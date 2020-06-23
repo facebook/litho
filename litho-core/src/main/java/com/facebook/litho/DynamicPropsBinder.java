@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderUnit;
 
 public class DynamicPropsBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
@@ -35,22 +34,14 @@ public class DynamicPropsBinder implements RenderUnit.Binder<LithoRenderUnit, Ob
 
   @Override
   public void bind(
-      final Context context,
-      final com.facebook.rendercore.Host host,
-      final Object content,
-      final LithoRenderUnit unit,
-      final Object data) {
+      final Context context, final Object content, final LithoRenderUnit unit, final Object data) {
     final LayoutOutput output = unit.output;
     mDynamicPropsManager.onBindComponentToContent(output.getComponent(), content);
   }
 
   @Override
   public void unbind(
-      final Context context,
-      final Host host,
-      final Object content,
-      final LithoRenderUnit unit,
-      final Object data) {
+      final Context context, final Object content, final LithoRenderUnit unit, final Object data) {
     final LayoutOutput output = unit.output;
     mDynamicPropsManager.onUnbindComponent(output.getComponent());
   }

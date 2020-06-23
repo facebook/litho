@@ -39,9 +39,11 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 
 /**
- * [UNPERFORMANT WARNING] if you do not need to render your corners transparently please use {@link
- * com.facebook.litho.widget.Card}. It is more expensive to perform rounded corners with transparent
- * clipping due to antialiasing operations.
+ * @Deprecated use Card with transparencyEnabled(true) instead
+ *
+ * <p>[UNPERFORMANT WARNING] if you do not need to render your corners transparently please use
+ * {@link com.facebook.litho.widget.Card}. It is more expensive to perform rounded corners with
+ * transparent clipping due to antialiasing operations.
  *
  * <p>A component that renders a given component into a card border with shadow, and allows for
  * transparent corners. {@link * com.facebook.litho.widget.Card} uses imitation clipped corners that
@@ -56,6 +58,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop elevation Elevation of the card.
  * @prop shadowBottomOverride Override of size of shadow at bottom of card.
  */
+@Deprecated
 @LayoutSpec(isPureRender = true)
 class TransparencyEnabledCardSpec {
 
@@ -91,7 +94,7 @@ class TransparencyEnabledCardSpec {
       @Prop(optional = true) boolean disableClipBottomLeft,
       @Prop(optional = true) boolean disableClipBottomRight) {
 
-    final Resources resources = c.getAndroidContext().getResources();
+    final Resources resources = c.getResources();
 
     if (cornerRadius == -1) {
       cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);

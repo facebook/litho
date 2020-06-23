@@ -23,9 +23,8 @@ import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static com.facebook.litho.MountState.shouldUpdateViewInfo;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import com.facebook.rendercore.Host;
+import android.view.View;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +101,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void bind(
         final Context context,
-        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -113,7 +111,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void unbind(
         final Context context,
-        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -135,18 +132,16 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void bind(
         final Context context,
-        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-
-      // TODO: Remove excess call from ComponentHost#mountDrawable() on first mount.
       if (content instanceof Drawable) {
-        maybeSetDrawableState(host, (Drawable) content, output.getFlags(), output.getNodeInfo());
-        Rect rect = new Rect();
-        output.getMountBounds(rect);
-        host.invalidate(rect);
+        final Drawable drawable = (Drawable) content;
+        if (drawable.getCallback() instanceof View) {
+          final View view = (View) drawable.getCallback();
+          maybeSetDrawableState(view, drawable, output.getFlags(), output.getNodeInfo());
+        }
       }
 
       output.getComponent().bind(output.getComponent().getScopedContext(), content);
@@ -155,7 +150,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void unbind(
         final Context context,
-        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -180,7 +174,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void bind(
         final Context context,
-        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -194,7 +187,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void unbind(
         final Context context,
-        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {

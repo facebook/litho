@@ -7,7 +7,13 @@
 
 /* You can override the default Infima variables here. */
 :root {
+  --ifm-color-primary-lightest: #FBCCD3;
+  --ifm-color-primary-lighter: #F79CA9;
+  --ifm-color-primary-light: #F68B9B;
   --ifm-color-primary: #F36B7F;
+  --ifm-color-primary-dark: #F04B63;
+  --ifm-color-primary-darker: #EF3A55;
+  --ifm-color-primary-darkest: #E31231;
   --ifm-navbar-link-color: #F6F7F9;
   --ifm-navbar-link-hover-color: #fff;
   --ifm-button-border-width: 2px;
@@ -40,4 +46,18 @@
   display: block;
   margin: auto;
   padding: 10px;
+}
+
+.widget-button {
+  background-color: --ifm-color-primary;
+  border-radius: 20px;
+  font-size: 18px;
+  padding: 10px 26px;
+  margin-top: 10px;
+  margin-right: 8px;
+  margin-bottom: 10px;
+  font-family: Arial;
+  &:hover {
+    background-color: --ifm-color-dark;
+  }
 }
