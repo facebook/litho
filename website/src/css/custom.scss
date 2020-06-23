@@ -6,6 +6,7 @@
  */
 
 /* You can override the default Infima variables here. */
+
 :root {
   --ifm-color-primary-lightest: #FBCCD3;
   --ifm-color-primary-lighter: #F79CA9;
@@ -21,7 +22,7 @@
 }
 
 .navbar {
-  background-color: #F36B7F;
+  background-color: var(--ifm-color-primary);
   box-shadow: none;
 }
 
@@ -30,7 +31,7 @@
 }
 
 .navbar-sidebar__brand {
-  background-color: #F36B7F;
+  background-color: var(--ifm-color-primary);
 }
 
 .docusaurus-highlight-code-line {
@@ -49,7 +50,7 @@
 }
 
 .widget-button {
-  background-color: --ifm-color-primary;
+  background-color: var(--ifm-color-primary);
   border-radius: 20px;
   font-size: 18px;
   padding: 10px 26px;
@@ -58,6 +59,10 @@
   margin-bottom: 10px;
   font-family: Arial;
   &:hover {
-    background-color: --ifm-color-dark;
+    background-color: var(--ifm-color-dark);
   }
+}
+
+html {
+  scroll-behavior: smooth;
 }

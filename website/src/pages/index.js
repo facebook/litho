@@ -77,7 +77,7 @@ function Home() {
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
           <img className={styles.heroImage} src={useBaseUrl('logo.svg')} />
-          <p className="hero__title">{siteConfig.title + ': ' + siteConfig.tagline}</p>
+          <div className={styles.heroTitle}>{siteConfig.title + ': ' + siteConfig.tagline}</div>
           <div className={styles.buttons}>
             <Link
               className={clsx(
@@ -85,7 +85,7 @@ function Home() {
                 styles.button,
               )}
               to={useBaseUrl('docs/')}>
-              Get Started
+              GET STARTED
             </Link>
             <Link
               className={clsx(
@@ -93,7 +93,7 @@ function Home() {
                 styles.button,
               )}
               to={useBaseUrl('docs/intro')}>
-              Learn More
+              LEARN MORE
             </Link>
             <Link
               className={clsx(
@@ -101,7 +101,7 @@ function Home() {
                 styles.button,
               )}
               to={useBaseUrl('docs/tutorial')}>
-              Tutorial
+              TUTORIAL
             </Link>
           </div>
         </div>

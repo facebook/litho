@@ -6,8 +6,8 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
-  text-align: center;
+  padding: 3rem 0 3rem 0;
+  text-align: left;
   position: relative;
   overflow: hidden;
 }
@@ -15,27 +15,45 @@
 .heroImage {
   width: 300px;
   margin-right: 5%;
+  float: left;
+}
+
+.heroTitle {
+  padding-top: 50px;
+  padding-bottom: 25px;
+  font-size: 50px;
+  line-height: 60px;
 }
 
 @media screen and (max-width: 966px) {
   .heroBanner {
     padding: 2rem;
+    margin-right:0px;
   }
   .heroImage {
     width: 100px;
     margin-right: 0;
   }
+  .heroTitle {
+    font-size: 40px;
+  }
 }
 
 .buttons {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
+  @media screen and (max-width: 750px) {
+    justify-content: space-around;
+  }
 }
 
 .button {
   color: #F6F7F9;
   margin-right: 20px;
+  padding: 10px 20px;
+  transition: background 0.3s, color 0.3s;
 }
 
 .button:hover {
