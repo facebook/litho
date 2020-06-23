@@ -41,6 +41,10 @@ module.exports = {
         },
       ],
     },
+    algolia: {
+      apiKey: '6502239eccd45af18518695c2b743307',
+      indexName: 'fblitho',
+    },
     footer: {
       style: 'dark',
       logo: {
