@@ -232,12 +232,8 @@ public class ComponentHost extends Host {
    * @param mountItem
    */
   void startUnmountDisappearingItem(MountItem mountItem) {
-    final int index;
-    if (mountItem.getContent() instanceof Drawable) {
-      index = mDrawableMountItems.keyAt(mDrawableMountItems.indexOfValue(mountItem));
-    } else {
-      index = mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
-    }
+    final int index =
+        mMountItems == null ? -1 : mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
     startUnmountDisappearingItem(index, mountItem);
   }
 
