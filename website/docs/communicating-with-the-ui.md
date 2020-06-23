@@ -158,7 +158,7 @@ Use this variation if you need to specify a snapping mode.
 3) `SNAP_TO_END`
 4) `SNAP_TO_CENTER`
 
-For the full list of methods available to request scroll to a position, check out the [SectionLifecycle](/javadoc/com/facebook/litho/sections/SectionLifecycle.html) documentation.
+For the full list of methods available to request scroll to a position, check out the [SectionLifecycle](javadoc/com/facebook/litho/sections/SectionLifecycle.html) documentation.
 
 ## @OnEvent(LoadingEvent.class)
 

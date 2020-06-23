@@ -137,7 +137,7 @@ static boolean shouldUpdate(@Prop Diff<String> someStringProp) {
   return !someStringProp.getPrevious().equals(someStringProp.getNext());
 }
 ```
-The parameters taken from `shouldUpdate` are [Diffs](/javadoc/com/facebook/litho/Diff) of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop` or `@State` in the new components hierarchy.
+The parameters taken from `shouldUpdate` are [Diffs](javadoc/com/facebook/litho/Diff.html) of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop` or `@State` in the new components hierarchy.
 In this example this component was defining **someStringProp** as a String `@Prop`. `shouldUpdate` will receive a `Diff<String>` to be able to compare the old and new value of this `@Prop`.
 `shouldUpdate` has to take into consideration any prop and any states that are used at `@OnMount` time. It can safely ignore props and states that are only used at `@OnBind`/`@OnUnbind` time as these two methods will be executed regardless.
 

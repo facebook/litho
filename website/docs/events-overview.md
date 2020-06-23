@@ -36,7 +36,7 @@ class ColorComponentSpec {
 
 For an event of type `FooEvent`, this will auto-generate a matching `dispatchFooEvent` method and an event identifier that will used by event callbacks.
 
-The `dispatchFooEvent` method takes an [EventHandler](/javadoc/com/facebook/litho/EventHandler) as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic listener interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component.
+The `dispatchFooEvent` method takes an [EventHandler](javadoc/com/facebook/litho/EventHandler.html) as the first argument followed by the list of attributes defined in your `@Event` class. An `EventHandler` is essentially a generic listener interface to connect components through events. The convention is to have an `EventHandler` prop for each event exposed by your component.
 
 In the example above, `ColorComponent` takes a `colorChangedHandler` as prop and dispatches the `ColorChangedEvent` to it with the generated `dispatchColorChangedEvent()` method.
 

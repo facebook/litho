@@ -4,7 +4,7 @@ title: Recycler
 ---
 
 If you choose to use Litho without using Sections, you can still use the
-[Recycler](/javadoc/com/facebook/litho/widget/Recycler.html) component to create lists.  `RecyclerCollectionComponent` uses `Recycler` under the hood.
+[Recycler](javadoc/com/facebook/litho/widget/Recycler.html) component to create lists.  `RecyclerCollectionComponent` uses `Recycler` under the hood.
 
 :::note
 Using the Recycler directly is not encouraged. Litho provides a utility component called [RecyclerCollectionComponent](recycler-collection-component) for writing lists, which abstracts all the complexity of using `Recycler` and `RecyclerBinder`.
@@ -28,7 +28,7 @@ static Component onCreateLayout(
 This code will render a `Recycler` component that will display the content of `recyclerBinder`.
 
 ### RecyclerBinder
-[RecyclerBinder](/javadoc/com/facebook/litho/widget/RecyclerBinder) is the entry point to manipulate list-like UIs with components.
+[RecyclerBinder](javadoc/com/facebook/litho/widget/RecyclerBinder.html) is the entry point to manipulate list-like UIs with components.
 It keeps a list of all the components contained in the list and as the user scrolls through the list it computes layouts for items that are about to become visible.
 
 `RecyclerBinder` is the part of Litho that:
@@ -83,7 +83,7 @@ recyclerBinder.insertItemAt(
 #### Using RecyclerBinder with DiffUtil
 
 RecyclerBinder exposes by default bindings to be used in conjunction with [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html).
-Litho defines in its API a [RecyclerBinderUpdateCallback](/javadoc/com/facebook/litho/widget/RecyclerBinderUpdateCallback.html) that implements `ListUpdateCallback` and therefore can be used to dispatch the `DiffResult` to a `RecyclerBinder`.
+Litho defines in its API a [RecyclerBinderUpdateCallback](javadoc/com/facebook/litho/widget/RecyclerBinderUpdateCallback.html) that implements `ListUpdateCallback` and therefore can be used to dispatch the `DiffResult` to a `RecyclerBinder`.
 
 Here's an example of how `DiffUtil` can be used with Litho:
 

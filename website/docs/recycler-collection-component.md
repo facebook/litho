@@ -4,7 +4,7 @@ title: RecyclerCollectionComponent
 ---
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items.
-Litho recommends using [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and [Sections](sections-intro) to build scrolling lists easily.  With these apis you can builds everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
+Litho recommends using [RecyclerCollectionComponent](javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) and [Sections](sections-intro) to build scrolling lists easily.  With these apis you can builds everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
 
 ### Create a RecyclerCollectionComponent
 
@@ -25,7 +25,7 @@ You can learn more about how to create sections by checking out some of the [bui
 
 ## Batteries Included
 
-`RecyclerCollectionComponent` includes a number of practical features for working with lists.   You can see the full list of props it accepts in [the javadocs](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) but here are some notable features:
+`RecyclerCollectionComponent` includes a number of practical features for working with lists.   You can see the full list of props it accepts in [the javadocs](javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) but here are some notable features:
 
 
 ### Horizontal lists
@@ -47,7 +47,7 @@ final Component component =
         .build();
 ```
 
-You can also create a grid list by using [GridRecyclerConfiguration](/javadoc/com/facebook/litho/sections/widget/GridRecyclerConfiguration).
+You can also create a grid list by using [GridRecyclerConfiguration](javadoc/com/facebook/litho/sections/widget/GridRecyclerConfiguration.html).
 
 ### Snapping
 
@@ -103,7 +103,7 @@ Collapsing the highest child: If the child with the biggest height collapses, th
 > Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
 
 Measuring all the children to determine the tallest comes with a high performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
-If you must do this, you can pass your own [RecyclerConfiguration](/javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable this on the [RecyclerBinderConfigurationer](/javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
+If you must do this, you can pass your own [RecyclerConfiguration](javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable this on the [RecyclerBinderConfigurationer](javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
 Here's an example of enabling that on a horizontal linear list:
 
 ```java
@@ -139,7 +139,7 @@ final Component component =
 
 ### Loading, Empty, and error screens
 
-With the sections API you can also integrate your data fetching through [Loading events](communicating-with-the-ui#null__loadingstate-loadingstate) and [Services](services).  `RecyclerCollectionComponent` can listen to these [loading events](/javadoc/com/facebook/litho/sections/LoadingEvent.html) and will respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things happen when fetching data:
+With the sections API you can also integrate your data fetching through [Loading events](communicating-with-the-ui#null__loadingstate-loadingstate) and [Services](services).  `RecyclerCollectionComponent` can listen to these [loading events](javadoc/com/facebook/litho/sections/LoadingEvent.html) and will respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things happen when fetching data:
  - `loadingComponent`: data is being loaded and there's nothing in the list
  - `emptyComponent`: data has finished loading and there's nothing to show.
  - `errorComponent`: data loading has failed and there's nothing in the list.
@@ -161,4 +161,4 @@ final Component component =
         .build();
  ```
 
-You can check what other props `RecyclerCollectionComponent` supports [here](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html).
+You can check what other props `RecyclerCollectionComponent` supports [here](javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html).

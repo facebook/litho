@@ -109,7 +109,7 @@ Collapsing the highest child: If the child with the biggest height collapses, th
 > Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
 
 Measuring all the children to determine the tallest comes with a high performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
-If you must do this, you can pass your own [RecyclerConfiguration](/javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable `hasDynamicItemHeight` on the [RecyclerBinderConfigurationer](/javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
+If you must do this, you can pass your own [RecyclerConfiguration](javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable `hasDynamicItemHeight` on the [RecyclerBinderConfigurationer](javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
 
 ```java
 RecyclerCollectionComponent.create(c)

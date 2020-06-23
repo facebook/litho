@@ -27,9 +27,11 @@ If you're new to using `DataDiffSection`, we recommend you watch this Litho Less
 
 ### How to Use DataDiffSection
 
-> **NOTE**: Because Sections diffing can occur on a background thread, mutations to the list or its elements from another thread can cause `DiffUtils` to emit an invalid diff! The reason for this is that `OnCheckIsSameItem` and/or `OnCheckIsSameContent` may return inconsistent results for the same pairs of indices over the course of diffing the lists. **This will show up as an `IndexOutOfBoundsException` thrown from `RecyclerBinder`**.
-> 
-> To fix this, you need to prevent concurrent modification of the data with diffing on another thread: the easiest way to ensure this is to use immutable lists and immutable data with `DataDiffSection` and the Sections API.
+**NOTE**: Because Sections diffing can occur on a background thread, mutations to the list or its elements from another thread can cause `DiffUtils` to emit an invalid diff! The reason for this is that `OnCheckIsSameItem` and/or `OnCheckIsSameContent` may return inconsistent results for the same pairs of indices over the course of diffing the lists. **This will show up as an `IndexOutOfBoundsException` thrown from `RecyclerBinder`**.
+ 
+:::tip 
+To fix this, you need to prevent concurrent modification of the data with diffing on another thread: the easiest way to ensure this is to use immutable lists and immutable data with `DataDiffSection` and the Sections API.
+:::
 
 A `DataDiffSection` is used to represent a homogeneous list of data. The minimal information that you have to pass to a `DataDiffSection` is the list of items that it needs to render and a callback for rendering each item in this list.
 
@@ -106,7 +108,7 @@ boolean onCheckIsSameContent(
 
 For easy integration with Litho, the framework provides a built-in Component that can render a hierarchy of Sections, called `RecyclerCollectionComponent`.
 
-This is a regular Litho Component that takes a Section prop and has logic for creating the infrastructure for rendering the Components encapsulated in the Section hierarchy in a [Recycler](recycler-component) managed by a [RecyclerBinder](/javadoc/com/facebook/litho/widget/RecyclerBinder).
+This is a regular Litho Component that takes a Section prop and has logic for creating the infrastructure for rendering the Components encapsulated in the Section hierarchy in a [Recycler](recycler-component) managed by a [RecyclerBinder](javadoc/com/facebook/litho/widget/RecyclerBinder.html).
 
 The Sections hierarchy becomes a “data source” for the `RecyclerCollectionComponent`, and the complexity of handling operations on your list, such as inserts or removes, is hidden away and handled by the infrastructure.
 
