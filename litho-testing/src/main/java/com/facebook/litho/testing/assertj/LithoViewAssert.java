@@ -148,6 +148,13 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
+  /** Inverse of {@link #hasVisibleText(int)} */
+  public LithoViewAssert doesNotHaveVisibleText(@StringRes int resourceId) {
+    assertThatViewTree().doesNotHaveVisibleText(resourceId);
+
+    return this;
+  }
+
   /** Assert that the given component contains the provided pattern. */
   public LithoViewAssert hasVisibleTextMatching(String pattern) {
     assertThatViewTree().hasVisibleTextMatching(pattern);
