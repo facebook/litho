@@ -95,7 +95,7 @@ static Transition onCreateTransition(ComponentContext c) {
 }
 ```
 
-<video loop autoplay class="video" width="100%" height="500px" >
+<video loop="true" autoplay="true" class="video" width="100%" height="500px" >
   <source type="video/webm" src="/static/videos/transitions/disappear.webm"></source>
   <p>Your browser does not support the video element.</p>
 </video>
@@ -106,4 +106,6 @@ Under the hood, in order to run a disappearing animation, the framework follows 
 2. Retrieve the *end* from the user-provided `disappearTo` value of transition definition.
 3. Render the *after* layout, but instead of removing the UI element from screen right away, drive the value of `AnimatedProperty` to the *end*, and only then remove the UI element.
 
-> It is important to understand that once the layout has been mounted (on step 3) a disappearing `Component` isn't a part of layout tree anymore. However the drawing order of all the UI element is defined by the layout tree. Hence the UI element for the disappearing `Component` will be drawn the last. In some rare cases (normally involving cross-fading elements), this may result in the rendering being different from what you would expect. In such cases, a change animation should be used instead.
+:::info
+It is important to understand that once the layout has been mounted (on step 3) a disappearing `Component` isn't a part of layout tree anymore. However the drawing order of all the UI element is defined by the layout tree. Hence the UI element for the disappearing `Component` will be drawn the last. In some rare cases (normally involving cross-fading elements), this may result in the rendering being different from what you would expect. In such cases, a change animation should be used instead.
+:::
