@@ -83,11 +83,11 @@ module.exports = {
           items: [
             {
               label: 'Github',
-              to: '#',
+              to: 'https://github.com/facebook/litho',
             },
             {
               label: 'Twitter',
-              to: '#',
+              to: 'https://twitter.com/fblitho',
             },
           ]
         },
@@ -104,7 +104,6 @@ module.exports = {
     },
   },
   plugins: ['docusaurus-plugin-sass'],
-  themes: [],
   presets: [ 
     [
       '@docusaurus/preset-classic',

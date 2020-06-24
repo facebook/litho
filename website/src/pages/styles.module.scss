@@ -13,7 +13,7 @@
 }
 
 .heroInner {
-  margin: 0 auto;
+  margin: 0px auto;
   max-width: 1200px;
   padding: 5px 20px 50px;
 }
@@ -30,14 +30,14 @@
   color: #FFFFFF;
   line-height: 65px;
   font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
-  font-weight: 300;
+  font-weight: 300px;
 }
 
 .buttons {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 20px 0 20px 0;
+  margin: 20px 0px 20px 0px;
 }
 
 @media screen and (max-width: 966px) {
@@ -46,7 +46,7 @@
   }
 
   .heroInner {
-    padding: 0;
+    padding: 0px;
   }
 
   .heroImage {
@@ -54,7 +54,7 @@
     justify-content: space-around;
     display: block;
     float: none;
-    margin: 0 auto;
+    margin: 0px auto;
   }
 
   .heroTitle {
@@ -70,13 +70,13 @@
 
 .button {
   color: var(--ifm-navbar-link-color) ;
-  margin: 0 15px 0 3px;
+  margin: 0px 15px 0px 3px;
   padding: 10px 20px;
   transition: background 0.3s, color 0.3s;
   border: 2px solid var(--litho-light);
   @media screen and (max-width: 600px) {
     padding: 8px 12px;
-    margin: 0 3px 0 3px;
+    margin: 0px 3px 0px 3px;
   }
 }
 
@@ -111,7 +111,7 @@ section {
   align-items: center;
   justify-content: space-around;
   max-width: 1200px;
-  padding: 0 60px;
+  padding: 0px 60px;
 }
 
 .featureText {
@@ -142,7 +142,7 @@ section {
 
 .featureImage {
   width: 350px;
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 966px) {
     width: 300px;
   } 
 }
