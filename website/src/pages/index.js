@@ -63,7 +63,7 @@ const features = [
 function Feature({ imageUrl, title, description, dark }) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
-    <div className={clsx(styles.feature, dark && styles.darkFeature)}>
+    <section className={clsx(dark && styles.darkFeature)}>
       <div className={styles.featureContent}>
         <img className={styles.featureImage} src={imgUrl} alt={title} />
         <div className={styles.featureText}>
@@ -71,7 +71,7 @@ function Feature({ imageUrl, title, description, dark }) {
           <p className={styles.featureDescription}>{description}</p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -82,7 +82,7 @@ function Home() {
     <Layout description="Home page of Litho: A declaritive UI framework for Android">
       <div className={styles.heroBanner}>
         <div className={styles.heroInner}>
-        <img className={styles.heroImage} src={useBaseUrl("logo.svg")} />
+          <img className={styles.heroImage} src={useBaseUrl("logo.svg")} />
           <div className={styles.heroTitle}>
             {siteConfig.title + ": " + siteConfig.tagline}
           </div>
@@ -109,15 +109,11 @@ function Home() {
         </div>
       </div>
       <main>
-        {features && features.length > 0 && (
-          <section className={styles.features}>
-            <div className={clsx("row", styles.content)}>
-              {features.map((props, idx) => (
-                <Feature key={idx} {...props} />
-              ))}
-            </div>
-          </section>
-        )}
+        {features && features.length > 0 &&
+          features.map((props, idx) => (
+            <Feature key={idx} {...props} />
+          ))
+        }
       </main>
     </Layout>
   );

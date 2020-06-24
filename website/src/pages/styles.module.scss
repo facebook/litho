@@ -5,7 +5,7 @@
  * and scoped locally.
  */
 
-// --- css for the banner ---
+// --- css for the hero section ---
 
 .heroBanner {
   background-color: var(--ifm-color-primary);
@@ -87,24 +87,22 @@
 
 // --- css for the features --- 
 
-.content {
-  margin: 0;
-}
-
-.features {
+section {
   display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.feature {
-  height: 500px;
-  display: flex;
+  position: relative;
+  flex-shrink: 0;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 0;
-  margin: 0;
   width: 100%;
+  height: 500px;
+
+  @media screen and (max-width: 750px) {
+    height: auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
 }
 
 
@@ -112,15 +110,17 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  padding: 0 40px;
 }
 
 .featureText {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 40%;
-  color: #484848;
+  margin-left: 40px;
 }
 
 .darkFeature {
