@@ -72,7 +72,9 @@ public class FeedWithComplexItemsTest {
   public ComponentsRule mComponentsRule = new ComponentsRule();
 ```
 
-<img src={useBaseUrl("/static/images/complex-component-0.svg")} float="right" width="200px" />
+<img src={useBaseUrl("/static/images/complex-component-0.svg")} align="right" width="200px"/>
+
+<br />
 
 As always, we create a standard JUnit test suite and run it with a
 `RobolectricTestRunner`-compatible implementation like `LithoTestRunner`.
@@ -81,7 +83,8 @@ For the purpose of this article, we assume that we have a `FeedItemComponent`
 that contains our `ComplexComponent`. The `FeedItemComponent` contains the logic
 for populating our complex props which we want to verify.
 
-<div clear="right" margin-bottom="1em"></div>
+<br clear="right" />
+<br />
 
 ```java
 @Test
@@ -239,7 +242,7 @@ public void testComplexTestSpecAdvancedProps() {
 
 ## Matching Matchers
 
-<img src={useBaseUrl("/static/images/yo_dawg.jpg")} float="right" width="200px" />
+<img src={useBaseUrl("/static/images/yo_dawg.jpg")} align="right" width="200px" />
 
 There is one type of prop that requires some special treatment: components.
 While we could just match against child components via normal equality (and
@@ -248,7 +251,13 @@ know what exact instance of a component is passed down to the props and we face
 many of the same problems we discussed before: The props of the Component may
 not be known in full or perhaps we don't want to provide them all.
 
-<img src={useBaseUrl("/static/images/complex-component-0.svg")} float="left" margin-right="1em" width="200px" />
+<br clear="right" />
+
+<img src={useBaseUrl("/static/images/complex-component-0.svg")} align="right" margin-right="1em" width="200px" />
+<br />
+<br />
+<br />
+
 The solution to this is obvious: We match matchers! For any prop that takes a
 Component, the TestSpec generates a matcher that takes another matcher. This
 allows for **declarative matching against entire trees of components**.
@@ -256,7 +265,8 @@ allows for **declarative matching against entire trees of components**.
 For our example, let's suppose that our `FeedItemComponent` wraps the
 `ComplexComponent` in a `Card`.
 
-<div clear="right" margin-bottom="1em"></div>
+<br clear="right" />
+<br />
 
 ```java
 @Test

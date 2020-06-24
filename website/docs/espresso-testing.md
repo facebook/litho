@@ -12,12 +12,15 @@ framework. For the time being, we only provide shallow selectors that will match
 
 ## Getting Started
 
-<img src={useBaseUrl("/static/images/espresso-logo.png")} width="150px" float="right" margin-left="50px" /> 
+<img src={useBaseUrl("/static/images/espresso-logo.png")} width="150px" align="right" margin-left="50px" /> 
 
 We ship with a bunch of custom matchers, which will hopefully make your life easier.
 
 The matchers exist as their own `litho-espresso` package, so make sure to add the
 dependencies to your `build.gradle` file alongside your Espresso setup:
+
+<br clear="right" />
+<br />
 
 ```gradle
 dependencies {
@@ -26,9 +29,7 @@ dependencies {
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
 }
-```
-
-<br clear="both" overflow="hidden" />
+``` 
 
 ## Matching
 
