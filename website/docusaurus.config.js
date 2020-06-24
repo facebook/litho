@@ -23,7 +23,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href:'javadoc/',
+          href:'/javadoc/',
           label: 'API',
           position: 'right',
         },
@@ -61,7 +61,7 @@ module.exports = {
             },
             {
               label: 'API',
-              href: 'javadoc/',
+              href: '/javadoc/',
             },
           ]
         },
