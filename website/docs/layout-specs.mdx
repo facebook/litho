@@ -1,9 +1,19 @@
 ---
 id: layout-specs
 title: Layout Specs
+hide_table_of_contents: true
 ---
 
-## Java Layout Spec
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  defaultValue="java"
+  values={[
+    {label: 'Java', value: 'java'},
+    {label: 'Kotlin', value: 'kotlin'},
+  ]}>
+  <TabItem value="java">
 
 A *layout spec* is the logical equivalent of a composite view on Android. It simply groups existing components together in an immutable layout tree.
 
@@ -65,7 +75,8 @@ Text.create(c)
 
 You can check the full [Yoga](https://yogalayout.com/docs/) documentation to see all the layout features that the framework exposes.
 
-## Kotlin Layout Spec
+  </TabItem>
+  <TabItem value="kotlin">
 
 A *layout spec* is the logical equivalent of a composite view on Android. It simply groups existing components together in an immutable layout tree.
 
@@ -125,3 +136,6 @@ Text.create(c)
 ![Layout Spec lifecycle flowchart](/static/images/flow-chart-v0.23.1-layout-spec.svg)
 
 You can check the full [Yoga](https://yogalayout.com/docs/) documentation to see all the layout features that the framework exposes.
+
+  </TabItem>
+</Tabs>
