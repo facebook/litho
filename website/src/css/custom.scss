@@ -15,7 +15,9 @@
   --ifm-color-primary-dark: #F04B63;
   --ifm-color-primary-darker: #EF3A55;
   --ifm-color-primary-darkest: #E31231;
-  --ifm-navbar-link-color: #F6F7F9;
+  --litho-light: #F6F7F9;
+  --litho-dark: #5F6673;
+  --ifm-navbar-link-color: var(--litho-light);
   --ifm-navbar-link-hover-color: #fff;
   --ifm-button-border-width: 2px;
   --ifm-code-font-size: 95%;

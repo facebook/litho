@@ -5,63 +5,87 @@
  * and scoped locally.
  */
 
+// --- css for the banner ---
+
 .heroBanner {
-  padding: 3rem 0 3rem 0;
-  text-align: left;
-  position: relative;
-  overflow: hidden;
+  background-color: var(--ifm-color-primary);
+  padding: 60px;
+}
+
+.heroInner {
+  margin: 0 auto;
+  max-width: 1150px;
+  padding: 10px 20px 50px;
 }
 
 .heroImage {
   width: 300px;
-  margin-right: 5%;
   float: left;
+  margin-right: 20px;
 }
 
 .heroTitle {
-  padding-top: 50px;
-  padding-bottom: 25px;
+  margin-top: 40px;
   font-size: 50px;
-  line-height: 60px;
-}
-
-@media screen and (max-width: 966px) {
-  .heroBanner {
-    padding: 2rem;
-    margin-right:0px;
-  }
-  .heroImage {
-    width: 100px;
-    margin-right: 0;
-  }
-  .heroTitle {
-    font-size: 40px;
-  }
+  color: #FFFFFF;
+  line-height: 65px;
 }
 
 .buttons {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: left;
-  @media screen and (max-width: 750px) {
+  margin: 20px 0 20px 0;
+}
+
+@media screen and (max-width: 966px) {
+  .heroBanner {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .heroInner {
+    padding: 0;
+  }
+
+  .heroImage {
+    width: 200px;
+    justify-content: space-around;
+    display: block;
+    float: none;
+    margin: 0 auto;
+  }
+
+  .heroTitle {
+    margin-top: 0px;
+    font-size: 40px;
+    text-align: center;
+  }
+
+  .buttons {
     justify-content: space-around;
   }
 }
 
 .button {
-  color: #F6F7F9;
-  margin-right: 20px;
+  color: var(--ifm-navbar-link-color) ;
+  margin: 0 15px 0 3px;
   padding: 10px 20px;
   transition: background 0.3s, color 0.3s;
-  border-color: #F6F7F9;
+  border-width: 2px;
+  @media screen and (max-width: 600px) {
+    padding: 8px 12px;
+    margin: 0 3px 0 3px;
+  }
 }
 
 .button:hover {
-  color: #F36B7F;
-  background-color: #F6F7F9;
-  border-color: #F6F7F9;
+  color: var(--ifm-color-primary);
+  background-color: var(--ifm-navbar-link-color);
+  border-color: var(--ifm-navbar-link-color);
 }
+
+// --- css for the features --- 
 
 .content {
   margin: 0;
@@ -100,8 +124,8 @@
 }
 
 .darkFeature {
-  background-color: #5F6673;
-  color: #F6F7F9;
+  background-color: var(--litho-dark);
+  color: var(--litho-light);
 }
 
 .featureBody {
