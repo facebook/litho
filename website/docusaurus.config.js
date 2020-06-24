@@ -104,6 +104,7 @@ module.exports = {
     },
   },
   plugins: ['docusaurus-plugin-sass'],
+  themes: [],
   presets: [
     [
       '@docusaurus/preset-classic',

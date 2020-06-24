@@ -74,9 +74,6 @@ public class FeedWithComplexItemsTest {
 
 <img src={useBaseUrl("/static/images/complex-component-0.svg")} float="right" width="200px" />
 
-<img src={useBaseUrl("/static/images/complex-component-0.svg")} style={{float:"right", width:"200px"}} />
-
-
 As always, we create a standard JUnit test suite and run it with a
 `RobolectricTestRunner`-compatible implementation like `LithoTestRunner`.
 
