@@ -94,7 +94,7 @@ module.exports = {
       ],
       logo: {
         alt: 'Facebook Open Source Logo',
-        src: 'static/oss_logo.png',
+        src: 'oss_logo.png',
         href: 'https://opensource.facebook.com',
       },
     },
