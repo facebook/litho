@@ -63,7 +63,9 @@ class ChildComponentSpec {
 }
 ```
 
-> IMPORTANT: Once created, the TreeProp value will be passed down to all children, but will not be accessible from the component that created this TreeProp.
+:::caution IMPORTANT 
+Once created, the TreeProp value will be passed down to all children, but will not be accessible from the component that created this TreeProp.
+:::
 
 If you want to access a TreeProp from the component that created this TreeProp, you can transform it into [`@State`](https://fblitho.com/docs/state) value like this:
 

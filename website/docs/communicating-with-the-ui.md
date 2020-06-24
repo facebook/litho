@@ -68,11 +68,11 @@ Position of the last fully visible components in the viewport.
 ### Change in Viewport
 A viewport change could occur due to any number of the following reasons:
 
-1) Components added to the visible viewport.
-2) Components removed from the visible viewport.
-3) Scrolling.
-4) Components in the visible viewport are updated.
-5) Components have moved in or out of the visible viewport.
+1. Components added to the visible viewport.
+2. Components removed from the visible viewport.
+3. Scrolling.
+4. Components in the visible viewport are updated.
+5. Components have moved in or out of the visible viewport.
 
 ### Positions and Counts
 
@@ -98,10 +98,10 @@ A method annotated with this annotation will be called when the data changes cor
 section's hierarchy is made available to the `SectionTree.Target`.
 
 Data changes could occur due to any number of the following:
-1) Insertion
-2) Update
-3) Delete
-4) Move
+1. Insertion
+2. Update
+3. Delete
+4. Move
 
 Availability of these data changes do not mean they are visible on the viewport.
 To detect visibility, use `@OnViewportChanged`.
@@ -131,7 +131,9 @@ There a few variations of the `requestFocus()` method.
 #### SectionLifecycle.requestFocus(SectionContext c, int index)
 Calls focus by the index of the `Component` in the `Section` scoped by the given `SectionContext`
 
-> As with `@OnViewportChanged`, the index is with respect to the number of components this section has.
+:::info
+As with `@OnViewportChanged`, the index is with respect to the number of components this section has.
+:::
 
 #### SectionLifecycle.requestFocus(SectionContext c, String sectionKey)
 Calls focus to the first index of the component in the section represented by the section's key you provided.
@@ -143,20 +145,22 @@ Same as `SectionLifecycle.requestFocus(SectionContext c, int index)` but with an
 Same as `SectionLifecycle.requestFocus(SectionContext c, String sectionKey)` but with an offset.
 
 #### SectionLifecycle.requestFocus(SectionContext c, String sectionKey, FocusType focusType)
+
 `FocusType` is either:
-1) `FocusType.START`
+
+1. `FocusType.START`
 Calls focus to the first index of the component in the section
 
-2) `FocusType.END`
+2. `FocusType.END`
 Calls focus to the last index of the component in the section
 
 #### SectionLifecycle.requestSmoothFocus(SectionContext c, int index, SmoothScrollAlignmentType type)
 Use this variation if you need to specify a snapping mode.
 `SmoothScrollAlignmentType` is either:
-1) `SNAP_TO_ANY`
-2) `SNAP_TO_START`
-3) `SNAP_TO_END`
-4) `SNAP_TO_CENTER`
+1. `SNAP_TO_ANY`
+2. `SNAP_TO_START`
+3. `SNAP_TO_END`
+4. `SNAP_TO_CENTER`
 
 For the full list of methods available to request scroll to a position, check out the [SectionLifecycle](/javadoc/com/facebook/litho/sections/SectionLifecycle.html) documentation.
 
@@ -211,16 +215,16 @@ class YourSectionSpec {
 ```
 
 #### LoadingState loadingState
-1) `INITIAL_LOAD`
+1. `INITIAL_LOAD`
 Loading has started
 
-2) `LOADING`
+2. `LOADING`
 Loading is still ongoing
 
-3) `SUCCEEDED`
+3. `SUCCEEDED`
 Loading is successful
 
-4) `FAILED`
+4. `FAILED`
 Loading has failed.
 
 #### boolean isEmpty

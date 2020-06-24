@@ -77,6 +77,6 @@ class BarSectionSpec {
 Below is a representation of the tree of Sections that has the root in `BarSection`. Each node in the tree is a Section, and the leaves are Components that can be rendered on screen.
 Each one of the sections in the tree acts as a data source. Its responsibilities are to describe what data it needs and how that data should be rendered.
 
-<img src={useBaseUrl('/static/images/group-section-spec.png')} width="800" />
+<img src={useBaseUrl("/images/group-section-spec.png")} width="800" />
 
 ![GroupSection Spec lifecycle flowchart](/images/flow-chart-v0.24.0-group-section-spec.svg)
