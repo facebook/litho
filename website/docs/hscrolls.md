@@ -47,7 +47,7 @@ To do this, just set the height through the `height` prop on your `RecyclerColle
        }
    }
 ```
-![fixedheight](/static/images/fixed-height-hscroll.png)
+![fixedheight](/images/fixed-height-hscroll.png)
 
 Notice the gray background is the actual bounds of the h-scroll, and the children have smaller heights.
 
@@ -93,7 +93,7 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
     }
 }
 ```
-![canmeasure](/static/images/canmeasure.png)
+![canmeasure](/images/canmeasure.png)
 
 In this case, the first child has a height of 100dip; the second child has a height of 200dip but it's cropped to fit the size of the h-scroll as determined by the first child. Once measured like this, the height cannot be changed.
 The gray background represents the actual bounds of the h-scroll.

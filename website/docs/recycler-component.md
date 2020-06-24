@@ -37,7 +37,7 @@ It keeps a list of all the components contained in the list and as the user scro
  - Defines the layout to use in the `RecyclerView` (ex Linear, Grid)
  - Manages all the complexity of computing layouts ahead of time in a background thread.
 
-![Layout range in action](/static/images/range_small.gif "Layout range in action")
+![Layout range in action](/images/range_small.gif "Layout range in action")
 
 Let's start creating a `RecyclerBinder`:
 

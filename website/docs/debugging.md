@@ -20,7 +20,7 @@ In this case we are compiling the `litho-widget` package.
 This will pause the execution during the "Starting Daemon" phase until you connect your debugger. This can be done by
 running a standard "Remote" target in IntelliJ which will look like this:
 
-![IntelliJ Remote Target](/static/images/remote-debugger.png)
+![IntelliJ Remote Target](/images/remote-debugger.png)
 
 Now set a breakpoint at the right point, run your remote target and debug away!
 

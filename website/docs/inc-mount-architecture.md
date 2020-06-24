@@ -9,6 +9,6 @@ Litho can transparently spread the cost of mounting components across UI frames 
 
 With incremental mount enabled (which it is by default), the `LithoView` will only mount enough content to fill its visible region and unmount (and recycle) components that are no longer visible.
   
-![Incremental Mount Diagram](/static/images/incremental-mount.png)
+![Incremental Mount Diagram](/images/incremental-mount.png)
 
 If you are using the Litho [async RecyclerView](recycler-component) support, the framework will seamlessly perform incremental mount.

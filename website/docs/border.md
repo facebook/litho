@@ -11,7 +11,7 @@ Litho supports setting a border width for all edges, or a different width per ed
 
 For example, let's say you wanted to specify a 10 dip border width for all edges:
 
-![Red Border](/static/images/border-all.png)
+![Red Border](/images/border-all.png)
 
 ```java
 Row.create(c)
@@ -29,7 +29,7 @@ Row.create(c)
 
 Or that you'd like to specify specific widths for a specific edge:
 
-![Red Left Border](/static/images/border-left.png)
+![Red Left Border](/images/border-left.png)
 
 ```java
 Row.create(c)
@@ -47,7 +47,7 @@ Row.create(c)
 
 Maybe you just want something different per edge:
 
-![Varying Border Width](/static/images/border-varying-all.png)
+![Varying Border Width](/images/border-varying-all.png)
 
 ```java
 Row.create(c)
@@ -72,7 +72,7 @@ Setting a color for a certain border edge is set via the various `color` builder
 
 You can set each border edge to any color you'd like:
 
-![Varying Border Color](/static/images/border-color-all.png)
+![Varying Border Color](/images/border-color-all.png)
 
 ```java
 Row.create(c)
@@ -93,7 +93,7 @@ Row.create(c)
 
 It still works for varying widths:
 
-![Varying Border Color with Varying Width](/static/images/border-color-varying-width.png)
+![Varying Border Color with Varying Width](/images/border-color-varying-width.png)
 
 ```java
 Row.create(c)
@@ -117,7 +117,7 @@ Row.create(c)
 
 ## Border Radius
 
-![Border Radius](/static/images/border-radius-xy.png)
+![Border Radius](/images/border-radius-xy.png)
 
 ```java
 Row.create(c)
@@ -137,7 +137,7 @@ Row.create(c)
 
 You may also set a separate radius value per corner:
 
-![Varying Border Radii](/static/images/border-radius-separate.png)
+![Varying Border Radii](/images/border-radius-separate.png)
 
 ```java
 Row.create(c)
@@ -176,7 +176,7 @@ Currently Litho does not support varying border widths with effects. Each border
 
 The dash effect applies a sequence of "on" and "off" sections of the border color. This effect utilizes [DashPathEffect](https://developer.android.com/reference/android/graphics/DashPathEffect.html) internally.
 
-![Dash Effect](/static/images/border-dash-effect.png)
+![Dash Effect](/images/border-dash-effect.png)
 
 ```java
 Row.create(c)
@@ -199,7 +199,7 @@ Row.create(c)
 
 The discrete effect will divide your border into segments whereby each segment will randomly deviate in the cross axis. This effect utilizes [DiscretePathEffect](https://developer.android.com/reference/android/graphics/DiscretePathEffect.html) internally.
 
-![Discrete Effect](/static/images/border-discrete-effect.png)
+![Discrete Effect](/images/border-discrete-effect.png)
 
 ```java
 Row.create(c)
@@ -221,7 +221,7 @@ Row.create(c)
 
 Path dash will take in a custom Android path object and continually stamp the path along the border. This effect utilizes [PathDashPathEffect](https://developer.android.com/reference/android/graphics/PathDashPathEffect.html) internally.
 
-![Path Effect](/static/images/border-pathdash-effect.png)
+![Path Effect](/images/border-pathdash-effect.png)
 
 ```java
 // Our stamp shape will be a simple circle
@@ -249,7 +249,7 @@ You may compose multiple effects by simply specifying more than one. This effect
 
 > IMPORTANT: Currently Litho does not support composing more than two effects.
 
-![Composed Effect](/static/images/border-composed-effect.png)
+![Composed Effect](/images/border-composed-effect.png)
 
 ```java
 Row.create(c)

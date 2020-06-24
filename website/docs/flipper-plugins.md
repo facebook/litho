@@ -7,7 +7,7 @@ When you create or debug standard Android Views, you can use Layout Preview and 
 
 Luckily, we have [Flipper](https://fbflipper.com) – an extensible mobile app debugger whose Layout Inspector plugin gives you an ability to tweak and inspect your UI in runtime and supports Litho. You'll be able to access full UI hierarchy, inspect Litho Components as well as Views, and even change values for View attributes or Component props in a currently running app without rebuilding it.
 
-![Flipper Layout plugin](/static/images/flipper-layout-plugin.png)
+![Flipper Layout plugin](/images/flipper-layout-plugin.png)
 
 ## Adding Flipper & Layout plugin to your Project
 
@@ -36,7 +36,7 @@ You can read more about Layout Inspector on [Flipper website](https://fbflipper.
 
 Another Litho plugin that is very useful for debugging Litho is Sections. It can uncover the flow of state changes for the list backed by [Litho Sections](sections-intro), visualise these changes such as which items were added, reused or deleted, and show the data corresponding to the specific Section.
 
-![Flipper Sections plugin](/static/images/flipper-sections-plugin.png)
+![Flipper Sections plugin](/images/flipper-sections-plugin.png)
 
 To enable Sections plugin in your app you need to add this line in addition to the general Flipper configuration:
 
