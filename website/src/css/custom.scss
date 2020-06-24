@@ -33,6 +33,14 @@
   color: #fff;
 }
 
+.navbar__toggle {
+  color: var(--litho-light);
+}
+
+.navbar__toggle:hover {
+  color: #fff;
+}
+
 .navbar-sidebar__brand {
   background-color: var(--ifm-color-primary);
 }
