@@ -4,7 +4,9 @@ title: Sections Tutorial
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-*NOTE* This part builds on the work you did in [the litho tutorial](tutorial). Make sure you've read through that tutorial before returning to this one.
+:::note
+This part builds on the work you did in [the litho tutorial](tutorial). Make sure you've read through that tutorial before returning to this one.
+:::
 
 Recall in [the litho tutorial](tutorial) that we left off with a vertically scrolling list with alternating background colors. In this optional part of this tutorial, we will add an horizontal scrolling unit at the top of the list by modifying `ListSectionSpec` to leverage the composability of the Litho and Sections API.
 

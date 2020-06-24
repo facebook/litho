@@ -82,7 +82,7 @@ function Home() {
     <Layout description="Home page of Litho: A declaritive UI framework for Android">
       <div className={styles.heroBanner}>
         <div className={styles.heroInner}>
-          <img className={styles.heroImage} src={useBaseUrl("logo.svg")} />
+          <img className={styles.heroImage} src={useBaseUrl("images/logo.svg")} />
           <div className={styles.heroTitle}>
             {siteConfig.title + ": " + siteConfig.tagline}
           </div>

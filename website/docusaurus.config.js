@@ -3,7 +3,7 @@ module.exports = {
   tagline: 'A declarative UI framework for Android',
   url: 'https://fblitho.com',
   baseUrl: '/',
-  favicon: 'favicon.png',
+  favicon: 'images/favicon.png',
   organizationName: 'facebook', // Usually your GitHub org/user name.
   projectName: 'litho', // Usually your repo name.
   themeConfig: {
@@ -13,7 +13,7 @@ module.exports = {
       title: 'Litho',
       logo: {
         alt: 'Litho Logo',
-        src: 'logo.svg',
+        src: 'images/logo.svg',
       },
       links: [
         {
@@ -48,7 +48,7 @@ module.exports = {
       style: 'dark',
       logo: {
         alt: 'Facebook Open Source Logo',
-        src: 'oss_logo.png',
+        src: 'images/oss_logo.png',
         href: 'https://opensource.facebook.com',
       },
       links: [
@@ -94,7 +94,7 @@ module.exports = {
       ],
       logo: {
         alt: 'Facebook Open Source Logo',
-        src: 'oss_logo.png',
+        src: 'images/oss_logo.png',
         href: 'https://opensource.facebook.com',
       },
     },
