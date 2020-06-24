@@ -14,19 +14,19 @@
 
 .heroInner {
   margin: 0 auto;
-  max-width: 1130px;
-  padding: 10px 20px 50px;
+  max-width: 1200px;
+  padding: 5px 20px 50px;
 }
 
 .heroImage {
   width: 300px;
   float: left;
-  margin-right: 20px;
+  margin-right: 35px;
 }
 
 .heroTitle {
-  margin-top: 40px;
-  font-size: 50px;
+  margin-top: 50px;
+  font-size: 53px;
   color: #FFFFFF;
   line-height: 65px;
   font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
@@ -42,8 +42,7 @@
 
 @media screen and (max-width: 966px) {
   .heroBanner {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 30px 20px;
   }
 
   .heroInner {
@@ -105,15 +104,13 @@ section {
     padding-top: 50px;
     padding-bottom: 50px;
   }
-
 }
 
 .featureContent {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  flex-wrap: wrap;
-  max-width: 1300px;
+  max-width: 1200px;
   padding: 0 60px;
 }
 
@@ -123,6 +120,7 @@ section {
   align-items: center;
   width: 40%;
   font-size: 18px;
+  margin-left: 10px;
 }
 
 .darkFeature {
@@ -144,11 +142,27 @@ section {
 
 .featureImage {
   width: 350px;
+  @media screen and (max-width: 900px) {
+    width: 300px;
+  } 
 }
 
 
 @media screen and (max-width: 750px) {
   .featureContent {
     padding: 0px;
+    flex-direction: column;
+  }
+  .featureText {
+    width: 80%;
+    text-align: center;
+    margin-left: 0px;
+  }
+  .featureTitle {
+    margin-top: 20px;
+    align-self: center;
+  }
+  .featureImage {
+    width: 350px;
   }
 }
