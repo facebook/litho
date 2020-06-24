@@ -413,6 +413,10 @@ class VisibilityOutputsExtension
 
   @Override
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
+    if (mVisibilityOutputs == null) {
+      return;
+    }
+
     boolean processVisibilityOutputs = !mHost.isInTransientState();
     if (processVisibilityOutputs) {
       processVisibilityOutputs(localVisibleRect, null, false);
