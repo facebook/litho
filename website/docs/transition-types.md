@@ -66,7 +66,7 @@ class MyComponentSpec {
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
-  <source type="video/webm" src={useBaseUrl("/static/videos/transitions/appear.webm")}></source>
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/appear.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
@@ -96,7 +96,7 @@ static Transition onCreateTransition(ComponentContext c) {
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px" >
-  <source type="video/webm" src="/static/videos/transitions/disappear.webm"></source>
+  <source type="video/webm" src="/videos/transitions/disappear.webm"></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
