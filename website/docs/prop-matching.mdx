@@ -249,12 +249,7 @@ know what exact instance of a component is passed down to the props and we face
 many of the same problems we discussed before: The props of the Component may
 not be known in full or perhaps we don't want to provide them all.
 
-<br clear="right" />
-
-<img src={useBaseUrl("/static/images/complex-component-0.svg")} align="right" margin-right="1em" width="200px" />
-<br />
-<br />
-<br />
+<img src={useBaseUrl("/static/images/complex-component-0.svg")} align="right" width="200px" />
 
 The solution to this is obvious: We match matchers! For any prop that takes a
 Component, the TestSpec generates a matcher that takes another matcher. This
