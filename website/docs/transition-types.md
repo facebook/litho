@@ -95,7 +95,7 @@ static Transition onCreateTransition(ComponentContext c) {
 }
 ```
 
-<video loop autoplay class="video" width="100%" height="500px">
+<video loop autoplay class="video" width="100%" height="500px" >
   <source type="video/webm" src="/static/videos/transitions/disappear.webm"></source>
   <p>Your browser does not support the video element.</p>
 </video>
