@@ -72,7 +72,7 @@ Here's a quick explanation of what's going on:
 
 Run the app. You should see the same thing as before.
 
-<img src={useBaseUrl("/static/images/barebones4.png")} width="300px" />
+<img src={useBaseUrl("/images/barebones4.png")} width="300px" />
 
 ## 2. Adding an H-scroll
 
@@ -111,7 +111,7 @@ We're seeing a couple new props for `RecyclerCollectionComponent` here.
 
 Run the app now, you should see something like this:
 
-<img src={useBaseUrl("/static/images/barebones5.gif")} width="300px" />
+<img src={useBaseUrl("/images/barebones5.gif")} width="300px" />
 
 ## Summary
 

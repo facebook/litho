@@ -65,7 +65,7 @@ The `Text` component is added as a single child component to the `LithoView` in 
 
 That's it! Run the app, you should see something like this:
 
-<img src={useBaseUrl("/static/images/barebones1.png")} style={{width: "300px"}}/>
+<img src={useBaseUrl("/images/barebones1.png")} style={{width: "300px"}}/>
 
 Not pretty, but this is certainly a start!
 
@@ -119,7 +119,7 @@ This runs an annotation processor over your code.  It looks for `FooSpec` class 
 
 It's as simple as that. Run your app. You should see something like this:
 
-<img src={useBaseUrl("/static/images/barebones2.png")} width="300px" />
+<img src={useBaseUrl("/images/barebones2.png")} width="300px" />
 
 ## 3. Creating a List of Items
 
@@ -168,7 +168,7 @@ That's `ListSection` you're using, not `ListSectionSpec`.
 
 Run the app. You should see a scrollable list of 32 `ListItem` components:
 
-<img src={useBaseUrl("/static/images/barebones3.png")} style={{width: "300px"}}/>
+<img src={useBaseUrl("/images/barebones3.png")} style={{width: "300px"}}/>
 
 ## 4. Defining a Component's properties
 
@@ -228,7 +228,7 @@ Now when `ListItem` is constructed, the `color`, `title` and `subtitle` props ar
 
 Run the app. You should see something like this:
 
-<img src={useBaseUrl("/static/images/barebones4.png")} width="300px" />
+<img src={useBaseUrl("/images/barebones4.png")} width="300px" />
 
 You can specify more options to the `@Prop` annotation.  For example, consider the property:
 

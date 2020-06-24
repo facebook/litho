@@ -26,7 +26,7 @@ In the following sample we have a `Component` that renders a yellow square in th
 We also have two regular Android `SeekBars` "outside" of the `Components` hierarchy that control the alpha and the scale levels of the square.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
-  <source type="video/webm" src={useBaseUrl("/static/videos/common_dynamic_props.webm")}></source>
+  <source type="video/webm" src={useBaseUrl("/videos/common_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
@@ -151,7 +151,7 @@ class ClockComponentSpec {
 }
 ```
 
-<img src={useBaseUrl("/static/images/clock_view.png")} height="500" />
+<img src={useBaseUrl("/images/clock_view.png")} height="500" />
 
 Notice that the value of the `time` property does not affect layout, it only controls how the `ClockView` draws clock hands.
 However, every time you want to update it the framework will have to go through `LayoutState` and `MountState`.
@@ -202,7 +202,7 @@ This method should always takes 2 arguments - mounted content, and the `@Prop` i
 Then, it is the responsibility of the framework to invoke these methods to keep changes to the `DynamicValue`.
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
-  <source type="video/webm" src={useBaseUrl("/static/videos/custom_dynamic_props.webm")}></source>
+  <source type="video/webm" src={useBaseUrl("/videos/custom_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 

@@ -12,7 +12,7 @@ framework. For the time being, we only provide shallow selectors that will match
 
 ## Getting Started
 
-<img src={useBaseUrl("/static/images/espresso-logo.png")} width="150px" align="right" margin-left="50px" /> 
+<img src={useBaseUrl("/images/espresso-logo.png")} width="150px" align="right" margin-left="50px" /> 
 
 We ship with a bunch of custom matchers, which will hopefully make your life easier.
 

@@ -9,7 +9,7 @@ As UIs become increasingly sophisticated, it gets harder to complete all the ren
 Android solves this problem this with [RecyclerView](https://developer.android.com/guide/topics/ui/layout/recyclerview.html), a dynamic UI container that is able to display elements from large data sets by creating only enough views to fill the screen and then recycling and reusing them as the UI scrolls.
 
 <video loop="true" autoplay="true" class="video">
-  <source type="video/mp4" src={useBaseUrl("/static/videos/recycler_view.mp4")}></source>
+  <source type="video/mp4" src={useBaseUrl("/videos/recycler_view.mp4")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
@@ -21,7 +21,7 @@ If that happens, RecyclerView has to allocate a new view. The allocation will ha
 
 
 <video loop="true" autoplay="true" class="video">
-  <source type="video/mp4" src={useBaseUrl("/static/videos/multiple_view_types.mp4")}></source>
+  <source type="video/mp4" src={useBaseUrl("/videos/multiple_view_types.mp4")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
@@ -34,7 +34,7 @@ This allows Litho to completely move away from the concept of View types. Rather
 This is not possible with traditional Android Views since the layout computation operates on the complete view tree and by the time we know the positions of all Views in a row everything has already been instatiated.
 
 <video loop="true" autoplay="true" class="video">
-  <source type="video/mp4" src={useBaseUrl("/static/videos/incremental_recycling.mp4")}></source>
+  <source type="video/mp4" src={useBaseUrl("/videos/incremental_recycling.mp4")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 

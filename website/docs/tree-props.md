@@ -133,7 +133,7 @@ pattern whenever possible.
 
 We now create a component hierarchy that looks like this:
 
-<img src={useBaseUrl("/static/images/treeprop-sections.png")} />
+<img src={useBaseUrl("/images/treeprop-sections.png")} />
 
 We start by setting up the RootComponent and the RecyclerComponent sitting
 inside:

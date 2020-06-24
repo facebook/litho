@@ -127,6 +127,6 @@ RecyclerCollectionComponent.create(c)
 In the video below you can see that the h-scroll will remeasure to always adjust height to accommodate the tallest item, but it won't collapse to fit a smaller maximum height.
 
 <video loop="true" autoplay="true" controls="true" class="video" width="600px" height="100%">
-  <source type="video/mp4" src={useBaseUrl("/static/videos/dynamicheight.mov")}></source>
+  <source type="video/mp4" src={useBaseUrl("/videos/dynamicheight.mov")}></source>
   <p>Your browser does not support the video element.</p>
 </video>

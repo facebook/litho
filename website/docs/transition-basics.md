@@ -27,7 +27,7 @@ class MyComponentSpec {
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
-  <source type="video/webm" src={useBaseUrl("/static/videos/transitions/basics1.webm")}></source>
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/basics1.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
@@ -68,7 +68,7 @@ class MyComponentSpec {
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
-  <source type="video/webm" src={useBaseUrl("/static/videos/transitions/basics2.webm")}></source>
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/basics2.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 

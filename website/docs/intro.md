@@ -42,7 +42,7 @@ rendering](inc-mount-architecture) complex components.
 ## Watch the F8 presentation
 
 <a href="https://developers.facebook.com/videos/f8-2017/litho-a-declarative-framework-for-efficient-uis/" target="_blank">
-  <img src={useBaseUrl("/static/images/f8-intro.png")} />
+  <img src={useBaseUrl("/images/f8-intro.png")} />
 </a>
 
 ## Continue exploring

@@ -46,7 +46,7 @@ protected void onDetached(
 ```
 
 <p align="center">
-<img src={useBaseUrl("/static/images/layout-spec-delegate-moethods.svg")} alt="Image" width="70%" height="70%" />
+<img src={useBaseUrl("/images/layout-spec-delegate-moethods.svg")} alt="Image" width="70%" height="70%" />
 </p>
 
 ## When is @OnAttached method called?
@@ -61,7 +61,7 @@ protected void onDetached(
 - A new root is assigned to `ComponentTree`, i.e `LithoView#setComponent()`, `ComponentTree#setRoot()` or one of their async variants is called, and the old component doesn't exist in the root. For example:
 
 <p align="center">
-  <img src={useBaseUrl("/static/images/set-new-root.png")} alt="Image" width="60%" height="60%" />
+  <img src={useBaseUrl("/images/set-new-root.png")} alt="Image" width="60%" height="60%" />
 </p>
 
 When a new root is applied, `@OnDetached` methods for components `C`, `D`, `E` are called. You can see that even if component `E` still exists in the new root, its `@OnDetached` is called as well, because its position has changed.
