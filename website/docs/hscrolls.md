@@ -97,7 +97,10 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
 
 In this case, the first child has a height of 100dip; the second child has a height of 200dip but it's cropped to fit the size of the h-scroll as determined by the first child. Once measured like this, the height cannot be changed.
 The gray background represents the actual bounds of the h-scroll.
-> Note that if you don't set a non-zero height on the `RecyclerCollectionComponent` and `canMeasureRecycler` is not enabled, your RecyclerCollectionComponent will end up with a height of 0.
+
+:::note
+If you don't set a non-zero height on the `RecyclerCollectionComponent` and `canMeasureRecycler` is not enabled, your RecyclerCollectionComponent will end up with a height of 0.
+:::
 
 **3) The underperformant way: Let the h-scroll dynamically change its height to fit the tallest item**
 
@@ -106,7 +109,9 @@ Initial height: The initial height of the h-scroll is determined by the height o
 Expanding more than the height of the h-scroll: If a child wants to expand to become taller than the current height of the h-scroll, the h-scroll will be remeasured with the new height of the child. Other items will not be remeasured.
 Collapsing the highest child: If the child with the biggest height collapses, then the h-scroll will again determine what its height should be by remeasuring all the items.
 
-> Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
+:::caution
+Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
+:::
 
 Measuring all the children to determine the tallest comes with a high performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
 If you must do this, you can pass your own [RecyclerConfiguration](/javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable `hasDynamicItemHeight` on the [RecyclerBinderConfigurationer](/javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
