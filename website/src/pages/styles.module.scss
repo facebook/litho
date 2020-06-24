@@ -108,14 +108,13 @@ section {
 
 }
 
-
 .featureContent {
   display: flex;
   align-items: center;
   justify-content: space-around;
   flex-wrap: wrap;
-  max-width: 1200px;
-  padding: 0 40px;
+  max-width: 1300px;
+  padding: 0 60px;
 }
 
 .featureText {
@@ -123,7 +122,6 @@ section {
   flex-direction: column;
   align-items: center;
   width: 40%;
-  margin-left: 40px;
   font-size: 18px;
 }
 
@@ -145,5 +143,12 @@ section {
 }
 
 .featureImage {
-  height: 200px;
+  width: 350px;
+}
+
+
+@media screen and (max-width: 750px) {
+  .featureContent {
+    padding: 0px;
+  }
 }
