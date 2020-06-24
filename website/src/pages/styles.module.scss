@@ -72,8 +72,7 @@
   margin: 0 15px 0 3px;
   padding: 10px 20px;
   transition: background 0.3s, color 0.3s;
-  border-width: 2px;
-  border-color: var(--litho-light);
+  border: 2px solid var(--litho-light);
   @media screen and (max-width: 600px) {
     padding: 8px 12px;
     margin: 0 3px 0 3px;
