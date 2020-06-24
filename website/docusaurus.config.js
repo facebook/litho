@@ -1,11 +1,11 @@
 module.exports = {
   title: 'Litho',
   tagline: 'A declarative UI framework for Android',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://fblitho.com',
   baseUrl: '/',
   favicon: 'favicon.png',
   organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  projectName: 'litho', // Usually your repo name.
   themeConfig: {
     defaultDarkMode: false,
     disableDarkMode: true,
@@ -23,7 +23,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href:'/javadoc/',
+          href:'javadoc/',
           label: 'API',
           position: 'right',
         },
@@ -61,7 +61,7 @@ module.exports = {
             },
             {
               label: 'API',
-              to: 'api/',
+              href: 'javadoc/',
             },
           ]
         },
