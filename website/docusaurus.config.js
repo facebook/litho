@@ -23,7 +23,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href:'/javadoc/',
+          href: '/javadoc/',
           label: 'API',
           position: 'right',
         },
@@ -63,7 +63,7 @@ module.exports = {
               label: 'API',
               href: '/javadoc/',
             },
-          ]
+          ],
         },
         {
           title: 'Open Source',
@@ -76,7 +76,7 @@ module.exports = {
               label: 'Open Source Projects',
               to: 'https://opensource.facebook.com',
             },
-          ]
+          ],
         },
         {
           title: 'Social',
@@ -89,7 +89,7 @@ module.exports = {
               label: 'Twitter',
               to: 'https://twitter.com/fblitho',
             },
-          ]
+          ],
         },
       ],
       logo: {
@@ -97,6 +97,8 @@ module.exports = {
         src: 'images/oss_logo.png',
         href: 'https://opensource.facebook.com',
       },
+      // Please do not remove the credits, help to publicize Docusaurus :)
+      copyright: `Copyright © ${new Date().getFullYear()} Facebook, Inc. Built with Docusaurus.`,
     },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
@@ -104,7 +106,7 @@ module.exports = {
     },
   },
   plugins: ['docusaurus-plugin-sass'],
-  presets: [ 
+  presets: [
     [
       '@docusaurus/preset-classic',
       {
@@ -112,8 +114,7 @@ module.exports = {
           // It is recommended to set document id as docs home page (`docs/` path).
           homePageId: 'getting-started',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/facebook/litho/edit/master/website/',
+          editUrl: 'https://github.com/facebook/litho/edit/master/website/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.scss'),

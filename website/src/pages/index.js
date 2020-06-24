@@ -1,15 +1,15 @@
-import React from "react";
-import clsx from "clsx";
-import Layout from "@theme/Layout";
-import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import useBaseUrl from "@docusaurus/useBaseUrl";
-import styles from "./styles.module.scss";
+import React from 'react';
+import clsx from 'clsx';
+import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import styles from './styles.module.scss';
 
 const features = [
   {
     title: <>Declarative</>,
-    imageUrl: "images/home-code.png",
+    imageUrl: 'images/home-code.png',
     description: (
       <>
         Litho uses a declarative API to define UI components. You simply
@@ -22,7 +22,7 @@ const features = [
   },
   {
     title: <>Asynchronous layout</>,
-    imageUrl: "images/home-async.png",
+    imageUrl: 'images/home-async.png',
     description: (
       <>
         Litho can measure and layout your UI ahead of time without blocking the
@@ -34,7 +34,7 @@ const features = [
   },
   {
     title: <>Flatter view hierarchies</>,
-    imageUrl: "images/home-flat-not-flat.png",
+    imageUrl: 'images/home-flat-not-flat.png',
     description: (
       <>
         Litho uses <a href="https://yogalayout.com/docs">Yoga</a> for layout and
@@ -46,7 +46,7 @@ const features = [
   },
   {
     title: <>Fine-grained recycling</>,
-    imageUrl: "images/home-incremental-mount.png",
+    imageUrl: 'images/home-incremental-mount.png',
     description: (
       <>
         With Litho, each UI item such as text, image, or video is recycled
@@ -60,7 +60,7 @@ const features = [
   },
 ];
 
-function Feature({ imageUrl, title, description, dark }) {
+function Feature({imageUrl, title, description, dark}) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
     <section className={clsx(dark && styles.darkFeature)}>
@@ -77,43 +77,41 @@ function Feature({ imageUrl, title, description, dark }) {
 
 function Home() {
   const context = useDocusaurusContext();
-  const { siteConfig = {} } = context;
+  const {siteConfig = {}} = context;
   return (
     <Layout description="Home page of Litho: A declaritive UI framework for Android">
       <div className={styles.heroBanner}>
         <div className={styles.heroInner}>
-          <img className={styles.heroImage} src={useBaseUrl("images/logo.svg")} />
+          <img
+            className={styles.heroImage}
+            src={useBaseUrl('images/logo.svg')}
+          />
           <div className={styles.heroTitle}>
-            {siteConfig.title + ": " + siteConfig.tagline}
+            {siteConfig.title + ': ' + siteConfig.tagline}
           </div>
           <div className={styles.buttons}>
             <Link
-              className={clsx("button button--outline", styles.button)}
-              to={useBaseUrl("docs/")}
-            >
+              className={clsx('button button--outline', styles.button)}
+              to={useBaseUrl('docs/')}>
               GET STARTED
             </Link>
             <Link
-              className={clsx("button button--outline", styles.button)}
-              to={useBaseUrl("docs/intro")}
-            >
+              className={clsx('button button--outline', styles.button)}
+              to={useBaseUrl('docs/intro')}>
               LEARN MORE
             </Link>
             <Link
-              className={clsx("button button--outline", styles.button)}
-              to={useBaseUrl("docs/tutorial")}
-            >
+              className={clsx('button button--outline', styles.button)}
+              to={useBaseUrl('docs/tutorial')}>
               TUTORIAL
             </Link>
           </div>
         </div>
       </div>
       <main>
-        {features && features.length > 0 &&
-          features.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))
-        }
+        {features &&
+          features.length > 0 &&
+          features.map((props, idx) => <Feature key={idx} {...props} />)}
       </main>
     </Layout>
   );

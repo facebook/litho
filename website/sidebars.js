@@ -1,10 +1,6 @@
 module.exports = {
   mainSidebar: {
-    'Introducing Litho': [
-      'intro',
-      'motivation',
-      'uses',
-    ],
+    'Introducing Litho': ['intro', 'motivation', 'uses'],
     'Quick Start': [
       'getting-started',
       'tutorial',
@@ -53,17 +49,8 @@ module.exports = {
       'sections-architecture',
       'sections-working-ranges',
     ],
-    'Common use cases': [
-      'updating-ui',
-      'border',
-      'tooltips',
-      'saving-state',
-    ],
-    Compatibility: [
-      'styles',
-      'accessibility',
-      'rtl',
-    ],
+    'Common use cases': ['updating-ui', 'border', 'tooltips', 'saving-state'],
+    Compatibility: ['styles', 'accessibility', 'rtl'],
     Testing: [
       'testing-overview',
       'unit-testing',
@@ -91,20 +78,8 @@ module.exports = {
       'view-flattening',
       'recycling',
     ],
-    'Additional Resources': [
-      'best-practices',
-      'faq',
-      'glossary',
-    ],
-    Tools: [
-      'flipper-plugins',
-      'debugging',
-      'dev-options',
-    ],
-    Contributing: [
-      'contributing',
-      'community-showcase',
-      'repo-structure',
-    ]
+    'Additional Resources': ['best-practices', 'faq', 'glossary'],
+    Tools: ['flipper-plugins', 'debugging', 'dev-options'],
+    Contributing: ['contributing', 'community-showcase', 'repo-structure'],
   },
 };

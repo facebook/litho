@@ -6,7 +6,9 @@
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy"
+    "deploy": "docusaurus deploy",
+    "prettier": "prettier --config .prettierrc --write \"**/*.{js,md}\"",
+    "prettier:diff": "prettier --config .prettierrc --list-different \"**/*.{js,md}\""
   },
   "dependencies": {
     "@docusaurus/core": "^2.0.0-alpha.58",
@@ -15,6 +17,9 @@
     "docusaurus-plugin-sass": "^0.1.9",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.2"
   },
   "browserslist": {
     "production": [
