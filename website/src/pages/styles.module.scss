@@ -35,8 +35,8 @@
   font-size: 53px;
   color: #FFFFFF;
   line-height: 65px;
-  font-family: "Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
-  font-weight: 300px;
+  font-family: "Helvetica Neue", Helvetica,Roboto,Arial,sans-serif;
+  font-weight: 300;
 }
 
 .buttons {
@@ -125,8 +125,10 @@ section {
   flex-direction: column;
   align-items: center;
   width: 40%;
-  font-size: 18px;
   margin-left: 10px;
+  font-family: proxima-nova, "Helvetica Neue", Helvetica,Roboto,Arial,sans-serif;
+  font-size: 20px;
+  line-height: 150%;
 }
 
 .darkFeature {
@@ -136,14 +138,15 @@ section {
 
 .featureBody {
   height: 200px;
+  font-weight: 300;
 }
 
 .featureTitle {
   align-self: flex-start;
-  font-size: 22px;
   font-weight: 540;
   line-height: 150%;
   margin-bottom: 15px;
+  font-weight: 500;
 }
 
 .featureImage {
