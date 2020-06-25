@@ -424,7 +424,7 @@ class MountState
       }
     }
 
-    afterMountMaybeUpdateAnimations(layoutState);
+    afterMountMaybeUpdateAnimations(shouldAnimateTransitions(layoutState));
 
     if (isVisibilityProcessingEnabled) {
       if (isTracing) {
@@ -476,12 +476,12 @@ class MountState
     mIsMounting = false;
   }
 
-  private void afterMountMaybeUpdateAnimations(LayoutState layoutState) {
+  private void afterMountMaybeUpdateAnimations(boolean shouldAnimateTransitions) {
     if (mTransitionsExtension != null && mIsDirty) {
       mTransitionsExtension.afterMount();
     } else {
       maybeUpdateAnimatingMountContent();
-      if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
+      if (shouldAnimateTransitions && hasTransitionsToAnimate()) {
         mTransitionManager.runTransitions();
       }
     }
@@ -505,7 +505,7 @@ class MountState
       mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
     }
 
-    afterMountMaybeUpdateAnimations(layoutState);
+    afterMountMaybeUpdateAnimations(shouldAnimateTransitions);
 
     cleanupTransitionsAfterMount();
 
