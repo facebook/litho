@@ -1,12 +1,17 @@
-# Website
+## User Documentation for Litho
 
-This website is built using [Docusaurus 2](https://v2.docusaurus.io/), a modern static website generator.
+This directory will contain the user and feature documentation for Litho. The documentation will be hosted on GitHub pages.
+
+### Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to add or modify content.
 
 ### Installation
 
 ```
 $ yarn
 ```
+Install dependencies.
 
 ### Local Development
 
