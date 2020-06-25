@@ -1,5 +1,5 @@
 ---
-id: border
+id: borders
 title: Borders
 ---
 

@@ -57,7 +57,7 @@ module.exports = {
       'sections-architecture',
       'sections-working-ranges',
     ],
-    'Common use cases': ['updating-ui', 'border', 'tooltips', 'saving-state'],
+    'Common use cases': ['updating-ui', 'borders', 'tooltips', 'saving-state'],
     Compatibility: ['styles', 'accessibility', 'rtl'],
     Testing: [
       'testing-overview',
