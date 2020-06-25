@@ -2,6 +2,7 @@
 id: dev-options
 title: Developer Options
 ---
+
 For debugging Litho layouts please have a look at [Flipper](https://fbflipper.com/), a general purpose debugging tool which has first class support for Litho.
 
 There are two compile time flags for visualizing the component hierarchy of your application. These are similar to Android's show view bounds internal setting but because Litho does not always use Android Views we have implemented our own to make it more helpful.
