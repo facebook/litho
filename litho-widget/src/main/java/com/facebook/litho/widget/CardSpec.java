@@ -62,9 +62,11 @@ class CardSpec {
 
   private static final int DEFAULT_CORNER_RADIUS_DP = 2;
   private static final int DEFAULT_SHADOW_SIZE_DP = 2;
+  // Colors are clamped between 0x00000000 and 0xffffffff so this value is safe
+  private static final int UNSET_CLIPPING = Integer.MIN_VALUE;
 
   @PropDefault static final int cardBackgroundColor = Color.WHITE;
-  @PropDefault static final int clippingColor = Color.WHITE;
+  @PropDefault static final int clippingColor = UNSET_CLIPPING;
   @PropDefault static final int shadowStartColor = 0x37000000;
   @PropDefault static final int shadowEndColor = 0x03000000;
   @PropDefault static final float cornerRadius = -1;
@@ -129,12 +131,15 @@ class CardSpec {
             .marginPx(BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom);
 
     if (transparencyEnabled) {
+      final int realClippingColor =
+          clippingColor == UNSET_CLIPPING ? Color.TRANSPARENT : clippingColor;
       columnBuilder =
           columnBuilder
-              .backgroundColor(clippingColor)
+              .backgroundColor(realClippingColor)
               .child(makeTransparencyEnabledCardClip(c, cardBackgroundColor, cornerRadius))
               .child(content);
     } else {
+      final int realClippingColor = clippingColor == UNSET_CLIPPING ? Color.WHITE : clippingColor;
       columnBuilder =
           columnBuilder
               .backgroundColor(cardBackgroundColor)
@@ -142,7 +147,7 @@ class CardSpec {
               .child(
                   makeCardClip(
                       c,
-                      clippingColor,
+                      realClippingColor,
                       cornerRadius,
                       disableClipTopLeft,
                       disableClipTopRight,
