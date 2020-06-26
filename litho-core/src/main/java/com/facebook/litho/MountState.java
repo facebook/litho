@@ -286,14 +286,19 @@ class MountState
     final boolean isIncrementalMountEnabled = componentTree.isIncrementalMountEnabled();
     final boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
 
-    if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
-      mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
-      return;
-    }
     assertMainThread();
 
     if (layoutState == null) {
       throw new IllegalStateException("Trying to mount a null layoutState");
+    }
+
+    if (mVisibilityOutputsExtension != null && mIsDirty) {
+      mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
+    }
+
+    if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
+      mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
+      return;
     }
 
     if (mIsMounting) {
@@ -870,7 +875,7 @@ class MountState
       boolean processVisibilityOutputs) {
     if (mVisibilityOutputsExtension != null) {
       if (isDirty) {
-        mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
+        mVisibilityOutputsExtension.afterMount();
       } else {
         mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
       }
