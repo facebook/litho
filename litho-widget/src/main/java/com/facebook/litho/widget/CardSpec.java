@@ -71,7 +71,6 @@ class CardSpec {
   @PropDefault static final float elevation = -1;
   @PropDefault static final int shadowTopOverride = -1;
   @PropDefault static final int shadowBottomOverride = -1;
-  @PropDefault static final boolean transparencyEnabled = false;
 
   private static float pixels(Resources resources, int dips) {
     final float scale = resources.getDisplayMetrics().density;
@@ -90,22 +89,12 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowTopOverride,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride,
-      @Prop(
-              optional = true,
-              docString =
-                  "[UNPERFORMANT WARNING] if you do not need to render your corners transparently please set to false. It is more expensive to perform rounded corners with transparent\n"
-                      + "clipping due to antialiasing operations.\n\n"
-                      + "<p>A component that renders a given component into a card border with shadow, and allows for\n"
-                      + "transparent corners. With transparencyEnabled(false) {@link * com.facebook.litho.widget.Card} uses imitation clipped corners that\n"
-                      + "draw in a solid color to mimic the background. transparencyEnabled(true) is useful if you are\n"
-                      + "rendering your pill over a gradient or dynamic background.\n")
-          boolean transparencyEnabled,
       @Prop(optional = true) boolean disableClipTopLeft,
       @Prop(optional = true) boolean disableClipTopRight,
       @Prop(optional = true) boolean disableClipBottomLeft,
       @Prop(optional = true) boolean disableClipBottomRight) {
 
-    final Resources resources = c.getResources();
+    final Resources resources = c.getAndroidContext().getResources();
 
     if (cornerRadius == -1) {
       cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);
@@ -121,37 +110,26 @@ class CardSpec {
     final int shadowLeft = getShadowLeft(elevation);
     final int shadowRight = getShadowRight(elevation);
 
-    Column.Builder columnBuilder =
-        Column.create(c)
-            .marginPx(LEFT, shadowLeft)
-            .marginPx(RIGHT, shadowRight)
-            .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
-            .marginPx(BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom);
-
-    if (transparencyEnabled) {
-      columnBuilder =
-          columnBuilder
-              .backgroundColor(clippingColor)
-              .child(makeTransparencyEnabledCardClip(c, cardBackgroundColor, cornerRadius))
-              .child(content);
-    } else {
-      columnBuilder =
-          columnBuilder
-              .backgroundColor(cardBackgroundColor)
-              .child(content)
-              .child(
-                  makeCardClip(
-                      c,
-                      clippingColor,
-                      cornerRadius,
-                      disableClipTopLeft,
-                      disableClipTopRight,
-                      disableClipBottomLeft,
-                      disableClipBottomRight));
-    }
-
     return Column.create(c)
-        .child(columnBuilder)
+        .child(
+            Column.create(c)
+                .marginPx(LEFT, shadowLeft)
+                .marginPx(RIGHT, shadowRight)
+                .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
+                .marginPx(
+                    BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom)
+                .backgroundColor(cardBackgroundColor)
+                .child(content)
+                .child(
+                    CardClip.create(c)
+                        .clippingColor(clippingColor)
+                        .cornerRadiusPx(cornerRadius)
+                        .positionType(ABSOLUTE)
+                        .positionPx(ALL, 0)
+                        .disableClipTopLeft(disableClipTopLeft)
+                        .disableClipTopRight(disableClipTopRight)
+                        .disableClipBottomLeft(disableClipBottomLeft)
+                        .disableClipBottomRight(disableClipBottomRight)))
         .child(
             elevation > 0
                 ? CardShadow.create(c)
@@ -165,33 +143,5 @@ class CardSpec {
                     .positionPx(ALL, 0)
                 : null)
         .build();
-  }
-
-  private static Component.Builder makeTransparencyEnabledCardClip(
-      ComponentContext c, int clippingColor, float cornerRadius) {
-    return TransparencyEnabledCardClip.create(c)
-        .cardBackgroundColor(clippingColor)
-        .cornerRadiusPx(cornerRadius)
-        .positionType(ABSOLUTE)
-        .positionPx(ALL, 0);
-  }
-
-  private static Component.Builder makeCardClip(
-      ComponentContext c,
-      int clippingColor,
-      float cornerRadius,
-      boolean disableClipTopLeft,
-      boolean disableClipTopRight,
-      boolean disableClipBottomLeft,
-      boolean disableClipBottomRight) {
-    return CardClip.create(c)
-        .clippingColor(clippingColor)
-        .cornerRadiusPx(cornerRadius)
-        .positionType(ABSOLUTE)
-        .positionPx(ALL, 0)
-        .disableClipTopLeft(disableClipTopLeft)
-        .disableClipTopRight(disableClipTopRight)
-        .disableClipBottomLeft(disableClipBottomLeft)
-        .disableClipBottomRight(disableClipBottomRight);
   }
 }

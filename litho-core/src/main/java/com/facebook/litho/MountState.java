@@ -2726,7 +2726,8 @@ class MountState
     }
 
     final ComponentHost host = (ComponentHost) item.getHost();
-    host.unmount(item);
+
+    unmount(host, output.getIndex(), content, item, output);
 
     maybeUnsetViewAttributes(item);
 
@@ -2945,6 +2946,7 @@ class MountState
           final RenderUnit.Binder binder = mountBinders.get(i);
           binder.unbind(
               mContext.getAndroidContext(),
+              mountItem.getHost(),
               mountItem.getContent(),
               renderUnit,
               mountItem.getRenderTreeNode());

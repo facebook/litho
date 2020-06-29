@@ -24,14 +24,14 @@ import com.facebook.litho.DslScope
 import com.facebook.litho.dp
 
 /**
- * Builder function for creating [CardSpec] components.
+ * Builder function for creating [TransparencyEnabledCardSpec] components.
  */
 @Suppress("FunctionName")
-inline fun DslScope.Card(
+inline fun DslScope.TransparencyEnabledCard(
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
     cornerRadius: Dp = 2.dp,
     elevation: Dp = 2.dp,
-    @ColorInt clippingColor: Int = Color.WHITE,
+    @ColorInt clippingColor: Int = Color.TRANSPARENT,
     @ColorInt shadowStartColor: Int = 0x37000000,
     @ColorInt shadowEndColor: Int = 0x03000000,
     shadowBottomOverride: Dp? = null,
@@ -40,8 +40,8 @@ inline fun DslScope.Card(
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
     child: DslScope.() -> Component
-): Card =
-    Card.create(context)
+): TransparencyEnabledCard =
+    TransparencyEnabledCard.create(context)
         .cardBackgroundColor(cardBackgroundColor)
         .cornerRadiusDip(cornerRadius.value)
         .elevationDip(elevation.value)
