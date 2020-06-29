@@ -16,9 +16,6 @@
 
 package com.facebook.litho.intellij.completion;
 
-import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.InsertHandler;
@@ -28,9 +25,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.Consumer;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,19 +43,6 @@ class ReplacingConsumer implements Consumer<CompletionResult> {
   private final CompletionResultSet result;
   private final InsertHandler<LookupElement> insertHandler;
 
-  ReplacingConsumer(
-      Collection<String> replacedQualifiedNames, CompletionResultSet result, String logTag) {
-    this(
-        replacedQualifiedNames,
-        result,
-        (context, item) -> {
-          final Map<String, String> data = new HashMap<>();
-          data.put(EventLogger.KEY_TYPE, item.getLookupString());
-          LithoLoggerProvider.getEventLogger().log(logTag, data);
-        });
-  }
-
-  @VisibleForTesting
   ReplacingConsumer(
       Collection<String> replacedQualifiedNames,
       CompletionResultSet result,

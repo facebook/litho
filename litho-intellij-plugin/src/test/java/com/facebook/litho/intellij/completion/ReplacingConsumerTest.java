@@ -56,7 +56,7 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           namesToReplace.add("Other");
 
           ReplacingConsumer replacingConsumer =
-              new ReplacingConsumer(namesToReplace, mutate, "Test");
+              new ReplacingConsumer(namesToReplace, mutate, (context, item) -> {});
 
           // Consumes CompletionResult and passes SpecLookupElement replacement to the provided
           // CompletionResultSet
@@ -118,7 +118,8 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           namesToReplace.add("one");
           namesToReplace.add("other");
 
-          new ReplacingConsumer(namesToReplace, mutate, "Test").addRemainingCompletions(project);
+          new ReplacingConsumer(namesToReplace, mutate, (context, item) -> {})
+              .addRemainingCompletions(project);
 
           // Creates Completions without consumption
           assertThat(mutate.elements).hasSize(2);

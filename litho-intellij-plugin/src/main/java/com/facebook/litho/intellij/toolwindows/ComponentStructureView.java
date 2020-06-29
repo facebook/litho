@@ -95,6 +95,8 @@ class ComponentStructureView implements Disposable {
     final StructureView oldStructure = structureView;
     final Map<String, String> data = new HashMap<>();
     data.put(EventLogger.KEY_TYPE, "update");
+    // Overriden below
+    data.put(EventLogger.KEY_RESULT, "fail");
     final JComponent mainView =
         Optional.ofNullable(selectedFile)
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))

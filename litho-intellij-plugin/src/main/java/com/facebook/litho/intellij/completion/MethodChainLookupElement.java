@@ -131,7 +131,8 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
         context.getProject());
     final Map<String, String> data = new HashMap<>();
     data.put(EventLogger.KEY_TYPE, "required_builder");
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_METHOD_CALL, data);
+    data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_CALL);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
   }
 
   @VisibleForTesting

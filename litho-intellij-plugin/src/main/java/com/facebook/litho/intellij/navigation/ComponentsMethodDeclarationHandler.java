@@ -65,8 +65,9 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
         .map(
             result -> {
               final Map<String, String> data = new HashMap<>();
-              data.put(EventLogger.KEY_TYPE, "method");
-              LOGGER.log(EventLogger.EVENT_GOTO_NAVIGATION, data);
+              data.put(EventLogger.KEY_TARGET, "method");
+              data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_GOTO);
+              LOGGER.log(EventLogger.EVENT_NAVIGATION, data);
               return result;
             })
         .orElse(PsiMethod.EMPTY_ARRAY);

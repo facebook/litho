@@ -51,6 +51,7 @@ class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
     super.handleInsert(context);
     final Map<String, String> data = new HashMap<>();
     data.put(EventLogger.KEY_TYPE, "required_prop");
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_METHOD_CALL, data);
+    data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_CALL);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
   }
 }

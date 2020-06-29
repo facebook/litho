@@ -46,7 +46,7 @@ class BaseLithoComponentsDeclarationHandler {
    * @param sourceElement component to find declaration for
    * @param isComponentClass filters component type
    * @param hasComponentSpecAnnotation filters resolved componentSpec type
-   * @param event event tag for logging
+   * @param tag event tag for logging
    * @return declaration target for the provided sourceElement or null if it wasn't found
    */
   @Nullable
@@ -54,7 +54,7 @@ class BaseLithoComponentsDeclarationHandler {
       @Nullable PsiElement sourceElement,
       Predicate<PsiClass> isComponentClass,
       Predicate<PsiClass> hasComponentSpecAnnotation,
-      String event) {
+      String tag) {
     // Exclusions
     if (sourceElement == null
         || PsiTreeUtil.getParentOfType(sourceElement, PsiImportStatement.class) != null) {
@@ -79,8 +79,10 @@ class BaseLithoComponentsDeclarationHandler {
         .peek(
             psiClass -> {
               final Map<String, String> data = new HashMap<>();
-              data.put(EventLogger.KEY_TYPE, event);
-              logger.log(EventLogger.EVENT_GOTO_NAVIGATION, data);
+              data.put(EventLogger.KEY_TARGET, "class");
+              data.put(EventLogger.KEY_CLASS, tag);
+              data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_GOTO);
+              logger.log(EventLogger.EVENT_NAVIGATION, data);
             })
         .findFirst()
         .orElse(null);

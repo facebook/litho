@@ -98,7 +98,8 @@ class LayoutSpecMethodAnnotationsProvider extends CompletionProvider<CompletionP
 
   private static void log(String annotation) {
     final Map<String, String> data = new HashMap<>();
-    data.put(EventLogger.KEY_TYPE, annotation);
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_METHOD, data);
+    data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_METHOD);
+    data.put(EventLogger.KEY_CLASS, annotation);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
   }
 }
