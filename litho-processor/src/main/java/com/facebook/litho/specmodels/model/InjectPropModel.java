@@ -30,11 +30,9 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class InjectPropModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
-  private final boolean mIsLazy;
 
-  public InjectPropModel(MethodParamModel paramModel, boolean isLazy) {
+  public InjectPropModel(MethodParamModel paramModel) {
     mParamModel = paramModel;
-    mIsLazy = isLazy;
   }
 
   @Override
@@ -72,12 +70,12 @@ public class InjectPropModel implements MethodParamModel {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     InjectPropModel that = (InjectPropModel) o;
-    return mIsLazy == that.mIsLazy && Objects.equals(mParamModel, that.mParamModel);
+    return Objects.equals(mParamModel, that.mParamModel);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(mParamModel, mIsLazy);
+    return Objects.hash(mParamModel);
   }
 
   /** Convert to a regular prop model. */
@@ -91,13 +89,9 @@ public class InjectPropModel implements MethodParamModel {
     };
   }
 
-  public boolean isLazy() {
-    return mIsLazy;
-  }
-
   /** @return a new {@link PropModel} instance with the given name overridden. */
   public InjectPropModel withName(String name) {
-    return new InjectPropModel(mParamModel, mIsLazy) {
+    return new InjectPropModel(mParamModel) {
       @Override
       public String getName() {
         return name;

@@ -161,8 +161,7 @@ public class MatcherGeneratorTest {
                         MockMethodParamModel.newBuilder()
                             .name("injectProp1")
                             .type(TypeName.get(MatcherGenerator.class))
-                            .build(),
-                        true)))
+                            .build())))
             .build();
     final TestSpecModel specModel = new TestSpecModel(mockSpecModel, null, sEnclosedSpec);
 

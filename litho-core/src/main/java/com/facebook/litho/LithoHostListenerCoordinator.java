@@ -60,8 +60,17 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
 
   @Override
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onVisibleBoundsChanged(localVisibleRect);
+    // We first mount and then we process visibility outputs.
+    if (mIncrementalMountExtension != null) {
+      mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
+    }
+
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.onVisibleBoundsChanged(localVisibleRect);
+    }
+
+    if (mVisibilityOutputsExtension != null) {
+      mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
     }
   }
 

@@ -17,7 +17,7 @@ LITHO_IS_OSS_BUILD = True
 def make_dep_path(pth):
     return LITHO_ROOT + pth
 
-LITHO_ROOT_TARGET = make_dep_path(":components")
+LITHO_OSS_ROOT_TARGET = make_dep_path(":components")
 
 LITHO_ROOT_KOTLIN_TARGET = make_dep_path(":litho_core_kotlin")
 

@@ -111,13 +111,11 @@ public class MountDelegate {
   @VisibleForTesting
   public void acquireMountRef(
       RenderTreeNode renderTreeNode, int i, MountDelegateInput input, boolean isMounting) {
-    final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
-
     incrementExtensionRefCount(renderTreeNode);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
-    if (!wasLockedForMount && isMounting) {
+    if (isMounting) {
       mMountDelegateTarget.notifyMount(input, renderTreeNode, i);
     }
   }

@@ -44,6 +44,7 @@ class VisibilityOutputsExtension
   private boolean mIncrementalVisibilityEnabled;
   private List<VisibilityOutput> mVisibilityOutputs;
   private VisibilityModuleInput mVisibilityModuleInput;
+  private Rect mCurrentLocalVisibleRect;
 
   VisibilityOutputsExtension(Host host) {
     mHost = host;
@@ -400,19 +401,24 @@ class VisibilityOutputsExtension
     mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
     mVisibilityModuleInput = input.getVisibilityModuleInput();
     mPreviousLocalVisibleRect.setEmpty();
+    mCurrentLocalVisibleRect = localVisibleRect;
+  }
 
+  @Override
+  public void afterMount() {
     boolean processVisibilityOutputs = !mHost.isInTransientState();
 
     if (processVisibilityOutputs) {
-      processVisibilityOutputs(localVisibleRect, null, true);
+      processVisibilityOutputs(mCurrentLocalVisibleRect, null, true);
     }
   }
 
   @Override
-  public void afterMount() {}
-
-  @Override
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
+    if (mVisibilityOutputs == null) {
+      return;
+    }
+
     boolean processVisibilityOutputs = !mHost.isInTransientState();
     if (processVisibilityOutputs) {
       processVisibilityOutputs(localVisibleRect, null, false);

@@ -734,7 +734,7 @@ public class TransitionsExtension extends MountDelegateExtension
       Object content,
       LithoRenderUnit lithoRenderUnit,
       @Nullable Object layoutData) {
-    mAttachDetachBinder.bind(context, host, content, lithoRenderUnit, layoutData);
+    mAttachDetachBinder.bind(context, content, lithoRenderUnit, layoutData);
   }
 
   // TODO: T68620328 Remove after test is done.
@@ -742,7 +742,6 @@ public class TransitionsExtension extends MountDelegateExtension
     final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
     mMountUnmountBinder.unbind(
         context,
-        mountItem.getHost(),
         mountItem.getContent(),
         (LithoRenderUnit) renderUnit,
         mountItem.getRenderTreeNode());
@@ -770,7 +769,6 @@ public class TransitionsExtension extends MountDelegateExtension
     @Override
     public void bind(
         Context context,
-        com.facebook.rendercore.Host host,
         Object content,
         LithoRenderUnit lithoRenderUnit,
         @Nullable Object layoutData) {
@@ -783,11 +781,7 @@ public class TransitionsExtension extends MountDelegateExtension
 
     @Override
     public void unbind(
-        Context context,
-        com.facebook.rendercore.Host host,
-        Object o,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {}
+        Context context, Object o, LithoRenderUnit lithoRenderUnit, @Nullable Object layoutData) {}
   }
 
   final class MountUnmountBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
@@ -804,18 +798,13 @@ public class TransitionsExtension extends MountDelegateExtension
     @Override
     public void bind(
         Context context,
-        com.facebook.rendercore.Host host,
         Object content,
         LithoRenderUnit lithoRenderUnit,
         @Nullable Object layoutData) {}
 
     @Override
     public void unbind(
-        Context context,
-        com.facebook.rendercore.Host host,
-        Object o,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {
+        Context context, Object o, LithoRenderUnit lithoRenderUnit, @Nullable Object layoutData) {
       final LayoutOutput output = lithoRenderUnit.output;
       if (output.getTransitionId() != null) {
         final @OutputUnitType int type =

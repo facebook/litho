@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
@@ -137,6 +138,25 @@ public class IncrementalMountExtension extends MountDelegateExtension
     }
 
     setupPreviousMountableOutputData(localVisibleRect);
+  }
+
+  @Override
+  protected void acquireMountReference(
+      RenderTreeNode renderTreeNode,
+      int position,
+      MountDelegate.MountDelegateInput input,
+      boolean isMounting) {
+    // Make sure the host is mounted before the child.
+    final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
+    if (hostTreeNode != null) {
+      final long hostId = hostTreeNode.getRenderUnit().getId();
+      if (!ownsReference(hostId)) {
+        final int hostIndex = mInput.getLayoutOutputPositionForId(hostId);
+        acquireMountReference(hostTreeNode, hostIndex, input, isMounting);
+      }
+    }
+
+    super.acquireMountReference(renderTreeNode, position, input, isMounting);
   }
 
   /**

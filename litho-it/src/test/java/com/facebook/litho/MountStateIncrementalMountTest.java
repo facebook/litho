@@ -44,7 +44,10 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
+import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaPositionType;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.After;
@@ -64,24 +67,30 @@ public class MountStateIncrementalMountTest {
   boolean useMountWithExtensions;
   boolean useIncMountOnlyExtension;
   final boolean mUseMountDelegateTarget;
+  final boolean mDelegateToRenderCoreMount;
   private boolean configUseIncrementalMountExtension;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, useIncrementalMountExtensionInMountState={1}")
+      name =
+          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useIncrementalMountExtensionInMountState={2}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false},
-          {true, false},
-          {false, true}
+          {false, false, false},
+          {true, false, false},
+          {true, true, false},
+          {false, false, true}
         });
   }
 
   public MountStateIncrementalMountTest(
-      boolean useMountDelegateTarget, boolean useIncrementalMountExtensionInMountState) {
+      boolean useMountDelegateTarget,
+      boolean delegateToRenderCoreMount,
+      boolean useIncrementalMountExtensionInMountState) {
     mUseMountDelegateTarget = useMountDelegateTarget;
+    mDelegateToRenderCoreMount = delegateToRenderCoreMount;
     mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
@@ -90,7 +99,8 @@ public class MountStateIncrementalMountTest {
     ComponentsConfiguration.useIncrementalMountExtension =
         mUseIncrementalMountExtensionInMountState;
     mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(new LithoView(mContext, mUseMountDelegateTarget, false));
+    mLithoViewRule.useLithoView(
+        new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
   }
 
   @After
@@ -474,19 +484,33 @@ public class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10)
                     .clickHandler(eventHandler)
+                    .positionType(YogaPositionType.ABSOLUTE)
+                    .alignSelf(YogaAlign.CENTER)
+                    .marginDip(YogaEdge.LEFT, -10)
                     .marginDip(YogaEdge.TOP, -10))
             .build();
 
+    final Component root2 =
+        Row.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(root)
+                    .clickHandler(eventHandler)
+                    .marginDip(YogaEdge.TOP, 100)
+                    .build())
+            .build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(root2)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
     final LithoView lithoView = mLithoViewRule.getLithoView();
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 1000, 10), true);
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
+    lithoView.getComponentTree().mountComponent(new Rect(0, 80, 1000, 1000), true);
   }
 
   /** Tests incremental mount behaviour of overlapping view mount items. */
@@ -736,6 +760,58 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(lifecycleTracker1.isMounted()).isTrue();
     assertThat(lifecycleTracker2.isMounted()).isTrue();
+  }
+
+  @Test
+  public void testMountStateNeedsRemount_incrementalMountAfterUnmount_isFalse() {
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+    assertThat(lithoView.mountStateNeedsRemount()).isFalse();
+
+    lithoView.unmountAllItems();
+    assertThat(lithoView.mountStateNeedsRemount()).isTrue();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    assertThat(lithoView.mountStateNeedsRemount()).isFalse();
+  }
+
+  @Test
+  public void testRootViewAttributes_incrementalMountAfterUnmount_setViewAttributes() {
+    final Component root = Text.create(mContext).text("Test").contentDescription("testcd").build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+    assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
+
+    lithoView.unmountAllItems();
+    assertThat(lithoView.getContentDescription()).isNull();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
   }
 
   /**

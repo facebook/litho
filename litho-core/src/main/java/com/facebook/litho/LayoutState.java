@@ -1683,6 +1683,8 @@ public class LayoutState
               null);
       output.setId(ROOT_HOST_ID);
       addMountableOutput(this, output, null);
+      addLayoutOutputIdToPositionsMap(
+          mOutputsIdToPositionMap, output, mMountableOutputs.size() - 1);
     }
 
     root = mMountableOutputs.get(0);

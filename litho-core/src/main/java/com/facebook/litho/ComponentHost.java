@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
+import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutOutput.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -231,12 +232,8 @@ public class ComponentHost extends Host {
    * @param mountItem
    */
   void startUnmountDisappearingItem(MountItem mountItem) {
-    final int index;
-    if (mountItem.getContent() instanceof Drawable) {
-      index = mDrawableMountItems.keyAt(mDrawableMountItems.indexOfValue(mountItem));
-    } else {
-      index = mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
-    }
+    final int index =
+        mMountItems == null ? -1 : mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
     startUnmountDisappearingItem(index, mountItem);
   }
 
@@ -860,7 +857,7 @@ public class ComponentHost extends Host {
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       final LayoutOutput output = getLayoutOutput(mountItem);
-      ComponentHostUtils.maybeSetDrawableState(
+      maybeSetDrawableState(
           this, (Drawable) mountItem.getContent(), output.getFlags(), output.getNodeInfo());
     }
   }
@@ -1257,8 +1254,14 @@ public class ComponentHost extends Host {
     final Drawable drawable = (Drawable) mountItem.getContent();
 
     final LayoutOutput output = getLayoutOutput(mountItem);
-    ComponentHostUtils.mountDrawable(
-        this, drawable, bounds, output.getFlags(), output.getNodeInfo());
+    drawable.setVisible(getVisibility() == View.VISIBLE, false);
+    drawable.setCallback(this);
+
+    // If mount data is LithoMountData then Litho need to manually set drawable state.
+    if (mountItem.getMountData() instanceof LithoMountData) {
+      maybeSetDrawableState(this, drawable, output.getFlags(), output.getNodeInfo());
+    }
+    invalidate(bounds);
   }
 
   private void unmountDrawable(Drawable drawable) {

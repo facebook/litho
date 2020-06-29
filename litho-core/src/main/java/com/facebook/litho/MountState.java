@@ -286,14 +286,19 @@ class MountState
     final boolean isIncrementalMountEnabled = componentTree.isIncrementalMountEnabled();
     final boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
 
-    if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
-      mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
-      return;
-    }
     assertMainThread();
 
     if (layoutState == null) {
       throw new IllegalStateException("Trying to mount a null layoutState");
+    }
+
+    if (mVisibilityOutputsExtension != null && mIsDirty) {
+      mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
+    }
+
+    if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
+      mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
+      return;
     }
 
     if (mIsMounting) {
@@ -364,12 +369,14 @@ class MountState
 
         final MountItem currentMountItem = getItemAt(i);
         final boolean isMounted = currentMountItem != null;
+        final boolean isRoot = currentMountItem != null && currentMountItem == rootMountItem;
         final boolean isMountable =
             !isIncrementalMountEnabled
                 || isMountedHostWithChildContent(currentMountItem)
                 || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
                 || isAnimationLocked(node, i)
-                || (currentMountItem != null && currentMountItem == rootMountItem);
+                || isRoot;
+
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
           if (isIncrementalMountEnabled) {
@@ -378,7 +385,7 @@ class MountState
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
         } else if (isMounted) {
-          if (mIsDirty) {
+          if (mIsDirty || (isRoot && mNeedsRemount)) {
             final boolean useUpdateValueFromLayoutOutput =
                 mLastMountedLayoutState != null
                     && mLastMountedLayoutState.getId() == layoutState.getPreviousLayoutStateId();
@@ -422,7 +429,7 @@ class MountState
       }
     }
 
-    afterMountMaybeUpdateAnimations(layoutState);
+    afterMountMaybeUpdateAnimations(shouldAnimateTransitions(layoutState));
 
     if (isVisibilityProcessingEnabled) {
       if (isTracing) {
@@ -474,12 +481,12 @@ class MountState
     mIsMounting = false;
   }
 
-  private void afterMountMaybeUpdateAnimations(LayoutState layoutState) {
+  private void afterMountMaybeUpdateAnimations(boolean shouldAnimateTransitions) {
     if (mTransitionsExtension != null && mIsDirty) {
       mTransitionsExtension.afterMount();
     } else {
       maybeUpdateAnimatingMountContent();
-      if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
+      if (shouldAnimateTransitions && hasTransitionsToAnimate()) {
         mTransitionManager.runTransitions();
       }
     }
@@ -494,13 +501,16 @@ class MountState
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree, localVisibleRect);
+    }
+
+    if (mIsDirty || mNeedsRemount) {
       mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
       mount(layoutState);
     } else {
       mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
     }
 
-    afterMountMaybeUpdateAnimations(layoutState);
+    afterMountMaybeUpdateAnimations(shouldAnimateTransitions);
 
     cleanupTransitionsAfterMount();
 
@@ -865,7 +875,7 @@ class MountState
       boolean processVisibilityOutputs) {
     if (mVisibilityOutputsExtension != null) {
       if (isDirty) {
-        mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
+        mVisibilityOutputsExtension.afterMount();
       } else {
         mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
       }
@@ -2726,8 +2736,7 @@ class MountState
     }
 
     final ComponentHost host = (ComponentHost) item.getHost();
-
-    unmount(host, output.getIndex(), content, item, output);
+    host.unmount(item);
 
     maybeUnsetViewAttributes(item);
 
@@ -2946,7 +2955,6 @@ class MountState
           final RenderUnit.Binder binder = mountBinders.get(i);
           binder.unbind(
               mContext.getAndroidContext(),
-              mountItem.getHost(),
               mountItem.getContent(),
               renderUnit,
               mountItem.getRenderTreeNode());

@@ -125,7 +125,7 @@ Component component =
 ## Card
 
 The Litho equivalent of an Android `CardView`. `Card` applies borders with shadows/elevation to a given component.
-If your card is rendered on top of a dynamically colored background which cannot be "faked" using the `Card` component, check out the less performant [`TransparencyEnabledCard`](https://fblitho.com/javadoc/com/facebook/litho/widget/TransparencyEnabledCard.html).
+If your card is rendered on top of a dynamically colored background which cannot be "faked" using the `Card` component, use the less performant prop `transparencyEnabled(true)`.
 
 ##### Required Props
 - `Component content`: The component to decorate.
