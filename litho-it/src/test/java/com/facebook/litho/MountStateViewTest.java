@@ -35,6 +35,8 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
@@ -223,6 +225,27 @@ public class MountStateViewTest {
 
     assertThat(textActualBounds.width()).isEqualTo(textOutputBounds.width());
     assertThat(textActualBounds.height()).isEqualTo(textOutputBounds.height());
+  }
+
+  @Test
+  public void onMountContentWithPadded9PatchDrawable_shouldNotSetPaddingOnHost() {
+    final boolean cachedValue = ComponentsConfiguration.shouldDisableDrawableOutputs;
+    ComponentsConfiguration.shouldDisableDrawableOutputs = true;
+
+    final Component component =
+        Column.create(mContext)
+            .backgroundRes(R.drawable.background_with_padding)
+            .child(Text.create(mContext).text("hello world").textSizeSp(20))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    assertThat(mLithoViewRule.getLithoView().getPaddingTop()).isEqualTo(0);
+    assertThat(mLithoViewRule.getLithoView().getPaddingRight()).isEqualTo(0);
+    assertThat(mLithoViewRule.getLithoView().getPaddingBottom()).isEqualTo(0);
+    assertThat(mLithoViewRule.getLithoView().getPaddingLeft()).isEqualTo(0);
+
+    ComponentsConfiguration.shouldDisableDrawableOutputs = cachedValue;
   }
 
   private void removeParent(View child) {
