@@ -16,7 +16,7 @@ module.exports = {
   projectName: 'litho', // Usually your repo name.
   themeConfig: {
     defaultDarkMode: false,
-    disableDarkMode: true,
+    disableDarkMode: false,
     navbar: {
       title: 'Litho',
       logo: {

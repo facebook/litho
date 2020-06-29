@@ -46,22 +46,22 @@ class SectionSpec {
 }
 ```
 
-1) `firstVisiblePosition`
+1. `firstVisiblePosition`
 Position of the first visible components in the viewport. Components are partially
 hidden from the visible viewport.
 
-2) `lastVisiblePosition`
+2. `lastVisiblePosition`
 Position of the last visible components in the viewport. Components are partially
 hidden from the visible viewport.
 
-3) `totalCount`
+3. `totalCount`
 Total number of items in the section's hierarchy, with the section that contains the
 annotated method as its root.
 
-4) `firstFullyVisibleIndex`
+4. `firstFullyVisibleIndex`
 Position of the first fully visible components in the viewport.
 
-5) `lastFullyVisibleIndex`
+5. `lastFullyVisibleIndex`
 Position of the last fully visible components in the viewport.
 
 

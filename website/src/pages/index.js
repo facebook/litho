@@ -26,6 +26,7 @@ const features = [
         code simple and easy to maintain.
       </>
     ),
+    dark: false,
   },
   {
     title: <>Asynchronous layout</>,
@@ -50,6 +51,7 @@ const features = [
         view hierarchies and improves both memory and scroll performance.
       </>
     ),
+    dark: false,
   },
   {
     title: <>Fine-grained recycling</>,
@@ -70,7 +72,7 @@ const features = [
 function Feature({imageUrl, title, description, dark}) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
-    <section className={clsx(dark && styles.darkFeature)}>
+    <section className={clsx(dark && styles.darkFeature, !dark && styles.lightFeature)}>
       <div className={styles.featureContent}>
         <img className={styles.featureImage} src={imgUrl} alt={title} />
         <div className={styles.featureText}>
