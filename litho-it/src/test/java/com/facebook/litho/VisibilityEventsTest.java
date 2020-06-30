@@ -59,6 +59,7 @@ public class VisibilityEventsTest {
   private boolean configVisExtension;
   private boolean configIncMountExtension;
   final boolean mUseMountDelegateTarget;
+  final boolean mDelegateToRenderCore;
   final boolean mUseVisibilityExtensionInMountState;
   final boolean mUseIncrementalMountExtensionInMountState;
 
@@ -66,23 +67,26 @@ public class VisibilityEventsTest {
 
   @ParameterizedRobolectricTestRunner.Parameters(
       name =
-          "useMountDelegateTarget={0}, useVisibilityExtensionInMountState={1}, useIncrementalMountExtensionInMountState={2}")
+          "useMountDelegateTarget={0}, delegateToRenderCore={1}, useVisibilityExtensionInMountState={2}, useIncrementalMountExtensionInMountState={3}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {false, true, false},
-          {true, true, false},
-          {false, true, true}
+          {false, false, false, false},
+          {true, false, false, false},
+          {false, false, true, false},
+          {true, false, true, false},
+          {false, false, true, true},
+          {true, true, false, false}
         });
   }
 
   public VisibilityEventsTest(
       boolean useMountDelegateTarget,
+      boolean delegateToRenderCore,
       boolean useVisibilityExtensionInMountState,
       boolean useIncrementalMountExtensionInMountState) {
     mUseMountDelegateTarget = useMountDelegateTarget;
+    mDelegateToRenderCore = delegateToRenderCore;
     mUseVisibilityExtensionInMountState = useVisibilityExtensionInMountState;
     mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
@@ -97,7 +101,7 @@ public class VisibilityEventsTest {
         mUseIncrementalMountExtensionInMountState;
 
     mContext = mLithoViewRule.getContext();
-    mLithoView = new LithoView(mContext, mUseMountDelegateTarget, false);
+    mLithoView = new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore);
     mLithoViewRule.useLithoView(mLithoView);
 
     mParent = new FrameLayout(mContext.getAndroidContext());
