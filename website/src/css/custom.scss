@@ -15,15 +15,11 @@
 /* You can override the default Infima variables here. */
 
 :root {
-  --ifm-color-primary-lightest: #FBCCD3;
-  --ifm-color-primary-lighter: #F79CA9;
-  --ifm-color-primary-light: #F68B9B;
-  --ifm-color-primary: #F36B7F;
-  --ifm-color-primary-dark: #F04B63;
-  --ifm-color-primary-darker: #EF3A55;
-  --ifm-color-primary-darkest: #E31231;
   --litho-light: #F6F7F9;
   --litho-dark: #5F6673;
+  --ifm-color-primary: #F36B7F;
+  --ifm-color-primary-dark: #F04B63;
+  --ifm-navbar-background-color: var(--ifm-color-primary);
   --ifm-navbar-link-color: var(--litho-light);
   --ifm-navbar-link-hover-color: #fff;
   --ifm-button-border-width: 2px;
@@ -32,20 +28,32 @@
 }
 
 .navbar {
-  background-color: var(--ifm-color-primary);
   box-shadow: none;
 }
 
+.navbar-sidebar {
+  background-color: var(--ifm-background-surface-color);
+}
+
 .navbar__brand:hover {
-  color: #fff;
+  color: var(--ifm-navbar-link-hover-color);
 }
 
 .navbar__toggle {
   color: var(--litho-light);
+  &:hover {
+    color: var(--ifm-navbar-link-hover-color);
+  }
 }
 
-.navbar__toggle:hover {
-  color: #fff;
+.menu__link {
+  color: var(--ifm-menu-color);
+}
+
+// Lock the search bar to always be light
+.navbar__search-input {
+  background-color: var(--litho-light);
+  color: #000;
 }
 
 .navbar-sidebar__brand {
