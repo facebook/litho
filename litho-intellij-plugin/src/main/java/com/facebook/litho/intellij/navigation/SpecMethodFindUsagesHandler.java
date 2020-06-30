@@ -25,6 +25,8 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -54,7 +56,10 @@ public class SpecMethodFindUsagesHandler extends FindUsagesHandler {
         .map(this::findComponentMethods)
         .map(
             methods -> {
-              LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".method");
+              final Map<String, String> data = new HashMap<>();
+              data.put(EventLogger.KEY_TARGET, "method");
+              data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_FIND_USAGES);
+              LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NAVIGATION, data);
               return ArrayUtil.mergeArrays(methods, super.getPrimaryElements());
             })
         .orElseGet(super::getPrimaryElements);

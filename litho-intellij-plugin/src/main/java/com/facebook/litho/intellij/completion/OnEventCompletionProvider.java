@@ -61,9 +61,9 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
                 OnEventGenerateUtils.createOnEventLookupString(clickEventCls),
                 () -> {
                   final Map<String, String> data = new HashMap<>();
-                  data.put(EventLogger.KEY_TYPE, "OnEvent");
-                  LithoLoggerProvider.getEventLogger()
-                      .log(EventLogger.EVENT_COMPLETION_METHOD, data);
+                  data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_METHOD);
+                  data.put(EventLogger.KEY_CLASS, "OnEvent");
+                  LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
                   LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
                       .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
                 }),

@@ -54,6 +54,8 @@ class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
   @Override
   public PsiElement[] getPrimaryElements() {
     final Map<String, String> data = new HashMap<>();
+    // Overriden below
+    data.put(EventLogger.KEY_RESULT, "fail");
     final PsiElement[] results =
         Optional.of(getPsiElement())
             .filter(PsiClass.class::isInstance)
@@ -65,8 +67,9 @@ class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
                   return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
                 })
             .orElseGet(super::getPrimaryElements);
-    data.put(EventLogger.KEY_TYPE, "class");
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES, data);
+    data.put(EventLogger.KEY_TARGET, "class");
+    data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_FIND_USAGES);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NAVIGATION, data);
     return results;
   }
 

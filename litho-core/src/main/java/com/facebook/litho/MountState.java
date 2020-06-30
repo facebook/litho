@@ -1981,12 +1981,21 @@ class MountState
 
     final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
     if (viewNodeInfo != null) {
+      final boolean isHostSpec = isHostSpec(component);
       setViewStateListAnimator(view, viewNodeInfo);
       if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
         setViewBackground(view, viewNodeInfo);
         setViewForeground(view, viewNodeInfo);
+
+        // when background outputs are disabled, they are wrapped by a ComponentHost.
+        // A background can set the padding of a view, but ComponentHost should not have
+        // any padding because the layout calculation has already accounted for padding by
+        // translating the bounds of its children.
+        if (isHostSpec) {
+          view.setPadding(0, 0, 0, 0);
+        }
       }
-      if (!isHostSpec(component)) {
+      if (!isHostSpec) {
         // Set view background, if applicable.  Do this before padding
         // as it otherwise overrides the padding.
         setViewBackground(view, viewNodeInfo);

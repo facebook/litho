@@ -25,6 +25,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.google.common.annotations.VisibleForTesting;
@@ -40,6 +41,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -108,7 +110,16 @@ public class LayoutSpecMethodParameterAnnotationsContributor extends CompletionC
           .map(
               annotations ->
                   new ReplacingConsumer(
-                      annotations, result, EventLogger.EVENT_COMPLETION_PARAMETER))
+                      annotations,
+                      result,
+                      (insertionContext, item) -> {
+                        final Map<String, String> data = new HashMap<>();
+                        data.put(
+                            EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_PARAMETER);
+                        data.put(EventLogger.KEY_CLASS, item.getLookupString());
+                        LithoLoggerProvider.getEventLogger()
+                            .log(EventLogger.EVENT_COMPLETION, data);
+                      }))
           .ifPresent(
               replacingConsumer -> {
                 // We want our suggestions at the top, that's why adding them first

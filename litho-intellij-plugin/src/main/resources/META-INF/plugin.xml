@@ -113,7 +113,7 @@
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
 
-    <toolWindow id="Litho Spec" anchor="left" icon="LithoPluginIcons.BASE_ACTION"
+    <toolWindow id="Litho Spec" anchor="left" icon="LithoPluginIcons.TOOLWINDOW"
       factoryClass="com.facebook.litho.intellij.toolwindows.LithoToolWindowFactory"
       conditionClass="com.facebook.litho.intellij.toolwindows.LithoToolWindowFactory"/>
   </extensions>
