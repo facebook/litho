@@ -2,6 +2,8 @@
 id: custom-layout
 title: Custom Layout
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
 
 Litho provides a custom layout API for accessing size information while the [`ComponentTree`](/javadoc/com/facebook/litho/ComponentTree.html) is being created and measured, as well as the possibility to measure a component in isolation.
@@ -153,4 +155,4 @@ class MyComponentSpec {
 }
 ```
 
-![Layout Spec lifecycle flowchart](/images/flow-chart-v0.22.1-layout-with-size-spec.svg)
+<img src={useBaseUrl("/images/flow-chart-v0.22.1-layout-with-size-spec.svg")} alt="Layout Spec lifecycle flowchart" className="white-background" />

@@ -71,7 +71,7 @@ public class FeedWithComplexItemsTest {
   public ComponentsRule mComponentsRule = new ComponentsRule();
 ```
 
-<img src={useBaseUrl("/images/complex-component-0.svg")} align="right" width="200px"/>
+<img src={useBaseUrl("/images/complex-component-0.svg")} align="right" width="200px" className="white-background"/>
 
 <br />
 
@@ -248,7 +248,7 @@ know what exact instance of a component is passed down to the props and we face
 many of the same problems we discussed before: The props of the Component may
 not be known in full or perhaps we don't want to provide them all.
 
-<img src={useBaseUrl("/images/complex-component-0.svg")} align="right" width="200px" />
+<img src={useBaseUrl("/images/complex-component-0.svg")} align="right" width="200px" className="white-background"/>
 
 The solution to this is obvious: We match matchers! For any prop that takes a
 Component, the TestSpec generates a matcher that takes another matcher. This

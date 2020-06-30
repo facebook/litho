@@ -93,7 +93,6 @@ html {
   scroll-behavior: smooth;
 }
 
-// set image background to white to improve contrast of SVGs in dark mode
-img {
-  background-color: white;
+.white-background {
+  background: white;
 }
