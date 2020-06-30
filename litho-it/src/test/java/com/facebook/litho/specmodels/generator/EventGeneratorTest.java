@@ -149,7 +149,7 @@ public class EventGeneratorTest {
         .isEqualTo(
             "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
-                + "  return newEventHandler(Test.class, c, -1400079064, new Object[] {\n"
+                + "  return newEventHandler(Test.class, \"Test\", c, -1400079064, new Object[] {\n"
                 + "        c,\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
@@ -160,7 +160,7 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.ComponentContext c) {\n"
-                + "  return newEventHandler(Test.class, c, -1400079063, new Object[] {\n"
+                + "  return newEventHandler(Test.class, \"Test\", c, -1400079063, new Object[] {\n"
                 + "        c,\n"
                 + "      });\n"
                 + "}\n");

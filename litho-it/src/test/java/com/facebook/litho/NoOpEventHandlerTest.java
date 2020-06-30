@@ -1,5 +1,3 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
-
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -59,7 +57,7 @@ public class NoOpEventHandlerTest {
     Component component = null;
     assertThat(
             ComponentLifecycle.newEventHandler(
-                    component.getClass(), componentContext, 1, new Object[1])
+                    component.getClass(), "Component", componentContext, 1, new Object[1])
                 .isEquivalentTo(NoOpEventHandler.getNoOpEventHandler()))
         .isTrue();
   }

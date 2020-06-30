@@ -641,7 +641,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(
-      Class<? extends Component> reference, ComponentContext c, int id, Object[] params) {
+      final Class<? extends Component> reference,
+      final String className,
+      final ComponentContext c,
+      final int id,
+      final Object[] params) {
     if (c == null || c.getComponentScope() == null) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
@@ -655,7 +659,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           String.format(
               "A Event handler from %s was created using a context from %s. "
                   + "Event Handlers must be created using a ComponentContext from its Component.",
-              reference.getSimpleName(), c.getComponentScope().getSimpleName()));
+              className, c.getComponentScope().getSimpleName()));
     }
     final EventHandler<E> eventHandler = c.newEventHandler(id, params);
     if (c.getComponentTree() != null) {
