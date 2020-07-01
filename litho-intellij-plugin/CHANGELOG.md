@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Version 1.5.6
+
+_2020-07-01_
+
+* Fix: Toolwindow icon.
+* New: Change log tags.
+
 ## Version 1.5.5
 
 _2020-06-19_
