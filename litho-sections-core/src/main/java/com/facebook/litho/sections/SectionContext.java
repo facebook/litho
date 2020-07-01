@@ -31,6 +31,7 @@ import com.facebook.litho.widget.SectionsDebug;
 import java.lang.ref.WeakReference;
 
 public class SectionContext extends ComponentContext {
+  static final String NO_SCOPE_EVENT_HANDLER = "SectionContext:NoScopeEventHandler";
 
   private SectionTree mSectionTree;
   private WeakReference<Section> mScope;

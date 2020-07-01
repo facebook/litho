@@ -16,12 +16,16 @@
 
 package com.facebook.litho.sections;
 
+import static com.facebook.litho.sections.SectionContext.NO_SCOPE_EVENT_HANDLER;
+
 import androidx.annotation.Nullable;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.Handle;
+import com.facebook.litho.NoOpEventHandler;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -33,7 +37,8 @@ import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
-
+  static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
+      "SectionLifecycle:WrongContextForEventHandler";
   /**
    * This methods will delegate to the {@link GroupSectionSpec} method annotated with {@link
    * com.facebook.litho.sections.annotations.OnCreateChildren}
@@ -150,8 +155,25 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       final SectionContext c,
       final int id,
       final Object[] params) {
-    final EventHandler eventHandler = c.newEventHandler(id, params);
-    recordEventHandler(c.getSectionScope(), eventHandler);
+    if (c == null || c.getSectionScope() == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.FATAL,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
+      return NoOpEventHandler.getNoOpEventHandler();
+    } else if (reference != c.getSectionScope().getClass()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          WRONG_CONTEXT_FOR_EVENT_HANDLER + ":" + c.getSectionScope().getSimpleName(),
+          String.format(
+              "A Event handler from %s was created using a context from %s. "
+                  + "Event Handlers must be created using a SectionContext from its Section.",
+              className, c.getSectionScope().getSimpleName()));
+    }
+    final EventHandler<E> eventHandler = c.newEventHandler(id, params);
+    if (c.getSectionTree() != null) {
+      c.getSectionTree().recordEventHandler(c.getSectionScope(), eventHandler);
+    }
 
     return eventHandler;
   }
