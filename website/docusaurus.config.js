@@ -15,8 +15,6 @@ module.exports = {
   organizationName: 'facebook', // Usually your GitHub org/user name.
   projectName: 'litho', // Usually your repo name.
   themeConfig: {
-    defaultDarkMode: false,
-    disableDarkMode: false,
     navbar: {
       title: 'Litho',
       logo: {
