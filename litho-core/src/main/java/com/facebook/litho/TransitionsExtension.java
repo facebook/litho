@@ -439,15 +439,21 @@ public class TransitionsExtension extends MountDelegateExtension
     for (int i = 1; i < mountItemCount; i++) {
       if (isItemDisappearing(newTransitionsExtensionInput, i)) {
         final int lastDescendantIndex = findLastDescendantIndex(mLastTransitionsExtensionInput, i);
-        // Go though disappearing subtree. Acquire a reference for everything that is not mounted.
+        // Go though disappearing subtree. Mount anything that's not mounted (without acquiring
+        // reference).
         for (int j = i; j <= lastDescendantIndex; j++) {
-          MountItem mountedItem = getMountTarget().getMountItemAt(j);
-          if (mountedItem == null) {
+          if (getMountTarget().getMountItemAt(j) == null) {
+            // We need to release any mount reference to this because we need to force mount here.
+            if (ownsReference(mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
+              releaseMountReference(
+                  mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+            }
             acquireMountReference(
                 mLastTransitionsExtensionInput.getMountableOutputAt(j), j, mInput, true);
-            mountedItem = getMountTarget().getMountItemAt(j);
+            // Here we have to release the ref count without mounting.
+            releaseMountReference(mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
           }
-          mLockedDisappearingMountitems.add(mountedItem);
+          mLockedDisappearingMountitems.add(getMountTarget().getMountItemAt(j));
         }
 
         // Reference to the root of the disappearing subtree
