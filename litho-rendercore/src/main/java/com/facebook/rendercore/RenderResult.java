@@ -45,7 +45,7 @@ public class RenderResult<State> {
     final Node previousTree = previousResult != null ? previousResult.getNodeTree() : null;
     final State previousState = previousResult != null ? previousResult.getState() : null;
 
-    Systrace.sInstance.beginSection("RC Create Tree");
+    RenderCoreSystrace.beginSection("RC Create Tree");
     final Pair<Node, State> result;
 
     if (previousResult != null && lazyTree == previousResult.getLazyTree()) {
@@ -65,7 +65,7 @@ public class RenderResult<State> {
               previousResult.getLayoutCache(),
               result.second);
     } else {
-      Systrace.sInstance.beginSection("RC Layout");
+      RenderCoreSystrace.beginSection("RC Layout");
 
       final LayoutCache layoutCache =
           previousResult != null
@@ -76,9 +76,9 @@ public class RenderResult<State> {
 
       final Node.LayoutResult layoutResult =
           result.first.calculateLayout(layoutContext, widthSpec, heightSpec);
-      Systrace.sInstance.endSection();
+      RenderCoreSystrace.endSection();
 
-      Systrace.sInstance.beginSection("RC Reduce");
+      RenderCoreSystrace.beginSection("RC Reduce");
       renderResult =
           create(
               layoutContext,
@@ -88,11 +88,11 @@ public class RenderResult<State> {
               widthSpec,
               heightSpec,
               result.second);
-      Systrace.sInstance.endSection();
+      RenderCoreSystrace.endSection();
       layoutContext.clearCache();
     }
 
-    Systrace.sInstance.endSection();
+    RenderCoreSystrace.endSection();
 
     return renderResult;
   }

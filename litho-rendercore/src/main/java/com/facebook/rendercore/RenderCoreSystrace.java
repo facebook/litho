@@ -19,15 +19,36 @@ package com.facebook.rendercore;
 import android.os.Build;
 import android.os.Trace;
 
-public interface Systrace {
+public final class RenderCoreSystrace {
 
-  public static Systrace sInstance = new DefaultTrace();
+  public interface IRenderCoreSystrace {
+    void beginSection(String name);
 
-  void beginSection(String name);
+    void endSection();
+  }
 
-  void endSection();
+  private static volatile IRenderCoreSystrace sInstance = new DefaultTrace();
+  private static volatile boolean sHasStarted = false;
 
-  class DefaultTrace implements Systrace {
+  public static void beginSection(String name) {
+    sHasStarted = true;
+    sInstance.beginSection(name);
+  }
+
+  public static void endSection() {
+    sInstance.endSection();
+  }
+
+  public static void use(IRenderCoreSystrace systraceImpl) {
+    if (sHasStarted) {
+      // We will not switch the implementation if the trace has already been used in the
+      // app lifecycle.
+      return;
+    }
+    sInstance = systraceImpl;
+  }
+
+  private static final class DefaultTrace implements IRenderCoreSystrace {
 
     @Override
     public void beginSection(String name) {
