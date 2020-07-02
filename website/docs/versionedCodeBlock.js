@@ -9,7 +9,9 @@
 import React from "react";
 import Highlight, { defaultProps } from "prism-react-renderer";
 import github from 'prism-react-renderer/themes/github';
+import dracula from 'prism-react-renderer/themes/dracula';
 import {site} from '../lithoVersions.js';
+import useThemeContext from '@theme/hooks/useThemeContext';
 
 // VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces
 // placeholders e.g. {{site.lithoVersion}} with current versions stated in ../lithoVersion.js
@@ -20,9 +22,10 @@ export const VersionedCodeBlock = ({language, code}) => {
     .replaceAll('{{site.soloaderVersion}}', site.soloaderVersion)
     .replaceAll('{{site.lithoSnapshotVersion}}', site.lithoSnapshotVersion)
     .replaceAll('{{site.flipperVersion}}', site.flipperVersion);
-  // render as a codeblock
+  const theme = getCodeBlockTheme();
+    // render as a codeblock
   return(
-  <Highlight {...defaultProps} code={modifiedCode} language={language} theme={github}>
+  <Highlight {...defaultProps} code={modifiedCode} language={language} theme={theme}>
     {({ className, style, tokens, getLineProps, getTokenProps }) => (
       <pre className={className} style={style}>
         {tokens.map((line, i) => (
@@ -36,4 +39,14 @@ export const VersionedCodeBlock = ({language, code}) => {
     )}
   </Highlight>
   );
+}
+
+// returns theme for codeblock depending on whether dark mode is activated
+function getCodeBlockTheme() {
+  const {isDarkTheme} = useThemeContext();
+  if (isDarkTheme) {
+    return dracula;
+  } else {
+    return github;
+  }
 }
