@@ -17,11 +17,11 @@ import useThemeContext from '@theme/hooks/useThemeContext';
 // placeholders e.g. {{site.lithoVersion}} with current versions stated in ../versionConfig.js
 // When updating versions in documentation, it suffices to update the versions in ../versionConfig.js 
 export const VersionedCodeBlock = ({language, code}) => {
-  // replace versions
-  const modifiedCode = code.replaceAll('{{site.lithoVersion}}', site.lithoVersion)
-    .replaceAll('{{site.soloaderVersion}}', site.soloaderVersion)
-    .replaceAll('{{site.lithoSnapshotVersion}}', site.lithoSnapshotVersion)
-    .replaceAll('{{site.flipperVersion}}', site.flipperVersion);
+  // replace all placeholders with actual versions
+  const modifiedCode = code.replace(/{{site.lithoVersion}}/g, site.lithoVersion)
+    .replace(/{{site.soloaderVersion}}/g, site.soloaderVersion)
+    .replace(/{{site.lithoSnapshotVersion}}/g, site.lithoSnapshotVersion)
+    .replace(/{{site.flipperVersion}}/g, site.flipperVersion);
   const theme = getCodeBlockTheme();
     // render as a codeblock
   return(
