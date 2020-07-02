@@ -10,12 +10,12 @@ import React from "react";
 import Highlight, { defaultProps } from "prism-react-renderer";
 import github from 'prism-react-renderer/themes/github';
 import dracula from 'prism-react-renderer/themes/dracula';
-import {site} from '../lithoVersions.js';
+import {site} from '../../versionConfig.js';
 import useThemeContext from '@theme/hooks/useThemeContext';
 
 // VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces
-// placeholders e.g. {{site.lithoVersion}} with current versions stated in ../lithoVersion.js
-// When updating versions in documentation, it suffices to update the versions in ../lithoVersion.js 
+// placeholders e.g. {{site.lithoVersion}} with current versions stated in ../versionConfig.js
+// When updating versions in documentation, it suffices to update the versions in ../versionConfig.js 
 export const VersionedCodeBlock = ({language, code}) => {
   // replace versions
   const modifiedCode = code.replaceAll('{{site.lithoVersion}}', site.lithoVersion)
