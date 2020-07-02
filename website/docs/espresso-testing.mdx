@@ -3,6 +3,7 @@ id: espresso-testing
 title: Espresso
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import {VersionedCodeBlock} from './versionedCodeBlock';
 
 Litho provides basic support for the
 [Espresso UI Testing](https://developer.android.com/training/testing/ui-testing/espresso-testing.html)
@@ -22,14 +23,14 @@ dependencies to your `build.gradle` file alongside your Espresso setup:
 <br clear="right" />
 <br />
 
-```gradle
-dependencies {
+export const espressoCode = `dependencies {
   // ...
-  androidTestCompile 'com.facebook.litho:litho-espresso:{{site.litho-version}}'
+  androidTestCompile 'com.facebook.litho:litho-espresso:{{site.lithoVersion}}'
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-}
-``` 
+}`; 
+
+<VersionedCodeBlock language="gradle" code={espressoCode} />
 
 ## Matching
 

@@ -2,6 +2,7 @@
 id: flipper-plugins
 title: Flipper Plugins
 ---
+import {VersionedCodeBlock} from './versionedCodeBlock';
 
 When you create or debug standard Android Views, you can use Layout Preview and Layout Inspector tools from Android Studio. But since Litho operates with different UI primitives like Components and Sections those standard tools are not very useful for our  case.
 
@@ -13,12 +14,12 @@ Luckily, we have [Flipper](https://fbflipper.com) – an extensible mobile app d
 
 To add Flipper and Litho plugins to you app you need to do the [following steps](https://fbflipper.com/docs/setup/layout-plugin):
 
-```groovy
-dependencies {
-  debugImplementation 'com.facebook.flipper:flipper:{{site.flipper-version}}'
-  debugImplementation 'com.facebook.flipper:flipper-litho-plugin:{{site.flipper-version}}'
-}
-```
+export const flipperDependencies =`dependencies {
+  debugImplementation 'com.facebook.flipper:flipper:{{site.flipperVersion}}'
+  debugImplementation 'com.facebook.flipper:flipper-litho-plugin:{{site.flipperVersion}}'
+}`;
+
+<VersionedCodeBlock language="groovy" code={flipperDependencies} />
 
 And init `FlipperClient` with Inspector plugin which is typically done in your custom `Application` class:
 

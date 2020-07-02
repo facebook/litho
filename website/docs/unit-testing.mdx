@@ -2,6 +2,7 @@
 id: unit-testing
 title: Unit Testing Basics
 ---
+import {VersionedCodeBlock} from './versionedCodeBlock';
 
 Litho provides testing helpers exposed through fluid
 AssertJ methods. They are available as:
@@ -23,9 +24,9 @@ In order to use any of the testing capabilities, you need include the optional
 `com.facebook.litho:litho-testing`. To include it in your gradle build, add this
 line to your `dependencies` block:
 
-```groovy
-testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
-```
+export const testingDependenciesCode = `testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'`;
+
+<VersionedCodeBlock language="groovy" code={testingDependenciesCode} />
 
 To demonstrate the usage of these classes, below is an example of a component
 that displays a like icon and a short description.

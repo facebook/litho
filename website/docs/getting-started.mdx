@@ -31,7 +31,7 @@ repositories {
 ```
 Then add the dependencies like this:
 
-export const dependencyDemo = `dependencies {
+export const dependenciesCode = `dependencies {
   // ...
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
@@ -43,25 +43,23 @@ export const dependencyDemo = `dependencies {
   implementation 'com.facebook.litho:litho-fresco:{{site.lithoVersion}}'\n
   // For testing
   testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
-}
-`;
+}`;
 
-<VersionedCodeBlock language="groovy" code={dependencyDemo} />
+<VersionedCodeBlock language="groovy" code={dependenciesCode} />
 
 ## Adding Sections to your Project
 
 Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
-```groovy
-dependencies {
 
+export const additionalDependenciesCode = `dependencies {\n
   // Sections
-  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-sections-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-sections-widget:{{site.lithoVersion}}'
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'\n
+  annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.lithoVersion}}'
+}`;
 
-  annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
-}
-```
+<VersionedCodeBlock language="groovy" code={additionalDependenciesCode} />
 
 ## Using Snapshot releases
 
@@ -80,25 +78,21 @@ repositories {
 Then you can access the snapshot versions of all Litho artifacts that we
 publish:
 
-```groovy
-dependencies {
+export const snapshotDependenciesCode = `dependencies {
   // ...
   // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
-
-  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
-
+  implementation 'com.facebook.litho:litho-core:{{site.lithoSnapshotVersion}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.lithoSnapshotVersion}}'
+  annotationProcessor 'com.facebook.litho:litho-processor:{{site.lithoSnapshotVersion}}'\n
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
+  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
   // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
-
+  implementation 'com.facebook.litho:litho-fresco:{{site.lithoSnapshotVersion}}'\n
   // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
-}
-```
+  testImplementation 'com.facebook.litho:litho-testing:{{site.lithoSnapshotVersion}}'
+}`;
+
+<VersionedCodeBlock language="groovy" code={snapshotDependenciesCode}/>
 
   </TabItem>
   <TabItem value="gradel-kotlin">
@@ -127,40 +121,35 @@ repositories {
 
 Then add the dependencies like this:
 
-```groovy
-dependencies {
+export const kaptDependenciesCode = `dependencies {
   // ...
   // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
-
-  kapt 'com.facebook.litho:litho-processor:{{site.litho-version}}'
-
+  implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
+  kapt 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'\n
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
+  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
   // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
-
+  implementation 'com.facebook.litho:litho-fresco:{{site.lithoVersion}}'\n
   // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
-}
-```
+  testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
+}`
+
+<VersionedCodeBlock language="groovy" code={kaptDependenciesCode} />
 
 ## Adding Sections to your Project
 
 Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
-```groovy
-dependencies {
 
+export const kaptAdditionalDependenciesCode = `dependencies {\n
   // Sections
-  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-sections-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-sections-widget:{{site.lithoVersion}}'
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'\n
+  kapt 'com.facebook.litho:litho-sections-processor:{{site.lithoVersion}}'
+}`;
 
-  kapt 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
-}
-```
+<VersionedCodeBlock language="groovy" code={kaptAdditionalDependenciesCode} />
 
 ## Using Snapshot releases
 
@@ -178,27 +167,23 @@ repositories {
 
 Then you can access the snapshot versions of all Litho artifacts that we
 publish:
-
-```groovy
-dependencies {
+  
+export const kaptSnapshotsDependenciesCode = `dependencies {
   // ...
   // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
-
-  kapt 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
-
+  implementation 'com.facebook.litho:litho-core:{{site.lithoSnapshotVersion}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.lithoSnapshotVersion}}'\n
+  kapt 'com.facebook.litho:litho-processor:{{site.lithoSnapshotVersion}}'\n
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
+  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
   // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
-
+  implementation 'com.facebook.litho:litho-fresco:{{site.lithoSnapshotVersion}}'\n
   // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
-}
-```
-  
+  testImplementation 'com.facebook.litho:litho-testing:{{site.lithoSnapshotVersion}}'
+}`
+
+<VersionedCodeBlock language="groovy" code={kaptSnapshotsDependenciesCode} />
+
   </TabItem>
   <TabItem value="buck-java">
 
@@ -206,55 +191,46 @@ dependencies {
 
 You can include Litho to your Android project via Buck by adding the following to your `BUCK` file:
 
-```python
-android_prebuilt_aar(
+export const buckCode = `android_prebuilt_aar(
     name = "litho",
     aar = ":litho-core.aar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-core.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-core:aar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-core:aar:{{site.lithoVersion}}",
+)\n
 prebuilt_jar(
     name = "litho-annotation",
     binary_jar = ":litho-annotation.jar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-processor.jar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-processor:jar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-processor:jar:{{site.lithoVersion}}",
+)\n
 prebuilt_jar(
     name = "litho-processor",
     binary_jar = ":litho-processor.jar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-annotation.jar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-annotation:jar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-annotation:jar:{{site.lithoVersion}}",
+)\n
 android_prebuilt_aar(
     name = "litho-widget",
     aar = ":litho-widget.aar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-widget.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-widget:aar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-widget:aar:{{site.lithoVersion}}",
+)\n
 android_library(
     ...
     # Your target here
@@ -273,65 +249,58 @@ android_library(
         ":litho",
         ":litho-widget",
         ...
-    ]
-)
-```
+    ])
+`;
+
+<VersionedCodeBlock language="python" code={buckCode} />
 
 ## Adding Sections to your Project
 
-
 Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `BUCK` file:
 
-```python
-android_prebuilt_aar(
+export const additionalBuckCode = `android_prebuilt_aar(
     name = "litho-sections",
     aar = ":litho-sections-core.aar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-sections-core.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-sections-core:aar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-sections-core:aar:{{site.lithoVersion}}",
+)\n
 prebuilt_jar(
     name = "litho-sections-annotation",
     binary_jar = ":litho-sections-annotation.jar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-sections-processor.jar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-sections-processor:jar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-sections-processor:jar:{{site.lithoVersion}}",
+)\n
 prebuilt_jar(
     name = "litho-sections-processor",
     binary_jar = ":litho-sections-processor.jar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-sections-annotation.jar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-sections-annotation:jar:{{site.litho-version}}",
-)
-
+    url = "mvn:com.facebook.litho:litho-sections-annotation:jar:{{site.lithoVersion}}",
+)\n
 android_prebuilt_aar(
     name = "litho-sections-widget",
     aar = ":litho-sections-widget.aar",
     visibility = ["PUBLIC"],
-)
-
+)\n
 remote_file(
     name = "litho-sections-widget.aar",
     sha1 = "sha1here",
-    url = "mvn:com.facebook.litho:litho-sections-widget:aar:{{site.litho-version}}",
-)
+    url = "mvn:com.facebook.litho:litho-sections-widget:aar:{{site.lithoVersion}}",
+)`;
 
-```
+<VersionedCodeBlock language="python" code={additionalBuckCode} />
+
 Then modify your `android_library` target as such:
 
 ```python
@@ -372,8 +341,7 @@ You can test your install by adding a view created with Litho to an activity.
 
 First, initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/). Your `Application` class is a good place to do this:
 
-```java
-[MyApplication.java]
+```java title="MyApplication.java"
 public class MyApplication extends Application {
 
   @Override
@@ -387,8 +355,7 @@ public class MyApplication extends Application {
 
 Then, add a predefined Litho `Text` widget to an activity that displays "Hello World!":
 
-```java
-[MyActivity.java]
+```java title="MyActivity.java"
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 
@@ -423,8 +390,7 @@ You can test your install by adding a view created with Litho to an activity.
 
 First, initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/). Your `Application` class is a good place to do this:
 
-```kotlin
-[MyApplication.kt]
+```kotlin title="MyApplication.kt"
 class MyApplication: Application() {
 
   override fun onCreate() {
@@ -436,8 +402,7 @@ class MyApplication: Application() {
 
 Then, add a predefined Litho `Text` widget to an activity that displays "Hello World!":
 
-```kotlin
-[MyActivity.kt]
+```kotlin title="MyActivity.kt"
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 
