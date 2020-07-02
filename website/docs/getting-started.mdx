@@ -6,6 +6,7 @@ hide_table_of_contents: true
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import {VersionedCodeBlock} from './versionedCodeBlock';
 
 <Tabs
   defaultValue="gradel-java"
@@ -28,28 +29,24 @@ repositories {
   jcenter()
 }
 ```
-
 Then add the dependencies like this:
 
-```groovy
-dependencies {
+export const dependencyDemo = `dependencies {
   // ...
   // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
-
-  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-version}}'
-
+  implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'  
+  annotationProcessor 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'\n
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
+  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
   // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
-
+  implementation 'com.facebook.litho:litho-fresco:{{site.lithoVersion}}'\n
   // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
+  testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
 }
-```
+`;
+
+<VersionedCodeBlock language="groovy" code={dependencyDemo} />
 
 ## Adding Sections to your Project
 
