@@ -42,7 +42,7 @@ public class LithoRenderUnitFactory {
     }
 
     for (int i = 0, size = mBindExtensionsCount; i < size; i++) {
-      renderUnit.addMountUnmountExtension(mBindExtensions.get(i));
+      renderUnit.addAttachDetachExtension(mBindExtensions.get(i));
     }
 
     return renderUnit;
