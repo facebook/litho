@@ -16,17 +16,12 @@
 
 package com.facebook.litho
 
-import android.app.Activity
+import android.content.Context
 
-inline fun build(
-    c: ComponentContext,
-    content: DslScope.() -> Component?
-): Component? = DslScope(c).content()
+inline class DslScope(val context: ComponentContext) {
+  val androidContext: Context get() = context.androidContext
+  val resourceResolver: ResourceResolver get() = context.resourceResolver
 
-fun Activity.setContent(component: Component) {
-  setContentView(LithoView.create(this, component))
-}
-
-fun Activity.setContent(content: DslScope.() -> Component) {
-  setContent(KComponent(content))
+  /*inline*/ fun Dp.toPx(): Px = Px(resourceResolver.dipsToPixels(value))
+  /*inline*/ fun Sp.toPx(): Px = Px(resourceResolver.sipsToPixels(value))
 }
