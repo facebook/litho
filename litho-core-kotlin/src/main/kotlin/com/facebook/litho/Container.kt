@@ -28,6 +28,7 @@ inline fun DslScope.Column(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
+    style: Style? = null,
     content: DslContainerScope.() -> Unit = {}
 ): Column =
     Column.create(context)
@@ -42,6 +43,9 @@ inline fun DslScope.Column(
           DslContainerScope(this).content()
         }
         .build()
+        .apply {
+          applyStyle(style)
+        }
 
 inline fun DslScope.Row(
     alignContent: YogaAlign? = null,
@@ -49,6 +53,7 @@ inline fun DslScope.Row(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
+    style: Style? = null,
     content: DslContainerScope.() -> Unit = {}
 ): Row =
     Row.create(context)
@@ -63,6 +68,9 @@ inline fun DslScope.Row(
           DslContainerScope(this).content()
         }
         .build()
+        .apply {
+          applyStyle(style)
+        }
 
 /**
  * A scope that exposes only [unaryPlus] operator in the context of [Component.ContainerBuilder]

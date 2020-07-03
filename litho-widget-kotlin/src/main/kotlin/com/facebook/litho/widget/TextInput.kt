@@ -24,6 +24,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.ColorInt
 import com.facebook.litho.DslScope
+import com.facebook.litho.Style
 import com.facebook.litho.Sp
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sp
@@ -33,7 +34,8 @@ import com.facebook.litho.sp
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.TextInput(
-    initialText: CharSequence = "",
+    initialText: CharSequence,
+    style: Style? = null,
     hint: CharSequence = "",
     @ColorInt textColor: Int = Color.BLACK,
     @ColorInt hintTextColor: Int = Color.LTGRAY,
@@ -70,3 +72,6 @@ inline fun DslScope.TextInput(
           onSelectionChanged?.let { selectionChangedEventHandler(eventHandler(it)) }
         }
         .build()
+        .apply {
+          applyStyle(style)
+        }

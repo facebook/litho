@@ -20,14 +20,12 @@ import android.graphics.Color.GRAY
 import android.graphics.Typeface.ITALIC
 import com.facebook.litho.Column
 import com.facebook.litho.KComponent
-import com.facebook.litho.Padding
 import com.facebook.litho.dp
+import com.facebook.litho.padding
 import com.facebook.litho.widget.Text
 
 class FooterComponent(text: String) : KComponent({
-  Padding(8.dp) {
-    Column {
-      +Text(text = text, textColor = GRAY, textStyle = ITALIC)
-    }
+  Column(style = padding(8.dp)) {
+    +Text(text = text, textColor = GRAY, textStyle = ITALIC)
   }
 })

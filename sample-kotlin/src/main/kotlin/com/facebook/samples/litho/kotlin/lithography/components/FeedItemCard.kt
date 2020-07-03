@@ -18,17 +18,15 @@ package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Column
 import com.facebook.litho.KComponent
-import com.facebook.litho.Padding
 import com.facebook.litho.dp
+import com.facebook.litho.padding
 import com.facebook.litho.widget.Card
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
 class FeedItemCard(artist: Artist) : KComponent({
-  Padding(horizontal = 16.dp, vertical = 8.dp) {
-    Column {
-      +Card {
-        FeedItemComponent(artist = artist)
-      }
+  Column(style = padding(horizontal = 16.dp, vertical = 8.dp)) {
+    +Card {
+      FeedItemComponent(artist = artist)
     }
   }
 })

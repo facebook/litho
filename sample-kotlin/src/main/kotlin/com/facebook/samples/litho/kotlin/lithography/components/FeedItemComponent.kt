@@ -23,10 +23,10 @@ import com.facebook.litho.Component
 import com.facebook.litho.Decoration
 import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.Padding
-import com.facebook.litho.Position
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
+import com.facebook.litho.padding
+import com.facebook.litho.position
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -40,16 +40,14 @@ class FeedItemComponent(artist: Artist) : KComponent({
   Column {
     +Column {
       +imageBlock(artist)
-      +Position(left = 4.dp, bottom = 4.dp) {
-        Padding(horizontal = 6.dp) {
-          Decoration(background = drawableColor(0xddffffff)) {
-            Text(text = artist.name, textSize = 24.sp, textStyle = BOLD)
-          }
-        }
+      +Decoration(background = drawableColor(0xddffffff)) {
+        Text(
+            text = artist.name,
+            style = position(start = 4.dp, bottom = 4.dp) + padding(horizontal = 6.dp),
+            textSize = 24.sp,
+            textStyle = BOLD)
       }
-      +Position(top = 4.dp, right = 4.dp) {
-        ActionsComponent()
-      }
+      +ActionsComponent(style = position(top = 4.dp, end = 4.dp))
     }
     +FooterComponent(text = artist.biography)
   }

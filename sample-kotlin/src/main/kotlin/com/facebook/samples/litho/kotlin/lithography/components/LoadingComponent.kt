@@ -17,17 +17,15 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import android.graphics.Color
-import com.facebook.litho.FixedSize
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.dp
+import com.facebook.litho.size
 import com.facebook.litho.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 
 class LoadingComponent : KComponent({
   Row(justifyContent = CENTER) {
-    +FixedSize(width = 50.dp) {
-      Progress(color = Color.DKGRAY)
-    }
+    +Progress(color = Color.DKGRAY, style = size(50.dp))
   }
 })

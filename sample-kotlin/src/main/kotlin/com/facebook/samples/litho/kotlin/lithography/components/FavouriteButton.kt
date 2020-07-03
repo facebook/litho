@@ -20,11 +20,11 @@ import android.R.drawable.star_off
 import android.R.drawable.star_on
 import com.facebook.litho.Clickable
 import com.facebook.litho.Decoration
-import com.facebook.litho.FixedSize
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
+import com.facebook.litho.size
 import com.facebook.litho.updateState
 import com.facebook.litho.useState
 import com.facebook.litho.value
@@ -35,10 +35,8 @@ class FavouriteButton : KComponent({
   val star = drawableRes(if (isFavourite.value) star_on else star_off)
 
   Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
-    FixedSize(width = 32.dp, height = 32.dp) {
-      Decoration(background = star) {
-        Row()
-      }
+    Decoration(background = star) {
+      Row(style = size(32.dp))
     }
   }
 })

@@ -18,42 +18,34 @@ package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Decoration
 import com.facebook.litho.Dp
-import com.facebook.litho.FixedSize
-import com.facebook.litho.Flex
 import com.facebook.litho.KComponent
-import com.facebook.litho.Margin
-import com.facebook.litho.Padding
 import com.facebook.litho.Row
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
+import com.facebook.litho.flex
+import com.facebook.litho.margin
+import com.facebook.litho.padding
+import com.facebook.litho.size
 import com.facebook.litho.sp
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Decade
 import com.facebook.yoga.YogaAlign.CENTER
 
 class DecadeSeparator(decade: Decade) : KComponent({
-  Padding(all = 16.dp) {
-    Decoration(background = drawableColor(0xFFFAFAFA)) {
-      Row(alignItems = CENTER) {
-        +Flex(grow = 1f) {
-          FixedSize(height = Dp.Hairline) {
-            Decoration(background = drawableColor(0xFFAAAAAA)) {
-              Row()
-            }
-          }
-        }
-        +Flex(shrink = 0f) {
-          Margin(horizontal = 10.dp) {
-            Text(text = "${decade.year}", textSize = 14.sp, textColor = 0xFFAAAAAA.toInt())
-          }
-        }
-        +Flex(grow = 1f) {
-          FixedSize(height = Dp.Hairline) {
-            Decoration(background = drawableColor(0xFFAAAAAA)) {
-              Row()
-            }
-          }
-        }
+  Decoration(background = drawableColor(0xFFFAFAFA)) {
+    Row(alignItems = CENTER, style = padding(16.dp)) {
+      +Decoration(background = drawableColor(0xFFAAAAAA)) {
+        Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
+      }
+
+      +Text(
+          text = "${decade.year}",
+          textSize = 14.sp,
+          textColor = 0xFFAAAAAA.toInt(),
+          style = margin(horizontal = 10.dp) + flex(shrink = 0f))
+
+      +Decoration(background = drawableColor(0xFFAAAAAA)) {
+        Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
       }
     }
   }

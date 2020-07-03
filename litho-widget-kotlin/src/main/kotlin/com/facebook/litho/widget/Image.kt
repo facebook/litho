@@ -19,6 +19,7 @@ package com.facebook.litho.widget
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
 import com.facebook.litho.DslScope
+import com.facebook.litho.Style
 
 /**
  * Builder function for creating [ImageSpec] components.
@@ -26,9 +27,13 @@ import com.facebook.litho.DslScope
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Image(
     drawable: Drawable,
+    style: Style? = null,
     scaleType: ScaleType = ScaleType.FIT_CENTER
 ): Image =
     Image.create(context)
         .drawable(drawable)
         .scaleType(scaleType)
         .build()
+        .apply {
+          applyStyle(style)
+        }

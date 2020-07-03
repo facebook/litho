@@ -17,11 +17,19 @@
 package com.facebook.litho
 
 /** Base class for Kotlin Components. */
-open class KComponent(
-    private val content: (DslScope.() -> Component?)? = null
+open class KComponent private constructor(
+    private val content: (DslScope.() -> Component?)? = null,
+    private val style: Style? = null
 ) : Component() {
+  constructor(style: Style? = null) : this(null, style)
+  constructor(content: DslScope.() -> Component?) : this(content, null)
+
   override fun onCreateLayout(c: ComponentContext): Component? {
-    return DslScope(c).render()
+    return DslScope(c).run {
+      render()?.apply {
+        applyStyle(style)
+      }
+    }
   }
 
   open fun DslScope.render(): Component? {

@@ -19,6 +19,9 @@ package com.facebook.litho
 inline class Px(val value: Int)
 
 inline class Dp(val value: Float) {
+
+  inline operator fun plus(other: Dp) = Dp(value = this.value + other.value)
+
   companion object {
     /**
      * Used to represent dimension of an element that should be drawn with 1px size (typically,
