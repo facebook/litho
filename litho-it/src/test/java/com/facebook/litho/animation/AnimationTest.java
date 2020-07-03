@@ -984,6 +984,85 @@ public class AnimationTest {
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensionsWithMountDelegate;
   }
 
+  @Test
+  public void animation_unmountElementMidAppearAnimation_elementShouldBeUnmounted() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.stagger(
+                    144,
+                    Transition.create(TRANSITION_KEY + 0)
+                        .animator(Transition.timing(144))
+                        .animate(AnimatedProperties.ALPHA)
+                        .appearFrom(0),
+                    Transition.create(TRANSITION_KEY + 1)
+                        .animator(Transition.timing(144))
+                        .animate(AnimatedProperties.ALPHA)
+                        .appearFrom(0)))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    Column.Builder builder =
+                        Column.create(componentContext)
+                            .child(
+                                Row.create(componentContext)
+                                    .heightDip(50)
+                                    .widthDip(50)
+                                    .backgroundColor(Color.YELLOW));
+                    if (state) {
+                      for (int i = 0; i < 2; i++) {
+                        builder.child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.RED)
+                                .viewTag(TRANSITION_KEY + i)
+                                .transitionKey(TRANSITION_KEY + i));
+                      }
+                    }
+                    return builder.build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    // The bug only happens if you start the animation in the middle twice.
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+
+    // View should be null as state is null
+    assertThat(view).describedAs("view before appearing").isNull();
+    mStateCaller.update();
+
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    assertThat(view).describedAs("view after toggle").isNotNull();
+    // After state update we should have the view added but with alpha equal to 0
+    assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
+
+    mTransitionTestRule.step(11);
+    // Update state again the element should not be there.
+    mStateCaller.update();
+
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    assertThat(view).describedAs("view unmount mid animation").isNull();
+
+    mTransitionTestRule.step(1);
+    // Now if we do this again we expect the appearing items to the same thing.
+    mStateCaller.update();
+    mTransitionTestRule.step(1);
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    assertThat(view).describedAs("view after toggle").isNotNull();
+    // After state update we should have the view added but with alpha equal to 0
+    assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
+    mStateCaller.update();
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    assertThat(view).describedAs("view unmount mid animation").isNull();
+  }
+
   private Component getAnimatingXPropertyComponent() {
     return TestAnimationsComponent.create(mLithoViewRule.getContext())
         .stateCaller(mStateCaller)

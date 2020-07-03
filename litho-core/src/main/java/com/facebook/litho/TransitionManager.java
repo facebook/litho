@@ -180,6 +180,8 @@ public class TransitionManager {
      * equivalent Transition specified, we need to interrupt this animation.
      */
     public boolean shouldFinishUndeclaredAnimation;
+
+    public boolean hasDisappearingAnimation;
   }
 
   private final Map<AnimationBinding, List<PropertyHandle>> mAnimationsToPropertyHandles =
@@ -403,7 +405,8 @@ public class TransitionManager {
     if (animationState == null) {
       return false;
     }
-    return animationState.changeType == ChangeType.DISAPPEARED;
+    return animationState.changeType == ChangeType.DISAPPEARED
+        && animationState.hasDisappearingAnimation;
   }
 
   /** To be called when a MountState is recycled for a new component tree. Clears all animations. */
@@ -457,6 +460,11 @@ public class TransitionManager {
     } else if (currentLayoutOutputsGroup != null && nextLayoutOutputsGroup != null) {
       animationState.changeType = ChangeType.CHANGED;
     } else {
+      if ((animationState.changeType == ChangeType.APPEARED
+              || animationState.changeType == ChangeType.CHANGED)
+          && !animationState.hasDisappearingAnimation) {
+        animationState.shouldFinishUndeclaredAnimation = true;
+      }
       animationState.changeType = ChangeType.DISAPPEARED;
     }
 
@@ -662,6 +670,8 @@ public class TransitionManager {
       return null;
     }
 
+    animationState.hasDisappearingAnimation =
+        transition.hasDisappearAnimation() || animationState.hasDisappearingAnimation;
     final int changeType = animationState.changeType;
     final String changeTypeString = changeTypeToString(animationState.changeType);
     if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation())
