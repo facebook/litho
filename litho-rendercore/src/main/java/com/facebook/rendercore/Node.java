@@ -25,9 +25,7 @@ import com.facebook.rendercore.RenderState.LayoutContext;
  * Represents a single node in a RenderCore Tree. A Node has children, base layout information, and
  * whether it needs to be rendered.
  */
-public abstract class Node<RenderContext> implements Copyable {
-
-  private Copyable mLayoutParams;
+public interface Node<RenderContext> extends Copyable {
 
   /**
    * Implementations of Node are responsible to calculate a layout based on the width/height
@@ -49,22 +47,22 @@ public abstract class Node<RenderContext> implements Copyable {
    * @param widthSpec a measure spec for the width in the format of {@link View.MeasureSpec}
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}
    */
-  public abstract LayoutResult calculateLayout(
-      LayoutContext<RenderContext> context, int widthSpec, int heightSpec);
+  LayoutResult calculateLayout(LayoutContext<RenderContext> context, int widthSpec, int heightSpec);
 
-  public Copyable getLayoutParams() {
-    return mLayoutParams;
-  }
-
-  public void setLayoutParams(Copyable layoutParams) {
-    mLayoutParams = layoutParams;
-  }
+  /**
+   * Returns the layout params of this Node. The layout params are useful to inform the parent of
+   * this node, about how this Node should be laid-out. The layout params implement {@link
+   * Copyable}, and can be copied to be reused but another node.
+   *
+   * @return the layout params for this Node.
+   */
+  Copyable getLayoutParams();
 
   /**
    * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
    * and all the layout information needed to position the content of such Node.
    */
-  public interface LayoutResult<T> {
+  interface LayoutResult<T> {
 
     /** @return the RenderUnit that should be rendered by this layout result. */
     @Nullable
@@ -120,21 +118,5 @@ public abstract class Node<RenderContext> implements Copyable {
 
     /** @return the height measurement that generated this LayoutResult */
     int getHeightSpec();
-  }
-
-  @Override
-  public Node makeCopy() {
-    final Node clone;
-    try {
-      clone = (Node) super.clone();
-
-      if (mLayoutParams != null) {
-        clone.mLayoutParams = mLayoutParams.makeCopy();
-      }
-
-      return clone;
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
-    }
   }
 }

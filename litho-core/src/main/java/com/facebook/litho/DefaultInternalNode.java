@@ -51,7 +51,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.rendercore.Node;
+import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
@@ -75,7 +75,7 @@ import javax.annotation.Nullable;
 /** Default implementation of {@link InternalNode}. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class DefaultInternalNode extends Node implements InternalNode, Cloneable {
+public class DefaultInternalNode implements InternalNode, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
@@ -184,6 +184,7 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
 
   private long mPrivateFlags;
   private RenderUnit mRenderUnit;
+  private @Nullable Copyable mLayoutParams;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
     this(componentContext, true);
@@ -528,6 +529,11 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
     Layout.measure(getContext(), this, widthSpec, heightSpec, null);
 
     return this;
+  }
+
+  @Override
+  public @Nullable Copyable getLayoutParams() {
+    return mLayoutParams;
   }
 
   @Override
@@ -1751,12 +1757,16 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   }
 
   protected DefaultInternalNode clone() {
+    final DefaultInternalNode node;
     try {
-      return (DefaultInternalNode) super.clone();
+      node = (DefaultInternalNode) super.clone();
     } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
       throw new RuntimeException(e);
     }
+
+    node.mLayoutParams = mLayoutParams != null ? mLayoutParams.makeCopy() : null;
+
+    return node;
   }
 
   private boolean isPaddingPercent(YogaEdge edge) {
@@ -2229,6 +2239,11 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
 
   public void setRenderUnit(RenderUnit renderUnit) {
     mRenderUnit = renderUnit;
+  }
+
+  @Override
+  public Copyable makeCopy() {
+    return clone();
   }
 
   @IntDef({ReconciliationMode.COPY, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})

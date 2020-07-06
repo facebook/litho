@@ -16,13 +16,15 @@
 
 package com.facebook.rendercore.testing;
 
+import androidx.annotation.Nullable;
+import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class TestNode extends Node {
+public class TestNode implements Node {
 
   static final AtomicLong sIdGenerator = new AtomicLong();
   private final ArrayList<Node> mChildren;
@@ -33,6 +35,7 @@ public class TestNode extends Node {
   private Object mLayoutData;
   private RenderUnit mRenderUnit;
   private long mId = sIdGenerator.getAndIncrement();
+  private @Nullable Copyable mLayoutParams;
 
   public TestNode() {
     super();
@@ -82,5 +85,27 @@ public class TestNode extends Node {
 
   public long getId() {
     return mId;
+  }
+
+  public void setLayoutParams(@Nullable Copyable layoutParams) {
+    mLayoutParams = layoutParams;
+  }
+
+  @Override
+  public @Nullable Copyable getLayoutParams() {
+    return mLayoutParams;
+  }
+
+  @Override
+  public Copyable makeCopy() {
+    final TestNode node;
+    try {
+      node = (TestNode) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException("This should not be possible", e);
+    }
+    node.mLayoutParams = mLayoutParams != null ? mLayoutParams.makeCopy() : null;
+
+    return node;
   }
 }
