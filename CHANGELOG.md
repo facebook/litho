@@ -1,14 +1,15 @@
 # Changelog
 
-## Version 0.36.1-SNAPSHOT
+## Version 0.37.0
 
-_TBA_
+_2020-07-07_
+
 * **Breaking: `TransparencyEnabledCard` is deprecated** Moved the behavior of `TransparencyEnabledCard` into `Card` when the prop `transparencyEnabled` is `true`. Please migrate your current uses because it will be removed in a few releases.
 * New: Add `.duplicateChildrenStates(boolean)` method to `Component` which passes the flag to [`ViewGroup#setAddStatesFromChildren(boolean)`](https://developer.android.com/reference/android/view/ViewGroup#setAddStatesFromChildren(boolean)). When this flag is set to true, the component applies all of its children's drawable states (focused, pressed, etc.) to itself.
 * New: Ability to specify the percentage of Component's width/height which should be visible to trigger Visible events. Read more in [the documentation](https://fblitho.com/docs/visibility-handling#custom-visibility-percentage).
 * Fix: Fix showing vertical scrollbar with `VerticalScrollSpec`. Default behaviour is scrollbars disabled.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.36.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.36.0...v0.37.0).
 
 
 ## Version 0.36.0
