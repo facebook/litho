@@ -490,6 +490,9 @@ public class MountState implements MountDelegateTarget {
     }
     mIndexToMountedItemMap.remove(unit.getId());
 
+    final boolean hasUnmountDelegate =
+        mUnmountDelegateExtension != null && mUnmountDelegateExtension.shouldDelegateUnmount(item);
+
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
@@ -503,7 +506,7 @@ public class MountState implements MountDelegateTarget {
         unmountItemRecursively(node.getChildAt(i));
       }
 
-      if (host.getMountItemCount() > 0) {
+      if (!hasUnmountDelegate && host.getMountItemCount() > 0) {
         throw new IllegalStateException(
             "Recursively unmounting items from a ComponentHost, left"
                 + " some items behind maybe because not tracked by its MountState");
@@ -512,8 +515,7 @@ public class MountState implements MountDelegateTarget {
 
     final Host host = item.getHost();
 
-    if (mUnmountDelegateExtension != null
-        && mUnmountDelegateExtension.shouldDelegateUnmount(item)) {
+    if (hasUnmountDelegate) {
       mUnmountDelegateExtension.unmount(node.getPositionInParent(), item, host);
     } else {
       if (item.isBound()) {

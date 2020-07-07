@@ -2876,6 +2876,9 @@ class MountState
 
     final Object content = item.getContent();
 
+    final boolean hasUnmountDelegate =
+        mUnmountDelegateExtension != null && mUnmountDelegateExtension.shouldDelegateUnmount(item);
+
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
@@ -2897,25 +2900,10 @@ class MountState
         }
       }
 
-      if (host.getMountItemCount() > 0) {
+      if (!hasUnmountDelegate && host.getMountItemCount() > 0) {
         throw new IllegalStateException(
             "Recursively unmounting items from a ComponentHost, left"
                 + " some items behind maybe because not tracked by its MountState");
-      }
-    }
-
-    /*
-     * The mounted content might contain other LithoViews which are not reachable from
-     * this MountState. If that content contains other LithoViews, we need to unmount them as well,
-     * so that their contents are recycled and reused next time.
-     */
-    if (content instanceof HasLithoViewChildren) {
-      final ArrayList<LithoView> lithoViews = new ArrayList<>();
-      ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
-
-      for (int i = lithoViews.size() - 1; i >= 0; i--) {
-        final LithoView lithoView = lithoViews.get(i);
-        lithoView.unmountAllItems();
       }
     }
 
@@ -2932,10 +2920,24 @@ class MountState
       hostsByMarker.removeAt(hostsByMarker.indexOfValue(componentHost));
     }
 
-    if (mUnmountDelegateExtension != null
-        && mUnmountDelegateExtension.shouldDelegateUnmount(item)) {
+    if (hasUnmountDelegate) {
       mUnmountDelegateExtension.unmount(index, item, host);
     } else {
+      /*
+       * The mounted content might contain other LithoViews which are not reachable from
+       * this MountState. If that content contains other LithoViews, we need to unmount them as well,
+       * so that their contents are recycled and reused next time.
+       */
+      if (content instanceof HasLithoViewChildren) {
+        final ArrayList<LithoView> lithoViews = new ArrayList<>();
+        ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
+
+        for (int i = lithoViews.size() - 1; i >= 0; i--) {
+          final LithoView lithoView = lithoViews.get(i);
+          lithoView.unmountAllItems();
+        }
+      }
+
       unmount(host, index, content, item, output);
       unbindMountItem(item);
     }

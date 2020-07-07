@@ -71,7 +71,18 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void unmount(int index, MountItem mountItem, com.facebook.rendercore.Host host) {
-    ((ComponentHost) host).startUnmountDisappearingItem(mountItem);
+    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+    final TransitionId transitionId = layoutOutput.getTransitionId();
+    final OutputUnitsAffinityGroup<MountItem> group = mDisappearingMountItems.get(transitionId);
+    if (group != null) {
+      final boolean isRoot =
+          group.get(LayoutStateOutputIdCalculator.getTypeFromId(layoutOutput.getId())) != null;
+      // We only start unmount disappearing item on the root of the disappearing animation. The rest
+      // will be unmounted after the animation finishes.
+      if (isRoot) {
+        ((ComponentHost) host).startUnmountDisappearingItem(mountItem);
+      }
+    }
   }
 
   public interface TransitionsExtensionInput extends MountDelegateInput {
@@ -475,14 +486,14 @@ public class TransitionsExtension extends MountDelegateExtension
     }
   }
 
-  private void unmountDisappearingItem(MountItem mountItem) {
+  private void unmountDisappearingItem(MountItem mountItem, boolean isRoot) {
     mLockedDisappearingMountitems.remove(mountItem);
     final Object content = mountItem.getContent();
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
       final com.facebook.rendercore.Host contentHost = (com.facebook.rendercore.Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
-        unmountDisappearingItem(contentHost.getMountItemAt(j));
+        unmountDisappearingItem(contentHost.getMountItemAt(j), false);
       }
 
       if (contentHost.getMountItemCount() > 0) {
@@ -496,7 +507,11 @@ public class TransitionsExtension extends MountDelegateExtension
     if (host == null) {
       throw new IllegalStateException("Disappearing mountItem has no host, can not be unmounted.");
     }
-    host.unmountDisappearingItem(mountItem);
+    if (isRoot) {
+      host.unmountDisappearingItem(mountItem);
+    } else {
+      host.unmount(mountItem);
+    }
 
     getMountTarget().unbindMountItem(mountItem);
   }
@@ -506,7 +521,7 @@ public class TransitionsExtension extends MountDelegateExtension
         getLayoutOutput(group.getMostSignificantUnit()).getTransitionId());
 
     for (int i = 0, size = group.size(); i < size; i++) {
-      unmountDisappearingItem(group.getAt(i));
+      unmountDisappearingItem(group.getAt(i), true);
     }
   }
 
