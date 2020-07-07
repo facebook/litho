@@ -127,4 +127,16 @@ public class AnimationsTest {
     newAnimator.end();
     assertThat(outState.get().get()).isEqualTo(5);
   }
+
+  @Test
+  public void animations_bindFloatToInteger_propagates() {
+    final DynamicValue<Float> source = new DynamicValue<>(5f);
+    final StateValue<DynamicValue<Integer>> target = new StateValue<>();
+    Animations.bind(source).toInteger(target);
+
+    assertThat(target.get().get()).isEqualTo(5);
+
+    source.set(2f);
+    assertThat(target.get().get()).isEqualTo(2);
+  }
 }

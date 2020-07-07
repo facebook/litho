@@ -82,30 +82,50 @@ public class Animations {
       dynamicValueState.set(dynamicValue);
     }
 
+    /** Special case method to bind to a DynamicValue<Integer> to animate color */
+    public void toInteger(StateValue<DynamicValue<Integer>> dynamicValueState) {
+      DynamicValue<Integer> dynamicValue = createInteger();
+      dynamicValueState.set(dynamicValue);
+    }
+
+    private float modify(float in) {
+      float result = in;
+
+      if (hasInputRange) {
+        result = (result - inputRangeStart) / (inputRangeEnd - inputRangeStart);
+        result = Math.min(result, 1);
+        result = Math.max(result, 0);
+      }
+
+      if (mInterpolator != null) {
+        result = mInterpolator.getInterpolation(result);
+      }
+
+      if (hasOutputRange) {
+        final float range = outputRangeEnd - outputRangeStart;
+        result = outputRangeStart + result * range;
+      }
+
+      return result;
+    }
+
     public DynamicValue<Float> create() {
       DerivedDynamicValue.Modifier<Float, Float> modifier =
           new DerivedDynamicValue.Modifier<Float, Float>() {
             @Override
             public Float modify(Float in) {
+              return DynamicValueBindingBuilder.this.modify(in);
+            }
+          };
+      return new DerivedDynamicValue<>(mSource, modifier);
+    }
 
-              float result = in;
-
-              if (hasInputRange) {
-                result = (result - inputRangeStart) / (inputRangeEnd - inputRangeStart);
-                result = Math.min(result, 1);
-                result = Math.max(result, 0);
-              }
-
-              if (mInterpolator != null) {
-                result = mInterpolator.getInterpolation(result);
-              }
-
-              if (hasOutputRange) {
-                final float range = outputRangeEnd - outputRangeStart;
-                result = outputRangeStart + result * range;
-              }
-
-              return result;
+    public DynamicValue<Integer> createInteger() {
+      DerivedDynamicValue.Modifier<Float, Integer> modifier =
+          new DerivedDynamicValue.Modifier<Float, Integer>() {
+            @Override
+            public Integer modify(Float in) {
+              return (int) DynamicValueBindingBuilder.this.modify(in);
             }
           };
 
