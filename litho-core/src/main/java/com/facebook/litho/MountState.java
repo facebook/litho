@@ -2930,7 +2930,6 @@ class MountState
     if (isHostSpec(component)) {
       final ComponentHost componentHost = (ComponentHost) content;
       hostsByMarker.removeAt(hostsByMarker.indexOfValue(componentHost));
-      removeDisappearingMountContentFromComponentHost(componentHost);
     }
 
     if (mUnmountDelegateExtension != null
@@ -2973,6 +2972,11 @@ class MountState
       if (mTransitionsExtension != null) {
         mTransitionsExtension.onUnmountItem(mContext.getAndroidContext(), mountItem);
       } else {
+        final Component component = output.getComponent();
+        if (isHostSpec(component)) {
+          final ComponentHost componentHost = (ComponentHost) mountItem.getContent();
+          removeDisappearingMountContentFromComponentHost(componentHost);
+        }
         if (getLayoutOutput(mountItem).getTransitionId() != null) {
           final @OutputUnitType int type =
               LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
@@ -3693,10 +3697,14 @@ class MountState
   }
 
   private void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
-    if (mTransitionManager != null && componentHost.hasDisappearingItems()) {
-      List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
-      for (int i = 0, size = ids.size(); i < size; i++) {
-        mTransitionManager.setMountContent(ids.get(i), null);
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.removeDisappearingMountContentFromComponentHost(componentHost);
+    } else {
+      if (mTransitionManager != null && componentHost.hasDisappearingItems()) {
+        List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
+        for (int i = 0, size = ids.size(); i < size; i++) {
+          mTransitionManager.setMountContent(ids.get(i), null);
+        }
       }
     }
   }

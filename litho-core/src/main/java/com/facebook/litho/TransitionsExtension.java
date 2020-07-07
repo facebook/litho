@@ -653,6 +653,16 @@ public class TransitionsExtension extends MountDelegateExtension
     }
   }
 
+  // TODO: T68620328 Make private after test is done
+  public void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
+    List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
+    if (ids != null) {
+      for (int i = 0, size = ids.size(); i < size; i++) {
+        mTransitionManager.setMountContent(ids.get(i), null);
+      }
+    }
+  }
+
   private void maybeRemoveAnimatingMountContent(@Nullable TransitionId transitionId) {
     if (mTransitionManager == null || transitionId == null) {
       return;
@@ -787,7 +797,16 @@ public class TransitionsExtension extends MountDelegateExtension
 
     @Override
     public void unbind(
-        Context context, Object o, LithoRenderUnit lithoRenderUnit, @Nullable Object layoutData) {}
+        Context context,
+        Object content,
+        LithoRenderUnit lithoRenderUnit,
+        @Nullable Object layoutData) {
+      if (mLastMountedComponentTreeId != mInput.getComponentTreeId()) {
+        if (content instanceof ComponentHost) {
+          removeDisappearingMountContentFromComponentHost((ComponentHost) content);
+        }
+      }
+    }
   }
 
   final class MountUnmountBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
@@ -810,7 +829,14 @@ public class TransitionsExtension extends MountDelegateExtension
 
     @Override
     public void unbind(
-        Context context, Object o, LithoRenderUnit lithoRenderUnit, @Nullable Object layoutData) {
+        Context context,
+        Object content,
+        LithoRenderUnit lithoRenderUnit,
+        @Nullable Object layoutData) {
+      // If this item is a host and contains disappearing items, we need to remove them.
+      if (content instanceof ComponentHost) {
+        removeDisappearingMountContentFromComponentHost((ComponentHost) content);
+      }
       final LayoutOutput output = lithoRenderUnit.output;
       if (output.getTransitionId() != null) {
         final @OutputUnitType int type =
