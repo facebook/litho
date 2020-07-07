@@ -152,7 +152,7 @@ class HostComponent extends Component {
 
   @Override
   boolean hasCommonDynamicProps() {
-    return mCommonDynamicProps != null;
+    return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
   }
 
   /**

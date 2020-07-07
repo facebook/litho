@@ -447,7 +447,7 @@ public abstract class Component extends ComponentLifecycle
    * @see DynamicPropsManager
    */
   boolean hasCommonDynamicProps() {
-    return mCommonDynamicProps != null;
+    return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
   }
 
   /** @return if has a handle set */

@@ -26,8 +26,13 @@ import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.DynamicPropsResetValueTester;
+import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec;
+import com.facebook.rendercore.MountItem;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -35,6 +40,7 @@ import org.robolectric.annotation.Config;
 @RunWith(LithoTestRunner.class)
 public class DynamicPropsTest {
   private ComponentContext mContext;
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
@@ -236,5 +242,96 @@ public class DynamicPropsTest {
 
     elevationDV.set(-50f);
     verify(mockLithoView).setElevation(-50f);
+  }
+
+  @Test
+  public void commonDynamicProps_unbindAndRebindContent_resetValues() {
+    final DynamicPropsResetValueTesterSpec.Caller stateUpdateCaller =
+        new DynamicPropsResetValueTesterSpec.Caller();
+    final Component component =
+        DynamicPropsResetValueTester.create(mContext).caller(stateUpdateCaller).build();
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
+
+    long text1HostId = -1;
+    long text2HostId = -1;
+
+    for (int i = 0, size = mountState.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountState.getItemAt(i);
+
+      if (mountItem != null) {
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
+
+        if (layoutOutput.getComponent().getSimpleName().equals("Text")) {
+          final long hostMarker = layoutOutput.getHostMarker();
+
+          if (text1HostId == -1) {
+            text1HostId = hostMarker;
+          } else if (text2HostId == -1) {
+            text2HostId = hostMarker;
+          }
+        }
+      }
+    }
+
+    HostComponent text1HostComponent = null;
+    HostComponent text2HostComponent = null;
+
+    ComponentHost text1Host = null;
+    ComponentHost text2Host = null;
+
+    for (int i = 0, size = mountState.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountState.getItemAt(i);
+
+      if (mountItem != null) {
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
+        if (text1HostId == layoutOutput.getId()) {
+          text1HostComponent = (HostComponent) layoutOutput.getComponent();
+          text1Host = (ComponentHost) mountItem.getContent();
+        }
+
+        if (text2HostId == layoutOutput.getId()) {
+          text2HostComponent = (HostComponent) layoutOutput.getComponent();
+          text2Host = (ComponentHost) mountItem.getContent();
+        }
+      }
+    }
+
+    assertThat(text1HostComponent.hasCommonDynamicProps()).isTrue();
+    assertThat(text1Host.getAlpha()).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_TRANSPARENT);
+
+    assertThat(text2HostComponent.hasCommonDynamicProps()).isFalse();
+    assertThat(text2Host.getAlpha()).isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE);
+
+    stateUpdateCaller.toggleShowChild();
+
+    HostComponent stateUpdateText1HostComponent = null;
+    HostComponent stateUpdateText2HostComponent = null;
+
+    ComponentHost stateUpdateText1Host = null;
+
+    for (int i = 0, size = mountState.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountState.getItemAt(i);
+
+      if (mountItem != null) {
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
+        if (text1HostId == layoutOutput.getId()) {
+          stateUpdateText1HostComponent = (HostComponent) layoutOutput.getComponent();
+          stateUpdateText1Host = (ComponentHost) mountItem.getContent();
+        }
+
+        if (text2HostId == layoutOutput.getId()) {
+          stateUpdateText2HostComponent = (HostComponent) layoutOutput.getComponent();
+        }
+      }
+    }
+
+    assertThat(stateUpdateText2HostComponent).isNull();
+
+    assertThat(stateUpdateText1Host).isEqualTo(stateUpdateText1Host);
+    assertThat(stateUpdateText1HostComponent.hasCommonDynamicProps()).isFalse();
+    assertThat(stateUpdateText1Host.getAlpha())
+        .isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE);
   }
 }

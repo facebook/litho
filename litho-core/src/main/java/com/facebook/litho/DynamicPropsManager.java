@@ -93,7 +93,7 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
     mContents.put(component, content);
   }
 
-  void onUnbindComponent(Component component) {
+  void onUnbindComponent(Component component, Object content) {
     if (!hasCommonDynamicPropsToBind(component) && component.getDynamicProps().length == 0) {
       return;
     }
@@ -107,6 +107,49 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
 
     for (DynamicValue<?> value : dynamicValues) {
       removeDependentComponentAndUnsubscribeIfNeeded(value, component);
+    }
+
+    resetDynamicValues(content);
+  }
+
+  private static void resetDynamicValues(Object content) {
+    if (!(content instanceof View)) {
+      return;
+    }
+
+    final View target = (View) content;
+    if (target.getAlpha() != 1) {
+      target.setAlpha(1);
+    }
+
+    if (target.getTranslationX() != 0) {
+      target.setTranslationX(0);
+    }
+
+    if (target.getTranslationY() != 0) {
+      target.setTranslationY(0);
+    }
+
+    if (target.getScaleX() != 1) {
+      target.setScaleX(1);
+    }
+
+    if (target.getScaleY() != 1) {
+      target.setScaleY(1);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (target.getElevation() != 0) {
+        target.setElevation(0);
+      }
+    }
+
+    if (target.getBackground() != null) {
+      target.setBackground(null);
+    }
+
+    if (target.getRotation() != 0) {
+      target.setRotation(0);
     }
   }
 

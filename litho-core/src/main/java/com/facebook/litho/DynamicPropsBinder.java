@@ -43,6 +43,6 @@ public class DynamicPropsBinder implements RenderUnit.Binder<LithoRenderUnit, Ob
   public void unbind(
       final Context context, final Object content, final LithoRenderUnit unit, final Object data) {
     final LayoutOutput output = unit.output;
-    mDynamicPropsManager.onUnbindComponent(output.getComponent());
+    mDynamicPropsManager.onUnbindComponent(output.getComponent(), content);
   }
 }

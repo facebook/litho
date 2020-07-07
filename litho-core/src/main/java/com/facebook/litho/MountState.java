@@ -3809,7 +3809,7 @@ class MountState
 
   private void unbindComponentFromContent(
       MountItem mountItem, Component component, Object content) {
-    mDynamicPropsManager.onUnbindComponent(component);
+    mDynamicPropsManager.onUnbindComponent(component, content);
     component.unbind(getContextForComponent(component), content);
     mountItem.setIsBound(false);
   }
