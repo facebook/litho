@@ -17,14 +17,16 @@
 package com.facebook.samples.litho.animations.transitions;
 
 import android.animation.Animator;
-import android.animation.FloatEvaluator;
-import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import com.facebook.litho.Animations;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -53,8 +55,9 @@ public class ExpandingPickerComponentSpec {
   static void createInitialState(
       ComponentContext c,
       StateValue<AtomicReference<Animator>> animatorRef,
+      StateValue<DynamicValue<Float>> animatedValue,
       StateValue<DynamicValue<Float>> expandedAmount,
-      StateValue<AtomicReference<Boolean>> isExpanded,
+      StateValue<AtomicReference<Boolean>> isExpandedRef,
       StateValue<DynamicValue<Float>> contractButtonRotation,
       StateValue<DynamicValue<Float>> contractButtonScale,
       StateValue<DynamicValue<Float>> contractButtonAlpha,
@@ -62,17 +65,25 @@ public class ExpandingPickerComponentSpec {
       StateValue<DynamicValue<Float>> expandButtonAlpha,
       StateValue<DynamicValue<Float>> menuButtonAlpha) {
     animatorRef.set(new AtomicReference<Animator>(null));
-    expandedAmount.set(new DynamicValue<>(START_EXPANDED ? 1f : 0f));
-    isExpanded.set(new AtomicReference<>(START_EXPANDED));
+    animatedValue.set(new DynamicValue<>(START_EXPANDED ? 1f : 0f));
+    isExpandedRef.set(new AtomicReference<>(START_EXPANDED));
 
-    contractButtonRotation.set(new DynamicValue<>(START_EXPANDED ? 0f : -90f));
-    contractButtonScale.set(new DynamicValue<>(START_EXPANDED ? 1f : 0.5f));
-    contractButtonAlpha.set(new DynamicValue<>(START_EXPANDED ? 1f : 0f));
+    final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 
-    expandButtonScale.set(new DynamicValue<>(START_EXPANDED ? 0.5f : 1f));
-    expandButtonAlpha.set(new DynamicValue<>(START_EXPANDED ? 0f : 1f));
+    Animations.bind(animatedValue).with(interpolator).to(expandedAmount);
 
-    menuButtonAlpha.set(new DynamicValue<>(START_EXPANDED ? 1f : 0f));
+    DynamicValue<Float> contractButtonAnimationProgress =
+        Animations.bind(animatedValue).inputRange(0.1f, 1f).with(interpolator).create();
+    Animations.bind(contractButtonAnimationProgress).outputRange(-90, 0).to(contractButtonRotation);
+    Animations.bind(contractButtonAnimationProgress).outputRange(.7f, 1).to(contractButtonScale);
+    Animations.bind(contractButtonAnimationProgress).to(contractButtonAlpha);
+
+    DynamicValue<Float> expandButtonAnimationProgress =
+        Animations.bind(animatedValue).inputRange(0f, .9f).with(interpolator).create();
+    Animations.bind(expandButtonAnimationProgress).outputRange(1, .5f).to(expandButtonScale);
+    Animations.bind(expandButtonAnimationProgress).outputRange(1, 0).to(expandButtonAlpha);
+
+    Animations.bind(animatedValue).inputRange(0.5f, 1f).with(interpolator).to(menuButtonAlpha);
   }
 
   @OnCreateLayout
@@ -119,7 +130,7 @@ public class ExpandingPickerComponentSpec {
                                   View view,
                                   RecyclerView parent,
                                   RecyclerView.State state) {
-                                outRect.left = c.getResourceResolver().dipsToPixels(5);
+                                outRect.left += c.getResourceResolver().dipsToPixels(5);
                               }
                             })
                         .recyclerConfiguration(
@@ -137,66 +148,22 @@ public class ExpandingPickerComponentSpec {
   static void onClickEvent(
       ComponentContext c,
       @State AtomicReference<Animator> animatorRef,
-      @State AtomicReference<Boolean> isExpanded,
-      @State DynamicValue<Float> expandedAmount,
-      @State DynamicValue<Float> contractButtonRotation,
-      @State DynamicValue<Float> contractButtonScale,
-      @State DynamicValue<Float> contractButtonAlpha,
-      @State DynamicValue<Float> expandButtonScale,
-      @State DynamicValue<Float> expandButtonAlpha,
-      @State DynamicValue<Float> menuButtonAlpha) {
+      @State AtomicReference<Boolean> isExpandedRef,
+      @State DynamicValue<Float> animatedValue) {
+    final boolean isExpanded = Boolean.TRUE.equals(isExpandedRef.get());
+    isExpandedRef.set(!isExpanded);
 
-    Animator oldAnimator = animatorRef.get();
-    if (oldAnimator != null) {
-      oldAnimator.cancel();
-    }
+    // Account for the progress of the previous animation in the duration
+    final float animationProgress = animatedValue.get();
+    final long animationDuration =
+        (long)
+            (EXPAND_COLLAPSE_DURATION_MS
+                * (isExpanded ? animationProgress : 1 - animationProgress));
 
-    Animator newAnimator =
-        createExpandCollapseAnimator(
-            !Boolean.TRUE.equals(isExpanded.get()),
-            expandedAmount,
-            contractButtonRotation,
-            contractButtonScale,
-            contractButtonAlpha,
-            expandButtonScale,
-            expandButtonAlpha,
-            menuButtonAlpha);
-    isExpanded.set(!Boolean.TRUE.equals(isExpanded.get()));
-    animatorRef.set(newAnimator);
-    newAnimator.start();
-  }
-
-  private static final Animator createExpandCollapseAnimator(
-      final boolean expand,
-      final DynamicValue<Float> expandedAmount,
-      final DynamicValue<Float> contractButtonRotation,
-      final DynamicValue<Float> contractButtonScale,
-      final DynamicValue<Float> contractButtonAlpha,
-      final DynamicValue<Float> expandButtonScale,
-      final DynamicValue<Float> expandButtonAlpha,
-      final DynamicValue<Float> menuButtonAlpha) {
-    final float from = expandedAmount.get();
-    final float to = expand ? 1 : 0;
-    final ValueAnimator expandCollapseAnimator = ValueAnimator.ofFloat(from, to);
-    expandCollapseAnimator.setDuration(EXPAND_COLLAPSE_DURATION_MS);
-    final FloatEvaluator floatEvaluator = new FloatEvaluator();
-    expandCollapseAnimator.addUpdateListener(
-        new ValueAnimator.AnimatorUpdateListener() {
-          @Override
-          public void onAnimationUpdate(ValueAnimator animation) {
-            float animatedValue = (Float) animation.getAnimatedValue();
-            expandedAmount.set(animatedValue);
-
-            contractButtonRotation.set(floatEvaluator.evaluate(animatedValue, -90, 0));
-            contractButtonScale.set(floatEvaluator.evaluate(animatedValue, .7, 1));
-            contractButtonAlpha.set(floatEvaluator.evaluate(animatedValue, 0, 1));
-
-            expandButtonScale.set(floatEvaluator.evaluate(animatedValue, 1, 0.7));
-            expandButtonAlpha.set(floatEvaluator.evaluate(animatedValue, 1, 0));
-
-            menuButtonAlpha.set(floatEvaluator.evaluate(animatedValue, 0, 1));
-          }
-        });
-    return expandCollapseAnimator;
+    Animations.animate(animatedValue)
+        .to(isExpanded ? 0 : 1)
+        .duration(animationDuration)
+        .interpolator(new LinearInterpolator())
+        .startAndCancelPrevious(animatorRef);
   }
 }

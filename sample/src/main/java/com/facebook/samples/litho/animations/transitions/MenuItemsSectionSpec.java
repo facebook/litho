@@ -16,10 +16,9 @@
 
 package com.facebook.samples.litho.animations.transitions;
 
-import android.animation.FloatEvaluator;
 import android.graphics.Color;
 import androidx.annotation.Dimension;
-import com.facebook.litho.DerivedDynamicValue;
+import com.facebook.litho.Animations;
 import com.facebook.litho.DynamicValue;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.Children;
@@ -39,32 +38,25 @@ class MenuItemsSectionSpec {
   @OnCreateChildren
   static Children onCreateChildren(SectionContext c, @Prop DynamicValue<Float> expandedAmount) {
     final List<Section> sections = new ArrayList<>(NUM_TILES);
+    final @Dimension int tileWidthWithSpacing = c.getResourceResolver().dipsToPixels(55);
     for (int i = 0; i < NUM_TILES; i++) {
+      final DynamicValue<Float> translationX =
+          Animations.bind(expandedAmount).outputRange(-tileWidthWithSpacing * (i + 1), 0).create();
+      final DynamicValue<Float> scale =
+          Animations.bind(expandedAmount).outputRange(0.8f, 1).create();
+
       sections.add(
           SingleComponentSection.create(c)
               .component(
                   TileComponent.create(c)
                       .alpha(expandedAmount)
-                      .translationX(createTranslationXDynamicValue(c, i, expandedAmount))
+                      .translationX(translationX)
+                      .scaleX(scale)
+                      .scaleY(scale)
                       .bgColor(Color.RED)
                       .text("" + i))
               .build());
     }
     return Children.create().child(sections).build();
-  }
-
-  private static DynamicValue<Float> createTranslationXDynamicValue(
-      SectionContext c, final int tileIndex, DynamicValue<Float> expandedAmount) {
-    final @Dimension int tileWidthWithSpacing = c.getResourceResolver().dipsToPixels(55);
-    final FloatEvaluator floatEvaluator = new FloatEvaluator();
-
-    return new DerivedDynamicValue<>(
-        expandedAmount,
-        new DerivedDynamicValue.Modifier<Float, Float>() {
-          @Override
-          public Float modify(Float in) {
-            return floatEvaluator.evaluate(in, -tileWidthWithSpacing * (tileIndex + 1), 0);
-          }
-        });
   }
 }
