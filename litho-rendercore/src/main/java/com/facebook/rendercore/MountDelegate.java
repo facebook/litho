@@ -108,7 +108,7 @@ public class MountDelegate {
     return refCount != null && refCount > 0;
   }
 
-  @VisibleForTesting
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void acquireMountRef(
       RenderTreeNode renderTreeNode, int i, MountDelegateInput input, boolean isMounting) {
     incrementExtensionRefCount(renderTreeNode);
@@ -120,7 +120,7 @@ public class MountDelegate {
     }
   }
 
-  @VisibleForTesting
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void releaseMountRef(RenderTreeNode renderTreeNode, int i, boolean isMounting) {
     final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
     decrementExtensionRefCount(renderTreeNode);

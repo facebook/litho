@@ -118,7 +118,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       RenderUnit renderUnit = (RenderUnit) super.clone();
       if (mMountUnmountFunctionsWithExtensions != null) {
         renderUnit.mMountUnmountFunctionsWithExtensions =
-            new ArrayList(mMountUnmountFunctionsWithExtensions);
+            new ArrayList<>(mMountUnmountFunctionsWithExtensions);
       }
 
       return renderUnit;

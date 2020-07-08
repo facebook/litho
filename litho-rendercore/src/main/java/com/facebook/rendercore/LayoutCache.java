@@ -30,7 +30,7 @@ public class LayoutCache {
   private final Map mWriteCache;
   private final Map mReadCache;
 
-  @VisibleForTesting
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public LayoutCache() {
     this(new HashMap<Node, Node.LayoutResult>());
   }
@@ -60,7 +60,7 @@ public class LayoutCache {
     return (T) mReadCache.get(uniqueId);
   }
 
-  Map<Node, Node.LayoutResult> getWriteCache() {
+  Map getWriteCache() {
     return mWriteCache;
   }
 }

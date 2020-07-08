@@ -84,7 +84,7 @@ public class MountDelegateExtension {
     return mLayoutOutputMountRefs.contains(id);
   }
 
-  @VisibleForTesting(otherwise = 4)
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public boolean canPreventMount() {
     return false;
   }

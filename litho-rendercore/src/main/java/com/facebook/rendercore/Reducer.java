@@ -105,8 +105,6 @@ public class Reducer {
           layoutResult.getYForChildAtIndex(i),
           flattenedTree);
     }
-
-    return;
   }
 
   private static RenderTreeNode createRenderTreeNode(
