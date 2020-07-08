@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.EquivalenceUtils.areObjectsEquivalent;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Holds information about the hooks of the components in a Component Tree. */
-public class HooksHandler {
+public class HooksHandler implements Equivalence<HooksHandler> {
 
   private static final int INITIAL_HOOKS_CONTAINER_CAPACITY = 4;
 
@@ -153,5 +155,42 @@ public class HooksHandler {
   @VisibleForTesting
   public Map<String, Hooks> getHooksContainer() {
     return Collections.unmodifiableMap(mHooksContainer);
+  }
+
+  @Override
+  public boolean isEquivalentTo(@Nullable HooksHandler other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null) {
+      return false;
+    }
+
+    final Map<String, Hooks> otherHooksContainer = other.mHooksContainer;
+    if (mHooksContainer.size() != otherHooksContainer.size()) {
+      return false;
+    }
+
+    // recursively check all values stored in the container are equivalent.
+    for (Map.Entry<String, Hooks> hooksEntry : mHooksContainer.entrySet()) {
+      final String key = hooksEntry.getKey();
+      final Hooks thisHooks = hooksEntry.getValue();
+      final Hooks otherHooks = otherHooksContainer.get(key);
+
+      if (thisHooks == otherHooks) {
+        continue;
+      }
+      if (thisHooks == null || otherHooks == null || thisHooks.size() != otherHooks.size()) {
+        return false;
+      }
+      for (int i = 0, size = thisHooks.size(); i < size; i++) {
+        final Object obj1 = thisHooks.get(i);
+        final Object obj2 = otherHooks.get(i);
+        if (!areObjectsEquivalent(obj1, obj2)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

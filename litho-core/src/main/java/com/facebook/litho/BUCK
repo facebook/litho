@@ -32,6 +32,7 @@ litho_android_library(
         "choreographercompat/*.java",
         "dataflow/**/*.java",
         "drawable/*.java",
+        "equivalence/*.java",
     ]),
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],

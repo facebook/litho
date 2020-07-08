@@ -60,15 +60,7 @@ public class ComponentUtils {
       return false;
     }
 
-    if (current.getClass() != next.getClass()) {
-      return false;
-    }
-
-    if (current.getId() == next.getId()) {
-      return true;
-    }
-
-    return hasEquivalentFields(current, next, /* shouldCompareStateContainers */ false);
+    return current.isEquivalentTo(next, /* shouldCompareState = */ false);
   }
 
   /**
@@ -85,7 +77,7 @@ public class ComponentUtils {
     return hasEquivalentFields(obj1, obj2, /* shouldCompareStateContainers */ true);
   }
 
-  private static boolean hasEquivalentFields(
+  static boolean hasEquivalentFields(
       final Object obj1, final Object obj2, final boolean shouldCompareStateContainers) {
     if (obj1 == null || obj2 == null || obj1.getClass() != obj2.getClass()) {
       throw new IllegalArgumentException("The input is invalid.");
@@ -257,18 +249,8 @@ public class ComponentUtils {
       }
 
     } else if (Collection.class.isAssignableFrom(classType)) {
-      final Collection c1 = (Collection) val1;
-      final Collection c2 = (Collection) val2;
-      final int level = levelOfComponentsInCollection(type);
-      if (level > 0) {
-        if (!areComponentCollectionsEquals(level, c1, c2)) {
-          return false;
-        }
-      } else {
-        if (c1 != null ? !c1.equals(c2) : c2 != null) {
-          return false;
-        }
-      }
+      return areCollectionsEquals(type, (Collection) val1, (Collection) val2);
+
       // Sections & Components implement Equivalence interface.
     } else if (Equivalence.class.isAssignableFrom(classType)) {
       if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
@@ -328,7 +310,7 @@ public class ComponentUtils {
         && Collection.class.isAssignableFrom((Class) ((ParameterizedType) type).getRawType());
   }
 
-  private static boolean areArraysEquals(Class<?> classType, Object val1, Object val2) {
+  static boolean areArraysEquals(Class<?> classType, Object val1, Object val2) {
     final Class<?> innerClassType = classType.getComponentType();
     if (Byte.TYPE.isAssignableFrom(innerClassType)) {
       if (!Arrays.equals((byte[]) val1, (byte[]) val2)) {
@@ -367,6 +349,14 @@ public class ComponentUtils {
     }
 
     return true;
+  }
+
+  static boolean areCollectionsEquals(Type type, @Nullable Collection c1, @Nullable Collection c2) {
+    final int level = levelOfComponentsInCollection(type);
+    if (level > 0) {
+      return areComponentCollectionsEquals(level, c1, c2);
+    }
+    return c1 != null ? c1.equals(c2) : c2 == null;
   }
 
   private static boolean areComponentCollectionsEquals(

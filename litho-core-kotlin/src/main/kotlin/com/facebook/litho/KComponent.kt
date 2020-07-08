@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import java.lang.reflect.Modifier
+
 /** Base class for Kotlin Components. */
 open class KComponent private constructor(
     private val content: (DslScope.() -> Component?)? = null,
@@ -37,5 +39,57 @@ open class KComponent private constructor(
       "You should override `render()` method or provide `content` lambda via constructor."
     }
     return render()
+  }
+
+  /**
+   * Compare this component to a different one to check if they are equivalent. This is used to be able to skip rendering a component again.
+   */
+  override fun isEquivalentTo(other: Component?): Boolean = isEquivalentTo(other, true)
+
+  internal override fun isEquivalentTo(other: Component?, shouldCompareState: Boolean): Boolean {
+    if (this === other) {
+      return true
+    }
+    if (other == null || javaClass != other.javaClass) {
+      return false
+    }
+    if (id == other.id) {
+      return true
+    }
+    if (!hasEquivalentFields(other as KComponent)) {
+      return false
+    }
+
+    if (shouldCompareState) { // Check hooks
+      val hooksHandler = scopedContext?.hooksHandler
+      val otherHooksHandler = other.scopedContext?.hooksHandler
+      if (hooksHandler !== otherHooksHandler) {
+        if (hooksHandler == null || !hooksHandler.isEquivalentTo(otherHooksHandler)) {
+          return false
+        }
+      }
+    }
+
+    return true
+  }
+
+  /**
+   * Compare all private final fields in the components.
+   */
+  private fun hasEquivalentFields(other: KComponent): Boolean {
+    for (field in javaClass.declaredFields) {
+      if (Modifier.isPrivate(field.modifiers) && Modifier.isFinal(field.modifiers)) {
+        field.isAccessible = true
+        val field1 = field.get(this)
+        val field2 = field.get(other)
+        field.isAccessible = false
+
+        if (!EquivalenceUtils.areObjectsEquivalent(field1, field2)) {
+          return false
+        }
+      }
+    }
+
+    return true
   }
 }

@@ -66,6 +66,10 @@ public class Hooks {
     return index < mMemoizedValues.size();
   }
 
+  int size() {
+    return mMemoizedValues.size();
+  }
+
   @VisibleForTesting
   List<Object> getMemoizedValues() {
     return Collections.unmodifiableList(mMemoizedValues);
