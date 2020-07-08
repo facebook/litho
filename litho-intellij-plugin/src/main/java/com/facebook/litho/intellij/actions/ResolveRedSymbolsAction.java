@@ -164,9 +164,8 @@ public class ResolveRedSymbolsAction extends AnAction {
                                     }),
                         daemonIndicator);
                 indicator.setFraction(1);
-                final boolean analysisFinished = success.get();
                 if (resolved.isEmpty()) {
-                  onFinished.accept(analysisFinished);
+                  onFinished.accept(success.get());
                   return;
                 }
 
@@ -175,7 +174,9 @@ public class ResolveRedSymbolsAction extends AnAction {
                     .smartInvokeLater(
                         () -> {
                           long bindStart = System.currentTimeMillis();
-                          bindExpressions(resolved, virtualFile, editor, project);
+                          if (!bindExpressions(resolved, virtualFile, editor, project)) {
+                            success.set(false);
+                          }
                           final long bindDelta = System.currentTimeMillis() - bindStart;
                           eventMetadata.put(
                               EventLogger.KEY_TIME_BIND_RED_SYMBOLS, String.valueOf(bindDelta));
@@ -185,7 +186,7 @@ public class ResolveRedSymbolsAction extends AnAction {
                   latch.await();
                 } catch (InterruptedException ignore) {
                 }
-                onFinished.accept(analysisFinished);
+                onFinished.accept(success.get());
               }
             });
   }
@@ -276,7 +277,8 @@ public class ResolveRedSymbolsAction extends AnAction {
     return redSymbolToClass;
   }
 
-  private static void bindExpressions(
+  /** @return if the binding was finished before editor disposed. */
+  private static boolean bindExpressions(
       Map<PsiClass, List<PsiElement>> resolved,
       VirtualFile virtualFile,
       Editor editor,
@@ -286,10 +288,13 @@ public class ResolveRedSymbolsAction extends AnAction {
       final List<PsiElement> expressions = entry.getValue();
       LOG.debug("Binding " + targetClass.getName());
       for (PsiElement expression : expressions) {
+        if (editor.isDisposed()) return false;
+
         new AddImportAction(project, (PsiReference) expression, editor, targetClass).execute();
       }
     }
     VfsUtil.markDirtyAndRefresh(true, true, true, virtualFile);
+    return true;
   }
 
   private static <T, V1, V2> Map<V1, V2> combine(Map<T, V1> map1, Map<T, V2> map2) {
