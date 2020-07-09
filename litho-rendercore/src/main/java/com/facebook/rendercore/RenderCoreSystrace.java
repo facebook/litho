@@ -18,11 +18,12 @@ package com.facebook.rendercore;
 
 import android.os.Build;
 import android.os.Trace;
+import androidx.annotation.Nullable;
 
 public final class RenderCoreSystrace {
 
   public interface IRenderCoreSystrace {
-    void beginSection(String name);
+    void beginSection(String name, Class value);
 
     void endSection();
   }
@@ -32,7 +33,11 @@ public final class RenderCoreSystrace {
 
   public static void beginSection(String name) {
     sHasStarted = true;
-    sInstance.beginSection(name);
+    sInstance.beginSection(name, null);
+  }
+
+  public static void beginSection(String name, @Nullable Class value) {
+    sInstance.beginSection(name, value);
   }
 
   public static void endSection() {
@@ -45,15 +50,16 @@ public final class RenderCoreSystrace {
       // app lifecycle.
       return;
     }
+
     sInstance = systraceImpl;
   }
 
   private static final class DefaultTrace implements IRenderCoreSystrace {
 
     @Override
-    public void beginSection(String name) {
+    public void beginSection(String name, Class value) {
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        Trace.beginSection(name);
+        Trace.beginSection(value != null ? name + value.getSimpleName() : name);
       }
     }
 

@@ -143,7 +143,7 @@ public class MountState implements MountDelegateTarget {
 
       if (!isMounted) {
         RenderCoreSystrace.beginSection(
-            renderTreeNode.getRenderUnit().getDescription().getSimpleName());
+            "MountItem: ", renderTreeNode.getRenderUnit().getDescription());
         mountRenderUnit(i, renderTreeNode);
         RenderCoreSystrace.endSection();
       } else {
@@ -640,8 +640,7 @@ public class MountState implements MountDelegateTarget {
     currentMountItem.update(renderTreeNode);
 
     if (currentRenderUnit != renderUnit) {
-      RenderCoreSystrace.beginSection("UPDATE");
-      RenderCoreSystrace.beginSection(renderUnit.getDescription().getSimpleName());
+      RenderCoreSystrace.beginSection("Update Item: ", renderUnit.getDescription());
 
       final List<RenderUnit.Binder> attachBinders = renderUnit.attachDetachFunctions();
       final List<RenderUnit.Binder> mountBinders = renderUnit.mountUnmountFunctions();
