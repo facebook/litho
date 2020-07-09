@@ -112,6 +112,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     return getClass();
   }
 
+  protected Class getDescription() {
+    return getClass();
+  }
+
   @Override
   public RenderUnit makeCopy() {
     try {

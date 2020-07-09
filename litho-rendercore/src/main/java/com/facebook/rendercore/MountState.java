@@ -121,10 +121,13 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
+    RenderCoreSystrace.beginSection("Mount");
     mRenderTree = renderTree;
     mIsMounting = true;
 
+    RenderCoreSystrace.beginSection("PrepareMount");
     prepareMount();
+    RenderCoreSystrace.endSection();
 
     // Let's start from 1 as the RenderTreeNode in position 0 always represents the root.
     for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
@@ -139,7 +142,10 @@ public class MountState implements MountDelegateTarget {
       final boolean isMounted = currentMountItem != null;
 
       if (!isMounted) {
+        RenderCoreSystrace.beginSection(
+            renderTreeNode.getRenderUnit().getDescription().getSimpleName());
         mountRenderUnit(i, renderTreeNode);
+        RenderCoreSystrace.endSection();
       } else {
         updateMountItemIfNeeded(mContext, renderTreeNode, currentMountItem);
       }
@@ -147,6 +153,7 @@ public class MountState implements MountDelegateTarget {
 
     mNeedsRemount = false;
     mIsMounting = false;
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -633,6 +640,8 @@ public class MountState implements MountDelegateTarget {
     currentMountItem.update(renderTreeNode);
 
     if (currentRenderUnit != renderUnit) {
+      RenderCoreSystrace.beginSection("UPDATE");
+      RenderCoreSystrace.beginSection(renderUnit.getDescription().getSimpleName());
 
       final List<RenderUnit.Binder> attachBinders = renderUnit.attachDetachFunctions();
       final List<RenderUnit.Binder> mountBinders = renderUnit.mountUnmountFunctions();
@@ -704,6 +713,9 @@ public class MountState implements MountDelegateTarget {
     // the RenderUnit has been updated or not since the mounted item might might have the same
     // size and content but a different position.
     updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem);
+
+    RenderCoreSystrace.endSection(); // UPDATE
+    RenderCoreSystrace.endSection(); // RenderUnit name
   }
 
   private static void unbind(
