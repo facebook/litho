@@ -276,7 +276,7 @@ public class ComponentBodyGeneratorTest {
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
                 + ")\n"
-                + "java.util.List<? extends java.lang.Number> arg9 = (java.util.List<? extends java.lang.Number>) java.util.Collections.EMPTY_LIST;\n");
+                + "java.util.List<? extends java.lang.Number> arg9 = java.util.Collections.emptyList();\n");
 
     dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(6);
@@ -344,7 +344,7 @@ public class ComponentBodyGeneratorTest {
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
                 + ")\n"
-                + "java.util.List<java.lang.Number> numbers = (java.util.List<java.lang.Number>) java.util.Collections.EMPTY_LIST;\n");
+                + "java.util.List<java.lang.Number> numbers = java.util.Collections.emptyList();\n");
   }
 
   @Test

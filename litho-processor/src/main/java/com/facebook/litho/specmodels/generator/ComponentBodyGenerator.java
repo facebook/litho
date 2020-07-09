@@ -249,7 +249,7 @@ public class ComponentBodyGenerator {
         assignInitializer(fieldBuilder, specModel, prop);
       } else if (prop.hasVarArgs()) {
         fieldBuilder.initializer(
-            "($T) $T.EMPTY_LIST", propFieldTypeName, ClassName.get(Collections.class));
+            "$T.emptyList()", ClassName.get(Collections.class));
       }
 
       FieldSpec field = fieldBuilder.build();
