@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderState.LazyTree;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -68,9 +69,8 @@ public class RenderResult<State> {
       RenderCoreSystrace.beginSection("RC Layout");
 
       final LayoutCache layoutCache =
-          previousResult != null
-              ? new LayoutCache(previousResult.getLayoutCache().getWriteCache())
-              : new LayoutCache(null);
+          buildCache(previousResult == null ? null : previousResult.getLayoutCache());
+
       final LayoutContext<RenderContext> layoutContext =
           new LayoutContext<>(context, renderContext, layoutVersion, layoutCache);
 
@@ -163,5 +163,13 @@ public class RenderResult<State> {
   @Nullable
   State getState() {
     return mState;
+  }
+
+  @VisibleForTesting
+  public static LayoutCache buildCache(@Nullable LayoutCache previousCache) {
+
+    return previousCache != null
+        ? new LayoutCache(previousCache.getWriteCache())
+        : new LayoutCache(null);
   }
 }
