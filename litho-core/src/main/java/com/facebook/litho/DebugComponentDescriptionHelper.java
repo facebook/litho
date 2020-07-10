@@ -19,7 +19,13 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.proguard.annotations.DoNotStrip;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
+import javax.annotation.Nullable;
+import org.json.JSONObject;
 
 /**
  * Describes {@link DebugComponent}s for use in testing and debugging. Note that {@link
@@ -27,6 +33,27 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * this data to be collected.
  */
 public class DebugComponentDescriptionHelper {
+
+  /** Fields to ignore when dumping extra props */
+  private static final HashSet<String> IGNORE_PROP_FIELDS =
+      new HashSet<>(
+          Arrays.asList(
+              "delegate",
+              "feedPrefetcher",
+              "parentFeedContextChain",
+              "child",
+              "children",
+              "childComponent",
+              "trackingCode",
+              "eventsController",
+              "itemAnimator",
+              "onScrollListeners",
+              "recyclerConfiguration",
+              "threadTileViewData",
+              "textColorStateList",
+              "typeface",
+              "text",
+              "params"));
 
   /**
    * Appends a compact description of a {@link DebugComponent} for debugging purposes.
@@ -43,7 +70,8 @@ public class DebugComponentDescriptionHelper {
       StringBuilder sb,
       int leftOffset,
       int topOffset,
-      boolean embedded) {
+      boolean embedded,
+      boolean withProps) {
     sb.append("litho.");
     sb.append(debugComponent.getComponent().getSimpleName());
 
@@ -75,16 +103,16 @@ public class DebugComponentDescriptionHelper {
 
     final String testKey = debugComponent.getTestKey();
     if (testKey != null && !TextUtils.isEmpty(testKey)) {
-      sb.append(String.format(" litho:id/%s", testKey.replace(' ', '_')));
+      sb.append(" litho:id/").append(testKey.replace(' ', '_'));
     }
 
     String textContent = debugComponent.getTextContent();
     if (textContent != null && !TextUtils.isEmpty(textContent)) {
-      textContent = textContent.replace("\n", "").replace("\"", "");
-      if (textContent.length() > 200) {
-        textContent = textContent.substring(0, 200) + "...";
-      }
-      sb.append(String.format(" text=\"%s\"", textContent));
+      sb.append(" text=\"").append(fixString(textContent, 200)).append("\"");
+    }
+
+    if (withProps) {
+      addExtraProps(debugComponent.getComponent(), sb);
     }
 
     if (!embedded && layout != null && layout.getClickHandler() != null) {
@@ -92,5 +120,61 @@ public class DebugComponentDescriptionHelper {
     }
 
     sb.append('}');
+  }
+
+  private static void addExtraProps(Object node, StringBuilder sb) {
+    JSONObject props = new JSONObject();
+    for (Field field : node.getClass().getDeclaredFields()) {
+      try {
+        if (IGNORE_PROP_FIELDS.contains(field.getName())) {
+          continue;
+        }
+        final Prop annotation = field.getAnnotation(Prop.class);
+        if (annotation == null) {
+          continue;
+        }
+        field.setAccessible(true);
+        switch (annotation.resType()) {
+          case COLOR:
+          case DRAWABLE:
+          case DIMEN_SIZE:
+          case DIMEN_OFFSET:
+            // ignore
+            break;
+          case STRING:
+            String strValue = fixString(field.get(node), 50);
+            if (!TextUtils.isEmpty(strValue)) {
+              props.put(field.getName(), strValue);
+            }
+            break;
+          default:
+            Object value = field.get(node);
+            if (value != null) {
+              props.put(field.getName(), value);
+            }
+            break;
+        }
+      } catch (Exception e) {
+        try {
+          props.put("DUMP-ERROR", fixString(e.getMessage(), 50));
+        } catch (Exception ex) {
+          // ignore
+        }
+      }
+    }
+    if (props.length() > 0) {
+      sb.append(" props=\"").append(props.toString()).append("\"");
+    }
+  }
+
+  private static String fixString(@Nullable Object str, int maxLength) {
+    if (str == null) {
+      return "";
+    }
+    String fixed = str.toString().replace("\n", "").replace("\"", "");
+    if (fixed.length() > maxLength) {
+      fixed = fixed.substring(0, maxLength) + "...";
+    }
+    return fixed;
   }
 }

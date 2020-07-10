@@ -124,7 +124,7 @@ public class LithoViewTestHelper {
       return "";
     }
     final StringBuilder sb = new StringBuilder();
-    viewToString(root, sb, true, depth, 0, 0);
+    viewToString(root, sb, true, withProps, depth, 0, 0);
     return sb.toString();
   }
 
@@ -145,7 +145,7 @@ public class LithoViewTestHelper {
     final StringBuilder sb = new StringBuilder();
     int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
     sb.append("\n");
-    viewToString(root, sb, embedded, depth, 0, 0);
+    viewToString(root, sb, embedded, false, depth, 0, 0);
     return sb.toString();
   }
 
@@ -154,17 +154,18 @@ public class LithoViewTestHelper {
       DebugComponent component,
       StringBuilder sb,
       boolean embedded,
+      boolean withProps,
       int depth,
       int leftOffset,
       int topOffset) {
     writeIndentByDepth(sb, depth);
     DebugComponentDescriptionHelper.addViewDescription(
-        component, sb, leftOffset, topOffset, embedded);
+        component, sb, leftOffset, topOffset, embedded, withProps);
     sb.append("\n");
 
     final Rect bounds = component.getBoundsInLithoView();
     for (DebugComponent child : component.getChildComponents()) {
-      viewToString(child, sb, embedded, depth + 1, bounds.left, bounds.top);
+      viewToString(child, sb, embedded, withProps, depth + 1, bounds.left, bounds.top);
     }
   }
 
