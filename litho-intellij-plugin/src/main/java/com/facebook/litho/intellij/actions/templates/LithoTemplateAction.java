@@ -86,6 +86,6 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
     data.put(EventLogger.KEY_TYPE, templateName);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE, data);
     LithoPluginUtils.getFirstClass(createdElement, LithoPluginUtils::isLayoutSpec)
-        .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+        .ifPresent(ComponentGenerateUtils::updateLayoutComponentAsync);
   }
 }

@@ -65,7 +65,7 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
                   data.put(EventLogger.KEY_CLASS, "OnEvent");
                   LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
                   LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
-                      .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+                      .ifPresent(ComponentGenerateUtils::updateLayoutComponentAsync);
                 }),
             Integer.MAX_VALUE));
   }

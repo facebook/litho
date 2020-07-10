@@ -45,7 +45,7 @@ public class ComponentFileListener implements FileDocumentManagerListener {
   private final Consumer<PsiClass> savingFileConsumer;
 
   ComponentFileListener() {
-    this(ComponentGenerateUtils::updateLayoutComponent);
+    this(ComponentGenerateUtils::updateLayoutComponentAsync);
   }
 
   @VisibleForTesting

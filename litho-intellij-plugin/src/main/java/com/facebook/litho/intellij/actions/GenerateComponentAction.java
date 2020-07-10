@@ -41,7 +41,7 @@ public class GenerateComponentAction extends AnAction {
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    getValidSpec(e).ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+    getValidSpec(e).ifPresent(ComponentGenerateUtils::updateLayoutComponentAsync);
   }
 
   /**

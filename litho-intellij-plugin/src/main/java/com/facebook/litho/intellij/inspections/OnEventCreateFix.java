@@ -97,7 +97,7 @@ class OnEventCreateFix extends BaseIntentionAction implements HighPriorityAction
         () -> {
           TransactionGuard.getInstance().submitTransactionAndWait(generateOnEvent);
           WriteCommandAction.runWriteCommandAction(project, updateArgumentList);
-          ComponentGenerateUtils.updateLayoutComponent(layoutCls);
+          ComponentGenerateUtils.updateLayoutComponentAsync(layoutCls);
           LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIX_EVENT_HANDLER + ".new");
         };
     final Application application = ApplicationManager.getApplication();

@@ -54,21 +54,19 @@ public class ComponentGenerateUtils {
   private ComponentGenerateUtils() {}
 
   /**
-   * Updates generated Component file from the given Spec class or do nothing if provided class
-   * doesn't contain {@link LayoutSpec}.
+   * Updates generated Component file from the given Spec class and shows success notification. Or
+   * do nothing if provided class doesn't contain {@link LayoutSpec}.
    *
    * @param layoutSpecCls class containing {@link LayoutSpec} class.
    */
-  public static void updateLayoutComponent(PsiClass layoutSpecCls) {
-    final String componentName =
-        LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
-    if (componentName == null) return;
-
+  public static void updateLayoutComponentAsync(PsiClass layoutSpecCls) {
     final Project project = layoutSpecCls.getProject();
     final Runnable job =
         () -> {
-          final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
-          updateComponent(componentName, model, project);
+          final PsiClass component = updateLayoutComponentSync(layoutSpecCls);
+          if (component != null) {
+            showSuccess(component.getName(), project);
+          }
         };
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       job.run();
@@ -77,11 +75,22 @@ public class ComponentGenerateUtils {
     }
   }
 
-  /** Updates generated Component file from the given Spec model. */
-  public static void updateComponent(
-      String componentQualifiedName, @Nullable SpecModel model, Project project) {
-    if (model == null) return;
+  @Nullable
+  static PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
+    final String componentQN =
+        LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
+    if (componentQN == null) return null;
 
+    final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
+    if (model == null) return null;
+
+    return updateComponent(componentQN, model, layoutSpecCls.getProject());
+  }
+
+  /** Updates generated Component file from the given Spec model. */
+  @Nullable
+  public static PsiClass updateComponent(
+      String componentQualifiedName, SpecModel model, Project project) {
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
@@ -98,15 +107,12 @@ public class ComponentGenerateUtils {
               document.setText(newContent);
             });
         FileDocumentManager.getInstance().saveDocument(document);
-        showSuccess(StringUtil.getShortName(componentQualifiedName), project);
+        return generatedClass.get();
       }
     } else {
-      final PsiClass component =
-          ComponentsCacheService.getInstance(project).update(componentQualifiedName, model);
-      if (component != null) {
-        showSuccess(component.getName(), project);
-      }
+      return ComponentsCacheService.getInstance(project).update(componentQualifiedName, model);
     }
+    return null;
   }
 
   private static void showSuccess(String componentName, Project project) {
