@@ -17,14 +17,10 @@
 package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.intellij.IntervalLogger;
-import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -32,10 +28,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.ThrowableRunnable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,10 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Stores generated in-memory components. Cache could be updated via {@link #maybeUpdate(PsiClass,
- * boolean)} call.
- */
+/** Stores generated in-memory components. */
 public class ComponentsCacheService implements Disposable {
   private static final Logger LOG = Logger.getInstance(ComponentsCacheService.class);
 
@@ -67,24 +57,9 @@ public class ComponentsCacheService implements Disposable {
     componentNameToClass.clear();
   }
 
-  @Nullable("returns null if component was not created")
-  public PsiClass maybeUpdate(PsiClass specClass, boolean forceUpdate) {
-    if (!LithoPluginUtils.isLayoutSpec(specClass)) return null;
-
-    final String componentQualifiedName =
-        LithoPluginUtils.getLithoComponentNameFromSpec(specClass.getQualifiedName());
-    if (componentQualifiedName == null) return null;
-
-    final ShouldUpdateChecker checker =
-        new ShouldUpdateChecker(forceUpdate, componentQualifiedName);
-    maybeUpdateInReadAction(specClass, componentQualifiedName, checker);
-    return getComponent(componentQualifiedName);
-  }
-
   /**
    * @return component already present in the cache by its full-qualified name or null if it's
    *     absent.
-   * @see #maybeUpdate(PsiClass, boolean)
    */
   @Nullable
   public PsiClass getComponent(String componentQualifiedName) {
@@ -130,60 +105,13 @@ public class ComponentsCacheService implements Disposable {
             });
   }
 
-  private void maybeUpdateInReadAction(
-      PsiClass specClass, String componentQualifiedName, ShouldUpdateChecker checker) {
-    final ThrowableRunnable<RuntimeException> job =
-        () -> {
-          if (checker.shouldStopUpdate()) return;
-
-          final LayoutSpecModel layoutModel = ComponentGenerateUtils.createLayoutModel(specClass);
-          update(componentQualifiedName, layoutModel);
-        };
-    if (ApplicationManager.getApplication().isReadAccessAllowed()) {
-      job.run();
-    } else {
-      ReadAction.run(job);
-    }
-  }
-
-  /** Updates cached class with provided model. Do nothing if name or model are invalid. */
+  /**
+   * Updates cache. This method shouldn't be called directly, use {@link
+   * ComponentGenerateUtils#updateLayoutComponentSync(PsiClass)} instead.
+   */
   @Nullable
-  public PsiClass update(String componentQualifiedName, @Nullable SpecModel model) {
-    if (model == null) return null;
-
-    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
-    if (componentShortName.isEmpty()) return null;
-
-    final PsiFile file =
-        ComponentGenerateUtils.createFileFromModel(componentQualifiedName, model, project);
-    ComponentScope.include(file);
-    final PsiClass inMemory =
-        LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
-            .orElse(null);
-    if (inMemory == null) return null;
-
+  public PsiClass update(String componentQualifiedName, PsiClass inMemory) {
     componentNameToClass.put(componentQualifiedName, inMemory);
     return inMemory;
-  }
-
-  /** Verifies that the update for the cached Component is needed. */
-  class ShouldUpdateChecker {
-    private final boolean forceUpdate;
-    private final String componentQualifiedName;
-
-    ShouldUpdateChecker(boolean forceUpdate, String componentQualifiedName) {
-      this.forceUpdate = forceUpdate;
-      this.componentQualifiedName = componentQualifiedName;
-    }
-
-    boolean shouldStopUpdate() {
-      if (project.isDisposed()) {
-        return true;
-      }
-      if (!componentNameToClass.containsKey(componentQualifiedName)) {
-        return false;
-      }
-      return !forceUpdate;
-    }
   }
 }

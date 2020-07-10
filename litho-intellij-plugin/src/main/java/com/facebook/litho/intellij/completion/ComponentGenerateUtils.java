@@ -91,12 +91,15 @@ public class ComponentGenerateUtils {
   @Nullable
   public static PsiClass updateComponent(
       String componentQualifiedName, SpecModel model, Project project) {
+    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
+    if (componentShortName.isEmpty()) return null;
+
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
     final boolean isPresent = generatedClass.isPresent();
+    final String newContent = createFileContentFromModel(componentQualifiedName, model);
     if (isPresent) {
-      final String newContent = createFileContentFromModel(componentQualifiedName, model);
       final Document document =
           PsiDocumentManager.getInstance(project)
               .getDocument(generatedClass.get().getContainingFile());
@@ -110,7 +113,17 @@ public class ComponentGenerateUtils {
         return generatedClass.get();
       }
     } else {
-      return ComponentsCacheService.getInstance(project).update(componentQualifiedName, model);
+      final PsiFile file =
+          PsiFileFactory.getInstance(project)
+              .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
+      ComponentScope.include(file);
+      final PsiClass inMemory =
+          LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
+              .orElse(null);
+      if (inMemory == null) return null;
+
+      ComponentsCacheService.getInstance(project).update(componentQualifiedName, inMemory);
+      return inMemory;
     }
     return null;
   }
@@ -128,14 +141,6 @@ public class ComponentGenerateUtils {
   @Nullable
   public static LayoutSpecModel createLayoutModel(PsiClass layoutSpecCls) {
     return MODEL_FACTORY.createWithPsi(layoutSpecCls.getProject(), layoutSpecCls, null);
-  }
-
-  public static PsiFile createFileFromModel(
-      String clsQualifiedName, SpecModel model, Project project) {
-    String fileContent = createFileContentFromModel(clsQualifiedName, model);
-    return PsiFileFactory.getInstance(project)
-        .createFileFromText(
-            StringUtil.getShortName(clsQualifiedName) + ".java", StdFileTypes.JAVA, fileContent);
   }
 
   private static String createFileContentFromModel(String clsQualifiedName, SpecModel specModel) {

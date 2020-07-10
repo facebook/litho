@@ -18,10 +18,8 @@ package com.facebook.litho.intellij.services;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertSame;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.LithoPluginUtils;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import org.junit.Test;
@@ -39,20 +37,16 @@ public class ComponentsCacheServiceTest extends LithoPluginIntellijTest {
     testHelper.getPsiClass(
         psiClasses -> {
           assertNotNull(psiClasses);
-          PsiClass layoutCls = psiClasses.get(0);
-          service.maybeUpdate(layoutCls, false);
-          final PsiClass component1 =
-              service.getComponent(
-                  LithoPluginUtils.getLithoComponentNameFromSpec(layoutCls.getQualifiedName()));
+          PsiClass cls = psiClasses.get(0);
+          final String componentQN = cls.getQualifiedName();
+          service.update(componentQN, cls);
+          final PsiClass component1 = service.getComponent(componentQN);
 
           assertNotNull(component1);
-          assertThat(component1.getName()).isEqualTo("Layout");
+          assertSame(cls, component1);
 
           // Check value is cached
-          service.maybeUpdate(layoutCls, false);
-          final PsiClass component2 =
-              service.getComponent(
-                  LithoPluginUtils.getLithoComponentNameFromSpec(layoutCls.getQualifiedName()));
+          final PsiClass component2 = service.getComponent(componentQN);
           assertSame(component1, component2);
           return true;
         },
