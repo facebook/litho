@@ -2985,11 +2985,9 @@ public class RecyclerBinder
       return;
     }
 
-    final int target = type == SmoothScrollAlignmentType.SNAP_TO_CENTER ? position + 1 : position;
-
     final RecyclerView.SmoothScroller smoothScroller =
         SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getAndroidContext(), offset, type);
-    smoothScroller.setTargetPosition(target);
+    smoothScroller.setTargetPosition(position);
     mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
   }
 
