@@ -1119,4 +1119,48 @@ public class AnimationTest {
             })
         .build();
   }
+
+  @Test
+  public void animationProperties_appearTransitionOnRoot_rootShouldAnimateInTheXAxis() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X)
+                    .appearFrom(-200))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .transitionKey(TRANSITION_KEY)
+                        .viewTag(TRANSITION_KEY)
+                        .heightDip(200)
+                        .widthDip(200)
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    assertThat(view).describedAs("view after mount").isInstanceOf(LithoView.class);
+    assertThat(view.getX()).describedAs("x pos before transition").isEqualTo(-200);
+
+    mTransitionTestRule.step(3);
+    assertThat(view.getX())
+        .describedAs("x pos after 3 frames of transition")
+        .isEqualTo(-176.60445f);
+
+    mTransitionTestRule.step(3);
+    assertThat(view.getX()).describedAs("x pos after 6 frames of transition").isEqualTo(-82.63518f);
+
+    mTransitionTestRule.step(5);
+    assertThat(view.getX()).describedAs("x pos after transition").isEqualTo(0f);
+  }
 }
