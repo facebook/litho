@@ -76,7 +76,7 @@ public class ComponentGenerateUtils {
   }
 
   @Nullable
-  static PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
+  public static PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
     if (componentQN == null) return null;

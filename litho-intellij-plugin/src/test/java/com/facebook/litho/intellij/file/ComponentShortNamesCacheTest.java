@@ -19,7 +19,7 @@ package com.facebook.litho.intellij.file;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.services.ComponentsCacheService;
+import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -46,7 +46,7 @@ public class ComponentShortNamesCacheTest extends LithoPluginIntellijTest {
               final ComponentShortNamesCache namesCache = new ComponentShortNamesCache(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
-              ComponentsCacheService.getInstance(project).maybeUpdate(cls, false);
+              ComponentGenerateUtils.updateLayoutComponentSync(cls);
 
               final String[] allClassNames = namesCache.getAllClassNames();
               assertThat(allClassNames.length).isOne();

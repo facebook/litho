@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
@@ -262,16 +263,25 @@ public class ResolveRedSymbolsAction extends AnAction {
 
   private static Map<String, PsiClass> addToCache(
       Collection<String> allRedSymbols, Project project, GlobalSearchScope symbolsScope) {
-    Map<String, PsiClass> redSymbolToClass = new HashMap<>();
-    ComponentsCacheService componentsCache = ComponentsCacheService.getInstance(project);
+    final Map<String, PsiClass> redSymbolToClass = new HashMap<>();
+    final ComponentsCacheService componentsCache = ComponentsCacheService.getInstance(project);
     for (String redSymbol : allRedSymbols) {
       Arrays.stream(
-              PsiSearchUtils.findClassesByShortName(project, symbolsScope, redSymbol + "Spec"))
+              PsiSearchUtils.findClassesByShortName(
+                  project,
+                  symbolsScope,
+                  LithoPluginUtils.getLithoComponentSpecNameFromComponent(redSymbol)))
           .filter(LithoPluginUtils::isLayoutSpec)
           .forEach(
               specCls -> {
-                final PsiClass resolved = componentsCache.maybeUpdate(specCls, false);
-                redSymbolToClass.put(redSymbol, resolved);
+                final String guessedComponentQN =
+                    LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
+                // Red symbol might exist for present but not-bind class
+                PsiClass component = PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
+                if (component == null) {
+                  component = ComponentGenerateUtils.updateLayoutComponentSync(specCls);
+                }
+                redSymbolToClass.put(redSymbol, component);
               });
     }
     return redSymbolToClass;
