@@ -117,7 +117,7 @@ public class TransitionManagerAnimationCreationTest {
   }
 
   @Test
-  public void testCreateMultiPropAnimationWithNonChangingProp() {
+  public void testCreateMultiPropAnimationWithNonChangingXYPropIsPinned() {
     final LayoutState current =
         createMockLayoutState(Transition.parallel(), createMockLayoutOutput("test", 0, 0));
     final LayoutState next =
@@ -125,6 +125,27 @@ public class TransitionManagerAnimationCreationTest {
             Transition.parallel(
                 Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
+                    .animator(mTestVerificationAnimator)),
+            createMockLayoutOutput("test", 0, 0));
+
+    mTransitionManager.setupTransitions(
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
+
+    assertThat(mCreatedAnimations)
+        .containsExactlyInAnyOrder(
+            createPropertyAnimation("test", AnimatedProperties.X, 0),
+            createPropertyAnimation("test", AnimatedProperties.Y, 0));
+  }
+
+  @Test
+  public void testCreateMultiPropAnimationWithNonChangingProp() {
+    final LayoutState current =
+        createMockLayoutState(Transition.parallel(), createMockLayoutOutput("test", 0, 0));
+    final LayoutState next =
+        createMockLayoutState(
+            Transition.parallel(
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
+                    .animate(AnimatedProperties.X, AnimatedProperties.WIDTH)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0));
 
@@ -224,7 +245,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutState(
             Transition.parallel(
                 Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
-                    .animate(AnimatedProperties.X, AnimatedProperties.Y)
+                    .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0));
 
@@ -268,7 +289,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutState(
             Transition.parallel(
                 Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
-                    .animate(AnimatedProperties.X, AnimatedProperties.Y)
+                    .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0),
             createMockLayoutOutput("test2", 20, 0));
@@ -309,7 +330,7 @@ public class TransitionManagerAnimationCreationTest {
             .animator(mTestVerificationAnimator));
     mountTimeTransitions.add(
         Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
-            .animate(AnimatedProperties.X, AnimatedProperties.Y)
+            .animate(AnimatedProperties.X)
             .animator(mTestVerificationAnimator));
 
     mTransitionManager.setupTransitions(

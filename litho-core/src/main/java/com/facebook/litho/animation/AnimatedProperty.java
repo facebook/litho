@@ -38,4 +38,10 @@ public interface AnimatedProperty {
 
   /** Resets this property to its default value on this mount content. */
   void reset(Object mountContent);
+
+  /**
+   * This property should be animated when the start and end values are the same e.g. to pin it in
+   * place.
+   */
+  boolean animateUnchanged();
 }
