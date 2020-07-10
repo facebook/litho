@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -105,6 +106,29 @@ public class LithoViewTestHelper {
   }
 
   /**
+   * Provide a nested string representation of a LithoView and its nested components for E2E testing
+   * purposes. Note: this method is called via reflection to prevent direct or shared dependencies.
+   * DO NOT CHANGE the method signature.
+   *
+   * @param depth the offset to set on the litho nodes
+   * @param withProps if to dump extra properties
+   */
+  @DoNotStrip
+  public static String viewToStringForE2E(View view, int depth, boolean withProps) {
+    if (!(view instanceof LithoView)) {
+      return "";
+    }
+    LithoView lithoView = (LithoView) view;
+    DebugComponent root = DebugComponent.getRootInstance(lithoView);
+    if (root == null) {
+      return "";
+    }
+    final StringBuilder sb = new StringBuilder();
+    viewToString(root, sb, true, depth, 0, 0);
+    return sb.toString();
+  }
+
+  /**
    * Provide a nested string representation of a LithoView and its nested components for debugging
    * purposes.
    *
@@ -120,6 +144,7 @@ public class LithoViewTestHelper {
 
     final StringBuilder sb = new StringBuilder();
     int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
+    sb.append("\n");
     viewToString(root, sb, embedded, depth, 0, 0);
     return sb.toString();
   }
@@ -132,9 +157,10 @@ public class LithoViewTestHelper {
       int depth,
       int leftOffset,
       int topOffset) {
-    writeNewLineWithIndentByDepth(sb, depth);
+    writeIndentByDepth(sb, depth);
     DebugComponentDescriptionHelper.addViewDescription(
         component, sb, leftOffset, topOffset, embedded);
+    sb.append("\n");
 
     final Rect bounds = component.getBoundsInLithoView();
     for (DebugComponent child : component.getChildComponents()) {
@@ -154,8 +180,7 @@ public class LithoViewTestHelper {
   }
 
   /** Add new line and two-space indent for each level to match android view hierarchy dump */
-  private static void writeNewLineWithIndentByDepth(StringBuilder sb, int depth) {
-    sb.append("\n");
+  private static void writeIndentByDepth(StringBuilder sb, int depth) {
     for (int i = 0; i < depth; i++) {
       sb.append("  ");
     }
