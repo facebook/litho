@@ -35,18 +35,12 @@ import java.util.Map;
 import javax.swing.Icon;
 
 public class LithoTemplateAction extends CreateFileFromTemplateAction {
-  private static final ExtensionPointName<TemplateProvider> EP_NAME =
-      ExtensionPointName.create("com.facebook.litho.intellij.templateProvider");
   private static final Icon ICON = AllIcons.Nodes.AbstractClass;
   private final String templateName;
   private final String classNameSuffix;
 
   static AnAction[] getTemplateActions() {
-    return Arrays.stream(EP_NAME.getExtensions())
-        .map(
-            provider ->
-                new LithoTemplateAction(provider.getTemplateName(), provider.getClassNameSuffix()))
-        .toArray(AnAction[]::new);
+    return ActionsHolder.ACTIONS;
   }
 
   LithoTemplateAction(String templateName, String classNameSuffix) {
@@ -87,5 +81,17 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE, data);
     LithoPluginUtils.getFirstClass(createdElement, LithoPluginUtils::isLayoutSpec)
         .ifPresent(ComponentGenerateUtils::updateLayoutComponentAsync);
+  }
+
+  private static class ActionsHolder {
+    private static final ExtensionPointName<TemplateProvider> EP_NAME =
+        ExtensionPointName.create("com.facebook.litho.intellij.templateProvider");
+    private static final AnAction[] ACTIONS =
+        Arrays.stream(EP_NAME.getExtensions())
+            .map(
+                provider ->
+                    new LithoTemplateAction(
+                        provider.getTemplateName(), provider.getClassNameSuffix()))
+            .toArray(AnAction[]::new);
   }
 }
