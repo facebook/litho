@@ -31,7 +31,7 @@ public class ComponentsCacheServiceTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void getComponentAndMaybeUpdate() {
+  public void update_valueIsCached() {
     final Project project = testHelper.getFixture().getProject();
     final ComponentsCacheService service = ComponentsCacheService.getInstance(project);
     testHelper.getPsiClass(
