@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
+import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.psi.PsiClass;
@@ -27,6 +28,7 @@ import com.intellij.psi.PsiFile;
 import java.io.IOException;
 import java.util.Collections;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class LithoTemplateActionTest extends LithoPluginIntellijTest {
 
@@ -52,15 +54,20 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
   @Test
   public void createFile_noDoubleSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.java");
-
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
               final TestTemplateAction templateAction = new TestTemplateAction();
               final String nameWithProvidedSuffix = "AnySectionSpec";
+              templateAction.buildDialog(
+                  testHelper.getFixture().getProject(),
+                  null,
+                  Mockito.mock(CreateFileFromTemplateDialog.Builder.class));
               final PsiFile created =
                   templateAction.createFile(
-                      nameWithProvidedSuffix, "GroupSectionSpec", specCls.getContainingDirectory());
+                      nameWithProvidedSuffix,
+                      "GroupSectionSpec.java",
+                      specCls.getContainingDirectory());
               assertThat(created.getName()).isEqualTo("AnySectionSpec.java");
             });
   }
@@ -73,9 +80,13 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
             () -> {
               final TestTemplateAction templateAction = new TestTemplateAction();
               final String nameWithoutSuffix = "Any";
+              templateAction.buildDialog(
+                  testHelper.getFixture().getProject(),
+                  null,
+                  Mockito.mock(CreateFileFromTemplateDialog.Builder.class));
               final PsiFile created =
                   templateAction.createFile(
-                      nameWithoutSuffix, "GroupSectionSpec", specCls.getContainingDirectory());
+                      nameWithoutSuffix, "GroupSectionSpec.java", specCls.getContainingDirectory());
               assertThat(created.getName()).isEqualTo("AnySectionSpec.java");
             });
   }

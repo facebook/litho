@@ -24,6 +24,8 @@ import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
+import com.intellij.ide.fileTemplates.FileTemplate;
+import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
@@ -38,6 +40,7 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
   private static final Icon ICON = AllIcons.Nodes.AbstractClass;
   private final String templateName;
   private final String classNameSuffix;
+  private final Map<String, FileTemplate> templateMap = new HashMap<>(2);
 
   static AnAction[] getTemplateActions() {
     return ActionsHolder.ACTIONS;
@@ -57,7 +60,22 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
   @Override
   protected void buildDialog(
       Project project, PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
-    builder.setTitle("New " + templateName).addKind(templateName, ICON, templateName);
+    builder.setTitle("New " + templateName);
+    final FileTemplateManager templateManager = FileTemplateManager.getInstance(project);
+    addKind(builder, templateManager, ".java", "Java");
+    addKind(builder, templateManager, ".kt", "Kotlin");
+  }
+
+  private void addKind(
+      CreateFileFromTemplateDialog.Builder builder,
+      FileTemplateManager templateManager,
+      String extension,
+      String kind) {
+    final String templateName = this.templateName + extension;
+    templateMap.putIfAbsent(templateName, templateManager.findInternalTemplate(templateName));
+    if (templateMap.get(templateName) != null) {
+      builder.addKind(kind, ICON, templateName);
+    }
   }
 
   @Override
@@ -68,7 +86,8 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
     } else if (LithoPluginUtils.isSpecName(name)) {
       name = LithoPluginUtils.getLithoComponentNameFromSpec(name);
     }
-    return super.createFile(name, templateName, dir);
+    // templateMap is populated in #buildDialog step
+    return super.createFileFromTemplate(name, templateMap.get(templateName), dir);
   }
 
   /** Generates component for createdElement */
