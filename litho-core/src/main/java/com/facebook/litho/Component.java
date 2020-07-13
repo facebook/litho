@@ -591,7 +591,7 @@ public abstract class Component extends ComponentLifecycle
       // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
       // pass the event on any further, we reraise it.
       if (parentEventDispatcherProvider == null) {
-        parentEventDispatcherProvider = new DefaultErrorEventDispatcher();
+        parentEventDispatcherProvider = DefaultErrorEventDispatcher.INSTANCE;
       }
 
       mErrorEventHandler =
@@ -2081,22 +2081,29 @@ public abstract class Component extends ComponentLifecycle
   /** An event handler to be used for the root of the hierarchy that reraises error events. */
   private static class DefaultErrorEventDispatcher implements HasEventDispatcher {
 
+    static final DefaultErrorEventDispatcher INSTANCE = new DefaultErrorEventDispatcher();
+
+    private static final EventDispatcher DISPATCHER_INSTANCE =
+        new EventDispatcher() {
+          @Override
+          public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+            if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+              final Exception e = ((ErrorEvent) eventState).exception;
+              if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+              } else {
+                throw new RuntimeException(e);
+              }
+            }
+            return null;
+          }
+        };
+
+    private DefaultErrorEventDispatcher() {}
+
     @Override
     public EventDispatcher getEventDispatcher() {
-      return new EventDispatcher() {
-        @Override
-        public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-          if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-            final Exception e = ((ErrorEvent) eventState).exception;
-            if (e instanceof RuntimeException) {
-              throw (RuntimeException) e;
-            } else {
-              throw new RuntimeException(e);
-            }
-          }
-          return null;
-        }
-      };
+      return DISPATCHER_INSTANCE;
     }
   }
 }
