@@ -95,7 +95,7 @@ public class EndToEndTestingExtension
     }
   }
 
-  private @Nullable Host getHost(TestOutput testOutput) {
+  private @Nullable ComponentHost getHost(TestOutput testOutput) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = mInput.getMountableOutputAt(i);
       final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(renderTreeNode);
@@ -105,8 +105,9 @@ public class EndToEndTestingExtension
           return null;
         }
 
-        final Host host =
-            (Host) mMountDelegateTarget.getContentById(hostTreeNode.getRenderUnit().getId());
+        final ComponentHost host =
+            (ComponentHost)
+                mMountDelegateTarget.getContentById(hostTreeNode.getRenderUnit().getId());
 
         return host;
       }

@@ -39,6 +39,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -1394,7 +1395,11 @@ public class LithoView extends Host {
   @DoNotStrip
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {
-    if (mUseExtensions && mLithoHostListenerCoordinator != null) {
+    if (mUseExtensions) {
+      if (mLithoHostListenerCoordinator == null) {
+        return new LinkedList<>();
+      }
+
       if (mLithoHostListenerCoordinator.getEndToEndTestingExtension() == null) {
         throw new IllegalStateException(
             "Trying to access TestItems while "
