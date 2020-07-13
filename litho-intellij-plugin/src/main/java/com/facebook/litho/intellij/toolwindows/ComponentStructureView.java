@@ -20,7 +20,7 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.ide.structureView.StructureView;
 import com.intellij.ide.structureView.StructureViewFactory;
 import com.intellij.ide.structureView.StructureViewModel;
@@ -33,7 +33,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.Content;
@@ -80,16 +79,16 @@ class ComponentStructureView implements Disposable {
   synchronized void setup(ToolWindow toolWindow) {
     contentManager = toolWindow.getContentManager();
     Disposer.register(contentManager, this);
-    refreshButton = createButton("Update", this::update);
+    refreshButton = createButton("Update", this::updateView);
     contentContainer =
         ContentFactory.SERVICE
             .getInstance()
             .createContent(createView(refreshButton, STUB), "", false);
     contentManager.addContent(contentContainer);
-    DumbService.getInstance(project).smartInvokeLater(this::update);
+    DumbService.getInstance(project).smartInvokeLater(this::updateView);
   }
 
-  synchronized void update() {
+  synchronized void updateView() {
     final FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor();
     final PsiFile selectedFile = getSelectedFile(selectedEditor, project);
     final StructureView oldStructure = structureView;
@@ -100,10 +99,9 @@ class ComponentStructureView implements Disposable {
     final JComponent mainView =
         Optional.ofNullable(selectedFile)
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
-            .map(ComponentGenerateUtils::createLayoutModel)
+            .map(cls -> cls.getUserData(ComponentGenerateUtils.KEY_SPEC_MODEL))
             .map(
                 model -> {
-                  updateComponent(model, selectedFile);
                   structureView = createStructureView(model, selectedEditor, selectedFile, project);
                   data.put(EventLogger.KEY_RESULT, "success");
                   return structureView.getComponent();
@@ -117,14 +115,6 @@ class ComponentStructureView implements Disposable {
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_TOOLWINDOW, data);
   }
 
-  private void updateComponent(LayoutSpecModel model, PsiFile file) {
-    LithoPluginUtils.getFirstClass(file, cls -> cls.getName().equals(model.getSpecName()))
-        .map(PsiClass::getQualifiedName)
-        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .ifPresent(
-            componentQN -> ComponentGenerateUtils.updateComponent(componentQN, model, project));
-  }
-
   private void dispose(@Nullable StructureView oldStructure) {
     if (oldStructure == null) return;
 
@@ -135,7 +125,7 @@ class ComponentStructureView implements Disposable {
   }
 
   private static StructureView createStructureView(
-      LayoutSpecModel model, FileEditor selectedEditor, PsiFile selectedFile, Project project) {
+      SpecModel model, FileEditor selectedEditor, PsiFile selectedFile, Project project) {
     final StructureViewModel viewModel = ComponentTreeModel.create(selectedFile, model);
     final StructureView view =
         StructureViewFactory.getInstance(project)

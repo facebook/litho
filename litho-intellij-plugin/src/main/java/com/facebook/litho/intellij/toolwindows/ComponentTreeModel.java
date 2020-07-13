@@ -16,7 +16,7 @@
 
 package com.facebook.litho.intellij.toolwindows;
 
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewModelBase;
 import com.intellij.ide.structureView.StructureViewTreeElement;
@@ -26,7 +26,7 @@ import com.intellij.psi.PsiFile;
 class ComponentTreeModel extends StructureViewModelBase
     implements StructureViewModel.ElementInfoProvider {
 
-  static StructureViewModel create(PsiFile selectedFile, LayoutSpecModel model) {
+  static StructureViewModel create(PsiFile selectedFile, SpecModel model) {
     final StructureViewTreeElement viewTreeElement = SpecTreeElementFactory.createTree(model);
     return new ComponentTreeModel(selectedFile, viewTreeElement);
   }
