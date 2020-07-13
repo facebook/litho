@@ -33,6 +33,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
@@ -49,6 +50,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ComponentGenerateUtils {
   private static final Logger LOG = Logger.getInstance(ComponentGenerateUtils.class);
+  public static final Key<SpecModel> KEY_SPEC_MODEL =
+      Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
 
   private ComponentGenerateUtils() {}
@@ -84,7 +87,12 @@ public class ComponentGenerateUtils {
     final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
     if (model == null) return null;
 
-    return updateComponent(componentQN, model, layoutSpecCls.getProject());
+    final Project project = layoutSpecCls.getProject();
+    final PsiClass generatedComponent = updateComponent(componentQN, model, project);
+    if (generatedComponent == null) return null;
+
+    layoutSpecCls.putUserData(KEY_SPEC_MODEL, model);
+    return generatedComponent;
   }
 
   /** Updates generated Component file from the given Spec model. */
