@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.5.7
+
+_2020-07-14_
+
+* New: Toolwindow auto updates.
+* New: Kotlin LayoutSpec template.
+* Fix: Red symbols binding on disposed Editor.
+
 ## Version 1.5.6
 
 _2020-07-01_
