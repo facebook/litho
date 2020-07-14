@@ -92,6 +92,10 @@ public class LithoPluginIntellijTest {
       fixture.tearDown();
     }
 
+    public Project getProject() {
+      return fixture.getProject();
+    }
+
     public PsiFile configure(String clsName) throws IOException {
       return fixture.configureByText(clsName, getContent(clsName));
     }

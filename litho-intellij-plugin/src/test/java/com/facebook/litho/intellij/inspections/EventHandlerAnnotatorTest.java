@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
@@ -39,10 +40,13 @@ public class EventHandlerAnnotatorTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void annotate() {
+  public void annotate_added() {
     testHelper.getPsiClass(
         classes -> {
           PsiClass cls = classes.get(0);
+          ComponentGenerateService.getInstance(testHelper.getProject())
+              .updateLayoutComponentSync(cls);
+
           PsiMethodCallExpression call =
               PsiTreeUtil.findChildOfType(cls, PsiMethodCallExpression.class);
           assertThat(call.getText()).isEqualTo("Component.create(c).testEventHandler()");

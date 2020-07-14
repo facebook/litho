@@ -23,8 +23,8 @@ import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -74,13 +74,13 @@ public class EventHandlerAnnotator implements Annotator {
     if (parentCls == null) {
       return;
     }
-    final LayoutSpecModel parentLayoutModel = ComponentGenerateService.createLayoutModel(parentCls);
-    if (parentLayoutModel == null) {
+    final SpecModel parentModel = parentCls.getUserData(ComponentGenerateService.KEY_SPEC_MODEL);
+    if (parentModel == null) {
       return;
     }
     final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
-        implementedEventHandlers = parentLayoutModel.getEventMethods();
-    final String componentQualifiedName = parentLayoutModel.getComponentTypeName().toString();
+        implementedEventHandlers = parentModel.getEventMethods();
+    final String componentQualifiedName = parentModel.getComponentTypeName().toString();
     final Project project = eventHandlerSetter.getProject();
     final PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
     final String message = "Add " + AddArgumentFix.getCapitalizedMethoName(eventHandlerSetter);
