@@ -33,6 +33,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.Content;
@@ -76,24 +77,31 @@ class ComponentStructureView implements Disposable {
     Disposer.register(contentManager, this);
     contentContainer = ContentFactory.SERVICE.getInstance().createContent(STUB, "", false);
     contentManager.addContent(contentContainer);
-    updateViewLater();
+    updateViewLater(null);
+    ComponentGenerateService.getInstance(project).subscribe(this::updateViewLater, this);
   }
 
-  private void updateViewLater() {
-    DumbService.getInstance(project).smartInvokeLater(this::updateView);
+  private void updateViewLater(@Nullable PsiClass updatedClass) {
+    DumbService.getInstance(project).smartInvokeLater(() -> updateView(updatedClass));
   }
 
-  synchronized void updateView() {
+  /** Updates view either if updatedClass is null, or if updatedClass is focused. */
+  synchronized void updateView(@Nullable PsiClass updatedClass) {
     final FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor();
     final PsiFile selectedFile = getSelectedFile(selectedEditor, project);
+    final PsiClass selectedClass =
+        Optional.ofNullable(selectedFile)
+            .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
+            .orElse(null);
+    if (updatedClass != null && updatedClass != selectedClass) return;
+
     final StructureView oldStructure = structureView;
     final Map<String, String> data = new HashMap<>();
     data.put(EventLogger.KEY_TYPE, "update");
-    // Overriden below
+    // Overridden below
     data.put(EventLogger.KEY_RESULT, "fail");
     final JComponent newView =
-        Optional.ofNullable(selectedFile)
-            .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
+        Optional.ofNullable(selectedClass)
             .map(cls -> cls.getUserData(ComponentGenerateService.KEY_SPEC_MODEL))
             .map(
                 model -> {

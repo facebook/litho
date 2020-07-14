@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.ServiceManager;
@@ -33,6 +34,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
@@ -41,7 +43,10 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -53,9 +58,16 @@ public class ComponentGenerateService {
   public static final Key<SpecModel> KEY_SPEC_MODEL =
       Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
+  private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
   private final Project project;
 
-  interface SpecUpdateNotifier {
+  /** Subscribes listener to Spec model updates. Removes subscription once parent is disposed. */
+  public void subscribe(SpecUpdateNotifier listener, Disposable parent) {
+    listeners.add(listener);
+    Disposer.register(parent, () -> listeners.remove(listener));
+  }
+
+  public interface SpecUpdateNotifier {
     void onSpecModelUpdated(PsiClass specCls);
   }
 
@@ -103,7 +115,11 @@ public class ComponentGenerateService {
     if (generatedComponent == null) return null;
 
     layoutSpecCls.putUserData(KEY_SPEC_MODEL, model);
-    // TODO: trigger listeners
+    Set<SpecUpdateNotifier> copy;
+    synchronized (listeners) {
+      copy = new HashSet<>(listeners);
+    }
+    copy.forEach(listener -> listener.onSpecModelUpdated(layoutSpecCls));
     return generatedComponent;
   }
 
