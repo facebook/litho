@@ -28,6 +28,8 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
@@ -39,6 +41,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
+import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.FormBuilder;
 import com.siyeh.ig.ui.BlankFiller;
 import java.util.HashMap;
@@ -79,6 +82,17 @@ class ComponentStructureView implements Disposable {
     contentManager.addContent(contentContainer);
     updateViewLater(null);
     ComponentGenerateService.getInstance(project).subscribe(this::updateViewLater, this);
+    final MessageBusConnection busConnection = project.getMessageBus().connect(this);
+    busConnection.subscribe(
+        FileEditorManagerListener.FILE_EDITOR_MANAGER,
+        new FileEditorManagerListener() {
+          @Override
+          public void selectionChanged(FileEditorManagerEvent event) {
+            if (event.getNewFile() == null) return;
+
+            updateViewLater(null);
+          }
+        });
   }
 
   private void updateViewLater(@Nullable PsiClass updatedClass) {
