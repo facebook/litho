@@ -18,9 +18,9 @@ package com.facebook.litho.intellij.inspections;
 
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -53,7 +53,7 @@ public class LayoutSpecAnnotator implements Annotator {
     if (!LithoPluginUtils.isLayoutSpec(cls)) return;
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateUtils.createLayoutModel(cls))
+        Optional.ofNullable(ComponentGenerateService.createLayoutModel(cls))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {

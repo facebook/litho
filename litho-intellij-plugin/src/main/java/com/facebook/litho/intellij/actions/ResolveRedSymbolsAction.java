@@ -18,9 +18,9 @@ package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
@@ -279,7 +279,9 @@ public class ResolveRedSymbolsAction extends AnAction {
                 // Red symbol might exist for present but not-bind class
                 PsiClass component = PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
                 if (component == null) {
-                  component = ComponentGenerateUtils.updateLayoutComponentSync(specCls);
+                  component =
+                      ComponentGenerateService.getInstance(project)
+                          .updateLayoutComponentSync(specCls);
                 }
                 redSymbolToClass.put(redSymbol, component);
               });

@@ -18,7 +18,6 @@ package com.facebook.litho.intellij.file;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.google.common.annotations.VisibleForTesting;
@@ -45,7 +44,7 @@ public class ComponentFileListener implements FileDocumentManagerListener {
   private final Consumer<PsiClass> savingFileConsumer;
 
   ComponentFileListener() {
-    this(ComponentGenerateUtils::updateLayoutComponentAsync);
+    this(cls -> {});
   }
 
   @VisibleForTesting

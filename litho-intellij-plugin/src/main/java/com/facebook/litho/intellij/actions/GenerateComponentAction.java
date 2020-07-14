@@ -18,7 +18,7 @@ package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 /**
  * Updates Component file for the given Spec file. Update logic is defined by the {@link
- * ComponentGenerateUtils}. Currently works with the {@link LayoutSpec} only.
+ * ComponentGenerateService}. Currently works with the {@link LayoutSpec} only.
  */
 public class GenerateComponentAction extends AnAction {
 
@@ -41,7 +41,11 @@ public class GenerateComponentAction extends AnAction {
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    getValidSpec(e).ifPresent(ComponentGenerateUtils::updateLayoutComponentAsync);
+    getValidSpec(e)
+        .ifPresent(
+            cls ->
+                ComponentGenerateService.getInstance(e.getProject())
+                    .updateLayoutComponentAsync(cls));
   }
 
   /**

@@ -18,7 +18,6 @@ package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ReadAction;
@@ -107,7 +106,7 @@ public class ComponentsCacheService implements Disposable {
 
   /**
    * Updates cache. This method shouldn't be called directly, use {@link
-   * ComponentGenerateUtils#updateLayoutComponentSync(PsiClass)} instead.
+   * ComponentGenerateService#updateLayoutComponentSync(PsiClass)} instead.
    */
   @Nullable
   public PsiClass update(String componentQualifiedName, PsiClass inMemory) {

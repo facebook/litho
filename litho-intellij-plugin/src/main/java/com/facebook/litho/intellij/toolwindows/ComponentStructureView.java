@@ -17,9 +17,9 @@
 package com.facebook.litho.intellij.toolwindows;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.ide.structureView.StructureView;
 import com.intellij.ide.structureView.StructureViewFactory;
@@ -99,7 +99,7 @@ class ComponentStructureView implements Disposable {
     final JComponent mainView =
         Optional.ofNullable(selectedFile)
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
-            .map(cls -> cls.getUserData(ComponentGenerateUtils.KEY_SPEC_MODEL))
+            .map(cls -> cls.getUserData(ComponentGenerateService.KEY_SPEC_MODEL))
             .map(
                 model -> {
                   structureView = createStructureView(model, selectedEditor, selectedFile, project);

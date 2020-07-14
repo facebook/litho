@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.completion;
+package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
-import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -48,13 +48,24 @@ import org.jetbrains.annotations.Nullable;
  * Utility class helping to create {@link LayoutSpecModel}s from the given file and update generated
  * Component files with the new model.
  */
-public class ComponentGenerateUtils {
-  private static final Logger LOG = Logger.getInstance(ComponentGenerateUtils.class);
+public class ComponentGenerateService {
+  private static final Logger LOG = Logger.getInstance(ComponentGenerateService.class);
   public static final Key<SpecModel> KEY_SPEC_MODEL =
       Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
+  private final Project project;
 
-  private ComponentGenerateUtils() {}
+  interface SpecUpdateNotifier {
+    void onSpecModelUpdated(PsiClass specCls);
+  }
+
+  public static ComponentGenerateService getInstance(Project project) {
+    return ServiceManager.getService(project, ComponentGenerateService.class);
+  }
+
+  private ComponentGenerateService(Project project) {
+    this.project = project;
+  }
 
   /**
    * Updates generated Component file from the given Spec class and shows success notification. Or
@@ -62,7 +73,7 @@ public class ComponentGenerateUtils {
    *
    * @param layoutSpecCls class containing {@link LayoutSpec} class.
    */
-  public static void updateLayoutComponentAsync(PsiClass layoutSpecCls) {
+  public void updateLayoutComponentAsync(PsiClass layoutSpecCls) {
     final Project project = layoutSpecCls.getProject();
     final Runnable job =
         () -> {
@@ -79,7 +90,7 @@ public class ComponentGenerateUtils {
   }
 
   @Nullable
-  public static PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
+  public PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
     if (componentQN == null) return null;
@@ -92,6 +103,7 @@ public class ComponentGenerateUtils {
     if (generatedComponent == null) return null;
 
     layoutSpecCls.putUserData(KEY_SPEC_MODEL, model);
+    // TODO: trigger listeners
     return generatedComponent;
   }
 

@@ -110,6 +110,7 @@
     <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.toolwindows.ComponentStructureView"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
+    <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentGenerateService" />
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
 

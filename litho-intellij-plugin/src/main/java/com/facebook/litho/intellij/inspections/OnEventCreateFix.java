@@ -17,9 +17,9 @@
 package com.facebook.litho.intellij.inspections;
 
 import com.facebook.litho.intellij.actions.OnEventGenerateAction;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.codeInsight.intention.HighPriorityAction;
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.openapi.application.Application;
@@ -97,7 +97,7 @@ class OnEventCreateFix extends BaseIntentionAction implements HighPriorityAction
         () -> {
           TransactionGuard.getInstance().submitTransactionAndWait(generateOnEvent);
           WriteCommandAction.runWriteCommandAction(project, updateArgumentList);
-          ComponentGenerateUtils.updateLayoutComponentAsync(layoutCls);
+          ComponentGenerateService.getInstance(project).updateLayoutComponentAsync(layoutCls);
           LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIX_EVENT_HANDLER + ".new");
         };
     final Application application = ApplicationManager.getApplication();

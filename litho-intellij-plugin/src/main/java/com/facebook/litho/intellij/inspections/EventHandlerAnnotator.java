@@ -19,7 +19,7 @@ package com.facebook.litho.intellij.inspections;
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -74,7 +74,7 @@ public class EventHandlerAnnotator implements Annotator {
     if (parentCls == null) {
       return;
     }
-    final LayoutSpecModel parentLayoutModel = ComponentGenerateUtils.createLayoutModel(parentCls);
+    final LayoutSpecModel parentLayoutModel = ComponentGenerateService.createLayoutModel(parentCls);
     if (parentLayoutModel == null) {
       return;
     }
