@@ -35,11 +35,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ex.ToolWindowManagerListener;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.FormBuilder;
@@ -47,12 +47,14 @@ import com.siyeh.ig.ui.BlankFiller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
 
 /** Service creates structure view reflecting {@link ComponentTreeModel}. */
 class ComponentStructureView implements Disposable {
   private static final BlankFiller STUB = new BlankFiller();
+  private final AtomicBoolean isVisible = new AtomicBoolean(false);
   private final Project project;
   private ContentManager contentManager;
   private Content contentContainer;
@@ -78,8 +80,9 @@ class ComponentStructureView implements Disposable {
   synchronized void setup(ToolWindow toolWindow) {
     contentManager = toolWindow.getContentManager();
     Disposer.register(contentManager, this);
-    contentContainer = ContentFactory.SERVICE.getInstance().createContent(STUB, "", false);
+    contentContainer = contentManager.getFactory().createContent(STUB, "", false);
     contentManager.addContent(contentContainer);
+    isVisible.set(toolWindow.isVisible());
     updateViewLater(null);
     ComponentGenerateService.getInstance(project).subscribe(this::updateViewLater, this);
     final MessageBusConnection busConnection = project.getMessageBus().connect(this);
@@ -93,14 +96,30 @@ class ComponentStructureView implements Disposable {
             updateViewLater(null);
           }
         });
+    busConnection.subscribe(
+        ToolWindowManagerListener.TOPIC,
+        new ToolWindowManagerListener() {
+          @Override
+          public void stateChanged() {
+            final boolean visible = toolWindow.isVisible();
+            final boolean wasVisible = isVisible.getAndSet(visible);
+            if (visible && !wasVisible) {
+              updateViewLater(null);
+            }
+          }
+        });
   }
 
   private void updateViewLater(@Nullable PsiClass updatedClass) {
+    if (!isVisible.get()) return;
     DumbService.getInstance(project).smartInvokeLater(() -> updateView(updatedClass));
   }
 
   /** Updates view either if updatedClass is null, or if updatedClass is focused. */
-  synchronized void updateView(@Nullable PsiClass updatedClass) {
+  private synchronized void updateView(@Nullable PsiClass updatedClass) {
+    // Sanity check in case view was disposed
+    if (contentManager == null || contentContainer == null) return;
+
     final FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor();
     final PsiFile selectedFile = getSelectedFile(selectedEditor, project);
     final PsiClass selectedClass =
