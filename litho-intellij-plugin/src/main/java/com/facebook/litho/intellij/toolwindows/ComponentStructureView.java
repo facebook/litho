@@ -112,6 +112,7 @@ class ComponentStructureView implements Disposable {
 
   private void updateViewLater(@Nullable PsiClass updatedClass) {
     if (!isVisible.get()) return;
+
     DumbService.getInstance(project).smartInvokeLater(() -> updateView(updatedClass));
   }
 
