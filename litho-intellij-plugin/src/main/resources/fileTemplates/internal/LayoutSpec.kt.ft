@@ -1,0 +1,22 @@
+import com.facebook.litho.Column
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateInitialState
+import com.facebook.litho.annotations.OnCreateLayout
+
+@LayoutSpec
+object ${NAME}Spec {
+
+  @OnCreateInitialState
+  fun onCreateInitialState(c: ComponentContext) {
+    // TODO: remove this method if not needed. Set an initial value for a state
+    // https://fblitho.com/docs/state
+  }
+
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext): Component {
+    // TODO: describe your UI with existing components https://fblitho.com/docs/layout-specs
+    return Column.create(c).build()
+  }
+}
