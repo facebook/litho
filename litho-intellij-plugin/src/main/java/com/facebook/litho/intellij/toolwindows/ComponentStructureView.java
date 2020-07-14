@@ -40,12 +40,9 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.FormBuilder;
 import com.siyeh.ig.ui.BlankFiller;
-import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +52,6 @@ class ComponentStructureView implements Disposable {
   private final Project project;
   private ContentManager contentManager;
   private Content contentContainer;
-  private JButton refreshButton;
   @Nullable private StructureView structureView;
 
   static ComponentStructureView getInstance(Project project) {
@@ -70,7 +66,6 @@ class ComponentStructureView implements Disposable {
   @Override
   public void dispose() {
     contentManager = null;
-    refreshButton = null;
     contentContainer.dispose();
     contentContainer = null;
     dispose(structureView);
@@ -79,12 +74,12 @@ class ComponentStructureView implements Disposable {
   synchronized void setup(ToolWindow toolWindow) {
     contentManager = toolWindow.getContentManager();
     Disposer.register(contentManager, this);
-    refreshButton = createButton("Update", this::updateView);
-    contentContainer =
-        ContentFactory.SERVICE
-            .getInstance()
-            .createContent(createView(refreshButton, STUB), "", false);
+    contentContainer = ContentFactory.SERVICE.getInstance().createContent(STUB, "", false);
     contentManager.addContent(contentContainer);
+    updateViewLater();
+  }
+
+  private void updateViewLater() {
     DumbService.getInstance(project).smartInvokeLater(this::updateView);
   }
 
@@ -96,7 +91,7 @@ class ComponentStructureView implements Disposable {
     data.put(EventLogger.KEY_TYPE, "update");
     // Overriden below
     data.put(EventLogger.KEY_RESULT, "fail");
-    final JComponent mainView =
+    final JComponent newView =
         Optional.ofNullable(selectedFile)
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
             .map(cls -> cls.getUserData(ComponentGenerateService.KEY_SPEC_MODEL))
@@ -107,7 +102,6 @@ class ComponentStructureView implements Disposable {
                   return structureView.getComponent();
                 })
             .orElse(STUB);
-    final JComponent newView = createView(refreshButton, mainView);
     contentContainer.setComponent(newView);
     // View wasn't updating without this step
     contentManager.setSelectedContent(contentContainer);
@@ -139,16 +133,6 @@ class ComponentStructureView implements Disposable {
         .addComponent(top, 1)
         .addComponentFillVertically(bottom, 0)
         .getPanel();
-  }
-
-  private static JButton createButton(String name, Runnable action) {
-    return new JButton(
-        new AbstractAction(name) {
-          @Override
-          public void actionPerformed(ActionEvent actionEvent) {
-            action.run();
-          }
-        });
   }
 
   @Nullable
