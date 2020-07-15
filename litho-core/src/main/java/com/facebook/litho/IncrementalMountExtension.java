@@ -89,7 +89,8 @@ public class IncrementalMountExtension extends MountDelegateExtension
     assertMainThread();
 
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
-    if (localVisibleRect.isEmpty()
+    if (mPreviousLocalVisibleRect.isEmpty()
+        || localVisibleRect.isEmpty()
         || localVisibleRect.left != mPreviousLocalVisibleRect.left
         || localVisibleRect.right != mPreviousLocalVisibleRect.right) {
       initIncrementalMount(localVisibleRect, true);
