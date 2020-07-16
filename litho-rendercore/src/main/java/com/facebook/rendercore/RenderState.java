@@ -392,9 +392,15 @@ public class RenderState<State, RenderContext> {
         mFutureTask.run();
         try {
           return mFutureTask.get();
-        } catch (ExecutionException | InterruptedException e) {
-          // This should never happen since we've already completed the task
+        } catch (InterruptedException e) {
           throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+          // Unwrap so that stacktraces are more clear in logs
+          if (e.getCause() instanceof RuntimeException) {
+            throw (RuntimeException) e.getCause();
+          } else {
+            throw new RuntimeException(e.getCause());
+          }
         }
       }
 
