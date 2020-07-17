@@ -152,14 +152,6 @@ public final class AnimatedProperties {
         // No-op: x/y are always properly set for Drawables
       }
     }
-
-    @Override
-    public boolean animateUnchanged() {
-      // Even if the start and end coordinates are the same, the component may move off this point
-      // during the animation due to changes in scale or layout within its parent. Therefore we
-      // may need an Transition to "pin" the component in place.
-      return true;
-    }
   }
 
   private static class YAnimatedProperty implements AnimatedProperty {
@@ -216,14 +208,6 @@ public final class AnimatedProperties {
       } else if (mountContent instanceof Drawable) {
         // No-op: x/y are always properly set for Drawables
       }
-    }
-
-    @Override
-    public boolean animateUnchanged() {
-      // Even if the start and end coordinates are the same, the component may move off this point
-      // during the animation due to changes in scale or layout within its parent. Therefore we
-      // may need an Transition to "pin" the component in place.
-      return true;
     }
   };
 
@@ -292,11 +276,6 @@ public final class AnimatedProperties {
     public void reset(Object mountContent) {
       // No-op: height/width are always properly set at mount time so we don't need to reset it.
     }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
-    }
   }
 
   private static class HeightAnimatedProperty implements AnimatedProperty {
@@ -364,11 +343,6 @@ public final class AnimatedProperties {
     public void reset(Object mountContent) {
       // No-op: height/width are always properly set at mount time so we don't need to reset it.
     }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
-    }
   }
 
   private static class AlphaAnimatedProperty implements AnimatedProperty {
@@ -405,11 +379,6 @@ public final class AnimatedProperties {
     @Override
     public void reset(Object mountContent) {
       set(mountContent, 1);
-    }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
     }
   }
 
@@ -448,11 +417,6 @@ public final class AnimatedProperties {
       asView.setScaleX(1);
       asView.setScaleY(1);
     }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
-    }
   }
 
   private static class ScaleXAnimatedProperty implements AnimatedProperty {
@@ -479,11 +443,6 @@ public final class AnimatedProperties {
     @Override
     public void reset(Object mountContent) {
       assertIsView(mountContent, this).setScaleX(1);
-    }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
     }
   }
 
@@ -512,11 +471,6 @@ public final class AnimatedProperties {
     public void reset(Object mountContent) {
       assertIsView(mountContent, this).setScaleY(1);
     }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
-    }
   }
 
   private static class RotationAnimatedProperty implements AnimatedProperty {
@@ -543,11 +497,6 @@ public final class AnimatedProperties {
     @Override
     public void reset(Object mountContent) {
       assertIsView(mountContent, this).setRotation(0);
-    }
-
-    @Override
-    public boolean animateUnchanged() {
-      return false;
     }
   }
 

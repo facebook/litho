@@ -717,9 +717,7 @@ public class TransitionManager {
               AnimationsDebug.TAG,
               " - property is already animating to this end value: " + endValue);
         }
-        if (!property.animateUnchanged()) {
-          return null;
-        }
+        return null;
       }
     } else if (startValue == endValue) {
       if (AnimationsDebug.ENABLED) {
@@ -727,9 +725,7 @@ public class TransitionManager {
             AnimationsDebug.TAG,
             " - the start and end values were the same: " + startValue + " = " + endValue);
       }
-      if (!property.animateUnchanged()) {
-        return null;
-      }
+      return null;
     }
 
     if (AnimationsDebug.ENABLED) {
