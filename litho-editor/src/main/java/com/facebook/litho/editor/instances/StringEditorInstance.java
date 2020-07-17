@@ -25,7 +25,9 @@ public class StringEditorInstance implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    return EditorValue.string(EditorUtils.<String>getNodeUNSAFE(f, node));
+    CharSequence value = EditorUtils.getNodeUNSAFE(f, node);
+    value = value == null ? "null" : value;
+    return EditorValue.string(value.toString());
   }
 
   @Override

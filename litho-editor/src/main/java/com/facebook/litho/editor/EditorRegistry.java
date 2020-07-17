@@ -51,6 +51,13 @@ public final class EditorRegistry {
       }
       clazz = parent;
     }
+
+    for (Class ifaceClass : c.getInterfaces()) {
+      if (EDITORS.containsKey(ifaceClass)) {
+        return EDITORS.get(ifaceClass);
+      }
+    }
+
     return null;
   }
 
@@ -97,7 +104,7 @@ public final class EditorRegistry {
     registerEditor(short.class, numberEditor);
     registerEditor(byte.class, numberEditor);
 
-    registerEditor(String.class, new StringEditorInstance());
+    registerEditor(CharSequence.class, new StringEditorInstance());
 
     final BoolEditorInstance boolEditor = new BoolEditorInstance();
     registerEditor(Boolean.class, boolEditor);
