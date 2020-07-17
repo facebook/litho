@@ -34,7 +34,24 @@ public class NumberEditorInstance implements Editor {
         new EditorValue.DefaultEditorPrimitiveVisitor() {
           @Override
           public boolean isNumber(String[] path, EditorNumber number) {
-            EditorUtils.<Number>setNodeUNSAFE(f, node, number.value);
+            Number value = number.value;
+            Class<?> clazz = f.getType();
+            if (clazz == int.class || clazz == Integer.class) {
+              value = value.intValue();
+            } else if (clazz == float.class || clazz == Float.class) {
+              value = value.floatValue();
+            } else if (clazz == short.class || clazz == Short.class) {
+              value = value.shortValue();
+            } else if (clazz == byte.class || clazz == Byte.class) {
+              value = value.byteValue();
+            } else if (clazz == double.class || clazz == Double.class) {
+              value = value.doubleValue();
+            } else if (clazz == long.class || clazz == Long.class) {
+              value = value.longValue();
+            } else {
+              value = value.floatValue();
+            }
+            EditorUtils.setNodeUNSAFE(f, node, value);
             return true;
           }
         });

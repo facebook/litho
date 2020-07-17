@@ -27,8 +27,8 @@ public abstract class EditorValue {
 
   // Constructors
 
-  public static EditorValue number(float f) {
-    return new EditorNumber(f);
+  public static EditorValue number(Number n) {
+    return new EditorNumber(n);
   }
 
   public static EditorValue string(String s) {

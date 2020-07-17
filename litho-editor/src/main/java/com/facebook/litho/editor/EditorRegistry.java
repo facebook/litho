@@ -58,6 +58,10 @@ public final class EditorRegistry {
     EDITORS.put(c, e);
   }
 
+  public static void registerEditors(final Map<Class<?>, Editor> e) {
+    EDITORS.putAll(e);
+  }
+
   /**
    * Reads an EditorValue for a field if there is an Editor defined for the Class parameter. Returns
    * null otherwise.
@@ -89,6 +93,9 @@ public final class EditorRegistry {
     registerEditor(int.class, numberEditor);
     registerEditor(float.class, numberEditor);
     registerEditor(double.class, numberEditor);
+    registerEditor(long.class, numberEditor);
+    registerEditor(short.class, numberEditor);
+    registerEditor(byte.class, numberEditor);
 
     registerEditor(String.class, new StringEditorInstance());
 
