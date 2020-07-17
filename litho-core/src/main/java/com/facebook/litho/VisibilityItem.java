@@ -33,20 +33,23 @@ class VisibilityItem {
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
   private final String mGlobalKey;
-  private int mFlags;
+  private final @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
   // the corresponding event when unbind is called or when the MountState is reset.
-  @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
-  @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
-  private @Nullable final EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+  private @Nullable EventHandler<InvisibleEvent> mInvisibleHandler;
+  private @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+
   private boolean mDoNotClearInThisPass;
   private boolean mWasFullyVisible;
 
+  private int mFlags;
+
   public VisibilityItem(
-      String globalKey,
-      EventHandler<InvisibleEvent> invisibleHandler,
-      EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
-      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      final String globalKey,
+      final @Nullable EventHandler<InvisibleEvent> invisibleHandler,
+      final @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
+      final @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     mGlobalKey = globalKey;
     mInvisibleHandler = invisibleHandler;
     mUnfocusedHandler = unfocusedHandler;
