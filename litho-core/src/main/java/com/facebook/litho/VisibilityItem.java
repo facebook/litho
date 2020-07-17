@@ -32,7 +32,7 @@ class VisibilityItem {
   private static final int FLAG_BOTTOM_EDGE_VISIBLE = 1 << 4;
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
-  private final String mGlobalKey;
+  private final String mKey;
   private final @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
 
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
@@ -46,18 +46,18 @@ class VisibilityItem {
   private int mFlags;
 
   public VisibilityItem(
-      final String globalKey,
+      final String key,
       final @Nullable EventHandler<InvisibleEvent> invisibleHandler,
       final @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
       final @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
-    mGlobalKey = globalKey;
+    mKey = key;
     mInvisibleHandler = invisibleHandler;
     mUnfocusedHandler = unfocusedHandler;
     mVisibilityChangedHandler = visibilityChangedHandler;
   }
 
-  String getGlobalKey() {
-    return mGlobalKey;
+  String getKey() {
+    return mKey;
   }
 
   /** Sets the invisible event handler. */
