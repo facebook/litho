@@ -16,9 +16,10 @@
 
 package com.facebook.litho;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
+import com.facebook.rendercore.Function;
 
-public class EventHandler<E> {
+public class EventHandler<E> implements Function<Void> {
 
   public HasEventDispatcher mHasEventDispatcher;
   public final int id;
@@ -32,6 +33,12 @@ public class EventHandler<E> {
     this.mHasEventDispatcher = hasEventDispatcher;
     this.id = id;
     this.params = params;
+  }
+
+  @Override
+  public @Nullable Void call(Object... arguments) {
+    dispatchEvent((E) arguments[0]);
+    return null;
   }
 
   public void dispatchEvent(E event) {
