@@ -78,7 +78,7 @@ public class VisibilityEventsHelperTest {
     assertThat(VisibilityEventsHelper.triggerVisibilityEvent(mComponentTree, InvisibleEvent.class))
         .isTrue();
 
-    verify(mInvisibleEventEventHandler).dispatchEvent(any(InvisibleEvent.class));
+    verify(mInvisibleEventEventHandler).call(any(InvisibleEvent.class));
   }
 
   @Test
@@ -98,7 +98,7 @@ public class VisibilityEventsHelperTest {
                 mComponentTree, UnfocusedVisibleEvent.class))
         .isTrue();
 
-    verify(mUnfocusedVisibleEventEventHandler).dispatchEvent(any(UnfocusedVisibleEvent.class));
+    verify(mUnfocusedVisibleEventEventHandler).call(any(UnfocusedVisibleEvent.class));
   }
 
   @Test

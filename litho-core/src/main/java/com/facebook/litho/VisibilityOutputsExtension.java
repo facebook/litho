@@ -348,11 +348,12 @@ class VisibilityOutputsExtension
       final String key = toClear.get(i);
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
 
-      final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
+      final EventHandler<InvisibleEvent> invisibleHandler =
+          (EventHandler<InvisibleEvent>) visibilityItem.getInvisibleHandler();
       final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          visibilityItem.getUnfocusedHandler();
+          (EventHandler<UnfocusedVisibleEvent>) visibilityItem.getUnfocusedHandler();
       final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-          visibilityItem.getVisibilityChangedHandler();
+          (EventHandler<VisibilityChangedEvent>) visibilityItem.getVisibilityChangedHandler();
 
       if (invisibleHandler != null) {
         EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);

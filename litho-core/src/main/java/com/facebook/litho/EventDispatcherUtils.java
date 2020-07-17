@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import com.facebook.rendercore.Function;
 
 /**
  * This class contains utility methods to send pre-defined events (click, touch, accessibility,
@@ -114,14 +115,14 @@ class EventDispatcherUtils {
     focusedHandler.dispatchEvent(sFocusedVisibleEvent);
   }
 
-  static void dispatchOnUnfocused(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+  static void dispatchOnUnfocused(Function unfocusedHandler) {
     assertMainThread();
 
     if (sUnfocusedVisibleEvent == null) {
       sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
     }
 
-    unfocusedHandler.dispatchEvent(sUnfocusedVisibleEvent);
+    unfocusedHandler.call(sUnfocusedVisibleEvent);
   }
 
   static void dispatchOnFullImpression(
@@ -135,14 +136,14 @@ class EventDispatcherUtils {
     fullImpressionHandler.dispatchEvent(sFullImpressionVisibleEvent);
   }
 
-  static void dispatchOnInvisible(EventHandler<InvisibleEvent> invisibleHandler) {
+  static void dispatchOnInvisible(Function invisibleHandler) {
     assertMainThread();
 
     if (sInvisibleEvent == null) {
       sInvisibleEvent = new InvisibleEvent();
     }
 
-    invisibleHandler.dispatchEvent(sInvisibleEvent);
+    invisibleHandler.call(sInvisibleEvent);
   }
 
   static void dispatchOnVisibilityChanged(

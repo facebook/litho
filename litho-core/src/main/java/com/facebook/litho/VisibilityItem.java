@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Function;
 
 /**
  * Holds information about a VisibilityOutput (that is, about a component for which a visibility
@@ -33,12 +34,12 @@ class VisibilityItem {
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
   private final String mKey;
-  private final @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+  private final @Nullable Function mVisibilityChangedHandler;
 
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
   // the corresponding event when unbind is called or when the MountState is reset.
-  private @Nullable EventHandler<InvisibleEvent> mInvisibleHandler;
-  private @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  private @Nullable Function mInvisibleHandler;
+  private @Nullable Function mUnfocusedHandler;
 
   private boolean mDoNotClearInThisPass;
   private boolean mWasFullyVisible;
@@ -47,9 +48,9 @@ class VisibilityItem {
 
   public VisibilityItem(
       final String key,
-      final @Nullable EventHandler<InvisibleEvent> invisibleHandler,
-      final @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
-      final @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      final @Nullable Function invisibleHandler,
+      final @Nullable Function unfocusedHandler,
+      final @Nullable Function visibilityChangedHandler) {
     mKey = key;
     mInvisibleHandler = invisibleHandler;
     mUnfocusedHandler = unfocusedHandler;
@@ -61,29 +62,26 @@ class VisibilityItem {
   }
 
   /** Sets the invisible event handler. */
-  void setInvisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+  void setInvisibleHandler(@Nullable Function invisibleHandler) {
     mInvisibleHandler = invisibleHandler;
   }
 
   /** Returns the invisible event handler. */
-  @Nullable
-  EventHandler<InvisibleEvent> getInvisibleHandler() {
+  public @Nullable Function getInvisibleHandler() {
     return mInvisibleHandler;
   }
 
   /** Sets the unfocused event handler. */
-  void setUnfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+  void setUnfocusedHandler(@Nullable Function unfocusedHandler) {
     mUnfocusedHandler = unfocusedHandler;
   }
 
   /** Returns the unfocused event handler. */
-  @Nullable
-  EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
+  public @Nullable Function getUnfocusedHandler() {
     return mUnfocusedHandler;
   }
 
-  @Nullable
-  EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler() {
+  public @Nullable Function getVisibilityChangedHandler() {
     return mVisibilityChangedHandler;
   }
 
