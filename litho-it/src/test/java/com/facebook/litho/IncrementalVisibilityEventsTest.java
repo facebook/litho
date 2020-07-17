@@ -33,6 +33,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.yoga.YogaEdge;
 import java.util.Map;
 import org.junit.After;

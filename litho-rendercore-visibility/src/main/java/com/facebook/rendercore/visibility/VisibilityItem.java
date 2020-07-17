@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
 
 /**
- * Holds information about a VisibilityOutput (that is, about a component for which a visibility
- * event handler has been set). This class is justified by the fact that VisibilityOutput should be
+ * Holds information about a VisibilityOutput (that is, about an item for which a visibility event
+ * handler have been set). This class is justified by the fact that VisibilityOutput should be
  * immutable.
  */
-class VisibilityItem {
+public class VisibilityItem {
 
   private static final int FLAG_LEFT_EDGE_VISIBLE = 1 << 1;
   private static final int FLAG_TOP_EDGE_VISIBLE = 1 << 2;
@@ -57,12 +57,12 @@ class VisibilityItem {
     mVisibilityChangedHandler = visibilityChangedHandler;
   }
 
-  String getKey() {
+  public String getKey() {
     return mKey;
   }
 
   /** Sets the invisible event handler. */
-  void setInvisibleHandler(@Nullable Function invisibleHandler) {
+  public void setInvisibleHandler(@Nullable Function invisibleHandler) {
     mInvisibleHandler = invisibleHandler;
   }
 
@@ -72,7 +72,7 @@ class VisibilityItem {
   }
 
   /** Sets the unfocused event handler. */
-  void setUnfocusedHandler(@Nullable Function unfocusedHandler) {
+  public void setUnfocusedHandler(@Nullable Function unfocusedHandler) {
     mUnfocusedHandler = unfocusedHandler;
   }
 
@@ -85,11 +85,11 @@ class VisibilityItem {
     return mVisibilityChangedHandler;
   }
 
-  boolean isInFocusedRange() {
+  public boolean isInFocusedRange() {
     return (mFlags & FLAG_FOCUSED_RANGE) != 0;
   }
 
-  void setFocusedRange(boolean isFocused) {
+  public void setFocusedRange(boolean isFocused) {
     if (isFocused) {
       mFlags |= FLAG_FOCUSED_RANGE;
     } else {
@@ -101,7 +101,7 @@ class VisibilityItem {
    * Returns true if the component associated with this VisibilityItem is in the full impression
    * range.
    */
-  boolean isInFullImpressionRange() {
+  public boolean isInFullImpressionRange() {
     final int allEdgesVisible =
         FLAG_LEFT_EDGE_VISIBLE
             | FLAG_TOP_EDGE_VISIBLE
@@ -116,7 +116,7 @@ class VisibilityItem {
    * checks if the component has entered the full impression visible range and, if so, it sets the
    * appropriate flag.
    */
-  void setVisibleEdges(Rect componentBounds, Rect componentVisibleBounds) {
+  public void setVisibleEdges(Rect componentBounds, Rect componentVisibleBounds) {
     if (componentBounds.top == componentVisibleBounds.top) {
       mFlags |= FLAG_TOP_EDGE_VISIBLE;
     }
@@ -131,19 +131,19 @@ class VisibilityItem {
     }
   }
 
-  boolean doNotClearInThisPass() {
+  public boolean doNotClearInThisPass() {
     return mDoNotClearInThisPass;
   }
 
-  void setDoNotClearInThisPass(boolean doNotClearInThisPass) {
+  public void setDoNotClearInThisPass(boolean doNotClearInThisPass) {
     mDoNotClearInThisPass = doNotClearInThisPass;
   }
 
-  boolean wasFullyVisible() {
+  public boolean wasFullyVisible() {
     return mWasFullyVisible;
   }
 
-  void setWasFullyVisible(boolean fullyVisible) {
+  public void setWasFullyVisible(boolean fullyVisible) {
     mWasFullyVisible = fullyVisible;
   }
 }

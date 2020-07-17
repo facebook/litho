@@ -23,6 +23,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.visibility.VisibilityItem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
