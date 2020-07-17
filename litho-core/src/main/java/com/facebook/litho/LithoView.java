@@ -358,22 +358,6 @@ public class LithoView extends Host {
     requestLayout();
   }
 
-  public void setAnimatedTranslationX(float translationX) {
-    if (translationX == getTranslationX()) {
-      return;
-    }
-    super.setTranslationX(translationX);
-    onOffsetOrTranslationChange(true);
-  }
-
-  public void setAnimatedTranslationY(float translationY) {
-    if (translationY == getTranslationY()) {
-      return;
-    }
-    super.setTranslationY(translationY);
-    onOffsetOrTranslationChange(true);
-  }
-
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     widthMeasureSpec =
@@ -897,14 +881,14 @@ public class LithoView extends Host {
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
-    onOffsetOrTranslationChange(false);
+    onOffsetOrTranslationChange();
   }
 
   @Override
   public void offsetLeftAndRight(int offset) {
     super.offsetLeftAndRight(offset);
 
-    onOffsetOrTranslationChange(false);
+    onOffsetOrTranslationChange();
   }
 
   @Override
@@ -914,7 +898,7 @@ public class LithoView extends Host {
     }
     super.setTranslationX(translationX);
 
-    onOffsetOrTranslationChange(false);
+    onOffsetOrTranslationChange();
   }
 
   @Override
@@ -924,7 +908,7 @@ public class LithoView extends Host {
     }
     super.setTranslationY(translationY);
 
-    onOffsetOrTranslationChange(false);
+    onOffsetOrTranslationChange();
   }
 
   @Override
@@ -946,7 +930,7 @@ public class LithoView extends Host {
     }
   }
 
-  private void onOffsetOrTranslationChange(boolean isAnimating) {
+  private void onOffsetOrTranslationChange() {
     if (mComponentTree == null || !(getParent() instanceof View)) {
       return;
     }
@@ -982,7 +966,7 @@ public class LithoView extends Host {
       return;
     }
 
-    notifyVisibleBoundsChanged(rect, true, isAnimating);
+    notifyVisibleBoundsChanged(rect, true);
   }
 
   /**
@@ -1006,20 +990,12 @@ public class LithoView extends Host {
   }
 
   public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
-    notifyVisibleBoundsChanged(visibleRect, processVisibilityOutputs, false);
-  }
-
-  public void notifyVisibleBoundsChanged(
-      Rect visibleRect, boolean processVisibilityOutputs, boolean isAnimating) {
     if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
       return;
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
-      if (!isAnimating) {
-        // Items remain mounted during animation, so no need to incremental mount
-        mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
-      }
+      mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else if (processVisibilityOutputs) {
       processVisibilityOutputs(visibleRect);
     }

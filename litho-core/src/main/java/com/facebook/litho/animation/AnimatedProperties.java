@@ -106,7 +106,7 @@ public final class AnimatedProperties {
     @Override
     public float get(Object mountContent) {
       if (mountContent instanceof LithoView) {
-        return ((LithoView) mountContent).getTranslationX();
+        return ((LithoView) mountContent).getX();
       } else if (mountContent instanceof View) {
         return getPositionRelativeToLithoView((View) mountContent, true);
       } else if (mountContent instanceof Drawable) {
@@ -127,7 +127,7 @@ public final class AnimatedProperties {
     @Override
     public void set(Object mountContent, float value) {
       if (mountContent instanceof LithoView) {
-        ((LithoView) mountContent).setAnimatedTranslationX(value);
+        ((View) mountContent).setX(value);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
         float parentX = getPositionRelativeToLithoView((View) view.getParent(), true);
@@ -145,9 +145,7 @@ public final class AnimatedProperties {
 
     @Override
     public void reset(Object mountContent) {
-      if (mountContent instanceof LithoView) {
-        ((LithoView) mountContent).setAnimatedTranslationX(0);
-      } else if (mountContent instanceof View) {
+      if (mountContent instanceof View) {
         final View view = (View) mountContent;
         view.setTranslationX(0);
       } else if (mountContent instanceof Drawable) {
@@ -173,7 +171,7 @@ public final class AnimatedProperties {
     @Override
     public float get(Object mountContent) {
       if (mountContent instanceof LithoView) {
-        return ((LithoView) mountContent).getTranslationY();
+        return ((LithoView) mountContent).getY();
       } else if (mountContent instanceof View) {
         return getPositionRelativeToLithoView((View) mountContent, false);
       } else if (mountContent instanceof Drawable) {
@@ -194,7 +192,7 @@ public final class AnimatedProperties {
     @Override
     public void set(Object mountContent, float value) {
       if (mountContent instanceof LithoView) {
-        ((LithoView) mountContent).setAnimatedTranslationY(value);
+        ((View) mountContent).setY(value);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
         float parentY = getPositionRelativeToLithoView((View) view.getParent(), false);
@@ -212,9 +210,7 @@ public final class AnimatedProperties {
 
     @Override
     public void reset(Object mountContent) {
-      if (mountContent instanceof LithoView) {
-        ((LithoView) mountContent).setAnimatedTranslationY(0);
-      } else if (mountContent instanceof View) {
+      if (mountContent instanceof View) {
         final View view = (View) mountContent;
         view.setTranslationY(0);
       } else if (mountContent instanceof Drawable) {
