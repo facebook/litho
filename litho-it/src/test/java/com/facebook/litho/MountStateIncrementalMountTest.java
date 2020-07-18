@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LifecycleStep.ON_MOUNT;
+import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestViewComponent.create;
@@ -36,7 +38,9 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
@@ -44,6 +48,8 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
+import com.facebook.litho.widget.SimpleStateUpdateEmulator;
+import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
@@ -858,6 +864,51 @@ public class MountStateIncrementalMountTest {
     // when
     // it is laid out and therefore doesn't need mounting again in the same frame
     verify(lithoView, never()).notifyVisibleBoundsChanged();
+  }
+
+  @Test
+  public void incrementalMount_dirtyMount_unmountItemsOffScreen() {
+    final LifecycleTracker info_child1 = new LifecycleTracker();
+    final LifecycleTracker info_child2 = new LifecycleTracker();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root =
+        Column.create(mLithoViewRule.getContext())
+            .child(
+                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                    .intrinsicSize(new Size(10, 10))
+                    .lifecycleTracker(info_child1)
+                    .key("some_key"))
+            .child(
+                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                    .intrinsicSize(new Size(10, 10))
+                    .lifecycleTracker(info_child2)
+                    .key("other_key"))
+            .child(
+                SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
+            .build();
+
+    mLithoViewRule.setRoot(root).setSizePx(10, 20).attachToWindow().measure().layout();
+
+    final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 20);
+
+    parent.addView(mLithoViewRule.getLithoView(), 0, 20);
+
+    assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_MOUNT);
+    assertThat(info_child2.getSteps()).describedAs("Mounted.").contains(ON_MOUNT);
+
+    stateUpdater.increment();
+
+    info_child1.reset();
+    info_child2.reset();
+
+    mLithoViewRule.getLithoView().setTranslationY(-12);
+    assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
   }
 
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {

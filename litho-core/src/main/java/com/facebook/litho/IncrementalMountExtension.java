@@ -107,7 +107,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
   public void beforeMount(IncrementalMountExtensionInput input, Rect localVisibleRect) {
     mInput = input;
     mPreviousLocalVisibleRect.setEmpty();
-    resetAcquiredReferences();
 
     initIncrementalMount(localVisibleRect, false);
     setVisibleRect(localVisibleRect);
