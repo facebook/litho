@@ -381,7 +381,7 @@ class MountState
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
           if (isIncrementalMountEnabled) {
-            mountComponentToContentApplyBinders(i, component, getItemAt(i).getContent());
+            mountComponentToContentApplyMountBinders(i, component, getItemAt(i).getContent());
           }
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
@@ -621,7 +621,7 @@ class MountState
 
       if (!isMounted) {
         mountLayoutOutput(i, renderTreeNode, layoutOutput, layoutState);
-        mountComponentToContentApplyBinders(i, component, getItemAt(i).getContent());
+        mountComponentToContentApplyMountBinders(i, component, getItemAt(i).getContent());
       } else {
         final boolean useUpdateValueFromLayoutOutput =
             mLastMountedLayoutState != null
@@ -681,7 +681,7 @@ class MountState
     mIsMounting = false;
   }
 
-  private void mountComponentToContentApplyBinders(
+  private void mountComponentToContentApplyMountBinders(
       int position, Component component, Object content) {
     if (mTransitionsExtension == null) {
       if (isAnimationLocked(position) && component.hasChildLithoViews()) {
