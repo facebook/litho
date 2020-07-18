@@ -506,7 +506,7 @@ class MountState
 
     if (mIsDirty || mNeedsRemount) {
       mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
-      mount(layoutState);
+      mount(layoutState, processVisibilityOutputs);
     } else {
       mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
     }
@@ -538,14 +538,14 @@ class MountState
   public void mount(RenderTree renderTree) {
     final LayoutState layoutState = (LayoutState) renderTree.getRenderTreeData();
 
-    mount(layoutState);
+    mount(layoutState, true);
   }
 
   /**
    * Mount only. Similar shape to RenderCore's mount. For extras such as incremental mount,
    * visibility outputs etc register an extension. To do: extract transitions logic from here.
    */
-  void mount(LayoutState layoutState) {
+  void mount(LayoutState layoutState, boolean processVisibilityOutputs) {
     assertMainThread();
 
     if (layoutState == null) {
@@ -653,6 +653,12 @@ class MountState
             mMountStats.noOpCount++;
           }
         }
+
+        applyBindBinders(
+            currentMountItem,
+            componentTree.isIncrementalMountEnabled(),
+            processVisibilityOutputs,
+            component);
       }
 
       if (isTracing) {
@@ -697,6 +703,16 @@ class MountState
       final LithoRenderUnit renderUnit =
           (LithoRenderUnit) mountItem.getRenderTreeNode().getRenderUnit();
       mTransitionsExtension.bind(mContext.getAndroidContext(), null, content, renderUnit, content);
+    }
+  }
+
+  private void applyBindBinders(
+      MountItem mountItem,
+      boolean isIncrementalMountEnabled,
+      boolean processVisibilityOutput,
+      Component component) {
+    if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
+      mountItemIncrementally(mountItem, processVisibilityOutput);
     }
   }
 

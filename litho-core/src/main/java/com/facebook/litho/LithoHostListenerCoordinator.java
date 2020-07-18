@@ -97,6 +97,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     mIncrementalMountExtension = new IncrementalMountExtension(lithoView);
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
+    addAttachDetachExtension(mIncrementalMountExtension.getAttachDetachBinder());
   }
 
   void enableVisibilityProcessing(LithoView lithoView) {
