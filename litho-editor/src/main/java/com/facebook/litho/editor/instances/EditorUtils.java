@@ -24,7 +24,11 @@ public final class EditorUtils {
   @SuppressWarnings("unchecked")
   public static <T> T getNodeUNSAFE(Field f, Object node) {
     try {
-      return (T) f.get(node);
+      boolean oldAccessibility = f.isAccessible();
+      f.setAccessible(true);
+      T value = (T) f.get(node);
+      f.setAccessible(oldAccessibility);
+      return value;
     } catch (IllegalArgumentException e) {
       throw new RuntimeException(e);
     } catch (IllegalAccessException e) {
@@ -34,9 +38,10 @@ public final class EditorUtils {
 
   public static <T> void setNodeUNSAFE(Field f, Object node, T value) {
     try {
+      boolean oldAccessibility = f.isAccessible();
       f.setAccessible(true);
       f.set(node, value);
-      f.setAccessible(false);
+      f.setAccessible(oldAccessibility);
     } catch (IllegalArgumentException e) {
       throw new RuntimeException(e);
     } catch (IllegalAccessException e) {
