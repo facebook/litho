@@ -4,7 +4,7 @@
 
 _release-date_
 
-* TBA
+* New: Add `LithoGestureDetector` wrapper class that ensures gestures are processed on UI thread.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.37.0...master).
 
