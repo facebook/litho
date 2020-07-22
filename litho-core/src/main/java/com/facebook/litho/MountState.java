@@ -191,11 +191,10 @@ class MountState
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
-    if (!mLithoView.usingExtensionsWithMountDelegate()) {
-      if (ComponentsConfiguration.useIncrementalMountExtension) {
-        mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
-        registerMountDelegateExtension(mIncrementalMountExtension);
-      }
+    if (!mLithoView.usingExtensionsWithMountDelegate()
+        && ComponentsConfiguration.useIncrementalMountExtension) {
+      mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
+      registerMountDelegateExtension(mIncrementalMountExtension);
     }
 
     if (!mLithoView.usingExtensionsWithMountDelegate()
@@ -207,7 +206,7 @@ class MountState
     }
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
-    if (!ComponentsConfiguration.useExtensionsWithMountDelegate
+    if (!mLithoView.usingExtensionsWithMountDelegate()
         && !ComponentsConfiguration.useIncrementalMountExtension
         && ComponentsConfiguration.useTransitionsExtension) {
       registerMountDelegateExtension(new TransitionsExtension(mLithoView));
