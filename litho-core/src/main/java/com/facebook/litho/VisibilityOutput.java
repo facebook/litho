@@ -26,17 +26,44 @@ import androidx.annotation.Nullable;
  */
 class VisibilityOutput {
 
-  private Component mComponent;
-  private final Rect mBounds = new Rect();
-  private float mVisibleHeightRatio;
-  private float mVisibleWidthRatio;
-  private EventHandler<VisibleEvent> mVisibleEventHandler;
-  private EventHandler<FocusedVisibleEvent> mFocusedEventHandler;
-  private EventHandler<UnfocusedVisibleEvent> mUnfocusedEventHandler;
-  private EventHandler<FullImpressionVisibleEvent> mFullImpressionEventHandler;
-  private EventHandler<InvisibleEvent> mInvisibleEventHandler;
-  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedEventHandler;
+  private final Rect mBounds;
+
+  private final Component mComponent;
+
+  private final float mVisibleHeightRatio;
+  private final float mVisibleWidthRatio;
+
+  private final @Nullable EventHandler<VisibleEvent> mVisibleEventHandler;
+  private final @Nullable EventHandler<FocusedVisibleEvent> mFocusedEventHandler;
+  private final @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedEventHandler;
+  private final @Nullable EventHandler<FullImpressionVisibleEvent> mFullImpressionEventHandler;
+  private final @Nullable EventHandler<InvisibleEvent> mInvisibleEventHandler;
+  private final @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedEventHandler;
+
   private float mFocusedRatio;
+
+  public VisibilityOutput(
+      final Component component,
+      final Rect bounds,
+      final float visibleHeightRatio,
+      final float visibleWidthRatio,
+      final @Nullable EventHandler<VisibleEvent> visibleEventHandler,
+      final @Nullable EventHandler<FocusedVisibleEvent> focusedEventHandler,
+      final @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler,
+      final @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionEventHandler,
+      final @Nullable EventHandler<InvisibleEvent> invisibleEventHandler,
+      final @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedEventHandler) {
+    mComponent = component;
+    mBounds = bounds;
+    mVisibleHeightRatio = visibleHeightRatio;
+    mVisibleWidthRatio = visibleWidthRatio;
+    mVisibleEventHandler = visibleEventHandler;
+    mFocusedEventHandler = focusedEventHandler;
+    mUnfocusedEventHandler = unfocusedEventHandler;
+    mFullImpressionEventHandler = fullImpressionEventHandler;
+    mInvisibleEventHandler = invisibleEventHandler;
+    mVisibilityChangedEventHandler = visibilityChangedEventHandler;
+  }
 
   @Nullable
   String getId() {
@@ -47,20 +74,8 @@ class VisibilityOutput {
     return mComponent;
   }
 
-  void setComponent(Component component) {
-    mComponent = component;
-  }
-
   Rect getBounds() {
     return mBounds;
-  }
-
-  void setBounds(int l, int t, int r, int b) {
-    mBounds.set(l, t, r, b);
-  }
-
-  void setBounds(Rect bounds) {
-    mBounds.set(bounds);
   }
 
   float getVisibilityTop() {
@@ -119,16 +134,8 @@ class VisibilityOutput {
     return mBounds.right - mFocusedRatio * (mBounds.right - mBounds.left);
   }
 
-  void setVisibleHeightRatio(float visibleHeightRatio) {
-    mVisibleHeightRatio = visibleHeightRatio;
-  }
-
   float getVisibleHeightRatio() {
     return mVisibleHeightRatio;
-  }
-
-  void setVisibleWidthRatio(float visibleWidthRatio) {
-    mVisibleWidthRatio = visibleWidthRatio;
   }
 
   float getVisibleWidthRatio() {
@@ -139,16 +146,8 @@ class VisibilityOutput {
     mFocusedRatio = focusedRatio;
   }
 
-  void setVisibleEventHandler(EventHandler<VisibleEvent> visibleEventHandler) {
-    mVisibleEventHandler = visibleEventHandler;
-  }
-
   EventHandler<VisibleEvent> getVisibleEventHandler() {
     return mVisibleEventHandler;
-  }
-
-  void setFocusedEventHandler(EventHandler<FocusedVisibleEvent> focusedEventHandler) {
-    mFocusedEventHandler = focusedEventHandler;
   }
 
   int getComponentArea() {
@@ -160,34 +159,16 @@ class VisibilityOutput {
     return mFocusedEventHandler;
   }
 
-  void setUnfocusedEventHandler(EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler) {
-    mUnfocusedEventHandler = unfocusedEventHandler;
-  }
-
   EventHandler<UnfocusedVisibleEvent> getUnfocusedEventHandler() {
     return mUnfocusedEventHandler;
-  }
-
-  void setFullImpressionEventHandler(
-      EventHandler<FullImpressionVisibleEvent> fullImpressionEventHandler) {
-    mFullImpressionEventHandler = fullImpressionEventHandler;
   }
 
   EventHandler<FullImpressionVisibleEvent> getFullImpressionEventHandler() {
     return mFullImpressionEventHandler;
   }
 
-  void setInvisibleEventHandler(EventHandler<InvisibleEvent> invisibleEventHandler) {
-    mInvisibleEventHandler = invisibleEventHandler;
-  }
-
   EventHandler<InvisibleEvent> getInvisibleEventHandler() {
     return mInvisibleEventHandler;
-  }
-
-  void setVisibilityChangedEventHandler(
-      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedEventHandler) {
-    mVisibilityChangedEventHandler = visibilityChangedEventHandler;
   }
 
   @Nullable

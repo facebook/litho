@@ -615,20 +615,18 @@ public class LayoutState
     final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
     final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
         node.getVisibilityChangedHandler();
-    final VisibilityOutput visibilityOutput = new VisibilityOutput();
 
-    visibilityOutput.setComponent(node.getTailComponent());
-    visibilityOutput.setBounds(l, t, r, b);
-    visibilityOutput.setVisibleHeightRatio(node.getVisibleHeightRatio());
-    visibilityOutput.setVisibleWidthRatio(node.getVisibleWidthRatio());
-    visibilityOutput.setVisibleEventHandler(visibleHandler);
-    visibilityOutput.setFocusedEventHandler(focusedHandler);
-    visibilityOutput.setUnfocusedEventHandler(unfocusedHandler);
-    visibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
-    visibilityOutput.setInvisibleEventHandler(invisibleHandler);
-    visibilityOutput.setVisibilityChangedEventHandler(visibleRectChangedEventHandler);
-
-    return visibilityOutput;
+    return new VisibilityOutput(
+        node.getTailComponent(),
+        new Rect(l, t, r, b),
+        node.getVisibleHeightRatio(),
+        node.getVisibleWidthRatio(),
+        visibleHandler,
+        focusedHandler,
+        unfocusedHandler,
+        fullImpressionHandler,
+        invisibleHandler,
+        visibleRectChangedEventHandler);
   }
 
   private static TestOutput createTestOutput(
