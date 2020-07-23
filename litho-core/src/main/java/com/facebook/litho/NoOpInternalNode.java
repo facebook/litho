@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;

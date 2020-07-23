@@ -35,6 +35,7 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat.Accessibility
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Deque;

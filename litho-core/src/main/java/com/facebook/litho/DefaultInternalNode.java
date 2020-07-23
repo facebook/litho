@@ -54,6 +54,7 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;

@@ -25,6 +25,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;

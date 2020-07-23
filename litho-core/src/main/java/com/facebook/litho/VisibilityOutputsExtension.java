@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.visibility.VisibilityItem;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

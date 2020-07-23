@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.litho.IncrementalModule.IncrementalModuleItem;
 import com.facebook.litho.VisibilityModuleInput.FocusedIncrementalModuleItem;
+import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

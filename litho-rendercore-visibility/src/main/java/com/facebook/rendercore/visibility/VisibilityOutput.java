@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
 
 /**
- * Stores information about a {@link Component} which has registered handlers for {@link
- * VisibleEvent} or {@link InvisibleEvent}. The information is passed to {@link MountState} which
- * then dispatches the appropriate events.
+ * Stores information about a node which has registered visibility handlers for. The information is
+ * passed to the visibility extension which then dispatches the appropriate events.
  */
-class VisibilityOutput {
+public class VisibilityOutput {
 
   private final String mId;
   private final String mKey;
@@ -68,19 +67,24 @@ class VisibilityOutput {
     mVisibilityChangedEventHandler = visibilityChangedEventHandler;
   }
 
-  String getId() {
+  /**
+   * An identifier unique to this visibility output. This needs to be unique for every output in a
+   * given {@link com.facebook.rendercore.RenderTree}.
+   */
+  public String getId() {
     return mId;
   }
 
-  String getKey() {
+  /** A pretty name of this visibility output; does not need to be unique. */
+  public String getKey() {
     return mKey;
   }
 
-  Rect getBounds() {
+  public Rect getBounds() {
     return mBounds;
   }
 
-  float getVisibilityTop() {
+  public float getVisibilityTop() {
     if (getVisibleHeightRatio() == 0) {
       return mBounds.top;
     }
@@ -88,7 +92,7 @@ class VisibilityOutput {
     return mBounds.top + getVisibleHeightRatio() * (mBounds.bottom - mBounds.top);
   }
 
-  float getVisibilityBottom() {
+  public float getVisibilityBottom() {
     if (getVisibleHeightRatio() == 0) {
       return mBounds.bottom;
     }
@@ -96,55 +100,55 @@ class VisibilityOutput {
     return mBounds.bottom - getVisibleHeightRatio() * (mBounds.bottom - mBounds.top);
   }
 
-  float getVisibilityLeft() {
+  public float getVisibilityLeft() {
     return mBounds.left + getVisibleWidthRatio() * (mBounds.right - mBounds.left);
   }
 
-  float getVisibilityRight() {
+  public float getVisibilityRight() {
     return mBounds.right - getVisibleHeightRatio() * (mBounds.right - mBounds.left);
   }
 
-  float getFullImpressionTop() {
+  public float getFullImpressionTop() {
     return mBounds.bottom;
   }
 
-  float getFullImpressionBottom() {
+  public float getFullImpressionBottom() {
     return mBounds.top;
   }
 
-  float getFullImpressionLeft() {
+  public float getFullImpressionLeft() {
     return mBounds.right;
   }
 
-  float getFullImpressionRight() {
+  public float getFullImpressionRight() {
     return mBounds.left;
   }
 
-  float getFocusedTop() {
+  public float getFocusedTop() {
     return mBounds.top + mFocusedRatio * (mBounds.bottom - mBounds.top);
   }
 
-  float getFocusedBottom() {
+  public float getFocusedBottom() {
     return mBounds.bottom - mFocusedRatio * (mBounds.bottom - mBounds.top);
   }
 
-  float getFocusedLeft() {
+  public float getFocusedLeft() {
     return mBounds.left + mFocusedRatio * (mBounds.right - mBounds.left);
   }
 
-  float getFocusedRight() {
+  public float getFocusedRight() {
     return mBounds.right - mFocusedRatio * (mBounds.right - mBounds.left);
   }
 
-  float getVisibleHeightRatio() {
+  public float getVisibleHeightRatio() {
     return mVisibleHeightRatio;
   }
 
-  float getVisibleWidthRatio() {
+  public float getVisibleWidthRatio() {
     return mVisibleWidthRatio;
   }
 
-  void setFocusedRatio(float focusedRatio) {
+  public void setFocusedRatio(float focusedRatio) {
     mFocusedRatio = focusedRatio;
   }
 
@@ -152,7 +156,7 @@ class VisibilityOutput {
     return mVisibleEventHandler;
   }
 
-  int getComponentArea() {
+  public int getComponentArea() {
     final Rect rect = getBounds();
     return rect.isEmpty() ? 0 : (rect.width() * rect.height());
   }
