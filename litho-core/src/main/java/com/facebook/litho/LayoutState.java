@@ -1754,8 +1754,9 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("sortMountableOutputs");
     }
-    Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
-    Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+
+    sortTops(layoutState);
+    sortBottoms(layoutState);
 
     if (layoutState.mIncrementalVisibility) {
       layoutState.mVisibilityModuleInput.setIncrementalModuleItems(layoutState.mVisibilityOutputs);
@@ -1771,6 +1772,40 @@ public class LayoutState
         && !ComponentsConfiguration.isDebugModeEnabled
         && !ComponentsConfiguration.isEndToEndTestRun) {
       layoutState.mLayoutRoot = null;
+    }
+  }
+
+  private static void sortTops(LayoutState layoutState) {
+    try {
+      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+    } catch (IllegalArgumentException e) {
+      final StringBuilder errorMessage = new StringBuilder();
+      errorMessage.append(e.getMessage()).append("\n");
+      final int size = layoutState.mMountableOutputTops.size();
+      errorMessage.append("Error while sorting LayoutState tops. Size: " + size).append("\n");
+      for (int i = 0; i < size; i++) {
+        final RenderTreeNode node = layoutState.mMountableOutputTops.get(i);
+        errorMessage.append("   Index " + i + " top: " + node.getBounds().top).append("\n");
+      }
+
+      throw new IllegalStateException(errorMessage.toString());
+    }
+  }
+
+  private static void sortBottoms(LayoutState layoutState) {
+    try {
+      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+    } catch (IllegalArgumentException e) {
+      final StringBuilder errorMessage = new StringBuilder();
+      errorMessage.append(e.getMessage()).append("\n");
+      final int size = layoutState.mMountableOutputBottoms.size();
+      errorMessage.append("Error while sorting LayoutState bottoms. Size: " + size).append("\n");
+      for (int i = 0; i < size; i++) {
+        final RenderTreeNode node = layoutState.mMountableOutputBottoms.get(i);
+        errorMessage.append("   Index " + i + " bottom: " + node.getBounds().bottom).append("\n");
+      }
+
+      throw new IllegalStateException(errorMessage.toString());
     }
   }
 
