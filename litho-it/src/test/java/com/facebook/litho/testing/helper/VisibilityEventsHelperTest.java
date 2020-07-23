@@ -70,7 +70,7 @@ public class VisibilityEventsHelperTest {
     assertThat(VisibilityEventsHelper.triggerVisibilityEvent(mComponentTree, VisibleEvent.class))
         .isTrue();
 
-    verify(mVisibleEventEventHandler).dispatchEvent(any(VisibleEvent.class));
+    verify(mVisibleEventEventHandler).call(any(VisibleEvent.class));
   }
 
   @Test
@@ -88,7 +88,7 @@ public class VisibilityEventsHelperTest {
                 mComponentTree, FocusedVisibleEvent.class))
         .isTrue();
 
-    verify(mFocusedVisibleEventEventHandler).dispatchEvent(any(FocusedVisibleEvent.class));
+    verify(mFocusedVisibleEventEventHandler).call(any(FocusedVisibleEvent.class));
   }
 
   @Test
@@ -108,7 +108,7 @@ public class VisibilityEventsHelperTest {
                 mComponentTree, FullImpressionVisibleEvent.class))
         .isTrue();
 
-    verify(mFullImpressionEventEventHandler).dispatchEvent(any(FullImpressionVisibleEvent.class));
+    verify(mFullImpressionEventEventHandler).call(any(FullImpressionVisibleEvent.class));
   }
 
   @Test
@@ -133,7 +133,7 @@ public class VisibilityEventsHelperTest {
     assertThat(VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent.class))
         .isTrue();
 
-    verify(mVisibleEventEventHandler).dispatchEvent(any(VisibleEvent.class));
+    verify(mVisibleEventEventHandler).call(any(VisibleEvent.class));
   }
 
   private Component getComponentWithHandlers() {

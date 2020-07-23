@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Function;
 
 /**
  * Stores information about a {@link Component} which has registered handlers for {@link
@@ -33,12 +34,12 @@ class VisibilityOutput {
   private final float mVisibleHeightRatio;
   private final float mVisibleWidthRatio;
 
-  private final @Nullable EventHandler<VisibleEvent> mVisibleEventHandler;
-  private final @Nullable EventHandler<FocusedVisibleEvent> mFocusedEventHandler;
-  private final @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedEventHandler;
-  private final @Nullable EventHandler<FullImpressionVisibleEvent> mFullImpressionEventHandler;
-  private final @Nullable EventHandler<InvisibleEvent> mInvisibleEventHandler;
-  private final @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedEventHandler;
+  private final @Nullable Function mVisibleEventHandler;
+  private final @Nullable Function mFocusedEventHandler;
+  private final @Nullable Function mUnfocusedEventHandler;
+  private final @Nullable Function mFullImpressionEventHandler;
+  private final @Nullable Function mInvisibleEventHandler;
+  private final @Nullable Function mVisibilityChangedEventHandler;
 
   private float mFocusedRatio;
 
@@ -48,12 +49,12 @@ class VisibilityOutput {
       final Rect bounds,
       final float visibleHeightRatio,
       final float visibleWidthRatio,
-      final @Nullable EventHandler<VisibleEvent> visibleEventHandler,
-      final @Nullable EventHandler<FocusedVisibleEvent> focusedEventHandler,
-      final @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler,
-      final @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionEventHandler,
-      final @Nullable EventHandler<InvisibleEvent> invisibleEventHandler,
-      final @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedEventHandler) {
+      final @Nullable Function visibleEventHandler,
+      final @Nullable Function focusedEventHandler,
+      final @Nullable Function unfocusedEventHandler,
+      final @Nullable Function fullImpressionEventHandler,
+      final @Nullable Function invisibleEventHandler,
+      final @Nullable Function visibilityChangedEventHandler) {
     mId = id;
     mKey = key;
     mBounds = bounds;
@@ -147,7 +148,7 @@ class VisibilityOutput {
     mFocusedRatio = focusedRatio;
   }
 
-  EventHandler<VisibleEvent> getVisibleEventHandler() {
+  public @Nullable Function getVisibleEventHandler() {
     return mVisibleEventHandler;
   }
 
@@ -156,24 +157,23 @@ class VisibilityOutput {
     return rect.isEmpty() ? 0 : (rect.width() * rect.height());
   }
 
-  EventHandler<FocusedVisibleEvent> getFocusedEventHandler() {
+  public @Nullable Function getFocusedEventHandler() {
     return mFocusedEventHandler;
   }
 
-  EventHandler<UnfocusedVisibleEvent> getUnfocusedEventHandler() {
+  public @Nullable Function getUnfocusedEventHandler() {
     return mUnfocusedEventHandler;
   }
 
-  EventHandler<FullImpressionVisibleEvent> getFullImpressionEventHandler() {
+  public @Nullable Function getFullImpressionEventHandler() {
     return mFullImpressionEventHandler;
   }
 
-  EventHandler<InvisibleEvent> getInvisibleEventHandler() {
+  public @Nullable Function getInvisibleEventHandler() {
     return mInvisibleEventHandler;
   }
 
-  @Nullable
-  EventHandler<VisibilityChangedEvent> getVisibilityChangedEventHandler() {
+  public @Nullable Function getVisibilityChangedEventHandler() {
     return mVisibilityChangedEventHandler;
   }
 }

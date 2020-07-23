@@ -146,17 +146,20 @@ class VisibilityOutputsExtension
         continue;
       }
 
-      final EventHandler<VisibleEvent> visibleHandler = visibilityOutput.getVisibleEventHandler();
+      final EventHandler<VisibleEvent> visibleHandler =
+          (EventHandler<VisibleEvent>) visibilityOutput.getVisibleEventHandler();
       final EventHandler<FocusedVisibleEvent> focusedHandler =
-          visibilityOutput.getFocusedEventHandler();
+          (EventHandler<FocusedVisibleEvent>) visibilityOutput.getFocusedEventHandler();
       final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          visibilityOutput.getUnfocusedEventHandler();
+          (EventHandler<UnfocusedVisibleEvent>) visibilityOutput.getUnfocusedEventHandler();
       final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
-          visibilityOutput.getFullImpressionEventHandler();
+          (EventHandler<FullImpressionVisibleEvent>)
+              visibilityOutput.getFullImpressionEventHandler();
       final EventHandler<InvisibleEvent> invisibleHandler =
-          visibilityOutput.getInvisibleEventHandler();
+          (EventHandler<InvisibleEvent>) visibilityOutput.getInvisibleEventHandler();
       final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-          visibilityOutput.getVisibilityChangedEventHandler();
+          (EventHandler<VisibilityChangedEvent>)
+              visibilityOutput.getVisibilityChangedEventHandler();
 
       final boolean isCurrentlyVisible =
           boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);

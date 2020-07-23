@@ -86,7 +86,7 @@ class EventDispatcherUtils {
     sFocusChangedEvent.view = null;
   }
 
-  static void dispatchOnVisible(EventHandler<VisibleEvent> visibleHandler) {
+  static void dispatchOnVisible(Function visibleHandler) {
     assertMainThread();
 
     boolean isTracing = ComponentsSystrace.isTracing();
@@ -98,21 +98,21 @@ class EventDispatcherUtils {
       sVisibleEvent = new VisibleEvent();
     }
 
-    visibleHandler.dispatchEvent(sVisibleEvent);
+    visibleHandler.call(sVisibleEvent);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
   }
 
-  static void dispatchOnFocused(EventHandler<FocusedVisibleEvent> focusedHandler) {
+  static void dispatchOnFocused(Function focusedHandler) {
     assertMainThread();
 
     if (sFocusedVisibleEvent == null) {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
 
-    focusedHandler.dispatchEvent(sFocusedVisibleEvent);
+    focusedHandler.call(sFocusedVisibleEvent);
   }
 
   static void dispatchOnUnfocused(Function unfocusedHandler) {
@@ -125,15 +125,14 @@ class EventDispatcherUtils {
     unfocusedHandler.call(sUnfocusedVisibleEvent);
   }
 
-  static void dispatchOnFullImpression(
-      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+  static void dispatchOnFullImpression(Function fullImpressionHandler) {
     assertMainThread();
 
     if (sFullImpressionVisibleEvent == null) {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
 
-    fullImpressionHandler.dispatchEvent(sFullImpressionVisibleEvent);
+    fullImpressionHandler.call(sFullImpressionVisibleEvent);
   }
 
   static void dispatchOnInvisible(Function invisibleHandler) {
@@ -147,7 +146,7 @@ class EventDispatcherUtils {
   }
 
   static void dispatchOnVisibilityChanged(
-      EventHandler<VisibilityChangedEvent> visibilityChangedHandler,
+      Function visibilityChangedHandler,
       int visibleWidth,
       int visibleHeight,
       float percentVisibleWidth,
@@ -163,7 +162,7 @@ class EventDispatcherUtils {
     sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;
     sVisibleRectChangedEvent.percentVisibleWidth = percentVisibleWidth;
 
-    visibilityChangedHandler.dispatchEvent(sVisibleRectChangedEvent);
+    visibilityChangedHandler.call(sVisibleRectChangedEvent);
   }
 
   static boolean dispatchOnLongClick(EventHandler<LongClickEvent> longClickHandler, View view) {
