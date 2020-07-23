@@ -957,10 +957,7 @@ class MountState
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
       if (isTracing) {
-        final String componentName =
-            visibilityOutput.getComponent() != null
-                ? visibilityOutput.getComponent().getSimpleName()
-                : "Unknown";
+        final String componentName = visibilityOutput.getKey();
         ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
       }
 
@@ -1045,10 +1042,7 @@ class MountState
       if (isCurrentlyVisible) {
         // The component is visible now, but used to be outside the viewport.
         if (visibilityItem == null) {
-          final String globalKey =
-              visibilityOutput.getComponent() != null
-                  ? visibilityOutput.getComponent().getGlobalKey()
-                  : null;
+          final String globalKey = visibilityOutput.getId();
           visibilityItem =
               new VisibilityItem(
                   globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
@@ -1101,10 +1095,7 @@ class MountState
         }
       }
       if (isDoingPerfLog) {
-        final String componentName =
-            visibilityOutput.getComponent() != null
-                ? visibilityOutput.getComponent().getSimpleName()
-                : "Unknown";
+        final String componentName = visibilityOutput.getKey();
         mMountStats.visibilityHandlerTimes.add((System.nanoTime() - handlerStartTime) / NS_IN_MS);
         mMountStats.visibilityHandlerNames.add(componentName);
       }

@@ -615,9 +615,11 @@ public class LayoutState
     final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
     final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
         node.getVisibilityChangedHandler();
+    final Component component = node.getTailComponent();
 
     return new VisibilityOutput(
-        node.getTailComponent(),
+        component != null ? component.getGlobalKey() : "null",
+        component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
         node.getVisibleHeightRatio(),
         node.getVisibleWidthRatio(),

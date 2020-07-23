@@ -115,10 +115,7 @@ class VisibilityOutputsExtension
     for (int j = 0, size = mVisibilityOutputs.size(); j < size; j++) {
       final VisibilityOutput visibilityOutput = mVisibilityOutputs.get(j);
       if (isTracing) {
-        final String componentName =
-            visibilityOutput.getComponent() != null
-                ? visibilityOutput.getComponent().getSimpleName()
-                : "Unknown";
+        final String componentName = visibilityOutput.getKey();
         ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
       }
 
@@ -202,10 +199,7 @@ class VisibilityOutputsExtension
       if (isCurrentlyVisible) {
         // The component is visible now, but used to be outside the viewport.
         if (visibilityItem == null) {
-          final String globalKey =
-              visibilityOutput.getComponent() != null
-                  ? visibilityOutput.getComponent().getGlobalKey()
-                  : null;
+          final String globalKey = visibilityOutput.getId();
           visibilityItem =
               new VisibilityItem(
                   globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
