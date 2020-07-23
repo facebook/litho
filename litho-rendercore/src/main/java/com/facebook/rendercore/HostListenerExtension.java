@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
 import android.graphics.Rect;
 
-/** Mount extension which can subscribe to a Host to receive event notifications. */
+/** A type of mount extension which can subscribe to a callbacks from a {@link Host} view. */
 public interface HostListenerExtension<T> {
 
   /**
    * Called for setting up input on the extension before mounting.
    *
-   * @param input
+   * @param input The new input the extension should use.
    */
   void beforeMount(T input, Rect localVisibleRect);
 
