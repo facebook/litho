@@ -59,13 +59,13 @@ class ComponentWithinMountedComponentMovesTransitionSpec {
                 .alpha(
                     new DynamicValue<Float>(.99f)) // Set a dynamic value to force it to be mounted
                 .child(Row.create(c).heightDip(10).widthDip(10).backgroundColor(Color.BLUE)))
-        .clickHandler(SingleComponentMovesTransition.onClick(c))
+        .clickHandler(ComponentWithinMountedComponentMovesTransition.onClick(c))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    SingleComponentMovesTransition.updateState(c);
+    ComponentWithinMountedComponentMovesTransition.updateState(c);
   }
 
   @OnUpdateState

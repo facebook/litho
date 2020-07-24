@@ -57,13 +57,13 @@ class ComponentWithinComponentMovesTransitionSpec {
                 .widthDip(SIZE_DP)
                 .backgroundColor(Color.RED)
                 .child(Row.create(c).heightDip(10).widthDip(10).backgroundColor(Color.BLUE)))
-        .clickHandler(SingleComponentMovesTransition.onClick(c))
+        .clickHandler(ComponentWithinComponentMovesTransition.onClick(c))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    SingleComponentMovesTransition.updateState(c);
+    ComponentWithinComponentMovesTransition.updateState(c);
   }
 
   @OnUpdateState

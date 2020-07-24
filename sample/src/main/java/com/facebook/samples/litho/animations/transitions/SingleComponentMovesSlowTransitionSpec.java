@@ -51,13 +51,13 @@ class SingleComponentMovesSlowTransitionSpec {
         .paddingDip(YogaEdge.ALL, 20)
         .alignItems(shouldAlignStart ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
         .child(Row.create(c).heightDip(SIZE_DP).widthDip(SIZE_DP).backgroundColor(Color.RED))
-        .clickHandler(SingleComponentMovesTransition.onClick(c))
+        .clickHandler(SingleComponentMovesSlowTransition.onClick(c))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    SingleComponentMovesTransition.updateState(c);
+    SingleComponentMovesSlowTransition.updateState(c);
   }
 
   @OnUpdateState
