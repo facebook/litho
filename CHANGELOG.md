@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 0.37.2-SNAPSHOT
+
+_release-date_
+
+* TBA
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.37.1...master).
+
+
 ## Version 0.37.1
 
 _2020-07-24_
