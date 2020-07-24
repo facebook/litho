@@ -3506,6 +3506,11 @@ docsearch.js@^2.6.3:
     to-factory "^1.0.0"
     zepto "^1.2.0"
 
+docusaurus-plugin-internaldocs-fb@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-internaldocs-fb/-/docusaurus-plugin-internaldocs-fb-0.3.3.tgz#f59b6d6cf11e2ab73d9a3622e7629ab5f92ef0bc"
+  integrity sha512-9xPQWw04M6v3uN9spxHovGDhAVsjLbQUmq8ngZZVzZxysMOEIFs/bt5TS6LLDRUfKoZ/JB2V6eIoYihsNOmWoQ==
+
 docusaurus-plugin-sass@^0.1.9:
   version "0.1.9"
   resolved "https://registry.yarnpkg.com/docusaurus-plugin-sass/-/docusaurus-plugin-sass-0.1.9.tgz#dbc253b02b8463520d205e237cbb3e6e673bcbd4"
