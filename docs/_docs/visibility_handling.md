@@ -113,6 +113,10 @@ LithoView.setVisibilityHint(true); // This will dispatch visible/focused events 
 LithoView.setVisibilityHint(false); // This will dispatch invisible/unfocused events as necessary on all components inside this LithoView
 ```
 
+After calling `LithoView.setVisibilityHint(false)`, the LithoView will consider itself not visible and will ignore any requests to mount until `setVisibilityHint(true)` is called.
+You may still unmount the entire LithoView content by calling `unmountAll` if the visibility hint was set to false.
+Resetting the visibility hint to true after it was set to false will also trigger a mount pass, in case the visible bounds changed while the LithoView was ignoring mount requests.
+
 ### Troubleshooting
 If you are not seeing your visibility event fired when you expect it to be, you can take the following steps: 
 1. Verify that incremental mount is enabled for your Component. It is enabled by default, but if you turned it off, then visibility events will not be fired. 

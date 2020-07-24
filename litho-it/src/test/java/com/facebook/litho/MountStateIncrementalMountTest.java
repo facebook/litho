@@ -911,6 +911,127 @@ public class MountStateIncrementalMountTest {
     assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
   }
 
+  @Test
+  public void incrementalMount_setVisibilityHintFalse_preventMount() {
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
+
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(child1, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(child1, 2);
+
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .visibleHandler(visibleEventHandler)
+                    .invisibleHandler(invisibleEventHandler)
+                    .widthPx(10)
+                    .heightPx(10))
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child2)
+                    .visibleHandler(visibleEventHandler)
+                    .invisibleHandler(invisibleEventHandler)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
+
+    assertThat(child2.isMounted()).isFalse();
+
+    child1.getDispatchedEventHandlers().clear();
+    child1.resetInteractions();
+
+    lithoView.setVisibilityHint(false);
+
+    assertThat(child1.wasOnMountCalled()).isFalse();
+    assertThat(child1.wasOnUnmountCalled()).isFalse();
+    assertThat(child1.getDispatchedEventHandlers()).contains(invisibleEventHandler);
+    assertThat(child1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+
+    child1.getDispatchedEventHandlers().clear();
+    child1.resetInteractions();
+    child2.resetInteractions();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 20), true);
+
+    assertThat(child2.wasOnMountCalled()).isFalse();
+    assertThat(child1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    assertThat(child1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+  }
+
+  @Test
+  public void incrementalMount_setVisibilityHintTrue_mountIfNeeded() {
+    final TestComponent child1 = create(mContext).build();
+
+    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(child1, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(child1, 2);
+
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .visibleHandler(visibleEventHandler1)
+                    .invisibleHandler(invisibleEventHandler1)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    assertThat(child1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+
+    lithoView.setVisibilityHint(false);
+
+    final TestComponent child2 = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(child2, 3);
+    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(child2, 4);
+    final Component newRoot =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .visibleHandler(visibleEventHandler1)
+                    .invisibleHandler(invisibleEventHandler1)
+                    .widthPx(10)
+                    .heightPx(10))
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child2)
+                    .visibleHandler(visibleEventHandler2)
+                    .invisibleHandler(invisibleEventHandler2)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    lithoView.getComponentTree().setRoot(newRoot);
+    assertThat(child2.wasOnMountCalled()).isFalse();
+    assertThat(child2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+
+    lithoView.setVisibilityHint(true);
+    assertThat(child2.wasOnMountCalled()).isTrue();
+    assertThat(child2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+  }
+
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getLeft()).thenReturn(bounds.left);
