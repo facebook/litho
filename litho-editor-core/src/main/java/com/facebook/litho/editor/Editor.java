@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 /**
  * A class to operate on Component fields from an external editor such as Flipper.
  *
- * <p>It is meant to be implemented for a single class. This pairing Class <-> Implementation cannot
+ * <p>It is meant to be implemented for a single class. This pairing [Class, Implementation] cannot
  * be done in plain Java, so we rely on the implementor to pair it with its corresponding class in a
  * Map such as the one in the EditorRegistry.
  *

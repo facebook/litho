@@ -17,6 +17,7 @@
 include ':litho-annotations'
 include ':litho-core'
 include ':litho-core-kotlin'
+include ':litho-editor-core'
 include ':litho-espresso'
 include ':litho-fresco'
 include ':litho-fresco-kotlin'
