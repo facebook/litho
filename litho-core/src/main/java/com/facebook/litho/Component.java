@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static androidx.annotation.Dimension.DP;
 import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
+import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_DRAWABLE;
 import static com.facebook.litho.DynamicPropsManager.KEY_ELEVATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
@@ -916,6 +917,16 @@ public abstract class Component extends ComponentLifecycle
      */
     public T backgroundColor(DynamicValue<Integer> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_BACKGROUND_COLOR, value);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object to the background drawable for this Component
+     *
+     * @param value controller for the background drawable
+     */
+    public T backgroundDynamicDrawable(DynamicValue<? extends Drawable> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_BACKGROUND_DRAWABLE, value);
       return getThis();
     }
 

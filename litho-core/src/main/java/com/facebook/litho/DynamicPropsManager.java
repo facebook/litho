@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
@@ -47,6 +48,7 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   static final int KEY_ELEVATION = 6;
   static final int KEY_BACKGROUND_COLOR = 7;
   static final int KEY_ROTATION = 8;
+  static final int KEY_BACKGROUND_DRAWABLE = 9;
 
   private final Map<DynamicValue<?>, Set<Component>> mDependentComponents = new HashMap<>();
   private final Map<Component, Set<DynamicValue<?>>> mAffectingDynamicValues = new HashMap<>();
@@ -213,6 +215,10 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
 
       case KEY_ROTATION:
         target.setRotation(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_BACKGROUND_DRAWABLE:
+        target.setBackground(DynamicPropsManager.<Drawable>resolve(value));
         break;
     }
   }

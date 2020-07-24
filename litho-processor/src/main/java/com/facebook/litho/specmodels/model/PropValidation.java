@@ -114,6 +114,7 @@ public class PropValidation {
           "backgroundAttr",
           "backgroundRes",
           "backgroundColor",
+          "backgroundDynamicDrawable",
           "foreground",
           "foregroundAttr",
           "foregroundRes",
