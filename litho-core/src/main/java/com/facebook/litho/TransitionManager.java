@@ -1025,6 +1025,13 @@ public class TransitionManager {
         final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
         final TransitionId transitionId = propertyAnimation.getTransitionId();
         final AnimationState animationState = mAnimationStates.get(transitionId);
+        if (animationState == null) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR,
+              "NoAnimationState",
+              "No animation state for transitionId=" + transitionId);
+          continue;
+        }
         final PropertyState propertyState =
             animationState.propertyStates.get(propertyAnimation.getProperty());
 
