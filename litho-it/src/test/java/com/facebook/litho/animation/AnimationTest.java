@@ -1063,6 +1063,103 @@ public class AnimationTest {
     assertThat(view).describedAs("view unmount mid animation").isNull();
   }
 
+  @Test
+  public void
+      animation_disappearAnimationMovingAnItemToTheSameIndex_elementShouldDisappearWithoutCrashing() {
+    final boolean useTransitionsExtension = ComponentsConfiguration.useTransitionsExtension;
+    ComponentsConfiguration.useTransitionsExtension = true;
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create("text_like")
+                    .animate(AnimatedProperties.ALPHA)
+                    .appearFrom(0)
+                    .disappearTo(0)
+                    .animate(AnimatedProperties.X)
+                    .appearFrom(DimensionValue.widthPercentageOffset(50))
+                    .disappearTo(DimensionValue.widthPercentageOffset(50)))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext c, boolean state) {
+                    return !state
+                        ? Row.create(c)
+                            .backgroundColor(Color.WHITE)
+                            .heightDip(56)
+                            .child(
+                                Row.create(c)
+                                    .widthPercent(33.3f)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .child(
+                                        Text.create(c)
+                                            .textSizeSp(16)
+                                            .text("Comment")
+                                            .marginDip(YogaEdge.LEFT, 8)))
+                            .child(
+                                Row.create(c)
+                                    .widthPercent(33.3f)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .child(
+                                        Column.create(c)
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED))
+                                    .child(
+                                        Text.create(c)
+                                            .textSizeSp(16)
+                                            .text("Like")
+                                            .transitionKey("text_like")
+                                            .marginDip(YogaEdge.LEFT, 8)))
+                            .build()
+                        : Row.create(c)
+                            .backgroundColor(Color.WHITE)
+                            .heightDip(56)
+                            .child(
+                                Row.create(c)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .paddingDip(YogaEdge.HORIZONTAL, 16)
+                                    .child(
+                                        Column.create(c)
+                                            .transitionKey("icon_like")
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED)))
+                            .child(
+                                Row.create(c)
+                                    .widthPercent(33.3f)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .child(
+                                        Text.create(c)
+                                            .textSizeSp(16)
+                                            .text("Comment")
+                                            .marginDip(YogaEdge.LEFT, 8)))
+                            .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    // We move 100 frames to be sure any appearing animation finished.
+    mTransitionTestRule.step(100);
+
+    mStateCaller.update();
+    // We move an other 100 frames to be sure disappearing animations are done.
+    mTransitionTestRule.step(100);
+
+    mTransitionTestRule.step(100);
+
+    // Do not crash.
+    ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
+  }
+
   private Component getAnimatingXPropertyComponent() {
     return TestAnimationsComponent.create(mLithoViewRule.getContext())
         .stateCaller(mStateCaller)
