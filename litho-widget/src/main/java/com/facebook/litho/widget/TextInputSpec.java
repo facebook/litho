@@ -21,6 +21,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import static android.os.Build.VERSION_CODES.M;
 import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
 
 import android.content.Context;
@@ -867,6 +868,16 @@ class TextInputSpec {
       // Unfortunately we can't just override `void onEditorAction(int actionCode)` as that only
       // covers a subset of all cases where onEditorActionListener is invoked.
       this.setOnEditorActionListener(this);
+    }
+
+    @Override
+    public void requestLayout() {
+      // TextInputSpec$ForMeasureEditText.setText in API23 causing relayout for
+      // EditTextWithEventHandlers https://fburl.com/mgq76t3l
+      if (SDK_INT == M && !ThreadUtils.isMainThread()) {
+        return;
+      }
+      super.requestLayout();
     }
 
     @Override
