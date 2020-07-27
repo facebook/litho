@@ -788,7 +788,6 @@ public class VisibilityEventsTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    mLithoView.setMountStateDirty();
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
@@ -801,7 +800,6 @@ public class VisibilityEventsTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
 
-    mLithoView.setMountStateDirty();
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
@@ -813,7 +811,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
@@ -825,7 +822,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
@@ -837,7 +833,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
@@ -849,7 +844,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 5, RIGHT, 11), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
@@ -922,7 +916,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
@@ -942,7 +935,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
@@ -974,7 +966,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
@@ -990,7 +981,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
@@ -1003,7 +993,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
@@ -1034,7 +1023,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
@@ -1132,7 +1120,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 15), true);
     assertThat(content1.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler1);
@@ -1145,7 +1132,6 @@ public class VisibilityEventsTest {
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
-    mLithoView.setMountStateDirty();
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
