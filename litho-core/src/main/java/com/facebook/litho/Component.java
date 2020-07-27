@@ -1819,6 +1819,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T testTag(@Nullable Object testTag) {
+      mComponent.getOrCreateCommonProps().testTag(testTag);
+      return getThis();
+    }
+
     public T touchExpansionAttr(
         @Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));

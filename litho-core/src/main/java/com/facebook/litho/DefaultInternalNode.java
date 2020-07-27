@@ -158,6 +158,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable String mTestKey;
+  private @Nullable Object mTestTag;
   private @Nullable Set<DebugComponent> mDebugComponents;
   private @Nullable List<Component> mUnresolvedComponents;
 
@@ -807,6 +808,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public @Nullable Object getTestTag() {
+    return mTestTag;
+  }
+
+  @Override
   public @Nullable Edges getTouchExpansion() {
     return mTouchExpansion;
   }
@@ -1285,6 +1291,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public InternalNode testKey(@Nullable String testKey) {
     mTestKey = testKey;
+    return this;
+  }
+
+  @Override
+  public InternalNode testTag(@Nullable Object testTag) {
+    mTestTag = testTag;
     return this;
   }
 

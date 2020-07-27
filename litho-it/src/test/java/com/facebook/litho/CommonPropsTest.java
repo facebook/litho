@@ -180,6 +180,9 @@ public class CommonPropsTest {
     mCommonProps.transitionKey("transitionKey", "");
     mCommonProps.testKey("testKey");
 
+    final Object testTag = new Object();
+    mCommonProps.testTag(testTag);
+
     final EventHandler<DispatchPopulateAccessibilityEventEvent>
         dispatchPopulateAccessibilityEventHandler = mock(EventHandler.class);
     final EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler =
@@ -309,6 +312,7 @@ public class CommonPropsTest {
     verify(mNodeInfo).setClipToOutline(false);
     verify(mNode).transitionKey(eq("transitionKey"), anyString());
     verify(mNode).testKey("testKey");
+    verify(mNode).testTag(testTag);
 
     verify(mNodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
     verify(mNodeInfo).setAccessibilityRoleDescription("Test Role Description");

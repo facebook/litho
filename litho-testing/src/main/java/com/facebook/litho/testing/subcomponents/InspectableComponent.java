@@ -143,6 +143,12 @@ public class InspectableComponent {
     return mComponent.getTestKey();
   }
 
+  /** @return This component's testTag or null if none is set. */
+  @Nullable
+  public Object getTestTag() {
+    return mComponent.getTestTag();
+  }
+
   /**
    * @return The text content of the component wrapped by the debug component, or null if no
    *     TextContent/TextView are found.
