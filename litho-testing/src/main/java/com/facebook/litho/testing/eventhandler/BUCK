@@ -6,7 +6,6 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_JAVA_TARGET",
-    "LITHO_MOCKITO_TARGET",
     "LITHO_MOCKITO_V2_TARGET",
     "litho_android_library",
 )
@@ -19,7 +18,7 @@ litho_android_library(
     ],
     deps = [
         LITHO_JAVA_TARGET,
-        LITHO_MOCKITO_TARGET,
+        LITHO_MOCKITO_V2_TARGET,
     ],
 )
 
