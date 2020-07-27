@@ -79,7 +79,6 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
-import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -114,12 +113,6 @@ class MountState
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
   private final LongSparseArray<MountItem> mIndexToItemMap;
-
-  // Holds a list with information about the components linked to the VisibilityOutputs that are
-  // stored in LayoutState. An item is inserted in this map if its corresponding component is
-  // visible. When the component exits the viewport, the item associated with it is removed from the
-  // map.
-  private final Map<String, VisibilityItem> mVisibilityIdToItemMap;
 
   // Holds a list of MountItems that are currently mounted which can mount incrementally.
   private final LongSparseArray<MountItem> mCanMountIncrementallyMountItems;
@@ -170,7 +163,6 @@ class MountState
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
 
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
-  private @Nullable VisibilityModule mVisibilityModule;
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
@@ -198,13 +190,7 @@ class MountState
       registerMountDelegateExtension(mIncrementalMountExtension);
     }
 
-    if (!mLithoView.usingExtensionsWithMountDelegate()
-        && ComponentsConfiguration.useVisibilityExtension) {
-      mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
-      mVisibilityIdToItemMap = null;
-    } else {
-      mVisibilityIdToItemMap = new HashMap<>();
-    }
+    mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
@@ -439,13 +425,8 @@ class MountState
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
       }
-      processVisibilityOutputsInternal(
-          layoutState,
-          localVisibleRect,
-          mPreviousLocalVisibleRect,
-          mIsDirty,
-          mountPerfEvent,
-          processVisibilityOutputs);
+      processVisibilityOutputs(
+          layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
       }
@@ -517,13 +498,8 @@ class MountState
 
     boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
     if (isVisibilityProcessingEnabled) {
-      processVisibilityOutputsInternal(
-          layoutState,
-          localVisibleRect,
-          previousLocalVisibleRect,
-          wasDirty,
-          null,
-          processVisibilityOutputs);
+      processVisibilityOutputs(
+          layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
     }
 
     processTestOutputs(layoutState);
@@ -879,251 +855,16 @@ class MountState
       Rect previousLocalVisibleRect,
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
-    processVisibilityOutputsInternal(
-        layoutState, localVisibleRect, previousLocalVisibleRect, isDirty, mountPerfEvent, true);
-  }
-
-  private void processVisibilityOutputsInternal(
-      LayoutState layoutState,
-      @Nullable Rect localVisibleRect,
-      Rect previousLocalVisibleRect,
-      boolean isDirty,
-      @Nullable PerfEvent mountPerfEvent,
-      boolean processVisibilityOutputs) {
-    if (mVisibilityOutputsExtension != null) {
-      if (isDirty) {
-        mVisibilityOutputsExtension.afterMount();
-      } else {
-        mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
-      }
-      return;
-    }
-
-    if (!processVisibilityOutputs) {
-      return;
-    }
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-
-    try {
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
-      }
-
-      if (isTracing) {
-        ComponentsSystrace.beginSection("processVisibilityOutputs");
-      }
-
-      if (layoutState.isIncrementalVisibilityEnabled()) {
-        if (mVisibilityModule == null) {
-          if (mLithoView == null) {
-            return;
-          }
-
-          mVisibilityModule = new VisibilityModule(mLithoView);
-        }
-
-        mVisibilityModule.processVisibilityOutputs(
-            isDirty,
-            layoutState.getVisibilityModuleInput(),
-            localVisibleRect,
-            previousLocalVisibleRect);
-      } else {
-        processVisibilityOutputsNonInc(layoutState, localVisibleRect, isDirty);
-      }
-
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
-      }
-    }
-  }
-
-  private void processVisibilityOutputsNonInc(
-      LayoutState layoutState, @Nullable Rect localVisibleRect, boolean isDirty) {
-    assertMainThread();
-
-    if (localVisibleRect == null) {
-      return;
-    }
-
-    final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0L;
-
-    for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
-      final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
-      if (isTracing) {
-        final String componentName = visibilityOutput.getKey();
-        ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
-      }
-
-      final Rect visibilityOutputBounds = visibilityOutput.getBounds();
-      final boolean boundsIntersect =
-          sTempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
-      final boolean isFullyVisible = boundsIntersect && sTempRect.equals(visibilityOutputBounds);
-      final String visibilityOutputId = visibilityOutput.getId();
-      VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
-
-      final boolean wasFullyVisible;
-      if (visibilityItem != null) {
-        wasFullyVisible = visibilityItem.wasFullyVisible();
-        visibilityItem.setWasFullyVisible(isFullyVisible);
-      } else {
-        wasFullyVisible = false;
-      }
-
-      if (isFullyVisible
-          && wasFullyVisible
-          && ComponentsConfiguration.skipVisChecksForFullyVisible) {
-        // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
-
-        visibilityItem.setDoNotClearInThisPass(isDirty);
-        continue;
-      }
-
-      final long handlerStartTime = isDoingPerfLog ? System.nanoTime() : 0;
-      final EventHandler<VisibleEvent> visibleHandler =
-          (EventHandler<VisibleEvent>) visibilityOutput.getVisibleEventHandler();
-      final EventHandler<FocusedVisibleEvent> focusedHandler =
-          (EventHandler<FocusedVisibleEvent>) visibilityOutput.getFocusedEventHandler();
-      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          (EventHandler<UnfocusedVisibleEvent>) visibilityOutput.getUnfocusedEventHandler();
-      final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
-          (EventHandler<FullImpressionVisibleEvent>)
-              visibilityOutput.getFullImpressionEventHandler();
-      final EventHandler<InvisibleEvent> invisibleHandler =
-          (EventHandler<InvisibleEvent>) visibilityOutput.getInvisibleEventHandler();
-      final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-          (EventHandler<VisibilityChangedEvent>)
-              visibilityOutput.getVisibilityChangedEventHandler();
-
-      final boolean isCurrentlyVisible =
-          boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
-
-      if (visibilityItem != null) {
-
-        // If we did a relayout due to e.g. a state update then the handlers will have changed,
-        // so we should keep them up to date.
-        visibilityItem.setUnfocusedHandler(unfocusedHandler);
-        visibilityItem.setInvisibleHandler(invisibleHandler);
-
-        if (!isCurrentlyVisible) {
-          // Either the component is invisible now, but used to be visible, or the key on the
-          // component has changed so we should generate new visibility events for the new
-          // component.
-          if (visibilityItem.getInvisibleHandler() != null) {
-            EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
-          }
-
-          if (visibilityChangedHandler != null) {
-            EventDispatcherUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler, 0, 0, 0f, 0f);
-          }
-
-          if (visibilityItem.isInFocusedRange()) {
-            visibilityItem.setFocusedRange(false);
-            if (visibilityItem.getUnfocusedHandler() != null) {
-              EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
-            }
-          }
-
-          mVisibilityIdToItemMap.remove(visibilityOutputId);
-          visibilityItem = null;
-        } else {
-          // Processed, do not clear.
-          visibilityItem.setDoNotClearInThisPass(isDirty);
-        }
-      }
-
-      if (isCurrentlyVisible) {
-        // The component is visible now, but used to be outside the viewport.
-        if (visibilityItem == null) {
-          final String globalKey = visibilityOutput.getId();
-          visibilityItem =
-              new VisibilityItem(
-                  globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
-          visibilityItem.setDoNotClearInThisPass(isDirty);
-          visibilityItem.setWasFullyVisible(isFullyVisible);
-          mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
-
-          if (visibleHandler != null) {
-            EventDispatcherUtils.dispatchOnVisible(visibleHandler);
-          }
-        }
-
-        // Check if the component has entered or exited the focused range.
-        if (focusedHandler != null || unfocusedHandler != null) {
-          if (isInFocusedRange(visibilityOutputBounds, sTempRect)) {
-            if (!visibilityItem.isInFocusedRange()) {
-              visibilityItem.setFocusedRange(true);
-              if (focusedHandler != null) {
-                EventDispatcherUtils.dispatchOnFocused(focusedHandler);
-              }
-            }
-          } else {
-            if (visibilityItem.isInFocusedRange()) {
-              visibilityItem.setFocusedRange(false);
-              if (unfocusedHandler != null) {
-                EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
-              }
-            }
-          }
-        }
-        // If the component has not entered the full impression range yet, make sure to update the
-        // information about the visible edges.
-        if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
-          visibilityItem.setVisibleEdges(visibilityOutputBounds, sTempRect);
-
-          if (visibilityItem.isInFullImpressionRange()) {
-            EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);
-          }
-        }
-
-        if (visibilityChangedHandler != null) {
-          final int visibleWidth = sTempRect.right - sTempRect.left;
-          final int visibleHeight = sTempRect.bottom - sTempRect.top;
-          EventDispatcherUtils.dispatchOnVisibilityChanged(
-              visibilityChangedHandler,
-              visibleWidth,
-              visibleHeight,
-              100f * visibleWidth / visibilityOutputBounds.width(),
-              100f * visibleHeight / visibilityOutputBounds.height());
-        }
-      }
-      if (isDoingPerfLog) {
-        final String componentName = visibilityOutput.getKey();
-        mMountStats.visibilityHandlerTimes.add((System.nanoTime() - handlerStartTime) / NS_IN_MS);
-        mMountStats.visibilityHandlerNames.add(componentName);
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-
     if (isDirty) {
-      clearVisibilityItems();
-    }
-
-    if (isDoingPerfLog) {
-      mMountStats.visibilityHandlersTotalTime = (System.nanoTime() - totalStartTime) / NS_IN_MS;
+      mVisibilityOutputsExtension.afterMount();
+    } else {
+      mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
     }
   }
 
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    if (mVisibilityOutputsExtension != null) {
-      return mVisibilityOutputsExtension.getVisibilityIdToItemMap();
-    }
-
-    return mVisibilityIdToItemMap;
+    return mVisibilityOutputsExtension.getVisibilityIdToItemMap();
   }
 
   @VisibleForTesting
@@ -1231,128 +972,11 @@ class MountState
   }
 
   void clearVisibilityItems() {
-    if (mVisibilityOutputsExtension != null) {
-      mVisibilityOutputsExtension.clearVisibilityItems();
-      return;
-    }
-
-    if (mVisibilityModule != null) {
-      clearVisibilityItemsIncremental();
-    } else {
-      clearVisibilityItemsNonincremental();
-    }
-  }
-
-  private void clearVisibilityItemsIncremental() {
-    assertMainThread();
-
-    boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("MountState.clearIncrementalItems");
-    }
-
-    if (mVisibilityModule != null) {
-      mVisibilityModule.clearIncrementalItems();
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-  }
-
-  private void clearVisibilityItemsNonincremental() {
-    assertMainThread();
-    boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("MountState.clearIncrementalItems");
-    }
-
-    List<String> toClear = new ArrayList<>();
-
-    for (String key : mVisibilityIdToItemMap.keySet()) {
-      final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
-      if (visibilityItem.doNotClearInThisPass()) {
-        // This visibility item has already been accounted for in this pass, so ignore it.
-        visibilityItem.setDoNotClearInThisPass(false);
-      } else {
-        toClear.add(key);
-      }
-    }
-
-    for (int i = 0, size = toClear.size(); i < size; i++) {
-      final String key = toClear.get(i);
-      final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
-
-      final EventHandler<InvisibleEvent> invisibleHandler =
-          (EventHandler<InvisibleEvent>) visibilityItem.getInvisibleHandler();
-      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          (EventHandler<UnfocusedVisibleEvent>) visibilityItem.getUnfocusedHandler();
-      final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-          (EventHandler<VisibilityChangedEvent>) visibilityItem.getVisibilityChangedHandler();
-
-      if (invisibleHandler != null) {
-        EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
-      }
-
-      if (visibilityItem.isInFocusedRange()) {
-        visibilityItem.setFocusedRange(false);
-        if (unfocusedHandler != null) {
-          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
-        }
-      }
-
-      if (visibilityChangedHandler != null) {
-        EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
-      }
-
-      visibilityItem.setWasFullyVisible(false);
-
-      mVisibilityIdToItemMap.remove(key);
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
+    mVisibilityOutputsExtension.clearVisibilityItems();
   }
 
   private void registerHost(long id, ComponentHost host) {
     mHostsByMarker.put(id, host);
-  }
-
-  private static boolean isInVisibleRange(
-      VisibilityOutput visibilityOutput, Rect bounds, Rect visibleBounds) {
-    float heightRatio = visibilityOutput.getVisibleHeightRatio();
-    float widthRatio = visibilityOutput.getVisibleWidthRatio();
-
-    if (heightRatio == 0 && widthRatio == 0) {
-      return true;
-    }
-
-    return isInRatioRange(heightRatio, bounds.height(), visibleBounds.height())
-        && isInRatioRange(widthRatio, bounds.width(), visibleBounds.width());
-  }
-
-  private static boolean isInRatioRange(float ratio, int length, int visiblelength) {
-    return visiblelength >= ratio * length;
-  }
-
-  /** Returns true if the component is in the focused visible range. */
-  private boolean isInFocusedRange(Rect componentBounds, Rect componentVisibleBounds) {
-    final View parent = (View) mLithoView.getParent();
-    if (parent == null) {
-      return false;
-    }
-
-    final int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
-    final int totalComponentArea = computeRectArea(componentBounds);
-    final int visibleComponentArea = computeRectArea(componentVisibleBounds);
-
-    // The component has entered the focused range either if it is larger than half of the viewport
-    // and it occupies at least half of the viewport or if it is smaller than half of the viewport
-    // and it is fully visible.
-    return (totalComponentArea >= halfViewportArea)
-        ? (visibleComponentArea >= halfViewportArea)
-        : componentBounds.equals(componentVisibleBounds);
   }
 
   private static int computeRectArea(Rect rect) {

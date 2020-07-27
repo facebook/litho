@@ -97,13 +97,11 @@ public class MountStateTest {
   public void onSetRootWithNoOutputsWithRenderCore_shouldSuccessfullyCompleteMount() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
     final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
-    final boolean useVisibilityExtension = ComponentsConfiguration.useVisibilityExtension;
     final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
     ComponentsConfiguration.useExtensionsWithMountDelegate = true;
     ComponentsConfiguration.useIncrementalMountExtension = true;
-    ComponentsConfiguration.useVisibilityExtension = true;
 
     final Component root =
         Wrapper.create(mContext)
@@ -123,7 +121,6 @@ public class MountStateTest {
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
-    ComponentsConfiguration.useVisibilityExtension = useVisibilityExtension;
     ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
   }
 }

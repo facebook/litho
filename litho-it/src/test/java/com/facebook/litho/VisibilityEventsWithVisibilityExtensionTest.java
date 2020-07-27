@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
@@ -33,7 +32,6 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,32 +46,21 @@ public class VisibilityEventsWithVisibilityExtensionTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configVisExtension;
   final boolean mUseMountDelegateTarget;
-  final boolean mUseVisibilityExtensionInMountState;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, useVisibilityExtensionInMountState={1}")
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useMountDelegateTarget={0}")
   public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, true},
-          {true, false}
-        });
+    return Arrays.asList(new Object[][] {{false}, {true}});
   }
 
-  public VisibilityEventsWithVisibilityExtensionTest(
-      boolean useMountDelegateTarget, boolean useVisibilityExtensionInMountState) {
+  public VisibilityEventsWithVisibilityExtensionTest(boolean useMountDelegateTarget) {
     mUseMountDelegateTarget = useMountDelegateTarget;
-    mUseVisibilityExtensionInMountState = useVisibilityExtensionInMountState;
   }
 
   @Before
   public void setup() {
-    configVisExtension = ComponentsConfiguration.useVisibilityExtension;
-    ComponentsConfiguration.useVisibilityExtension = mUseVisibilityExtensionInMountState;
     mContext = mLithoViewRule.getContext();
     mLithoView = new LithoView(mContext, mUseMountDelegateTarget, false);
     mLithoViewRule.useLithoView(mLithoView);
@@ -84,11 +71,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
     mParent.setRight(10);
     mParent.setBottom(10);
     mParent.addView(mLithoView);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useVisibilityExtension = configVisExtension;
   }
 
   @Test
@@ -137,7 +119,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
       LithoHostListenerCoordinator lithoHostListenerCoordinator =
           Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
       lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);
-    } else if (mUseVisibilityExtensionInMountState) {
+    } else {
       final MountState mountState = lithoView.getMountState();
       Whitebox.setInternalState(
           mountState, "mVisibilityOutputsExtension", visibilityOutputsExtension);

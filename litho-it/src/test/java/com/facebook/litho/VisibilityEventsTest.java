@@ -58,47 +58,41 @@ public class VisibilityEventsTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configVisExtension;
   private boolean configIncMountExtension;
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCore;
-  final boolean mUseVisibilityExtensionInMountState;
   final boolean mUseIncrementalMountExtensionInMountState;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @ParameterizedRobolectricTestRunner.Parameters(
       name =
-          "useMountDelegateTarget={0}, delegateToRenderCore={1}, useVisibilityExtensionInMountState={2}, useIncrementalMountExtensionInMountState={3}")
+          "useMountDelegateTarget={0}, delegateToRenderCore={1}, useIncrementalMountExtensionInMountState={2}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false, false},
-          {true, false, false, false},
-          {false, false, true, false},
-          {true, false, true, false},
-          {false, false, true, true},
-          {true, true, false, false}
+          {false, false, false},
+          {true, false, false},
+          {false, false, false},
+          {true, false, false},
+          {false, false, true},
+          {true, true, false}
         });
   }
 
   public VisibilityEventsTest(
       boolean useMountDelegateTarget,
       boolean delegateToRenderCore,
-      boolean useVisibilityExtensionInMountState,
       boolean useIncrementalMountExtensionInMountState) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCore = delegateToRenderCore;
-    mUseVisibilityExtensionInMountState = useVisibilityExtensionInMountState;
     mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
   @Before
   public void setup() {
-    configVisExtension = ComponentsConfiguration.useVisibilityExtension;
     configIncMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
 
-    ComponentsConfiguration.useVisibilityExtension = mUseVisibilityExtensionInMountState;
     ComponentsConfiguration.useIncrementalMountExtension =
         mUseIncrementalMountExtensionInMountState;
 
@@ -116,7 +110,6 @@ public class VisibilityEventsTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useVisibilityExtension = configVisExtension;
     ComponentsConfiguration.useIncrementalMountExtension = configIncMountExtension;
   }
 
