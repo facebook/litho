@@ -17,5 +17,5 @@ jobs:
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | sed 's|.*Release version \([0-9\.]*\).*|\1|'`
     - name: Print version info
       env:
-        TAG: ${{ steps.tag_info.outputs.VERSION_INFO }}
+        VERSION_INFO: ${{ steps.tag_info.outputs.VERSION_INFO }}
       run: echo $VERSION_INFO
