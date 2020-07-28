@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run all tests
-      run: ./gradlew test --stacktrace
+      run: echo $PATH && ./gradlew test --stacktrace
   sample-java-job:
     name: Assemble sample app
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run all tests
-      run: ./gradlew :sample:assembleDebug --stacktrace
+      run: echo $PATH && ./gradlew :sample:assembleDebug --stacktrace
   sample-kotlin-job:
     name: Assemble kotlin app
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Assemble kotlin sample
-      run: ./gradlew :sample-kotlin:assembleDebug --stacktrace
+      run: echo $PATH && ./gradlew :sample-kotlin:assembleDebug --stacktrace
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
