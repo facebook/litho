@@ -84,7 +84,7 @@ jobs:
         chmod +x buck-master.pex
     - name: Rename buck
       run: |
-        mv buck-master.pex buck && ls -l buck
+        mv buck-master.pex buck
     - name: Publish to maven
       env:
         BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
