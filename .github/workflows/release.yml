@@ -10,18 +10,21 @@ jobs:
     name: Run all tests
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Run all tests
       run: ./gradlew test
   sample-java-job:
     name: Assemble sample app
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Run all tests
       run: ./gradlew :sample:assembleDebug
   sample-kotlin-job:
     name: Assemble kotlin app
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Assemble kotlin sample
       run: ./gradlew :sample-kotlin:assembleDebug
   publish-job:
@@ -29,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test-job, sample-java-job, sample-kotlin-job]
     steps:
+    - uses: actions/checkout@v2
     - name: Publish to maven
       env:
         BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
@@ -40,6 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [publish-job]
     steps:
+    - uses: actions/checkout@v2
     - name: Run validation script
       run: |
         scripts/verify-bintray-upload.hs ${GITHUB_REF#refs/tags/}
