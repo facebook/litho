@@ -6,9 +6,19 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
+  get-buck:
+    name: Fetch latest buck binary
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fetch buck
+    - run: |
+      wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
+      mv buck-master.pex buck
+      chmod +x buck
   test-job:
     name: Run all tests
     runs-on: ubuntu-latest
+    needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
     - name: Run all tests
@@ -16,6 +26,7 @@ jobs:
   sample-java-job:
     name: Assemble sample app
     runs-on: ubuntu-latest
+    needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
     - name: Run all tests
@@ -23,6 +34,7 @@ jobs:
   sample-kotlin-job:
     name: Assemble kotlin app
     runs-on: ubuntu-latest
+    needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
     - name: Assemble kotlin sample
@@ -30,7 +42,7 @@ jobs:
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
-    needs: [test-job, sample-java-job, sample-kotlin-job]
+    needs: [get-buck, test-job, sample-java-job, sample-kotlin-job]
     steps:
     - uses: actions/checkout@v2
     - name: Publish to maven
