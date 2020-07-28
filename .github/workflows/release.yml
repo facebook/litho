@@ -1,0 +1,45 @@
+name: Release on new version tags
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+jobs:
+  test-job:
+    name: Run all tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run all tests
+      run: ./gradlew test
+  sample-java-job:
+    name: Assemble sample app
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run all tests
+      run: ./gradlew :sample:assembleDebug
+  sample-kotlin-job:
+    name: Assemble kotlin app
+    runs-on: ubuntu-latest
+    steps:
+    - name: Assemble kotlin sample
+      run: ./gradlew :sample-kotlin:assembleDebug
+  publish-job:
+    name: Maven Publish
+    runs-on: ubuntu-latest
+    needs: [test-job, sample-app-job, sample-kotlin-job]
+    steps:
+    - name: Publish to maven
+      env:
+        BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
+        BINTRAY_API_KEY: ${{ secrets.bintrayApiKey }}
+      run: |
+        ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY
+  validate-job:
+    name: Validate uploads
+    runs-on: ubuntu-latest
+    needs: [publish-job]
+    steps:
+    - name: Run validation script
+      run: |
+        scripts/verify-bintray-upload.hs ${GITHUB_REF#refs/tags/}
