@@ -1,4 +1,4 @@
-name: Push a new tag on correct release
+name: Push a new tag on correct release!
 
 on: push
 
