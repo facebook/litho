@@ -4,7 +4,7 @@ on: push
 
 jobs:
   push-tags-job:
-    if: "contains(github.event.commits.*.message, 'Release version [0-9]+\.[0-9]+\.[0-9]+')"
+    if: "contains(github.event.commits.*.message, 'Release version [0-9]+.[0-9]+.[0-9]+')"
     name: Push tags for release
     runs-on: ubuntu-latest
     needs: []
