@@ -25,7 +25,6 @@ jobs:
   test-job:
     name: Run all tests
     runs-on: ubuntu-latest
-    needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
     - name: Fetch buck
@@ -45,7 +44,6 @@ jobs:
   sample-java-job:
     name: Assemble sample app
     runs-on: ubuntu-latest
-    needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
     - name: Fetch buck
@@ -65,7 +63,6 @@ jobs:
   sample-kotlin-job:
     name: Assemble kotlin app
     runs-on: ubuntu-latest
-    needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
     - name: Fetch buck
@@ -85,7 +82,7 @@ jobs:
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
-    needs: [get-buck, test-job, sample-java-job, sample-kotlin-job]
+    needs: [test-job, sample-java-job, sample-kotlin-job]
     steps:
     - uses: actions/checkout@v2
     - name: Fetch buck
