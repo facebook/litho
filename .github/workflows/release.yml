@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Fetch buck
       run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex  && \
+        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
     - name: Elevate buck
       run: |
         chmod +x buck-master.pex
