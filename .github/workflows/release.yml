@@ -12,9 +12,7 @@ jobs:
     steps:
     - name: Fetch buck
     - run: |
-      wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex \
-      mv buck-master.pex buck \
-      chmod +x buck
+      wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && chmod +x buck-master.pex && mv buck-master.pex buck
   test-job:
     name: Run all tests
     runs-on: ubuntu-latest
