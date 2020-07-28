@@ -13,8 +13,15 @@ jobs:
     - name: Fetch buck
       run: |
         wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex  && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck
+    - name: Elevate buck
+      run: |
+        chmod +x buck-master.pex
+    - name: Rename buck
+      run: |
+        mv buck-master.pex buck && ls -l buck
+    - name: Export buck
+      run: |
+        export PATH="`realpath buck`:$PATH"
   test-job:
     name: Run all tests
     runs-on: ubuntu-latest
