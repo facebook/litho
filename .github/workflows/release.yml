@@ -6,10 +6,28 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
-  get-buck:
-    name: Fetch latest buck binary
+  # get-buck:
+  #   name: Fetch latest buck binary
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Fetch buck
+  #     run: |
+  #       wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
+  #   - name: Elevate buck
+  #     run: |
+  #       chmod +x buck-master.pex
+  #   - name: Rename buck
+  #     run: |
+  #       mv buck-master.pex buck && ls -l buck
+  #   - name: Export buck
+  #     run: |
+  #       export PATH="`realpath buck`:$PATH"
+  test-job:
+    name: Run all tests
     runs-on: ubuntu-latest
+    needs: [get-buck]
     steps:
+    - uses: actions/checkout@v2
     - name: Fetch buck
       run: |
         wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
@@ -22,12 +40,6 @@ jobs:
     - name: Export buck
       run: |
         export PATH="`realpath buck`:$PATH"
-  test-job:
-    name: Run all tests
-    runs-on: ubuntu-latest
-    needs: [get-buck]
-    steps:
-    - uses: actions/checkout@v2
     - name: Run all tests
       run: echo $PATH && ./gradlew test --stacktrace
   sample-java-job:
@@ -36,6 +48,18 @@ jobs:
     needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
+    - name: Fetch buck
+      run: |
+        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
+    - name: Elevate buck
+      run: |
+        chmod +x buck-master.pex
+    - name: Rename buck
+      run: |
+        mv buck-master.pex buck && ls -l buck
+    - name: Export buck
+      run: |
+        export PATH="`realpath buck`:$PATH"
     - name: Run all tests
       run: echo $PATH && ./gradlew :sample:assembleDebug --stacktrace
   sample-kotlin-job:
@@ -44,6 +68,18 @@ jobs:
     needs: [get-buck]
     steps:
     - uses: actions/checkout@v2
+    - name: Fetch buck
+      run: |
+        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
+    - name: Elevate buck
+      run: |
+        chmod +x buck-master.pex
+    - name: Rename buck
+      run: |
+        mv buck-master.pex buck && ls -l buck
+    - name: Export buck
+      run: |
+        export PATH="`realpath buck`:$PATH"
     - name: Assemble kotlin sample
       run: echo $PATH && ./gradlew :sample-kotlin:assembleDebug --stacktrace
   publish-job:
@@ -52,6 +88,18 @@ jobs:
     needs: [get-buck, test-job, sample-java-job, sample-kotlin-job]
     steps:
     - uses: actions/checkout@v2
+    - name: Fetch buck
+      run: |
+        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex
+    - name: Elevate buck
+      run: |
+        chmod +x buck-master.pex
+    - name: Rename buck
+      run: |
+        mv buck-master.pex buck && ls -l buck
+    - name: Export buck
+      run: |
+        export PATH="`realpath buck`:$PATH"
     - name: Publish to maven
       env:
         BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
