@@ -74,11 +74,8 @@ jobs:
     - name: Rename buck
       run: |
         mv buck-master.pex buck && ls -l buck
-    - name: Export buck
-      run: |
-        export PATH="`realpath buck`:$PATH"
     - name: Assemble kotlin sample
-      run: echo $PATH && ./gradlew :sample-kotlin:assembleDebug --stacktrace
+      run: export PATH="`realpath buck`:$PATH" && echo $PATH && ./gradlew :sample-kotlin:assembleDebug --stacktrace
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
