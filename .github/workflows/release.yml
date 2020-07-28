@@ -69,9 +69,12 @@ jobs:
     # needs: [publish-job]
     steps:
     - uses: actions/checkout@v2
-    - uses: mstksg/setup-stack@v1
+    - name: Get tag info
+      id: tag_info
+      run: echo ::set-output name=TAG_INFO::`git describe --tags | cut -d v -f2`
     - name: Run validation script
       env:
-          TAG: ${GITHUB_REF#refs/tags/}
+          TAG: ${{ steps.tag_info.outputs.TAG_INFO }}
       run: |
-        stack scripts/verify-bintray-upload.hs $TAG
+        echo $TAG
+      # && scripts/verify-bintray-upload.hs $TAG
