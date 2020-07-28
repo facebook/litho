@@ -63,20 +63,6 @@ or with a combination of changing `./_data/features.yml` and adding some Liquid 
 {% include content/gridblocks.html data_source=site.data.features imagealign="bottom"%}
 ```
 
-## Blog
-
-To modify a blog post, edit the appopriate markdown file in `./_posts/`.
-
-Adding a new blog post is a four-step process.
-
-> Some posts have a `permalink` and `comments` in the blog post YAML header. You will not need these for new blog posts. These are an artifact of migrating the blog from Wordpress to gh-pages.
-
-1. Create your blog post in `./_posts/` in markdown (file extension `.md` or `.markdown`). See current posts in that folder or `./doc-type-examples/2016-04-07-blog-post-example.md` for an example of the YAML format. **If the `./_posts` directory does not exist, create it**.
-  - You can add a `<!--truncate-->` tag in the middle of your post such that you show only the excerpt above that tag in the main `/blog` index on your page.
-1. If you have not authored a blog post before, modify the `./_data/authors.yml` file with the `author` id you used in your blog post, along with your full name and Facebook ID to get your profile picture.
-1. [Run the site locally](./README.md) to test your changes. It will be at `http://127.0.0.1/blog/your-new-blog-post-title.html`
-1. Push your changes to GitHub.
-
 ## Docs
 
 To modify docs, edit the appropriate markdown file in `./_docs/`.
