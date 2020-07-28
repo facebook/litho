@@ -99,6 +99,9 @@ public class ComponentGlobalKeyTest {
     final Component column = Column.create(mContext).build();
     final int columnSpecId = column.getTypeId();
 
+    final HostComponent host = HostComponent.create();
+    final int hostId = host.getTypeId();
+
     final LithoView lithoView = getLithoView(component);
 
     // Text
@@ -121,23 +124,22 @@ public class ComponentGlobalKeyTest {
             columnSpecId,
             columnSpecId,
             "[CardClip1]"),
-        getComponentAt(lithoView, 3).getGlobalKey());
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(4)).getComponent().getGlobalKey());
     // Text in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[Text1]"),
-        getComponentAt(lithoView, 4).getGlobalKey());
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(5)).getComponent().getGlobalKey());
     // background
-    Assert.assertNull(getComponentAt(lithoView, 5).getGlobalKey());
     // CardClip
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, columnSpecId, "[CardClip2]"),
-        getComponentAt(lithoView, 6).getGlobalKey());
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(7)).getComponent().getGlobalKey());
     // TestViewComponent
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[TestViewComponent2]"),
-        getComponentAt(lithoView, 7).getGlobalKey());
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(8)).getComponent().getGlobalKey());
   }
 
   @Test
@@ -432,13 +434,25 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 3).getOwnerGlobalKey());
 
     // Text in child
-    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 4).getOwnerGlobalKey());
+    Assert.assertEquals(
+        nestedLayoutGlobalKey,
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(4))
+            .getComponent()
+            .getOwnerGlobalKey());
 
     // CardClip
-    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 6).getOwnerGlobalKey());
+    Assert.assertEquals(
+        rootGlobalKey,
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(1))
+            .getComponent()
+            .getOwnerGlobalKey());
 
     // TestViewComponent
-    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 7).getOwnerGlobalKey());
+    Assert.assertEquals(
+        rootGlobalKey,
+        getLayoutOutput(lithoView.getMountState().getMountItemAt(7))
+            .getComponent()
+            .getOwnerGlobalKey());
   }
 
   @Test

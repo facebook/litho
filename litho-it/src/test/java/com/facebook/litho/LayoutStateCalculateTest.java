@@ -407,7 +407,7 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(200, EXACTLY));
     // Check total layout outputs.
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(8);
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(7);
 
     // Check quantity of HostComponents.
     int totalHosts = 0;
@@ -421,22 +421,22 @@ public class LayoutStateCalculateTest {
 
     // Check all the Layouts are in the correct position.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
+    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(Text.class);
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(Text.class);
-    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(Text.class);
-    assertThat(isHostComponent(getComponentAt(layoutState, 5))).isTrue();
-    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(Text.class);
-    assertThat(getComponentAt(layoutState, 7)).isInstanceOf(TestViewComponent.class);
+    // assertThat(getComponentAt(layoutState, 4)).isInstanceOf(Text.class);
+    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(HostComponent.class);
+    assertThat(getComponentAt(layoutState, 5)).isInstanceOf(Text.class);
+    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(TestViewComponent.class);
 
     // Check the text within the TextComponents.
-    assertThat(getTextFromTextComponent(layoutState, 3)).isEqualTo("textLeft1");
-    assertThat(getTextFromTextComponent(layoutState, 4)).isEqualTo("textRight1");
-    assertThat(getTextFromTextComponent(layoutState, 6)).isEqualTo("textLeft2");
+    assertThat(getTextFromTextComponent(layoutState, 2)).isEqualTo("textLeft1");
+    assertThat(getTextFromTextComponent(layoutState, 3)).isEqualTo("textRight1");
+    assertThat(getTextFromTextComponent(layoutState, 5)).isEqualTo("textLeft2");
 
-    final Rect textLayoutBounds = getLayoutOutput(layoutState.getMountableOutputAt(6)).getBounds();
+    final Rect textLayoutBounds = getLayoutOutput(layoutState.getMountableOutputAt(5)).getBounds();
     final Rect textBackgroundBounds =
-        getLayoutOutput(layoutState.getMountableOutputAt(5)).getBounds();
+        getLayoutOutput(layoutState.getMountableOutputAt(4)).getBounds();
 
     assertThat(textLayoutBounds.left - paddingSize).isEqualTo(textBackgroundBounds.left);
     assertThat(textLayoutBounds.top - paddingSize).isEqualTo(textBackgroundBounds.top);
@@ -546,7 +546,7 @@ public class LayoutStateCalculateTest {
     final boolean foregroundHasOwnOutput = SDK_INT < M;
 
     // Check total layout outputs.
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(foregroundHasOwnOutput ? 12 : 11);
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(foregroundHasOwnOutput ? 7 : 11);
 
     // Check quantity of HostComponents.
     int totalHosts = 0;
@@ -559,56 +559,33 @@ public class LayoutStateCalculateTest {
     assertThat(totalHosts).isEqualTo(3);
 
     // Check all the Layouts are in the correct position.
-    assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
-    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(DrawableComponent.class);
-    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(Text.class);
+    assertThat(getComponentAt(layoutState, 0)).isInstanceOf(HostComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
+    // assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
+    // assertThat(getComponentAt(layoutState, 3)).isInstanceOf(HostComponent.class);
+    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(Text.class);
+    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(Text.class);
+    // assertThat(getComponentAt(layoutState, 6)).isInstanceOf(HostComponent.class);
+    // assertThat(isHostComponent(getComponentAt(layoutState, 4))).isTrue();
+    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(HostComponent.class);
     assertThat(getComponentAt(layoutState, 5)).isInstanceOf(Text.class);
-    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(DrawableComponent.class);
-    assertThat(isHostComponent(getComponentAt(layoutState, 7))).isTrue();
-    assertThat(getComponentAt(layoutState, 8)).isInstanceOf(DrawableComponent.class);
-    assertThat(getComponentAt(layoutState, 9)).isInstanceOf(Text.class);
-    assertThat(getComponentAt(layoutState, 10)).isInstanceOf(TestViewComponent.class);
-    if (foregroundHasOwnOutput) {
-      assertThat(getComponentAt(layoutState, 11)).isInstanceOf(DrawableComponent.class);
-    }
+    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(TestViewComponent.class);
+    /*if (foregroundHasOwnOutput) {
+      assertThat(getComponentAt(layoutState, 11)).isInstanceOf(HostComponent.class);
+    }*/
 
     // Check the text within the TextComponents.
-    assertThat(getTextFromTextComponent(layoutState, 4)).isEqualTo("textLeft1");
-    assertThat(getTextFromTextComponent(layoutState, 5)).isEqualTo("textRight1");
-    assertThat(getTextFromTextComponent(layoutState, 9)).isEqualTo("textLeft2");
+    assertThat(getTextFromTextComponent(layoutState, 2)).isEqualTo("textLeft1");
+    assertThat(getTextFromTextComponent(layoutState, 3)).isEqualTo("textRight1");
+    assertThat(getTextFromTextComponent(layoutState, 5)).isEqualTo("textLeft2");
 
-    // Check that the backgrounds have the same size of the components to which they are associated
-    assertThat(layoutState.getMountableOutputAt(3).getBounds())
-        .isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
-    assertThat(layoutState.getMountableOutputAt(6).getBounds())
-        .isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
-
-    final Rect textLayoutBounds = layoutState.getMountableOutputAt(9).getBounds();
-    final Rect textBackgroundBounds = layoutState.getMountableOutputAt(8).getBounds();
+    final Rect textLayoutBounds = layoutState.getMountableOutputAt(5).getBounds();
+    final Rect textBackgroundBounds = layoutState.getMountableOutputAt(4).getBounds();
 
     assertThat(textLayoutBounds.left - paddingSize).isEqualTo(textBackgroundBounds.left);
     assertThat(textLayoutBounds.top - paddingSize).isEqualTo(textBackgroundBounds.top);
     assertThat(textLayoutBounds.right + paddingSize).isEqualTo(textBackgroundBounds.right);
     assertThat(textLayoutBounds.bottom + paddingSize).isEqualTo(textBackgroundBounds.bottom);
-
-    assertThat(layoutState.getMountableOutputAt(8).getBounds())
-        .isEqualTo(layoutState.getMountableOutputAt(7).getBounds());
-
-    final ViewNodeInfo viewNodeInfo =
-        getLayoutOutput(layoutState.getMountableOutputAt(10)).getViewNodeInfo();
-    assertThat(viewNodeInfo).isNotNull();
-    assertThat(viewNodeInfo.getBackground() != null).isTrue();
-    if (foregroundHasOwnOutput) {
-      assertThat(viewNodeInfo.getForeground() == null).isTrue();
-    } else {
-      assertThat(viewNodeInfo.getForeground() != null).isTrue();
-    }
-    assertThat(viewNodeInfo.getPaddingLeft() == paddingSize).isTrue();
-    assertThat(viewNodeInfo.getPaddingTop() == paddingSize).isTrue();
-    assertThat(viewNodeInfo.getPaddingRight() == paddingSize).isTrue();
-    assertThat(viewNodeInfo.getPaddingBottom() == paddingSize).isTrue();
   }
 
   @Test
@@ -1246,11 +1223,7 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY));
 
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
-
-    // First and third output are the background and the foreground
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(DrawableComponent.class);
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
   }
 
   @Test
@@ -1718,7 +1691,7 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY),
             makeSizeSpec(100, EXACTLY));
 
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(10);
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(9);
 
     final long hostMarkerRoot =
         getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker();
@@ -1726,32 +1699,27 @@ public class LayoutStateCalculateTest {
     final long hostMarkerTwo = getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker();
     final long hostMarkerThree =
         getLayoutOutput(layoutState.getMountableOutputAt(7)).getHostMarker();
-    final long hostMarkerFour =
-        getLayoutOutput(layoutState.getMountableOutputAt(9)).getHostMarker();
 
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
         .isEqualTo(hostMarkerRoot);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
         .isEqualTo(hostMarkerOne);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker())
-        .isEqualTo(hostMarkerOne);
+        .isEqualTo(hostMarkerRoot);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker())
         .isEqualTo(hostMarkerTwo);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(7)).getHostMarker())
         .isEqualTo(hostMarkerThree);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(9)).getHostMarker())
-        .isEqualTo(hostMarkerFour);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
-    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(DrawableComponent.class);
-    assertThat(getComponentAt(layoutState, 4)).isInstanceOf(TestDrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestDrawableComponent.class);
+    assertThat(isHostComponent(getComponentAt(layoutState, 4))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 5))).isTrue();
-    assertThat(isHostComponent(getComponentAt(layoutState, 6))).isTrue();
-    assertThat(getComponentAt(layoutState, 7)).isInstanceOf(TestDrawableComponent.class);
-    assertThat(isHostComponent(getComponentAt(layoutState, 8))).isTrue();
-    assertThat(getComponentAt(layoutState, 9)).isInstanceOf(TestDrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 6)).isInstanceOf(TestDrawableComponent.class);
+    assertThat(isHostComponent(getComponentAt(layoutState, 7))).isTrue();
+    assertThat(getComponentAt(layoutState, 8)).isInstanceOf(TestDrawableComponent.class);
   }
 
   @Test
@@ -1799,25 +1767,27 @@ public class LayoutStateCalculateTest {
 
     final long hostMarkerRoot =
         getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker();
-    final long hostMarkerOne = getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker();
+    final long hostMarkerOne = getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker();
     final long hostMarkerTwo = getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker();
+    final long hostMarkerThree =
+        getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker();
 
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
         .isEqualTo(hostMarkerRoot);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getHostMarker())
         .isEqualTo(hostMarkerRoot);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
+        .isEqualTo(hostMarkerOne);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker())
         .isEqualTo(hostMarkerRoot);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker())
-        .isEqualTo(hostMarkerOne);
+        .isEqualTo(hostMarkerThree);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker())
         .isEqualTo(hostMarkerTwo);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
-    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(HostComponent.class);
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestDrawableComponent.class);
     assertThat(isHostComponent(getComponentAt(layoutState, 4))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 5))).isTrue();
@@ -1969,12 +1939,12 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
     // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(5, 5, 55, 55));
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(5, 5, 55, 55));
+    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 50, 50));
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestViewComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(3)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(8, 58, 342, 78));
@@ -2013,12 +1983,12 @@ public class LayoutStateCalculateTest {
     getLayoutOutput(layoutState.getMountableOutputAt(0)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
     // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(13, 13, 63, 63));
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(13, 13, 63, 63));
+    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 50, 50));
   }
 
   @Test
@@ -2055,12 +2025,12 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
     // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(18, 18, 68, 68));
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(18, 18, 68, 68));
+    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 50, 50));
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestViewComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(3)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(21, 71, 329, 91));
@@ -2096,12 +2066,12 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
     // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(5, 5, 55, 55));
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(5, 5, 55, 55));
+    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 50, 50));
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestViewComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(3)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(8, 58, 342, 78));
@@ -2137,12 +2107,12 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
     // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(10, 10, 60, 60));
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(10, 10, 60, 60));
+    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 50, 50));
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestViewComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(3)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(13, 63, 337, 83));
@@ -2306,7 +2276,7 @@ public class LayoutStateCalculateTest {
     getLayoutOutput(layoutState.getMountableOutputAt(0)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 100, 100));
 
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 50, 50));
   }
@@ -2341,7 +2311,7 @@ public class LayoutStateCalculateTest {
     getLayoutOutput(layoutState.getMountableOutputAt(0)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 60, 86));
 
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(HostComponent.class);
     getLayoutOutput(layoutState.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 60, 86));
   }
