@@ -23,6 +23,7 @@ dependencies {
 // someone (maybe you!) will fix this and get CMake to help us out.
 task buckBuild(type: Exec) {
     workingDir rootDir
+    def buckPath = System.getenv('BUCK_PATH') ? System.getenv('BUCK_PATH') : 'buck'
     environment BUCKVERSION: 'last'
-    commandLine 'buck', 'build', '//lib/yogajni:jni#default,shared'
+    commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
 }
