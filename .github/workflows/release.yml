@@ -12,21 +12,21 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run all tests
-      run: ./gradlew test
+      run: ./gradlew test --stacktrace
   sample-java-job:
     name: Assemble sample app
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Run all tests
-      run: ./gradlew :sample:assembleDebug
+      run: ./gradlew :sample:assembleDebug --stacktrace
   sample-kotlin-job:
     name: Assemble kotlin app
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Assemble kotlin sample
-      run: ./gradlew :sample-kotlin:assembleDebug
+      run: ./gradlew :sample-kotlin:assembleDebug --stacktrace
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
@@ -38,7 +38,7 @@ jobs:
         BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
         BINTRAY_API_KEY: ${{ secrets.bintrayApiKey }}
       run: |
-        ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY
+        ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
   validate-job:
     name: Validate uploads
     runs-on: ubuntu-latest
@@ -46,5 +46,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run validation script
+      env:
+          TAG: ${GITHUB_REF#refs/tags/}
       run: |
-        scripts/verify-bintray-upload.hs ${GITHUB_REF#refs/tags/}
+        scripts/verify-bintray-upload.hs
