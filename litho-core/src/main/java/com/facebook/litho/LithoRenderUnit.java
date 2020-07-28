@@ -33,13 +33,13 @@ import java.util.Map;
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> {
 
-  static final List<Binder<LithoRenderUnit, Object>> sMountBinder = new ArrayList<>(1);
-  static final List<Binder<LithoRenderUnit, Object>> sBindBinders = new ArrayList<>(2);
+  static final List<Binder<LithoRenderUnit, Object>> sMountBinders = new ArrayList<>(2);
+  static final List<Binder<LithoRenderUnit, Object>> sBindBinder = new ArrayList<>(1);
 
   static {
-    sMountBinder.add(LithoMountBinder.INSTANCE);
-    sMountBinder.add(LithoViewAttributeBinder.INSTANCE);
-    sBindBinders.add(LithoBindBinder.INSTANCE);
+    sMountBinders.add(LithoMountBinder.INSTANCE);
+    sMountBinders.add(LithoViewAttributeBinder.INSTANCE);
+    sBindBinder.add(LithoBindBinder.INSTANCE);
   }
 
   final LayoutOutput output;
@@ -47,7 +47,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
   private int mDefaultViewAttributeFlags = -1;
 
   public LithoRenderUnit(LayoutOutput output) {
-    super(getRenderType(output), sMountBinder, sBindBinders);
+    super(getRenderType(output), sMountBinders, sBindBinder);
     this.output = output;
   }
 
