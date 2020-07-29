@@ -47,13 +47,12 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
+import com.facebook.litho.widget.MountSpecLifecycleTesterDrawable;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaPositionType;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.After;
@@ -480,9 +479,31 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
+    final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 1000);
+
+    mLithoViewRule
+        .setRoot(Row.create(mContext).build())
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+    parent.addView(lithoView);
+
+    lithoView.setTranslationY(105);
+
     final EventHandler eventHandler = mock(EventHandler.class);
-    final Component child1 = SimpleMountSpecTester.create(mContext).build();
-    final Component root =
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTesterDrawable.create(mContext)
+            .lifecycleTracker(lifecycleTracker1)
+            .build();
+    final Component childHost1 =
         Column.create(mContext)
             .child(
                 Wrapper.create(mContext)
@@ -490,33 +511,103 @@ public class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10)
                     .clickHandler(eventHandler)
-                    .positionType(YogaPositionType.ABSOLUTE)
-                    .alignSelf(YogaAlign.CENTER)
-                    .marginDip(YogaEdge.LEFT, -10)
                     .marginDip(YogaEdge.TOP, -10))
             .build();
 
-    final Component root2 =
+    final Component rootHost =
         Row.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(root)
-                    .clickHandler(eventHandler)
-                    .marginDip(YogaEdge.TOP, 100)
-                    .build())
+            .child(Wrapper.create(mContext).delegate(childHost1).clickHandler(eventHandler).build())
             .build();
 
+    lithoView.getComponentTree().setRoot(rootHost);
+
+    assertThat(lifecycleTracker1.getSteps()).contains(LifecycleStep.ON_MOUNT);
+  }
+
+  @Test
+  public void itemWithNegativeMargin_removeAndAdd_hostIsMounted() {
+    final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 1000);
+
     mLithoViewRule
-        .setRoot(root2)
+        .setRoot(Row.create(mContext).build())
         .attachToWindow()
-        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
         .measure()
         .layout();
 
     final LithoView lithoView = mLithoViewRule.getLithoView();
-    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 1000, 10), true);
+    parent.addView(lithoView);
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 80, 1000, 1000), true);
+    lithoView.setTranslationY(95);
+
+    final EventHandler eventHandler1 = mock(EventHandler.class);
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTesterDrawable.create(mContext)
+            .lifecycleTracker(lifecycleTracker1)
+            .build();
+    final Component childHost1 =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .clickHandler(eventHandler1))
+            .build();
+
+    final Component host1 =
+        Row.create(mContext)
+            .child(
+                Wrapper.create(mContext).delegate(childHost1).clickHandler(eventHandler1).build())
+            .build();
+
+    final EventHandler eventHandler2 = mock(EventHandler.class);
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component child2 =
+        MountSpecLifecycleTesterDrawable.create(mContext)
+            .lifecycleTracker(lifecycleTracker2)
+            .build();
+    final Component childHost2 =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child2)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .clickHandler(eventHandler2)
+                    .marginDip(YogaEdge.TOP, -10))
+            .build();
+
+    final Component host2 =
+        Row.create(mContext)
+            .child(
+                Wrapper.create(mContext).delegate(childHost2).clickHandler(eventHandler2).build())
+            .build();
+
+    final Component rootHost = Column.create(mContext).child(host1).child(host2).build();
+
+    // Mount both child1 and child2.
+    lithoView.getComponentTree().setRoot(rootHost);
+
+    assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_MOUNT);
+    lifecycleTracker2.reset();
+
+    // Remove child2.
+    final Component newHost = Column.create(mContext).child(host1).build();
+    lithoView.getComponentTree().setRoot(newHost);
+
+    // Add child2 back.
+    assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);
+    lifecycleTracker2.reset();
+
+    lithoView.getComponentTree().setRoot(rootHost);
+
+    assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_MOUNT);
   }
 
   /** Tests incremental mount behaviour of overlapping view mount items. */
