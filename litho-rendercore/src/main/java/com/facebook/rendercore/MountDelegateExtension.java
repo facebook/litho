@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import androidx.annotation.VisibleForTesting;
 import java.util.HashSet;
 import java.util.Set;
+import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * Mount extension which can be registered by a MountState as an extension which can override
@@ -26,6 +27,7 @@ import java.util.Set;
  * decide what to mount or unmount. If no extensions are registered on the MountState's delegate, it
  * falls back to its default behaviour.
  */
+@DoNotStrip
 public class MountDelegateExtension {
 
   private Set<Long> mLayoutOutputMountRefs = new HashSet<>();

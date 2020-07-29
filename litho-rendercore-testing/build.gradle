@@ -52,7 +52,7 @@ dependencies {
     compileOnly deps.jsr305
     implementation deps.inferAnnotations
 
-    //compileOnly deps.proguardAnnotations
+    compileOnly deps.proguardAnnotations
 
     // Android Support Library
     compileOnly deps.supportAnnotations
