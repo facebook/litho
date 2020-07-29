@@ -1,4 +1,4 @@
-name: Release on new version tags
+name: Release on new release commit
 
 on: push
 
@@ -23,7 +23,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   new-release:
-    name: Check for new release
+    name: Skip all if not a new release
     needs: [push-tags-job]
     if: ${{ needs.push-tags-job.outputs.is-new-release == true }}
     runs-on: ubuntu-latest
