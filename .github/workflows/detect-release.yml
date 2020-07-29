@@ -6,7 +6,7 @@ jobs:
   push-tags-job:
     name: Push tags for release
     runs-on: ubuntu-latest
-    needs: []
+    # needs: []
     steps:
     - uses: actions/checkout@v2
     - name: Set version info
