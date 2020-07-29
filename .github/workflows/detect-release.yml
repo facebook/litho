@@ -16,6 +16,6 @@ jobs:
       uses: weareyipyip/walking-tag-action@v2
       with:
         tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
-        tag-message: See [CHANGELOG.md](https://github.com/facebook/litho/blob/master/CHANGELOG.md) for the complete list of updates
+        tag-message: ""
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
