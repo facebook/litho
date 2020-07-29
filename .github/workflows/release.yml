@@ -39,9 +39,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Check dependencies
-      run: |
-        ./gradlew :litho-core:dependencies
     - name: Fetch buck
       run: |
         wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
@@ -49,7 +46,7 @@ jobs:
         mv buck-master.pex buck && \
         ls -l buck
     - name: Run all tests
-      run: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
+      run: BUCK_PATH=`realpath buck` ./gradlew testRelease --stacktrace
   sample-java-job:
     name: Assemble sample app
     needs: [new-release]
@@ -63,7 +60,7 @@ jobs:
         mv buck-master.pex buck && \
         ls -l buck
     - name: Assemble sample app
-      run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleDebug --stacktrace
+      run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleRelease --stacktrace
   sample-kotlin-job:
     name: Assemble kotlin app
     needs: [new-release]
@@ -77,7 +74,7 @@ jobs:
         mv buck-master.pex buck && \
         ls -l buck
     - name: Assemble kotlin sample
-      run: BUCK_PATH=`realpath buck` ./gradlew :sample-kotlin:assembleDebug --stacktrace
+      run: BUCK_PATH=`realpath buck` ./gradlew :sample-kotlin:assembleRelease --stacktrace
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
