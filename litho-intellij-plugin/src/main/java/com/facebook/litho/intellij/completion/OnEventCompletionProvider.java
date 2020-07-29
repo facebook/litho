@@ -68,7 +68,7 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
                   LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
                       .ifPresent(
                           cls ->
-                              ComponentGenerateService.getInstance(cls.getProject())
+                              ComponentGenerateService.getInstance()
                                   .updateLayoutComponentAsync(cls));
                 }),
             Integer.MAX_VALUE));

@@ -117,10 +117,7 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     super.actionPerformed(e);
     final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
     LithoPluginUtils.getFirstLayoutSpec(file)
-        .ifPresent(
-            cls ->
-                ComponentGenerateService.getInstance(e.getProject())
-                    .updateLayoutComponentAsync(cls));
+        .ifPresent(cls -> ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls));
   }
 
   /**

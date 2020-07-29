@@ -59,24 +59,21 @@ public class ComponentGenerateService {
       Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
-  private final Project project;
-
-  /** Subscribes listener to Spec model updates. Removes subscription once parent is disposed. */
-  public void subscribe(SpecUpdateNotifier listener, Disposable parent) {
-    listeners.add(listener);
-    Disposer.register(parent, () -> listeners.remove(listener));
-  }
 
   public interface SpecUpdateNotifier {
     void onSpecModelUpdated(PsiClass specCls);
   }
 
-  public static ComponentGenerateService getInstance(Project project) {
-    return ServiceManager.getService(project, ComponentGenerateService.class);
+  public static ComponentGenerateService getInstance() {
+    return ServiceManager.getService(ComponentGenerateService.class);
   }
 
-  private ComponentGenerateService(Project project) {
-    this.project = project;
+  private ComponentGenerateService() {}
+
+  /** Subscribes listener to Spec model updates. Removes subscription once parent is disposed. */
+  public void subscribe(SpecUpdateNotifier listener, Disposable parent) {
+    listeners.add(listener);
+    Disposer.register(parent, () -> listeners.remove(listener));
   }
 
   /**
@@ -127,41 +124,46 @@ public class ComponentGenerateService {
   @Nullable
   private static PsiClass updateComponent(
       String componentQualifiedName, SpecModel model, Project project) {
-    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
-    if (componentShortName.isEmpty()) return null;
-
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
-    final boolean isPresent = generatedClass.isPresent();
     final String newContent = createFileContentFromModel(componentQualifiedName, model);
-    if (isPresent) {
-      final Document document =
-          PsiDocumentManager.getInstance(project)
-              .getDocument(generatedClass.get().getContainingFile());
-      if (document != null) {
-        // Write access is allowed inside write-action only
-        WriteAction.run(
-            () -> {
-              document.setText(newContent);
-            });
-        FileDocumentManager.getInstance().saveDocument(document);
-        return generatedClass.get();
-      }
+    if (generatedClass.isPresent()) {
+      return updateExistingComponent(newContent, generatedClass.get(), project);
     } else {
-      final PsiFile file =
-          PsiFileFactory.getInstance(project)
-              .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
-      ComponentScope.include(file);
-      final PsiClass inMemory =
-          LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
-              .orElse(null);
-      if (inMemory == null) return null;
-
-      ComponentsCacheService.getInstance(project).update(componentQualifiedName, inMemory);
-      return inMemory;
+      return updateInMemoryComponent(newContent, componentQualifiedName, project);
     }
-    return null;
+  }
+
+  private static PsiClass updateExistingComponent(
+      String newContent, PsiClass generatedClass, Project project) {
+    // Null is not expected scenario
+    final Document document =
+        PsiDocumentManager.getInstance(project).getDocument(generatedClass.getContainingFile());
+    // Write access is allowed inside write-action only
+    WriteAction.run(() -> document.setText(newContent));
+    FileDocumentManager.getInstance().saveDocument(document);
+    return generatedClass;
+  }
+
+  @Nullable
+  private static PsiClass updateInMemoryComponent(
+      String newContent, String componentQualifiedName, Project project) {
+    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
+    if (componentShortName.isEmpty()) return null;
+
+    final ComponentsCacheService cacheService = ComponentsCacheService.getInstance(project);
+    final PsiFile file =
+        PsiFileFactory.getInstance(project)
+            .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
+    ComponentScope.include(file);
+    final PsiClass inMemory =
+        LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
+            .orElse(null);
+    if (inMemory == null) return null;
+
+    cacheService.update(componentQualifiedName, inMemory);
+    return inMemory;
   }
 
   private static void showSuccess(String componentName, Project project) {

@@ -84,7 +84,7 @@ class ComponentStructureView implements Disposable {
     contentManager.addContent(contentContainer);
     isVisible.set(toolWindow.isVisible());
     updateViewLater(null);
-    ComponentGenerateService.getInstance(project).subscribe(this::updateViewLater, this);
+    ComponentGenerateService.getInstance().subscribe(this::updateViewLater, this);
     final MessageBusConnection busConnection = project.getMessageBus().connect(this);
     busConnection.subscribe(
         FileEditorManagerListener.FILE_EDITOR_MANAGER,

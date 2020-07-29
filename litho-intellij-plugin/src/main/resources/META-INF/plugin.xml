@@ -74,6 +74,8 @@
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.EventHandlerAnnotator"/>
 
+    <applicationService serviceImplementation="com.facebook.litho.intellij.services.ComponentGenerateService" />
+
     <codeInsight.lineMarkerProvider language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropLineMarkerProvider"/>
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
@@ -110,7 +112,6 @@
     <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.toolwindows.ComponentStructureView"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
-    <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentGenerateService" />
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
 

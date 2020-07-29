@@ -99,10 +99,7 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
     data.put(EventLogger.KEY_TYPE, templateName);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE, data);
     LithoPluginUtils.getFirstClass(createdElement, LithoPluginUtils::isLayoutSpec)
-        .ifPresent(
-            cls ->
-                ComponentGenerateService.getInstance(cls.getProject())
-                    .updateLayoutComponentAsync(cls));
+        .ifPresent(cls -> ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls));
   }
 
   private static class ActionsHolder {
