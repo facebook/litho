@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set version info
       id: version_info
-      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | sed 's|\[litho\] Release version \([0-9\.]*\).*|\1|'`
+      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+'`
     - name: Print version info
       if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
       env:
