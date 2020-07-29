@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Dummy step
-    - run: echo 1
+      run: echo "Starting a new release"
   test-job:
     name: Run all tests
     needs: [new-release]
