@@ -229,12 +229,12 @@ public class LayoutStateCalculateTest {
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(0)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
     // Check NestedTree
-    assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(HostComponent.class);
+    assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(DrawableComponent.class);
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
     assertThat(getComponentAt(layoutStateSpy, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 260, 0));
+    assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
   }
@@ -302,12 +302,12 @@ public class LayoutStateCalculateTest {
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(0)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
     // Check NestedTree
-    assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(HostComponent.class);
+    assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(DrawableComponent.class);
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(1)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
     assertThat(getComponentAt(layoutStateSpy, 2)).isInstanceOf(TestDrawableComponent.class);
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(2)).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 250, 0));
+    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
     assertThat(getComponentAt(layoutStateSpy, 3)).isInstanceOf(TestViewComponent.class);
     getLayoutOutput(layoutStateSpy.getMountableOutputAt(3)).getMountBounds(mountBounds);
     assertThat(mountBounds).isEqualTo(new Rect(28, 8, 272, 8));
