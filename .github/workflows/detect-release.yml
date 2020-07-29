@@ -6,12 +6,11 @@ jobs:
   push-tags-job:
     name: Push tags for release
     runs-on: ubuntu-latest
-    needs: []
     steps:
     - uses: actions/checkout@v2
     - name: Set version info
       id: version_info
-      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+'`
+      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '\[[lL]itho\] [rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+'`
     - name: Print version info
       if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
       env:
