@@ -4,17 +4,17 @@ on: push
 
 jobs:
   push-tags-job:
-    name: Push tags for release
+    name: Push tags if new release
     runs-on: ubuntu-latest
     outputs:
-      is-new-release: ${{ steps.push_tag_step.outcome == 'success' }}
+      is-new-release: ${{ steps.push_tag.outcome == 'success' }}
     steps:
     - uses: actions/checkout@v2
     - name: Extract version info
       id: version_info
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '\[[lL]itho\] [rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
     - name: Set Git tag
-      id: push_tag_step
+      id: push_tag
       if: ${{ steps.version_info.outputs.VERSION_INFO != 'v' }}
       uses: weareyipyip/walking-tag-action@v2
       with:
@@ -29,7 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Dummy step
-      run: echo "Starting a new release"
+      run: echo "$NEEDS"
+      env:
+        NEEDS: ${{ toJson(needs) }}
   test-job:
     name: Run all tests
     needs: [new-release]
