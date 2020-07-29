@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -53,7 +52,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
     return mAttachDetachBinder;
   }
 
-  public interface IncrementalMountExtensionInput extends MountDelegateInput {
+  public interface IncrementalMountExtensionInput extends MountDelegate.MountDelegateInput {
     int getMountableOutputCount();
 
     List<RenderTreeNode> getMountableOutputTops();
