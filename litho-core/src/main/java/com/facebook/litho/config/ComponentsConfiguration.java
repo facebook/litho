@@ -231,7 +231,7 @@ public class ComponentsConfiguration {
 
   public static boolean disableTransitionsExtensionForMountDelegate = false;
 
-  public static boolean shouldDisableDrawableOutputs = false;
+  public static boolean shouldDisableDrawableOutputs = true;
 
   public static boolean useIncrementalMountExtension = false;
 

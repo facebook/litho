@@ -522,20 +522,17 @@ public class TreeDiffingTest {
     componentTree.setRoot(component2);
     LayoutState secondState = componentTree.getMainThreadLayoutState();
 
-    assertThat(5).isEqualTo(secondState.getMountableOutputCount());
+    assertThat(secondState.getMountableOutputCount()).isEqualTo(3);
     assertOutputsState(secondState, STATE_UPDATED);
 
     componentTree.setRoot(component3);
     LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
-    assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
+    assertThat(thirdState.getMountableOutputCount()).isEqualTo(3);
+
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(1)).getUpdateState())
-        .isEqualTo(STATE_DIRTY);
+        .isEqualTo(STATE_UPDATED);
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(3)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(4)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
   }
 
@@ -568,7 +565,7 @@ public class TreeDiffingTest {
     LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_DIRTY);
+        .isEqualTo(STATE_UPDATED);
   }
 
   @Test
