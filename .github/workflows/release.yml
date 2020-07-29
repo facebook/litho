@@ -23,15 +23,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   new-release:
-    name: Shortcircuit workflow if this isn't a new release
+    name: Check for new release
     needs: [push-tags-job]
     if: ${{ needs.push-tags-job.outputs.is-new-release == true }}
     runs-on: ubuntu-latest
     steps:
-    - name: Dummy step
-      run: echo "$NEEDS"
-      env:
-        NEEDS: ${{ toJson(needs) }}
+    - name: Check step
+      run: echo "Starting a new release"
   test-job:
     name: Run all tests
     needs: [new-release]
