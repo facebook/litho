@@ -20,80 +20,86 @@ jobs:
         tag-message: ""
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  test-job:
+  pring-job:
     name: Run all tests
     needs: [push-tags-job]
-    if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Run all tests
-      run: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
-  sample-java-job:
-    name: Assemble sample app
-    needs: [push-tags-job]
-    if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Assemble sample app
-      run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleDebug --stacktrace
-  sample-kotlin-job:
-    name: Assemble kotlin app
-    needs: [push-tags-job]
-    if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Assemble kotlin sample
-      run: BUCK_PATH=`realpath buck` ./gradlew :sample-kotlin:assembleDebug --stacktrace
-  publish-job:
-    name: Maven Publish
-    runs-on: ubuntu-latest
-    needs: [test-job, sample-java-job, sample-kotlin-job]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Publish to maven
-      env:
-        BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
-        BINTRAY_API_KEY: ${{ secrets.bintrayApiKey }}
-      run: |
-        BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
-  validate-job:
-    name: Validate uploads
-    runs-on: ubuntu-latest
-    needs: [publish-job]
-    steps:
-    - uses: actions/checkout@v2
-    - name: Get tag info
-      id: tag_info
-      run: echo ::set-output name=TAG_INFO::`git describe --tags | cut -d v -f2`
-    - name: Run validation script
-      env:
-        TAG: ${{ steps.tag_info.outputs.TAG_INFO }}
-      run: |
-        scripts/verify-bintray-upload.hs $TAG
+    env:
+      NEEDS: ${{ toJson(needs) }}
+    run: echo "$NEEDS"
+  # test-job:
+  #   name: Run all tests
+  #   needs: [push-tags-job]
+  #   if: ${{ needs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Fetch buck
+  #     run: |
+  #       wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
+  #       chmod +x buck-master.pex && \
+  #       mv buck-master.pex buck && \
+  #       ls -l buck
+  #   - name: Run all tests
+  #     run: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
+  # sample-java-job:
+  #   name: Assemble sample app
+  #   needs: [push-tags-job]
+  #   if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Fetch buck
+  #     run: |
+  #       wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
+  #       chmod +x buck-master.pex && \
+  #       mv buck-master.pex buck && \
+  #       ls -l buck
+  #   - name: Assemble sample app
+  #     run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleDebug --stacktrace
+  # sample-kotlin-job:
+  #   name: Assemble kotlin app
+  #   needs: [push-tags-job]
+  #   if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Fetch buck
+  #     run: |
+  #       wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
+  #       chmod +x buck-master.pex && \
+  #       mv buck-master.pex buck && \
+  #       ls -l buck
+  #   - name: Assemble kotlin sample
+  #     run: BUCK_PATH=`realpath buck` ./gradlew :sample-kotlin:assembleDebug --stacktrace
+  # publish-job:
+  #   name: Maven Publish
+  #   runs-on: ubuntu-latest
+  #   needs: [test-job, sample-java-job, sample-kotlin-job]
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Fetch buck
+  #     run: |
+  #       wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
+  #       chmod +x buck-master.pex && \
+  #       mv buck-master.pex buck && \
+  #       ls -l buck
+  #   - name: Publish to maven
+  #     env:
+  #       BINTRAY_USERNAME: ${{ secrets.bintrayUsername }}
+  #       BINTRAY_API_KEY: ${{ secrets.bintrayApiKey }}
+  #     run: |
+  #       BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
+  # validate-job:
+  #   name: Validate uploads
+  #   runs-on: ubuntu-latest
+  #   needs: [publish-job]
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Get tag info
+  #     id: tag_info
+  #     run: echo ::set-output name=TAG_INFO::`git describe --tags | cut -d v -f2`
+  #   - name: Run validation script
+  #     env:
+  #       TAG: ${{ steps.tag_info.outputs.TAG_INFO }}
+  #     run: |
+  #       scripts/verify-bintray-upload.hs $TAG
