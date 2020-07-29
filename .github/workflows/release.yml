@@ -13,7 +13,7 @@ jobs:
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '\[[lL]itho\] [rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
     - name: Set Git tag
       id: push_tag_step
-      if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
+      if: ${{ steps.version_info.outputs.VERSION_INFO != 'v' }}
       uses: weareyipyip/walking-tag-action@v2
       with:
         tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
@@ -28,7 +28,7 @@ jobs:
     - name: Print
       env:
         NEEDS: ${{ toJson(needs) }}
-      run: echo "\n$NEEDS"
+      run: echo "$NEEDS"
   # test-job:
   #   name: Run all tests
   #   needs: [push-tags-job]
