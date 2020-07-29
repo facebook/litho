@@ -6,8 +6,27 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
+  push-tags-job:
+    name: Push tags for release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Extract version info
+      id: version_info
+      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '\[[lL]itho\] [rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
+    - name: Set Git tag
+      id: push_tag_step
+      if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
+      uses: weareyipyip/walking-tag-action@v2
+      with:
+        tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
+        tag-message: ""
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test-job:
     name: Run all tests
+    needs: [push-tags-job]
+    if: ${{ jobs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -21,6 +40,8 @@ jobs:
       run: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
   sample-java-job:
     name: Assemble sample app
+    needs: [push-tags-job]
+    if: ${{ jobs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -34,6 +55,8 @@ jobs:
       run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleDebug --stacktrace
   sample-kotlin-job:
     name: Assemble kotlin app
+    needs: [push-tags-job]
+    if: ${{ jobs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
