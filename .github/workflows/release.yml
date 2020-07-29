@@ -1,4 +1,4 @@
-name: Release on new release commit
+name: Publish on release commits
 
 on: push
 
