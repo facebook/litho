@@ -23,7 +23,7 @@ jobs:
   test-job:
     name: Run all tests
     needs: [push-tags-job]
-    if: ${{ jobs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
+    if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
   sample-java-job:
     name: Assemble sample app
     needs: [push-tags-job]
-    if: ${{ jobs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
+    if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
   sample-kotlin-job:
     name: Assemble kotlin app
     needs: [push-tags-job]
-    if: ${{ jobs.push-tags-job.steps.push_tag_step.outcome == 'success' }}
+    if: ${{ push-tags-job.steps.push_tag_step.outcome == 'success' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
