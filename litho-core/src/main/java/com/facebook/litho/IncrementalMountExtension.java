@@ -29,6 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -52,7 +53,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
     return mAttachDetachBinder;
   }
 
-  public interface IncrementalMountExtensionInput extends MountDelegate.MountDelegateInput {
+  public interface IncrementalMountExtensionInput extends MountDelegateInput {
     int getMountableOutputCount();
 
     List<RenderTreeNode> getMountableOutputTops();
@@ -105,7 +106,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
   @Override
   public void beforeMount(IncrementalMountExtensionInput input, Rect localVisibleRect) {
-    releaseAcquiredReferencesForRemovedItems(input);
     mInput = input;
     mPreviousLocalVisibleRect.setEmpty();
 
@@ -155,20 +155,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
   @Override
   public void onUnbind() {}
-
-  private void releaseAcquiredReferencesForRemovedItems(IncrementalMountExtensionInput input) {
-    if (mInput == null) {
-      return;
-    }
-
-    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
-      final RenderTreeNode node = mInput.getMountableOutputAt(i);
-      final long id = node.getRenderUnit().getId();
-      if (input.getLayoutOutputPositionForId(id) < 0) {
-        releaseMountReference(node, i, false);
-      }
-    }
-  }
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
