@@ -29,7 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check step
-      run: echo "Starting a new release"
+      run: echo "$NEEDS"
+      env:
+        NEEDS: ${{ toJson(needs) }}
   test-job:
     name: Run all tests
     needs: [new-release]
