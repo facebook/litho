@@ -10,9 +10,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Set version info
       id: version_info
-      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | \
-      egrep '\[[lL]itho\] [rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | \
-      xargs -0 printf v%s`
+      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '\[[lL]itho\] [rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
     - name: Set Git tag
       if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
       uses: weareyipyip/walking-tag-action@v2
