@@ -29,11 +29,13 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Annotator that uses {@link LayoutSpecModel} validation to annotate class with error messages.
@@ -47,13 +49,11 @@ public class LayoutSpecAnnotator implements Annotator {
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
     DEBUG_LOGGER.logStep("start " + element);
-    if (!(element instanceof PsiClass)) return;
-
-    final PsiClass cls = (PsiClass) element;
-    if (!LithoPluginUtils.isLayoutSpec(cls)) return;
+    final PsiClass layoutSpec = getLayoutSpec(element);
+    if (layoutSpec == null) return;
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.createLayoutModel(cls))
+        Optional.ofNullable(ComponentGenerateService.createLayoutModel(layoutSpec))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
@@ -63,5 +63,16 @@ public class LayoutSpecAnnotator implements Annotator {
       errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
     DEBUG_LOGGER.logStep("end " + element);
+  }
+
+  @Nullable
+  private static PsiClass getLayoutSpec(PsiElement element) {
+    if (element instanceof PsiClass && LithoPluginUtils.isLayoutSpec((PsiClass) element)) {
+      return (PsiClass) element;
+    }
+    if (element instanceof PsiFile) {
+      return LithoPluginUtils.getFirstLayoutSpec((PsiFile) element).orElse(null);
+    }
+    return null;
   }
 }
