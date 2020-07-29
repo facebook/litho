@@ -28,7 +28,7 @@ jobs:
     - name: Print
       env:
         NEEDS: ${{ toJson(needs) }}
-      run: echo "$NEEDS"
+      run: echo "\n$NEEDS"
   # test-job:
   #   name: Run all tests
   #   needs: [push-tags-job]
