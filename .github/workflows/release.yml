@@ -27,7 +27,8 @@ jobs:
     needs: [push-tags-job]
     if: ${{ needs.push-tags-job.outputs.-is-new-release }}
     runs-on: ubuntu-latest
-    steps: []
+    steps:
+    - name: Dummy step
   test-job:
     name: Run all tests
     needs: [new-release]
