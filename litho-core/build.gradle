@@ -55,7 +55,7 @@ android {
 dependencies {
     // Project dependencies
     api project(':litho-annotations')
-    implementation project(':litho-rendercore')
+    api project(':litho-rendercore')
     api project(':litho-rendercore-visibility')
 
     // Annotations
