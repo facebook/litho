@@ -254,7 +254,7 @@ public interface InternalNode
    * Arbitrary data which may be attached to a component for testing.
    */
   @Nullable
-  String getTestTag();
+  Object getTestTag();
 
   @Nullable
   Edges getTouchExpansion();

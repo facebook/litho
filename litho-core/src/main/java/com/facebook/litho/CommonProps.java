@@ -61,7 +61,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   @Nullable
   Object getTestTag();
 
-  void testTag(Object tag);
+  void testTag(@Nullable Object tag);
 
   void wrapInView();
 

@@ -115,12 +115,12 @@ class CommonPropsHolder implements CommonProps {
 
   @Override
   @Nullable
-  public void getTestTag() {
+  public Object getTestTag() {
     return mTestTag;
   }
 
   @Override
-  public void testTag(Object testTag) {
+  public void testTag(@Nullable Object testTag) {
     mTestTag = testTag;
   }
 
