@@ -21,8 +21,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pring-job:
-    name: Run all tests
+    name: Print needs
     needs: [push-tags-job]
+    runs-on: ubuntu-latest
     steps:
     - name: Print
       env:
