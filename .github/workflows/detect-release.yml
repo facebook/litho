@@ -18,7 +18,7 @@ jobs:
         VERSION_INFO: ${{ steps.version_info.outputs.VERSION_INFO }}
       run: |
         echo ::set-output name=TAG_VERSION::`echo v${VERSION_INFO}` && \
-        echo ::set-output name=TAG_MESSAGE::`echo Release v${VERSION_INFO}`
+        echo ::set-output name=TAG_MESSAGE::`echo "Release v${VERSION_INFO}"`
     - name: Tag version from info
       if: ${{ steps.tag_info.outputs.TAG_VERSION != '' }}
       env:
