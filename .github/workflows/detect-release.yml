@@ -4,7 +4,6 @@ on: push
 
 jobs:
   push-tags-job:
-    # if: "contains(github.event.commits.*.message, '[litho] Release version ')"
     name: Push tags for release
     runs-on: ubuntu-latest
     needs: []
@@ -14,7 +13,7 @@ jobs:
       id: version_info
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | sed 's|\[litho\] Release version \([0-9\.]*\).*|\1|'`
     - name: Print version info
-      # if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
+      if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
       env:
         VERSION_INFO: ${{ steps.version_info.outputs.VERSION_INFO }}
       run: echo $VERSION_INFO
