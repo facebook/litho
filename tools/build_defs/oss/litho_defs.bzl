@@ -56,27 +56,27 @@ LITHO_FRESCO_KOTLIN_TARGET = make_dep_path("litho-fresco-kotlin/src/main/kotlin/
 # Testing targets
 LITHO_TESTING_CORE_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
-LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4")
+LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
 LITHO_TESTING_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
 
-LITHO_TESTING_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing-v4")
+LITHO_TESTING_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
 
 LITHO_TESTING_WHITEBOX_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:whitebox")
 
 LITHO_TESTING_ASSERTJ_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
 
-LITHO_TESTING_ASSERTJ_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4")
+LITHO_TESTING_ASSERTJ_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
 
 LITHO_TESTING_HELPER_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
 
-LITHO_TESTING_HELPER_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper-v4")
+LITHO_TESTING_HELPER_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
 
 LITHO_TESTING_SUBCOMPONENTS_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/subcomponents:subcomponents")
 
 LITHO_TESTING_WIDGET_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget")
 
-LITHO_TESTING_WIDGET_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget-v4")
+LITHO_TESTING_WIDGET_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget")
 
 LITHO_TESTING_ESPRESSO_TARGET = make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso")
 

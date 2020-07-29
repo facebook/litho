@@ -21,15 +21,3 @@ litho_android_library(
         LITHO_MOCKITO_V2_TARGET,
     ],
 )
-
-litho_android_library(
-    name = "eventhandler-v4",
-    srcs = glob(["*.java"]),
-    visibility = [
-        "PUBLIC",
-    ],
-    deps = [
-        LITHO_JAVA_TARGET,
-        LITHO_MOCKITO_V2_TARGET,
-    ],
-)

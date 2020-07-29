@@ -45,7 +45,7 @@ litho_robolectric4_test(
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
     ],
 )

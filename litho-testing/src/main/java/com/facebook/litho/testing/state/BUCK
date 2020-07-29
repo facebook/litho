@@ -10,42 +10,15 @@ load(
     "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
-    "LITHO_ROBOLECTRIC_V3_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
-    "LITHO_TESTING_HELPER_V3_TARGET",
     "LITHO_TESTING_HELPER_V4_TARGET",
     "LITHO_TESTING_SUBCOMPONENTS_TARGET",
     "LITHO_TESTING_WHITEBOX_TARGET",
     "litho_android_library",
 )
 
-COMMON_DEPS = [
-    LITHO_ANDROIDSUPPORT_TARGET,
-    LITHO_JAVA_TARGET,
-    LITHO_JSR_TARGET,
-    LITHO_TESTING_WHITEBOX_TARGET,
-    LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-    LITHO_ANDROIDSUPPORT_TESTING_TARGET,
-]
-
 litho_android_library(
     name = "state",
-    srcs = glob(["*.java"]),
-    provided_deps = [
-        LITHO_ROBOLECTRIC_V3_TARGET,
-    ],
-    visibility = [
-        "PUBLIC",
-    ],
-    deps = COMMON_DEPS,
-    exported_deps = [
-        LITHO_TESTING_HELPER_V3_TARGET,
-        LITHO_TESTING_SUBCOMPONENTS_TARGET,
-    ],
-)
-
-litho_android_library(
-    name = "state-v4",
     srcs = glob(["*.java"]),
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
@@ -53,7 +26,14 @@ litho_android_library(
     visibility = [
         "PUBLIC",
     ],
-    deps = COMMON_DEPS,
+    deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_TESTING_WHITEBOX_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+    ],
     exported_deps = [
         LITHO_TESTING_HELPER_V4_TARGET,
         LITHO_TESTING_SUBCOMPONENTS_TARGET,

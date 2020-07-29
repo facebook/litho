@@ -16,27 +16,13 @@ load(
     "LITHO_JUNIT_TARGET",
     "LITHO_PROCESSOR_LIB_TARGET",
     "LITHO_ROBOLECTRIC_V3_TARGET",
-    "LITHO_TESTING_ASSERTJ_V3_TARGET",
     "LITHO_TESTING_ASSERTJ_V4_TARGET",
-    "LITHO_TESTING_CORE_V3_TARGET",
     "LITHO_TESTING_CORE_V4_TARGET",
     "LITHO_TESTING_SUBCOMPONENTS_TARGET",
-    "LITHO_TESTING_V3_TARGET",
     "LITHO_TESTING_V4_TARGET",
     "LITHO_WIDGET_TARGET",
     "litho_android_library",
 )
-
-COMMON_DEPS = [
-    LITHO_WIDGET_TARGET,
-    LITHO_JSR_TARGET,
-    LITHO_HAMCREST_CORE_TARGET,
-    LITHO_HAMCREST_LIBRARY_TARGET,
-    LITHO_JAVA_TARGET,
-    LITHO_ANNOTATIONS_TARGET,
-    LITHO_ANDROIDSUPPORT_TARGET,
-    LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-]
 
 litho_android_library(
     name = "widget",
@@ -49,28 +35,15 @@ litho_android_library(
     ],
     is_androidx = True,
     visibility = ["PUBLIC"],
-    deps = COMMON_DEPS + [
-        LITHO_TESTING_ASSERTJ_V3_TARGET,
-        LITHO_TESTING_CORE_V3_TARGET,
-        LITHO_TESTING_V3_TARGET,
-    ],
-    exported_deps = [
-        LITHO_TESTING_CORE_V3_TARGET,
-    ],
-)
-
-litho_android_library(
-    name = "widget-v4",
-    srcs = glob(["*Spec.java"]),
-    annotation_processor_deps = [
-        LITHO_PROCESSOR_LIB_TARGET,
-    ],
-    annotation_processors = [
-        "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
-    ],
-    is_androidx = True,
-    visibility = ["PUBLIC"],
-    deps = COMMON_DEPS + [
+    deps = [
+        LITHO_WIDGET_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_HAMCREST_CORE_TARGET,
+        LITHO_HAMCREST_LIBRARY_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_TESTING_ASSERTJ_V4_TARGET,
         LITHO_TESTING_CORE_V4_TARGET,
         LITHO_TESTING_V4_TARGET,

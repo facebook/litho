@@ -7,26 +7,12 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_JAVA_TARGET",
-    "LITHO_TESTING_CORE_V3_TARGET",
     "LITHO_TESTING_CORE_V4_TARGET",
     "litho_android_library",
 )
 
 litho_android_library(
     name = "logging",
-    srcs = glob(["*.java"]),
-    visibility = [
-        "PUBLIC",
-    ],
-    deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_TESTING_CORE_V3_TARGET,
-    ],
-)
-
-litho_android_library(
-    name = "logging-v4",
     srcs = glob(["*.java"]),
     visibility = [
         "PUBLIC",

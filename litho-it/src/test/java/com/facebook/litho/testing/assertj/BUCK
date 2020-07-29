@@ -28,9 +28,9 @@ litho_robolectric4_test(
         LITHO_JUNIT_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,
         LITHO_TESTING_V4_TARGET,
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/inlinelayoutspec:inlinelayoutspec"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget"),
     ],
 )

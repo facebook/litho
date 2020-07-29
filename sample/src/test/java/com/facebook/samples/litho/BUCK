@@ -48,8 +48,8 @@ litho_robolectric4_test(
         LITHO_TESTING_V4_TARGET,
         LITHO_TESTING_WIDGET_V4_TARGET,
         LITHO_WIDGET_TARGET,
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
     ],
 )
