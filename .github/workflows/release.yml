@@ -25,7 +25,7 @@ jobs:
   new-release:
     name: Skip all if not a new release
     needs: [push-tags-job]
-    if: ${{ needs.push-tags-job.outputs.is-new-release == true }}
+    # if: ${{ needs.push-tags-job.outputs.is-new-release == true }}
     runs-on: ubuntu-latest
     steps:
     - name: Check step
