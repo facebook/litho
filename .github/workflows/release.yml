@@ -23,9 +23,11 @@ jobs:
   pring-job:
     name: Run all tests
     needs: [push-tags-job]
-    env:
-      NEEDS: ${{ toJson(needs) }}
-    run: echo "$NEEDS"
+    steps:
+    - name: Print
+      env:
+        NEEDS: ${{ toJson(needs) }}
+      run: echo "$NEEDS"
   # test-job:
   #   name: Run all tests
   #   needs: [push-tags-job]
