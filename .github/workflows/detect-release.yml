@@ -14,7 +14,7 @@ jobs:
     - name: Print version info
       if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
       env:
-        VERSION_INFO: ${{ join('v', steps.version_info.outputs.VERSION_INFO) }}
+        VERSION_INFO: ${{ join('v', ${{ steps.version_info.outputs.VERSION_INFO) }} }}
       run: echo $VERSION_INFO
     - name: Tag version from info
       if: ${{ steps.version_info.outputs.VERSION_INFO != '' }}
