@@ -6,6 +6,8 @@ jobs:
   push-tags-job:
     name: Push tags for release
     runs-on: ubuntu-latest
+    outputs:
+      is-new-version: ${{ steps.push_tag_step.outcome == 'success' }}
     steps:
     - uses: actions/checkout@v2
     - name: Extract version info
