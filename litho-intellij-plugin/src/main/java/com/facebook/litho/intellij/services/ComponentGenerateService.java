@@ -125,7 +125,7 @@ public class ComponentGenerateService {
 
   /** Updates generated Component file from the given Spec model. */
   @Nullable
-  public static PsiClass updateComponent(
+  private static PsiClass updateComponent(
       String componentQualifiedName, SpecModel model, Project project) {
     final String componentShortName = StringUtil.getShortName(componentQualifiedName);
     if (componentShortName.isEmpty()) return null;
