@@ -68,6 +68,7 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
@@ -100,7 +101,8 @@ import java.util.Set;
  */
 @ThreadConfined(ThreadConfined.UI)
 class MountState
-    implements TransitionManager.OnAnimationCompleteListener<EventHandler>, MountDelegateTarget {
+    implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
+        MountDelegateTarget {
 
   private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
       "MountState:DisappearAnimTargetingRoot";
@@ -2982,9 +2984,9 @@ class MountState
 
   @Override
   public void onAnimationUnitComplete(
-      PropertyHandle propertyHandle, EventHandler transitionEndHandler) {
+      PropertyHandle propertyHandle, Function transitionEndHandler) {
     if (transitionEndHandler != null) {
-      transitionEndHandler.dispatchEvent(
+      transitionEndHandler.call(
           new TransitionEndEvent(
               propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
     }

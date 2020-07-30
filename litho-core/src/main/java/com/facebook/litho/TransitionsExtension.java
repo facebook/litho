@@ -28,6 +28,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
+import com.facebook.rendercore.Function;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
@@ -47,7 +48,7 @@ import java.util.Set;
 /** Extension for performing transitions. */
 public class TransitionsExtension extends MountDelegateExtension
     implements HostListenerExtension<TransitionsExtension.TransitionsExtensionInput>,
-        TransitionManager.OnAnimationCompleteListener<EventHandler<TransitionEndEvent>>,
+        TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
         UnmountDelegateExtension {
 
   private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
@@ -605,9 +606,9 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void onAnimationUnitComplete(
-      PropertyHandle propertyHandle, EventHandler transitionEndHandler) {
+      PropertyHandle propertyHandle, Function transitionEndHandler) {
     if (transitionEndHandler != null) {
-      transitionEndHandler.dispatchEvent(
+      transitionEndHandler.call(
           new TransitionEndEvent(
               propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
     }
