@@ -7,7 +7,7 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_JAVA_TARGET",
-    "LITHO_TESTING_CORE_V4_TARGET",
+    "LITHO_TESTING_CORE_TARGET",
     "litho_android_library",
 )
 
@@ -20,6 +20,6 @@ litho_android_library(
     deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
-        LITHO_TESTING_CORE_V4_TARGET,
+        LITHO_TESTING_CORE_TARGET,
     ],
 )

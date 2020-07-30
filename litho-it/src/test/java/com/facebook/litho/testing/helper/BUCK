@@ -12,7 +12,7 @@ load(
     "LITHO_JUNIT_TARGET",
     "LITHO_MOCKITO_V2_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
-    "LITHO_TESTING_V4_TARGET",
+    "LITHO_TESTING_TARGET",
     "litho_robolectric4_test",
     "make_dep_path",
 )
@@ -33,7 +33,7 @@ litho_robolectric4_test(
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
         LITHO_MOCKITO_V2_TARGET,
-        LITHO_TESTING_V4_TARGET,
+        LITHO_TESTING_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
     ],

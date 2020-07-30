@@ -5,7 +5,7 @@ load(
     "LITHO_HAMCREST_CORE_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
-    "LITHO_TESTING_HELPER_V4_TARGET",
+    "LITHO_TESTING_HELPER_TARGET",
     "LITHO_TESTING_SUBCOMPONENTS_TARGET",
     "LITHO_TESTING_WHITEBOX_TARGET",
     "litho_android_library",
@@ -29,7 +29,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = COMMON_DEPS + [
-        LITHO_TESTING_HELPER_V4_TARGET,
+        LITHO_TESTING_HELPER_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
     ],
