@@ -165,7 +165,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode node = mInput.getMountableOutputAt(i);
       final long id = node.getRenderUnit().getId();
-      if (input.getLayoutOutputPositionForId(id) < 0) {
+      if (input.getLayoutOutputPositionForId(id) < 0 && ownsReference(id)) {
         releaseMountReference(node, i, false);
       }
     }
