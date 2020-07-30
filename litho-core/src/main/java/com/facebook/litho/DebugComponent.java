@@ -257,7 +257,7 @@ public final class DebugComponent {
   public Object getTestTag() {
     Component component = mNode.getComponents().get(mComponentIndex);
     CommonProps props = component.getCommonProps();
-    return props == null ? props.getTestTag();
+    return props != null ? props.getTestTag() : null;
   }
 
   /**
