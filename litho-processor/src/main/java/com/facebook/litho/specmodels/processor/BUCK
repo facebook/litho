@@ -6,7 +6,6 @@ load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANNOTATIONS_TARGET",
-    "LITHO_JAVAC_TOOLS_TARGET",
     "LITHO_JAVAPOET_TARGET",
     "LITHO_JSR_TARGET",
     "fb_java_library",
@@ -57,14 +56,19 @@ fb_java_library(
 fb_java_library(
     name = "processor-lib-bare",
     srcs = glob(["*.java"]),
+    extra_arguments = [
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+        "--add-exports",
+        "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+    ],
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
-        LITHO_JAVAC_TOOLS_TARGET,
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
     ],
-    source = "8",
-    target = "8",
+    source = "11",
+    target = "11",
     visibility = [
         "PUBLIC",
     ],

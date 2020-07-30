@@ -22,7 +22,6 @@ load(
     "LITHO_FRESCO_KOTLIN_TARGET",
     "LITHO_FRESCO_PIPELINE_TARGET",
     "LITHO_FRESCO_TARGETS",
-    "LITHO_JAVAC_TOOLS_TARGET",
     "LITHO_KOTLIN_STDLIB_TARGET",
     "LITHO_PROCESSOR_TARGET",
     "LITHO_RES_TARGET",
@@ -49,9 +48,6 @@ fb_android_library(
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
-    ],
-    provided_deps = [
-        LITHO_JAVAC_TOOLS_TARGET,
     ],
     visibility = [
         "PUBLIC",
