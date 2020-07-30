@@ -59,8 +59,6 @@ public class LithoView extends Host {
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
-  private boolean mHasVisibilityHint;
-  private boolean mVisibilityHintIsVisible;
 
   public interface OnDirtyMountListener {
     /**
@@ -825,17 +823,11 @@ public class LithoView extends Host {
       return;
     }
 
-    final boolean forceMount = mHasVisibilityHint && !mVisibilityHintIsVisible;
-    mHasVisibilityHint = true;
-    mVisibilityHintIsVisible = isVisible;
-
     if (isVisible) {
-      if (forceMount) {
-        notifyVisibleBoundsChanged();
-      } else if (getLocalVisibleRect(mRect)) {
+      if (getLocalVisibleRect(mRect)) {
         processVisibilityOutputs(mRect);
+        recursivelySetVisibleHint(true);
       }
-      recursivelySetVisibleHint(true);
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
       recursivelySetVisibleHint(false);
@@ -1040,10 +1032,6 @@ public class LithoView extends Host {
       LayoutState layoutState,
       @Nullable Rect currentVisibleArea,
       boolean processVisibilityOutputs) {
-
-    if (mHasVisibilityHint && !mVisibilityHintIsVisible) {
-      return;
-    }
 
     if (mTransientStateCount > 0
         && mComponentTree != null
