@@ -33,13 +33,7 @@ android {
     buildTypes {
         def internalBuildField = 'IS_INTERNAL_BUILD'
 
-        debug {
-            buildConfigField 'boolean', internalBuildField, 'true'
-        }
-
-        release {
-            buildConfigField 'boolean', internalBuildField, 'false'
-        }
+        buildConfigField 'boolean', internalBuildField, 'true'
     }
 
     // TODO(#62): Re-enable abort on error.
