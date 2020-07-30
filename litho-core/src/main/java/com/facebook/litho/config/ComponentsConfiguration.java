@@ -245,8 +245,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldForceComponentUpdateOnOrientationChange = true;
 
-  public static boolean isGlobalComponentsPoolEnabled = false;
-
   /** When {@code true} internal hooks implementation is applied. */
   public static boolean isHooksImplEnabled = false;
 
