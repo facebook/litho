@@ -140,6 +140,10 @@ public class ComponentGenerateService {
     // Null is not expected scenario
     final Document document =
         PsiDocumentManager.getInstance(project).getDocument(generatedClass.getContainingFile());
+    if (newContent.equals(document.getText())) {
+      return generatedClass;
+    }
+
     // Write access is allowed inside write-action only
     WriteAction.run(() -> document.setText(newContent));
     FileDocumentManager.getInstance().saveDocument(document);
@@ -153,6 +157,11 @@ public class ComponentGenerateService {
     if (componentShortName.isEmpty()) return null;
 
     final ComponentsCacheService cacheService = ComponentsCacheService.getInstance(project);
+    final PsiClass oldComponent = cacheService.getComponent(componentQualifiedName);
+    if (oldComponent != null && newContent.equals(oldComponent.getContainingFile().getText())) {
+      return oldComponent;
+    }
+
     final PsiFile file =
         PsiFileFactory.getInstance(project)
             .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
