@@ -175,8 +175,6 @@ LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transition
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
 
-LITHO_ROBOLECTRIC_V3_TARGET = make_dep_path("lib/robolectric3:robolectric3")
-
 LITHO_ROBOLECTRIC_V4_TARGET = make_dep_path("lib/robolectric4:robolectric4")
 
 LITHO_JUNIT_TARGET = make_dep_path("lib/junit:junit")
