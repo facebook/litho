@@ -54,52 +54,68 @@ import java.util.List;
 public class DemoListActivity extends NavigatableDemoActivity {
 
   static final String INDICES = "INDICES";
+
   static final List<DemoListDataModel> DATA_MODELS =
       Arrays.asList(
-          new DemoListDataModel("Lithography", LithographyActivity.class),
           new DemoListDataModel("Playground", PlaygroundActivity.class),
-          new DemoListDataModel("Border effects", BorderEffectsActivity.class),
-          new DemoListDataModel("Error boundaries", ErrorHandlingActivity.class),
-          new DemoListDataModel("HScroll with Snapping", HorizontalScrollWithSnapActivity.class),
+
+          // Please keep this alphabetical with consistent naming and casing!
           new DemoListDataModel(
-              "Non-recycling scroll",
-              Arrays.asList(
-                  new DemoListDataModel("HorizontalScroll", HorizontalScrollActivity.class))),
-          new DemoListDataModel(
-              "Animations",
-              Arrays.asList(
-                  new DemoListDataModel("Animations Composition", ComposedAnimationsActivity.class),
-                  new DemoListDataModel("Expandable Element", ExpandableElementActivity.class),
-                  new DemoListDataModel("Animated Badge", AnimatedBadgeActivity.class),
-                  new DemoListDataModel("Bounds Animation", BoundsAnimationActivity.class),
-                  new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
-                  new DemoListDataModel(
-                      "Common Dynamic Props Animations", CommonDynamicPropsAnimationActivity.class),
-                  new DemoListDataModel("Animation Cookbook", AnimationCookBookActivity.class),
-                  new DemoListDataModel("Animation Callbacks", AnimationCallbacksActivity.class),
-                  new DemoListDataModel("Shared elements", SharedElementsActivity.class),
-                  new DemoListDataModel("Transitions", TransitionsActivity.class))),
-          new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
-          new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),
-          new DemoListDataModel("Litho Stats", StatsActivity.class),
-          new DemoListDataModel(
-              "Changeset debug",
-              Arrays.asList(
-                  new DemoListDataModel("Resetting state", StateResettingActivity.class),
-                  new DemoListDataModel("Items re-rendering", ItemsRerenderingActivity.class),
-                  new DemoListDataModel("Not updating with new props", PropUpdatingActivity.class),
-                  new DemoListDataModel(
-                      "List scrolls to bottom", ScrollingToBottomActivity.class))),
-          new DemoListDataModel(
-              "Triggers",
+              "API Demos",
               Arrays.asList(
                   new DemoListDataModel(
-                      "Clear Text Trigger", ClearTextTriggerExampleActivity.class),
+                      "Animations",
+                      Arrays.asList(
+                          new DemoListDataModel(
+                              "Animations Composition", ComposedAnimationsActivity.class),
+                          new DemoListDataModel(
+                              "Expandable Element", ExpandableElementActivity.class),
+                          new DemoListDataModel("Animated Badge", AnimatedBadgeActivity.class),
+                          new DemoListDataModel("Bounds Animation", BoundsAnimationActivity.class),
+                          new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
+                          new DemoListDataModel(
+                              "Common Dynamic Props Animations",
+                              CommonDynamicPropsAnimationActivity.class),
+                          new DemoListDataModel(
+                              "Animation Cookbook", AnimationCookBookActivity.class),
+                          new DemoListDataModel(
+                              "Animation Callbacks", AnimationCallbacksActivity.class),
+                          new DemoListDataModel("Shared elements", SharedElementsActivity.class),
+                          new DemoListDataModel("Transitions", TransitionsActivity.class))),
+                  new DemoListDataModel("Border Effects", BorderEffectsActivity.class),
                   new DemoListDataModel(
-                      "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
-                  new DemoListDataModel("Tooltip Trigger", TooltipTriggerExampleActivity.class))),
-          new DemoListDataModel("Component Lifecycle Example", LifecycleDelegateActivity.class),
-          new DemoListDataModel("Duplicate Parent/Child State", DuplicateStateActivity.class));
+                      "Duplicate Parent/Child State", DuplicateStateActivity.class),
+                  new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
+                  new DemoListDataModel("Error Boundaries", ErrorHandlingActivity.class),
+                  new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),
+                  new DemoListDataModel(
+                      "HorizontalScroll (non-recycling)", HorizontalScrollActivity.class),
+                  new DemoListDataModel("Lifecycle Callbacks", LifecycleDelegateActivity.class),
+                  new DemoListDataModel("LithoStats", StatsActivity.class),
+                  new DemoListDataModel("Snapping", HorizontalScrollWithSnapActivity.class),
+                  new DemoListDataModel(
+                      "Triggers",
+                      Arrays.asList(
+                          new DemoListDataModel(
+                              "Clear Text Trigger", ClearTextTriggerExampleActivity.class),
+                          new DemoListDataModel(
+                              "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
+                          new DemoListDataModel(
+                              "Tooltip Trigger", TooltipTriggerExampleActivity.class))))),
+          new DemoListDataModel(
+              "Internal Debugging Samples",
+              Arrays.asList(
+                  new DemoListDataModel("Lithography", LithographyActivity.class),
+                  new DemoListDataModel(
+                      "Sections Changesets",
+                      Arrays.asList(
+                          new DemoListDataModel("Resetting state", StateResettingActivity.class),
+                          new DemoListDataModel(
+                              "Items re-rendering", ItemsRerenderingActivity.class),
+                          new DemoListDataModel(
+                              "Not updating with new props", PropUpdatingActivity.class),
+                          new DemoListDataModel(
+                              "List scrolls to bottom", ScrollingToBottomActivity.class))))));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
