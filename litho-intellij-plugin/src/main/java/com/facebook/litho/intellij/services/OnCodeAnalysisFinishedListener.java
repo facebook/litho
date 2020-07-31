@@ -27,6 +27,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -34,18 +35,18 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.messages.MessageBusConnection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** */
+/** Daemon finished listener invokes red symbols analysis. */
 public class OnCodeAnalysisFinishedListener
     implements DaemonCodeAnalyzer.DaemonListener, FileEditorManagerListener, Disposable {
   private static final Logger LOG = Logger.getInstance(OnCodeAnalysisFinishedListener.class);
-  private final Set<String> analyzedFiles = new HashSet<>();
-  private final Set<String> pendingFiles = new HashSet<>();
-  private final Object analyzedFilesLock = new Object();
+  private final Set<String> analyzedFiles = Collections.synchronizedSet(new HashSet<>());
+  private final Set<String> pendingFiles = Collections.synchronizedSet(new HashSet<>());
   private final Project project;
   private final MessageBusConnection bus;
 
@@ -78,18 +79,13 @@ public class OnCodeAnalysisFinishedListener
     if (vf == null) return;
 
     final String path = vf.getPath();
-    boolean stopProcessing;
-    synchronized (analyzedFilesLock) {
-      stopProcessing = analyzedFiles.contains(path) || pendingFiles.contains(path);
-    }
+    boolean stopProcessing = analyzedFiles.contains(path) || pendingFiles.contains(path);
     if (stopProcessing) return;
 
     final PsiFile pf = PsiManager.getInstance(project).findFile(vf);
     if (!(pf instanceof PsiJavaFile)) return;
 
-    synchronized (analyzedFilesLock) {
-      pendingFiles.add(path);
-    }
+    pendingFiles.add(path);
     final Map<String, String> eventMetadata = new HashMap<>();
     ResolveRedSymbolsAction.resolveRedSymbols(
         (PsiJavaFile) pf,
@@ -97,21 +93,23 @@ public class OnCodeAnalysisFinishedListener
         editor,
         project,
         eventMetadata,
-        finished -> {
-          synchronized (analyzedFilesLock) {
-            pendingFiles.remove(path);
-          }
-          if (finished) {
-            synchronized (analyzedFilesLock) {
-              analyzedFiles.add(path);
-            }
-          }
+        newSymbolsFound -> {
+          pendingFiles.remove(path);
+          analyzedFiles.add(path);
           eventMetadata.put(EventLogger.KEY_TYPE, "daemon");
-          eventMetadata.put(EventLogger.KEY_RESULT, finished ? "success" : "fail");
+          eventMetadata.put(EventLogger.KEY_RESULT, newSymbolsFound ? "success" : "fail");
           LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS, eventMetadata);
         });
   }
 
   @Override
   public void daemonCancelEventOccurred(String reason) {}
+
+  @Override
+  public void selectionChanged(FileEditorManagerEvent event) {
+    final VirtualFile oldFile = event.getOldFile();
+    if (oldFile != null) {
+      analyzedFiles.remove(oldFile.getPath());
+    }
+  }
 }
