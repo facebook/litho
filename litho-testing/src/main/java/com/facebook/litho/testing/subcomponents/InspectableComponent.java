@@ -143,10 +143,10 @@ public class InspectableComponent {
     return mComponent.getTestKey();
   }
 
-  /** @return This component's testTag or null if none is set. */
+  /** @return This component's componentTag or null if none is set. */
   @Nullable
-  public Object getTestTag() {
-    return mComponent.getTestTag();
+  public Object getComponentTag() {
+    return mComponent.getComponentTag();
   }
 
   /**

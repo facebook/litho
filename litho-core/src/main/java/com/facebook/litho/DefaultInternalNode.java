@@ -158,7 +158,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable String mTestKey;
-  private @Nullable Object mTestTag;
+  private @Nullable Object mComponentTag;
   private @Nullable Set<DebugComponent> mDebugComponents;
   private @Nullable List<Component> mUnresolvedComponents;
 
@@ -808,8 +808,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable Object getTestTag() {
-    return mTestTag;
+  public @Nullable Object getComponentTag() {
+    return mComponentTag;
   }
 
   @Override
@@ -1295,8 +1295,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode testTag(@Nullable Object testTag) {
-    mTestTag = testTag;
+  public InternalNode componentTag(@Nullable Object componentTag) {
+    mComponentTag = componentTag;
     return this;
   }
 

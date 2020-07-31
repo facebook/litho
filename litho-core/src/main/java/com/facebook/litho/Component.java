@@ -1819,8 +1819,8 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T testTag(@Nullable Object testTag) {
-      mComponent.getOrCreateCommonProps().testTag(testTag);
+    public T componentTag(@Nullable Object componentTag) {
+      mComponent.getOrCreateCommonProps().componentTag(componentTag);
       return getThis();
     }
 

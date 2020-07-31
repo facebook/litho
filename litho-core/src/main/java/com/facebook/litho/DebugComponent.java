@@ -250,14 +250,14 @@ public final class DebugComponent {
   }
 
   /**
-   * @return This component's testTag or null if none is set. Unlike {@link getTestKey}, this
+   * @return This component's componentTag or null if none is set. Unlike {@link getTestKey}, this
    *     will return tags for any Component, including Components which are not LayoutNodes.
    */
   @Nullable
-  public Object getTestTag() {
+  public Object getComponentTag() {
     Component component = mNode.getComponents().get(mComponentIndex);
     CommonProps props = component.getCommonProps();
-    return props != null ? props.getTestTag() : null;
+    return props != null ? props.getComponentTag() : null;
   }
 
   /**

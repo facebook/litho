@@ -578,7 +578,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public Object getTestTag() {
+  public Object getComponentTag() {
     return null;
   }
 
@@ -820,7 +820,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable InternalNode testTag(@Nullable Object testTag) {
+  public @Nullable InternalNode componentTag(@Nullable Object componentTag) {
     return null;
   }
 

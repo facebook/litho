@@ -54,7 +54,7 @@ class CommonPropsHolder implements CommonProps {
   @Nullable private CopyableLayoutProps mLayoutProps;
   @Nullable private Drawable mBackground;
   @Nullable private String mTestKey;
-  @Nullable private Object mTestTag;
+  @Nullable private Object mComponentTag;
   private boolean mWrapInView;
   @AttrRes private int mDefStyleAttr;
   @StyleRes private int mDefStyleRes;
@@ -115,13 +115,13 @@ class CommonPropsHolder implements CommonProps {
 
   @Override
   @Nullable
-  public Object getTestTag() {
-    return mTestTag;
+  public Object getComponentTag() {
+    return mComponentTag;
   }
 
   @Override
-  public void testTag(@Nullable Object testTag) {
-    mTestTag = testTag;
+  public void componentTag(@Nullable Object componentTag) {
+    mComponentTag = componentTag;
   }
 
   @Override
@@ -652,7 +652,7 @@ class CommonPropsHolder implements CommonProps {
     if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
       node.testKey(mTestKey);
     }
-    node.testTag(mTestTag);
+    node.componentTag(mComponentTag);
 
     if (shouldWrapInView()) {
       node.wrapInView();
