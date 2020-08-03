@@ -18,16 +18,18 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.view.View;
+import com.facebook.rendercore.visibility.IncrementalModule;
+import com.facebook.rendercore.visibility.IncrementalModuleItem;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class VisibilityModuleInput {
-  private ArrayList<IncrementalModule.IncrementalModuleItem> mIncrementalVisibilityItemsTops;
-  private ArrayList<IncrementalModule.IncrementalModuleItem> mIncrementalVisibilitytemsBottoms;
-  private ArrayList<IncrementalModule.IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
-  private ArrayList<IncrementalModule.IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
+  private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
+  private ArrayList<IncrementalModuleItem> mIncrementalVisibilitytemsBottoms;
+  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
+  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
   private ArrayList<FocusedIncrementalModuleItem> mIncrementalFocusedItems;
   private ArrayList<VisibilityOutput> mVisibilityChangedOutputs;
 
@@ -124,19 +126,19 @@ public class VisibilityModuleInput {
     }
   }
 
-  ArrayList<IncrementalModule.IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
+  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
     return mIncrementalVisibilityItemsTops;
   }
 
-  ArrayList<IncrementalModule.IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
+  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
     return mIncrementalVisibilitytemsBottoms;
   }
 
-  ArrayList<IncrementalModule.IncrementalModuleItem> getFullImpressionItemsTops() {
+  ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
     return mIncrementalFullImpressionItemsTops;
   }
 
-  ArrayList<IncrementalModule.IncrementalModuleItem> getFullImpressionItemsBottoms() {
+  ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
     return mIncrementalFullImpressionItemsBottoms;
   }
 
@@ -179,8 +181,7 @@ public class VisibilityModuleInput {
     }
   }
 
-  static final class VisibleIncrementalModuleItem
-      implements IncrementalModule.IncrementalModuleItem {
+  static final class VisibleIncrementalModuleItem implements IncrementalModuleItem {
     private final VisibilityOutput mVisibilityOutput;
 
     VisibleIncrementalModuleItem(VisibilityOutput visibilityOutput) {
@@ -221,8 +222,7 @@ public class VisibilityModuleInput {
     public void onLithoViewAvailable(View view) {}
   }
 
-  static final class FocusedIncrementalModuleItem
-      implements IncrementalModule.IncrementalModuleItem {
+  static final class FocusedIncrementalModuleItem implements IncrementalModuleItem {
 
     private final VisibilityOutput mVisibilityOutput;
 
@@ -277,8 +277,7 @@ public class VisibilityModuleInput {
     }
   }
 
-  static final class FullImpressionIncrementalModuleItem
-      implements IncrementalModule.IncrementalModuleItem {
+  static final class FullImpressionIncrementalModuleItem implements IncrementalModuleItem {
 
     private final VisibilityOutput mVisibilityOutput;
 
