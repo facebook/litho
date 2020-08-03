@@ -2597,17 +2597,8 @@ class MountState
 
     if (mLithoView.usingExtensionsWithMountDelegate()) {
       final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
-      final List<RenderUnit.Binder> mountBinders = renderUnit.mountUnmountFunctions();
-      if (mountBinders != null) {
-        for (int i = mountBinders.size() - 1; i >= 0; i--) {
-          final RenderUnit.Binder binder = mountBinders.get(i);
-          binder.unbind(
-              mContext.getAndroidContext(),
-              mountItem.getContent(),
-              renderUnit,
-              mountItem.getRenderTreeNode());
-        }
-      }
+      renderUnit.unmountExtensions(
+          mContext.getAndroidContext(), mountItem.getContent(), mountItem.getRenderTreeNode());
     } else {
       if (mTransitionsExtension != null) {
         mTransitionsExtension.onUnmountItem(mContext.getAndroidContext(), mountItem);
