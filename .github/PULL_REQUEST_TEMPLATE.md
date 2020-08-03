@@ -10,7 +10,7 @@ solve? -->
 ## Changelog
 
 <!-- Help reviewers and the release process by writing your own changelog entry. This should just be
-a brief oneline we can mention in our release notes: https://github.com/facebook/litho/releases -->
+a brief one line we can mention in our release notes: https://github.com/facebook/litho/releases -->
 
 ## Test Plan
 
