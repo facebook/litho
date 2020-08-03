@@ -25,6 +25,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecLifecycleTesterSpec;
+import com.facebook.litho.widget.events.EventWithoutAnnotation;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -157,5 +158,27 @@ public class LayoutSpecLifecycleTest {
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT);
     ComponentsConfiguration.isReconciliationEnabled = true;
+  }
+
+  @Test
+  public void lifecycle_dispatchEventWithoutAnnotation_shouldCallOnEventWithoutAnnotation() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    LayoutSpecLifecycleTesterSpec.Caller caller = new LayoutSpecLifecycleTesterSpec.Caller();
+    final Component component =
+        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .steps(info)
+            .caller(caller)
+            .build();
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+    info.clear();
+    EventWithoutAnnotation eventDispatched = new EventWithoutAnnotation(1, true, "hello");
+    caller.dispatchEventWithoutAnnotation(eventDispatched);
+    EventWithoutAnnotation eventReceived = caller.getEventWithoutAnnotation();
+
+    assertThat(eventReceived).isNotNull();
+    assertThat(eventDispatched.count).isSameAs(eventReceived.count);
+    assertThat(eventDispatched.isDirty).isSameAs(eventReceived.isDirty);
+    assertThat(eventDispatched.message).isSameAs(eventReceived.message);
   }
 }

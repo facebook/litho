@@ -77,6 +77,6 @@ public class EventDeclarationsExtractor {
         ProcessorUtils.getAnnotationParameter(
             elements, typeElement, Event.class, "returnType", TypeMirror.class);
 
-    return typeMirror != null ? TypeName.get(typeMirror) : null;
+    return typeMirror != null ? TypeName.get(typeMirror) : TypeName.VOID;
   }
 }
