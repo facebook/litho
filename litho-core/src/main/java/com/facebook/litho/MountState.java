@@ -3015,17 +3015,23 @@ class MountState
         return;
       }
 
-      for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-        final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
-        final int position = layoutOutput.getIndex();
-        updateAnimationLockCount(mLastMountedLayoutState, position, false);
-      }
-
-      if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionIds.isEmpty()) {
-        for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
-          if (mAnimationLockedIndices[i] != 0) {
-            throw new RuntimeException(
-                "No running animations but index " + i + " is still animation locked!");
+      if (mAnimationLockedIndices == null) {
+        if (AnimationsDebug.ENABLED) {
+          Log.e(
+              AnimationsDebug.TAG, "Unlocking animation " + transitionId + " that was not locked!");
+        }
+      } else {
+        for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
+          final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+          final int position = layoutOutput.getIndex();
+          updateAnimationLockCount(mLastMountedLayoutState, position, false);
+        }
+        if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionIds.isEmpty()) {
+          for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
+            if (mAnimationLockedIndices[i] != 0) {
+              throw new RuntimeException(
+                  "No running animations but index " + i + " is still animation locked!");
+            }
           }
         }
       }
