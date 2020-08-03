@@ -578,12 +578,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public Object getComponentTag() {
-    return null;
-  }
-
-  @Nullable
-  @Override
   public Edges getTouchExpansion() {
     return null;
   }
@@ -816,11 +810,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public @Nullable InternalNode testKey(@Nullable String testKey) {
-    return null;
-  }
-
-  @Override
-  public @Nullable InternalNode componentTag(@Nullable Object componentTag) {
     return null;
   }
 

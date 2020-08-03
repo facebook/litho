@@ -250,12 +250,6 @@ public interface InternalNode
   @Nullable
   String getTestKey();
 
-  /**
-   * Arbitrary data which may be attached to a component for testing.
-   */
-  @Nullable
-  Object getComponentTag();
-
   @Nullable
   Edges getTouchExpansion();
 
@@ -374,8 +368,6 @@ public interface InternalNode
   InternalNode stateListAnimatorRes(@DrawableRes int resId);
 
   InternalNode testKey(@Nullable String testKey);
-
-  InternalNode componentTag(@Nullable Object componentTag);
 
   InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion);
 

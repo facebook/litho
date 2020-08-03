@@ -652,7 +652,6 @@ class CommonPropsHolder implements CommonProps {
     if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
       node.testKey(mTestKey);
     }
-    node.componentTag(mComponentTag);
 
     if (shouldWrapInView()) {
       node.wrapInView();
