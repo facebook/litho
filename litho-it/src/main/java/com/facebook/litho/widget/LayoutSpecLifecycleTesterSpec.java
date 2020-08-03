@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.EventHandler;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
@@ -115,10 +114,10 @@ public class LayoutSpecLifecycleTesterSpec {
   @OnEvent(EventWithoutAnnotation.class)
   static void onEventWithoutAnnotation(
       final ComponentContext c,
+      final @Nullable @Prop(optional = true) Caller caller,
       final @FromEvent int count,
       final @FromEvent boolean isDirty,
-      final @FromEvent String message,
-      final @Nullable @Prop(optional = true) Caller caller) {
+      final @FromEvent String message) {
     if (caller != null) {
       caller.eventWithoutAnnotation = new EventWithoutAnnotation(count, isDirty, message);
     }
