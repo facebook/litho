@@ -282,7 +282,9 @@ public class ResolveRedSymbolsAction extends AnAction {
                   component =
                       ComponentGenerateService.getInstance().updateLayoutComponentSync(specCls);
                 }
-                redSymbolToClass.put(redSymbol, component);
+                if (component != null) {
+                  redSymbolToClass.put(redSymbol, component);
+                }
               });
     }
     return redSymbolToClass;
