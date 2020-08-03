@@ -45,6 +45,8 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +61,7 @@ public class ComponentGenerateService {
       Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
+  private final List<String> underAnalysis = Collections.synchronizedList(new LinkedList<>());
 
   public interface SpecUpdateNotifier {
     void onSpecModelUpdated(PsiClass specCls);
@@ -98,8 +101,31 @@ public class ComponentGenerateService {
     }
   }
 
+  /** @return false iff class is under analysis. Otherwise starts analysis. */
+  public boolean tryUpdateLayoutComponent(PsiClass layoutSpecCls) {
+    LOG.debug("Under update " + underAnalysis);
+    if (underAnalysis.contains(layoutSpecCls.getQualifiedName())) return false;
+
+    updateLayoutComponentSync(layoutSpecCls);
+    return true;
+  }
+
   @Nullable
   public PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
+    final String qName = layoutSpecCls.getQualifiedName();
+    underAnalysis.add(qName);
+    PsiClass psiClass;
+    try {
+      psiClass = updateLayoutComponent(layoutSpecCls);
+    } finally {
+      underAnalysis.remove(qName);
+    }
+    LOG.debug("Update finished " + qName + (psiClass != null));
+    return psiClass;
+  }
+
+  @Nullable
+  private PsiClass updateLayoutComponent(PsiClass layoutSpecCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
     if (componentQN == null) return null;
@@ -107,17 +133,15 @@ public class ComponentGenerateService {
     final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
     if (model == null) return null;
 
-    final Project project = layoutSpecCls.getProject();
-    final PsiClass generatedComponent = updateComponent(componentQN, model, project);
-    if (generatedComponent == null) return null;
-
+    // New model might be malformed to generate component, but it's accurate to the Spec
     layoutSpecCls.putUserData(KEY_SPEC_MODEL, model);
     Set<SpecUpdateNotifier> copy;
     synchronized (listeners) {
       copy = new HashSet<>(listeners);
     }
     copy.forEach(listener -> listener.onSpecModelUpdated(layoutSpecCls));
-    return generatedComponent;
+
+    return updateComponent(componentQN, model, layoutSpecCls.getProject());
   }
 
   /** Updates generated Component file from the given Spec model. */
@@ -186,7 +210,7 @@ public class ComponentGenerateService {
    *     com.facebook.litho.annotations.LayoutSpec} class.
    */
   @Nullable
-  public static LayoutSpecModel createLayoutModel(PsiClass layoutSpecCls) {
+  private static LayoutSpecModel createLayoutModel(PsiClass layoutSpecCls) {
     return MODEL_FACTORY.createWithPsi(layoutSpecCls.getProject(), layoutSpecCls, null);
   }
 

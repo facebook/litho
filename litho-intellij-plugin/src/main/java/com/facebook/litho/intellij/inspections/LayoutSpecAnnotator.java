@@ -16,7 +16,6 @@
 
 package com.facebook.litho.intellij.inspections;
 
-import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
@@ -42,18 +41,21 @@ import org.jetbrains.annotations.Nullable;
  * This re-uses Litho compile-time check.
  */
 public class LayoutSpecAnnotator implements Annotator {
-  private static final IntervalLogger DEBUG_LOGGER =
-      new IntervalLogger(Logger.getInstance(LayoutSpecAnnotator.class));
+  private static final Logger DEBUG_LOGGER = Logger.getInstance(LayoutSpecAnnotator.class);
   private static final EventLogger LOGGER = new DebounceEventLogger(60_000);
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
-    DEBUG_LOGGER.logStep("start " + element);
     final PsiClass layoutSpec = getLayoutSpec(element);
     if (layoutSpec == null) return;
 
+    if (!ComponentGenerateService.getInstance().tryUpdateLayoutComponent(layoutSpec)) {
+      return;
+    }
+    DEBUG_LOGGER.debug(element + " under analysis");
+
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.createLayoutModel(layoutSpec))
+        Optional.ofNullable(layoutSpec.getUserData(ComponentGenerateService.KEY_SPEC_MODEL))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
@@ -62,7 +64,6 @@ public class LayoutSpecAnnotator implements Annotator {
       LOGGER.log(EventLogger.EVENT_ANNOTATOR, data);
       errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
-    DEBUG_LOGGER.logStep("end " + element);
   }
 
   @Nullable
