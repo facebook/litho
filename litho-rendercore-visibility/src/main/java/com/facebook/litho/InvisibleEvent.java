@@ -16,11 +16,9 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.annotations.Event;
-
 /**
- * Event triggered when a Component enters the Visible Range. This happens when at least a pixel of
- * the Component is visible.
+ * Event triggered when a Component becomes invisible. This is the same with exiting the Visible
+ * Range, the Focused Range and the Full Impression Range. All the code that needs to be executed
+ * when a component leaves any of these ranges should be written in the handler for this event.
  */
-@Event
-public class VisibleEvent {}
+public class InvisibleEvent {}

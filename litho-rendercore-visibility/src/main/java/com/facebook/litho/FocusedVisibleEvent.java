@@ -16,12 +16,9 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.annotations.Event;
-
 /**
- * Event triggered when a Component exits the Focused Range. The Focused Range is defined as at
- * least half of the viewport or, if the Component is smaller than half of the viewport, when the it
- * is fully visible.
+ * Event triggered when a Component enters the Focused Range. This happens when either the Component
+ * occupies at least half of the viewport or, if the Component is smaller than half of the viewport,
+ * when the it is fully visible.
  */
-@Event
-public class UnfocusedVisibleEvent {}
+public class FocusedVisibleEvent {}
