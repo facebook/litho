@@ -24,6 +24,7 @@ import com.facebook.rendercore.visibility.IncrementalModule;
 import com.facebook.rendercore.visibility.IncrementalModuleItem;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -136,9 +137,10 @@ public class VisibilityModule {
       boolean intersect = tempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
 
       if (!intersect) {
-        if (mVisibilityRatioChanged.containsKey(visibilityOutput.getId()))
-          EventDispatcherUtils.dispatchOnVisibilityChanged(
+        if (mVisibilityRatioChanged.containsKey(visibilityOutput.getId())) {
+          VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityOutput.getVisibilityChangedEventHandler(), 0, 0, 0f, 0f);
+        }
         mVisibilityRatioChanged.remove(visibilityOutput.getId());
 
         return;
@@ -147,7 +149,7 @@ public class VisibilityModule {
       final int visibleWidth = tempRect.right - tempRect.left;
       final int visibleHeight = tempRect.bottom - tempRect.top;
 
-      EventDispatcherUtils.dispatchOnVisibilityChanged(
+      VisibilityUtils.dispatchOnVisibilityChanged(
           visibilityOutput.getVisibilityChangedEventHandler(),
           visibleWidth,
           visibleHeight,
@@ -160,7 +162,7 @@ public class VisibilityModule {
   private void clearVisibilityChanged() {
     for (Map.Entry<String, VisibilityOutput> entry : mVisibilityRatioChanged.entrySet()) {
       VisibilityOutput visibilityOutput = entry.getValue();
-      EventDispatcherUtils.dispatchOnVisibilityChanged(
+      VisibilityUtils.dispatchOnVisibilityChanged(
           visibilityOutput.getVisibilityChangedEventHandler(), 0, 0, 0, 0);
     }
     mVisibilityRatioChanged.clear();

@@ -38,7 +38,6 @@ class EventDispatcherUtils {
   private static LongClickEvent sLongClickEvent;
   private static TouchEvent sTouchEvent;
   private static InterceptTouchEvent sInterceptTouchEvent;
-  private static VisibilityChangedEvent sVisibleRectChangedEvent;
   private static DispatchPopulateAccessibilityEventEvent sDispatchPopulateAccessibilityEventEvent;
   private static OnInitializeAccessibilityEventEvent sOnInitializeAccessibilityEventEvent;
   private static OnInitializeAccessibilityNodeInfoEvent sOnInitializeAccessibilityNodeInfoEvent;
@@ -79,26 +78,6 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
 
     sFocusChangedEvent.view = null;
-  }
-
-  static void dispatchOnVisibilityChanged(
-      Function visibilityChangedHandler,
-      int visibleWidth,
-      int visibleHeight,
-      float percentVisibleWidth,
-      float percentVisibleHeight) {
-    assertMainThread();
-
-    if (sVisibleRectChangedEvent == null) {
-      sVisibleRectChangedEvent = new VisibilityChangedEvent();
-    }
-
-    sVisibleRectChangedEvent.visibleHeight = visibleHeight;
-    sVisibleRectChangedEvent.visibleWidth = visibleWidth;
-    sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;
-    sVisibleRectChangedEvent.percentVisibleWidth = percentVisibleWidth;
-
-    visibilityChangedHandler.call(sVisibleRectChangedEvent);
   }
 
   static boolean dispatchOnLongClick(EventHandler<LongClickEvent> longClickHandler, View view) {

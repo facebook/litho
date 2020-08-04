@@ -184,8 +184,7 @@ class VisibilityOutputsExtension
           }
 
           if (visibilityChangedHandler != null) {
-            EventDispatcherUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler, 0, 0, 0f, 0f);
+            VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
           }
 
           if (visibilityItem.isInFocusedRange()) {
@@ -250,7 +249,7 @@ class VisibilityOutputsExtension
         if (visibilityChangedHandler != null) {
           final int visibleWidth = sTempRect.right - sTempRect.left;
           final int visibleHeight = sTempRect.bottom - sTempRect.top;
-          EventDispatcherUtils.dispatchOnVisibilityChanged(
+          VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
               visibleWidth,
               visibleHeight,
@@ -369,7 +368,7 @@ class VisibilityOutputsExtension
       }
 
       if (visibilityChangedHandler != null) {
-        EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
+        VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
       }
 
       visibilityItem.setWasFullyVisible(false);
