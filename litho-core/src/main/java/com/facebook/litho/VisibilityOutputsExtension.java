@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
+import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;

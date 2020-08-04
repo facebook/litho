@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.visibility;
 
-import android.graphics.Rect;
-import android.view.View;
-import com.facebook.rendercore.visibility.IncrementalModule;
-import com.facebook.rendercore.visibility.IncrementalModuleItem;
-import com.facebook.rendercore.visibility.VisibilityOutput;
-import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -127,193 +121,57 @@ public class VisibilityModuleInput {
     }
   }
 
-  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
+  public ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
     return mIncrementalVisibilityItemsTops;
   }
 
-  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
+  public ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
     return mIncrementalVisibilitytemsBottoms;
   }
 
-  ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
+  public ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
     return mIncrementalFullImpressionItemsTops;
   }
 
-  ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
+  public ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
     return mIncrementalFullImpressionItemsBottoms;
   }
 
-  ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
+  public ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
     return mIncrementalFocusedItems;
   }
 
-  ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
+  public ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
     return mVisibilityChangedOutputs;
   }
 
-  private static void processInvisible(VisibilityOutput visibilityOutput) {
+  static void processInvisible(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getInvisibleEventHandler() != null) {
       VisibilityUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
     }
   }
 
-  private static void processVisible(VisibilityOutput visibilityOutput) {
+  static void processVisible(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getVisibleEventHandler() != null) {
       VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
     }
   }
 
-  private static void processFocused(VisibilityOutput visibilityOutput) {
+  static void processFocused(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getFocusedEventHandler() != null) {
       VisibilityUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
     }
   }
 
-  private static void processUnfocused(VisibilityOutput visibilityOutput) {
+  static void processUnfocused(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getUnfocusedEventHandler() != null) {
       VisibilityUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
     }
   }
 
-  private static void processFullImpressionHandler(VisibilityOutput visibilityOutput) {
+  static void processFullImpressionHandler(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getFullImpressionEventHandler() != null) {
       VisibilityUtils.dispatchOnFullImpression(visibilityOutput.getFullImpressionEventHandler());
     }
-  }
-
-  static final class VisibleIncrementalModuleItem implements IncrementalModuleItem {
-    private final VisibilityOutput mVisibilityOutput;
-
-    VisibleIncrementalModuleItem(VisibilityOutput visibilityOutput) {
-      this.mVisibilityOutput = visibilityOutput;
-    }
-
-    @Override
-    public String getId() {
-      return "v_" + mVisibilityOutput.getId();
-    }
-
-    @Override
-    public Rect getBounds() {
-      return mVisibilityOutput.getBounds();
-    }
-
-    @Override
-    public float getEnterRangeTop() {
-      return mVisibilityOutput.getVisibilityTop();
-    }
-
-    @Override
-    public float getEnterRangeBottom() {
-      return mVisibilityOutput.getVisibilityBottom();
-    }
-
-    @Override
-    public void onEnterVisibleRange() {
-      processVisible(mVisibilityOutput);
-    }
-
-    @Override
-    public void onExitVisibleRange() {
-      processInvisible(mVisibilityOutput);
-    }
-
-    @Override
-    public void onLithoViewAvailable(View view) {}
-  }
-
-  static final class FocusedIncrementalModuleItem implements IncrementalModuleItem {
-
-    private final VisibilityOutput mVisibilityOutput;
-
-    FocusedIncrementalModuleItem(VisibilityOutput visibilityOutput) {
-      mVisibilityOutput = visibilityOutput;
-    }
-
-    @Override
-    public String getId() {
-      return "f_" + mVisibilityOutput.getId();
-    }
-
-    @Override
-    public Rect getBounds() {
-      return mVisibilityOutput.getBounds();
-    }
-
-    @Override
-    public float getEnterRangeTop() {
-      return mVisibilityOutput.getFocusedTop();
-    }
-
-    @Override
-    public float getEnterRangeBottom() {
-      return mVisibilityOutput.getFocusedBottom();
-    }
-
-    @Override
-    public void onEnterVisibleRange() {
-      processFocused(mVisibilityOutput);
-    }
-
-    @Override
-    public void onExitVisibleRange() {
-      processUnfocused(mVisibilityOutput);
-    }
-
-    public void onLithoViewAvailable(View view) {
-      final View parent = (View) view.getParent();
-      if (parent == null) {
-        return;
-      }
-
-      final int halfViewportArea = parent.getWidth() * parent.getHeight() / 2;
-
-      if (mVisibilityOutput.getComponentArea() >= halfViewportArea) {
-        float ratio = 0.5f * halfViewportArea / halfViewportArea;
-        mVisibilityOutput.setFocusedRatio(ratio);
-      } else {
-        mVisibilityOutput.setFocusedRatio(1.0f);
-      }
-    }
-  }
-
-  static final class FullImpressionIncrementalModuleItem implements IncrementalModuleItem {
-
-    private final VisibilityOutput mVisibilityOutput;
-
-    FullImpressionIncrementalModuleItem(VisibilityOutput visibilityOutput) {
-      mVisibilityOutput = visibilityOutput;
-    }
-
-    @Override
-    public String getId() {
-      return "fi_" + mVisibilityOutput.getId();
-    }
-
-    @Override
-    public Rect getBounds() {
-      return mVisibilityOutput.getBounds();
-    }
-
-    @Override
-    public float getEnterRangeTop() {
-      return mVisibilityOutput.getFullImpressionTop();
-    }
-
-    @Override
-    public float getEnterRangeBottom() {
-      return mVisibilityOutput.getFullImpressionBottom();
-    }
-
-    @Override
-    public void onEnterVisibleRange() {
-      processFullImpressionHandler(mVisibilityOutput);
-    }
-
-    @Override
-    public void onExitVisibleRange() {}
-
-    @Override
-    public void onLithoViewAvailable(View view) {}
   }
 }
