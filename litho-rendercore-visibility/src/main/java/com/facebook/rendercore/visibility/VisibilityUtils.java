@@ -16,4 +16,58 @@
 
 package com.facebook.rendercore.visibility;
 
-public class VisibilityUtils {}
+import com.facebook.litho.FocusedVisibleEvent;
+import com.facebook.litho.FullImpressionVisibleEvent;
+import com.facebook.litho.InvisibleEvent;
+import com.facebook.litho.UnfocusedVisibleEvent;
+import com.facebook.litho.VisibleEvent;
+import com.facebook.rendercore.Function;
+import com.facebook.rendercore.RenderCoreSystrace;
+
+public class VisibilityUtils {
+
+  private static VisibleEvent sVisibleEvent;
+  private static InvisibleEvent sInvisibleEvent;
+  private static FocusedVisibleEvent sFocusedVisibleEvent;
+  private static UnfocusedVisibleEvent sUnfocusedVisibleEvent;
+  private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
+
+  public static void dispatchOnVisible(Function visibleHandler) {
+    RenderCoreSystrace.beginSection("VisibilityUtils.dispatchOnVisible");
+
+    if (sVisibleEvent == null) {
+      sVisibleEvent = new VisibleEvent();
+    }
+    visibleHandler.call(sVisibleEvent);
+
+    RenderCoreSystrace.endSection();
+  }
+
+  public static void dispatchOnFocused(Function focusedHandler) {
+    if (sFocusedVisibleEvent == null) {
+      sFocusedVisibleEvent = new FocusedVisibleEvent();
+    }
+    focusedHandler.call(sFocusedVisibleEvent);
+  }
+
+  public static void dispatchOnUnfocused(Function unfocusedHandler) {
+    if (sUnfocusedVisibleEvent == null) {
+      sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
+    }
+    unfocusedHandler.call(sUnfocusedVisibleEvent);
+  }
+
+  public static void dispatchOnFullImpression(Function fullImpressionHandler) {
+    if (sFullImpressionVisibleEvent == null) {
+      sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
+    }
+    fullImpressionHandler.call(sFullImpressionVisibleEvent);
+  }
+
+  public static void dispatchOnInvisible(Function invisibleHandler) {
+    if (sInvisibleEvent == null) {
+      sInvisibleEvent = new InvisibleEvent();
+    }
+    invisibleHandler.call(sInvisibleEvent);
+  }
+}

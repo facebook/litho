@@ -38,11 +38,6 @@ class EventDispatcherUtils {
   private static LongClickEvent sLongClickEvent;
   private static TouchEvent sTouchEvent;
   private static InterceptTouchEvent sInterceptTouchEvent;
-  private static VisibleEvent sVisibleEvent;
-  private static InvisibleEvent sInvisibleEvent;
-  private static FocusedVisibleEvent sFocusedVisibleEvent;
-  private static UnfocusedVisibleEvent sUnfocusedVisibleEvent;
-  private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
   private static VisibilityChangedEvent sVisibleRectChangedEvent;
   private static DispatchPopulateAccessibilityEventEvent sDispatchPopulateAccessibilityEventEvent;
   private static OnInitializeAccessibilityEventEvent sOnInitializeAccessibilityEventEvent;
@@ -84,65 +79,6 @@ class EventDispatcherUtils {
     eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
 
     sFocusChangedEvent.view = null;
-  }
-
-  static void dispatchOnVisible(Function visibleHandler) {
-    assertMainThread();
-
-    boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("EventDispatcherUtils.dispatchOnVisible");
-    }
-
-    if (sVisibleEvent == null) {
-      sVisibleEvent = new VisibleEvent();
-    }
-
-    visibleHandler.call(sVisibleEvent);
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-  }
-
-  static void dispatchOnFocused(Function focusedHandler) {
-    assertMainThread();
-
-    if (sFocusedVisibleEvent == null) {
-      sFocusedVisibleEvent = new FocusedVisibleEvent();
-    }
-
-    focusedHandler.call(sFocusedVisibleEvent);
-  }
-
-  static void dispatchOnUnfocused(Function unfocusedHandler) {
-    assertMainThread();
-
-    if (sUnfocusedVisibleEvent == null) {
-      sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
-    }
-
-    unfocusedHandler.call(sUnfocusedVisibleEvent);
-  }
-
-  static void dispatchOnFullImpression(Function fullImpressionHandler) {
-    assertMainThread();
-
-    if (sFullImpressionVisibleEvent == null) {
-      sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
-    }
-
-    fullImpressionHandler.call(sFullImpressionVisibleEvent);
-  }
-
-  static void dispatchOnInvisible(Function invisibleHandler) {
-    assertMainThread();
-
-    if (sInvisibleEvent == null) {
-      sInvisibleEvent = new InvisibleEvent();
-    }
-
-    invisibleHandler.call(sInvisibleEvent);
   }
 
   static void dispatchOnVisibilityChanged(

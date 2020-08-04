@@ -36,6 +36,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -1152,24 +1153,23 @@ public class LithoView extends Host {
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
+        VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
       }
     } else if (visibilityEventType == InvisibleEvent.class) {
       if (visibilityOutput.getInvisibleEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
+        VisibilityUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
       }
     } else if (visibilityEventType == FocusedVisibleEvent.class) {
       if (visibilityOutput.getFocusedEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
+        VisibilityUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
       }
     } else if (visibilityEventType == UnfocusedVisibleEvent.class) {
       if (visibilityOutput.getUnfocusedEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
+        VisibilityUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
       }
     } else if (visibilityEventType == FullImpressionVisibleEvent.class) {
       if (visibilityOutput.getFullImpressionEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnFullImpression(
-            visibilityOutput.getFullImpressionEventHandler());
+        VisibilityUtils.dispatchOnFullImpression(visibilityOutput.getFullImpressionEventHandler());
       }
     }
   }

@@ -21,6 +21,7 @@ import android.view.View;
 import com.facebook.rendercore.visibility.IncrementalModule;
 import com.facebook.rendercore.visibility.IncrementalModuleItem;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -152,32 +153,31 @@ public class VisibilityModuleInput {
 
   private static void processInvisible(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getInvisibleEventHandler() != null) {
-      EventDispatcherUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
+      VisibilityUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
     }
   }
 
   private static void processVisible(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getVisibleEventHandler() != null) {
-      EventDispatcherUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
+      VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
     }
   }
 
   private static void processFocused(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getFocusedEventHandler() != null) {
-      EventDispatcherUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
+      VisibilityUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
     }
   }
 
   private static void processUnfocused(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getUnfocusedEventHandler() != null) {
-      EventDispatcherUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
+      VisibilityUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
     }
   }
 
   private static void processFullImpressionHandler(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getFullImpressionEventHandler() != null) {
-      EventDispatcherUtils.dispatchOnFullImpression(
-          visibilityOutput.getFullImpressionEventHandler());
+      VisibilityUtils.dispatchOnFullImpression(visibilityOutput.getFullImpressionEventHandler());
     }
   }
 

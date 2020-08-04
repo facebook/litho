@@ -26,6 +26,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,7 +179,7 @@ class VisibilityOutputsExtension
           // component has changed so we should generate new visibility events for the new
           // component.
           if (visibilityItem.getInvisibleHandler() != null) {
-            EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+            VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
           }
 
           if (visibilityChangedHandler != null) {
@@ -189,7 +190,7 @@ class VisibilityOutputsExtension
           if (visibilityItem.isInFocusedRange()) {
             visibilityItem.setFocusedRange(false);
             if (visibilityItem.getUnfocusedHandler() != null) {
-              EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+              VisibilityUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
             }
           }
 
@@ -213,7 +214,7 @@ class VisibilityOutputsExtension
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
-            EventDispatcherUtils.dispatchOnVisible(visibleHandler);
+            VisibilityUtils.dispatchOnVisible(visibleHandler);
           }
         }
 
@@ -223,14 +224,14 @@ class VisibilityOutputsExtension
             if (!visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(true);
               if (focusedHandler != null) {
-                EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+                VisibilityUtils.dispatchOnFocused(focusedHandler);
               }
             }
           } else {
             if (visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(false);
               if (unfocusedHandler != null) {
-                EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+                VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
               }
             }
           }
@@ -241,7 +242,7 @@ class VisibilityOutputsExtension
           visibilityItem.setVisibleEdges(visibilityOutputBounds, sTempRect);
 
           if (visibilityItem.isInFullImpressionRange()) {
-            EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);
+            VisibilityUtils.dispatchOnFullImpression(fullImpressionHandler);
           }
         }
 
@@ -356,13 +357,13 @@ class VisibilityOutputsExtension
           (EventHandler<VisibilityChangedEvent>) visibilityItem.getVisibilityChangedHandler();
 
       if (invisibleHandler != null) {
-        EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
+        VisibilityUtils.dispatchOnInvisible(invisibleHandler);
       }
 
       if (visibilityItem.isInFocusedRange()) {
         visibilityItem.setFocusedRange(false);
         if (unfocusedHandler != null) {
-          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+          VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
         }
       }
 
