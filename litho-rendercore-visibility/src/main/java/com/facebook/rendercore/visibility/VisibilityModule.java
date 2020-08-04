@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.visibility.FocusedIncrementalModuleItem;
-import com.facebook.rendercore.visibility.IncrementalModule;
-import com.facebook.rendercore.visibility.IncrementalModuleItem;
-import com.facebook.rendercore.visibility.VisibilityModuleInput;
-import com.facebook.rendercore.visibility.VisibilityOutput;
-import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,7 +43,7 @@ public class VisibilityModule {
     mVisibilityRatioChanged = new HashMap<>();
   }
 
-  void processVisibilityOutputs(
+  public void processVisibilityOutputs(
       boolean isDirty,
       VisibilityModuleInput visibilityModuleInput,
       @Nullable Rect localVisibleRect,
@@ -106,7 +100,7 @@ public class VisibilityModule {
     processNonincrementalChanges(visibilityModuleInput, localVisibleRect);
   }
 
-  void clearIncrementalItems() {
+  public void clearIncrementalItems() {
     if (mIncrementalModuleVisibility != null) {
       mIncrementalModuleVisibility.clearIncrementalItems();
     }
