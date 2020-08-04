@@ -16,10 +16,7 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.annotations.Event;
-
 /** Event triggered when the visible rect of a Component changes. */
-@Event
 public class VisibilityChangedEvent {
   public int visibleHeight;
   public int visibleWidth;
