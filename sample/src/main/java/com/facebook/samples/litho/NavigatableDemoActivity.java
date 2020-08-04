@@ -23,18 +23,26 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 import java.util.Arrays;
-import java.util.List;
 
 public class NavigatableDemoActivity extends AppCompatActivity {
+
+  private DemoListActivity.DemoListDataModel mDataModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     int[] indices = getIntent().getIntArrayExtra(DemoListActivity.INDICES);
     if (indices != null) {
+      mDataModel = getDataModel(indices);
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      setTitleFromIndices(indices);
+      setTitle(mDataModel.name);
     }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    mDataModel = null;
   }
 
   @Override
@@ -63,13 +71,15 @@ public class NavigatableDemoActivity extends AppCompatActivity {
     return parentIntent;
   }
 
-  private void setTitleFromIndices(int[] indices) {
-    List<DemoListActivity.DemoListDataModel> dataModels = DemoListActivity.DATA_MODELS;
-    for (int i = 0; i < indices.length - 1; i++) {
-      dataModels = dataModels.get(indices[i]).datamodels;
+  private DemoListActivity.DemoListDataModel getDataModel(int[] indices) {
+    DemoListActivity.DemoListDataModel model = DemoListActivity.DATA_MODELS.get(indices[0]);
+    for (int i = 1; i < indices.length; i++) {
+      model = model.datamodels.get(indices[i]);
     }
+    return model;
+  }
 
-    final String title = dataModels.get(indices[indices.length - 1]).name;
-    setTitle(title);
+  protected DemoListActivity.DemoListDataModel getDataModel() {
+    return mDataModel;
   }
 }

@@ -17,10 +17,11 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 
 /** A provider function for a {@link Component}. */
 public interface ComponentCreator {
 
   /** Creates a new instance of {@link Component}. */
-  Component create();
+  Component create(ComponentContext c);
 }

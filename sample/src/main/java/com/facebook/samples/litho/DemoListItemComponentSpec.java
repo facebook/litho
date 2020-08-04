@@ -50,9 +50,7 @@ public class DemoListItemComponentSpec {
       @FromEvent View view,
       @Prop final DemoListActivity.DemoListDataModel model,
       @Prop final int[] currentIndices) {
-    final Intent intent =
-        new Intent(
-            c.getAndroidContext(), model.datamodels == null ? model.klass : DemoListActivity.class);
+    final Intent intent = new Intent(c.getAndroidContext(), model.getActivityClass());
     intent.putExtra(DemoListActivity.INDICES, currentIndices);
     c.getAndroidContext().startActivity(intent);
   }

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.playground;
+package com.facebook.samples.litho;
 
 import android.os.Bundle;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.samples.litho.NavigatableDemoActivity;
 
-public class PlaygroundActivity extends NavigatableDemoActivity {
+public class ComponentDemoActivity extends NavigatableDemoActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentContext componentContext = new ComponentContext(this);
-    setContentView(LithoView.create(this, PlaygroundComponent.create(componentContext).build()));
+    DemoListActivity.DemoListDataModel model = getDataModel();
+    LithoView lithoView = new LithoView(this);
+    lithoView.setComponent(model.componentCreator.create(lithoView.getComponentContext()));
+    setContentView(lithoView);
   }
 }
