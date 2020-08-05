@@ -22,11 +22,11 @@ import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.visibility.VisibilityExtensionConfigs;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityModule;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;
@@ -135,7 +135,7 @@ class VisibilityOutputsExtension
 
       if (isFullyVisible
           && wasFullyVisible
-          && ComponentsConfiguration.skipVisChecksForFullyVisible) {
+          && VisibilityExtensionConfigs.skipVisChecksForFullyVisible) {
         // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
         RenderCoreSystrace.endSection();
 
