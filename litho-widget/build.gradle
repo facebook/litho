@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation project(':litho-core')
     implementation deps.supportRecyclerView
+    implementation deps.supportMaterial
     annotationProcessor project(':litho-processor')
 
     // Annotations
