@@ -121,27 +121,27 @@ public class VisibilityModuleInput {
     }
   }
 
-  public ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
+  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
     return mIncrementalVisibilityItemsTops;
   }
 
-  public ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
+  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
     return mIncrementalVisibilitytemsBottoms;
   }
 
-  public ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
+  ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
     return mIncrementalFullImpressionItemsTops;
   }
 
-  public ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
+  ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
     return mIncrementalFullImpressionItemsBottoms;
   }
 
-  public ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
+  ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
     return mIncrementalFocusedItems;
   }
 
-  public ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
+  ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
     return mVisibilityChangedOutputs;
   }
 
