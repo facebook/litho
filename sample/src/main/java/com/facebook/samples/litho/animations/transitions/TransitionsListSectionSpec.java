@@ -44,7 +44,6 @@ class TransitionsListSectionSpec {
         .child(SingleComponentSection.create(c).component(AppearDisappearTransition.create(c)))
         .child(
             SingleComponentSection.create(c).component(AppearDisappearCustomTransition.create(c)))
-        .child(SingleComponentSection.create(c).component(ExpandingPickerComponent.create(c)))
         .child(SingleComponentSection.create(c).component(ColorTransition.create(c)))
 
         // Force scrollable
