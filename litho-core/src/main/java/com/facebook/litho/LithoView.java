@@ -715,11 +715,6 @@ public class LithoView extends Host {
     return mLithoRenderUnitFactory;
   }
 
-  @Override
-  boolean isInTransientState() {
-    return hasTransientState();
-  }
-
   /** Change the root component synchronously. */
   public void setComponent(Component component) {
     if (mComponentTree == null) {
