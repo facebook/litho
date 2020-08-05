@@ -631,6 +631,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return trigger;
   }
 
+  /**
+   * This method is overridden in the generated component to return true if and only if the
+   * Component Spec has an OnError lifecycle callback.
+   */
+  protected boolean hasOwnErrorHandler() {
+    return false;
+  }
+
   protected static <E> EventHandler<E> newEventHandler(
       final Class<? extends Component> reference,
       final String className,
