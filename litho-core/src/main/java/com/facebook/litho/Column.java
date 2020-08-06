@@ -124,7 +124,7 @@ public final class Column extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     if (this == other) {
       return true;
     }

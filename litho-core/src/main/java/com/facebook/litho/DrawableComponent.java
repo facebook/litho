@@ -89,7 +89,7 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component o) {
+  public boolean isEquivalentTo(Component o, boolean shouldCompareState) {
     if (this == o) {
       return true;
     }

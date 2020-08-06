@@ -230,7 +230,7 @@ public abstract class Component extends ComponentLifecycle
    * @param other the component to compare to
    * @param shouldCompareState compare State if true
    */
-  boolean isEquivalentTo(Component other, boolean shouldCompareState) {
+  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     if (this == other) {
       return true;
     }

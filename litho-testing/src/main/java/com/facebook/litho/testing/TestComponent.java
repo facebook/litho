@@ -155,7 +155,7 @@ public abstract class TestComponent extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     mIsEquivalentToCalled = true;
     return this == other;
   }
