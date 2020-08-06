@@ -122,8 +122,8 @@ public class ResolveRedSymbolsAction extends AnAction {
    * @param editor editor containing document.
    * @param project project to resolve red symbols.
    * @param eventMetadata mutable map to store event data.
-   * @param onFinished accepts true, iff analysis was finished, false otherwise. May be called
-   *     before symbols binding.
+   * @param onFinished accepts true, iff red symbols were found and bind, false otherwise. May be
+   *     called before symbols binding.
    */
   public static void resolveRedSymbols(
       PsiJavaFile psiFile,
@@ -138,7 +138,6 @@ public class ResolveRedSymbolsAction extends AnAction {
               @Override
               public void run(ProgressIndicator indicator) {
                 final Map<PsiClass, List<PsiElement>> resolved = new HashMap<>();
-                AtomicBoolean success = new AtomicBoolean(false);
                 DumbService.getInstance(project)
                     .runReadActionInSmartMode(
                         () -> {
@@ -150,18 +149,17 @@ public class ResolveRedSymbolsAction extends AnAction {
                                     editor.getDocument(),
                                     project,
                                     eventMetadata));
-                            success.set(true);
                           } catch (Exception e) {
                             LOG.debug(e);
                           }
                         });
-                indicator.setFraction(1);
                 if (resolved.isEmpty()) {
-                  onFinished.accept(success.get());
+                  onFinished.accept(false);
                   return;
                 }
 
                 final CountDownLatch latch = new CountDownLatch(1);
+                final AtomicBoolean success = new AtomicBoolean(false);
                 DumbService.getInstance(project)
                     .smartInvokeLater(
                         () -> {
