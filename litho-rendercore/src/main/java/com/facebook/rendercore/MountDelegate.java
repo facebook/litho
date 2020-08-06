@@ -21,13 +21,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import java.util.ArrayList;
 import java.util.List;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * Can be passed to a MountState to override default mounting behaviour and control which items get
  * mounted or unmounted.
  */
-@DoNotStrip
 public class MountDelegate {
 
   private final LongSparseArray<Integer> mReferenceCountMap = new LongSparseArray<>();
