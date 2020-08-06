@@ -431,7 +431,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param e The exception caught.
    */
   protected void onError(ComponentContext c, Exception e) {
-    throw new RuntimeException(e);
+    EventHandler<ErrorEvent> eventHandler = c.getComponentScope().getErrorHandler();
+    if (eventHandler == null) {
+      throw new RuntimeException(e);
+    }
+    ErrorEvent errorEvent = new ErrorEvent();
+    errorEvent.exception = e;
+    eventHandler.dispatchEvent(errorEvent);
   }
 
   protected void onLoadStyle(ComponentContext c) {}
