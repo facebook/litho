@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import com.facebook.rendercore.Function;
 
 /**
  * This class contains utility methods to send pre-defined events (click, touch, accessibility,
