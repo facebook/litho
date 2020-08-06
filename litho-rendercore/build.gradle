@@ -28,7 +28,18 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+    }
+
+    buildTypes {
+        def internalBuildField = 'IS_INTERNAL_BUILD'
+
+        debug {
+            buildConfigField 'boolean', internalBuildField, 'true'
+        }
+
+        release {
+            buildConfigField 'boolean', internalBuildField, 'false'
+        }
     }
 
     // TODO(#62): Re-enable abort on error.
