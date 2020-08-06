@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.actions.ResolveRedSymbolsActionTest;
 import com.facebook.litho.intellij.settings.AppSettingsState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -39,14 +40,17 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
   @Test
   public void daemonFinished_settingsTrue_resolved() throws IOException {
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
-    testHelper.configure("ResolveRedSymbolsActionTest.java");
+    final PsiFile fileUnderTest = testHelper.configure("ResolveRedSymbolsActionTest.java");
     final Project project = testHelper.getFixture().getProject();
     AppSettingsState.getInstance(project).getState().resolveRedSymbols = true;
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
+              // Search and highlights in test env are not populated, do it manually
               PsiSearchUtils.addMock(
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
+              ResolveRedSymbolsActionTest.parseDocument(
+                  testHelper.getFixture().getEditor().getDocument(), fileUnderTest, project);
               new OnCodeAnalysisFinishedListener(project).daemonFinished();
             });
     final PsiClass cached = ComponentsCacheService.getInstance(project).getComponent("Layout");
@@ -60,14 +64,17 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
   @Test
   public void daemonFinished_settingsFalse_notResolved() throws IOException {
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
-    testHelper.configure("ResolveRedSymbolsActionTest.java");
+    final PsiFile fileUnderTest = testHelper.configure("ResolveRedSymbolsActionTest.java");
     final Project project = testHelper.getFixture().getProject();
     AppSettingsState.getInstance(project).getState().resolveRedSymbols = false;
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
+              // Search and highlights in test env are not populated, do it manually
               PsiSearchUtils.addMock(
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
+              ResolveRedSymbolsActionTest.parseDocument(
+                  testHelper.getFixture().getEditor().getDocument(), fileUnderTest, project);
               new OnCodeAnalysisFinishedListener(project).daemonFinished();
             });
     final PsiClass cached = ComponentsCacheService.getInstance(project).getComponent("Layout");

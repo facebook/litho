@@ -22,10 +22,7 @@ import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
-import com.intellij.codeInsight.daemon.impl.DaemonProgressIndicator;
-import com.intellij.codeInsight.daemon.impl.HighlightInfo;
+import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.actions.AddImportAction;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -141,29 +138,23 @@ public class ResolveRedSymbolsAction extends AnAction {
               @Override
               public void run(ProgressIndicator indicator) {
                 final Map<PsiClass, List<PsiElement>> resolved = new HashMap<>();
-                final ProgressIndicator daemonIndicator = new DaemonProgressIndicator();
                 AtomicBoolean success = new AtomicBoolean(false);
-                ProgressManager.getInstance()
-                    .runProcess(
-                        () ->
-                            DumbService.getInstance(project)
-                                .runReadActionInSmartMode(
-                                    () -> {
-                                      try {
-                                        resolved.putAll(
-                                            collectAndAddToCache(
-                                                psiFile,
-                                                virtualFile,
-                                                editor.getDocument(),
-                                                project,
-                                                eventMetadata,
-                                                daemonIndicator));
-                                        success.set(true);
-                                      } catch (Exception e) {
-                                        LOG.debug(e);
-                                      }
-                                    }),
-                        daemonIndicator);
+                DumbService.getInstance(project)
+                    .runReadActionInSmartMode(
+                        () -> {
+                          try {
+                            resolved.putAll(
+                                collectAndAddToCache(
+                                    psiFile,
+                                    virtualFile,
+                                    editor.getDocument(),
+                                    project,
+                                    eventMetadata));
+                            success.set(true);
+                          } catch (Exception e) {
+                            LOG.debug(e);
+                          }
+                        });
                 indicator.setFraction(1);
                 if (resolved.isEmpty()) {
                   onFinished.accept(success.get());
@@ -197,13 +188,12 @@ public class ResolveRedSymbolsAction extends AnAction {
       VirtualFile virtualFile,
       Document document,
       Project project,
-      Map<String, String> eventMetadata,
-      ProgressIndicator progress) {
+      Map<String, String> eventMetadata) {
     long startTime = System.currentTimeMillis();
     eventMetadata.put(EventLogger.KEY_FILE, psiFile.getPackageName() + "." + psiFile.getName());
 
     final Map<String, List<PsiElement>> redSymbolToExpressions =
-        collectRedSymbols(psiFile, document, project, progress);
+        collectRedSymbols(psiFile, document, project);
 
     final long collectedTime = System.currentTimeMillis();
     final long collectDelta = collectedTime - startTime;
@@ -239,25 +229,29 @@ public class ResolveRedSymbolsAction extends AnAction {
   }
 
   private static Map<String, List<PsiElement>> collectRedSymbols(
-      PsiFile psiFile, Document document, Project project, ProgressIndicator daemonIndicator) {
+      PsiFile psiFile, Document document, Project project) {
     Map<String, List<PsiElement>> redSymbolToElements = new HashMap<>();
-    List<HighlightInfo> infos =
-        ((DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project))
-            .runMainPasses(psiFile, document, daemonIndicator);
-    for (HighlightInfo info : infos) {
-      if (!info.getSeverity().equals(HighlightSeverity.ERROR)) continue;
+    DaemonCodeAnalyzerEx.processHighlights(
+        document,
+        project,
+        HighlightSeverity.ERROR,
+        0,
+        document.getTextLength(),
+        info -> {
+          final String redSymbol =
+              document.getText(new TextRange(info.startOffset, info.endOffset));
+          if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol))
+            return true;
 
-      final String redSymbol = document.getText(new TextRange(info.startOffset, info.endOffset));
-      if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol)) continue;
+          final PsiJavaCodeReferenceElement ref =
+              PsiTreeUtil.findElementOfClassAtOffset(
+                  psiFile, info.startOffset, PsiJavaCodeReferenceElement.class, false);
+          if (ref == null) return true;
 
-      final PsiJavaCodeReferenceElement ref =
-          PsiTreeUtil.findElementOfClassAtOffset(
-              psiFile, info.startOffset, PsiJavaCodeReferenceElement.class, false);
-      if (ref == null) continue;
-
-      redSymbolToElements.putIfAbsent(redSymbol, new ArrayList<>());
-      redSymbolToElements.get(redSymbol).add(ref);
-    }
+          redSymbolToElements.putIfAbsent(redSymbol, new ArrayList<>());
+          redSymbolToElements.get(redSymbol).add(ref);
+          return true;
+        });
     return redSymbolToElements;
   }
 
