@@ -38,8 +38,8 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+    <activity android:name=".ComponentDemoActivity" />
     <activity android:name=".lithography.LithographyActivity" />
-    <activity android:name=".playground.PlaygroundActivity" />
     <activity android:name=".bordereffects.BorderEffectsActivity" />
     <activity android:name=".errors.ErrorHandlingActivity" />
     <activity android:name=".hscroll.HorizontalScrollWithSnapActivity" />

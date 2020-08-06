@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.playground;
+@com.facebook.litho.annotations.LayoutSpec
+class LayoutSpec {
 
-import android.os.Bundle;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LithoView;
-import com.facebook.samples.litho.NavigatableDemoActivity;
-
-public class PlaygroundActivity extends NavigatableDemoActivity {
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    final ComponentContext componentContext = new ComponentContext(this);
-    setContentView(LithoView.create(this, PlaygroundComponent.create(componentContext).build()));
+  @com.facebook.litho.annotations.OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c) {
+    int x = 2;
   }
 }

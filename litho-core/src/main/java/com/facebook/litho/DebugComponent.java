@@ -250,6 +250,17 @@ public final class DebugComponent {
   }
 
   /**
+   * @return This component's componentTag or null if none is set. Unlike {@link getTestKey}, this
+   *     will return tags for any Component, including Components which are not LayoutNodes.
+   */
+  @Nullable
+  public Object getComponentTag() {
+    Component component = mNode.getComponents().get(mComponentIndex);
+    CommonProps props = component.getCommonProps();
+    return props != null ? props.getComponentTag() : null;
+  }
+
+  /**
    * @return A concatenated string of all text content within the underlying LithoView. Null if the
    *     node doesn't have an associated LithoView.
    */

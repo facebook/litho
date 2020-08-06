@@ -45,6 +45,8 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
@@ -59,24 +61,22 @@ public class ComponentGenerateService {
       Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
-  private final Project project;
-
-  /** Subscribes listener to Spec model updates. Removes subscription once parent is disposed. */
-  public void subscribe(SpecUpdateNotifier listener, Disposable parent) {
-    listeners.add(listener);
-    Disposer.register(parent, () -> listeners.remove(listener));
-  }
+  private final List<String> underAnalysis = Collections.synchronizedList(new LinkedList<>());
 
   public interface SpecUpdateNotifier {
     void onSpecModelUpdated(PsiClass specCls);
   }
 
-  public static ComponentGenerateService getInstance(Project project) {
-    return ServiceManager.getService(project, ComponentGenerateService.class);
+  public static ComponentGenerateService getInstance() {
+    return ServiceManager.getService(ComponentGenerateService.class);
   }
 
-  private ComponentGenerateService(Project project) {
-    this.project = project;
+  private ComponentGenerateService() {}
+
+  /** Subscribes listener to Spec model updates. Removes subscription once parent is disposed. */
+  public void subscribe(SpecUpdateNotifier listener, Disposable parent) {
+    listeners.add(listener);
+    Disposer.register(parent, () -> listeners.remove(listener));
   }
 
   /**
@@ -101,8 +101,31 @@ public class ComponentGenerateService {
     }
   }
 
+  /** @return false iff class is under analysis. Otherwise starts analysis. */
+  public boolean tryUpdateLayoutComponent(PsiClass layoutSpecCls) {
+    LOG.debug("Under update " + underAnalysis);
+    if (underAnalysis.contains(layoutSpecCls.getQualifiedName())) return false;
+
+    updateLayoutComponentSync(layoutSpecCls);
+    return true;
+  }
+
   @Nullable
   public PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
+    final String qName = layoutSpecCls.getQualifiedName();
+    underAnalysis.add(qName);
+    PsiClass psiClass;
+    try {
+      psiClass = updateLayoutComponent(layoutSpecCls);
+    } finally {
+      underAnalysis.remove(qName);
+    }
+    LOG.debug("Update finished " + qName + (psiClass != null));
+    return psiClass;
+  }
+
+  @Nullable
+  private PsiClass updateLayoutComponent(PsiClass layoutSpecCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
     if (componentQN == null) return null;
@@ -110,58 +133,70 @@ public class ComponentGenerateService {
     final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
     if (model == null) return null;
 
-    final Project project = layoutSpecCls.getProject();
-    final PsiClass generatedComponent = updateComponent(componentQN, model, project);
-    if (generatedComponent == null) return null;
-
+    // New model might be malformed to generate component, but it's accurate to the Spec
     layoutSpecCls.putUserData(KEY_SPEC_MODEL, model);
     Set<SpecUpdateNotifier> copy;
     synchronized (listeners) {
       copy = new HashSet<>(listeners);
     }
     copy.forEach(listener -> listener.onSpecModelUpdated(layoutSpecCls));
-    return generatedComponent;
+
+    return updateComponent(componentQN, model, layoutSpecCls.getProject());
   }
 
   /** Updates generated Component file from the given Spec model. */
   @Nullable
-  public static PsiClass updateComponent(
+  private static PsiClass updateComponent(
       String componentQualifiedName, SpecModel model, Project project) {
-    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
-    if (componentShortName.isEmpty()) return null;
-
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
-    final boolean isPresent = generatedClass.isPresent();
     final String newContent = createFileContentFromModel(componentQualifiedName, model);
-    if (isPresent) {
-      final Document document =
-          PsiDocumentManager.getInstance(project)
-              .getDocument(generatedClass.get().getContainingFile());
-      if (document != null) {
-        // Write access is allowed inside write-action only
-        WriteAction.run(
-            () -> {
-              document.setText(newContent);
-            });
-        FileDocumentManager.getInstance().saveDocument(document);
-        return generatedClass.get();
-      }
+    if (generatedClass.isPresent()) {
+      return updateExistingComponent(newContent, generatedClass.get(), project);
     } else {
-      final PsiFile file =
-          PsiFileFactory.getInstance(project)
-              .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
-      ComponentScope.include(file);
-      final PsiClass inMemory =
-          LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
-              .orElse(null);
-      if (inMemory == null) return null;
-
-      ComponentsCacheService.getInstance(project).update(componentQualifiedName, inMemory);
-      return inMemory;
+      return updateInMemoryComponent(newContent, componentQualifiedName, project);
     }
-    return null;
+  }
+
+  private static PsiClass updateExistingComponent(
+      String newContent, PsiClass generatedClass, Project project) {
+    // Null is not expected scenario
+    final Document document =
+        PsiDocumentManager.getInstance(project).getDocument(generatedClass.getContainingFile());
+    if (newContent.equals(document.getText())) {
+      return generatedClass;
+    }
+
+    // Write access is allowed inside write-action only
+    WriteAction.run(() -> document.setText(newContent));
+    FileDocumentManager.getInstance().saveDocument(document);
+    return generatedClass;
+  }
+
+  @Nullable
+  private static PsiClass updateInMemoryComponent(
+      String newContent, String componentQualifiedName, Project project) {
+    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
+    if (componentShortName.isEmpty()) return null;
+
+    final ComponentsCacheService cacheService = ComponentsCacheService.getInstance(project);
+    final PsiClass oldComponent = cacheService.getComponent(componentQualifiedName);
+    if (oldComponent != null && newContent.equals(oldComponent.getContainingFile().getText())) {
+      return oldComponent;
+    }
+
+    final PsiFile file =
+        PsiFileFactory.getInstance(project)
+            .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
+    ComponentScope.include(file);
+    final PsiClass inMemory =
+        LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
+            .orElse(null);
+    if (inMemory == null) return null;
+
+    cacheService.update(componentQualifiedName, inMemory);
+    return inMemory;
   }
 
   private static void showSuccess(String componentName, Project project) {
@@ -175,7 +210,7 @@ public class ComponentGenerateService {
    *     com.facebook.litho.annotations.LayoutSpec} class.
    */
   @Nullable
-  public static LayoutSpecModel createLayoutModel(PsiClass layoutSpecCls) {
+  private static LayoutSpecModel createLayoutModel(PsiClass layoutSpecCls) {
     return MODEL_FACTORY.createWithPsi(layoutSpecCls.getProject(), layoutSpecCls, null);
   }
 

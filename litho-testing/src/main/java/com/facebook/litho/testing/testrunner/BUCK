@@ -11,7 +11,7 @@ load(
 )
 
 litho_android_library(
-    name = "testrunner-v4",
+    name = "testrunner",
     srcs = glob(["*.java"]),
     visibility = [
         "PUBLIC",

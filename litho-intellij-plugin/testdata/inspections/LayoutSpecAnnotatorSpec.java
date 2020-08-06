@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.annotations;
+import com.facebook.litho.Column;
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import OnCreateLayout;
 
-/**
- * A method annotated with this annotation specifies whether this component may be allocated with
- * application context and placed in the global component pool.
- *
- * <p>For example: <code>
- *
- * {@literal @}ShouldUseGlobalPool
- * boolean shouldUseGlobalPool() {
- *   return true;
- * }
- * </code>
- */
-public @interface ShouldUseGlobalPool {}
+@com.facebook.litho.annotations.LayoutSpec
+class LayoutSpecAnnotatorSpec {
+
+    @com.facebook.litho.annotations.OnCreateInitialState
+    static void onCreateInitialState() {
+    }
+}

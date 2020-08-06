@@ -44,8 +44,7 @@ public class EventHandlerAnnotatorTest extends LithoPluginIntellijTest {
     testHelper.getPsiClass(
         classes -> {
           PsiClass cls = classes.get(0);
-          ComponentGenerateService.getInstance(testHelper.getProject())
-              .updateLayoutComponentSync(cls);
+          ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls);
 
           PsiMethodCallExpression call =
               PsiTreeUtil.findChildOfType(cls, PsiMethodCallExpression.class);

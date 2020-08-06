@@ -19,12 +19,11 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.View;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
@@ -240,12 +239,8 @@ public class ApplyStylesTest {
                             mLithoViewRule.getContext(),
                             0,
                             R.style.ApplyStylesTest_BackgroundForeground)
-                        .wrapInView()
-                        .child(
-                            Text.create(mLithoViewRule.getContext())
-                                .wrapInView()
-                                .flexGrow(1)
-                                .text("test")))
+                        .flexGrow(1)
+                        .wrapInView())
                 .build())
         .measure()
         .layout()
@@ -256,10 +251,19 @@ public class ApplyStylesTest {
             ViewMatchNode.forType(LithoView.class)
                 .child(
                     ViewMatchNode.forType(ComponentHost.class)
-                        .child(ViewMatchNode.forType(ComponentHost.class))
                         .prop(
-                            "background",
-                            MatchNode.forType(ColorDrawable.class).prop("color", Color.WHITE))));
+                            "drawables",
+                            MatchNode.list(
+                                MatchNode.forType(MatrixDrawable.class)
+                                    .prop(
+                                        "mountedDrawable",
+                                        MatchNode.forType(ComparableColorDrawable.class)
+                                            .prop("color", Color.WHITE)),
+                                MatchNode.forType(MatrixDrawable.class)
+                                    .prop(
+                                        "mountedDrawable",
+                                        MatchNode.forType(ComparableColorDrawable.class)
+                                            .prop("color", Color.BLACK))))));
   }
 
   @Test

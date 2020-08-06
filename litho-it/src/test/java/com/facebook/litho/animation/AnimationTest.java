@@ -1160,6 +1160,38 @@ public class AnimationTest {
     ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
   }
 
+  @Test
+  public void
+      animationTransitionsExtension_reUsingLithoViewWithSameComponentTrees_shouldNotCrash() {
+    ComponentContext componentContext = mLithoViewRule.getContext();
+
+    ComponentTree animatingComponentTree = ComponentTree.create(componentContext).build();
+    animatingComponentTree.setRoot(getAnimatingXPropertyComponent());
+
+    mLithoViewRule.useComponentTree(animatingComponentTree);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    mStateCaller.update();
+
+    mTransitionTestRule.step(5);
+
+    LithoView lithoView1 = mLithoViewRule.getLithoView();
+    lithoView1.setComponentTree(null);
+    LithoView lithoView2 = new LithoView(componentContext);
+    lithoView2.setComponentTree(animatingComponentTree);
+    mLithoViewRule.useLithoView(lithoView2);
+    animatingComponentTree.setRoot(getNonAnimatingComponent());
+    mStateCaller.update();
+    mTransitionTestRule.step(1);
+
+    lithoView2.setComponentTree(null);
+    lithoView1.setComponentTree(animatingComponentTree);
+    mLithoViewRule.useLithoView(lithoView1);
+
+    mTransitionTestRule.step(1000);
+  }
+
   private Component getAnimatingXPropertyComponent() {
     return TestAnimationsComponent.create(mLithoViewRule.getContext())
         .stateCaller(mStateCaller)

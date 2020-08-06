@@ -58,6 +58,11 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void testKey(String testKey);
 
+  @Nullable
+  Object getComponentTag();
+
+  void componentTag(@Nullable Object componentTag);
+
   void wrapInView();
 
   void importantForAccessibility(int importantForAccessibility);

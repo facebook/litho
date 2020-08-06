@@ -42,10 +42,7 @@ public class GenerateComponentAction extends AnAction {
   @Override
   public void actionPerformed(AnActionEvent e) {
     getValidSpec(e)
-        .ifPresent(
-            cls ->
-                ComponentGenerateService.getInstance(e.getProject())
-                    .updateLayoutComponentAsync(cls));
+        .ifPresent(cls -> ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls));
   }
 
   /**

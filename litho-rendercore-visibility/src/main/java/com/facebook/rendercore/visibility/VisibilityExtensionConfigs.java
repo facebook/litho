@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import com.facebook.litho.annotations.Event;
+package com.facebook.rendercore.visibility;
 
 /**
- * Event triggered when a Component enters the Focused Range. This happens when either the Component
- * occupies at least half of the viewport or, if the Component is smaller than half of the viewport,
- * when the it is fully visible.
+ * This class contains mainly flags for features that are either under active development and not
+ * ready for public consumption, or for use in experiments.
+ *
+ * <p>These values are safe defaults and should not require manual changes.
  */
-@Event
-public class FocusedVisibleEvent {}
+public class VisibilityExtensionConfigs {
+
+  /** Skips visibility checks for fully visible items */
+  public static boolean skipVisChecksForFullyVisible = false;
+}

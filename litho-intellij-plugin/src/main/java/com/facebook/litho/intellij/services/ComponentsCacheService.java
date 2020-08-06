@@ -109,8 +109,8 @@ public class ComponentsCacheService implements Disposable {
   }
 
   /**
-   * Updates cache. Use {@link ComponentGenerateService#updateLayoutComponentSync(PsiClass)} instead
-   * for most purposes.
+   * Updates cache. Use {@link ComponentGenerateService#updateLayoutComponentAsync(PsiClass)}
+   * instead for most purposes.
    */
   void update(String componentQualifiedName, PsiClass inMemory) {
     componentNameToClass.put(componentQualifiedName, inMemory);

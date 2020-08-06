@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.samples.litho;
 
-import com.facebook.litho.annotations.Event;
+import android.os.Bundle;
+import com.facebook.litho.LithoView;
 
-/**
- * Event triggered when a Component exits the Focused Range. The Focused Range is defined as at
- * least half of the viewport or, if the Component is smaller than half of the viewport, when the it
- * is fully visible.
- */
-@Event
-public class UnfocusedVisibleEvent {}
+public class ComponentDemoActivity extends NavigatableDemoActivity {
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    DemoListActivity.DemoListDataModel model = getDataModel();
+    LithoView lithoView = new LithoView(this);
+    lithoView.setComponent(model.componentCreator.create(lithoView.getComponentContext()));
+    setContentView(lithoView);
+  }
+}

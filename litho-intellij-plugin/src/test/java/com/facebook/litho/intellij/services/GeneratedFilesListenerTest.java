@@ -50,7 +50,7 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
             () -> {
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
               // Add file to cache
-              ComponentGenerateService.getInstance(project).updateLayoutComponentSync(cls);
+              ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls);
               final ComponentsCacheService service = ComponentsCacheService.getInstance(project);
               final PsiClass component = service.getComponent("Layout");
               assertThat(component).isNotNull();

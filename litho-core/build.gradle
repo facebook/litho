@@ -57,6 +57,7 @@ dependencies {
     api project(':litho-annotations')
     api project(':litho-rendercore')
     api project(':litho-rendercore-visibility')
+    api project(':litho-rendercore-transitions')
 
     // Annotations
     compileOnly deps.jsr305

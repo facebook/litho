@@ -16,12 +16,12 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.annotations.Event;
-
-/**
- * Event triggered when a Component enters the Full Impression Range. This happens, for instance in
- * the case of a vertical RecyclerView, when both the top and bottom edges of the component become
- * visible.
- */
-@Event
-public class FullImpressionVisibleEvent {}
+/** Event triggered when the visible rect of a Component changes. */
+public class VisibilityChangedEvent {
+  public int visibleHeight;
+  public int visibleWidth;
+  /** Between 0 and 100, indicates percentage of item width that is visible on screen. */
+  public float percentVisibleWidth;
+  /** Between 0 and 100, indicates percentage of item height that is visible on screen. */
+  public float percentVisibleHeight;
+}

@@ -22,10 +22,16 @@ import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.Function;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostListenerExtension;
+import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.visibility.VisibilityExtensionConfigs;
 import com.facebook.rendercore.visibility.VisibilityItem;
+import com.facebook.rendercore.visibility.VisibilityModule;
+import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,16 +70,13 @@ class VisibilityOutputsExtension
 
   private void processVisibilityOutputs(
       @Nullable Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent, boolean isDirty) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
 
     try {
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
       }
 
-      if (isTracing) {
-        ComponentsSystrace.beginSection("processVisibilityOutputs");
-      }
+      RenderCoreSystrace.beginSection("processVisibilityOutputs");
 
       if (mIncrementalVisibilityEnabled) {
         if (mVisibilityModule == null) {
@@ -91,9 +94,7 @@ class VisibilityOutputsExtension
       }
 
     } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
+      RenderCoreSystrace.endSection();
 
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
@@ -112,14 +113,10 @@ class VisibilityOutputsExtension
       return;
     }
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
-
     for (int j = 0, size = mVisibilityOutputs.size(); j < size; j++) {
       final VisibilityOutput visibilityOutput = mVisibilityOutputs.get(j);
-      if (isTracing) {
-        final String componentName = visibilityOutput.getKey();
-        ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
-      }
+      final String componentName = visibilityOutput.getKey();
+      RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
 
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
       final boolean boundsIntersect =
@@ -138,30 +135,20 @@ class VisibilityOutputsExtension
 
       if (isFullyVisible
           && wasFullyVisible
-          && ComponentsConfiguration.skipVisChecksForFullyVisible) {
+          && VisibilityExtensionConfigs.skipVisChecksForFullyVisible) {
         // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
+        RenderCoreSystrace.endSection();
 
         visibilityItem.setDoNotClearInThisPass(isDirty);
         continue;
       }
 
-      final EventHandler<VisibleEvent> visibleHandler =
-          (EventHandler<VisibleEvent>) visibilityOutput.getVisibleEventHandler();
-      final EventHandler<FocusedVisibleEvent> focusedHandler =
-          (EventHandler<FocusedVisibleEvent>) visibilityOutput.getFocusedEventHandler();
-      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          (EventHandler<UnfocusedVisibleEvent>) visibilityOutput.getUnfocusedEventHandler();
-      final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
-          (EventHandler<FullImpressionVisibleEvent>)
-              visibilityOutput.getFullImpressionEventHandler();
-      final EventHandler<InvisibleEvent> invisibleHandler =
-          (EventHandler<InvisibleEvent>) visibilityOutput.getInvisibleEventHandler();
-      final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-          (EventHandler<VisibilityChangedEvent>)
-              visibilityOutput.getVisibilityChangedEventHandler();
+      final Function visibleHandler = visibilityOutput.getVisibleEventHandler();
+      final Function focusedHandler = visibilityOutput.getFocusedEventHandler();
+      final Function unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
+      final Function fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
+      final Function invisibleHandler = visibilityOutput.getInvisibleEventHandler();
+      final Function visibilityChangedHandler = visibilityOutput.getVisibilityChangedEventHandler();
 
       final boolean isCurrentlyVisible =
           boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
@@ -178,18 +165,17 @@ class VisibilityOutputsExtension
           // component has changed so we should generate new visibility events for the new
           // component.
           if (visibilityItem.getInvisibleHandler() != null) {
-            EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+            VisibilityUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
           }
 
           if (visibilityChangedHandler != null) {
-            EventDispatcherUtils.dispatchOnVisibilityChanged(
-                visibilityChangedHandler, 0, 0, 0f, 0f);
+            VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
           }
 
           if (visibilityItem.isInFocusedRange()) {
             visibilityItem.setFocusedRange(false);
             if (visibilityItem.getUnfocusedHandler() != null) {
-              EventDispatcherUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
+              VisibilityUtils.dispatchOnUnfocused(visibilityItem.getUnfocusedHandler());
             }
           }
 
@@ -213,7 +199,7 @@ class VisibilityOutputsExtension
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
-            EventDispatcherUtils.dispatchOnVisible(visibleHandler);
+            VisibilityUtils.dispatchOnVisible(visibleHandler);
           }
         }
 
@@ -223,14 +209,14 @@ class VisibilityOutputsExtension
             if (!visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(true);
               if (focusedHandler != null) {
-                EventDispatcherUtils.dispatchOnFocused(focusedHandler);
+                VisibilityUtils.dispatchOnFocused(focusedHandler);
               }
             }
           } else {
             if (visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(false);
               if (unfocusedHandler != null) {
-                EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+                VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
               }
             }
           }
@@ -241,14 +227,14 @@ class VisibilityOutputsExtension
           visibilityItem.setVisibleEdges(visibilityOutputBounds, sTempRect);
 
           if (visibilityItem.isInFullImpressionRange()) {
-            EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);
+            VisibilityUtils.dispatchOnFullImpression(fullImpressionHandler);
           }
         }
 
         if (visibilityChangedHandler != null) {
           final int visibleWidth = sTempRect.right - sTempRect.left;
           final int visibleHeight = sTempRect.bottom - sTempRect.top;
-          EventDispatcherUtils.dispatchOnVisibilityChanged(
+          VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
               visibleWidth,
               visibleHeight,
@@ -257,9 +243,7 @@ class VisibilityOutputsExtension
         }
       }
 
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
+      RenderCoreSystrace.endSection();
     }
 
     if (isDirty) {
@@ -311,26 +295,18 @@ class VisibilityOutputsExtension
   private void clearVisibilityItemsIncremental() {
     assertMainThread();
 
-    boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("MountState.clearIncrementalItems");
-    }
+    RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
     if (mVisibilityModule != null) {
       mVisibilityModule.clearIncrementalItems();
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
+    RenderCoreSystrace.endSection();
   }
 
   private void clearVisibilityItemsNonincremental() {
     assertMainThread();
-    boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("MountState.clearIncrementalItems");
-    }
+    RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
     List<String> toClear = new ArrayList<>();
 
@@ -348,36 +324,33 @@ class VisibilityOutputsExtension
       final String key = toClear.get(i);
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
 
-      final EventHandler<InvisibleEvent> invisibleHandler =
-          (EventHandler<InvisibleEvent>) visibilityItem.getInvisibleHandler();
-      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          (EventHandler<UnfocusedVisibleEvent>) visibilityItem.getUnfocusedHandler();
-      final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-          (EventHandler<VisibilityChangedEvent>) visibilityItem.getVisibilityChangedHandler();
+      if (visibilityItem != null) {
+        final Function invisibleHandler = visibilityItem.getInvisibleHandler();
+        final Function unfocusedHandler = visibilityItem.getUnfocusedHandler();
+        final Function visibilityChangedHandler = visibilityItem.getVisibilityChangedHandler();
 
-      if (invisibleHandler != null) {
-        EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
-      }
-
-      if (visibilityItem.isInFocusedRange()) {
-        visibilityItem.setFocusedRange(false);
-        if (unfocusedHandler != null) {
-          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+        if (invisibleHandler != null) {
+          VisibilityUtils.dispatchOnInvisible(invisibleHandler);
         }
-      }
 
-      if (visibilityChangedHandler != null) {
-        EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
-      }
+        if (visibilityItem.isInFocusedRange()) {
+          visibilityItem.setFocusedRange(false);
+          if (unfocusedHandler != null) {
+            VisibilityUtils.dispatchOnUnfocused(unfocusedHandler);
+          }
+        }
 
-      visibilityItem.setWasFullyVisible(false);
+        if (visibilityChangedHandler != null) {
+          VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
+        }
+
+        visibilityItem.setWasFullyVisible(false);
+      }
 
       mVisibilityIdToItemMap.remove(key);
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
+    RenderCoreSystrace.endSection();
   }
 
   public void unmountAllItems() {
@@ -407,7 +380,7 @@ class VisibilityOutputsExtension
 
   @Override
   public void afterMount() {
-    boolean processVisibilityOutputs = !mHost.isInTransientState();
+    boolean processVisibilityOutputs = !mHost.hasTransientState();
 
     if (processVisibilityOutputs) {
       processVisibilityOutputs(mCurrentLocalVisibleRect, null, true);
@@ -420,7 +393,7 @@ class VisibilityOutputsExtension
       return;
     }
 
-    boolean processVisibilityOutputs = !mHost.isInTransientState();
+    boolean processVisibilityOutputs = !mHost.hasTransientState();
     if (processVisibilityOutputs) {
       processVisibilityOutputs(localVisibleRect, null, false);
     }

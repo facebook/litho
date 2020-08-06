@@ -54,29 +54,19 @@ LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/
 LITHO_FRESCO_KOTLIN_TARGET = make_dep_path("litho-fresco-kotlin/src/main/kotlin/com/facebook/litho/fresco:fresco-kotlin")
 
 # Testing targets
-LITHO_TESTING_CORE_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
+LITHO_TESTING_CORE_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
-LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4")
-
-LITHO_TESTING_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
-
-LITHO_TESTING_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing-v4")
+LITHO_TESTING_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
 
 LITHO_TESTING_WHITEBOX_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:whitebox")
 
-LITHO_TESTING_ASSERTJ_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
+LITHO_TESTING_ASSERTJ_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
 
-LITHO_TESTING_ASSERTJ_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4")
-
-LITHO_TESTING_HELPER_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
-
-LITHO_TESTING_HELPER_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper-v4")
+LITHO_TESTING_HELPER_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
 
 LITHO_TESTING_SUBCOMPONENTS_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/subcomponents:subcomponents")
 
 LITHO_TESTING_WIDGET_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget")
-
-LITHO_TESTING_WIDGET_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget-v4")
 
 LITHO_TESTING_ESPRESSO_TARGET = make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso")
 
@@ -122,6 +112,8 @@ LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET = make_dep_path("lib/androidx:androidx-app
 
 LITHO_ANDROIDSUPPORT_LIFECYCLE_EXT_TARGET = make_dep_path("lib/androidx:androidx-lifecycle-extensions")
 
+LITHO_ANDROIDSUPPORT_MATERIAL_TARGET = make_dep_path("lib/androidx:androidx-material")
+
 LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testing")
 
 LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET = make_dep_path("lib/androidx:androidx-testing-core")
@@ -162,8 +154,6 @@ LITHO_POWERMOCK_MOCKITO_V2_TARGET = make_dep_path("lib/powermock2:powermock-mock
 
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
 
-LITHO_JAVAC_TOOLS_TARGET = make_dep_path("lib/javac-tools:javac-tools")
-
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
 
 ANDROID_STUDIO_PLUGIN_SDK = make_dep_path("lib/intellij-plugin-sdk:intellij-plugin-sdk")
@@ -182,10 +172,10 @@ LITHO_RENDERCORE_TESTING_TARGET = make_dep_path("litho-rendercore-testing:litho-
 
 LITHO_RENDERCORE_VISIBILITY_TARGET = make_dep_path("litho-rendercore-visibility:rendercore-visibility-stub")
 
+LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transitions:rendercore-transitions-stub")
+
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
-
-LITHO_ROBOLECTRIC_V3_TARGET = make_dep_path("lib/robolectric3:robolectric3")
 
 LITHO_ROBOLECTRIC_V4_TARGET = make_dep_path("lib/robolectric4:robolectric4")
 

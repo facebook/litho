@@ -16,15 +16,8 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.annotations.Event;
-
-/** Event triggered when the visible rect of a Component changes. */
-@Event
-public class VisibilityChangedEvent {
-  public int visibleHeight;
-  public int visibleWidth;
-  /** Between 0 and 100, indicates percentage of item width that is visible on screen. */
-  public float percentVisibleWidth;
-  /** Between 0 and 100, indicates percentage of item height that is visible on screen. */
-  public float percentVisibleHeight;
-}
+/**
+ * Event triggered when a Component enters the Visible Range. This happens when at least a pixel of
+ * the Component is visible.
+ */
+public class VisibleEvent {}

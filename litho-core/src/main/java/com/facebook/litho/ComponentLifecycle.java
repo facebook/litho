@@ -104,9 +104,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
     }
     try {
-      if (ComponentsConfiguration.isGlobalComponentsPoolEnabled && shouldUseGlobalPool()) {
-        c = c.getApplicationContext();
-      }
       return onCreateMountContent(c);
     } finally {
       if (isTracing) {
@@ -562,14 +559,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * @return true this component may be allocated with application context and placed in the global
-   *     component pool.
-   */
-  protected boolean shouldUseGlobalPool() {
-    return false;
-  }
-
-  /**
    * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
    * two {@link Component} with the same global scope.
    */
@@ -616,6 +605,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
+  protected abstract @Nullable EventHandler<ErrorEvent> getErrorHandler();
+
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
     if (c.getComponentScope() == null) {
@@ -638,6 +629,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     return trigger;
+  }
+
+  /**
+   * This method is overridden in the generated component to return true if and only if the
+   * Component Spec has an OnError lifecycle callback.
+   */
+  protected boolean hasOwnErrorHandler() {
+    return false;
   }
 
   protected static <E> EventHandler<E> newEventHandler(

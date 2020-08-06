@@ -30,7 +30,6 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.samples.litho.playground.PlaygroundActivity;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,7 @@ public class DemoListItemComponentTest {
 
   @Test
   public void testComponentOnClick() {
-    final Class activityClassToLaunch = PlaygroundActivity.class;
+    final Class activityClassToLaunch = ComponentDemoActivity.class;
     final DemoListItemComponent.Builder builder =
         DemoListItemComponent.create(mComponentsRule.getContext())
             .model(new DemoListActivity.DemoListDataModel("My Component", activityClassToLaunch))
@@ -59,7 +58,7 @@ public class DemoListItemComponentTest {
 
   @Test
   public void testComponentOnSyntheticEventClick() {
-    final Class activityClassToLaunch = PlaygroundActivity.class;
+    final Class activityClassToLaunch = ComponentDemoActivity.class;
     final Component component =
         DemoListItemComponent.create(mComponentsRule.getContext())
             .model(new DemoListActivity.DemoListDataModel("My Component", activityClassToLaunch))

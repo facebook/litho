@@ -29,6 +29,4 @@ public abstract class Host extends ComponentHost {
   public Host(ComponentContext context, AttributeSet attrs) {
     super(context, attrs);
   }
-
-  abstract boolean isInTransientState();
 }

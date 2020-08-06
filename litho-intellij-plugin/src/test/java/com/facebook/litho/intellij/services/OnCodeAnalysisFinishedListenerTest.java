@@ -27,6 +27,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
+import java.util.Arrays;
 import org.junit.Test;
 
 public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest {
@@ -49,7 +50,11 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
               new OnCodeAnalysisFinishedListener(project).daemonFinished();
             });
     final PsiClass cached = ComponentsCacheService.getInstance(project).getComponent("Layout");
-    assertThat(cached).isNotNull();
+    assertThat(cached)
+        .describedAs(
+            "Not present in cache %s",
+            Arrays.toString(ComponentsCacheService.getInstance(project).getAllComponents()))
+        .isNotNull();
   }
 
   @Test

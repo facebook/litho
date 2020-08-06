@@ -36,6 +36,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -59,8 +60,6 @@ public class LithoView extends Host {
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
-  private boolean mHasVisibilityHint;
-  private boolean mVisibilityHintIsVisible;
 
   public interface OnDirtyMountListener {
     /**
@@ -716,11 +715,6 @@ public class LithoView extends Host {
     return mLithoRenderUnitFactory;
   }
 
-  @Override
-  boolean isInTransientState() {
-    return hasTransientState();
-  }
-
   /** Change the root component synchronously. */
   public void setComponent(Component component) {
     if (mComponentTree == null) {
@@ -825,17 +819,11 @@ public class LithoView extends Host {
       return;
     }
 
-    final boolean forceMount = mHasVisibilityHint && !mVisibilityHintIsVisible;
-    mHasVisibilityHint = true;
-    mVisibilityHintIsVisible = isVisible;
-
     if (isVisible) {
-      if (forceMount) {
-        notifyVisibleBoundsChanged();
-      } else if (getLocalVisibleRect(mRect)) {
+      if (getLocalVisibleRect(mRect)) {
         processVisibilityOutputs(mRect);
+        recursivelySetVisibleHint(true);
       }
-      recursivelySetVisibleHint(true);
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
       recursivelySetVisibleHint(false);
@@ -1041,10 +1029,6 @@ public class LithoView extends Host {
       @Nullable Rect currentVisibleArea,
       boolean processVisibilityOutputs) {
 
-    if (mHasVisibilityHint && !mVisibilityHintIsVisible) {
-      return;
-    }
-
     if (mTransientStateCount > 0
         && mComponentTree != null
         && mComponentTree.isIncrementalMountEnabled()) {
@@ -1164,24 +1148,23 @@ public class LithoView extends Host {
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
+        VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
       }
     } else if (visibilityEventType == InvisibleEvent.class) {
       if (visibilityOutput.getInvisibleEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
+        VisibilityUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
       }
     } else if (visibilityEventType == FocusedVisibleEvent.class) {
       if (visibilityOutput.getFocusedEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
+        VisibilityUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
       }
     } else if (visibilityEventType == UnfocusedVisibleEvent.class) {
       if (visibilityOutput.getUnfocusedEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
+        VisibilityUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
       }
     } else if (visibilityEventType == FullImpressionVisibleEvent.class) {
       if (visibilityOutput.getFullImpressionEventHandler() != null) {
-        EventDispatcherUtils.dispatchOnFullImpression(
-            visibilityOutput.getFullImpressionEventHandler());
+        VisibilityUtils.dispatchOnFullImpression(visibilityOutput.getFullImpressionEventHandler());
       }
     }
   }

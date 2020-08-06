@@ -26,6 +26,7 @@ import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.CachedValue;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
@@ -34,14 +35,16 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.widget.events.EventWithoutAnnotation;
 import java.util.List;
 
-@LayoutSpec
+@LayoutSpec(events = EventWithoutAnnotation.class)
 public class LayoutSpecLifecycleTesterSpec {
 
   @OnCreateInitialState
@@ -108,9 +111,23 @@ public class LayoutSpecLifecycleTesterSpec {
     return Transition.allLayout();
   }
 
+  @OnEvent(EventWithoutAnnotation.class)
+  static void onEventWithoutAnnotation(
+      final ComponentContext c,
+      final @Nullable @Prop(optional = true) Caller caller,
+      final @FromEvent int count,
+      final @FromEvent boolean isDirty,
+      final @FromEvent String message) {
+    if (caller != null) {
+      caller.eventWithoutAnnotation = new EventWithoutAnnotation(count, isDirty, message);
+    }
+  }
+
   public static class Caller {
+
     ComponentContext c;
     List<LifecycleStep.StepInfo> steps;
+    EventWithoutAnnotation eventWithoutAnnotation;
 
     void set(ComponentContext c, List<LifecycleStep.StepInfo> steps) {
       this.c = c;
@@ -123,6 +140,14 @@ public class LayoutSpecLifecycleTesterSpec {
 
     public void updateStateWithTransition() {
       LayoutSpecLifecycleTester.updateStateWithTransitionWithTransition(c, steps);
+    }
+
+    public void dispatchEventWithoutAnnotation(EventWithoutAnnotation event) {
+      LayoutSpecLifecycleTester.onEventWithoutAnnotation(c).call(event);
+    }
+
+    public @Nullable EventWithoutAnnotation getEventWithoutAnnotation() {
+      return eventWithoutAnnotation;
     }
   }
 }

@@ -280,10 +280,11 @@ public class ResolveRedSymbolsAction extends AnAction {
                 PsiClass component = PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
                 if (component == null) {
                   component =
-                      ComponentGenerateService.getInstance(project)
-                          .updateLayoutComponentSync(specCls);
+                      ComponentGenerateService.getInstance().updateLayoutComponentSync(specCls);
                 }
-                redSymbolToClass.put(redSymbol, component);
+                if (component != null) {
+                  redSymbolToClass.put(redSymbol, component);
+                }
               });
     }
     return redSymbolToClass;

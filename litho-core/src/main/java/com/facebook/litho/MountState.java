@@ -68,6 +68,7 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
@@ -100,7 +101,8 @@ import java.util.Set;
  */
 @ThreadConfined(ThreadConfined.UI)
 class MountState
-    implements TransitionManager.OnAnimationCompleteListener<EventHandler>, MountDelegateTarget {
+    implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
+        MountDelegateTarget {
 
   private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
       "MountState:DisappearAnimTargetingRoot";
@@ -2595,17 +2597,8 @@ class MountState
 
     if (mLithoView.usingExtensionsWithMountDelegate()) {
       final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
-      final List<RenderUnit.Binder> mountBinders = renderUnit.mountUnmountFunctions();
-      if (mountBinders != null) {
-        for (int i = mountBinders.size() - 1; i >= 0; i--) {
-          final RenderUnit.Binder binder = mountBinders.get(i);
-          binder.unbind(
-              mContext.getAndroidContext(),
-              mountItem.getContent(),
-              renderUnit,
-              mountItem.getRenderTreeNode());
-        }
-      }
+      renderUnit.unmountExtensions(
+          mContext.getAndroidContext(), mountItem.getContent(), mountItem.getRenderTreeNode());
     } else {
       if (mTransitionsExtension != null) {
         mTransitionsExtension.onUnmountItem(mContext.getAndroidContext(), mountItem);
@@ -2982,9 +2975,9 @@ class MountState
 
   @Override
   public void onAnimationUnitComplete(
-      PropertyHandle propertyHandle, EventHandler transitionEndHandler) {
+      PropertyHandle propertyHandle, Function transitionEndHandler) {
     if (transitionEndHandler != null) {
-      transitionEndHandler.dispatchEvent(
+      transitionEndHandler.call(
           new TransitionEndEvent(
               propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
     }
@@ -3013,17 +3006,23 @@ class MountState
         return;
       }
 
-      for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-        final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
-        final int position = layoutOutput.getIndex();
-        updateAnimationLockCount(mLastMountedLayoutState, position, false);
-      }
-
-      if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionIds.isEmpty()) {
-        for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
-          if (mAnimationLockedIndices[i] != 0) {
-            throw new RuntimeException(
-                "No running animations but index " + i + " is still animation locked!");
+      if (mAnimationLockedIndices == null) {
+        if (AnimationsDebug.ENABLED) {
+          Log.e(
+              AnimationsDebug.TAG, "Unlocking animation " + transitionId + " that was not locked!");
+        }
+      } else {
+        for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
+          final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+          final int position = layoutOutput.getIndex();
+          updateAnimationLockCount(mLastMountedLayoutState, position, false);
+        }
+        if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionIds.isEmpty()) {
+          for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
+            if (mAnimationLockedIndices[i] != 0) {
+              throw new RuntimeException(
+                  "No running animations but index " + i + " is still animation locked!");
+            }
           }
         }
       }

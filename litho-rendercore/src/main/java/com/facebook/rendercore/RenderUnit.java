@@ -40,6 +40,17 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     VIEW,
   }
 
+  /**
+   * List used to temporarily record the attach {@link RenderUnit.Binder}s which should be updated
+   * (unbound and re-bound).
+   */
+  private static final List<Binder> sTmpAttachDetachExtensionsToUpdate = new ArrayList<>();
+  /**
+   * List used to temporarily record the mount {@link RenderUnit.Binder}s which should be updated
+   * (unbound and re-bound).
+   */
+  private static final List<Binder> sTmpMountUnmountExtensionsToUpdate = new ArrayList<>();
+
   private final RenderType mRenderType;
   private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseMountUnmountFunctions;
   private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseAttachDetachFunctions;
@@ -86,7 +97,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
   /** @return a list of binding functions that will be invoked during the mount process. */
   @Nullable
-  public final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mountUnmountFunctions() {
+  private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mountUnmountFunctions() {
     return mMountUnmountFunctionsWithExtensions != null
         ? mMountUnmountFunctionsWithExtensions
         : mBaseMountUnmountFunctions;
@@ -99,7 +110,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
    *     guaranteed to be called once.
    */
   @Nullable
-  public final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> attachDetachFunctions() {
+  private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> attachDetachFunctions() {
     return mAttachDetachFunctionsWithExtensions != null
         ? mAttachDetachFunctionsWithExtensions
         : mBaseAttachDetachFunctions;
@@ -161,6 +172,124 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     }
     mAttachDetachFunctionsWithExtensions.add(
         (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>) binder);
+  }
+
+  /** Bind all mountUnmount extension functions. */
+  void mountExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+    bind((List) mountUnmountFunctions(), context, content, this, layoutData);
+  }
+
+  /** Unbind all mountUnmount extension functions. Public because used from Litho's MountState. */
+  public void unmountExtensions(
+      Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+    unbind((List) mountUnmountFunctions(), context, content, this, layoutData);
+  }
+
+  /** Bind all attachDetach extension functions. */
+  void attachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+    bind((List) attachDetachFunctions(), context, content, this, layoutData);
+  }
+
+  /** Unbind all attachDetach extension functions. */
+  void detachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
+    unbind((List) attachDetachFunctions(), context, content, this, layoutData);
+  }
+
+  /**
+   * Unbind and rebind all extensions which should update compared to a previous (i.e. current)
+   * RenderUnit.
+   */
+  void updateExtensions(
+      Context context,
+      MOUNT_CONTENT content,
+      RenderUnit<MOUNT_CONTENT> currentRenderUnit,
+      @Nullable Object currentLayoutData,
+      @Nullable Object newLayoutData) {
+    final List<Binder> tmpAttachDetachExtensionsToUpdate = sTmpAttachDetachExtensionsToUpdate;
+    final List<Binder> tmpMountUnmountExtensionsToUpdate = sTmpMountUnmountExtensionsToUpdate;
+
+    // 1. Fill in the extensions to update.
+    shouldUpdate(
+        attachDetachFunctions(),
+        tmpAttachDetachExtensionsToUpdate,
+        currentRenderUnit,
+        this,
+        currentLayoutData,
+        newLayoutData);
+    shouldUpdate(
+        mountUnmountFunctions(),
+        tmpMountUnmountExtensionsToUpdate,
+        currentRenderUnit,
+        this,
+        currentLayoutData,
+        newLayoutData);
+
+    // 2. unbind all attach binders which should update.
+    unbind(
+        tmpAttachDetachExtensionsToUpdate, context, content, currentRenderUnit, currentLayoutData);
+
+    // 3. unbind all mount binders which should update.
+    unbind(
+        tmpMountUnmountExtensionsToUpdate, context, content, currentRenderUnit, currentLayoutData);
+
+    // 4. rebind all mount binder which did update.
+    bind(tmpMountUnmountExtensionsToUpdate, context, content, this, newLayoutData);
+
+    // 5. rebind all attach binder which did update.
+    bind(tmpAttachDetachExtensionsToUpdate, context, content, this, newLayoutData);
+
+    // 6. Clear auxiliary data structures.
+    tmpAttachDetachExtensionsToUpdate.clear();
+    tmpMountUnmountExtensionsToUpdate.clear();
+  }
+
+  private static <MOUNT_CONTENT> void bind(
+      @Nullable List<Binder> extensions,
+      Context context,
+      MOUNT_CONTENT content,
+      RenderUnit<MOUNT_CONTENT> renderUnit,
+      @Nullable Object layoutData) {
+    if (extensions == null) {
+      return;
+    }
+
+    for (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT> binder : extensions) {
+      binder.bind(context, content, renderUnit, layoutData);
+    }
+  }
+
+  private static <MOUNT_CONTENT> void unbind(
+      @Nullable List<Binder> extensions,
+      Context context,
+      MOUNT_CONTENT content,
+      RenderUnit<MOUNT_CONTENT> renderUnit,
+      @Nullable Object layoutData) {
+    if (extensions == null) {
+      return;
+    }
+
+    for (int i = extensions.size() - 1; i >= 0; i--) {
+      final Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT> binder = extensions.get(i);
+      binder.unbind(context, content, renderUnit, layoutData);
+    }
+  }
+
+  private static <MOUNT_CONTENT> void shouldUpdate(
+      @Nullable List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> extensions,
+      List<Binder> extensionsToUpdate,
+      RenderUnit<MOUNT_CONTENT> currentRenderUnit,
+      RenderUnit<MOUNT_CONTENT> newRenderUnit,
+      @Nullable Object currentLayoutData,
+      @Nullable Object newLayoutData) {
+    if (extensions == null) {
+      return;
+    }
+
+    for (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT> binder : extensions) {
+      if (binder.shouldUpdate(currentRenderUnit, newRenderUnit, currentLayoutData, newLayoutData)) {
+        extensionsToUpdate.add(binder);
+      }
+    }
   }
 
   /**

@@ -366,8 +366,8 @@ public abstract class Component extends ComponentLifecycle
    * @return The error handler dispatching to either the parent component if available, or reraising
    *     the exception. Null if the component isn't initialized.
    */
-  @Nullable
-  EventHandler<ErrorEvent> getErrorHandler() {
+  @Override
+  protected @Nullable EventHandler<ErrorEvent> getErrorHandler() {
     return mErrorEventHandler;
   }
 
@@ -1816,6 +1816,11 @@ public abstract class Component extends ComponentLifecycle
 
     public T testKey(@Nullable String testKey) {
       mComponent.getOrCreateCommonProps().testKey(testKey);
+      return getThis();
+    }
+
+    public T componentTag(@Nullable Object componentTag) {
+      mComponent.getOrCreateCommonProps().componentTag(componentTag);
       return getThis();
     }
 

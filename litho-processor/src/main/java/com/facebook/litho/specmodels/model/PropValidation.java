@@ -146,6 +146,7 @@ public class PropValidation {
           "outlineProvider",
           "clipToOutline",
           "testKey",
+          "componentTag",
           "accessibilityRole",
           "dispatchPopulateAccessibilityEventHandler",
           "onInitializeAccessibilityEventHandler",
@@ -173,6 +174,7 @@ public class PropValidation {
               ParameterizedTypeName.get(
                   ClassNames.COMPARABLE_DRAWABLE, WildcardTypeName.subtypeOf(ClassNames.DRAWABLE))),
           new CommonPropModel("testKey", ClassNames.STRING),
+          new CommonPropModel("componentTag", ClassNames.OBJECT),
           new CommonPropModel(
               "layoutDirection", ClassName.bestGuess("com.facebook.yoga.YogaDirection")),
           new CommonPropModel("alignSelf", ClassName.bestGuess("com.facebook.yoga.YogaAlign")),

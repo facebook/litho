@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.widget.events;
 
-import com.facebook.litho.annotations.Event;
+public class EventWithoutAnnotation {
+  public int count;
+  public boolean isDirty;
+  public String message;
 
-/**
- * Event triggered when a Component enters the Visible Range. This happens when at least a pixel of
- * the Component is visible.
- */
-@Event
-public class VisibleEvent {}
+  public EventWithoutAnnotation() {}
+
+  public EventWithoutAnnotation(int count, boolean isDirty, String message) {
+    this.count = count;
+    this.isDirty = isDirty;
+    this.message = message;
+  }
+}

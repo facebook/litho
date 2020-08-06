@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -31,7 +31,7 @@ import java.util.Map.Entry;
  * operations when those events occur. Example use cases: incrementally mounting components when
  * scrolling, incrementally processing visibility handlers.
  */
-class IncrementalModule {
+public class IncrementalModule {
 
   private final View mView;
   private final Map<String, IncrementalModuleItem> mPreviousIncrementalVertical = new HashMap<>();
@@ -57,41 +57,7 @@ class IncrementalModule {
    */
   private int mPreviousBottomIndex;
 
-  /**
-   * This is a temporary wrapper around VisibilityOutput, the plan is to make VisibilityOutput
-   * implement this in a future diff, so we don't have two abstractions for the same thing. Right
-   * now it only supports vertical incremental handling.
-   */
-  public interface IncrementalModuleItem {
-    String getId();
-
-    Rect getBounds();
-
-    /**
-     * The minimum point from top of this item which would need to be visible so that this items
-     * qualifies as "in range".
-     */
-    float getEnterRangeTop();
-
-    /**
-     * The minimum point from bottom of this item which would need to be visible so that this item
-     * qualifies as "in range".
-     */
-    float getEnterRangeBottom();
-
-    void onEnterVisibleRange();
-
-    void onExitVisibleRange();
-
-    /**
-     * We might need to do some setup when the LithoView is available. Ex: for focused events we
-     * need to know the size of the parent LithoView to decide how much the item needs to be visible
-     * to be eligible.
-     */
-    void onLithoViewAvailable(View view);
-  }
-
-  static final Comparator<IncrementalModuleItem> sTopsComparators =
+  public static final Comparator<IncrementalModuleItem> sTopsComparators =
       new Comparator<IncrementalModuleItem>() {
         @Override
         public int compare(IncrementalModuleItem lhs, IncrementalModuleItem rhs) {
@@ -101,7 +67,7 @@ class IncrementalModule {
         }
       };
 
-  static final Comparator<IncrementalModuleItem> sBottomsComparator =
+  public static final Comparator<IncrementalModuleItem> sBottomsComparator =
       new Comparator<IncrementalModuleItem>() {
         @Override
         public int compare(IncrementalModuleItem lhs, IncrementalModuleItem rhs) {
@@ -111,7 +77,7 @@ class IncrementalModule {
         }
       };
 
-  IncrementalModule(View view) {
+  public IncrementalModule(View view) {
     mView = view;
   }
 
@@ -119,7 +85,7 @@ class IncrementalModule {
    * Triggers exit range callbacks for all items which were inside the range, used for example when
    * the LithoView is not visible anymore.
    */
-  void clearIncrementalItems() {
+  public void clearIncrementalItems() {
     for (String key : mPreviousIncrementalVertical.keySet()) {
       mPreviousIncrementalVertical.get(key).onExitVisibleRange();
     }
@@ -275,7 +241,7 @@ class IncrementalModule {
     }
   }
 
-  boolean performIncrementalProcessing(
+  public boolean performIncrementalProcessing(
       boolean isDirty,
       @Nullable List<IncrementalModuleItem> sortedTops,
       @Nullable List<IncrementalModuleItem> sortedBottoms,

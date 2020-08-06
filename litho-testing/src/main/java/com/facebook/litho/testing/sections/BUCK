@@ -35,23 +35,3 @@ litho_android_test_library(
         LITHO_WIDGET_TARGET,
     ],
 )
-
-litho_android_test_library(
-    name = "sections-v4",
-    srcs = glob(["*.java"]),
-    is_androidx = True,
-    plugins = [
-        LITHO_SECTIONS_PROCESSOR_TARGET,
-    ],
-    visibility = ["PUBLIC"],
-    deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_JSR_TARGET,
-        LITHO_MOCKITO_V2_TARGET,
-        LITHO_SECTIONS_ANNOTATIONS_TARGET,
-        LITHO_SECTIONS_COMMON_TARGET,
-        LITHO_SECTIONS_TARGET,
-        LITHO_WIDGET_TARGET,
-    ],
-)

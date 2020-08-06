@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.litho.IncrementalModule.IncrementalModuleItem;
-import com.facebook.litho.VisibilityModuleInput.FocusedIncrementalModuleItem;
-import com.facebook.rendercore.visibility.VisibilityOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +43,7 @@ public class VisibilityModule {
     mVisibilityRatioChanged = new HashMap<>();
   }
 
-  void processVisibilityOutputs(
+  public void processVisibilityOutputs(
       boolean isDirty,
       VisibilityModuleInput visibilityModuleInput,
       @Nullable Rect localVisibleRect,
@@ -103,7 +100,7 @@ public class VisibilityModule {
     processNonincrementalChanges(visibilityModuleInput, localVisibleRect);
   }
 
-  void clearIncrementalItems() {
+  public void clearIncrementalItems() {
     if (mIncrementalModuleVisibility != null) {
       mIncrementalModuleVisibility.clearIncrementalItems();
     }
@@ -134,9 +131,10 @@ public class VisibilityModule {
       boolean intersect = tempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
 
       if (!intersect) {
-        if (mVisibilityRatioChanged.containsKey(visibilityOutput.getId()))
-          EventDispatcherUtils.dispatchOnVisibilityChanged(
+        if (mVisibilityRatioChanged.containsKey(visibilityOutput.getId())) {
+          VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityOutput.getVisibilityChangedEventHandler(), 0, 0, 0f, 0f);
+        }
         mVisibilityRatioChanged.remove(visibilityOutput.getId());
 
         return;
@@ -145,7 +143,7 @@ public class VisibilityModule {
       final int visibleWidth = tempRect.right - tempRect.left;
       final int visibleHeight = tempRect.bottom - tempRect.top;
 
-      EventDispatcherUtils.dispatchOnVisibilityChanged(
+      VisibilityUtils.dispatchOnVisibilityChanged(
           visibilityOutput.getVisibilityChangedEventHandler(),
           visibleWidth,
           visibleHeight,
@@ -158,7 +156,7 @@ public class VisibilityModule {
   private void clearVisibilityChanged() {
     for (Map.Entry<String, VisibilityOutput> entry : mVisibilityRatioChanged.entrySet()) {
       VisibilityOutput visibilityOutput = entry.getValue();
-      EventDispatcherUtils.dispatchOnVisibilityChanged(
+      VisibilityUtils.dispatchOnVisibilityChanged(
           visibilityOutput.getVisibilityChangedEventHandler(), 0, 0, 0, 0);
     }
     mVisibilityRatioChanged.clear();
