@@ -106,6 +106,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
   @Override
   public void beforeMount(IncrementalMountExtensionInput input, Rect localVisibleRect) {
+    releaseAcquiredReferencesForRemovedItems(input);
     mInput = input;
     mPreviousLocalVisibleRect.setEmpty();
 
@@ -155,6 +156,20 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
   @Override
   public void onUnbind() {}
+
+  private void releaseAcquiredReferencesForRemovedItems(IncrementalMountExtensionInput input) {
+    if (mInput == null) {
+      return;
+    }
+
+    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
+      final RenderTreeNode node = mInput.getMountableOutputAt(i);
+      final long id = node.getRenderUnit().getId();
+      if (input.getLayoutOutputPositionForId(id) < 0 && ownsReference(id)) {
+        releaseMountReference(node, i, false);
+      }
+    }
+  }
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
