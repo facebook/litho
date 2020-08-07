@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import static com.facebook.litho.ThreadUtils.assertMainThread;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.RenderCoreSystrace;
-import com.facebook.rendercore.visibility.VisibilityExtensionConfigs;
-import com.facebook.rendercore.visibility.VisibilityItem;
-import com.facebook.rendercore.visibility.VisibilityModule;
-import com.facebook.rendercore.visibility.VisibilityModuleInput;
-import com.facebook.rendercore.visibility.VisibilityOutput;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtensionInput;
-import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutputsExtensionInput> {
+public class VisibilityOutputsExtension
+    implements HostListenerExtension<VisibilityOutputsExtensionInput> {
 
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -57,13 +50,14 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
   private boolean mIncrementalVisibilityEnabled;
   private List<VisibilityOutput> mVisibilityOutputs;
   private VisibilityModuleInput mVisibilityModuleInput;
-  private Rect mCurrentLocalVisibleRect;
+  private @Nullable Rect mCurrentLocalVisibleRect;
 
-  VisibilityOutputsExtension(Host host) {
+  public VisibilityOutputsExtension(Host host) {
     mHost = host;
     mVisibilityIdToItemMap = new HashMap<>();
   }
 
+  @UiThread
   private void processVisibilityOutputs(@Nullable Rect localVisibleRect, boolean isDirty) {
     try {
       RenderCoreSystrace.beginSection("processVisibilityOutputs");
@@ -92,9 +86,8 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
     }
   }
 
+  @UiThread
   private void processVisibilityOutputsNonInc(@Nullable Rect localVisibleRect, boolean isDirty) {
-    assertMainThread();
-
     if (localVisibleRect == null) {
       return;
     }
@@ -237,8 +230,8 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
     }
   }
 
-  private boolean isInVisibleRange(
-      VisibilityOutput visibilityOutput, Rect bounds, Rect visibleBounds) {
+  private static boolean isInVisibleRange(
+      final VisibilityOutput visibilityOutput, final Rect bounds, final Rect visibleBounds) {
     float heightRatio = visibilityOutput.getVisibleHeightRatio();
     float widthRatio = visibilityOutput.getVisibleWidthRatio();
 
@@ -269,7 +262,8 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
         : componentBounds.equals(componentVisibleBounds);
   }
 
-  void clearVisibilityItems() {
+  @UiThread
+  public void clearVisibilityItems() {
     if (mVisibilityModule != null) {
       clearVisibilityItemsIncremental();
     } else {
@@ -278,9 +272,8 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
     mPreviousLocalVisibleRect.setEmpty();
   }
 
+  @UiThread
   private void clearVisibilityItemsIncremental() {
-    assertMainThread();
-
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
     if (mVisibilityModule != null) {
@@ -290,8 +283,8 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
     RenderCoreSystrace.endSection();
   }
 
+  @UiThread
   private void clearVisibilityItemsNonincremental() {
-    assertMainThread();
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
     List<String> toClear = new ArrayList<>();
@@ -349,7 +342,7 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
   }
 
   @Override
-  public void beforeMount(VisibilityOutputsExtensionInput input, Rect localVisibleRect) {
+  public void beforeMount(VisibilityOutputsExtensionInput input, @Nullable Rect localVisibleRect) {
 
     mVisibilityOutputs = input.getVisibilityOutputs();
 
@@ -366,7 +359,7 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
 
   @Override
   public void afterMount() {
-    boolean processVisibilityOutputs = !hasTransientState();
+    boolean processVisibilityOutputs = !mHost.hasTransientState();
 
     if (processVisibilityOutputs) {
       processVisibilityOutputs(mCurrentLocalVisibleRect, true);
@@ -374,7 +367,7 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
   }
 
   @Override
-  public void onVisibleBoundsChanged(Rect localVisibleRect) {
+  public void onVisibleBoundsChanged(@Nullable Rect localVisibleRect) {
     if (mVisibilityOutputs == null) {
       return;
     }
@@ -407,7 +400,7 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
   }
 
   @VisibleForTesting
-  Map<String, VisibilityItem> getVisibilityIdToItemMap() {
+  public Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     return mVisibilityIdToItemMap;
   }
 

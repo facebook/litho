@@ -38,6 +38,7 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
+import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;

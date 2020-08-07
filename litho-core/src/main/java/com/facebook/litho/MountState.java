@@ -80,6 +80,7 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
+import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
