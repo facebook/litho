@@ -598,25 +598,6 @@ public class ComponentTreeTest {
   }
 
   @Test
-  public void testRootWrapperComponent() {
-    final Component component = TestLayoutComponent.create(mContext).build();
-    final Component wrapperComponent = TestLayoutComponent.create(mContext).build();
-
-    ErrorBoundariesConfiguration.rootWrapperComponentFactory =
-        new RootWrapperComponentFactory() {
-          @Override
-          public Component createWrapper(ComponentContext c, Component root) {
-            return wrapperComponent;
-          }
-        };
-
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
-
-    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
-    assertThat(componentTree.getRoot()).isEqualTo(wrapperComponent);
-  }
-
-  @Test
   public void testSetComponentFromView() {
     Component component1 = SimpleMountSpecTester.create(mContext).build();
     ComponentTree componentTree1 = ComponentTree.create(mContext, component1).build();
