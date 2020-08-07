@@ -22,6 +22,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.util.LongSparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
@@ -48,6 +49,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
   private IncrementalMountExtensionInput mInput;
   private final AttachDetachBinder mAttachDetachBinder = new AttachDetachBinder();
+  private final LongSparseArray<RenderTreeNode> mPendingImmediateRemoval = new LongSparseArray<>();
 
   public RenderUnit.Binder getAttachDetachBinder() {
     return mAttachDetachBinder;
@@ -115,7 +117,16 @@ public class IncrementalMountExtension extends MountDelegateExtension
   }
 
   @Override
-  public void afterMount() {}
+  public void afterMount() {
+    // remove everything that was marked as needing to be removed.
+    // At this point we know that all items have been moved to the appropriate hosts.
+    for (int i = 0, size = mPendingImmediateRemoval.size(); i < size; i++) {
+      final long position = mPendingImmediateRemoval.keyAt(i);
+      final RenderTreeNode node = mPendingImmediateRemoval.get(position);
+      releaseMountReference(node, (int) position, true);
+    }
+    mPendingImmediateRemoval.clear();
+  }
 
   @Override
   public void onUnmount() {
@@ -189,7 +200,11 @@ public class IncrementalMountExtension extends MountDelegateExtension
       if (isMountable && !hasAcquiredMountRef) {
         acquireMountReference(renderTreeNode, i, mInput, isMounting);
       } else if (!isMountable && hasAcquiredMountRef) {
-        releaseMountReference(renderTreeNode, i, isMounting);
+        if (!isMounting) {
+          mPendingImmediateRemoval.put(i, renderTreeNode);
+        } else {
+          releaseMountReference(renderTreeNode, i, true);
+        }
       } else if (isMountable && hasAcquiredMountRef && isMounting) {
         // If we're in the process of mounting now, we know the item we're updating is already
         // mounted and that MountState.mount will not be called. We have to call the binder

@@ -490,6 +490,7 @@ class MountState
     if (mIsDirty || mNeedsRemount) {
       mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
       mount(layoutState, processVisibilityOutputs);
+      mIncrementalMountExtension.afterMount();
     } else {
       mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
     }
