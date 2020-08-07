@@ -47,6 +47,8 @@ import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundComponent;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
 import com.facebook.samples.litho.stats.StatsActivity;
+import com.facebook.samples.litho.textinput.TextInputRequestAndClearFocus;
+import com.facebook.samples.litho.textinput.TextInputWithKeyboardAndFocusDemo;
 import com.facebook.samples.litho.triggers.ClearTextTriggerExampleActivity;
 import com.facebook.samples.litho.triggers.CustomEventTriggerExampleActivity;
 import com.facebook.samples.litho.triggers.TooltipTriggerExampleActivity;
@@ -102,6 +104,25 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Lifecycle Callbacks", LifecycleDelegateActivity.class),
                   new DemoListDataModel("LithoStats", StatsActivity.class),
                   new DemoListDataModel("Snapping", HorizontalScrollWithSnapActivity.class),
+                  new DemoListDataModel(
+                      "TextInput",
+                      Arrays.asList(
+                          new DemoListDataModel(
+                              "Focus and Show Soft Keyboard on Appear",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return TextInputWithKeyboardAndFocusDemo.create(c).build();
+                                }
+                              }),
+                          new DemoListDataModel(
+                              "Request and Clear Focus with Keyboard",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return TextInputRequestAndClearFocus.create(c).build();
+                                }
+                              }))),
                   new DemoListDataModel(
                       "Triggers",
                       Arrays.asList(
