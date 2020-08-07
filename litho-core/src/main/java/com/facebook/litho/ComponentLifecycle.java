@@ -433,7 +433,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void onError(ComponentContext c, Exception e) {
     EventHandler<ErrorEvent> eventHandler = c.getComponentScope().getErrorHandler();
     if (eventHandler == null) {
-      throw new RuntimeException(e);
+      if (e instanceof RuntimeException) {
+        throw (RuntimeException) e;
+      } else {
+        throw new RuntimeException(e);
+      }
     }
     ErrorEvent errorEvent = new ErrorEvent();
     errorEvent.exception = e;
