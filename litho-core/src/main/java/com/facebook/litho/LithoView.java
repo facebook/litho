@@ -60,6 +60,8 @@ public class LithoView extends Host {
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
+  private boolean mHasVisibilityHint;
+  private boolean mVisibilityHintIsVisible;
 
   public interface OnDirtyMountListener {
     /**
@@ -819,11 +821,20 @@ public class LithoView extends Host {
       return;
     }
 
+    // If the LithoView previously had the visibility hint set to false, then when it's set back
+    // to true we should trigger a mount, in case the visible bounds changed while mounting was
+    // paused.
+    final boolean forceMount = shouldPauseMountingWithVisibilityHintFalse();
+    mHasVisibilityHint = true;
+    mVisibilityHintIsVisible = isVisible;
+
     if (isVisible) {
-      if (getLocalVisibleRect(mRect)) {
+      if (forceMount) {
+        notifyVisibleBoundsChanged();
+      } else if (getLocalVisibleRect(mRect)) {
         processVisibilityOutputs(mRect);
-        recursivelySetVisibleHint(true);
       }
+      recursivelySetVisibleHint(true);
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
       recursivelySetVisibleHint(false);
@@ -1024,10 +1035,22 @@ public class LithoView extends Host {
     }
   }
 
+  // We pause mounting while the visibility hint is set to false, because the visible rect of
+  // the LithoView is not consistent with what's currently on screen.
+  private boolean shouldPauseMountingWithVisibilityHintFalse() {
+    return ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse
+        && mHasVisibilityHint
+        && !mVisibilityHintIsVisible;
+  }
+
   void mount(
       LayoutState layoutState,
       @Nullable Rect currentVisibleArea,
       boolean processVisibilityOutputs) {
+
+    if (shouldPauseMountingWithVisibilityHintFalse()) {
+      return;
+    }
 
     if (mTransientStateCount > 0
         && mComponentTree != null

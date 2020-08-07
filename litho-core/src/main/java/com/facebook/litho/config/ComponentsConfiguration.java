@@ -250,4 +250,6 @@ public class ComponentsConfiguration {
 
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
+
+  public static boolean skipIncrementalMountOnSetVisibilityHintFalse = false;
 }
