@@ -17,6 +17,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
+project.group = GROUP
+version = VERSION_NAME
+
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion

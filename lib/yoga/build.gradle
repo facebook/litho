@@ -24,5 +24,6 @@ dependencies {
 task buckBuild(type: Exec) {
     workingDir rootDir
     environment BUCKVERSION: 'last'
-    commandLine 'buck', 'build', '//lib/yogajni:jni#default,shared'
+    def buckPath = System.getenv('BUCK_PATH') ?: 'buck'
+    commandLine buckPath, 'build', '//lib/yogajni:jni#default,shared'
 }
