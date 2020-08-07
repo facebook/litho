@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -39,6 +40,9 @@ import java.util.Map;
 
 class VisibilityOutputsExtension
     implements HostListenerExtension<VisibilityOutputsExtension.VisibilityOutputsExtensionInput> {
+
+  private static final boolean IS_JELLYBEAN_OR_HIGHER =
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
 
   private final Host mHost;
   // Holds a list with information about the components linked to the VisibilityOutputs that are
@@ -380,7 +384,7 @@ class VisibilityOutputsExtension
 
   @Override
   public void afterMount() {
-    boolean processVisibilityOutputs = !mHost.hasTransientState();
+    boolean processVisibilityOutputs = !hasTransientState();
 
     if (processVisibilityOutputs) {
       processVisibilityOutputs(mCurrentLocalVisibleRect, null, true);
@@ -393,10 +397,14 @@ class VisibilityOutputsExtension
       return;
     }
 
-    boolean processVisibilityOutputs = !mHost.hasTransientState();
+    boolean processVisibilityOutputs = !hasTransientState();
     if (processVisibilityOutputs) {
       processVisibilityOutputs(localVisibleRect, null, false);
     }
+  }
+
+  private boolean hasTransientState() {
+    return IS_JELLYBEAN_OR_HIGHER ? mHost.hasTransientState() : false;
   }
 
   @Override
