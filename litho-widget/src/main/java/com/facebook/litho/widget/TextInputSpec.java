@@ -768,13 +768,10 @@ class TextInputSpec {
   @OnTrigger(RequestFocusEvent.class)
   static void requestFocus(
       ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
-    EditTextWithEventHandlers view = mountedView.get();
+    final EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
       if (view.requestFocus()) {
-        InputMethodManager imm =
-            (InputMethodManager)
-                c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(view, 0);
+        view.setSoftInputVisibility(true);
       }
     }
   }
@@ -785,9 +782,7 @@ class TextInputSpec {
     EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
       view.clearFocus();
-      InputMethodManager imm =
-          (InputMethodManager) c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+      view.setSoftInputVisibility(false);
     }
   }
 
@@ -862,6 +857,7 @@ class TextInputSpec {
     @Nullable private AtomicReference<CharSequence> mTextState;
     private int mLineCount = UNMEASURED_LINE_COUNT;
     @Nullable private TextWatcher mTextWatcher;
+    private boolean mIsSoftInputRequested = false;
 
     public EditTextWithEventHandlers(Context context) {
       super(context);
@@ -1014,6 +1010,40 @@ class TextInputSpec {
       if (mTextWatcher != null) {
         removeTextChangedListener(mTextWatcher);
         mTextWatcher = null;
+      }
+    }
+
+    private void setSoftInputVisibility(boolean visible) {
+      final InputMethodManager imm =
+          (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      if (imm == null) {
+        return;
+      }
+
+      if (visible) {
+        if (imm.isActive(this)) {
+          imm.showSoftInput(this, 0);
+          mIsSoftInputRequested = false;
+        } else {
+          // Unfortunately, IMM and requesting focus has race conditions and there are cases where
+          // even though the focus request went through, IMM hasn't been updated yet (thus the
+          // isActive check). Posting a Runnable gives time for the Runnable the IMM Binder posts
+          // to run first and update the IMM.
+          post(
+              new Runnable() {
+                @Override
+                public void run() {
+                  if (mIsSoftInputRequested) {
+                    imm.showSoftInput(EditTextWithEventHandlers.this, 0);
+                  }
+                  mIsSoftInputRequested = false;
+                }
+              });
+          mIsSoftInputRequested = true;
+        }
+      } else {
+        imm.hideSoftInputFromWindow(getWindowToken(), 0);
+        mIsSoftInputRequested = false;
       }
     }
 
