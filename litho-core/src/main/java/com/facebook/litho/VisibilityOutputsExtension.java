@@ -32,14 +32,14 @@ import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityModule;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
+import com.facebook.rendercore.visibility.VisibilityOutputsExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class VisibilityOutputsExtension
-    implements HostListenerExtension<VisibilityOutputsExtension.VisibilityOutputsExtensionInput> {
+class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutputsExtensionInput> {
 
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -62,14 +62,6 @@ class VisibilityOutputsExtension
   VisibilityOutputsExtension(Host host) {
     mHost = host;
     mVisibilityIdToItemMap = new HashMap<>();
-  }
-
-  public interface VisibilityOutputsExtensionInput {
-    List<VisibilityOutput> getVisibilityOutputs();
-
-    boolean isIncrementalVisibilityEnabled();
-
-    VisibilityModuleInput getVisibilityModuleInput();
   }
 
   private void processVisibilityOutputs(
