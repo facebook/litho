@@ -140,7 +140,7 @@ public final class Row extends Component {
         return false;
       }
       for (int i = 0, size = children.size(); i < size; i++) {
-        if (!children.get(i).isEquivalentTo(row.children.get(i))) {
+        if (!children.get(i).isEquivalentTo(row.children.get(i), shouldCompareState)) {
           return false;
         }
       }
