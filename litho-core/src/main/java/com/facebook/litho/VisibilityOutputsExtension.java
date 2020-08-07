@@ -64,14 +64,8 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
     mVisibilityIdToItemMap = new HashMap<>();
   }
 
-  private void processVisibilityOutputs(
-      @Nullable Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent, boolean isDirty) {
-
+  private void processVisibilityOutputs(@Nullable Rect localVisibleRect, boolean isDirty) {
     try {
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
-      }
-
       RenderCoreSystrace.beginSection("processVisibilityOutputs");
 
       if (mIncrementalVisibilityEnabled) {
@@ -91,10 +85,6 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
 
     } finally {
       RenderCoreSystrace.endSection();
-
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
-      }
     }
 
     if (localVisibleRect != null) {
@@ -379,7 +369,7 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
     boolean processVisibilityOutputs = !hasTransientState();
 
     if (processVisibilityOutputs) {
-      processVisibilityOutputs(mCurrentLocalVisibleRect, null, true);
+      processVisibilityOutputs(mCurrentLocalVisibleRect, true);
     }
   }
 
@@ -391,7 +381,7 @@ class VisibilityOutputsExtension implements HostListenerExtension<VisibilityOutp
 
     boolean processVisibilityOutputs = !hasTransientState();
     if (processVisibilityOutputs) {
-      processVisibilityOutputs(localVisibleRect, null, false);
+      processVisibilityOutputs(localVisibleRect, false);
     }
   }
 
