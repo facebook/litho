@@ -888,6 +888,10 @@ public class LithoView extends Host {
 
   @Override
   public void offsetTopAndBottom(int offset) {
+    if (offset == 0) {
+      return;
+    }
+    
     super.offsetTopAndBottom(offset);
 
     onOffsetOrTranslationChange();
@@ -895,6 +899,10 @@ public class LithoView extends Host {
 
   @Override
   public void offsetLeftAndRight(int offset) {
+    if (offset == 0) {
+      return;
+    }
+    
     super.offsetLeftAndRight(offset);
 
     onOffsetOrTranslationChange();
@@ -1000,6 +1008,10 @@ public class LithoView extends Host {
 
   public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
     if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
+      return;
+    }
+    
+    if (!shouldRequestLayout()) {
       return;
     }
 
