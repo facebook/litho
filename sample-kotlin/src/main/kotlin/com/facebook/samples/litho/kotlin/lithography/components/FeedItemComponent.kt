@@ -27,6 +27,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.padding
 import com.facebook.litho.position
+import com.facebook.litho.Opacity
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -40,7 +41,7 @@ class FeedItemComponent(artist: Artist) : KComponent({
   Column {
     +Column {
       +imageBlock(artist)
-      +Decoration(background = drawableColor(0xddffffff)) {
+      +Decoration(background = drawableColor("ffffff", Opacity._50)) {
         Text(
             text = artist.name,
             style = position(start = 4.dp, bottom = 4.dp) + padding(horizontal = 6.dp),

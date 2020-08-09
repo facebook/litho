@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
@@ -73,11 +74,18 @@ fun DslScope.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): Dra
     drawableRes(resourceResolver.resolveResIdAttr(id, defResId))
 
 /**
- * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [Drawable]
+ * Return a [android.graphics.drawable.Drawable] for a [String] hex color value as a [Drawable]
  * instance.
  */
-fun DslScope.drawableColor(@ColorInt color: Int): Drawable =
-    ComparableColorDrawable.create(color)
+fun DslScope.drawableColor(hexColor: String): Drawable =
+        ComparableColorDrawable.create(Color.parseColor("#$hexColor"))
+
+/**
+ * Return a [android.graphics.drawable.Drawable] for a [String] hex color value as a [Drawable]
+ * instance.
+ */
+fun DslScope.drawableColor(hexColor: String, opacity: Opacity): Drawable =
+        ComparableColorDrawable.create(Color.parseColor("#${opacity.percent}$hexColor"))
 
 /**
  * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [Drawable]

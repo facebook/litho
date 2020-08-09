@@ -221,3 +221,35 @@ fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom
         positionEnd = end,
         positionBottom = bottom,
         positionType = YogaPositionType.RELATIVE)
+
+class Opacity(value: String) {
+
+  var percent = value
+
+  companion object {
+    /**
+     * Used to assign the value of opacity
+     */
+    val _100 = Opacity("FF")
+    val _95 = Opacity("F2")
+    val _90 = Opacity("E6")
+    val _85 = Opacity("D9")
+    val _80 = Opacity("CC")
+    val _75 = Opacity("BF")
+    val _70 = Opacity("B3")
+    val _65 = Opacity("A6")
+    val _60 = Opacity("99")
+    val _55 = Opacity("8C")
+    val _50 = Opacity("80")
+    val _45 = Opacity("73")
+    val _40 = Opacity("66")
+    val _35 = Opacity("59")
+    val _30 = Opacity("4D")
+    val _25 = Opacity("40")
+    val _20 = Opacity("33")
+    val _15 = Opacity("26")
+    val _10 = Opacity("1A")
+    val _5 = Opacity("0D")
+    val _0 = Opacity("00")
+  }
+}

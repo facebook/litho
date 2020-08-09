@@ -29,7 +29,7 @@ import com.facebook.litho.padding
 class ActionsComponent(style: Style) : KComponent(style) {
 
   override fun DslScope.render(): Component? {
-    return Decoration(background = drawableColor(0xddffffff)) {
+    return Decoration(background = drawableColor("ffffff")) {
       Row(style = padding(2.dp)) {
         +FavouriteButton()
       }

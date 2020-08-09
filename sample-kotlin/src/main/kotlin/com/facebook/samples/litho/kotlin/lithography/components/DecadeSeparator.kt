@@ -32,9 +32,9 @@ import com.facebook.samples.litho.kotlin.lithography.data.Decade
 import com.facebook.yoga.YogaAlign.CENTER
 
 class DecadeSeparator(decade: Decade) : KComponent({
-  Decoration(background = drawableColor(0xFFFAFAFA)) {
+  Decoration(background = drawableColor("FAFAFA")) {
     Row(alignItems = CENTER, style = padding(16.dp)) {
-      +Decoration(background = drawableColor(0xFFAAAAAA)) {
+      +Decoration(background = drawableColor("AAAAAA")) {
         Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
       }
 
@@ -44,7 +44,7 @@ class DecadeSeparator(decade: Decade) : KComponent({
           textColor = 0xFFAAAAAA.toInt(),
           style = margin(horizontal = 10.dp) + flex(shrink = 0f))
 
-      +Decoration(background = drawableColor(0xFFAAAAAA)) {
+      +Decoration(background = drawableColor("AAAAAA")) {
         Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
       }
     }
