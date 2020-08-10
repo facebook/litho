@@ -49,8 +49,13 @@ public class LayoutSpecAnnotator implements Annotator {
     final PsiClass layoutSpec = getLayoutSpec(element);
     if (layoutSpec == null) return;
 
-    if (!ComponentGenerateService.getInstance().tryUpdateLayoutComponent(layoutSpec)) {
-      return;
+    try {
+      if (!ComponentGenerateService.getInstance().tryUpdateLayoutComponent(layoutSpec)) {
+        return;
+      }
+    } catch (Exception e) {
+      // Model might contain errors. Proceed to surfacing them.
+      DEBUG_LOGGER.debug(e);
     }
     DEBUG_LOGGER.debug(element + " under analysis");
 
