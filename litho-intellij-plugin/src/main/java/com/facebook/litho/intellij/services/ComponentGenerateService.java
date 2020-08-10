@@ -159,6 +159,7 @@ public class ComponentGenerateService {
     }
   }
 
+  @Nullable
   private static PsiClass updateExistingComponent(
       String newContent, PsiClass generatedClass, Project project) {
     // Null is not expected scenario
@@ -168,10 +169,19 @@ public class ComponentGenerateService {
       return generatedClass;
     }
 
-    // Write access is allowed inside write-action only
+    // Write access is allowed inside write-action only and on EDT
+    if (ApplicationManager.getApplication().isDispatchThread()) {
+      updateDocument(newContent, document);
+    } else {
+      ApplicationManager.getApplication().invokeLater(() -> updateDocument(newContent, document));
+    }
+    // Currently, we don't need reference to the pre-existing component's PsiClass.
+    return null;
+  }
+
+  private static void updateDocument(String newContent, Document document) {
     WriteAction.run(() -> document.setText(newContent));
     FileDocumentManager.getInstance().saveDocument(document);
-    return generatedClass;
   }
 
   @Nullable
