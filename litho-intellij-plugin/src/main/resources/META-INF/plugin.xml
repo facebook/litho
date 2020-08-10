@@ -45,7 +45,7 @@
     <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
   ]]>
   </description>
-  <version>1.5.8-SNAPSHOT</version>
+  <version>1.5.8</version>
   <change-notes>
     <![CDATA[<h3>1.5.8</h3>]]>
   </change-notes>
