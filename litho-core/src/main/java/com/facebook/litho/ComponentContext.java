@@ -191,9 +191,7 @@ public class ComponentContext {
             : mComponentTree.getSimpleName();
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
-    if (ComponentsConfiguration.isHooksImplEnabled) {
-      mHooksHandler = hooksHandler != null ? hooksHandler : context.mHooksHandler;
-    }
+    mHooksHandler = hooksHandler != null ? hooksHandler : context.mHooksHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
   }
 

@@ -1236,7 +1236,7 @@ public class ComponentTree {
         return;
       }
 
-      if (ComponentsConfiguration.isHooksImplEnabled) {
+      if (mHooksHandler != null) {
         mHooksHandler.queueHookStateUpdate(updater);
       } else {
         mStateHandler.queueHookStateUpdate(updater);
@@ -1973,8 +1973,7 @@ public class ComponentTree {
       }
 
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
-      final HooksHandler layoutStateHooksHandler =
-          ComponentsConfiguration.isHooksImplEnabled ? localLayoutState.getHooksHandler() : null;
+      final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
@@ -2499,7 +2498,7 @@ public class ComponentTree {
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
         final HooksHandler hooksHandler =
-            (ComponentsConfiguration.isHooksImplEnabled)
+            (ComponentTree.this.mHooksHandler != null)
                 ? new HooksHandler(ComponentTree.this.mHooksHandler)
                 : null;
 
