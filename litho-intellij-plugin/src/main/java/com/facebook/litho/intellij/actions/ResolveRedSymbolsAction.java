@@ -29,14 +29,13 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
 import com.intellij.openapi.util.TextRange;
@@ -51,14 +50,13 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -132,53 +130,38 @@ public class ResolveRedSymbolsAction extends AnAction {
       Project project,
       Map<String, String> eventMetadata,
       Consumer<Boolean> onFinished) {
-    ProgressManager.getInstance()
-        .run(
-            new Task.Backgroundable(project, ACTION, false) {
-              @Override
-              public void run(ProgressIndicator indicator) {
-                final Map<PsiClass, List<PsiElement>> resolved = new HashMap<>();
-                DumbService.getInstance(project)
-                    .runReadActionInSmartMode(
-                        () -> {
-                          try {
-                            resolved.putAll(
-                                collectAndAddToCache(
-                                    psiFile,
-                                    virtualFile,
-                                    editor.getDocument(),
-                                    project,
-                                    eventMetadata));
-                          } catch (Exception e) {
-                            LOG.debug(e);
-                          }
-                        });
-                if (resolved.isEmpty()) {
-                  onFinished.accept(false);
-                  return;
-                }
+    final Map<PsiClass, List<PsiElement>> resolved = new HashMap<>();
+    Runnable action =
+        () ->
+            resolved.putAll(
+                collectAndAddToCache(
+                    psiFile, virtualFile, editor.getDocument(), project, eventMetadata));
 
-                final CountDownLatch latch = new CountDownLatch(1);
-                final AtomicBoolean success = new AtomicBoolean(false);
-                DumbService.getInstance(project)
-                    .smartInvokeLater(
-                        () -> {
-                          long bindStart = System.currentTimeMillis();
-                          if (!bindExpressions(resolved, virtualFile, editor, project)) {
-                            success.set(false);
-                          }
-                          final long bindDelta = System.currentTimeMillis() - bindStart;
-                          eventMetadata.put(
-                              EventLogger.KEY_TIME_BIND_RED_SYMBOLS, String.valueOf(bindDelta));
-                          latch.countDown();
-                        });
-                try {
-                  latch.await();
-                } catch (InterruptedException ignore) {
-                }
-                onFinished.accept(success.get());
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      action.run();
+      return;
+    }
+    ReadAction.nonBlocking(action)
+        .inSmartMode(project)
+        .expireWith(project)
+        .expireWhen(editor::isDisposed)
+        .finishOnUiThread(
+            ModalityState.NON_MODAL,
+            aVoid -> {
+              if (resolved.isEmpty()) {
+                onFinished.accept(false);
+                return;
               }
-            });
+              long bindStart = System.currentTimeMillis();
+              if (!bindExpressions(resolved, virtualFile, editor, project)) {
+                onFinished.accept(false);
+                return;
+              }
+              final long bindDelta = System.currentTimeMillis() - bindStart;
+              eventMetadata.put(EventLogger.KEY_TIME_BIND_RED_SYMBOLS, String.valueOf(bindDelta));
+              onFinished.accept(true);
+            })
+        .submit(AppExecutorUtil.getAppExecutorService());
   }
 
   private static Map<PsiClass, List<PsiElement>> collectAndAddToCache(
