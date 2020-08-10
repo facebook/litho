@@ -24,7 +24,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.graphics.Color;
 import android.os.Looper;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -39,9 +38,7 @@ import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.SameManualKeyRootComponentSpec;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
-import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.TestWrapperComponent;
-import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextDrawable;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;

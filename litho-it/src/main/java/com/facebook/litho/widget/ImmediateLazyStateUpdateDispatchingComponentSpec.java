@@ -25,7 +25,6 @@ import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import java.util.List;
