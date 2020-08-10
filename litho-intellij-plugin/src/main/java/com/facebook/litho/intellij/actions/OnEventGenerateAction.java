@@ -20,7 +20,6 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.OnEventGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.generation.ClassMember;
 import com.intellij.codeInsight.generation.GenerateMembersHandlerBase;
@@ -109,15 +108,6 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     if (!LithoPluginUtils.isLithoSpec(file)) {
       e.getPresentation().setEnabledAndVisible(false);
     }
-  }
-
-  @Override
-  public void actionPerformed(AnActionEvent e) {
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION + ".invoke");
-    super.actionPerformed(e);
-    final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-    LithoPluginUtils.getFirstLayoutSpec(file)
-        .ifPresent(cls -> ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls));
   }
 
   /**
