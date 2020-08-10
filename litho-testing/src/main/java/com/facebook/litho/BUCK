@@ -10,7 +10,7 @@ load(
     "LITHO_HAMCREST_CORE_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
-    "LITHO_MOCKITO_TARGET",
+    "LITHO_MOCKITO_V2_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_TESTING_ASSERTJ_TARGET",
     "LITHO_TESTING_TARGET",
@@ -26,7 +26,7 @@ litho_android_library(
         exclude = ["BenchmarkTestHelper.java"],
     ),
     provided_deps = [
-        LITHO_MOCKITO_TARGET,
+        LITHO_MOCKITO_V2_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
     tests = [
