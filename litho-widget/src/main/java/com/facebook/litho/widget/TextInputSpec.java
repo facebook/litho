@@ -52,7 +52,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.FocusChangedEvent;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -177,7 +176,6 @@ import javax.annotation.Nullable;
     isPureRender = true,
     events = {
       TextChangedEvent.class,
-      FocusChangedEvent.class,
       SelectionChangedEvent.class,
       KeyUpEvent.class,
       KeyPreImeEvent.class,
@@ -724,7 +722,6 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(TextInput.getKeyPreImeEventHandler(c));
     editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
     editText.setInputConnectionEventHandler(TextInput.getInputConnectionEventHandler(c));
-    editText.setFocusChangedEventHandler(TextInput.getFocusChangedEventHandler(c));
   }
 
   @OnUnmount
@@ -747,7 +744,6 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
     editText.setInputConnectionEventHandler(null);
-    editText.setFocusChangedEventHandler(null);
   }
 
   @Nullable
@@ -847,7 +843,6 @@ class TextInputSpec {
 
     private static final int UNMEASURED_LINE_COUNT = -1;
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
-    @Nullable private EventHandler<FocusChangedEvent> mFocusChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
     @Nullable private EventHandler<KeyPreImeEvent> mKeyPreImeEventEventHandler;
@@ -892,16 +887,6 @@ class TextInputSpec {
           && mLineCount != lineCount
           && mComponentContext != null) {
         com.facebook.litho.widget.TextInput.remeasureForUpdatedTextSync(mComponentContext);
-      }
-    }
-
-    @Override
-    protected void onFocusChanged(
-        boolean focused, int direction, @Nullable Rect previouslyFocusedRect) {
-      super.onFocusChanged(focused, direction, previouslyFocusedRect);
-      if (mFocusChangedEventHandler != null) {
-        TextInput.dispatchFocusChangedEvent(
-            mFocusChangedEventHandler, EditTextWithEventHandlers.this, focused);
       }
     }
 
@@ -957,11 +942,6 @@ class TextInputSpec {
     void setTextChangedEventHandler(
         @Nullable EventHandler<TextChangedEvent> textChangedEventHandler) {
       mTextChangedEventHandler = textChangedEventHandler;
-    }
-
-    void setFocusChangedEventHandler(
-        @Nullable EventHandler<FocusChangedEvent> focusChangedEventHandler) {
-      mFocusChangedEventHandler = focusChangedEventHandler;
     }
 
     void setSelectionChangedEventHandler(
