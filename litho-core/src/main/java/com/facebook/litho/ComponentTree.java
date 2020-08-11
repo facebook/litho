@@ -1808,19 +1808,14 @@ public class ComponentTree {
           && mostRecentLayoutState != null
           && mostRecentLayoutState.isCompatibleComponentAndSpec(
               resolvedRoot.getId(), resolvedWidthSpec, resolvedHeightSpec)) {
-        // The spec and the root haven't changed. Either we have a layout already, or we're
-        // currently computing one on another thread.
-        if (output == null) {
-          return;
-        }
-
-        // Set the output if we have a LayoutState, otherwise we need to compute one synchronously
-        // below to get the correct output.
-        if (mostRecentLayoutState != null) {
+        // The spec and the root haven't changed and we have a compatible LayoutState already
+        // committed
+        if (output != null) {
           output.height = mostRecentLayoutState.getHeight();
           output.width = mostRecentLayoutState.getWidth();
-          return;
         }
+
+        return;
       }
 
       if (widthSpecInitialized) {
