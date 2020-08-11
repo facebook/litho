@@ -30,7 +30,7 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.Button;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.yoga.YogaEdge;
 
@@ -50,16 +50,14 @@ class TextInputRequestAndClearFocusSpec {
         .child(
             Row.create(c)
                 .child(
-                    Text.create(c)
+                    Button.create(c)
                         .text("Request Focus")
                         .clickHandler(TextInputRequestAndClearFocus.onRequestFocusClick(c))
-                        .paddingDip(YogaEdge.ALL, 16)
-                        .marginDip(YogaEdge.RIGHT, 16))
+                        .marginDip(YogaEdge.HORIZONTAL, 8))
                 .child(
-                    Text.create(c)
+                    Button.create(c)
                         .text("Clear Focus")
-                        .clickHandler(TextInputRequestAndClearFocus.onClearFocusClick(c))
-                        .paddingDip(YogaEdge.ALL, 16)))
+                        .clickHandler(TextInputRequestAndClearFocus.onClearFocusClick(c))))
         .build();
   }
 
