@@ -152,6 +152,17 @@ public class SectionContext extends ComponentContext {
     return new EventTrigger<>(parentKey, id, childKey, handle);
   }
 
+  @Override
+  public String getGlobalKey() {
+    final Section section = mScope.get();
+    if (section == null) {
+      throw new IllegalStateException(
+          "getGlobalKey cannot be accessed from a SectionContext without a scope");
+    }
+
+    return section.getGlobalKey();
+  }
+
   public Section getSectionScope() {
     final Section section = mScope.get();
 

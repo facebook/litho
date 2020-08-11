@@ -268,6 +268,15 @@ public class ComponentContext {
     return mComponentScope;
   }
 
+  public String getGlobalKey() {
+    if (mComponentScope == null) {
+      throw new RuntimeException(
+          "getGlobalKey cannot be accessed from a ComponentContext without a scope");
+    }
+
+    return mComponentScope.getGlobalKey();
+  }
+
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
