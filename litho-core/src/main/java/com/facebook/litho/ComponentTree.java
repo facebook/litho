@@ -23,6 +23,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
+import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -81,6 +82,8 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @ThreadSafe
 public class ComponentTree {
+
+  private static final boolean DEBUG_LOGS = false;
 
   public static final int INVALID_ID = -1;
   private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
@@ -527,6 +530,9 @@ public class ComponentTree {
     }
 
     if (!layoutStateUpdated) {
+      if (DEBUG_LOGS) {
+        debugLog("backgroundLayoutStateUpdated", "Abort: LayoutState was not updated");
+      }
       return;
     }
 
@@ -534,6 +540,15 @@ public class ComponentTree {
 
     // If we are in measure, we will let mounting happen from the layout call
     if (!mIsAttached || mIsMeasuring) {
+      if (DEBUG_LOGS) {
+        debugLog(
+            "backgroundLayoutStateUpdated",
+            "Abort: will wait for attach/measure (mIsAttached: "
+                + mIsAttached
+                + ", mIsMeasuring: "
+                + mIsMeasuring
+                + ")");
+      }
       return;
     }
 
@@ -541,6 +556,9 @@ public class ComponentTree {
     final int viewWidth = mLithoView.getMeasuredWidth();
     final int viewHeight = mLithoView.getMeasuredHeight();
     if (viewWidth == 0 && viewHeight == 0) {
+      if (DEBUG_LOGS) {
+        debugLog("backgroundLayoutStateUpdated", "Abort: Host view was not measured yet");
+      }
       // The host view has not been measured yet.
       return;
     }
@@ -553,6 +571,19 @@ public class ComponentTree {
       mLithoView.requestLayout();
     } else {
       mountComponentIfNeeded();
+    }
+
+    if (DEBUG_LOGS) {
+      debugLog(
+          "backgroundLayoutStateUpdated",
+          "Updated - viewWidth: "
+              + viewWidth
+              + ", viewHeight: "
+              + viewHeight
+              + ", needsAndroidLayout: "
+              + needsAndroidLayout
+              + ", layoutRequested: "
+              + mLithoView.isLayoutRequested());
     }
   }
 
@@ -941,6 +972,24 @@ public class ComponentTree {
     try {
       final boolean needsSyncLayout;
       synchronized (this) {
+        if (DEBUG_LOGS) {
+          debugLog(
+              "StartMeasure",
+              "WidthSpec: "
+                  + View.MeasureSpec.toString(widthSpec)
+                  + ", HeightSpec: "
+                  + View.MeasureSpec.toString(heightSpec)
+                  + ", isCompatibleWithCommittedLayout: "
+                  + isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)
+                  + ", isCompatibleWithMainThreadLayout: "
+                  + isCompatibleComponentAndSpec(
+                      mMainThreadLayoutState, mRoot.getId(), widthSpec, heightSpec)
+                  + ", hasSameSpecs: "
+                  + (mMainThreadLayoutState != null
+                      && mMainThreadLayoutState.getWidthSpec() == widthSpec
+                      && mMainThreadLayoutState.getHeightSpec() == heightSpec));
+        }
+
         if (mCommittedLayoutState != null
             && mCommittedLayoutState != mMainThreadLayoutState
             && isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)) {
@@ -1009,6 +1058,19 @@ public class ComponentTree {
       }
     } finally {
       mIsMeasuring = false;
+    }
+
+    if (DEBUG_LOGS) {
+      debugLog(
+          "FinishMeasure",
+          "WidthSpec: "
+              + View.MeasureSpec.toString(widthSpec)
+              + ", HeightSpec: "
+              + View.MeasureSpec.toString(heightSpec)
+              + ", OutWidth: "
+              + measureOutput[0]
+              + ", OutHeight: "
+              + measureOutput[1]);
     }
   }
 
@@ -1815,7 +1877,33 @@ public class ComponentTree {
           output.width = mostRecentLayoutState.getWidth();
         }
 
+        if (DEBUG_LOGS) {
+          debugLog(
+              "StartLayout",
+              "Layout was compatible, not calculating a new one - Source: "
+                  + layoutSourceToString(source)
+                  + ", Extra: "
+                  + extraAttribution
+                  + ", WidthSpec: "
+                  + View.MeasureSpec.toString(resolvedWidthSpec)
+                  + ", HeightSpec: "
+                  + View.MeasureSpec.toString(resolvedHeightSpec));
+        }
+
         return;
+      }
+
+      if (DEBUG_LOGS) {
+        debugLog(
+            "StartLayout",
+            "Calculating new layout - Source: "
+                + layoutSourceToString(source)
+                + ", Extra: "
+                + extraAttribution
+                + ", WidthSpec: "
+                + View.MeasureSpec.toString(resolvedWidthSpec)
+                + ", HeightSpec: "
+                + View.MeasureSpec.toString(resolvedHeightSpec));
       }
 
       if (widthSpecInitialized) {
@@ -1967,6 +2055,10 @@ public class ComponentTree {
         committedNewLayout = true;
       }
 
+      if (DEBUG_LOGS) {
+        logFinishLayout(source, extraAttribution, localLayoutState, committedNewLayout);
+      }
+
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
       final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
@@ -2079,6 +2171,29 @@ public class ComponentTree {
       }
       mMainThreadHandler.post(mBackgroundLayoutStateUpdateRunnable, tag);
     }
+  }
+
+  private void logFinishLayout(
+      int source,
+      String extraAttribution,
+      LayoutState localLayoutState,
+      boolean committedNewLayout) {
+    final String message = committedNewLayout ? "Committed layout" : "Did NOT commit layout";
+    debugLog(
+        "FinishLayout",
+        message
+            + " - Source: "
+            + layoutSourceToString(source)
+            + ", Extra: "
+            + extraAttribution
+            + ", WidthSpec: "
+            + View.MeasureSpec.toString(localLayoutState.getWidthSpec())
+            + ", HeightSpec: "
+            + View.MeasureSpec.toString(localLayoutState.getHeightSpec())
+            + ", Width: "
+            + localLayoutState.getWidth()
+            + ", Height: "
+            + localLayoutState.getHeight());
   }
 
   /**
@@ -2374,6 +2489,21 @@ public class ComponentTree {
       }
     }
     return localAttachDetachHandler;
+  }
+
+  private void debugLog(String eventName, String info) {
+    if (DEBUG_LOGS) {
+      android.util.Log.d(
+          "ComponentTreeDebug",
+          "("
+              + hashCode()
+              + ") ["
+              + eventName
+              + " - Root: "
+              + (mRoot != null ? mRoot.getSimpleName() : null)
+              + "] "
+              + info);
+    }
   }
 
   @IntDef({
