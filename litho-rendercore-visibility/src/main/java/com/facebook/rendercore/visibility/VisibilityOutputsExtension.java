@@ -359,7 +359,7 @@ public class VisibilityOutputsExtension
 
   @Override
   public void afterMount() {
-    boolean processVisibilityOutputs = !mHost.hasTransientState();
+    boolean processVisibilityOutputs = !hasTransientState();
 
     if (processVisibilityOutputs) {
       processVisibilityOutputs(mCurrentLocalVisibleRect, true);
@@ -379,7 +379,7 @@ public class VisibilityOutputsExtension
   }
 
   private boolean hasTransientState() {
-    return IS_JELLYBEAN_OR_HIGHER ? mHost.hasTransientState() : false;
+    return IS_JELLYBEAN_OR_HIGHER && mHost.hasTransientState();
   }
 
   @Override
