@@ -18,10 +18,7 @@ package com.facebook.rendercore.testing;
 
 import android.content.Context;
 import android.view.View;
-import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,9 +29,9 @@ public class TestRenderUnit extends RenderUnit {
   private long mId;
 
   public TestRenderUnit(
-      final @Nullable List<? extends RenderUnit.Binder> mountBinders,
-      final @Nullable List<? extends RenderUnit.Binder> attachBinders) {
-    super(RenderType.VIEW, mountBinders, attachBinders);
+      final List<? extends Extension> mountExtensions,
+      final List<? extends Extension> attachExtensions) {
+    super(RenderType.VIEW, mountExtensions, attachExtensions);
     mId = sIdGenerator.incrementAndGet();
   }
 
@@ -43,8 +40,9 @@ public class TestRenderUnit extends RenderUnit {
     mId = sIdGenerator.incrementAndGet();
   }
 
-  public TestRenderUnit(RenderUnit.Binder... attachDetachFunctions) {
-    super(RenderType.VIEW, new ArrayList<>(), Arrays.asList(attachDetachFunctions));
+  public TestRenderUnit(RenderUnit.Extension... attachDetachFunctions) {
+    super(RenderType.VIEW);
+    addAttachDetachExtensions(attachDetachFunctions);
     mId = sIdGenerator.incrementAndGet();
   }
 

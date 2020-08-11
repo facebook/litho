@@ -16,19 +16,20 @@
 
 package com.facebook.rendercore.text;
 
+import static com.facebook.rendercore.RenderUnit.Extension.extension;
 import static com.facebook.rendercore.RenderUnit.RenderType.VIEW;
 
 import android.content.Context;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.text.TextMeasurementUtils.TextLayoutContext;
-import java.util.Collections;
 
 public class TextRenderUnit extends RenderUnit<RCTextView> {
   private long mId;
 
   public TextRenderUnit(long id) {
-    super(VIEW, Collections.singletonList(sMountUnmount));
+    super(VIEW);
     mId = id;
+    addMountUnmountExtension(extension(this, sMountUnmount));
   }
 
   @Override
