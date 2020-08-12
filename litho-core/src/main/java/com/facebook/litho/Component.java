@@ -591,12 +591,7 @@ public abstract class Component extends ComponentLifecycle
         mErrorEventHandler =
             new EventHandler<>(this, ERROR_EVENT_HANDLER_ID, new Object[] {getScopedContext()});
       } else {
-        Component parent = parentContext.getComponentScope();
-        if (parent != null) {
-          mErrorEventHandler = parent.getErrorHandler();
-        } else {
-          mErrorEventHandler = DefaultErrorEventHandler.INSTANCE;
-        }
+        mErrorEventHandler = parentContext.getErrorEventHandler();
       }
     }
   }

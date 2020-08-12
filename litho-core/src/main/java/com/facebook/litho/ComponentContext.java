@@ -277,6 +277,16 @@ public class ComponentContext {
     return mComponentScope.getGlobalKey();
   }
 
+  public EventHandler<ErrorEvent> getErrorEventHandler() {
+    if (mComponentScope != null && mComponentScope.getErrorHandler() != null) {
+      return mComponentScope.getErrorHandler();
+    }
+    if (mComponentTree != null) {
+      return mComponentTree.getErrorEventHandler();
+    }
+    return DefaultErrorEventHandler.INSTANCE;
+  }
+
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
