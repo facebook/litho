@@ -19,11 +19,17 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 
 /** Default implementation of ErrorEvent handler. */
-public class DefaultErrorEventHandler extends EventHandler<ErrorEvent> {
+public class DefaultErrorEventHandler extends ErrorEventHandler {
+
   static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
 
-  private DefaultErrorEventHandler() {
-    super(DefaultErrorEventDispatcher.INSTANCE, ComponentLifecycle.ERROR_EVENT_HANDLER_ID);
+  @Override
+  public void onError(Exception e) {
+    if (e instanceof RuntimeException) {
+      throw (RuntimeException) e;
+    } else {
+      throw new RuntimeException(e);
+    }
   }
 
   /** An event handler to be used for the root of the hierarchy that reraises error events. */
