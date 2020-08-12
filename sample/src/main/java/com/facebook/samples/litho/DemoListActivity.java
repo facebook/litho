@@ -45,6 +45,7 @@ import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundComponent;
+import com.facebook.samples.litho.stateupdates.StateUpdateFromOutsideTreeActivity;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
 import com.facebook.samples.litho.stats.StatsActivity;
 import com.facebook.samples.litho.textinput.TextInputRequestAndClearFocus;
@@ -104,6 +105,12 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Lifecycle Callbacks", LifecycleDelegateActivity.class),
                   new DemoListDataModel("LithoStats", StatsActivity.class),
                   new DemoListDataModel("Snapping", HorizontalScrollWithSnapActivity.class),
+                  new DemoListDataModel(
+                      "State Updates",
+                      Arrays.asList(
+                          new DemoListDataModel(
+                              "State Update from Outside Litho",
+                              StateUpdateFromOutsideTreeActivity.class))),
                   new DemoListDataModel(
                       "TextInput",
                       Arrays.asList(
