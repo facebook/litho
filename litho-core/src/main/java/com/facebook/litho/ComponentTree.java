@@ -291,6 +291,8 @@ public class ComponentTree {
 
   protected final int mId;
 
+  private final ErrorEventHandler mErrorEventHandler;
+
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -340,6 +342,7 @@ public class ComponentTree {
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
+    mErrorEventHandler = builder.errorEventHandler;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -1102,6 +1105,10 @@ public class ComponentTree {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
+  }
+
+  public ErrorEventHandler getErrorEventHandler() {
+    return mErrorEventHandler;
   }
 
   synchronized Component getRoot() {
@@ -2984,6 +2991,7 @@ public class ComponentTree {
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
@@ -3150,6 +3158,12 @@ public class ComponentTree {
     /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    /** Sets the ErrorEventHandler */
+    public Builder errorHandler(ErrorEventHandler errorEventHandler) {
+      this.errorEventHandler = errorEventHandler;
       return this;
     }
 
