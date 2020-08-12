@@ -16,29 +16,12 @@
 
 package com.facebook.litho.widget;
 
-import static android.graphics.Typeface.BOLD;
-import static com.facebook.yoga.YogaEdge.ALL;
-
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.StateListDrawable;
-import android.graphics.drawable.shapes.RectShape;
-import android.os.Build;
 import com.facebook.litho.AccessibilityRole;
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.PropDefault;
-import com.facebook.litho.annotations.ResType;
 
 @LayoutSpec
 class ButtonSpec {
