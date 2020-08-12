@@ -97,6 +97,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
     } catch (IndexOutOfBoundsException e) {
       throw new IndexOutOfBoundsException(e.getMessage() + getDebugInfo());
+    } catch (StackOverflowError e) {
+      throw new StackOverflowError(e.getMessage() + getDebugInfo());
     }
 
     canvas.restoreToCount(saveCount);
