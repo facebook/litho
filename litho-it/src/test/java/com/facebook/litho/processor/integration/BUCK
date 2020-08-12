@@ -24,6 +24,7 @@ load(
 fb_java_test(
     name = "integration",
     srcs = glob(["*Test.java"]),
+    contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "1.8",
     target = "1.8",
     deps = [

@@ -24,6 +24,7 @@ fb_java_test(
         ["**/*Test.java"],
         exclude = glob(["processor/**/*.java"]),
     ),
+    contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "11",
     target = "11",
     deps = [
