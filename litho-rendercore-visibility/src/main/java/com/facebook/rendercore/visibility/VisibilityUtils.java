@@ -35,7 +35,7 @@ public class VisibilityUtils {
   private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
   private static VisibilityChangedEvent sVisibleRectChangedEvent;
 
-  public static void dispatchOnVisible(Function visibleHandler) {
+  public static void dispatchOnVisible(Function<Void> visibleHandler) {
     RenderCoreSystrace.beginSection("VisibilityUtils.dispatchOnVisible");
 
     if (sVisibleEvent == null) {
@@ -46,28 +46,28 @@ public class VisibilityUtils {
     RenderCoreSystrace.endSection();
   }
 
-  public static void dispatchOnFocused(Function focusedHandler) {
+  public static void dispatchOnFocused(Function<Void> focusedHandler) {
     if (sFocusedVisibleEvent == null) {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
     focusedHandler.call(sFocusedVisibleEvent);
   }
 
-  public static void dispatchOnUnfocused(Function unfocusedHandler) {
+  public static void dispatchOnUnfocused(Function<Void> unfocusedHandler) {
     if (sUnfocusedVisibleEvent == null) {
       sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
     }
     unfocusedHandler.call(sUnfocusedVisibleEvent);
   }
 
-  public static void dispatchOnFullImpression(Function fullImpressionHandler) {
+  public static void dispatchOnFullImpression(Function<Void> fullImpressionHandler) {
     if (sFullImpressionVisibleEvent == null) {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
     fullImpressionHandler.call(sFullImpressionVisibleEvent);
   }
 
-  public static void dispatchOnInvisible(Function invisibleHandler) {
+  public static void dispatchOnInvisible(Function<Void> invisibleHandler) {
     if (sInvisibleEvent == null) {
       sInvisibleEvent = new InvisibleEvent();
     }
@@ -75,7 +75,7 @@ public class VisibilityUtils {
   }
 
   public static void dispatchOnVisibilityChanged(
-      @Nullable Function visibilityChangedHandler,
+      @Nullable Function<Void> visibilityChangedHandler,
       int visibleWidth,
       int visibleHeight,
       float percentVisibleWidth,

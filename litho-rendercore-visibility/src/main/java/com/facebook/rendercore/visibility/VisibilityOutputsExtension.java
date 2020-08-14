@@ -122,12 +122,13 @@ public class VisibilityOutputsExtension
         continue;
       }
 
-      final Function visibleHandler = visibilityOutput.getVisibleEventHandler();
-      final Function focusedHandler = visibilityOutput.getFocusedEventHandler();
-      final Function unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
-      final Function fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
-      final Function invisibleHandler = visibilityOutput.getInvisibleEventHandler();
-      final Function visibilityChangedHandler = visibilityOutput.getVisibilityChangedEventHandler();
+      final Function<Void> visibleHandler = visibilityOutput.getVisibleEventHandler();
+      final Function<Void> focusedHandler = visibilityOutput.getFocusedEventHandler();
+      final Function<Void> unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
+      final Function<Void> fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
+      final Function<Void> invisibleHandler = visibilityOutput.getInvisibleEventHandler();
+      final Function<Void> visibilityChangedHandler =
+          visibilityOutput.getVisibilityChangedEventHandler();
 
       final boolean isCurrentlyVisible =
           boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
@@ -304,9 +305,10 @@ public class VisibilityOutputsExtension
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
 
       if (visibilityItem != null) {
-        final Function invisibleHandler = visibilityItem.getInvisibleHandler();
-        final Function unfocusedHandler = visibilityItem.getUnfocusedHandler();
-        final Function visibilityChangedHandler = visibilityItem.getVisibilityChangedHandler();
+        final Function<Void> invisibleHandler = visibilityItem.getInvisibleHandler();
+        final Function<Void> unfocusedHandler = visibilityItem.getUnfocusedHandler();
+        final Function<Void> visibilityChangedHandler =
+            visibilityItem.getVisibilityChangedHandler();
 
         if (invisibleHandler != null) {
           VisibilityUtils.dispatchOnInvisible(invisibleHandler);

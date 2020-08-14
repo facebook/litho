@@ -33,12 +33,12 @@ public class VisibilityOutput {
   private final float mVisibleHeightRatio;
   private final float mVisibleWidthRatio;
 
-  private final @Nullable Function mVisibleEventHandler;
-  private final @Nullable Function mFocusedEventHandler;
-  private final @Nullable Function mUnfocusedEventHandler;
-  private final @Nullable Function mFullImpressionEventHandler;
-  private final @Nullable Function mInvisibleEventHandler;
-  private final @Nullable Function mVisibilityChangedEventHandler;
+  private final @Nullable Function<Void> mVisibleEventHandler;
+  private final @Nullable Function<Void> mFocusedEventHandler;
+  private final @Nullable Function<Void> mUnfocusedEventHandler;
+  private final @Nullable Function<Void> mFullImpressionEventHandler;
+  private final @Nullable Function<Void> mInvisibleEventHandler;
+  private final @Nullable Function<Void> mVisibilityChangedEventHandler;
 
   private float mFocusedRatio;
 
@@ -48,12 +48,12 @@ public class VisibilityOutput {
       final Rect bounds,
       final float visibleHeightRatio,
       final float visibleWidthRatio,
-      final @Nullable Function visibleEventHandler,
-      final @Nullable Function focusedEventHandler,
-      final @Nullable Function unfocusedEventHandler,
-      final @Nullable Function fullImpressionEventHandler,
-      final @Nullable Function invisibleEventHandler,
-      final @Nullable Function visibilityChangedEventHandler) {
+      final @Nullable Function<Void> visibleEventHandler,
+      final @Nullable Function<Void> focusedEventHandler,
+      final @Nullable Function<Void> unfocusedEventHandler,
+      final @Nullable Function<Void> fullImpressionEventHandler,
+      final @Nullable Function<Void> invisibleEventHandler,
+      final @Nullable Function<Void> visibilityChangedEventHandler) {
     mId = id;
     mKey = key;
     mBounds = bounds;
@@ -140,6 +140,11 @@ public class VisibilityOutput {
     return mBounds.right - mFocusedRatio * (mBounds.right - mBounds.left);
   }
 
+  public int getComponentArea() {
+    final Rect rect = getBounds();
+    return rect.isEmpty() ? 0 : (rect.width() * rect.height());
+  }
+
   public float getVisibleHeightRatio() {
     return mVisibleHeightRatio;
   }
@@ -152,32 +157,27 @@ public class VisibilityOutput {
     mFocusedRatio = focusedRatio;
   }
 
-  public @Nullable Function getVisibleEventHandler() {
+  public @Nullable Function<Void> getVisibleEventHandler() {
     return mVisibleEventHandler;
   }
 
-  public int getComponentArea() {
-    final Rect rect = getBounds();
-    return rect.isEmpty() ? 0 : (rect.width() * rect.height());
-  }
-
-  public @Nullable Function getFocusedEventHandler() {
+  public @Nullable Function<Void> getFocusedEventHandler() {
     return mFocusedEventHandler;
   }
 
-  public @Nullable Function getUnfocusedEventHandler() {
+  public @Nullable Function<Void> getUnfocusedEventHandler() {
     return mUnfocusedEventHandler;
   }
 
-  public @Nullable Function getFullImpressionEventHandler() {
+  public @Nullable Function<Void> getFullImpressionEventHandler() {
     return mFullImpressionEventHandler;
   }
 
-  public @Nullable Function getInvisibleEventHandler() {
+  public @Nullable Function<Void> getInvisibleEventHandler() {
     return mInvisibleEventHandler;
   }
 
-  public @Nullable Function getVisibilityChangedEventHandler() {
+  public @Nullable Function<Void> getVisibilityChangedEventHandler() {
     return mVisibilityChangedEventHandler;
   }
 }
