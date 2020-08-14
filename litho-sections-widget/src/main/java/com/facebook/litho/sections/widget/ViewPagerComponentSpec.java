@@ -39,7 +39,7 @@ public class ViewPagerComponentSpec<T> {
   static <T> Component onCreateLayout(
       ComponentContext c,
       @Prop DataDiffSection<T> dataDiffSection,
-      @Prop RecyclerCollectionEventsController eventsController,
+      @Prop(optional = true) RecyclerCollectionEventsController eventsController,
       @Prop(optional = true) int initialPageIndex) {
     final RecyclerConfiguration recyclerConfiguration =
         ListRecyclerConfiguration.create()

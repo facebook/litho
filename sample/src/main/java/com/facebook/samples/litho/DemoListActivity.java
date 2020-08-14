@@ -53,6 +53,7 @@ import com.facebook.samples.litho.textinput.TextInputWithKeyboardAndFocusDemo;
 import com.facebook.samples.litho.triggers.ClearTextTriggerExampleActivity;
 import com.facebook.samples.litho.triggers.CustomEventTriggerExampleActivity;
 import com.facebook.samples.litho.triggers.TooltipTriggerExampleActivity;
+import com.facebook.samples.litho.viewpager.ViewPagerDemoComponent;
 import java.util.Arrays;
 import java.util.List;
 
@@ -138,7 +139,15 @@ public class DemoListActivity extends NavigatableDemoActivity {
                           new DemoListDataModel(
                               "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
                           new DemoListDataModel(
-                              "Tooltip Trigger", TooltipTriggerExampleActivity.class))))),
+                              "Tooltip Trigger", TooltipTriggerExampleActivity.class))),
+                  new DemoListDataModel(
+                      "ViewPager",
+                      new ComponentCreator() {
+                        @Override
+                        public Component create(ComponentContext c) {
+                          return ViewPagerDemoComponent.create(c).build();
+                        }
+                      }))),
           new DemoListDataModel(
               "Internal Debugging Samples",
               Arrays.asList(
