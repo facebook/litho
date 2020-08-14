@@ -20,7 +20,6 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.extensions.TemplateProvider;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
@@ -98,8 +97,6 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
     final Map<String, String> data = new HashMap<>();
     data.put(EventLogger.KEY_TYPE, templateName);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE, data);
-    LithoPluginUtils.getFirstClass(createdElement, LithoPluginUtils::isLayoutSpec)
-        .ifPresent(cls -> ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls));
   }
 
   private static class ActionsHolder {

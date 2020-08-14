@@ -63,7 +63,7 @@ public final class Wrapper extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     if (this == other) {
       return true;
     }
@@ -74,7 +74,9 @@ public final class Wrapper extends Component {
     if (this.getId() == wrapper.getId()) {
       return true;
     }
-    if (delegate != null ? !delegate.equals(wrapper.delegate) : wrapper.delegate != null) {
+    if (delegate != null
+        ? !delegate.isEquivalentTo(wrapper.delegate, shouldCompareState)
+        : wrapper.delegate != null) {
       return false;
     }
     return true;

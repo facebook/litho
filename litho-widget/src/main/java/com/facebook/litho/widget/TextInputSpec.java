@@ -52,7 +52,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.FocusChangedEvent;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -177,7 +176,6 @@ import javax.annotation.Nullable;
     isPureRender = true,
     events = {
       TextChangedEvent.class,
-      FocusChangedEvent.class,
       SelectionChangedEvent.class,
       KeyUpEvent.class,
       KeyPreImeEvent.class,
@@ -724,7 +722,6 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(TextInput.getKeyPreImeEventHandler(c));
     editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
     editText.setInputConnectionEventHandler(TextInput.getInputConnectionEventHandler(c));
-    editText.setFocusChangedEventHandler(TextInput.getFocusChangedEventHandler(c));
   }
 
   @OnUnmount
@@ -747,7 +744,6 @@ class TextInputSpec {
     editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
     editText.setInputConnectionEventHandler(null);
-    editText.setFocusChangedEventHandler(null);
   }
 
   @Nullable
@@ -768,13 +764,10 @@ class TextInputSpec {
   @OnTrigger(RequestFocusEvent.class)
   static void requestFocus(
       ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
-    EditTextWithEventHandlers view = mountedView.get();
+    final EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
       if (view.requestFocus()) {
-        InputMethodManager imm =
-            (InputMethodManager)
-                c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(view, 0);
+        view.setSoftInputVisibility(true);
       }
     }
   }
@@ -785,9 +778,7 @@ class TextInputSpec {
     EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
       view.clearFocus();
-      InputMethodManager imm =
-          (InputMethodManager) c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-      imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+      view.setSoftInputVisibility(false);
     }
   }
 
@@ -852,7 +843,6 @@ class TextInputSpec {
 
     private static final int UNMEASURED_LINE_COUNT = -1;
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
-    @Nullable private EventHandler<FocusChangedEvent> mFocusChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
     @Nullable private EventHandler<KeyPreImeEvent> mKeyPreImeEventEventHandler;
@@ -862,6 +852,7 @@ class TextInputSpec {
     @Nullable private AtomicReference<CharSequence> mTextState;
     private int mLineCount = UNMEASURED_LINE_COUNT;
     @Nullable private TextWatcher mTextWatcher;
+    private boolean mIsSoftInputRequested = false;
 
     public EditTextWithEventHandlers(Context context) {
       super(context);
@@ -896,16 +887,6 @@ class TextInputSpec {
           && mLineCount != lineCount
           && mComponentContext != null) {
         com.facebook.litho.widget.TextInput.remeasureForUpdatedTextSync(mComponentContext);
-      }
-    }
-
-    @Override
-    protected void onFocusChanged(
-        boolean focused, int direction, @Nullable Rect previouslyFocusedRect) {
-      super.onFocusChanged(focused, direction, previouslyFocusedRect);
-      if (mFocusChangedEventHandler != null) {
-        TextInput.dispatchFocusChangedEvent(
-            mFocusChangedEventHandler, EditTextWithEventHandlers.this, focused);
       }
     }
 
@@ -963,11 +944,6 @@ class TextInputSpec {
       mTextChangedEventHandler = textChangedEventHandler;
     }
 
-    void setFocusChangedEventHandler(
-        @Nullable EventHandler<FocusChangedEvent> focusChangedEventHandler) {
-      mFocusChangedEventHandler = focusChangedEventHandler;
-    }
-
     void setSelectionChangedEventHandler(
         @Nullable EventHandler<SelectionChangedEvent> selectionChangedEventHandler) {
       mSelectionChangedEventHandler = selectionChangedEventHandler;
@@ -1014,6 +990,40 @@ class TextInputSpec {
       if (mTextWatcher != null) {
         removeTextChangedListener(mTextWatcher);
         mTextWatcher = null;
+      }
+    }
+
+    private void setSoftInputVisibility(boolean visible) {
+      final InputMethodManager imm =
+          (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      if (imm == null) {
+        return;
+      }
+
+      if (visible) {
+        if (imm.isActive(this)) {
+          imm.showSoftInput(this, 0);
+          mIsSoftInputRequested = false;
+        } else {
+          // Unfortunately, IMM and requesting focus has race conditions and there are cases where
+          // even though the focus request went through, IMM hasn't been updated yet (thus the
+          // isActive check). Posting a Runnable gives time for the Runnable the IMM Binder posts
+          // to run first and update the IMM.
+          post(
+              new Runnable() {
+                @Override
+                public void run() {
+                  if (mIsSoftInputRequested) {
+                    imm.showSoftInput(EditTextWithEventHandlers.this, 0);
+                  }
+                  mIsSoftInputRequested = false;
+                }
+              });
+          mIsSoftInputRequested = true;
+        }
+      } else {
+        imm.hideSoftInputFromWindow(getWindowToken(), 0);
+        mIsSoftInputRequested = false;
       }
     }
 

@@ -1,4 +1,26 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 name: Publish on release commits
+
+# This workflow detects commits with the message "Release version X.Y.Z" and tags them as releases.
+# After the release is tagged it runs tests in parallel before publishing and uploading it.
+# When the upload is complete a script checks whether the artifacts are available.
+#
+# If the workflow fails any commit with the same version message
+# will retag and trigger the workflow again.
 
 on:
   push:
@@ -39,8 +61,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+<<<<<<< HEAD
       with:
         submodules: true
+=======
+>>>>>>> 08caf348fdd3f61e8b64713dcdd5b2047deb3215
     - name: Fetch buck
       run: |
         wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
@@ -48,15 +73,22 @@ jobs:
         mv buck-master.pex buck && \
         ls -l buck
     - name: Run all tests
+<<<<<<< HEAD
       run: BUCK_PATH=`realpath buck` ./gradlew testRelease --stacktrace
+=======
+      run: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
+>>>>>>> 08caf348fdd3f61e8b64713dcdd5b2047deb3215
   sample-java-job:
     name: Assemble sample app
     needs: [new-release]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+<<<<<<< HEAD
       with:
         submodules: true
+=======
+>>>>>>> 08caf348fdd3f61e8b64713dcdd5b2047deb3215
     - name: Fetch buck
       run: |
         wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
@@ -71,8 +103,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+<<<<<<< HEAD
       with:
         submodules: true
+=======
+>>>>>>> 08caf348fdd3f61e8b64713dcdd5b2047deb3215
     - name: Fetch buck
       run: |
         wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \

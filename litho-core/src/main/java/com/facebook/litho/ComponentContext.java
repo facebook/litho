@@ -191,9 +191,7 @@ public class ComponentContext {
             : mComponentTree.getSimpleName();
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
-    if (ComponentsConfiguration.isHooksImplEnabled) {
-      mHooksHandler = hooksHandler != null ? hooksHandler : context.mHooksHandler;
-    }
+    mHooksHandler = hooksHandler != null ? hooksHandler : context.mHooksHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
   }
 
@@ -268,6 +266,25 @@ public class ComponentContext {
 
   public Component getComponentScope() {
     return mComponentScope;
+  }
+
+  public String getGlobalKey() {
+    if (mComponentScope == null) {
+      throw new RuntimeException(
+          "getGlobalKey cannot be accessed from a ComponentContext without a scope");
+    }
+
+    return mComponentScope.getGlobalKey();
+  }
+
+  public EventHandler<ErrorEvent> getErrorEventHandler() {
+    if (mComponentScope != null && mComponentScope.getErrorHandler() != null) {
+      return mComponentScope.getErrorHandler();
+    }
+    if (mComponentTree != null) {
+      return mComponentTree.getErrorEventHandler();
+    }
+    return DefaultErrorEventHandler.INSTANCE;
   }
 
   @Nullable

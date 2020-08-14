@@ -23,6 +23,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
+import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -81,6 +82,8 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @ThreadSafe
 public class ComponentTree {
+
+  private static final boolean DEBUG_LOGS = false;
 
   public static final int INVALID_ID = -1;
   private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
@@ -288,6 +291,8 @@ public class ComponentTree {
 
   protected final int mId;
 
+  private final ErrorEventHandler mErrorEventHandler;
+
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -320,7 +325,7 @@ public class ComponentTree {
 
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
-    mRoot = wrapRootInErrorBoundary(builder.root);
+    mRoot = builder.root;
     mIncrementalMountEnabled =
         builder.incrementalMountEnabled && !incrementalMountGloballyDisabled();
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
@@ -337,6 +342,7 @@ public class ComponentTree {
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
+    mErrorEventHandler = builder.errorEventHandler;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -527,6 +533,9 @@ public class ComponentTree {
     }
 
     if (!layoutStateUpdated) {
+      if (DEBUG_LOGS) {
+        debugLog("backgroundLayoutStateUpdated", "Abort: LayoutState was not updated");
+      }
       return;
     }
 
@@ -534,6 +543,15 @@ public class ComponentTree {
 
     // If we are in measure, we will let mounting happen from the layout call
     if (!mIsAttached || mIsMeasuring) {
+      if (DEBUG_LOGS) {
+        debugLog(
+            "backgroundLayoutStateUpdated",
+            "Abort: will wait for attach/measure (mIsAttached: "
+                + mIsAttached
+                + ", mIsMeasuring: "
+                + mIsMeasuring
+                + ")");
+      }
       return;
     }
 
@@ -541,6 +559,9 @@ public class ComponentTree {
     final int viewWidth = mLithoView.getMeasuredWidth();
     final int viewHeight = mLithoView.getMeasuredHeight();
     if (viewWidth == 0 && viewHeight == 0) {
+      if (DEBUG_LOGS) {
+        debugLog("backgroundLayoutStateUpdated", "Abort: Host view was not measured yet");
+      }
       // The host view has not been measured yet.
       return;
     }
@@ -553,6 +574,19 @@ public class ComponentTree {
       mLithoView.requestLayout();
     } else {
       mountComponentIfNeeded();
+    }
+
+    if (DEBUG_LOGS) {
+      debugLog(
+          "backgroundLayoutStateUpdated",
+          "Updated - viewWidth: "
+              + viewWidth
+              + ", viewHeight: "
+              + viewHeight
+              + ", needsAndroidLayout: "
+              + needsAndroidLayout
+              + ", layoutRequested: "
+              + mLithoView.isLayoutRequested());
     }
   }
 
@@ -941,6 +975,24 @@ public class ComponentTree {
     try {
       final boolean needsSyncLayout;
       synchronized (this) {
+        if (DEBUG_LOGS) {
+          debugLog(
+              "StartMeasure",
+              "WidthSpec: "
+                  + View.MeasureSpec.toString(widthSpec)
+                  + ", HeightSpec: "
+                  + View.MeasureSpec.toString(heightSpec)
+                  + ", isCompatibleWithCommittedLayout: "
+                  + isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)
+                  + ", isCompatibleWithMainThreadLayout: "
+                  + isCompatibleComponentAndSpec(
+                      mMainThreadLayoutState, mRoot.getId(), widthSpec, heightSpec)
+                  + ", hasSameSpecs: "
+                  + (mMainThreadLayoutState != null
+                      && mMainThreadLayoutState.getWidthSpec() == widthSpec
+                      && mMainThreadLayoutState.getHeightSpec() == heightSpec));
+        }
+
         if (mCommittedLayoutState != null
             && mCommittedLayoutState != mMainThreadLayoutState
             && isCompatibleSpec(mCommittedLayoutState, widthSpec, heightSpec)) {
@@ -1010,6 +1062,19 @@ public class ComponentTree {
     } finally {
       mIsMeasuring = false;
     }
+
+    if (DEBUG_LOGS) {
+      debugLog(
+          "FinishMeasure",
+          "WidthSpec: "
+              + View.MeasureSpec.toString(widthSpec)
+              + ", HeightSpec: "
+              + View.MeasureSpec.toString(heightSpec)
+              + ", OutWidth: "
+              + measureOutput[0]
+              + ", OutHeight: "
+              + measureOutput[1]);
+    }
   }
 
   /** Returns {@code true} if the layout call mounted the component. */
@@ -1040,6 +1105,10 @@ public class ComponentTree {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
+  }
+
+  public ErrorEventHandler getErrorEventHandler() {
+    return mErrorEventHandler;
   }
 
   synchronized Component getRoot() {
@@ -1236,7 +1305,7 @@ public class ComponentTree {
         return;
       }
 
-      if (ComponentsConfiguration.isHooksImplEnabled) {
+      if (mHooksHandler != null) {
         mHooksHandler.queueHookStateUpdate(updater);
       } else {
         mStateHandler.queueHookStateUpdate(updater);
@@ -1711,7 +1780,7 @@ public class ComponentTree {
       @Nullable TreeProps treeProps) {
 
     setRootAndSizeSpecInternal(
-        wrapRootInErrorBoundary(root),
+        root,
         widthSpec,
         heightSpec,
         isAsync,
@@ -1722,16 +1791,6 @@ public class ComponentTree {
         treeProps,
         false,
         false);
-  }
-
-  private Component wrapRootInErrorBoundary(Component originalRoot) {
-    // If a rootWrapperComponentFactory is provided, we use it to create a new root
-    // component.
-    final RootWrapperComponentFactory rootWrapperComponentFactory =
-        ErrorBoundariesConfiguration.rootWrapperComponentFactory;
-    return rootWrapperComponentFactory == null
-        ? originalRoot
-        : rootWrapperComponentFactory.createWrapper(mContext, originalRoot);
   }
 
   private void setRootAndSizeSpecInternal(
@@ -1818,19 +1877,40 @@ public class ComponentTree {
           && mostRecentLayoutState != null
           && mostRecentLayoutState.isCompatibleComponentAndSpec(
               resolvedRoot.getId(), resolvedWidthSpec, resolvedHeightSpec)) {
-        // The spec and the root haven't changed. Either we have a layout already, or we're
-        // currently computing one on another thread.
-        if (output == null) {
-          return;
-        }
-
-        // Set the output if we have a LayoutState, otherwise we need to compute one synchronously
-        // below to get the correct output.
-        if (mostRecentLayoutState != null) {
+        // The spec and the root haven't changed and we have a compatible LayoutState already
+        // committed
+        if (output != null) {
           output.height = mostRecentLayoutState.getHeight();
           output.width = mostRecentLayoutState.getWidth();
-          return;
         }
+
+        if (DEBUG_LOGS) {
+          debugLog(
+              "StartLayout",
+              "Layout was compatible, not calculating a new one - Source: "
+                  + layoutSourceToString(source)
+                  + ", Extra: "
+                  + extraAttribution
+                  + ", WidthSpec: "
+                  + View.MeasureSpec.toString(resolvedWidthSpec)
+                  + ", HeightSpec: "
+                  + View.MeasureSpec.toString(resolvedHeightSpec));
+        }
+
+        return;
+      }
+
+      if (DEBUG_LOGS) {
+        debugLog(
+            "StartLayout",
+            "Calculating new layout - Source: "
+                + layoutSourceToString(source)
+                + ", Extra: "
+                + extraAttribution
+                + ", WidthSpec: "
+                + View.MeasureSpec.toString(resolvedWidthSpec)
+                + ", HeightSpec: "
+                + View.MeasureSpec.toString(resolvedHeightSpec));
       }
 
       if (widthSpecInitialized) {
@@ -1982,9 +2062,12 @@ public class ComponentTree {
         committedNewLayout = true;
       }
 
+      if (DEBUG_LOGS) {
+        logFinishLayout(source, extraAttribution, localLayoutState, committedNewLayout);
+      }
+
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
-      final HooksHandler layoutStateHooksHandler =
-          ComponentsConfiguration.isHooksImplEnabled ? localLayoutState.getHooksHandler() : null;
+      final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
@@ -2095,6 +2178,29 @@ public class ComponentTree {
       }
       mMainThreadHandler.post(mBackgroundLayoutStateUpdateRunnable, tag);
     }
+  }
+
+  private void logFinishLayout(
+      int source,
+      String extraAttribution,
+      LayoutState localLayoutState,
+      boolean committedNewLayout) {
+    final String message = committedNewLayout ? "Committed layout" : "Did NOT commit layout";
+    debugLog(
+        "FinishLayout",
+        message
+            + " - Source: "
+            + layoutSourceToString(source)
+            + ", Extra: "
+            + extraAttribution
+            + ", WidthSpec: "
+            + View.MeasureSpec.toString(localLayoutState.getWidthSpec())
+            + ", HeightSpec: "
+            + View.MeasureSpec.toString(localLayoutState.getHeightSpec())
+            + ", Width: "
+            + localLayoutState.getWidth()
+            + ", Height: "
+            + localLayoutState.getHeight());
   }
 
   /**
@@ -2392,6 +2498,21 @@ public class ComponentTree {
     return localAttachDetachHandler;
   }
 
+  private void debugLog(String eventName, String info) {
+    if (DEBUG_LOGS) {
+      android.util.Log.d(
+          "ComponentTreeDebug",
+          "("
+              + hashCode()
+              + ") ["
+              + eventName
+              + " - Root: "
+              + (mRoot != null ? mRoot.getSimpleName() : null)
+              + "] "
+              + info);
+    }
+  }
+
   @IntDef({
     RecyclingMode.DEFAULT,
     RecyclingMode.NO_VIEW_REUSE,
@@ -2509,7 +2630,7 @@ public class ComponentTree {
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
         final HooksHandler hooksHandler =
-            (ComponentsConfiguration.isHooksImplEnabled)
+            (ComponentTree.this.mHooksHandler != null)
                 ? new HooksHandler(ComponentTree.this.mHooksHandler)
                 : null;
 
@@ -2870,6 +2991,7 @@ public class ComponentTree {
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
@@ -3036,6 +3158,12 @@ public class ComponentTree {
     /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    /** Sets the ErrorEventHandler */
+    public Builder errorHandler(ErrorEventHandler errorEventHandler) {
+      this.errorEventHandler = errorEventHandler;
       return this;
     }
 

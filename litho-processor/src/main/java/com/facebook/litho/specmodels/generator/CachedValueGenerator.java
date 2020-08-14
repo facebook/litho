@@ -25,6 +25,7 @@ import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -33,6 +34,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -70,13 +72,28 @@ public class CachedValueGenerator {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     String cachedValueName = getAnnotatedName(onCalculateCachedValueMethod);
+    List<CachedValueInput> inputParams = getCachedValueInputs(onCalculateCachedValueMethod);
 
     typeSpecDataHolder.addMethod(
-        createGetterMethod(specModel, onCalculateCachedValueMethod, cachedValueName));
-    typeSpecDataHolder.addType(
-        createInputsClass(onCalculateCachedValueMethod, cachedValueName, runMode));
+        createGetterMethod(specModel, onCalculateCachedValueMethod, inputParams, cachedValueName));
+    typeSpecDataHolder.addType(createInputsClass(inputParams, cachedValueName, runMode));
 
     return typeSpecDataHolder.build();
+  }
+
+  public static List<CachedValueInput> getCachedValueInputs(
+      SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod) {
+    // Skip the ComponentContext param from the input class creation since the context can change
+    // during the lifetime of the cache.
+    List<CachedValueInput> inputParams =
+        onCalculateCachedValueMethod.methodParams.stream()
+            .filter(
+                methodParamModel ->
+                    !MethodParamModelUtils.isComponentContextParam(methodParamModel))
+            .map(methodParamModel -> new MethodParamCachedValueInput(methodParamModel))
+            .collect(Collectors.toList());
+    inputParams.add(0, new GlobalKeyCachedValueInput("globalKey"));
+    return inputParams;
   }
 
   private static String getAnnotatedName(
@@ -93,13 +110,15 @@ public class CachedValueGenerator {
   public static MethodSpec createGetterMethod(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
+      List<CachedValueInput> inputParams,
       String cachedValueName) {
     final TypeName cachedValueType = onCalculateCachedValueMethod.returnType;
     MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(getCachedValueGetterName(cachedValueName))
             .addModifiers(Modifier.PRIVATE)
             .returns(cachedValueType)
-            .addStatement("$T c = getScopedContext()", specModel.getContextClass());
+            .addStatement("$T c = getScopedContext()", specModel.getContextClass())
+            .addStatement("String globalKey = c.getGlobalKey()");
 
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
     codeBlock
@@ -109,20 +128,10 @@ public class CachedValueGenerator {
             getInputsClassName(cachedValueName))
         .indent();
 
-    // Skip the ComponentContext param from the input class creation since the context can change
-    // during the lifetime of the cache.
-    List<MethodParamModel> onCalculateCachedValueMethodParams =
-        onCalculateCachedValueMethod.methodParams.stream()
-            .filter(
-                methodParamModel ->
-                    !MethodParamModelUtils.isComponentContextParam(methodParamModel))
-            .collect(Collectors.toList());
-
-    final int filteredParamSize = onCalculateCachedValueMethodParams.size();
+    final int filteredParamSize = inputParams.size();
 
     for (int i = 0; i < filteredParamSize; i++) {
-      MethodParamModel methodParamModel = onCalculateCachedValueMethodParams.get(i);
-      codeBlock.add("$L", ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
+      codeBlock.add("$L", inputParams.get(i).getAccessor(specModel));
       if (i < filteredParamSize - 1) {
         codeBlock.add(",");
       }
@@ -178,28 +187,17 @@ public class CachedValueGenerator {
   }
 
   public static TypeSpec createInputsClass(
-      SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
-      String cachedValueName,
-      EnumSet<RunMode> runMode) {
+      List<CachedValueInput> inputParams, String cachedValueName, EnumSet<RunMode> runMode) {
     TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getInputsClassName(cachedValueName))
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
-
-    // Skip the ComponentContext param from the input class creation since the context can change
-    // during the lifetime of the cache.
-    List<MethodParamModel> onCalculateCachedValueMethodParams =
-        onCalculateCachedValueMethod.methodParams.stream()
-            .filter(
-                methodParamModel ->
-                    !MethodParamModelUtils.isComponentContextParam(methodParamModel))
-            .collect(Collectors.toList());
 
     MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
 
     final Set<TypeVariableName> typeVariables = new HashSet<>();
 
-    for (MethodParamModel param : onCalculateCachedValueMethodParams) {
-      typeVariables.addAll(MethodParamModelUtils.getTypeVariables(param));
+    for (CachedValueInput param : inputParams) {
+      typeVariables.addAll(param.getTypeVariables());
       typeSpec.addField(
           FieldSpec.builder(param.getTypeName(), param.getName(), Modifier.PRIVATE, Modifier.FINAL)
               .build());
@@ -211,7 +209,7 @@ public class CachedValueGenerator {
     typeSpec.addTypeVariables(typeVariables);
     typeSpec.addMethod(constructor.build());
 
-    final int paramSize = onCalculateCachedValueMethodParams.size();
+    final int paramSize = inputParams.size();
     MethodSpec.Builder hashCodeMethod =
         MethodSpec.methodBuilder("hashCode")
             .addAnnotation(Override.class)
@@ -220,17 +218,10 @@ public class CachedValueGenerator {
 
     CodeBlock.Builder codeBlock =
         CodeBlock.builder().add("return $T.hash(", ClassNames.COMMON_UTILS);
-    if (paramSize > 0) {
-      for (int i = 0; i < paramSize; i++) {
-        if (i < paramSize - 1) {
-          codeBlock.add("$L, ", onCalculateCachedValueMethodParams.get(i).getName());
-        } else {
-          codeBlock.add("$L);\n", onCalculateCachedValueMethodParams.get(i).getName());
-        }
-      }
-    } else {
-      codeBlock.add("getClass());\n");
+    for (int i = 0; i < paramSize; i++) {
+      codeBlock.add("$L, ", inputParams.get(i).getName());
     }
+    codeBlock.add("getClass());\n");
     hashCodeMethod.addCode(codeBlock.build());
     typeSpec.addMethod(hashCodeMethod.build());
 
@@ -252,13 +243,8 @@ public class CachedValueGenerator {
                 getInputsClassName(cachedValueName),
                 getInputsClassName(cachedValueName));
 
-    for (MethodParamModel methodParamModel : onCalculateCachedValueMethodParams) {
-      equalsMethod.addCode(
-          ComponentBodyGenerator.getCompareStatement(
-              methodParamModel,
-              methodParamModel.getName(),
-              "cachedValueInputs." + methodParamModel.getName(),
-              runMode));
+    for (CachedValueInput inputParam : inputParams) {
+      equalsMethod.addCode(inputParam.createCompareStatement("cachedValueInputs", runMode));
     }
 
     equalsMethod.addStatement("return true");
@@ -278,5 +264,98 @@ public class CachedValueGenerator {
 
   private static String toUpperCaseFirstLetter(CharSequence name) {
     return name.toString().substring(0, 1).toUpperCase() + name.toString().substring(1);
+  }
+
+  /**
+   * This represents a field on the Inputs class: it exists because we need to add the global key as
+   * a field, want to share code with the rest of generation in this class, but don't want to create
+   * a MethodParamModel because the globalKey isn't a method param.
+   */
+  public interface CachedValueInput {
+    String getName();
+
+    TypeName getTypeName();
+
+    String getAccessor(SpecModel specModel);
+
+    List<TypeVariableName> getTypeVariables();
+
+    CodeBlock createCompareStatement(String otherObjectName, EnumSet<RunMode> runMode);
+  }
+
+  private static class MethodParamCachedValueInput implements CachedValueInput {
+
+    private final MethodParamModel mMethodParamModel;
+
+    private MethodParamCachedValueInput(MethodParamModel methodParamModel) {
+      mMethodParamModel = methodParamModel;
+    }
+
+    @Override
+    public String getName() {
+      return mMethodParamModel.getName();
+    }
+
+    @Override
+    public TypeName getTypeName() {
+      return mMethodParamModel.getTypeName();
+    }
+
+    @Override
+    public String getAccessor(SpecModel specModel) {
+      return ComponentBodyGenerator.getImplAccessor(specModel, mMethodParamModel);
+    }
+
+    @Override
+    public List<TypeVariableName> getTypeVariables() {
+      return MethodParamModelUtils.getTypeVariables(mMethodParamModel);
+    }
+
+    @Override
+    public CodeBlock createCompareStatement(String otherObjectName, EnumSet<RunMode> runMode) {
+      return ComponentBodyGenerator.getCompareStatement(
+          mMethodParamModel,
+          mMethodParamModel.getName(),
+          otherObjectName + "." + mMethodParamModel.getName(),
+          runMode);
+    }
+  }
+
+  private static class GlobalKeyCachedValueInput implements CachedValueInput {
+
+    private final String mName;
+
+    private GlobalKeyCachedValueInput(String name) {
+      mName = name;
+    }
+
+    @Override
+    public String getName() {
+      return mName;
+    }
+
+    @Override
+    public TypeName getTypeName() {
+      return ClassName.bestGuess("String");
+    }
+
+    @Override
+    public String getAccessor(SpecModel specModel) {
+      return getName();
+    }
+
+    @Override
+    public List<TypeVariableName> getTypeVariables() {
+      return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public CodeBlock createCompareStatement(String otherObjectName, EnumSet<RunMode> runMode) {
+      return CodeBlock.builder()
+          .beginControlFlow("if (!$L.equals($L))", getName(), otherObjectName + "." + getName())
+          .addStatement("return false")
+          .endControlFlow()
+          .build();
+    }
   }
 }

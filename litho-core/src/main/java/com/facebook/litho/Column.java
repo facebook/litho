@@ -124,7 +124,7 @@ public final class Column extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     if (this == other) {
       return true;
     }
@@ -140,7 +140,7 @@ public final class Column extends Component {
         return false;
       }
       for (int i = 0, size = children.size(); i < size; i++) {
-        if (!children.get(i).isEquivalentTo(column.children.get(i))) {
+        if (!children.get(i).isEquivalentTo(column.children.get(i), shouldCompareState)) {
           return false;
         }
       }

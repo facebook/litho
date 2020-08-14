@@ -172,4 +172,13 @@ public class RenderResult<State> {
         ? new LayoutCache(previousCache.getWriteCache())
         : new LayoutCache(null);
   }
+
+  public static LazyTree<Void> wrapInLazyTree(final Node node) {
+    return new LazyTree<Void>() {
+      @Override
+      public Pair<Node, Void> resolve() {
+        return new Pair(node, null);
+      }
+    };
+  }
 }

@@ -38,14 +38,23 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.sections.widget.RecyclerConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
+import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterDrawable;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -63,6 +72,8 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateIncrementalMountTest {
@@ -74,6 +85,7 @@ public class MountStateIncrementalMountTest {
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
   private boolean configUseIncrementalMountExtension;
+  private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
@@ -106,6 +118,9 @@ public class MountStateIncrementalMountTest {
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
+    mLayoutThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
   }
 
   @After
@@ -1000,6 +1015,220 @@ public class MountStateIncrementalMountTest {
 
     mLithoViewRule.getLithoView().setTranslationY(-12);
     assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
+  }
+
+  @Test
+  public void incrementalMount_setVisibilityHintFalse_preventMount() {
+    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = true;
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
+
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(child1, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(child1, 2);
+
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .visibleHandler(visibleEventHandler)
+                    .invisibleHandler(invisibleEventHandler)
+                    .widthPx(10)
+                    .heightPx(10))
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child2)
+                    .visibleHandler(visibleEventHandler)
+                    .invisibleHandler(invisibleEventHandler)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
+
+    assertThat(child2.isMounted()).isFalse();
+
+    child1.getDispatchedEventHandlers().clear();
+    child1.resetInteractions();
+
+    lithoView.setVisibilityHint(false);
+
+    assertThat(child1.wasOnMountCalled()).isFalse();
+    assertThat(child1.wasOnUnmountCalled()).isFalse();
+    assertThat(child1.getDispatchedEventHandlers()).contains(invisibleEventHandler);
+    assertThat(child1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+
+    child1.getDispatchedEventHandlers().clear();
+    child1.resetInteractions();
+    child2.resetInteractions();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 20), true);
+
+    assertThat(child2.wasOnMountCalled()).isFalse();
+    assertThat(child1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    assertThat(child1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
+  }
+
+  @Test
+  public void incrementalMount_setVisibilityHintTrue_mountIfNeeded() {
+    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = true;
+    final TestComponent child1 = create(mContext).build();
+
+    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(child1, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(child1, 2);
+
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .visibleHandler(visibleEventHandler1)
+                    .invisibleHandler(invisibleEventHandler1)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    assertThat(child1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+
+    lithoView.setVisibilityHint(false);
+
+    final TestComponent child2 = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(child2, 3);
+    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(child2, 4);
+    final Component newRoot =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .visibleHandler(visibleEventHandler1)
+                    .invisibleHandler(invisibleEventHandler1)
+                    .widthPx(10)
+                    .heightPx(10))
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child2)
+                    .visibleHandler(visibleEventHandler2)
+                    .invisibleHandler(invisibleEventHandler2)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    lithoView.getComponentTree().setRoot(newRoot);
+    assertThat(child2.wasOnMountCalled()).isFalse();
+    assertThat(child2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+
+    lithoView.setVisibilityHint(true);
+    assertThat(child2.wasOnMountCalled()).isTrue();
+    assertThat(child2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
+  }
+
+  @Test
+  public void dirtyMount_visibleRectChanged_unmountItemNotInVisibleBounds() {
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker3 = new LifecycleTracker();
+
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
+    final Component child3 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker3).build();
+
+    final Component root1 =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
+            .build();
+
+    final RecyclerBinderConfiguration binderConfig =
+        RecyclerBinderConfiguration.create().lithoViewFactory(getLithoViewFactory()).build();
+    RecyclerConfiguration config =
+        ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build();
+
+    final Component rcc =
+        RecyclerCollectionComponent.create(mContext)
+            .recyclerConfiguration(config)
+            .section(
+                SingleComponentSection.create(new SectionContext(mContext))
+                    .component(root1)
+                    .build())
+            .build();
+
+    mLithoViewRule
+        .setRoot(rcc)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, EXACTLY))
+        .measure()
+        .layout();
+
+    assertThat(lifecycleTracker1.getSteps()).contains(LifecycleStep.ON_MOUNT);
+    assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_MOUNT);
+    assertThat(lifecycleTracker3.getSteps()).doesNotContain(LifecycleStep.ON_MOUNT);
+
+    lifecycleTracker1.reset();
+    lifecycleTracker2.reset();
+    lifecycleTracker3.reset();
+
+    final Component root2 =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(
+                        MountSpecLifecycleTester.create(mContext)
+                            .lifecycleTracker(lifecycleTracker1)
+                            .build())
+                    .widthPx(10)
+                    .heightPx(20))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
+            .build();
+
+    final Component rcc2 =
+        RecyclerCollectionComponent.create(mContext)
+            .recyclerConfiguration(config)
+            .section(
+                SingleComponentSection.create(new SectionContext(mContext))
+                    .component(root2)
+                    .build())
+            .build();
+
+    mLithoViewRule.setRoot(rcc2);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged();
+
+    assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);
+  }
+
+  private LithoViewFactory getLithoViewFactory() {
+    return new LithoViewFactory() {
+      @Override
+      public LithoView createLithoView(ComponentContext context) {
+        return new LithoView(context, mUseMountDelegateTarget, mDelegateToRenderCoreMount);
+      }
+    };
   }
 
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {

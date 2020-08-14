@@ -43,7 +43,7 @@ public class VisibilityModule {
     mVisibilityRatioChanged = new HashMap<>();
   }
 
-  public void processVisibilityOutputs(
+  void processVisibilityOutputs(
       boolean isDirty,
       VisibilityModuleInput visibilityModuleInput,
       @Nullable Rect localVisibleRect,
@@ -100,7 +100,7 @@ public class VisibilityModule {
     processNonincrementalChanges(visibilityModuleInput, localVisibleRect);
   }
 
-  public void clearIncrementalItems() {
+  void clearIncrementalItems() {
     if (mIncrementalModuleVisibility != null) {
       mIncrementalModuleVisibility.clearIncrementalItems();
     }

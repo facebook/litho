@@ -38,7 +38,7 @@ public abstract class InlineLayoutSpec extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     return this == other;
   }
 

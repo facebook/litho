@@ -108,6 +108,14 @@ public final class DelegateMethodDescriptions {
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.EXCEPTION))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
+          .extraMethods(
+              ImmutableList.of(
+                  MethodSpec.methodBuilder("hasOwnErrorHandler")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PROTECTED)
+                      .returns(TypeName.BOOLEAN)
+                      .addStatement("return true")
+                      .build()))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_LAYOUT_WITH_SIZE_SPEC =

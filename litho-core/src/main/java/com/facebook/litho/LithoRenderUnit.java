@@ -21,33 +21,27 @@ import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
 import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
 import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static com.facebook.litho.MountState.shouldUpdateViewInfo;
+import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.rendercore.RenderUnit;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> {
-
-  static final List<Binder<LithoRenderUnit, Object>> sMountBinders = new ArrayList<>(2);
-  static final List<Binder<LithoRenderUnit, Object>> sBindBinder = new ArrayList<>(1);
-
-  static {
-    sMountBinders.add(LithoMountBinder.INSTANCE);
-    sMountBinders.add(LithoViewAttributeBinder.INSTANCE);
-    sBindBinder.add(LithoBindBinder.INSTANCE);
-  }
 
   final LayoutOutput output;
 
   private int mDefaultViewAttributeFlags = -1;
 
   public LithoRenderUnit(LayoutOutput output) {
-    super(getRenderType(output), sMountBinders, sBindBinder);
+    super(getRenderType(output));
+    addMountUnmountExtensions(
+        extension(this, LithoMountBinder.INSTANCE),
+        extension(this, LithoViewAttributeBinder.INSTANCE));
+    addAttachDetachExtension(extension(this, LithoBindBinder.INSTANCE));
     this.output = output;
   }
 

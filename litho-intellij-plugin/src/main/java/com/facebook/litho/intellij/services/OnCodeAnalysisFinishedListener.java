@@ -29,6 +29,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -84,6 +85,9 @@ public class OnCodeAnalysisFinishedListener
 
     final PsiFile pf = PsiManager.getInstance(project).findFile(vf);
     if (!(pf instanceof PsiJavaFile)) return;
+
+    // Skip until project is not dumb to avoid waits
+    if (DumbService.isDumb(project)) return;
 
     pendingFiles.add(path);
     final Map<String, String> eventMetadata = new HashMap<>();

@@ -29,6 +29,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;

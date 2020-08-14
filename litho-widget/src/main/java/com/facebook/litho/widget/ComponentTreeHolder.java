@@ -240,10 +240,7 @@ public class ComponentTreeHolder {
   public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
     if (acquireStateHandlerOnRelease || shouldAcquireStateHandlerOnRelease()) {
       acquireStateHandler();
-
-      if (ComponentsConfiguration.isHooksImplEnabled) {
-        acquireHooksHandlerIfNecessary();
-      }
+      acquireHooksHandlerIfNecessary();
     }
 
     acquireAnimationState();

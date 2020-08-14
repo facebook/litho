@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -46,7 +46,7 @@ open class KComponent private constructor(
    */
   override fun isEquivalentTo(other: Component?): Boolean = isEquivalentTo(other, true)
 
-  internal override fun isEquivalentTo(other: Component?, shouldCompareState: Boolean): Boolean {
+  override fun isEquivalentTo(other: Component?, shouldCompareState: Boolean): Boolean {
     if (this === other) {
       return true
     }

@@ -32,24 +32,24 @@ fun <T> DslScope.useState(initializer: () -> T): StateDelegate<T> =
 /** Delegate to access and initialize a state variable. */
 class StateDelegate<T>(private val c: ComponentContext, private val initializer: () -> T) {
 
-  // TODO: remove lateinit after Hooks experiment(with isHooksImplEnabled config) is complete.
+  // TODO: remove lateinit after Hooks experiment(with ComponentsConfiguration.isHooksImplEnabled config) is complete.
   private lateinit var hooks: Hooks
   private lateinit var hookStateKey: String
   private var hookIndex: Int = 0
 
   init {
-    if (ComponentsConfiguration.isHooksImplEnabled) {
-      hooks = c.hooksHandler!!.getOrCreate(c.componentScope.globalKey)
+    c.hooksHandler?.let {
+      hooks = it.getOrCreate(c.componentScope.globalKey)
       hookIndex = hooks.getAndIncrementHookIndex()
       hookStateKey = "${c.componentScope.globalKey}:$hookIndex"
     }
   }
 
   operator fun getValue(nothing: Nothing?, property: KProperty<*>): State<T> {
+    val hooksHandler = c.hooksHandler
     @Suppress("UNCHECKED_CAST")
-    return if (ComponentsConfiguration.isHooksImplEnabled) {
-      val value =
-          c.hooksHandler!!.getOrPut(c.componentScope.globalKey, hookIndex) { getInitialState() }
+    return if (hooksHandler != null) {
+      val value = hooksHandler.getOrPut(c.componentScope.globalKey, hookIndex) { getInitialState() }
       State(c.componentScope.globalKey, value, hookIndex)
     } else {
       hookStateKey = "${c.componentScope.globalKey}:${property.name}"

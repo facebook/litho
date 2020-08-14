@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Version 1.5.8
+
+_2020-08-10_
+
+* New: LayoutSpec Annotator re-generates Component.
+* New: LayoutSpec Annotator analyzes PsiFile.
+* New: Red Symbols analysis restarts on file open.
+* New: Red Symbols analysis uses non-blocking Read action.
+* New: Red Symbols analysis uses MarkupModel instead of Daemon analysis.
+
 ## Version 1.5.7
 
 _2020-07-14_

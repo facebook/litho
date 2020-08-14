@@ -171,7 +171,7 @@ public class DebugComponentDescriptionHelper {
     if (str == null) {
       return "";
     }
-    String fixed = str.toString().replace("\n", "").replace("\"", "");
+    String fixed = str.toString().replace(" \n", " ").replace("\n", " ").replace("\"", "");
     if (fixed.length() > maxLength) {
       fixed = fixed.substring(0, maxLength) + "...";
     }

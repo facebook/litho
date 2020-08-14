@@ -61,6 +61,7 @@
     <activity android:name=".changesetdebug.ItemsRerenderingActivity"/>
     <activity android:name=".changesetdebug.PropUpdatingActivity"/>
     <activity android:name=".changesetdebug.ScrollingToBottomActivity" />
+    <activity android:name=".stateupdates.StateUpdateFromOutsideTreeActivity" />
     <activity android:name=".triggers.ClearTextTriggerExampleActivity" />
     <activity android:name=".triggers.CustomEventTriggerExampleActivity" />
     <activity android:name=".triggers.TooltipTriggerExampleActivity" />

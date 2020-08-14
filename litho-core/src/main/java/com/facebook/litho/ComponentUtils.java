@@ -183,6 +183,12 @@ public class ComponentUtils {
         break;
 
       case Comparable.COMPONENT:
+        if (val1 != null
+            ? !((Component) val1).isEquivalentTo((Component) val2, shouldCompareStateContainers)
+            : val2 != null) {
+          return false;
+        }
+        break;
       case Comparable.SECTION:
         if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
           return false;
@@ -251,7 +257,14 @@ public class ComponentUtils {
     } else if (Collection.class.isAssignableFrom(classType)) {
       return areCollectionsEquals(type, (Collection) val1, (Collection) val2);
 
-      // Sections & Components implement Equivalence interface.
+    } else if (Component.class.isAssignableFrom(classType)) {
+      if (val1 != null
+          ? !((Component) val1).isEquivalentTo((Component) val2, shouldCompareStateContainers)
+          : val2 != null) {
+        return false;
+      }
+
+      // Sections implement Equivalence interface.
     } else if (Equivalence.class.isAssignableFrom(classType)) {
       if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
         return false;

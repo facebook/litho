@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
-
-import static com.facebook.litho.ThreadUtils.assertMainThread;
+package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.RenderCoreSystrace;
-import com.facebook.rendercore.visibility.VisibilityExtensionConfigs;
-import com.facebook.rendercore.visibility.VisibilityItem;
-import com.facebook.rendercore.visibility.VisibilityModule;
-import com.facebook.rendercore.visibility.VisibilityModuleInput;
-import com.facebook.rendercore.visibility.VisibilityOutput;
-import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class VisibilityOutputsExtension
-    implements HostListenerExtension<VisibilityOutputsExtension.VisibilityOutputsExtensionInput> {
+public class VisibilityOutputsExtension
+    implements HostListenerExtension<VisibilityOutputsExtensionInput> {
+
+  private static final boolean IS_JELLYBEAN_OR_HIGHER =
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
 
   private final Host mHost;
   // Holds a list with information about the components linked to the VisibilityOutputs that are
@@ -53,29 +50,16 @@ class VisibilityOutputsExtension
   private boolean mIncrementalVisibilityEnabled;
   private List<VisibilityOutput> mVisibilityOutputs;
   private VisibilityModuleInput mVisibilityModuleInput;
-  private Rect mCurrentLocalVisibleRect;
+  private @Nullable Rect mCurrentLocalVisibleRect;
 
-  VisibilityOutputsExtension(Host host) {
+  public VisibilityOutputsExtension(Host host) {
     mHost = host;
     mVisibilityIdToItemMap = new HashMap<>();
   }
 
-  public interface VisibilityOutputsExtensionInput {
-    List<VisibilityOutput> getVisibilityOutputs();
-
-    boolean isIncrementalVisibilityEnabled();
-
-    VisibilityModuleInput getVisibilityModuleInput();
-  }
-
-  private void processVisibilityOutputs(
-      @Nullable Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent, boolean isDirty) {
-
+  @UiThread
+  private void processVisibilityOutputs(@Nullable Rect localVisibleRect, boolean isDirty) {
     try {
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
-      }
-
       RenderCoreSystrace.beginSection("processVisibilityOutputs");
 
       if (mIncrementalVisibilityEnabled) {
@@ -95,10 +79,6 @@ class VisibilityOutputsExtension
 
     } finally {
       RenderCoreSystrace.endSection();
-
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
-      }
     }
 
     if (localVisibleRect != null) {
@@ -106,9 +86,8 @@ class VisibilityOutputsExtension
     }
   }
 
+  @UiThread
   private void processVisibilityOutputsNonInc(@Nullable Rect localVisibleRect, boolean isDirty) {
-    assertMainThread();
-
     if (localVisibleRect == null) {
       return;
     }
@@ -251,8 +230,8 @@ class VisibilityOutputsExtension
     }
   }
 
-  private boolean isInVisibleRange(
-      VisibilityOutput visibilityOutput, Rect bounds, Rect visibleBounds) {
+  private static boolean isInVisibleRange(
+      final VisibilityOutput visibilityOutput, final Rect bounds, final Rect visibleBounds) {
     float heightRatio = visibilityOutput.getVisibleHeightRatio();
     float widthRatio = visibilityOutput.getVisibleWidthRatio();
 
@@ -283,7 +262,8 @@ class VisibilityOutputsExtension
         : componentBounds.equals(componentVisibleBounds);
   }
 
-  void clearVisibilityItems() {
+  @UiThread
+  public void clearVisibilityItems() {
     if (mVisibilityModule != null) {
       clearVisibilityItemsIncremental();
     } else {
@@ -292,9 +272,8 @@ class VisibilityOutputsExtension
     mPreviousLocalVisibleRect.setEmpty();
   }
 
+  @UiThread
   private void clearVisibilityItemsIncremental() {
-    assertMainThread();
-
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
     if (mVisibilityModule != null) {
@@ -304,8 +283,8 @@ class VisibilityOutputsExtension
     RenderCoreSystrace.endSection();
   }
 
+  @UiThread
   private void clearVisibilityItemsNonincremental() {
-    assertMainThread();
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
     List<String> toClear = new ArrayList<>();
@@ -363,7 +342,7 @@ class VisibilityOutputsExtension
   }
 
   @Override
-  public void beforeMount(VisibilityOutputsExtensionInput input, Rect localVisibleRect) {
+  public void beforeMount(VisibilityOutputsExtensionInput input, @Nullable Rect localVisibleRect) {
 
     mVisibilityOutputs = input.getVisibilityOutputs();
 
@@ -380,23 +359,27 @@ class VisibilityOutputsExtension
 
   @Override
   public void afterMount() {
-    boolean processVisibilityOutputs = !mHost.hasTransientState();
+    boolean processVisibilityOutputs = !hasTransientState();
 
     if (processVisibilityOutputs) {
-      processVisibilityOutputs(mCurrentLocalVisibleRect, null, true);
+      processVisibilityOutputs(mCurrentLocalVisibleRect, true);
     }
   }
 
   @Override
-  public void onVisibleBoundsChanged(Rect localVisibleRect) {
+  public void onVisibleBoundsChanged(@Nullable Rect localVisibleRect) {
     if (mVisibilityOutputs == null) {
       return;
     }
 
-    boolean processVisibilityOutputs = !mHost.hasTransientState();
+    boolean processVisibilityOutputs = !hasTransientState();
     if (processVisibilityOutputs) {
-      processVisibilityOutputs(localVisibleRect, null, false);
+      processVisibilityOutputs(localVisibleRect, false);
     }
+  }
+
+  private boolean hasTransientState() {
+    return IS_JELLYBEAN_OR_HIGHER && mHost.hasTransientState();
   }
 
   @Override
@@ -417,7 +400,7 @@ class VisibilityOutputsExtension
   }
 
   @VisibleForTesting
-  Map<String, VisibilityItem> getVisibilityIdToItemMap() {
+  public Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     return mVisibilityIdToItemMap;
   }
 

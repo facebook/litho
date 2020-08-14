@@ -19,14 +19,10 @@ package com.facebook.litho.intellij.actions.templates;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import java.io.IOException;
-import java.util.Collections;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -34,21 +30,6 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
 
   public LithoTemplateActionTest() {
     super("testdata/actions");
-  }
-
-  @Test
-  public void postProcess_generateCreatedLayoutSpec() throws IOException {
-    final PsiFile specCls = testHelper.configure("LayoutSpec.java");
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              new TestTemplateAction().postProcess(specCls, "Any", Collections.emptyMap());
-              final PsiClass generatedForSpecCls =
-                  ServiceManager.getService(
-                          testHelper.getFixture().getProject(), ComponentsCacheService.class)
-                      .getComponent("Layout");
-              assertThat(generatedForSpecCls).isNotNull();
-            });
   }
 
   @Test

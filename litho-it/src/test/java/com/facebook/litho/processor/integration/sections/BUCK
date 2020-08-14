@@ -25,6 +25,7 @@ fb_java_test(
     name = "sections",
     # T41117446 Enable them after switching target to AndroidX
     srcs = glob(["*Test.java"]),
+    contacts = ["oncall+litho_components_for_android@xmail.facebook.com"],
     source = "1.8",
     target = "1.8",
     deps = [

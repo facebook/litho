@@ -23,7 +23,6 @@ import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
@@ -65,11 +64,6 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
                   data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_METHOD);
                   data.put(EventLogger.KEY_CLASS, "OnEvent");
                   LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
-                  LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
-                      .ifPresent(
-                          cls ->
-                              ComponentGenerateService.getInstance()
-                                  .updateLayoutComponentAsync(cls));
                 }),
             Integer.MAX_VALUE));
   }

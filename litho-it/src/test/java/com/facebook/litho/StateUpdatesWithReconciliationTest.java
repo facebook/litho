@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
@@ -27,17 +28,23 @@ import android.os.Looper;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent;
+import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.SameManualKeyRootComponentSpec;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
+import com.facebook.litho.widget.TestWrapperComponent;
 import com.facebook.litho.widget.TextDrawable;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,6 +58,8 @@ public class StateUpdatesWithReconciliationTest {
 
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
+
+  public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private static final String mLogTag = "logTag";
 
@@ -321,6 +330,58 @@ public class StateUpdatesWithReconciliationTest {
                     MatchNode.list(
                         MatchNode.forType(TextDrawable.class).prop("text", "First: 2"),
                         MatchNode.forType(TextDrawable.class).prop("text", "Second: 2"))));
+  }
+
+  @Test
+  public void whenSetRootWithDifferentPropsWithPendingUpdate_shouldNotReconcile() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final ImmediateLazyStateUpdateDispatchingComponent child =
+        ImmediateLazyStateUpdateDispatchingComponent.create(c).build();
+
+    final Component initial = Column.create(c).child(child).build();
+
+    mLithoViewRule.attachToWindow().setRoot(initial).measure().layout();
+
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component updated =
+        Column.create(c)
+            .child(child)
+            .child(LayoutSpecLifecycleTester.create(c).steps(info))
+            .build();
+
+    mLithoViewRule.setRoot(updated);
+
+    // If the new component resolves then the root component (column) was not reconciled.
+    assertThat(getSteps(info)).contains(LifecycleStep.ON_CREATE_LAYOUT);
+  }
+
+  @Test
+  public void whenSetRootWithDelegatingComponentWithPendingUpdate_shouldReconcile() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component initial =
+        TestWrapperComponent.create(c)
+            .delegate(
+                Column.create(c)
+                    .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
+                    .child(LayoutSpecLifecycleTester.create(c).steps(info)))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(initial).measure().layout();
+
+    final Component updated =
+        TestWrapperComponent.create(c)
+            .delegate(
+                Column.create(c)
+                    .child(ImmediateLazyStateUpdateDispatchingComponent.create(c))
+                    .child(LayoutSpecLifecycleTester.create(c).steps(info)))
+            .build();
+
+    info.clear();
+    mLithoViewRule.setRoot(updated);
+
+    // If the new component's on create layout is not called then it was reconciled.
+    assertThat(getSteps(info)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT);
   }
 
   static class DummyComponent extends Component {

@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.RenderUnit.Extension.extension;
+
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
@@ -38,11 +40,11 @@ public class LithoRenderUnitFactory {
   public LithoRenderUnit getRenderUnit(LayoutOutput layoutOutput) {
     final LithoRenderUnit renderUnit = new LithoRenderUnit(layoutOutput);
     for (int i = 0, size = mMountExtensionsCount; i < size; i++) {
-      renderUnit.addMountUnmountExtension(mMountExtensions.get(i));
+      renderUnit.addMountUnmountExtension(extension(renderUnit, mMountExtensions.get(i)));
     }
 
     for (int i = 0, size = mBindExtensionsCount; i < size; i++) {
-      renderUnit.addAttachDetachExtension(mBindExtensions.get(i));
+      renderUnit.addAttachDetachExtension(extension(renderUnit, mBindExtensions.get(i)));
     }
 
     return renderUnit;

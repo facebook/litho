@@ -17,6 +17,7 @@
 package com.facebook.rendercore;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 
 /** A type of mount extension which can subscribe to a callbacks from a {@link Host} view. */
 public interface HostListenerExtension<T> {
@@ -26,13 +27,13 @@ public interface HostListenerExtension<T> {
    *
    * @param input The new input the extension should use.
    */
-  void beforeMount(T input, Rect localVisibleRect);
+  void beforeMount(T input, @Nullable Rect localVisibleRect);
 
   /** Called immediately after mounting. */
   void afterMount();
 
   /** Called when the visible bounds of the Host change. */
-  void onVisibleBoundsChanged(Rect localVisibleRect);
+  void onVisibleBoundsChanged(@Nullable Rect localVisibleRect);
 
   /** Called after all the Host's children have been unmounted. */
   void onUnmount();
