@@ -9,7 +9,7 @@ Litho is a declarative framework for building efficient UIs on Android.
 * **View flattening:** Litho uses [Yoga](https://facebook.github.io/yoga/) for layout and automatically reduces the number of ViewGroups that your UI contains.
 * **Fine-grained recycling:** Any component such as a text or image can be recycled and reused anywhere in the UI.
 
-To get started, check out these links:
+To get started, check out the links below:
 
 * [Learn how to use Litho in your project.](http://fblitho.com/docs/getting-started)
 * [Get started with our tutorial.](http://fblitho.com/docs/tutorial)
@@ -48,7 +48,7 @@ public void onCreate(Bundle savedInstanceState) {
 ## Run sample
 You can find more examples in our [sample app](https://github.com/facebook/litho/tree/master/sample).
 
-To build and run (on an attached device/emulator) the sample app, execute
+To build and run (on an attached device/emulator) the sample app, execute:
 
     $ buck fetch sample
     $ buck install -r sample
