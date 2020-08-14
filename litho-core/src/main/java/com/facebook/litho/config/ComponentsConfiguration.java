@@ -104,6 +104,8 @@ public class ComponentsConfiguration {
   /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
   public static boolean enableOnErrorHandling = false;
 
+  public static boolean shouldConsumeUnhandledExceptions = false;
+
   public static boolean enableErrorBoundaryComponent = false;
 
   /**
