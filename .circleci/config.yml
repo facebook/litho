@@ -21,11 +21,11 @@ aliases:
   # BUCK Cache aliases
   - &restore-cache-buck
     keys:
-      - v2-buck-{{ arch }}-master
+      - v3-buck-{{ arch }}-master
   - &save-cache-buck
     paths:
       - workspace/buck
-    key: v2-buck-{{ arch }}-master
+    key: v3-buck-{{ arch }}-master
 
   # Build dependencies Cache aliases
   - &restore-cache-apt
