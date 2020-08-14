@@ -54,16 +54,14 @@ class ViewPagerHelperSectionSpec<T> {
 
   @OnDataBound
   protected static void onDataBound(
-      final SectionContext c,
-      @Prop final int offset,
-      @Prop(optional = true) final int initialPageIndex) {
+      final SectionContext c, @Prop(optional = true) final int initialPageIndex) {
     if (initialPageIndex >= 0) {
       new Handler()
           .post(
               new Runnable() {
                 @Override
                 public void run() {
-                  SectionLifecycle.requestFocusWithOffset(c, initialPageIndex, offset);
+                  SectionLifecycle.requestFocus(c, initialPageIndex);
                 }
               });
     }

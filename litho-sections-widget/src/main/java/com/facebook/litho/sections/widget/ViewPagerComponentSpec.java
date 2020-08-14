@@ -16,12 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Rect;
-import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -47,11 +43,7 @@ public class ViewPagerComponentSpec<T> {
       @Prop final EventHandler<RenderEvent> renderEventHandler,
       @Prop final List<T> data,
       @Prop RecyclerCollectionEventsController eventsController,
-      @Prop(optional = true) final int itemSpacingDp,
       @Prop(optional = true) int initialPageIndex) {
-
-    final int spacingInPixels = c.getResourceResolver().dipsToPixels(itemSpacingDp);
-
     final RecyclerConfiguration recyclerConfiguration =
         ListRecyclerConfiguration.create()
             .orientation(LinearLayoutManager.HORIZONTAL)
@@ -61,73 +53,36 @@ public class ViewPagerComponentSpec<T> {
                   @Override
                   public LinearLayoutInfo createLinearLayoutInfo(
                       Context context, int orientation, boolean reverseLayout) {
-                    return new ViewPagerLinearLayoutInfo(
-                        context, orientation, reverseLayout, spacingInPixels, data.size() > 1);
+                    return new ViewPagerLinearLayoutInfo(context, orientation, reverseLayout);
                   }
                 })
             .build();
 
-    final RecyclerCollectionComponent.Builder builder =
-        RecyclerCollectionComponent.create(c)
-            .disablePTR(true)
-            .section(
-                ViewPagerHelperSection.<T>create(new SectionContext(c))
-                    .data(data)
-                    .renderEventHandler(renderEventHandler)
-                    .pageSelectedEventEventHandler(
-                        ViewPagerComponent.getPageSelectedEventHandler(c))
-                    .initialPageIndex(initialPageIndex)
-                    .offset((int) (spacingInPixels * 3f)))
-            .eventsController(eventsController)
-            .recyclerConfiguration(recyclerConfiguration);
-    if (itemSpacingDp > 0) {
-      builder.itemDecoration(new ViewPagerItemDecoration(spacingInPixels, data.size()));
-    }
-    return builder.build();
+    return RecyclerCollectionComponent.create(c)
+        .flexGrow(1)
+        .disablePTR(true)
+        .section(
+            ViewPagerHelperSection.<T>create(new SectionContext(c))
+                .data(data)
+                .renderEventHandler(renderEventHandler)
+                .pageSelectedEventEventHandler(ViewPagerComponent.getPageSelectedEventHandler(c))
+                .initialPageIndex(initialPageIndex))
+        .eventsController(eventsController)
+        .recyclerConfiguration(recyclerConfiguration)
+        .build();
   }
 
   /** Custom implementation of LinearLayout to assign parent's width to items. */
   private static class ViewPagerLinearLayoutInfo extends LinearLayoutInfo {
-    private final int spacingInPixels;
-    private final boolean adjustWidthForSpacing;
 
-    public ViewPagerLinearLayoutInfo(
-        Context context,
-        int orientation,
-        boolean reverseLayout,
-        int spacingInPixels,
-        boolean adjustWidthForSpacing) {
+    public ViewPagerLinearLayoutInfo(Context context, int orientation, boolean reverseLayout) {
       super(context, orientation, reverseLayout);
-      this.spacingInPixels = spacingInPixels;
-      this.adjustWidthForSpacing = adjustWidthForSpacing;
     }
 
     @Override
     public int getChildWidthSpec(int widthSpec, RenderInfo renderInfo) {
       final int hscrollWidth = SizeSpec.getSize(widthSpec);
-      return SizeSpec.makeSizeSpec(
-          hscrollWidth - (adjustWidthForSpacing ? 7 * spacingInPixels : 2 * spacingInPixels),
-          SizeSpec.EXACTLY);
-    }
-  }
-
-  private static final class ViewPagerItemDecoration extends RecyclerView.ItemDecoration {
-    private final int itemSpacing;
-    private final int itemsCount;
-
-    public ViewPagerItemDecoration(int itemSpacing, int itemsCount) {
-      this.itemSpacing = itemSpacing;
-      this.itemsCount = itemsCount;
-    }
-
-    @Override
-    @TargetApi(17)
-    public void getItemOffsets(
-        Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-      final int index = parent.getChildAdapterPosition(view);
-      int leftPadding = index == 0 ? itemSpacing : itemSpacing / 2;
-      int rightPadding = index == itemsCount - 1 ? itemSpacing : itemSpacing / 2;
-      outRect.set(leftPadding, 0, rightPadding, 0);
+      return SizeSpec.makeSizeSpec(hscrollWidth, SizeSpec.EXACTLY);
     }
   }
 }
