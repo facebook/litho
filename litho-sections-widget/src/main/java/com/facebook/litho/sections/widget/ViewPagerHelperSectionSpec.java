@@ -31,8 +31,6 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
 import com.facebook.litho.sections.common.DataDiffSection;
-import com.facebook.litho.sections.common.RenderEvent;
-import java.util.List;
 import javax.annotation.Nullable;
 
 @GroupSectionSpec
@@ -45,11 +43,8 @@ class ViewPagerHelperSectionSpec<T> {
   }
 
   @OnCreateChildren
-  static <T> Children onCreateChildren(
-      SectionContext c, @Prop List<T> data, @Prop EventHandler<RenderEvent> renderEventHandler) {
-    return Children.create()
-        .child(DataDiffSection.<T>create(c).data(data).renderEventHandler(renderEventHandler))
-        .build();
+  static <T> Children onCreateChildren(SectionContext c, @Prop DataDiffSection<T> delegateSection) {
+    return Children.create().child(delegateSection).build();
   }
 
   @OnDataBound

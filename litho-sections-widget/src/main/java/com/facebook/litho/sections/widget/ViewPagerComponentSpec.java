@@ -21,17 +21,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.EventHandler;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.common.RenderEvent;
+import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SnapUtil;
-import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @LayoutSpec(events = PageSelectedEvent.class)
@@ -40,8 +38,7 @@ public class ViewPagerComponentSpec<T> {
   @OnCreateLayout
   static <T> Component onCreateLayout(
       ComponentContext c,
-      @Prop final EventHandler<RenderEvent> renderEventHandler,
-      @Prop final List<T> data,
+      @Prop DataDiffSection<T> dataDiffSection,
       @Prop RecyclerCollectionEventsController eventsController,
       @Prop(optional = true) int initialPageIndex) {
     final RecyclerConfiguration recyclerConfiguration =
@@ -63,8 +60,7 @@ public class ViewPagerComponentSpec<T> {
         .disablePTR(true)
         .section(
             ViewPagerHelperSection.<T>create(new SectionContext(c))
-                .data(data)
-                .renderEventHandler(renderEventHandler)
+                .delegateSection(dataDiffSection)
                 .pageSelectedEventEventHandler(ViewPagerComponent.getPageSelectedEventHandler(c))
                 .initialPageIndex(initialPageIndex))
         .eventsController(eventsController)
