@@ -57,6 +57,7 @@ dependencies {
     // Android Support Library
     compileOnly deps.supportAnnotations
     implementation deps.supportCore
+    implementation deps.textlayoutbuilder
 }
 
 apply from: rootProject.file('gradle/release.gradle')
