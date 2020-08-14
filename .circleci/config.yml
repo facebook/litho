@@ -142,7 +142,7 @@ store_litho_artifacts: &store_litho_artifacts
 executors:
   litho-executor:
     docker:
-      - image: circleci/android:api-28-ndk-r17b
+      - image: ccistaging/android:api-28-ndk
     working_directory: ~/litho-working-dir
     environment:
       # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
