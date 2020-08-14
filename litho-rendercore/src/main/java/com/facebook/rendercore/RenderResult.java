@@ -56,8 +56,7 @@ public class RenderResult<State> {
     }
     final RenderResult renderResult;
 
-    if (previousResult != null
-        && shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
+    if (shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
       renderResult =
           new RenderResult<>(
               previousResult.getRenderTree(),
