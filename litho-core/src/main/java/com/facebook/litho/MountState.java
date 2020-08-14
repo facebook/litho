@@ -302,12 +302,15 @@ class MountState
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSectionWithArgs(
-              isIncrementalMountEnabled ? "incrementalMount" : "mount")
+      String sectionName = isIncrementalMountEnabled ? "incrementalMount" : "mount";
+      ComponentsSystrace.beginSectionWithArgs(sectionName)
           .arg("treeId", layoutState.getComponentTreeId())
           .arg("component", componentTree.getSimpleName())
           .arg("logTag", componentTree.getContext().getLogTag())
           .flush();
+      // We also would like to trace this section attributed with component name
+      // for component share analysis.
+      ComponentsSystrace.beginSection(sectionName + "_" + componentTree.getSimpleName());
     }
 
     final ComponentsLogger logger = componentTree.getContext().getLogger();
@@ -459,6 +462,7 @@ class MountState
     }
 
     if (isTracing) {
+      ComponentsSystrace.endSection();
       ComponentsSystrace.endSection();
     }
     LithoStats.incrementComponentMountCount();
