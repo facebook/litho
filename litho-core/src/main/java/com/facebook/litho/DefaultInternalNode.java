@@ -768,12 +768,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void setRootComponent(Component component) {
-    mComponents.clear();
-    mComponents.add(component);
-  }
-
-  @Override
   public @Nullable StateListAnimator getStateListAnimator() {
     return mStateListAnimator;
   }

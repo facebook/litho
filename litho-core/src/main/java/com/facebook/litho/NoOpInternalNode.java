@@ -541,9 +541,6 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
-  @Override
-  public void setRootComponent(Component component) {}
-
   @Nullable
   @Override
   public StateListAnimator getStateListAnimator() {

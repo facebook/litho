@@ -230,8 +230,6 @@ public interface InternalNode
   @Nullable
   Component getTailComponent();
 
-  void setRootComponent(Component component);
-
   @Nullable
   StateListAnimator getStateListAnimator();
 
