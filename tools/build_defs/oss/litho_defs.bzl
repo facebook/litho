@@ -170,6 +170,8 @@ LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore:rendercore-stub")
 
 LITHO_RENDERCORE_TESTING_TARGET = make_dep_path("litho-rendercore-testing:litho-rendercore-testing")
 
+LITHO_RENDERCORE_TEXT_TARGET = make_dep_path("litho-rendercore-text:rendercore-text")
+
 LITHO_RENDERCORE_VISIBILITY_TARGET = make_dep_path("litho-rendercore-visibility:rendercore-visibility-stub")
 
 LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transitions:rendercore-transitions-stub")

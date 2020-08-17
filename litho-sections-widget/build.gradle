@@ -40,6 +40,9 @@ dependencies {
     // compileOnly dependencies
     compileOnly deps.jsr305
 
+    // annotations
+    implementation deps.inferAnnotations
+
     // Android Support Library
     compileOnly deps.supportAnnotations
     implementation deps.supportRecyclerView

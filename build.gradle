@@ -91,7 +91,7 @@ ext.deps = [
         flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.30.2',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
-        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.17.0',
+        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         // Debugging and testing
         guava              : 'com.google.guava:guava:27.0.1-android',
         robolectric        : 'org.robolectric:robolectric:4.3',
