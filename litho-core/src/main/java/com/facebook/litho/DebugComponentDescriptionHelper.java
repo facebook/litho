@@ -34,6 +34,14 @@ import org.json.JSONObject;
  */
 public class DebugComponentDescriptionHelper {
 
+  /**
+   * An interface for callsite to append extra description into {@link StringBuilder} by given
+   * {@link DebugComponent}.
+   */
+  public interface ExtraDescription {
+    void applyExtraDescription(DebugComponent debugComponent, StringBuilder sb);
+  }
+
   /** Fields to ignore when dumping extra props */
   private static final HashSet<String> IGNORE_PROP_FIELDS =
       new HashSet<>(
@@ -55,15 +63,6 @@ public class DebugComponentDescriptionHelper {
               "text",
               "params"));
 
-  /**
-   * Appends a compact description of a {@link DebugComponent} for debugging purposes.
-   *
-   * @param debugComponent The {@link DebugComponent}
-   * @param sb The {@link StringBuilder} to which the description is appended
-   * @param leftOffset Offset of the parent component relative to litho view
-   * @param topOffset Offset of the parent component relative to litho view
-   * @param embedded Whether the call is embedded in "adb dumpsys activity"
-   */
   @DoNotStrip
   public static void addViewDescription(
       DebugComponent debugComponent,
@@ -72,6 +71,28 @@ public class DebugComponentDescriptionHelper {
       int topOffset,
       boolean embedded,
       boolean withProps) {
+    addViewDescription(debugComponent, sb, leftOffset, topOffset, embedded, withProps, null);
+  }
+
+  /**
+   * Appends a compact description of a {@link DebugComponent} for debugging purposes.
+   *
+   * @param debugComponent The {@link DebugComponent}
+   * @param sb The {@link StringBuilder} to which the description is appended
+   * @param leftOffset Offset of the parent component relative to litho view
+   * @param topOffset Offset of the parent component relative to litho view
+   * @param embedded Whether the call is embedded in "adb dumpsys activity"
+   * @param extraDescription An interface for callsite to append extra description.
+   */
+  @DoNotStrip
+  public static void addViewDescription(
+      DebugComponent debugComponent,
+      StringBuilder sb,
+      int leftOffset,
+      int topOffset,
+      boolean embedded,
+      boolean withProps,
+      @Nullable ExtraDescription extraDescription) {
     sb.append("litho.");
     sb.append(debugComponent.getComponent().getSimpleName());
 
@@ -113,6 +134,10 @@ public class DebugComponentDescriptionHelper {
 
     if (withProps) {
       addExtraProps(debugComponent.getComponent(), sb);
+    }
+
+    if (extraDescription != null) {
+      extraDescription.applyExtraDescription(debugComponent, sb);
     }
 
     if (!embedded && layout != null && layout.getClickHandler() != null) {
