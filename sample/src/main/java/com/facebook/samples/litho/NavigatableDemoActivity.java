@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 public class NavigatableDemoActivity extends AppCompatActivity {
 
-  private DemoListActivity.DemoListDataModel mDataModel;
+  private Demos.DemoItem mDataModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class NavigatableDemoActivity extends AppCompatActivity {
     if (indices != null) {
       mDataModel = getDataModel(indices);
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      setTitle(mDataModel.name);
+      setTitle(mDataModel.getName());
     }
   }
 
@@ -71,15 +71,19 @@ public class NavigatableDemoActivity extends AppCompatActivity {
     return parentIntent;
   }
 
-  private DemoListActivity.DemoListDataModel getDataModel(int[] indices) {
-    DemoListActivity.DemoListDataModel model = DemoListActivity.DATA_MODELS.get(indices[0]);
+  private Demos.DemoItem getDataModel(int[] indices) {
+    Demos.DemoItem model = Demos.DEMOS.get(indices[0]);
     for (int i = 1; i < indices.length; i++) {
-      model = model.datamodels.get(indices[i]);
+      if (model instanceof Demos.HasChildrenDemos) {
+        model = ((Demos.HasChildrenDemos) model).getDemos().get(indices[i]);
+      } else {
+        throw new RuntimeException("Unexpected type: " + model);
+      }
     }
     return model;
   }
 
-  protected DemoListActivity.DemoListDataModel getDataModel() {
+  protected Demos.DemoItem getDataModel() {
     return mDataModel;
   }
 }

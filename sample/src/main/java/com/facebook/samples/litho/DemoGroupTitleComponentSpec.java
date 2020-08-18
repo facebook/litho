@@ -18,40 +18,31 @@ package com.facebook.samples.litho;
 
 import static com.facebook.yoga.YogaEdge.ALL;
 
-import android.content.Intent;
-import android.view.View;
-import com.facebook.litho.ClickEvent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 
 @LayoutSpec
-public class DemoListItemComponentSpec {
+public class DemoGroupTitleComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c, @Prop final DemoListActivity.DemoListDataModel model) {
+  static Component onCreateLayout(ComponentContext c, @Prop String title) {
     return Column.create(c)
-        .paddingDip(ALL, 16)
-        .child(Text.create(c).text(model.name).textSizeSp(18).build())
-        .clickHandler(DemoListItemComponent.onClick(c))
+        .child(
+            Text.create(c)
+                .paddingDip(ALL, 8)
+                .text(title)
+                .textSizeSp(18)
+                .textStyle(Typeface.BOLD)
+                .backgroundRes(R.color.colorPrimaryLightBg)
+                .build())
+        .child(Column.create(c).heightPx(1).backgroundColor(Color.BLACK))
         .build();
-  }
-
-  @OnEvent(ClickEvent.class)
-  static void onClick(
-      ComponentContext c,
-      @FromEvent View view,
-      @Prop final DemoListActivity.DemoListDataModel model,
-      @Prop final int[] currentIndices) {
-    final Intent intent = new Intent(c.getAndroidContext(), model.getActivityClass());
-    intent.putExtra(DemoListActivity.INDICES, currentIndices);
-    c.getAndroidContext().startActivity(intent);
   }
 }

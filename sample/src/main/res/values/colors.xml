@@ -16,5 +16,8 @@
   -->
 
 <resources>
-  <string name="app_name">Litho Sample</string>
+  <color name="primaryColor">#ED526C</color>
+  <color name="primaryDarkColor">#bc3953</color>
+  <color name="secondaryColor">#5e35b1</color>
+  <color name="colorPrimaryLightBg">#FFF3F5</color>
 </resources>

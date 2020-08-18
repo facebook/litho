@@ -16,27 +16,30 @@
 
 package com.facebook.samples.litho;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 
-public class DemoListActivity extends NavigatableDemoActivity {
-
-  static final String INDICES = "INDICES";
+public class SampleRootActivity extends AppCompatActivity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final int[] indices = getIntent().getIntArrayExtra(INDICES);
-
     final ComponentContext componentContext = new ComponentContext(this);
     setContentView(
         LithoView.create(
             this,
-            DemoListRootComponent.create(componentContext)
-                .demos(((Demos.DemoList) getDataModel()).getDemos())
-                .previousIndices(indices)
+            RecyclerCollectionComponent.create(componentContext)
+                .disablePTR(true)
+                .section(
+                    SampleRootSection.create(new SectionContext(componentContext))
+                        .dataModels(Demos.DEMOS))
+                .backgroundColor(Color.WHITE)
                 .build()));
   }
 }
