@@ -57,7 +57,7 @@ If you are getting this error when running a Litho unit test, go through these s
 
 **For Gradle**
 
-- Follow the instructions under [Unit Testing - Caveats](https://fblitho.com/docs/unit-testing.html#caveats) for your setup.
+- Follow the instructions under [Unit Testing - Caveats](unit-testing#caveats) for your setup.
 - Relaunch the gradle daemon with `./gradlew --stop`.
 
 ### `@InjectProp` fails for generated components

@@ -178,7 +178,7 @@ This is what you need to keep in mind when calling state update methods:
 * In `LayoutSpec`s, you should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
 Every call to a state update method will trigger a new layout calculation on the ComponentTree, which in turn will call `onCreateLayout` on all its components, so it's rather easy to go into an infinite loop. You should consider whether a lazy state update (described below) wouldn't be more appropriate for your use case.
 * In `MountSpec`s, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
-* State is a concept local to components. You cannot call a state update method from outside a component. [Props](props) are the mechanism to update a component based on outside changes. You can read more about that [here](https://fblitho.com/docs/best-practices#props-vs-state).
+* State is a concept local to components. You cannot call a state update method from outside a component. [Props](props) are the mechanism to update a component based on outside changes. You can read more about that [here](best-practices#props-vs-state).
 
 ## Keys and identifying components
 The framework sets a key on each component, based on its type and the key of its parent. This key is used to determine which component we want to update when calling a state update and finding this component when traversing the tree.
