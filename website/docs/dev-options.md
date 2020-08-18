@@ -7,7 +7,7 @@ For debugging Litho layouts please have a look at [Flipper](https://fbflipper.co
 
 There are two compile time flags for visualizing the component hierarchy of your application. These are similar to Android's show view bounds internal setting but because Litho does not always use Android Views we have implemented our own to make it more helpful.
 
-Within the [ComponentsConfiguration](/javadoc/com/facebook/litho/config/ComponentsConfiguration) class there are two fields which control this.
+Within the [ComponentsConfiguration](/javadoc/com/facebook/litho/config/ComponentsConfiguration.html) class there are two fields which control this.
 
 ### debugHighlightInteractiveBounds
 Highlight the interactive bounds of components as well as their expanded touch bounds, if present.
