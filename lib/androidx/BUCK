@@ -355,7 +355,19 @@ fb_java_library(
     exported_deps = [
         ":androidx-appcompat-aar",
         ":androidx-material-aar",
+        ":androidx-cardview-aar",
     ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-cardview-aar",
+    aar = ":androidx-cardview.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-cardview.aar",
+    sha1 = "158dbc2e2bc502815821191b04446b8f663c1874",
+    url = "mvn:androidx.cardview:cardview:aar:1.0.0",
 )
 
 fb_java_library(
