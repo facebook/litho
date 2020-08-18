@@ -21,6 +21,8 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.ComponentCreator;
 import com.facebook.samples.litho.animations.animatedbadge.AnimatedBadgeActivity;
 import com.facebook.samples.litho.animations.animationcallbacks.AnimationCallbacksActivity;
@@ -46,6 +48,7 @@ import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomVie
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundComponent;
+import com.facebook.samples.litho.stateupdates.SectionStateUpdateFromComponentSection;
 import com.facebook.samples.litho.stateupdates.StateUpdateFromOutsideTreeActivity;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
 import com.facebook.samples.litho.stats.StatsActivity;
@@ -118,7 +121,21 @@ public class DemoListActivity extends NavigatableDemoActivity {
                       Arrays.asList(
                           new DemoListDataModel(
                               "State Update from Outside Litho",
-                              StateUpdateFromOutsideTreeActivity.class))),
+                              StateUpdateFromOutsideTreeActivity.class),
+                          new DemoListDataModel(
+                              "State Update in Section from Child Component",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return RecyclerCollectionComponent.create(c)
+                                      .disablePTR(true)
+                                      .section(
+                                          SectionStateUpdateFromComponentSection.create(
+                                                  new SectionContext(c))
+                                              .build())
+                                      .build();
+                                }
+                              }))),
                   new DemoListDataModel(
                       "TextInput",
                       Arrays.asList(
