@@ -431,7 +431,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param e The exception caught.
    */
   protected void onError(ComponentContext c, Exception e) {
-    EventHandler<ErrorEvent> eventHandler = c.getComponentScope().getErrorHandler();
+    EventHandler<ErrorEvent> eventHandler = c.getErrorEventHandler();
     if (eventHandler == null) {
       if (e instanceof RuntimeException) {
         throw (RuntimeException) e;
@@ -601,12 +601,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
    */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
-    final Component scope = c.getComponentScope();
-    if (scope == null) {
-      throw new RuntimeException(
-          "No component scope found for handler to throw error", e.exception);
-    }
-    final EventHandler<ErrorEvent> errorHandler = scope.getErrorHandler();
+    final EventHandler<ErrorEvent> errorHandler = c.getErrorEventHandler();
 
     // TODO(T26533980): This check is only necessary as long as we have the configuration flag as
     //                  the enabled state could theoretically change at runtime.
