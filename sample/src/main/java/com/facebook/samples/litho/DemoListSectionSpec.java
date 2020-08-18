@@ -93,6 +93,6 @@ class DemoListSectionSpec {
   @OnEvent(ClickEvent.class)
   static void onClickEvent(
       SectionContext c, @Param int[] indices, @Param Demos.NavigableDemoItem model) {
-    model.navigate(c.getAndroidContext(), indices);
+    c.getAndroidContext().startActivity(model.getIntent(c.getAndroidContext(), indices));
   }
 }

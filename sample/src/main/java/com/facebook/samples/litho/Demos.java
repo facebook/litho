@@ -206,7 +206,7 @@ public class Demos {
    * ComponentCreator is not parcelable).
    */
   public interface NavigableDemoItem extends DemoItem {
-    void navigate(Context context, int[] currentIndices);
+    Intent getIntent(Context context, int[] currentIndices);
   }
 
   public interface HasChildrenDemos {
@@ -229,10 +229,10 @@ public class Demos {
     }
 
     @Override
-    public void navigate(Context context, int[] currentIndices) {
+    public Intent getIntent(Context context, int[] currentIndices) {
       final Intent intent = new Intent(context, DemoListActivity.class);
       intent.putExtra(DemoListActivity.INDICES, currentIndices);
-      context.startActivity(intent);
+      return intent;
     }
 
     @Override
@@ -293,10 +293,10 @@ public class Demos {
     }
 
     @Override
-    public void navigate(Context context, int[] currentIndices) {
+    public Intent getIntent(Context context, int[] currentIndices) {
       final Intent intent = new Intent(context, getActivityClass());
       intent.putExtra(DemoListActivity.INDICES, currentIndices);
-      context.startActivity(intent);
+      return intent;
     }
   }
 }

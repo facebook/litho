@@ -63,12 +63,20 @@ public class NavigatableDemoActivity extends AppCompatActivity {
       return null;
     }
 
-    final Intent parentIntent = new Intent(this, DemoListActivity.class);
-    if (indices.length > 1) {
-      parentIntent.putExtra(DemoListActivity.INDICES, Arrays.copyOf(indices, indices.length - 1));
+    // Keep popping indices off the route until we get to an Activity we can navigate back to.
+    // If we can't find one, pop back to the root.
+    int[] parentIndices = indices;
+    Demos.DemoItem item = null;
+    while (parentIndices.length > 1 && !(item instanceof Demos.NavigableDemoItem)) {
+      parentIndices = Arrays.copyOf(indices, parentIndices.length - 1);
+      item = getDataModel(parentIndices);
     }
 
-    return parentIntent;
+    if (item != null && item instanceof Demos.NavigableDemoItem) {
+      return ((Demos.NavigableDemoItem) item).getIntent(this, parentIndices);
+    } else {
+      return new Intent(this, SampleRootActivity.class);
+    }
   }
 
   private Demos.DemoItem getDataModel(int[] indices) {

@@ -78,6 +78,6 @@ class SampleRootSectionSpec {
   @OnEvent(ClickEvent.class)
   static void onClickEvent(
       SectionContext c, @Param Demos.NavigableDemoItem model, @Param int index) {
-    model.navigate(c.getAndroidContext(), new int[] {index});
+    c.getAndroidContext().startActivity(model.getIntent(c.getAndroidContext(), new int[] {index}));
   }
 }
