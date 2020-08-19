@@ -652,12 +652,11 @@ public abstract class Transition {
    */
   private static class RootItemResolver implements Resolver {
 
-    private final TransitionsExtension.TransitionsExtensionInput mTransitionsExtensionInput;
+    private final TransitionsExtensionInput mTransitionsExtensionInput;
     private final AnimatedProperty mAnimatedProperty;
 
     private RootItemResolver(
-        TransitionsExtension.TransitionsExtensionInput transitionsExtensionInput,
-        AnimatedProperty animatedProperty) {
+        TransitionsExtensionInput transitionsExtensionInput, AnimatedProperty animatedProperty) {
       mTransitionsExtensionInput = transitionsExtensionInput;
       mAnimatedProperty = animatedProperty;
     }
@@ -676,7 +675,7 @@ public abstract class Transition {
 
   static float getRootAppearFromValue(
       TransitionUnit transition,
-      TransitionsExtension.TransitionsExtensionInput transitionsExtensionInput,
+      TransitionsExtensionInput transitionsExtensionInput,
       AnimatedProperty property) {
     final RootItemResolver resolver = new RootItemResolver(transitionsExtensionInput, property);
     final TransitionId rootTransitionId = transitionsExtensionInput.getRootTransitionId();

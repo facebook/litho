@@ -31,7 +31,6 @@ import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
@@ -47,7 +46,7 @@ import java.util.Set;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension extends MountDelegateExtension
-    implements HostListenerExtension<TransitionsExtension.TransitionsExtensionInput>,
+    implements HostListenerExtension<TransitionsExtensionInput>,
         TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
         UnmountDelegateExtension {
 
@@ -85,36 +84,6 @@ public class TransitionsExtension extends MountDelegateExtension
         ((ComponentHost) host).startUnmountDisappearingItem(mountItem);
       }
     }
-  }
-
-  public interface TransitionsExtensionInput extends MountDelegateInput {
-    int getMountableOutputCount();
-
-    RenderTreeNode getMountableOutputAt(int index);
-
-    boolean needsToRerunTransitions();
-
-    void setNeedsToRerunTransitions(boolean needsToRerunTransitions);
-
-    int getComponentTreeId();
-
-    Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping();
-
-    @Nullable
-    OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
-        TransitionId transitionId);
-
-    @Nullable
-    List<Component> getComponentsNeedingPreviousRenderData();
-
-    @Nullable
-    String getRootComponentName();
-
-    @Nullable
-    List<Transition> getTransitions();
-
-    @Nullable
-    TransitionId getRootTransitionId();
   }
 
   public TransitionsExtension(Host lithoView) {
