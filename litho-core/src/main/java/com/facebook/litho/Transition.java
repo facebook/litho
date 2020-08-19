@@ -647,22 +647,24 @@ public abstract class Transition {
   }
 
   /**
-   * Separate resolver for root component to extract the start value of appear animation of its
-   * width/height that we will set in {@link LithoView#onMeasure(int, int)}.
+   * Separate resolver for root component to extract the start value of appear animation of its *
+   * width/height that we will set in root host onMeasure.
    */
   private static class RootItemResolver implements Resolver {
 
-    private final LayoutState mLayoutState;
+    private final TransitionsExtension.TransitionsExtensionInput mTransitionsExtensionInput;
     private final AnimatedProperty mAnimatedProperty;
 
-    private RootItemResolver(LayoutState layoutState, AnimatedProperty animatedProperty) {
-      mLayoutState = layoutState;
+    private RootItemResolver(
+        TransitionsExtension.TransitionsExtensionInput transitionsExtensionInput,
+        AnimatedProperty animatedProperty) {
+      mTransitionsExtensionInput = transitionsExtensionInput;
       mAnimatedProperty = animatedProperty;
     }
 
     @Override
     public float getCurrentState(PropertyHandle propertyHandle) {
-      final LayoutOutput root = getLayoutOutput(mLayoutState.getMountableOutputAt(0));
+      final LayoutOutput root = getLayoutOutput(mTransitionsExtensionInput.getMountableOutputAt(0));
       return mAnimatedProperty.get(root);
     }
 
@@ -673,9 +675,11 @@ public abstract class Transition {
   }
 
   static float getRootAppearFromValue(
-      TransitionUnit transition, LayoutState layoutState, AnimatedProperty property) {
-    final RootItemResolver resolver = new RootItemResolver(layoutState, property);
-    final TransitionId rootTransitionId = layoutState.getRootTransitionId();
+      TransitionUnit transition,
+      TransitionsExtension.TransitionsExtensionInput transitionsExtensionInput,
+      AnimatedProperty property) {
+    final RootItemResolver resolver = new RootItemResolver(transitionsExtensionInput, property);
+    final TransitionId rootTransitionId = transitionsExtensionInput.getRootTransitionId();
     return transition
         .getAppearFrom()
         .resolve(resolver, new PropertyHandle(rootTransitionId, property));
@@ -684,7 +688,7 @@ public abstract class Transition {
   /**
    * Contains information about whether root component has bounds transition and if so whether it
    * defines appear animation as well. The latter is useful to extract from which value we should
-   * animate from so that in {@link LithoView#onMeasure(int, int)} we can set initial value.
+   * animate from so that in root Host on measure we can set initial value.
    */
   static class RootBoundsTransition {
     boolean hasTransition;
