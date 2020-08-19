@@ -870,6 +870,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public @Nullable String getTransitionGlobalKey() {
+    final Component component = getTailComponent();
+    return component != null ? component.getGlobalKey() : null;
+  }
+
+  @Override
   public @Nullable EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
   }

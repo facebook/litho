@@ -266,6 +266,9 @@ public interface InternalNode
   String getTransitionOwnerKey();
 
   @Nullable
+  String getTransitionGlobalKey();
+
+  @Nullable
   Transition.TransitionKeyType getTransitionKeyType();
 
   @Nullable

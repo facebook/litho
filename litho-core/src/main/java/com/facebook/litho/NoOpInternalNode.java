@@ -826,6 +826,11 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
+  public @Nullable String getTransitionGlobalKey() {
+    return null;
+  }
+
+  @Override
   public @Nullable InternalNode unfocusedHandler(
       @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     return null;

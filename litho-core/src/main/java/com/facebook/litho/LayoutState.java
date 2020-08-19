@@ -2422,7 +2422,11 @@ public class LayoutState
   }
 
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
-    return TransitionUtils.createTransitionId(node);
+    return TransitionUtils.createTransitionId(
+        node.getTransitionKey(),
+        node.getTransitionKeyType(),
+        node.getTransitionOwnerKey(),
+        node.getTransitionGlobalKey());
   }
 
   @Override
