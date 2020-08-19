@@ -354,8 +354,8 @@ fb_java_library(
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":androidx-appcompat-aar",
-        ":androidx-material-aar",
         ":androidx-cardview-aar",
+        ":androidx-material-aar",
     ],
 )
 
