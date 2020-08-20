@@ -18,15 +18,6 @@ aliases:
       - /opt/android/sdk
     key: v5-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
-  # BUCK Cache aliases
-  - &restore-cache-buck
-    keys:
-      - v3-buck-{{ arch }}-master
-  - &save-cache-buck
-    paths:
-      - workspace/buck
-    key: v3-buck-{{ arch }}-master
-
   # Build dependencies Cache aliases
   - &restore-cache-apt
     keys:
@@ -70,21 +61,6 @@ aliases:
       fi
       sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
 
-  # Download and build BUCK
-  - &download-buck
-    name: Install BUCK
-    command: |
-      if [[ ! -e $HOME/litho-working-dir/workspace/buck ]]; then
-        git clone https://github.com/facebook/buck.git $HOME/litho-working-dir/workspace/buck --branch master --depth=1
-      fi
-      cd $HOME/litho-working-dir/workspace/buck && ant
-      $HOME/litho-working-dir/workspace/buck/bin/buck --version
-
-  # Export BUCK in PATH
-  - &setup-buck
-    name: Set up BUCK
-    command: echo "export PATH=$HOME/litho-working-dir/workspace/buck/bin:$PATH" >> $BASH_ENV
-
   # Setup KEY
   - &setup-keys
     name: Set up keys
@@ -98,24 +74,6 @@ aliases:
     command: |
       cd workspace/repo
       ./gradlew :litho-it:testDebugUnitTest --tests "*NodeInfoTest" --no-daemon
-
-  # Download project BUCK dependencies
-  - &download-buck-dependencies
-    name: Buck Dependencies
-    command: |
-      cd workspace/repo
-      # $HOME/litho-working-dir/workspace/buck/bin/buck fetch //... # explicitly exclude Kotlin modules until OSS BUCK config will be fixed
-      $HOME/litho-working-dir/workspace/buck/bin/buck fetch //:components sample sample-barebones sample-codelab litho-it/... litho-it-powermock/...
-
-  # Save Litho BUCK test results
-  - &save-litho-buck-tests-results
-    name: Save Litho BUCK tests results
-    command: |
-      cd workspace
-      mkdir -p junit
-      cd repo
-      find . -type f -name "litho-it*tests*.xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
-    when: always
 
   # Save Litho Gradle test results
   - &save-litho-gradle-tests-results
@@ -153,60 +111,27 @@ executors:
       ANDROID_NDK_HOME: '/opt/ndk/android-ndk-r15c/'
 
 commands:
-  attach_restore_setup_buck:
-    description: "A command that attaches to workspace, restores caches and setups BUCK"
+  attach_restore_setup:
+    description: "A command that attaches to workspace, restores caches"
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
       - restore_cache: *restore-cache-ndk
-      - restore_cache: *restore-cache-buck
       - restore_cache: *restore-repo-cache
       - restore_cache: *restore-cache-android-packages
-      - run: *setup-buck
 
-  buck_build:
-    description: "A command that uses BUCK for builds"
-    parameters:
-      module_name:
-        type: string
-    steps:
-      - attach_restore_setup_buck
-      - run:
-          name: Build <<parameters.module_name>> with BUCK
-          command: |
-            cd workspace/repo
-            buck fetch <<parameters.module_name>>
-            buck build <<parameters.module_name>> --num-threads=4
-  
   gradle_build:
     description: "A command that uses Gradle for builds"
     parameters:
       module_name:
         type: string
     steps:
-      - attach_restore_setup_buck
+      - attach_restore_setup
       - run:
           name: Build <<parameters.module_name>> with Gradle
           command: |
             cd workspace/repo
             ./gradlew :<<parameters.module_name>>:assembleDebug --no-daemon --max-workers 2
-
-  buck_tests:
-    description: "A command that runs tests using BUCK"
-    parameters:
-      module_name:
-        type: string
-    steps:
-      - attach_restore_setup_buck
-      - run:
-          name: Run <<parameters.module_name>> tests with BUCK
-          command: |
-            cd workspace/repo
-            buck fetch <<parameters.module_name>>/...
-            buck test <<parameters.module_name>>/src/test/... --num-threads=4 --xml <<parameters.module_name>>_tests.xml
-      - run: *save-litho-buck-tests-results
-      - *store_litho_tests_results
-      - *store_litho_artifacts
 
 jobs:
   checkout_code:
@@ -236,11 +161,6 @@ jobs:
       - run: *install-android-packages
       - save_cache: *save-cache-android-packages
 
-      # Manage BUCK caches
-      - restore_cache: *restore-cache-buck
-      - run: *download-buck
-      - save_cache: *save-cache-buck
-
       # Persist repo code
       - persist_to_workspace:
           root: workspace
@@ -250,28 +170,8 @@ jobs:
   build:
     executor: litho-executor
     steps:
-      - attach_restore_setup_buck
-      - run: *download-buck-dependencies
       - run: *download-gradle-dependencies
       - save_cache: *save-repo-cache
-
-  buck_sample_build:
-    executor: litho-executor
-    steps:
-      - buck_build:
-          module_name: "sample"
-
-  buck_sample_barebones_build:
-    executor: litho-executor
-    steps:
-      - buck_build:
-          module_name: "sample-barebones"
-
-  buck_sample_codelab_build:
-    executor: litho-executor
-    steps:
-      - buck_build:
-          module_name: "sample-codelab"
 
   gradle_sample_build:
     executor: litho-executor
@@ -285,23 +185,10 @@ jobs:
       - gradle_build:
           module_name: "sample-kotlin"
 
-
-  buck_litho_it_tests_run:
-    executor: litho-executor
-    steps:
-      - buck_tests:
-          module_name: "litho-it"
-
-  buck_litho_it_powermock_tests_run:
-    executor: litho-executor
-    steps:
-      - buck_tests:
-          module_name: "litho-it-powermock"
-
   gradle_tests_run:
     executor: litho-executor
     steps:
-      - attach_restore_setup_buck
+      - attach_restore_setup
       - run:
           name: Run test with Gradle
           command: |
@@ -315,7 +202,7 @@ jobs:
   publish_snapshot:
     executor: litho-executor
     steps:
-      - attach_restore_setup_buck
+      - attach_restore_setup
       - run: *setup-keys
       - run:
           name: Publish Snapshot
@@ -331,25 +218,10 @@ workflows:
       - build:
           requires:
             - checkout_code
-      - buck_sample_build:
-          requires:
-            - build
-      - buck_sample_barebones_build:
-          requires:
-            - build
-      - buck_sample_codelab_build:
-          requires:
-            - build
       - gradle_sample_build:
           requires:
             - build
       - gradle_sample_kotlin_build:
-          requires:
-            - build
-      - buck_litho_it_tests_run:
-          requires:
-            - build
-      - buck_litho_it_powermock_tests_run:
           requires:
             - build
       - gradle_tests_run:
@@ -357,8 +229,6 @@ workflows:
             - build
       - publish_snapshot:
           requires:
-            - buck_litho_it_tests_run
-            - buck_litho_it_powermock_tests_run
             - gradle_tests_run
           filters:
             branches:
