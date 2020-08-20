@@ -23,6 +23,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.Decoration
 import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
+import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.padding
@@ -43,7 +44,9 @@ class FeedItemComponent(artist: Artist) : KComponent({
       +Decoration(background = drawableColor(0xddffffff)) {
         Text(
             text = artist.name,
-            style = position(start = 4.dp, bottom = 4.dp) + padding(horizontal = 6.dp),
+            style = Style
+                .position(start = 4.dp, bottom = 4.dp)
+                .padding(horizontal = 6.dp),
             textSize = 24.sp,
             textStyle = BOLD)
       }

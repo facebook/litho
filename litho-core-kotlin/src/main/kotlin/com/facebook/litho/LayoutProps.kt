@@ -25,6 +25,7 @@ import com.facebook.yoga.YogaPositionType
 /**
  * Builder for setting the same [all] padding to each edge of the child component.
  */
+@Deprecated(message = "Use Style.padding instead")
 inline fun DslScope.Padding(
     all: Dp,
     content: DslScope.() -> Component
@@ -36,6 +37,7 @@ inline fun DslScope.Padding(
 /**
  * Builder for setting [horizontal] and [vertical] paddings to the child component.
  */
+@Deprecated(message = "Use Style.padding instead")
 inline fun DslScope.Padding(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,
@@ -51,6 +53,7 @@ inline fun DslScope.Padding(
 /**
  * Builder for setting granular [left], [top], [right] and [bottom] paddings to the child component.
  */
+@Deprecated(message = "Use Style.padding instead")
 inline fun DslScope.Padding(
     left: Dp = 0.dp,
     top: Dp = 0.dp,
@@ -70,6 +73,7 @@ inline fun DslScope.Padding(
 /**
  * Builder for setting the same [all] margin for each edge of the child component.
  */
+@Deprecated(message = "Use Style.margin instead")
 inline fun DslScope.Margin(
     all: Dp,
     content: DslScope.() -> Component
@@ -81,6 +85,7 @@ inline fun DslScope.Margin(
 /**
  * Builder for setting [horizontal] and [vertical] margins for the child component.
  */
+@Deprecated(message = "Use Style.margin instead")
 inline fun DslScope.Margin(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,
@@ -96,6 +101,7 @@ inline fun DslScope.Margin(
 /**
  * Builder for setting granular [left], [top], [right] and [bottom] paddings to the child component.
  */
+@Deprecated(message = "Use Style.margin instead")
 inline fun DslScope.Margin(
     left: Dp = 0.dp,
     top: Dp = 0.dp,
@@ -117,6 +123,7 @@ inline fun DslScope.Margin(
  * its siblings. [left], [top], [right], [bottom] specify the offset of the child's respective side
  * from the same side of the parent.
  */
+@Deprecated(message = "Use Style.position instead")
 inline fun DslScope.Position(
     left: Dp? = null,
     top: Dp? = null,
@@ -137,6 +144,7 @@ inline fun DslScope.Position(
 /**
  * Builder for setting a specific [width] and [height] for a child component.
  */
+@Deprecated(message = "Use Style.size instead")
 inline fun DslScope.FixedSize(
     width: Dp? = null,
     height: Dp? = null,
@@ -149,6 +157,7 @@ inline fun DslScope.FixedSize(
       }
     }
 
+@Deprecated(message = "Use Style.flex instead")
 inline fun DslScope.Flex(
     grow: Float = 0f,
     shrink: Float = 1f,
@@ -163,6 +172,7 @@ inline fun DslScope.Flex(
       }
     }
 
+@Deprecated(message = "Use Style.alighSelf instead")
 inline fun DslScope.Alignment(
     align: YogaAlign,
     content: DslScope.() -> Component

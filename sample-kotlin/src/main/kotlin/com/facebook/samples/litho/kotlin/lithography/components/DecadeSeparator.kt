@@ -20,6 +20,7 @@ import com.facebook.litho.Decoration
 import com.facebook.litho.Dp
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
+import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flex
@@ -35,17 +36,23 @@ class DecadeSeparator(decade: Decade) : KComponent({
   Decoration(background = drawableColor(0xFFFAFAFA)) {
     Row(alignItems = CENTER, style = padding(16.dp)) {
       +Decoration(background = drawableColor(0xFFAAAAAA)) {
-        Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
+        Row(style = Style
+            .size(height = Dp.Hairline)
+            .flex(grow = 1f))
       }
 
       +Text(
           text = "${decade.year}",
           textSize = 14.sp,
           textColor = 0xFFAAAAAA.toInt(),
-          style = margin(horizontal = 10.dp) + flex(shrink = 0f))
+          style = Style
+              .margin(horizontal = 10.dp)
+              .flex(shrink = 0f))
 
       +Decoration(background = drawableColor(0xFFAAAAAA)) {
-        Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
+        Row(style = Style
+            .size(height = Dp.Hairline)
+            .flex(grow = 1f))
       }
     }
   }

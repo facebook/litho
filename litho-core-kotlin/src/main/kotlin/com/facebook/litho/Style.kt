@@ -21,7 +21,7 @@ import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
 // TODO should be `data` if we want to consider it for comparison as a Prop.
-class Style(
+open class Style(
     val width: Dp? = null,
     val height: Dp? = null,
     val widthPercent: Float? = null,
@@ -114,6 +114,8 @@ class Style(
         positionType = other.positionType ?: positionType
     )
   }
+
+  companion object : Style()
 }
 
 infix fun Dp?.plusSafe(other: Dp?) = (this ?: 0.dp) + (other ?: 0.dp)
@@ -168,21 +170,35 @@ internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
 }
 
 fun size(size: Dp) = Style(width = size, height = size)
+fun Style.size(size: Dp) = this + com.facebook.litho.size(size)
 
 fun size(width: Dp? = null, height: Dp? = null) = Style(width, height)
+fun Style.size(width: Dp? = null, height: Dp? = null) =
+    this + com.facebook.litho.size(width, height)
 
 fun width(minWidth: Dp? = null, maxWidth: Dp? = null) =
     Style(minWidth = minWidth, maxWidth = maxWidth)
 
+fun Style.width(minWidth: Dp? = null, maxWidth: Dp? = null) =
+    this + com.facebook.litho.width(minWidth, maxWidth)
+
 fun height(minHeight: Dp? = null, maxHeight: Dp? = null) =
     Style(minHeight = minHeight, maxHeight = maxHeight)
+
+fun Style.height(minHeight: Dp? = null, maxHeight: Dp? = null) =
+    this + com.facebook.litho.height(minHeight, maxHeight)
 
 fun flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
     Style(flexGrow = grow, flexShrink = shrink, flexBasis = basis)
 
+fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
+    this + com.facebook.litho.flex(grow, shrink, basis)
+
 fun aspectRatio(aspectRatio: Float) = Style(aspectRatio = aspectRatio)
+fun Style.aspectRatio(aspectRatio: Float) = this + com.facebook.litho.aspectRatio(aspectRatio)
 
 fun padding(all: Dp) = Style(paddingAll = all)
+fun Style.padding(all: Dp) = this + com.facebook.litho.padding(all)
 
 fun padding(horizontal: Dp? = null, vertical: Dp? = null) =
     Style(
@@ -191,10 +207,17 @@ fun padding(horizontal: Dp? = null, vertical: Dp? = null) =
         paddingEnd = horizontal,
         paddingBottom = vertical)
 
+fun Style.padding(horizontal: Dp? = null, vertical: Dp? = null) =
+    this + com.facebook.litho.padding(horizontal, vertical)
+
 fun padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
     Style(paddingStart = start, paddingTop = top, paddingEnd = end, paddingBottom = bottom)
 
+fun Style.padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+    this + com.facebook.litho.padding(start, top, end, bottom)
+
 fun margin(all: Dp) = Style(marginAll = all)
+fun Style.margin(all: Dp) = this + com.facebook.litho.margin(all)
 
 fun margin(horizontal: Dp? = null, vertical: Dp? = null) =
     Style(
@@ -203,8 +226,14 @@ fun margin(horizontal: Dp? = null, vertical: Dp? = null) =
         marginEnd = horizontal,
         marginBottom = vertical)
 
+fun Style.margin(horizontal: Dp? = null, vertical: Dp? = null) =
+    this + com.facebook.litho.margin(horizontal, vertical)
+
 fun margin(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
     Style(marginStart = start, marginTop = top, marginEnd = end, marginBottom = bottom)
+
+fun Style.margin(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+    this + com.facebook.litho.margin(start, top, end, bottom)
 
 fun position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
     Style(
@@ -214,6 +243,9 @@ fun position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = 
         positionBottom = bottom,
         positionType = YogaPositionType.ABSOLUTE)
 
+fun Style.position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+    this + com.facebook.litho.position(start, top, end, bottom)
+
 fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
     Style(
         positionStart = start,
@@ -221,3 +253,6 @@ fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom
         positionEnd = end,
         positionBottom = bottom,
         positionType = YogaPositionType.RELATIVE)
+
+fun Style.positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+    this + com.facebook.litho.positionRelative(start, top, end, bottom)
