@@ -20,10 +20,10 @@ import android.graphics.Typeface.BOLD
 import android.widget.LinearLayout
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.Decoration
 import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.padding
@@ -41,15 +41,14 @@ class FeedItemComponent(artist: Artist) : KComponent({
   Column {
     +Column {
       +imageBlock(artist)
-      +Decoration(background = drawableColor(0xddffffff)) {
-        Text(
+      +Text(
             text = artist.name,
             style = Style
                 .position(start = 4.dp, bottom = 4.dp)
-                .padding(horizontal = 6.dp),
+                .padding(horizontal = 6.dp)
+                .background(drawableColor(0xddffffff)),
             textSize = 24.sp,
             textStyle = BOLD)
-      }
       +ActionsComponent(style = position(top = 4.dp, end = 4.dp))
     }
     +FooterComponent(text = artist.biography)

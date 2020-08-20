@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.drawable.Drawable
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
@@ -64,7 +65,10 @@ open class Style(
     val positionTop: Dp? = null,
     val positionEnd: Dp? = null,
     val positionBottom: Dp? = null,
-    val positionType: YogaPositionType? = null
+    val positionType: YogaPositionType? = null,
+
+    val background: Drawable? = null,
+    val foreground: Drawable? = null
 ) {
 
   operator fun plus(other: Style): Style {
@@ -111,7 +115,10 @@ open class Style(
         positionTop = other.positionTop ?: positionTop,
         positionEnd = other.positionEnd ?: positionEnd,
         positionBottom = other.positionBottom ?: positionBottom,
-        positionType = other.positionType ?: positionType
+        positionType = other.positionType ?: positionType,
+
+        background = other.background ?: background,
+        foreground = other.foreground ?: foreground
     )
   }
 
@@ -166,6 +173,9 @@ internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
     style.positionEnd?.let { positionPx(YogaEdge.END, it.toPx().value) }
     style.positionBottom?.let { positionPx(YogaEdge.BOTTOM, it.toPx().value) }
     style.positionType?.let { positionType(it) }
+
+    style.background?.let { background(it) }
+    style.foreground?.let { foreground(it) }
   }
 }
 
@@ -256,3 +266,9 @@ fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom
 
 fun Style.positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
     this + com.facebook.litho.positionRelative(start, top, end, bottom)
+
+fun background(background: Drawable) = Style(background = background)
+fun Style.background(background: Drawable) = this + com.facebook.litho.background(background)
+
+fun foreground(foreground: Drawable) = Style(foreground = foreground)
+fun Style.foreground(foreground: Drawable) = this + com.facebook.litho.foreground(foreground)

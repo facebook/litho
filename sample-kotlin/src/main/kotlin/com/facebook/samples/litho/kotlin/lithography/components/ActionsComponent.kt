@@ -17,11 +17,11 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Component
-import com.facebook.litho.Decoration
 import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.padding
@@ -29,10 +29,10 @@ import com.facebook.litho.padding
 class ActionsComponent(style: Style) : KComponent(style) {
 
   override fun DslScope.render(): Component? {
-    return Decoration(background = drawableColor(0xddffffff)) {
-      Row(style = padding(2.dp)) {
-        +FavouriteButton()
-      }
+    return Row(style = Style
+        .padding(2.dp)
+        .background(drawableColor(0xddffffff))) {
+      +FavouriteButton()
     }
   }
 }
