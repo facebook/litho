@@ -91,21 +91,21 @@ class Style(
 
         aspectRatio = other.aspectRatio ?: aspectRatio,
 
-        paddingStart = paddingStart plus other.paddingStart,
-        paddingTop = paddingTop plus other.paddingTop,
-        paddingEnd = paddingEnd plus other.paddingEnd,
-        paddingBottom = paddingBottom plus other.paddingBottom,
-        paddingHorizontal = paddingHorizontal plus other.paddingHorizontal,
-        paddingVertical = paddingVertical plus other.paddingVertical,
-        paddingAll = paddingAll plus other.paddingAll,
+        paddingStart = paddingStart plusSafe other.paddingStart,
+        paddingTop = paddingTop plusSafe other.paddingTop,
+        paddingEnd = paddingEnd plusSafe other.paddingEnd,
+        paddingBottom = paddingBottom plusSafe other.paddingBottom,
+        paddingHorizontal = paddingHorizontal plusSafe other.paddingHorizontal,
+        paddingVertical = paddingVertical plusSafe other.paddingVertical,
+        paddingAll = paddingAll plusSafe other.paddingAll,
 
-        marginStart = marginStart plus other.marginStart,
-        marginTop = marginTop plus other.marginTop,
-        marginEnd = marginEnd plus other.marginEnd,
-        marginBottom = marginBottom plus other.marginBottom,
-        marginHorizontal = marginHorizontal plus other.marginHorizontal,
-        marginVertical = marginVertical plus other.marginVertical,
-        marginAll = marginAll plus other.marginAll,
+        marginStart = marginStart plusSafe other.marginStart,
+        marginTop = marginTop plusSafe other.marginTop,
+        marginEnd = marginEnd plusSafe other.marginEnd,
+        marginBottom = marginBottom plusSafe other.marginBottom,
+        marginHorizontal = marginHorizontal plusSafe other.marginHorizontal,
+        marginVertical = marginVertical plusSafe other.marginVertical,
+        marginAll = marginAll plusSafe other.marginAll,
 
         positionStart = other.positionStart ?: positionStart,
         positionTop = other.positionTop ?: positionTop,
@@ -116,7 +116,7 @@ class Style(
   }
 }
 
-infix fun Dp?.plus(other: Dp?) = (this ?: 0.dp) + (other ?: 0.dp)
+infix fun Dp?.plusSafe(other: Dp?) = (this ?: 0.dp) + (other ?: 0.dp)
 
 internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
   props.apply {
