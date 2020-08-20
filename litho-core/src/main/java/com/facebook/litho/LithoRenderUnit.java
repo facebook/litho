@@ -55,6 +55,11 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     return output.getId();
   }
 
+  @Override
+  public Object getRenderContentType() {
+    return output.getComponent().getClass();
+  }
+
   private boolean hasDefaultViewAttributeFlags() {
     return mDefaultViewAttributeFlags != -1;
   }

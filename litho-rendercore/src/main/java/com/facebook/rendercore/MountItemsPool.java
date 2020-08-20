@@ -75,7 +75,7 @@ public class MountItemsPool {
   }
 
   static void release(Context context, RenderUnit renderUnit, Object mountContent) {
-    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getClass());
+    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getRenderContentType());
     if (pool != null) {
       pool.release(mountContent);
     }
@@ -98,7 +98,7 @@ public class MountItemsPool {
     Pools.SimplePool pool = poolsMap.get(lifecycle);
     if (pool == null) {
       pool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
-      poolsMap.put(lifecycle.getClass(), pool);
+      poolsMap.put(lifecycle, pool);
     }
 
     return pool;
