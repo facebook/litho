@@ -1777,16 +1777,20 @@ public class LayoutState
   }
 
   private static void sortTops(LayoutState layoutState) {
+    final List<RenderTreeNode> unsortedNodes = new ArrayList<>(layoutState.mMountableOutputTops);
     try {
       Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
-      final int size = layoutState.mMountableOutputTops.size();
+      final int size = unsortedNodes.size();
       errorMessage.append("Error while sorting LayoutState tops. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = layoutState.mMountableOutputTops.get(i);
-        errorMessage.append("   Index " + i + " top: " + node.getBounds().top).append("\n");
+        final RenderTreeNode node = unsortedNodes.get(i);
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
+        errorMessage
+            .append("   Index " + layoutOutput.getIndex() + " top: " + layoutOutput.getBounds().top)
+            .append("\n");
       }
 
       throw new IllegalStateException(errorMessage.toString());
@@ -1794,16 +1798,24 @@ public class LayoutState
   }
 
   private static void sortBottoms(LayoutState layoutState) {
+    final List<RenderTreeNode> unsortedNodes = new ArrayList<>(layoutState.mMountableOutputBottoms);
     try {
       Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
-      final int size = layoutState.mMountableOutputBottoms.size();
+      final int size = unsortedNodes.size();
       errorMessage.append("Error while sorting LayoutState bottoms. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = layoutState.mMountableOutputBottoms.get(i);
-        errorMessage.append("   Index " + i + " bottom: " + node.getBounds().bottom).append("\n");
+        final RenderTreeNode node = unsortedNodes.get(i);
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
+        errorMessage
+            .append(
+                "   Index "
+                    + layoutOutput.getIndex()
+                    + " bottom: "
+                    + layoutOutput.getBounds().bottom)
+            .append("\n");
       }
 
       throw new IllegalStateException(errorMessage.toString());
