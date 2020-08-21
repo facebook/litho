@@ -219,8 +219,7 @@ jobs:
           name: Run test with Gradle
           command: |
             cd workspace/repo
-            # Temporarily exclude IntelliJ Plugin tests.
-            ./gradlew test -x :litho-intellij-plugin:test --no-daemon --max-workers 2
+            ./gradlew test --no-daemon --max-workers 2
       - run: *save-litho-gradle-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts

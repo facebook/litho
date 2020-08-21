@@ -29,6 +29,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
 import java.util.Arrays;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest {
@@ -37,6 +38,7 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
     super("testdata/actions");
   }
 
+  @Ignore("T73932936")
   @Test
   public void daemonFinished_settingsTrue_resolved() throws IOException {
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");

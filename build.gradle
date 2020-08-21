@@ -47,6 +47,11 @@ subprojects {
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
             environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+
+            def offlineDepsDir = System.getProperty('robolectric.dependency.dir')
+            if (offlineDepsDir != null) {
+                systemProperty 'robolectric.dependency.dir', "${rootDir}/$offlineDepsDir"
+            }
         }
     }
 }
