@@ -216,10 +216,23 @@ jobs:
     steps:
       - attach_restore_setup_buck
       - run:
-          name: Run test with Gradle
+          name: Run tests with Gradle
           command: |
             cd workspace/repo
-            ./gradlew test --no-daemon --max-workers 2
+            ./gradlew test -x :litho-intellij-plugin:test --no-daemon --max-workers 2
+      - run: *save-litho-gradle-tests-results
+      - *store_litho_tests_results
+      - *store_litho_artifacts
+
+  gradle_tests_intellij:
+    executor: litho-executor
+    steps:
+      - attach_restore_setup_buck
+      - run:
+          name: Run IntelliJ Plugin tests with Gradle
+          command: |
+            cd workspace/repo
+            ./gradlew :litho-intellij-plugin:test --no-daemon --max-workers 2
       - run: *save-litho-gradle-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts
@@ -247,6 +260,9 @@ workflows:
           requires:
             - setup_deps
       - gradle_tests:
+          requires:
+            - gradle_build
+      - gradle_tests_intellij:
           requires:
             - setup_deps
       - publish_snapshot:
