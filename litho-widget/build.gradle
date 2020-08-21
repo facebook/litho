@@ -37,6 +37,7 @@ dependencies {
     implementation project(':litho-core')
     implementation deps.supportRecyclerView
     implementation deps.supportMaterial
+    implementation deps.supportTransition
     annotationProcessor project(':litho-processor')
 
     // Annotations

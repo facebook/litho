@@ -114,6 +114,8 @@ LITHO_ANDROIDSUPPORT_LIFECYCLE_EXT_TARGET = make_dep_path("lib/androidx:androidx
 
 LITHO_ANDROIDSUPPORT_MATERIAL_TARGET = make_dep_path("lib/androidx:androidx-material")
 
+LITHO_ANDROIDSUPPORT_TRANSITION_TARGET = make_dep_path("lib/androidx:androidx-transition")
+
 LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testing")
 
 LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET = make_dep_path("lib/androidx:androidx-testing-core")
