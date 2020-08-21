@@ -161,14 +161,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   Component createComponentLayout(ComponentContext c) {
     Component layoutComponent = null;
 
-    try {
-      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-        layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
-      } else {
-        layoutComponent = onCreateLayout(c);
-      }
-    } catch (Exception e) {
-      dispatchErrorEvent(c, e);
+    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+      layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
+    } else {
+      layoutComponent = onCreateLayout(c);
     }
 
     return layoutComponent;
@@ -586,7 +582,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     if (ComponentsConfiguration.enableOnErrorHandling) {
       final ErrorEvent errorEvent = new ErrorEvent();
       errorEvent.exception = e;
-
       dispatchErrorEvent(c, errorEvent);
     } else {
       if (e instanceof RuntimeException) {
@@ -601,12 +596,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
    */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
-    final EventHandler<ErrorEvent> errorHandler = c.getErrorEventHandler();
-
-    // TODO(T26533980): This check is only necessary as long as we have the configuration flag as
-    //                  the enabled state could theoretically change at runtime.
-    if (errorHandler != null) {
-      errorHandler.dispatchEvent(e);
+    final EventHandler<ErrorEvent> handler = c.getErrorEventHandler();
+    if (handler != null) {
+      handler.dispatchEvent(e);
     }
   }
 

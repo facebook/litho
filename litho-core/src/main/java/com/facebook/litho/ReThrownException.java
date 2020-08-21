@@ -16,23 +16,13 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
+public class ReThrownException extends RuntimeException {
 
-/** Exception class used to print the Components' hierarchy involved in a crash. */
-class ComponentsChainException extends RuntimeException {
+  final Exception original;
+  final EventHandler<ErrorEvent> handler;
 
-  @Nullable Exception original;
-  @Nullable EventHandler<ErrorEvent> handler;
-
-  ComponentsChainException(Component c, Throwable cause) {
-    super(c.getSimpleName());
-    initCause(cause);
-    setStackTrace(new StackTraceElement[0]);
-  }
-
-  ComponentsChainException(String prefixMessage, Component c, Throwable cause) {
-    super(prefixMessage + " " + c.getSimpleName());
-    initCause(cause);
-    setStackTrace(new StackTraceElement[0]);
+  ReThrownException(final Exception original, final EventHandler<ErrorEvent> handler) {
+    this.original = original;
+    this.handler = handler;
   }
 }

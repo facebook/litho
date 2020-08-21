@@ -476,4 +476,8 @@ public class ComponentUtils {
 
     return builder.toString();
   }
+
+  public static void raise(ComponentContext c, Exception e) {
+    throw new ReThrownException(e, c.getErrorEventHandler());
+  }
 }

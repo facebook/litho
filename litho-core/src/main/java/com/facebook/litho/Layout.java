@@ -200,8 +200,9 @@ class Layout {
         return NULL_LAYOUT;
       }
 
-    } catch (Throwable t) {
-      throw new ComponentsChainException(component, t);
+    } catch (Exception e) {
+      handle(parent, component, e);
+      return NULL_LAYOUT;
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -269,13 +270,19 @@ class Layout {
   }
 
   static InternalNode create(
-      final ComponentContext parentContext,
+      ComponentContext parentContext,
       final InternalNode holder,
       final int widthSpec,
       final int heightSpec) {
 
     final Component component = holder.getTailComponent();
     final InternalNode currentLayout = holder.getNestedTree();
+
+    // Find the immediate parent context
+    List<Component> components = holder.getComponents();
+    if (components.size() > 1) {
+      parentContext = components.get(components.size() - 2).getScopedContext();
+    }
 
     if (component == null) {
       throw new IllegalArgumentException("A component is required to resolve a nested tree.");
@@ -677,5 +684,66 @@ class Layout {
   @TargetApi(JELLY_BEAN_MR1)
   private static int getLayoutDirection(final Context context) {
     return context.getResources().getConfiguration().getLayoutDirection();
+  }
+
+  private static void handle(ComponentContext parent, Component component, Exception exception) {
+
+    if (!ComponentsConfiguration.enableOnErrorHandling) {
+      throw new ComponentsChainException(component, exception);
+    }
+
+    final EventHandler<ErrorEvent> nextHandler = parent.getErrorEventHandler();
+    final EventHandler<ErrorEvent> handler;
+    final Exception original;
+    final boolean rethrown;
+
+    if (exception instanceof ReThrownException) {
+      original = ((ReThrownException) exception).original;
+      handler = ((ReThrownException) exception).handler;
+      rethrown = true;
+    } else if (exception instanceof ComponentsChainException) {
+      if (((ComponentsChainException) exception).handler != null) {
+        original = ((ComponentsChainException) exception).original;
+        handler = ((ComponentsChainException) exception).handler;
+        rethrown = false;
+      } else {
+        original = null;
+        handler = null;
+        rethrown = false;
+      }
+    } else {
+      original = exception;
+      handler = null;
+      rethrown = false;
+    }
+
+    final Exception link;
+    if (rethrown) {
+      link = original;
+    } else {
+      link = exception;
+    }
+
+    if (handler == nextHandler) { // was and handled
+      // propagate with updated component chain exception, handler, and original cause
+      final ComponentsChainException chain = new ComponentsChainException(component, link);
+      chain.original = original;
+      chain.handler = handler;
+      throw chain;
+    } else if (nextHandler instanceof ErrorEventHandler) { // at the root
+      // update component chain exception and call error handler
+      final ComponentsChainException chain = new ComponentsChainException(component, link);
+      ((ErrorEventHandler) nextHandler).onError(chain);
+    } else { // Handle again with new handler
+      try {
+        ComponentLifecycle.dispatchErrorEvent(parent, link);
+      } catch (ReThrownException ex) { // exception was raised again
+        // propagate with updated component chain, latest handler, and original cause
+        final ComponentsChainException chain = new ComponentsChainException(component, link);
+        chain.original = original;
+        chain.handler = nextHandler;
+        throw chain;
+      }
+    }
   }
 }
