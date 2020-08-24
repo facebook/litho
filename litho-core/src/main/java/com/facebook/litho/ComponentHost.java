@@ -232,15 +232,7 @@ public class ComponentHost extends Host {
    * @param mountItem
    */
   void startUnmountDisappearingItem(MountItem mountItem) {
-    final int index;
-    final int indexOfValue = mMountItems.indexOfValue(mountItem);
-    // If an item was moved to this same index in a previous pass, we'll find the index in the
-    // mScrapMountItemsArray.
-    if (indexOfValue == -1) {
-      index = mScrapMountItemsArray.keyAt(mScrapMountItemsArray.indexOfValue(mountItem));
-    } else {
-      index = mMountItems.keyAt(indexOfValue);
-    }
+    final int index = mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
     startUnmountDisappearingItem(index, mountItem);
   }
 

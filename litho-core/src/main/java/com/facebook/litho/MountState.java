@@ -1403,6 +1403,10 @@ class MountState
               ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
               : false;
 
+      if (hasUnmountDelegate) {
+        continue;
+      }
+
       // Just skip disappearing items here
       if (disappearingItems.size() > disappearingItemsPointer
           && disappearingItems.get(disappearingItemsPointer) == i) {
@@ -1413,7 +1417,7 @@ class MountState
         continue;
       }
 
-      if (newPosition == -1 || hasUnmountDelegate) {
+      if (newPosition == -1) {
         unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {

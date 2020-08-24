@@ -454,6 +454,9 @@ public class TransitionsExtension extends MountDelegateExtension
         remountHostToRootIfNeeded(i, disappearingItem);
 
         mapDisappearingItemWithTransitionId(disappearingItem);
+
+        getMountTarget().notifyUnmount(i);
+
         i = lastDescendantIndex;
       }
     }
