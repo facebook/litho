@@ -23,12 +23,18 @@ import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec;
 import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.OnErrorNotPresentChild;
+import com.facebook.litho.widget.OnErrorPassUpChildTester;
+import com.facebook.litho.widget.OnErrorPassUpParentTester;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,6 +49,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class ComponentLifecycleErrorTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
   private boolean mPreviousOnErrorConfig;
 
   @Before
@@ -220,5 +227,55 @@ public class ComponentLifecycleErrorTest {
     }
 
     assertThat(exception).isNotNull().hasMessageContaining("onMount crash");
+  }
+
+  @Test
+  public void lifecycleOnErrorIndirectlyPassError() {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+    final List<String> info = new ArrayList<>();
+    Exception exception = null;
+    final ComponentContext context = mLithoViewRule.getContext();
+    try {
+      final Component component =
+          OnErrorPassUpParentTester.create(context)
+              .child(OnErrorPassUpChildTester.create(context).info(info).build())
+              .info(info)
+              .build();
+      mLithoViewRule.setRoot(component);
+      mLithoViewRule.attachToWindow().measure().layout();
+    } catch (Exception error) {
+      exception = error;
+    }
+    assertThat(exception).isNotNull();
+
+    assertThat(info)
+        .containsExactly(
+            "OnErrorPassUpChildTesterSpec->onError", "OnErrorPassUpParentTesterSpec->onError");
+    ComponentsConfiguration.enableOnErrorHandling = false;
+  }
+
+  @Test
+  public void lifecycleOnErrorDirectlyPassError() {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+    final List<String> info = new ArrayList<>();
+    Exception exception = null;
+    final ComponentContext context = mLithoViewRule.getContext();
+    try {
+      final Component component =
+          OnErrorPassUpParentTester.create(context)
+              .child(OnErrorNotPresentChild.create(context).info(info).build())
+              .info(info)
+              .build();
+      mLithoViewRule.setRoot(component);
+
+      mLithoViewRule.attachToWindow().measure().layout();
+    } catch (Exception error) {
+      exception = error;
+    }
+
+    assertThat(exception).isNotNull();
+
+    assertThat(info).containsExactly("OnErrorPassUpParentTesterSpec->onError");
+    ComponentsConfiguration.enableOnErrorHandling = false;
   }
 }
