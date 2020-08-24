@@ -33,6 +33,7 @@ import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPro
 import com.facebook.samples.litho.animations.expandableelement.ExpandableElementActivity;
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.sharedelements.SharedElementsActivity;
+import com.facebook.samples.litho.animations.sharedelements.SharedElementsFragmentActivity;
 import com.facebook.samples.litho.animations.transitions.TransitionsActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
 import com.facebook.samples.litho.changesetdebug.ItemsRerenderingActivity;
@@ -92,7 +93,12 @@ public class Demos {
                               CommonDynamicPropsAnimationActivity.class),
                           new SingleDemo("Animation Cookbook", AnimationCookBookActivity.class),
                           new SingleDemo("Animation Callbacks", AnimationCallbacksActivity.class),
-                          new SingleDemo("Shared elements", SharedElementsActivity.class),
+                          new SingleDemo(
+                              "Activity Transition with Shared elements",
+                              SharedElementsActivity.class),
+                          new SingleDemo(
+                              "Fragments Transition with Shared elements",
+                              SharedElementsFragmentActivity.class),
                           new SingleDemo("Transitions", TransitionsActivity.class))),
                   new DemoGrouping(
                       "Collections",

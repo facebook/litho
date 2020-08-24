@@ -72,6 +72,7 @@ dependencies {
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.supportViewPager
+    implementation deps.supportTransition
 
     // First-party dependencies
     if (project.isRelease()) {
