@@ -99,7 +99,6 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void beforeMount(TransitionsExtensionInput input, Rect localVisibleRect) {
-    resetAcquiredReferences();
     mInput = input;
 
     if (input.getComponentTreeId() != mLastMountedComponentTreeId) {
@@ -188,7 +187,7 @@ public class TransitionsExtension extends MountDelegateExtension
       if (mTransitionManager != null) {
         mTransitionManager.finishUndeclaredTransitions();
       }
-
+      resetAcquiredReferences();
       if (!mAnimatingTransitionIds.isEmpty()) {
         regenerateAnimationLockedIndices(input);
       }
@@ -218,6 +217,8 @@ public class TransitionsExtension extends MountDelegateExtension
     for (OutputUnitsAffinityGroup<MountItem> group : mDisappearingMountItems.values()) {
       endUnmountDisappearingItem(group);
     }
+
+    resetAcquiredReferences();
     mDisappearingMountItems.clear();
     mLockedDisappearingMountitems.clear();
     mAnimatingTransitionIds.clear();
