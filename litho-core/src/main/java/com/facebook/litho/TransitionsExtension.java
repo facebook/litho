@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateExtension;
@@ -71,7 +72,7 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   @Override
-  public void unmount(int index, MountItem mountItem, com.facebook.rendercore.Host host) {
+  public void unmount(int index, MountItem mountItem, Host host) {
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final TransitionId transitionId = layoutOutput.getTransitionId();
     final OutputUnitsAffinityGroup<MountItem> group = mDisappearingMountItems.get(transitionId);
@@ -461,7 +462,7 @@ public class TransitionsExtension extends MountDelegateExtension
     mLockedDisappearingMountitems.remove(mountItem);
     final Object content = mountItem.getContent();
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
-      final com.facebook.rendercore.Host contentHost = (com.facebook.rendercore.Host) content;
+      final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
         unmountDisappearingItem(contentHost.getMountItemAt(j), false);
@@ -511,7 +512,7 @@ public class TransitionsExtension extends MountDelegateExtension
 
   private static void remountHostToRootIfNeeded(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
-    final com.facebook.rendercore.Host host = mountItem.getHost();
+    final Host host = mountItem.getHost();
 
     if (host == null) {
       throw new IllegalStateException(
@@ -522,7 +523,7 @@ public class TransitionsExtension extends MountDelegateExtension
           "Disappearing item content should never be null. Index: " + index);
     }
 
-    if (!(host.getParent() instanceof com.facebook.rendercore.Host)) {
+    if (!(host.getParent() instanceof Host)) {
       // Already mounted to the root
       return;
     }
@@ -532,14 +533,14 @@ public class TransitionsExtension extends MountDelegateExtension
     int top = 0;
     int right;
     int bottom;
-    com.facebook.rendercore.Host itemHost = host;
-    com.facebook.rendercore.Host rootHost = host;
+    Host itemHost = host;
+    Host rootHost = host;
     // Get left/top position of the item's host first
     while (itemHost != null) {
       left += itemHost.getLeft();
       top += itemHost.getTop();
-      if (itemHost.getParent() instanceof com.facebook.rendercore.Host) {
-        itemHost = (com.facebook.rendercore.Host) itemHost.getParent();
+      if (itemHost.getParent() instanceof Host) {
+        itemHost = (Host) itemHost.getParent();
       } else {
         rootHost = itemHost;
         itemHost = null;
@@ -732,7 +733,7 @@ public class TransitionsExtension extends MountDelegateExtension
   // TODO: T68620328 Remove after test is done.
   public void bind(
       Context context,
-      com.facebook.rendercore.Host host,
+      Host host,
       Object content,
       LithoRenderUnit lithoRenderUnit,
       @Nullable Object layoutData) {

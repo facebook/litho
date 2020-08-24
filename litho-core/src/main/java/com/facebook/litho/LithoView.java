@@ -48,7 +48,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends Host {
+public class LithoView extends ComponentHost {
 
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
