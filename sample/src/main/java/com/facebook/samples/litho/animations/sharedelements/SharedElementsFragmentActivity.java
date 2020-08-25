@@ -38,7 +38,6 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.animation.ComponentHostChangeBoundsTransition;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 

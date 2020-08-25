@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.animation;
+package com.facebook.samples.litho.animations.sharedelements;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
