@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore.extensions;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Host;
 
 /** A type of mount extension which can subscribe to a callbacks from a {@link Host} view. */
 public interface HostListenerExtension<T> {

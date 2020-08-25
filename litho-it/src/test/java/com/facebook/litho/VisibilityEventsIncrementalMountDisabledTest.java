@@ -33,7 +33,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
-import com.facebook.rendercore.HostListenerExtension;
+import com.facebook.rendercore.extensions.HostListenerExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.yoga.YogaEdge;
