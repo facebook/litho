@@ -1720,7 +1720,7 @@ public class SectionTree {
           if (TextUtils.isEmpty(childKey)) {
             final String errorMessage =
                 "Your Section "
-                    + child.getClass().getSimpleName()
+                    + child.getSimpleName()
                     + " has an empty key. Please specify a key.";
             throw new IllegalStateException(errorMessage);
           }
