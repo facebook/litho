@@ -31,16 +31,16 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
-import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.HostListenerExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /** Extension for performing incremental mount. */
-public class IncrementalMountExtension extends MountDelegateExtension
+public class IncrementalMountExtension extends MountExtension
     implements HostListenerExtension<IncrementalMountExtension.IncrementalMountExtensionInput> {
 
   private final Host mLithoView;

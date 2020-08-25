@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore;
+package com.facebook.rendercore.extensions;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.OkToExtend;
+import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,7 +29,8 @@ import java.util.Set;
  * decide what to mount or unmount. If no extensions are registered on the MountState's delegate, it
  * falls back to its default behaviour.
  */
-public class MountDelegateExtension {
+@OkToExtend
+public class MountExtension {
 
   private Set<Long> mLayoutOutputMountRefs = new HashSet<>();
   private MountDelegate mMountDelegate;

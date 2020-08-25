@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 
@@ -215,11 +216,11 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+  public void registerMountDelegateExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this);
     }
-    mMountDelegate.addExtension(mountDelegateExtension);
+    mMountDelegate.addExtension(mountExtension);
   }
 
   @Override

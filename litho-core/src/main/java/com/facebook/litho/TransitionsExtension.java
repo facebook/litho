@@ -31,12 +31,12 @@ import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.HostListenerExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Extension for performing transitions. */
-public class TransitionsExtension extends MountDelegateExtension
+public class TransitionsExtension extends MountExtension
     implements HostListenerExtension<TransitionsExtensionInput>,
         TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
         UnmountDelegateExtension {

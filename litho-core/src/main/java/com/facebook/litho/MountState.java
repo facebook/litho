@@ -72,12 +72,12 @@ import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
-import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
@@ -204,15 +204,15 @@ class MountState
   }
 
   @Override
-  public void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+  public void registerMountDelegateExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this);
     }
-    mMountDelegate.addExtension(mountDelegateExtension);
+    mMountDelegate.addExtension(mountExtension);
 
     // Used for testing incremental mount extension until TransitionsExtension is testable.
-    if (mountDelegateExtension instanceof TransitionsExtension) {
-      mTransitionsExtension = (TransitionsExtension) mountDelegateExtension;
+    if (mountExtension instanceof TransitionsExtension) {
+      mTransitionsExtension = (TransitionsExtension) mountExtension;
     }
   }
 
