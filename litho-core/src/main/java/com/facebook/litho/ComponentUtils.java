@@ -477,6 +477,13 @@ public class ComponentUtils {
     return builder.toString();
   }
 
+  /**
+   * Reraise an error event up the hierarchy so it can be caught by another component, or reach the
+   * root and cause the application to crash.
+   *
+   * @param c The component context the error event was caught in.
+   * @param e The original exception.
+   */
   public static void raise(ComponentContext c, Exception e) {
     throw new ReThrownException(e, c.getErrorEventHandler());
   }

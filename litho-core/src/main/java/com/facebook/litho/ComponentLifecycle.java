@@ -572,13 +572,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   /**
-   * Reraise an error event up the hierarchy so it can be caught by another component, or reach the
-   * root and cause the application to crash.
-   *
-   * @param c The component context the error event was caught in.
-   * @param e The original exception.
+   * For internal use, only. In order to reraise an error event up the hierarchy use {@link
+   * ComponentUtils#raise(ComponentContext, Exception)} instead.
    */
-  public static void dispatchErrorEvent(ComponentContext c, Exception e) {
+  protected static void dispatchErrorEvent(ComponentContext c, Exception e) {
     if (ComponentsConfiguration.enableOnErrorHandling) {
       final ErrorEvent errorEvent = new ErrorEvent();
       errorEvent.exception = e;
@@ -592,9 +589,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  /**
-   * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
-   */
+  /** For internal use, only. */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
     final EventHandler<ErrorEvent> handler = c.getErrorEventHandler();
     if (handler != null) {
