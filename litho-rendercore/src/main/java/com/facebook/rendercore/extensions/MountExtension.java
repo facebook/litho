@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore.extensions;
 
+import android.graphics.Rect;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.rendercore.MountDelegate;
@@ -30,7 +32,7 @@ import java.util.Set;
  * falls back to its default behaviour.
  */
 @OkToExtend
-public class MountExtension {
+public class MountExtension<Input> {
 
   private Set<Long> mLayoutOutputMountRefs = new HashSet<>();
   private MountDelegate mMountDelegate;
@@ -96,4 +98,23 @@ public class MountExtension {
   public MountDelegate.MountDelegateTarget getMountTarget() {
     return mMountDelegate.getMountDelegateTarget();
   }
+
+  /**
+   * Called for setting up input on the extension before mounting.
+   *
+   * @param input The new input the extension should use.
+   */
+  public void beforeMount(Input input, @Nullable Rect localVisibleRect) {}
+
+  /** Called immediately after mounting. */
+  public void afterMount() {}
+
+  /** Called when the visible bounds of the Host change. */
+  public void onVisibleBoundsChanged(@Nullable Rect localVisibleRect) {}
+
+  /** Called after all the Host's children have been unmounted. */
+  public void onUnmount() {}
+
+  /** Called after all the Host's children have been unbound. */
+  public void onUnbind() {}
 }

@@ -22,14 +22,14 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.rendercore.extensions.HostListenerExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class EndToEndTestingExtension
-    implements HostListenerExtension<EndToEndTestingExtension.EndToEndTestingExtensionInput> {
+    extends MountExtension<EndToEndTestingExtension.EndToEndTestingExtensionInput> {
 
   // A map from test key to a list of one or more `TestItem`s which is only allocated
   // and populated during test runs.

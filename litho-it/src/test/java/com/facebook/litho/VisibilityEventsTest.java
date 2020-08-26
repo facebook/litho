@@ -36,7 +36,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
-import com.facebook.rendercore.extensions.HostListenerExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.yoga.YogaEdge;
@@ -1827,7 +1827,7 @@ public class VisibilityEventsTest {
 
     LithoHostListenerCoordinator lithoHostListenerCoordinator =
         Whitebox.getInternalState(mLithoView, "mLithoHostListenerCoordinator");
-    List<HostListenerExtension> extensions =
+    List<MountExtension> extensions =
         Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
     for (int i = 0, size = extensions.size(); i < size; i++) {
       if (extensions.get(i) instanceof VisibilityOutputsExtension) {

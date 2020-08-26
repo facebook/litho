@@ -35,7 +35,6 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
-import com.facebook.rendercore.extensions.HostListenerExtension;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
@@ -46,9 +45,8 @@ import java.util.Map;
 import java.util.Set;
 
 /** Extension for performing transitions. */
-public class TransitionsExtension extends MountExtension
-    implements HostListenerExtension<TransitionsExtensionInput>,
-        TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
+public class TransitionsExtension extends MountExtension<TransitionsExtensionInput>
+    implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
         UnmountDelegateExtension {
 
   private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =

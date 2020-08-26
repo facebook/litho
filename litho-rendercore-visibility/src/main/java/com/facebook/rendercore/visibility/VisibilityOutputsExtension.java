@@ -25,14 +25,13 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderCoreSystrace;
-import com.facebook.rendercore.extensions.HostListenerExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VisibilityOutputsExtension
-    implements HostListenerExtension<VisibilityOutputsExtensionInput> {
+public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputsExtensionInput> {
 
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
