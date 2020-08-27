@@ -5,7 +5,6 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_MATERIAL_TARGET",
     "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
@@ -67,6 +66,5 @@ litho_android_library(
             LITHO_RES_TARGET,
             LITHO_WIDGET_RES_TARGET,
             LITHO_WIDGET_ACCESSIBILITIES_TARGET,
-            LITHO_ANDROIDSUPPORT_MATERIAL_TARGET,
         ],
 )

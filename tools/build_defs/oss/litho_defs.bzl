@@ -38,6 +38,8 @@ LITHO_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path("litho-widget/src/main/java/
 
 LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget")
 
+LITHO_WIDGET_MATERIAL_TARGET = make_dep_path("litho-widget-material/src/main/java/com/facebook/litho/widget:widget")
+
 LITHO_WIDGET_RES_TARGET = make_dep_path("litho-widget:res")
 
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")

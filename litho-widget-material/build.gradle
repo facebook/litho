@@ -21,29 +21,22 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    useLibrary 'org.apache.http.legacy'
-
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-    }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
-        abortOnError false
     }
 }
 
 dependencies {
     implementation project(':litho-core')
-    implementation deps.supportRecyclerView
+    implementation project(':litho-widget')
+    
+    implementation deps.supportMaterial
+    
     annotationProcessor project(':litho-processor')
 
     // Annotations
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
-
-    // First-party
-    implementation deps.textlayoutbuilder
 }
 
 apply from: rootProject.file('gradle/release.gradle')
