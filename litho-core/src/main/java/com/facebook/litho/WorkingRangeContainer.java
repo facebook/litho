@@ -78,7 +78,7 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          component.dispatchOnEnteredRange(rangeTuple.mName);
+          component.dispatchOnEnteredRange(component.getScopedContext(), rangeTuple.mName);
           statusHandler.setEnteredRangeStatus(rangeTuple.mName, component);
 
         } else if (statusHandler.isInRange(rangeTuple.mName, component)
@@ -89,7 +89,7 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          component.dispatchOnExitedRange(rangeTuple.mName);
+          component.dispatchOnExitedRange(component.getScopedContext(), rangeTuple.mName);
           statusHandler.setExitedRangeStatus(rangeTuple.mName, component);
         }
       }
@@ -110,7 +110,7 @@ class WorkingRangeContainer {
 
       for (Component component : rangeTuple.mComponents) {
         if (statusHandler.isInRange(rangeTuple.mName, component)) {
-          component.dispatchOnExitedRange(rangeTuple.mName);
+          component.dispatchOnExitedRange(component.getScopedContext(), rangeTuple.mName);
         }
       }
     }

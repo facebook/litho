@@ -250,11 +250,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected void createInitialState(ComponentContext c) {}
 
-  protected void dispatchOnEnteredRange(String name) {
+  protected void dispatchOnEnteredRange(ComponentContext c, String name) {
     // Do nothing by default
   }
 
-  protected void dispatchOnExitedRange(String name) {
+  protected void dispatchOnExitedRange(ComponentContext c, String name) {
     // Do nothing by default
   }
 
