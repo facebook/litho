@@ -67,6 +67,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -2556,7 +2557,7 @@ public class ComponentTree {
     private final int heightSpec;
     private final boolean diffingEnabled;
     @Nullable private final TreeProps treeProps;
-    private final FutureTask<LayoutState> futureTask;
+    private final RunnableFuture<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
     private final int layoutVersion;
