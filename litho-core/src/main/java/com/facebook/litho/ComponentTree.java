@@ -2595,25 +2595,27 @@ public class ComponentTree {
       this.layoutVersion = layoutVersion;
 
       this.futureTask =
-          new FutureTask<>(
-              new Callable<LayoutState>() {
-                @Override
-                public @Nullable LayoutState call() {
-                  synchronized (LayoutStateFuture.this) {
-                    if (released) {
-                      return null;
+          FutureInstrumenter.instrument(
+              new FutureTask<>(
+                  new Callable<LayoutState>() {
+                    @Override
+                    public @Nullable LayoutState call() {
+                      synchronized (LayoutStateFuture.this) {
+                        if (released) {
+                          return null;
+                        }
+                      }
+                      final LayoutState result = calculateLayoutStateInternal();
+                      synchronized (LayoutStateFuture.this) {
+                        if (released) {
+                          return null;
+                        } else {
+                          return result;
+                        }
+                      }
                     }
-                  }
-                  final LayoutState result = calculateLayoutStateInternal();
-                  synchronized (LayoutStateFuture.this) {
-                    if (released) {
-                      return null;
-                    } else {
-                      return result;
-                    }
-                  }
-                }
-              });
+                  }),
+              "LayoutStateFuture_calculateLayout");
     }
 
     private LayoutState calculateLayoutStateInternal() {
