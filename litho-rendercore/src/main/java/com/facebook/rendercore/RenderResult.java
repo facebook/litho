@@ -160,7 +160,7 @@ public class RenderResult<State> {
   }
 
   @Nullable
-  State getState() {
+  public State getState() {
     return mState;
   }
 
