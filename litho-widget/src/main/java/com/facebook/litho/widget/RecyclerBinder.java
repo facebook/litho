@@ -2542,7 +2542,7 @@ public class RecyclerBinder
 
     // We need to call this as we want to make sure everything is re-bound since we need new sizes
     // on all rows.
-    if (Looper.myLooper() == Looper.getMainLooper()) {
+    if (Looper.myLooper() == Looper.getMainLooper() && !isRecyclerViewTargetComputingLayout()) {
       mInternalAdapter.notifyDataSetChanged();
     } else {
       mMainThreadHandler.removeCallbacks(mNotifyDatasetChangedRunnable);
