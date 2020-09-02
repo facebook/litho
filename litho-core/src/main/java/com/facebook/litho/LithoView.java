@@ -35,6 +35,8 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat.Accessibility
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.RenderState;
+import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.rendercore.visibility.VisibilityUtils;
@@ -48,7 +50,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends ComponentHost {
+public class LithoView extends ComponentHost implements RootHost {
 
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
@@ -1575,5 +1577,10 @@ public class LithoView extends ComponentHost {
           loggingInfo.startupLoggerAttribution);
       loggingInfo.lastMountLogged[0] = true;
     }
+  }
+
+  @Override
+  public void setRenderState(RenderState renderState) {
+    throw new UnsupportedOperationException("Not currently supported by Litho");
   }
 }
