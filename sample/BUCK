@@ -15,6 +15,7 @@
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET",
     "LITHO_SAMPLE_JAVA",
     "fb_android_resource",
 )
@@ -37,6 +38,9 @@ fb_android_resource(
     res = "src/main/res",
     visibility = [
         "PUBLIC",
+    ],
+    deps = [
+        LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET,
     ],
 )
 
