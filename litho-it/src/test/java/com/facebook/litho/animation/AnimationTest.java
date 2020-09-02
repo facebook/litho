@@ -1248,4 +1248,59 @@ public class AnimationTest {
             })
         .build();
   }
+
+  @Test
+  public void transitionAnimation_interruption_overridesCurrentTransition() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(160, null))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec.TestComponent() {
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .widthDip(200)
+                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(40)
+                                .widthDip(40)
+                                .transitionKey(TRANSITION_KEY)
+                                .viewTag(TRANSITION_KEY)
+                                .build())
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    final View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    assertThat(view.getX()).describedAs("x pos before transition").isEqualTo(160);
+
+    // Start the transition by changing the state
+    mStateCaller.update();
+
+    // Advance to the mid point of the transition
+    mTransitionTestRule.step(6);
+    assertThat(view.getX()).describedAs("x pos at transition midpoint").isEqualTo(80f);
+
+    // Trigger a new transition that interrupts the current transition and  returns the component to
+    // its original position. NB: The Transition is fixed time, so it will take longer to return
+    mStateCaller.update();
+
+    // Advance to the mid point of the return transition
+    mTransitionTestRule.step(6);
+    assertThat(view.getX()).describedAs("x pos at return transition midpoint").isEqualTo(120);
+
+    // Advance to the end of the return transition
+    mTransitionTestRule.step(5);
+    assertThat(view.getX()).describedAs("x pos after return transition").isEqualTo(160);
+  }
 }
