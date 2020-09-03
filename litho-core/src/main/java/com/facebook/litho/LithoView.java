@@ -55,6 +55,7 @@ public class LithoView extends ComponentHost implements RootHost {
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
+  public static final String TEXTURE_TOO_BIG = "TextureTooBig";
   private static final int TOO_BIG_TEXTURE_SIZE = 4096;
   private static final String TAG = LithoView.class.getSimpleName();
   private final boolean mDisableTransitionsExtension;
@@ -496,7 +497,7 @@ public class LithoView extends ComponentHost implements RootHost {
         if (isDeviceThatCantHandleTooBigTextures()) {
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR,
-              "TextureTooBig",
+              TEXTURE_TOO_BIG,
               "LithoView has measured greater than "
                   + TOO_BIG_TEXTURE_SIZE
                   + " in one dimension. Size: "
