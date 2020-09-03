@@ -69,6 +69,7 @@ import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtensionInput;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -289,6 +290,8 @@ public class LayoutState
 
   private AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
+
+  @Nullable private Rect mRootMargins;
 
   private StateHandler mStateHandler;
   private List<Component> mComponentsNeedingPreviousRenderData;
@@ -1538,6 +1541,14 @@ public class LayoutState
                   diffTreeRoot,
                   logLayoutState)
               : layoutCreatedInWillRender;
+
+      YogaNode yogaNode = root.getYogaNode();
+      if (yogaNode != null) {
+        layoutState.mRootMargins =
+            LayoutStateUtils.resolveMargins(
+                yogaNode, Layout.isLayoutDirectionRTL(c.getAndroidContext()));
+      }
+
       // Null check for tests.
       if (root.getContext() != null) {
         root.getContext().setLayoutStateContext(layoutStateContext);
@@ -2461,5 +2472,10 @@ public class LayoutState
   @Override
   public @Nullable String getRootComponentName() {
     return mRootComponentName;
+  }
+
+  @Nullable
+  Rect getRootMargins() {
+    return mRootMargins;
   }
 }

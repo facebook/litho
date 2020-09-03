@@ -23,10 +23,12 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -35,6 +37,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaNode;
 import java.util.List;
 
 class Layout {
@@ -401,12 +404,30 @@ class Layout {
     return component;
   }
 
+  static int adjustSizeSpecForPadding(int sizeSpec, int padding) {
+    final int mode = SizeSpec.getMode(sizeSpec);
+    if (mode == UNSPECIFIED) {
+      return sizeSpec;
+    }
+    return SizeSpec.makeSizeSpec(SizeSpec.getSize(sizeSpec) - padding, mode);
+  }
+
   static void measure(
       final ComponentContext c,
       final InternalNode root,
-      final int widthSpec,
-      final int heightSpec,
+      int widthSpec,
+      int heightSpec,
       final @Nullable DiffNode diff) {
+
+    YogaNode yogaNode = root.getYogaNode();
+    if (yogaNode != null) {
+      Rect resolvedMargins =
+          LayoutStateUtils.resolveMargins(
+              yogaNode, root.recursivelyResolveLayoutDirection() == YogaDirection.RTL);
+      widthSpec = adjustSizeSpecForPadding(widthSpec, resolvedMargins.left + resolvedMargins.right);
+      heightSpec =
+          adjustSizeSpecForPadding(heightSpec, resolvedMargins.top + resolvedMargins.bottom);
+    }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
