@@ -351,14 +351,6 @@ public class LithoView extends ComponentHost implements RootHost {
    * the LithoView.
    */
   public void setAnimatedWidth(int width) {
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.ERROR,
-        "SetAnimatedWidth",
-        "Animating LithoView's width generally creates buggy animations"
-            + ", component: "
-            + (mComponentTree != null && mComponentTree.getRoot() != null
-                ? mComponentTree.getRoot().getSimpleName()
-                : null));
     mAnimatedWidth = width;
     requestLayout();
   }
@@ -369,14 +361,6 @@ public class LithoView extends ComponentHost implements RootHost {
    * the LithoView.
    */
   public void setAnimatedHeight(int height) {
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.ERROR,
-        "SetAnimatedHeight",
-        "Animating LithoView's height generally creates buggy animations"
-            + ", component: "
-            + (mComponentTree != null && mComponentTree.getRoot() != null
-                ? mComponentTree.getRoot().getSimpleName()
-                : null));
     mAnimatedHeight = height;
     requestLayout();
   }
