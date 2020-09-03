@@ -793,10 +793,6 @@ public class ComponentTree {
     consumeReentrantMounts();
   }
 
-  private boolean shouldApplyPadding(Rect rect) {
-    return rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0;
-  }
-
   private void mountComponentInternal(
       @Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     final LayoutState layoutState = mMainThreadLayoutState;
@@ -806,16 +802,6 @@ public class ComponentTree {
     }
 
     final boolean isDirtyMount = mLithoView.isMountStateDirty();
-
-    // Apply the root margins as padding
-    final Rect rootMargins = layoutState.getRootMargins();
-    if (rootMargins != null && shouldApplyPadding(rootMargins)) {
-      mLithoView.setPadding(
-          mLithoView.getPaddingLeft() + rootMargins.left,
-          mLithoView.getPaddingTop() + rootMargins.top,
-          mLithoView.getPaddingRight() + rootMargins.right,
-          mLithoView.getPaddingBottom() + rootMargins.bottom);
-    }
 
     mIsMounting = true;
 
