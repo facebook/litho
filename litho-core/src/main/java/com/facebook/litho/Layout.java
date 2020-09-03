@@ -708,11 +708,6 @@ class Layout {
   }
 
   private static void handle(ComponentContext parent, Component component, Exception exception) {
-
-    if (!ComponentsConfiguration.enableOnErrorHandling) {
-      throw new ComponentsChainException(component, exception);
-    }
-
     final EventHandler<ErrorEvent> nextHandler = parent.getErrorEventHandler();
     final EventHandler<ErrorEvent> handler;
     final Exception original;

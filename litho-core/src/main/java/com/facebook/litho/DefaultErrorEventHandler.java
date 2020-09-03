@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.config.ComponentsConfiguration;
-
 /** Default implementation of ErrorEvent handler. */
 public class DefaultErrorEventHandler extends ErrorEventHandler {
 
@@ -25,10 +23,6 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
 
   @Override
   public void onError(Exception e) {
-    // TODO(T71762149): This must be removed once the QE is completed.
-    if (ComponentsConfiguration.shouldConsumeUnhandledExceptions) {
-      return;
-    }
     if (e instanceof RuntimeException) {
       throw (RuntimeException) e;
     } else {

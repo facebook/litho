@@ -19,17 +19,12 @@ package com.facebook.samples.litho.kotlin.errors
 import android.os.Bundle
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
 class ErrorHandlingActivity : NavigatableDemoActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    // This feature is currently experimental and not enabled by default.
-    ComponentsConfiguration.enableOnErrorHandling = true
-
     setContentView(
         LithoView.create(
             this,

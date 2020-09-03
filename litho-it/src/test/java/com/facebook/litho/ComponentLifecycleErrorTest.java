@@ -35,7 +35,6 @@ import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +49,6 @@ import org.junit.runner.RunWith;
 public class ComponentLifecycleErrorTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
-  private boolean mPreviousOnErrorConfig;
 
   @Before
   public void assumeDebug() {
@@ -60,19 +58,8 @@ public class ComponentLifecycleErrorTest {
         is(true));
   }
 
-  @Before
-  public void saveConfiguration() {
-    mPreviousOnErrorConfig = ComponentsConfiguration.enableOnErrorHandling;
-  }
-
-  @After
-  public void restoreConfiguration() {
-    ComponentsConfiguration.enableOnErrorHandling = mPreviousOnErrorConfig;
-  }
-
   @Test
   public void testOnCreateLayoutErrorBoundary() throws Exception {
-    ComponentsConfiguration.enableOnErrorHandling = true;
     final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
 
     // Disable reconciliation so that the onCreateLayout is
@@ -91,28 +78,7 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
-  public void testOnCreateLayoutErrorBoundaryWhenDisabled() {
-    ComponentsConfiguration.enableOnErrorHandling = false;
-
-    final ComponentContext c = mComponentsRule.getContext();
-
-    final TestErrorBoundary.Builder builder =
-        TestErrorBoundary.create(c).child(TestCrasherOnCreateLayout.create(c).build());
-
-    RuntimeException exception = null;
-    try {
-      ComponentTestHelper.mountComponent(builder);
-    } catch (RuntimeException e) {
-      exception = e;
-    }
-
-    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayout crash");
-  }
-
-  @Test
   public void testOnCreateLayoutErrorWithoutBoundaryWhenEnabled() {
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
     final ComponentContext c = mComponentsRule.getContext();
 
     final TestCrasherOnCreateLayout.Builder builder = TestCrasherOnCreateLayout.create(c);
@@ -129,8 +95,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnCreateLayoutWithSizeSpecErrorBoundary() throws Exception {
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
     final ComponentContext c = mComponentsRule.getContext();
 
     final Component component =
@@ -144,28 +108,7 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
-  public void testOnCreateLayoutWithSizeSpecErrorBoundaryWhenDisabled() {
-    ComponentsConfiguration.enableOnErrorHandling = false;
-
-    final ComponentContext c = mComponentsRule.getContext();
-
-    final TestErrorBoundary.Builder builder =
-        TestErrorBoundary.create(c).child(TestCrasherOnCreateLayoutWithSizeSpec.create(c).build());
-
-    RuntimeException exception = null;
-    try {
-      ComponentTestHelper.mountComponent(builder);
-    } catch (RuntimeException e) {
-      exception = e;
-    }
-
-    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayoutWithSizeSpec crash");
-  }
-
-  @Test
   public void testOnCreateLayoutWithSizeSpecErrorWithoutBoundaryWhenEnabled() {
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
     final ComponentContext c = mComponentsRule.getContext();
 
     final TestCrasherOnCreateLayoutWithSizeSpec.Builder builder =
@@ -183,8 +126,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnMountErrorBoundary() throws Exception {
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
     final ComponentContext c = mComponentsRule.getContext();
 
     final Component component =
@@ -193,28 +134,7 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
-  public void testOnMountErrorBoundaryWhenDisabled() throws Exception {
-    ComponentsConfiguration.enableOnErrorHandling = false;
-
-    final ComponentContext c = mComponentsRule.getContext();
-
-    final TestErrorBoundary.Builder builder =
-        TestErrorBoundary.create(c).child(TestCrasherOnMount.create(c).build());
-
-    RuntimeException exception = null;
-    try {
-      ComponentTestHelper.mountComponent(builder);
-    } catch (RuntimeException e) {
-      exception = e;
-    }
-
-    assertThat(exception).isNotNull().hasMessageContaining("onMount crash");
-  }
-
-  @Test
   public void testOnMountErrorWithoutBoundaryWhenEnabled() throws Exception {
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
     final ComponentContext c = mComponentsRule.getContext();
 
     final TestCrasherOnMount.Builder builder = TestCrasherOnMount.create(c);
@@ -231,7 +151,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void lifecycleOnErrorIndirectlyPassError() {
-    ComponentsConfiguration.enableOnErrorHandling = true;
     final List<String> info = new ArrayList<>();
     Exception exception = null;
     final ComponentContext context = mLithoViewRule.getContext();
@@ -251,12 +170,10 @@ public class ComponentLifecycleErrorTest {
     assertThat(info)
         .containsExactly(
             "OnErrorPassUpChildTesterSpec->onError", "OnErrorPassUpParentTesterSpec->onError");
-    ComponentsConfiguration.enableOnErrorHandling = false;
   }
 
   @Test
   public void lifecycleOnErrorDirectlyPassError() {
-    ComponentsConfiguration.enableOnErrorHandling = true;
     final List<String> info = new ArrayList<>();
     Exception exception = null;
     final ComponentContext context = mLithoViewRule.getContext();
@@ -276,6 +193,5 @@ public class ComponentLifecycleErrorTest {
     assertThat(exception).isNotNull();
 
     assertThat(info).containsExactly("OnErrorPassUpParentTesterSpec->onError");
-    ComponentsConfiguration.enableOnErrorHandling = false;
   }
 }

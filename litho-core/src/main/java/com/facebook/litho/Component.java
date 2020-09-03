@@ -586,13 +586,11 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private void generateErrorEventHandler(ComponentContext parentContext) {
-    if (ComponentsConfiguration.enableOnErrorHandling && mErrorEventHandler == null) {
-      if (hasOwnErrorHandler()) {
-        mErrorEventHandler =
-            new EventHandler<>(this, ERROR_EVENT_HANDLER_ID, new Object[] {getScopedContext()});
-      } else {
-        mErrorEventHandler = parentContext.getErrorEventHandler();
-      }
+    if (hasOwnErrorHandler()) {
+      mErrorEventHandler =
+          new EventHandler<>(this, ERROR_EVENT_HANDLER_ID, new Object[] {getScopedContext()});
+    } else {
+      mErrorEventHandler = parentContext.getErrorEventHandler();
     }
   }
 

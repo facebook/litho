@@ -114,8 +114,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (ComponentsConfiguration.enableOnErrorHandling
-        && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
 
@@ -576,17 +575,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * ComponentUtils#raise(ComponentContext, Exception)} instead.
    */
   protected static void dispatchErrorEvent(ComponentContext c, Exception e) {
-    if (ComponentsConfiguration.enableOnErrorHandling) {
-      final ErrorEvent errorEvent = new ErrorEvent();
-      errorEvent.exception = e;
-      dispatchErrorEvent(c, errorEvent);
-    } else {
-      if (e instanceof RuntimeException) {
-        throw (RuntimeException) e;
-      } else {
-        throw new RuntimeException(e);
-      }
-    }
+    final ErrorEvent errorEvent = new ErrorEvent();
+    errorEvent.exception = e;
+    dispatchErrorEvent(c, errorEvent);
   }
 
   /** For internal use, only. */
