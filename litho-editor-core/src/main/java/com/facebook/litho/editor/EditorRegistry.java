@@ -95,14 +95,18 @@ public final class EditorRegistry {
   }
 
   static {
-    final NumberEditorInstance numberEditor = new NumberEditorInstance();
-    registerEditor(Number.class, numberEditor);
-    registerEditor(int.class, numberEditor);
-    registerEditor(float.class, numberEditor);
-    registerEditor(double.class, numberEditor);
-    registerEditor(long.class, numberEditor);
-    registerEditor(short.class, numberEditor);
-    registerEditor(byte.class, numberEditor);
+    registerEditor(int.class, new NumberEditorInstance<>(int.class));
+    registerEditor(float.class, new NumberEditorInstance<>(float.class));
+    registerEditor(double.class, new NumberEditorInstance<>(double.class));
+    registerEditor(long.class, new NumberEditorInstance<>(long.class));
+    registerEditor(short.class, new NumberEditorInstance<>(short.class));
+    registerEditor(byte.class, new NumberEditorInstance<>(byte.class));
+    registerEditor(Integer.class, new NumberEditorInstance<>(Integer.class));
+    registerEditor(Float.class, new NumberEditorInstance<>(Float.class));
+    registerEditor(Double.class, new NumberEditorInstance<>(Double.class));
+    registerEditor(Long.class, new NumberEditorInstance<>(Long.class));
+    registerEditor(Short.class, new NumberEditorInstance<>(Short.class));
+    registerEditor(Byte.class, new NumberEditorInstance<>(Byte.class));
 
     registerEditor(CharSequence.class, new StringEditorInstance());
 

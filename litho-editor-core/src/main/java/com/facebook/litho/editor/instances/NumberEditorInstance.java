@@ -21,7 +21,13 @@ import com.facebook.litho.editor.model.EditorNumber;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 
-public class NumberEditorInstance implements Editor {
+public class NumberEditorInstance<T extends Number> implements Editor {
+
+  private final Class<T> mClazz;
+
+  public NumberEditorInstance(final Class<T> clazz) {
+    mClazz = clazz;
+  }
 
   @Override
   public EditorValue read(Field f, Object node) {
@@ -30,29 +36,27 @@ public class NumberEditorInstance implements Editor {
 
   @Override
   public boolean write(final Field f, final Object node, final EditorValue values) {
-    values.whenPrimitive(
-        new EditorValue.DefaultEditorPrimitiveVisitor() {
+    values.when(
+        new EditorValue.DefaultEditorVisitor() {
           @Override
-          public boolean isNumber(String[] path, EditorNumber number) {
+          public Void isNumber(EditorNumber number) {
             Number value = number.value;
-            Class<?> clazz = f.getType();
-            if (clazz == int.class || clazz == Integer.class) {
+            if (mClazz == int.class || mClazz == Integer.class) {
               value = value.intValue();
-            } else if (clazz == float.class || clazz == Float.class) {
+            } else if (mClazz == float.class || mClazz == Float.class) {
               value = value.floatValue();
-            } else if (clazz == short.class || clazz == Short.class) {
+            } else if (mClazz == short.class || mClazz == Short.class) {
               value = value.shortValue();
-            } else if (clazz == byte.class || clazz == Byte.class) {
+            } else if (mClazz == byte.class || mClazz == Byte.class) {
               value = value.byteValue();
-            } else if (clazz == double.class || clazz == Double.class) {
+            } else if (mClazz == double.class || mClazz == Double.class) {
               value = value.doubleValue();
-            } else if (clazz == long.class || clazz == Long.class) {
+            } else if (mClazz == long.class || mClazz == Long.class) {
               value = value.longValue();
-            } else {
-              value = value.floatValue();
-            }
+            } // else trust the value the user has input is assignable
+            // to the one expected by the field
             EditorUtils.setNodeUNSAFE(f, node, value);
-            return true;
+            return null;
           }
         });
     return true;
