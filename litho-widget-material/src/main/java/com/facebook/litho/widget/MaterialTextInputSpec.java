@@ -28,6 +28,7 @@ import android.text.TextWatcher;
 import android.text.method.MovementMethod;
 import android.view.KeyEvent;
 import android.widget.EditText;
+import androidx.core.util.ObjectsCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -146,6 +147,8 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
+      @Prop(optional = true) boolean counterEnabled,
+      @Prop(optional = true) int counterMaxLength,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
         TextInputSpec.createAndMeasureEditText(
@@ -179,10 +182,9 @@ class MaterialTextInputSpec {
             error,
             errorDrawable,
             savedText.get());
-
     TextInputLayout textInputLayout = new TextInputLayout(c.getAndroidContext());
-    textInputLayout.addView(editText);
-    textInputLayout.setHint(hint);
+    setParams(editText, textInputLayout, hint, counterEnabled, counterMaxLength);
+
     textInputLayout.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
@@ -216,38 +218,48 @@ class MaterialTextInputSpec {
       @Prop(optional = true) Diff<Integer> cursorDrawableRes,
       @Prop(optional = true) Diff<MovementMethod> movementMethod,
       @Prop(optional = true, resType = ResType.STRING) Diff<CharSequence> error,
+      @Prop(optional = true) Diff<Boolean> counterEnabled,
+      @Prop(optional = true) Diff<Integer> counterMaxLength,
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedEditTextRef,
       @State Diff<AtomicReference<CharSequence>> savedText) {
-    return TextInputSpec.shouldUpdate(
-        initialText,
-        hint,
-        inputBackground,
-        shadowRadius,
-        shadowDx,
-        shadowDy,
-        shadowColor,
-        textColorStateList,
-        hintColorStateList,
-        highlightColor,
-        textSize,
-        typeface,
-        textAlignment,
-        gravity,
-        editable,
-        inputType,
-        imeOptions,
-        inputFilters,
-        ellipsize,
-        multiline,
-        minLines,
-        maxLines,
-        cursorDrawableRes,
-        movementMethod,
-        error,
-        measureSeqNumber,
-        mountedEditTextRef,
-        savedText);
+    boolean shouldUpdateEditText =
+        TextInputSpec.shouldUpdate(
+            initialText,
+            hint,
+            inputBackground,
+            shadowRadius,
+            shadowDx,
+            shadowDy,
+            shadowColor,
+            textColorStateList,
+            hintColorStateList,
+            highlightColor,
+            textSize,
+            typeface,
+            textAlignment,
+            gravity,
+            editable,
+            inputType,
+            imeOptions,
+            inputFilters,
+            ellipsize,
+            multiline,
+            minLines,
+            maxLines,
+            cursorDrawableRes,
+            movementMethod,
+            error,
+            measureSeqNumber,
+            mountedEditTextRef,
+            savedText);
+    if (shouldUpdateEditText
+        || !ObjectsCompat.equals(counterEnabled.getPrevious(), counterEnabled.getNext())
+        || !ObjectsCompat.equals(counterMaxLength.getPrevious(), counterMaxLength.getNext())) {
+      return true;
+    }
+
+    return false;
   }
 
   @OnCreateMountContent
@@ -284,6 +296,8 @@ class MaterialTextInputSpec {
       @Prop(optional = true) MovementMethod movementMethod,
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
+      @Prop(optional = true) boolean counterEnabled,
+      @Prop(optional = true) int counterMaxLength,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c.getAndroidContext());
@@ -320,10 +334,20 @@ class MaterialTextInputSpec {
         savedText.get(),
         error,
         errorDrawable);
-    textInputLayout.setHint(hint);
-    textInputLayout.addView(editText);
-
+    setParams(editText, textInputLayout, hint, counterEnabled, counterMaxLength);
     editText.setTextState(savedText);
+  }
+
+  static void setParams(
+      EditText editText,
+      TextInputLayout textInputLayout,
+      CharSequence hint,
+      boolean counterEnabled,
+      int counterMaxLength) {
+    textInputLayout.setHint(hint);
+    textInputLayout.setCounterEnabled(counterEnabled);
+    textInputLayout.setCounterMaxLength(counterMaxLength);
+    textInputLayout.addView(editText);
   }
 
   @OnBind
