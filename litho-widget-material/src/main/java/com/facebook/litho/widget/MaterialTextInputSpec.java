@@ -252,10 +252,7 @@ class MaterialTextInputSpec {
 
   @OnCreateMountContent
   protected static TextInputLayout onCreateMountContent(Context c) {
-    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
-    TextInputLayout textInputLayout = new TextInputLayout(c);
-    textInputLayout.addView(editText);
-    return textInputLayout;
+    return new TextInputLayout(c);
   }
 
   @OnMount
@@ -289,8 +286,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
-    final EditTextWithEventHandlers editText =
-        (EditTextWithEventHandlers) textInputLayout.getEditText();
+    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c.getAndroidContext());
     mountedEditTextRef.set(editText);
 
     TextInputSpec.setParams(
@@ -325,6 +321,8 @@ class MaterialTextInputSpec {
         error,
         errorDrawable);
     textInputLayout.setHint(hint);
+    textInputLayout.addView(editText);
+
     editText.setTextState(savedText);
   }
 
