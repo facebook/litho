@@ -27,10 +27,11 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import java.util.Map;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
-public class LithoRenderUnit extends RenderUnit<Object> {
+public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
 
   final LayoutOutput output;
 
@@ -79,6 +80,11 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     return output.getComponent().getMountType() == ComponentLifecycle.MountType.DRAWABLE
         ? RenderType.DRAWABLE
         : RenderType.VIEW;
+  }
+
+  @Override
+  public boolean getMatchHostBounds() {
+    return (output.getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
   }
 
   public static class LithoMountBinder implements Binder<LithoRenderUnit, Object> {

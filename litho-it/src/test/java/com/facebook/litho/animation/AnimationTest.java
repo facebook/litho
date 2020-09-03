@@ -105,20 +105,7 @@ public class AnimationTest {
                     .TestComponent() { // This could be a lambda but it fails ci.
                   @Override
                   public Component getComponent(ComponentContext componentContext, boolean state) {
-                    return Row.create(componentContext)
-                        .heightDip(200)
-                        .widthDip(200)
-                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
-                        .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
-                        .child(
-                            Row.create(componentContext)
-                                .heightDip(40)
-                                .widthDip(40)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)
-                                .build())
-                        .build();
+                    return getAnimatingXPropertyComponent();
                   }
                 })
             .build();
@@ -1190,6 +1177,86 @@ public class AnimationTest {
     mLithoViewRule.useLithoView(lithoView1);
 
     mTransitionTestRule.step(1000);
+  }
+
+  @Test
+  public void
+      animationProperties_animatingPropertyOnRootComponent_elementShouldAnimateInTheXAxis() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X)
+                    .animate(AnimatedProperties.Y)
+                    .animate(AnimatedProperties.WIDTH)
+                    .animate(AnimatedProperties.HEIGHT))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .heightDip(state ? 200 : 100)
+                        .widthDip(state ? 200 : 100)
+                        .backgroundColor(Color.RED)
+                        .positionPx(YogaEdge.LEFT, !state ? 0 : 100)
+                        .positionPx(YogaEdge.TOP, !state ? 0 : 100)
+                        .transitionKey(TRANSITION_KEY)
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    View lithoView = mLithoViewRule.getLithoView();
+
+    // 160 is equal to height and width of 200 - 40 for the size of the row.
+    assertThat(lithoView.getX())
+        .describedAs("view X axis should be at start position")
+        .isEqualTo(0);
+    assertThat(lithoView.getY())
+        .describedAs("view Y axis should be at start position")
+        .isEqualTo(0);
+    assertThat(lithoView.getWidth())
+        .describedAs("view Width should be at start position")
+        .isEqualTo(320);
+    assertThat(lithoView.getHeight())
+        .describedAs("view Height should be at start position")
+        .isEqualTo(422);
+
+    mStateCaller.update();
+
+    // X after state update should be at 0 because is going to be animated.
+    assertThat(lithoView.getX()).describedAs("view X axis after toggle").isEqualTo(0);
+    // Y after state update should be at 0 because is going to be animated.
+    assertThat(lithoView.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
+    // Width after state update should be at 320 because is going to be animated.
+    assertThat(lithoView.getWidth()).describedAs("view Width after toggle").isEqualTo(320);
+    // Height after state update should be at 422 because is going to be animated.
+    assertThat(lithoView.getHeight()).describedAs("view Height after toggle").isEqualTo(422);
+    mTransitionTestRule.step(5);
+
+    // Check java doc for how we calculate this value.
+    assertThat(lithoView.getX()).describedAs("view X axis after 5 frames").isEqualTo(41.31759f);
+    assertThat(lithoView.getY()).describedAs("view Y axis after 5 frames").isEqualTo(28.238356f);
+    assertThat(lithoView.getWidth()).describedAs("view Width axis after 5 frames").isEqualTo(128);
+    assertThat(lithoView.getHeight()).describedAs("view Height axis after 5 frames").isEqualTo(128);
+
+    // Enough frames to finish all animations
+    mTransitionTestRule.step(500);
+
+    assertThat(lithoView.getX()).describedAs("view X axis after animation finishes").isEqualTo(100);
+    assertThat(lithoView.getY()).describedAs("view Y axis after animation finishes").isEqualTo(100);
+    assertThat(lithoView.getWidth())
+        .describedAs("view Width after animation finishes")
+        .isEqualTo(200);
+    assertThat(lithoView.getHeight())
+        .describedAs("view Height after animation finishes")
+        .isEqualTo(200);
   }
 
   private Component getAnimatingXPropertyComponent() {

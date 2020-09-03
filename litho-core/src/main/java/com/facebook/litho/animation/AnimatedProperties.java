@@ -20,9 +20,13 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.BoundsHelper;
-import com.facebook.litho.ComponentHost;
 import com.facebook.litho.LithoView;
+import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import com.facebook.rendercore.utils.BoundsUtils;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -30,14 +34,14 @@ import javax.annotation.Nullable;
 public final class AnimatedProperties {
 
   /**
-   * The absolute X-position of a mount content, relative to the {@link
-   * com.facebook.litho.LithoView} that is rendering this component tree.
+   * The absolute X-position of a mount content, relative to the root {@link Host} that is rendering
+   * this component tree.
    */
   public static final AnimatedProperty X = new XAnimatedProperty();
 
   /**
-   * The absolute Y-position of a mount content, relative to the {@link
-   * com.facebook.litho.LithoView} that is rendering this component tree.
+   * The absolute Y-position of a mount content, relative to the root {@link Host} that is rendering
+   * this component tree.
    */
   public static final AnimatedProperty Y = new YAnimatedProperty();
 
@@ -105,13 +109,13 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      if (mountContent instanceof LithoView) {
-        return ((LithoView) mountContent).getX();
+      if (mountContent instanceof Host && mountContent instanceof RootHost) {
+        return ((Host) mountContent).getX();
       } else if (mountContent instanceof View) {
-        return getPositionRelativeToLithoView((View) mountContent, true);
+        return getPositionRelativeToRootHost((View) mountContent, true);
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
-        float parentX = getPositionRelativeToLithoView(getHostView(drawable), true);
+        float parentX = getPositionRelativeToRootHost(getHostView(drawable), true);
         return parentX + drawable.getBounds().left;
       } else {
         throw new UnsupportedOperationException(
@@ -126,15 +130,15 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof LithoView) {
+      if (mountContent instanceof Host && mountContent instanceof RootHost) {
         ((View) mountContent).setX(value);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
-        float parentX = getPositionRelativeToLithoView((View) view.getParent(), true);
+        float parentX = getPositionRelativeToRootHost((View) view.getParent(), true);
         view.setX(value - parentX);
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
-        float parentX = getPositionRelativeToLithoView(getHostView(drawable), true);
+        float parentX = getPositionRelativeToRootHost(getHostView(drawable), true);
         BoundsHelper.applyXYToDrawableForAnimation(
             drawable, (int) (value - parentX), drawable.getBounds().top);
       } else {
@@ -162,13 +166,13 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      if (mountContent instanceof LithoView) {
-        return ((LithoView) mountContent).getY();
+      if (mountContent instanceof Host && mountContent instanceof RootHost) {
+        return ((Host) mountContent).getY();
       } else if (mountContent instanceof View) {
-        return getPositionRelativeToLithoView((View) mountContent, false);
+        return getPositionRelativeToRootHost((View) mountContent, false);
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
-        float parentY = getPositionRelativeToLithoView(getHostView(drawable), false);
+        float parentY = getPositionRelativeToRootHost(getHostView(drawable), false);
         return parentY + drawable.getBounds().top;
       } else {
         throw new UnsupportedOperationException(
@@ -183,15 +187,15 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof LithoView) {
+      if (mountContent instanceof Host && mountContent instanceof RootHost) {
         ((View) mountContent).setY(value);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
-        float parentY = getPositionRelativeToLithoView((View) view.getParent(), false);
+        float parentY = getPositionRelativeToRootHost((View) view.getParent(), false);
         view.setY(value - parentY);
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
-        float parentY = getPositionRelativeToLithoView(getHostView(drawable), false);
+        float parentY = getPositionRelativeToRootHost(getHostView(drawable), false);
         BoundsHelper.applyXYToDrawableForAnimation(
             drawable, drawable.getBounds().left, (int) (value - parentY));
       } else {
@@ -236,8 +240,8 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof ComponentHost) {
-        final ComponentHost view = (ComponentHost) mountContent;
+      if (mountContent instanceof Host) {
+        final Host view = (Host) mountContent;
         if (view instanceof LithoView) {
           ((LithoView) view).setAnimatedWidth((int) value);
         } else {
@@ -246,7 +250,7 @@ public final class AnimatedProperties {
               left, view.getTop(), (int) (left + value), view.getBottom(), null, view, false);
         }
 
-        final List<Drawable> animatingDrawables = view.getLinkedDrawablesForAnimation();
+        final List<Drawable> animatingDrawables = getLinkedDrawables(view);
         if (animatingDrawables != null) {
           final int width = (int) value;
           final int height = view.getHeight();
@@ -303,8 +307,8 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof ComponentHost) {
-        final ComponentHost view = (ComponentHost) mountContent;
+      if (mountContent instanceof Host) {
+        final Host view = (Host) mountContent;
         if (view instanceof LithoView) {
           ((LithoView) view).setAnimatedHeight((int) value);
         } else {
@@ -313,7 +317,7 @@ public final class AnimatedProperties {
               view.getLeft(), top, view.getRight(), (int) (top + value), null, view, false);
         }
 
-        final List<Drawable> animatingDrawables = view.getLinkedDrawablesForAnimation();
+        final List<Drawable> animatingDrawables = getLinkedDrawables(view);
         if (animatingDrawables != null) {
           final int width = view.getWidth();
           final int height = (int) value;
@@ -501,17 +505,17 @@ public final class AnimatedProperties {
   }
 
   /**
-   * @return the x or y position of the given view relative to the LithoView that this ComponentTree
-   *     is being rendered in to.
+   * @return the x or y position of the given view relative to the root {@link Host} that this
+   *     ComponentTree is being rendered in to.
    */
-  private static float getPositionRelativeToLithoView(View mountContent, boolean getX) {
+  private static float getPositionRelativeToRootHost(View mountContent, boolean getX) {
     float pos = 0;
     @Nullable View currentView = mountContent;
     while (true) {
       if (currentView == null || !(currentView.getParent() instanceof View)) {
         return pos;
       }
-      if (currentView instanceof LithoView) {
+      if (currentView instanceof Host && currentView instanceof RootHost) {
         return pos;
       }
       pos += getX ? currentView.getX() : currentView.getY();
@@ -532,5 +536,23 @@ public final class AnimatedProperties {
         return null;
       }
     }
+  }
+
+  private static @Nullable List<Drawable> getLinkedDrawables(Host host) {
+    List<Drawable> drawables = null;
+
+    for (int i = 0, size = host.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = host.getMountItemAt(i);
+      if (mountItem.getContent() instanceof Drawable
+          && mountItem.getRenderTreeNode().getRenderUnit() instanceof TransitionRenderUnit
+          && ((TransitionRenderUnit) mountItem.getRenderTreeNode().getRenderUnit())
+              .getMatchHostBounds()) {
+        if (drawables == null) {
+          drawables = new ArrayList<>();
+        }
+        drawables.add((Drawable) mountItem.getContent());
+      }
+    }
+    return drawables;
   }
 }
