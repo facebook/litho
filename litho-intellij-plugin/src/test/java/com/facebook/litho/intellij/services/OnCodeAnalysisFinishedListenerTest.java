@@ -38,7 +38,6 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
     super("testdata/actions");
   }
 
-  @Ignore("T73932936")
   @Test
   public void daemonFinished_settingsTrue_resolved() throws IOException {
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
