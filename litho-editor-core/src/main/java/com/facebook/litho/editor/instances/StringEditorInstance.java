@@ -32,12 +32,12 @@ public class StringEditorInstance implements Editor {
 
   @Override
   public boolean write(final Field f, final Object node, final EditorValue values) {
-    values.whenPrimitive(
-        new EditorValue.DefaultEditorPrimitiveVisitor() {
+    values.when(
+        new EditorValue.DefaultEditorVisitor() {
           @Override
-          public boolean isString(String[] path, EditorString string) {
+          public Void isString(EditorString string) {
             EditorUtils.setNodeUNSAFE(f, node, string.value);
-            return true;
+            return null;
           }
         });
     return true;

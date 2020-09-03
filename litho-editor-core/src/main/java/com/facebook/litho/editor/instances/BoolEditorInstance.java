@@ -30,12 +30,12 @@ public class BoolEditorInstance implements Editor {
 
   @Override
   public boolean write(final Field f, final Object node, final EditorValue values) {
-    values.whenPrimitive(
-        new EditorValue.DefaultEditorPrimitiveVisitor() {
+    values.when(
+        new EditorValue.DefaultEditorVisitor() {
           @Override
-          public boolean isBool(String[] path, EditorBool bool) {
+          public Void isBool(EditorBool bool) {
             EditorUtils.setNodeUNSAFE(f, node, bool.value);
-            return true;
+            return null;
           }
         });
     return true;
