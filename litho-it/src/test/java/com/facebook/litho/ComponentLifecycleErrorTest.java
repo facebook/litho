@@ -20,6 +20,9 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
@@ -33,6 +36,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
+import com.facebook.litho.widget.ThrowExceptionGrandChildTester;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -193,5 +197,22 @@ public class ComponentLifecycleErrorTest {
     assertThat(exception).isNotNull();
 
     assertThat(info).containsExactly("OnErrorPassUpParentTesterSpec->onError");
+  }
+
+  @Test
+  public void testOwnErrorHandler() {
+    ErrorEventHandler errorEventHandler = mock(ErrorEventHandler.class);
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    Component component = ThrowExceptionGrandChildTester.create(context).build();
+    ComponentTree.Builder componentTreeBuilder = ComponentTree.create(context);
+
+    ComponentTree componentTree = componentTreeBuilder.errorHandler(errorEventHandler).build();
+
+    componentTree.setRoot(component);
+    mLithoViewRule.useComponentTree(componentTree);
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    verify(errorEventHandler).onError(any());
   }
 }
