@@ -210,7 +210,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       // list.
       boolean found = false;
       for (int i = extensions.size() - 1; i >= 0; i--) {
-        if (extensions.get(i).equalTypes(extension)) {
+        if (extensions.get(i).binder.getClass() == extension.binder.getClass()) {
           extensions.remove(i);
           found = true;
           break;
@@ -419,23 +419,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       return new Extension<>(model, binder);
     }
 
-    boolean equalTypes(Extension extension) {
-      return model.getClass() == extension.model.getClass()
-          && binder.getClass() == extension.binder.getClass();
-    }
-
     boolean shouldUpdate(
         final Extension<MODEL, CONTENT> prevExtension,
         final @Nullable Object currentLayoutData,
         final @Nullable Object nextLayoutData) {
-      if (!equalTypes(prevExtension)) {
-        throw new IllegalArgumentException(
-            "The types to operate on do not match!\nNew model: "
-                + model
-                + ", old model: "
-                + prevExtension.model);
-      }
-
       return binder.shouldUpdate(prevExtension.model, model, currentLayoutData, nextLayoutData);
     }
 
