@@ -1771,7 +1771,8 @@ public class LayoutState
     if (!c.isReconciliationEnabled()
         && !ComponentsConfiguration.useInternalNodesForLayoutDiffing
         && !ComponentsConfiguration.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun) {
+        && !ComponentsConfiguration.isEndToEndTestRun
+        && !ComponentsConfiguration.keepInternalNodes) {
       layoutState.mLayoutRoot = null;
     }
   }

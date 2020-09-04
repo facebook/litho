@@ -60,6 +60,7 @@ public class ComponentTreeDumpingHelperTest {
     lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
 
     final String string = ComponentTreeDumpingHelper.dumpContextTree(componentContext);
-    assertThat(string).containsPattern("InlineLayout\\{V}\n" + "  SimpleMountSpecTester\\{V}");
+    assertThat(string)
+        .containsPattern("InlineLayout\\{V}\n" + "  SimpleMountSpecTester\\{V 100.0x100.0}");
   }
 }

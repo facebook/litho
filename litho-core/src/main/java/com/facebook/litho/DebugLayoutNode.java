@@ -435,4 +435,12 @@ public final class DebugLayoutNode {
   public EventHandler getClickHandler() {
     return mNode.getNodeInfo() != null ? mNode.getNodeInfo().getClickHandler() : null;
   }
+
+  public float getLayoutWidth() {
+    return mNode.getYogaNode().getLayoutWidth();
+  }
+
+  public float getLayoutHeight() {
+    return mNode.getYogaNode().getLayoutHeight();
+  }
 }

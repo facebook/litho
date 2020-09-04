@@ -507,7 +507,9 @@ public class LithoView extends ComponentHost implements RootHost {
                   + ", component: "
                   + (mComponentTree.getRoot() != null
                       ? mComponentTree.getRoot().getSimpleName()
-                      : null),
+                      : null)
+                  + ", tree: "
+                  + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()),
               100);
         }
       }
