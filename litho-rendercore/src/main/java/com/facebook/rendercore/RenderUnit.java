@@ -429,7 +429,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
         final @Nullable Object currentLayoutData,
         final @Nullable Object nextLayoutData) {
       if (!equalTypes(prevExtension)) {
-        throw new IllegalArgumentException("The types to operate on to not match!");
+        throw new IllegalArgumentException(
+            "The types to operate on do not match!\nNew model: "
+                + model
+                + ", old model: "
+                + prevExtension.model);
       }
 
       return binder.shouldUpdate(prevExtension.model, model, currentLayoutData, nextLayoutData);
