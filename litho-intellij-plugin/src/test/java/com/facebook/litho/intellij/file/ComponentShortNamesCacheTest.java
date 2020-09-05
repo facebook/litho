@@ -26,6 +26,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ComponentShortNamesCacheTest extends LithoPluginIntellijTest {
@@ -34,6 +35,7 @@ public class ComponentShortNamesCacheTest extends LithoPluginIntellijTest {
     super("testdata/file");
   }
 
+  @Ignore("T73932936")
   @Test
   public void getAllClassNames() throws IOException {
     // Add file to cache
