@@ -5,6 +5,7 @@ load(
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JUNIT_TARGET",
     "LITHO_RENDERCORE_TARGET",
+    "LITHO_ROBOLECTRIC_V4_TARGET",
     "litho_android_library",
 )
 
@@ -15,10 +16,11 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_RENDERCORE_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_JUNIT_TARGET,
+        LITHO_RENDERCORE_TARGET,
+        LITHO_ROBOLECTRIC_V4_TARGET,
     ],
 )

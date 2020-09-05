@@ -25,6 +25,7 @@ import android.content.ContextWrapper;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pools;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,6 +103,12 @@ public class MountItemsPool {
     }
 
     return pool;
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static void clear() {
+    sMountContentPoolsByContext.clear();
+    sDestroyedRootContexts.clear();
   }
 
   /**
