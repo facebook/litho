@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.annotation;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 
+import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -1247,13 +1248,13 @@ public class BuilderGenerator {
       String name,
       List<ParameterSpec> parameters,
       CodeBlock codeBlock) {
-    final MethodSpec.Builder builder =
+    final MethodSpec.Builder methodBuilder =
         MethodSpec.methodBuilder(name)
             .addModifiers(Modifier.PUBLIC)
             .returns(getBuilderType(specModel));
 
     if (prop.isCommonProp()) {
-      builder.addAnnotation(Override.class);
+      methodBuilder.addAnnotation(Override.class);
 
       if (!prop.overrideCommonPropBehavior()) {
         final CodeBlock.Builder superCodeBlock = CodeBlock.builder().add("super.$L(", name);
@@ -1266,26 +1267,32 @@ public class BuilderGenerator {
           isFirstParam = false;
         }
 
-        builder.addCode(superCodeBlock.add(");\n").build());
+        methodBuilder.addCode(superCodeBlock.add(");\n").build());
       }
     }
 
     for (ParameterSpec param : parameters) {
-      builder.addParameter(param);
+      methodBuilder.addParameter(param);
     }
 
-    builder.addCode(codeBlock);
+    methodBuilder.addCode(codeBlock);
+
+    methodBuilder.addAnnotation(
+        AnnotationSpec.builder(PropSetter.class)
+            .addMember("value", "$S", prop.getName())
+            .addMember("required", "$L", !prop.isOptional())
+            .build());
     if (!prop.isOptional()) {
-      builder.addAnnotation(
+      methodBuilder.addAnnotation(
           AnnotationSpec.builder(RequiredProp.class)
               .addMember("value", "$S", prop.getName())
               .build());
-      builder.addStatement("$L.set($L)", "mRequired", requiredIndex);
+      methodBuilder.addStatement("$L.set($L)", "mRequired", requiredIndex);
     }
 
-    builder.addStatement("return this");
+    methodBuilder.addStatement("return this");
 
-    return builder;
+    return methodBuilder;
   }
 
   private static MethodSpec generateEventDeclarationBuilderMethod(
