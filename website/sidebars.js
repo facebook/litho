@@ -72,6 +72,7 @@ module.exports = {
       'unit-testing',
       'subcomponent-testing',
       'prop-matching',
+      'testing-treeprops',
       'injectprop-matching',
       'event-handler-testing',
       'espresso-testing',

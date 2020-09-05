@@ -68,6 +68,7 @@
   - id: unit-testing
   - id: subcomponent-testing
   - id: prop-matching
+  - id: testing-treeprops
   - id: injectprop-matching
   - id: event-handler-testing
   - id: espresso-testing
