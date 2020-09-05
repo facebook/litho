@@ -408,12 +408,13 @@ public class ComponentContext {
     return mComponentTree;
   }
 
-  protected void setTreeProps(@Nullable TreeProps treeProps) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  public void setTreeProps(@Nullable TreeProps treeProps) {
     mTreeProps = treeProps;
   }
 
-  @Nullable
-  protected TreeProps getTreeProps() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  public @Nullable TreeProps getTreeProps() {
     return mTreeProps;
   }
 
