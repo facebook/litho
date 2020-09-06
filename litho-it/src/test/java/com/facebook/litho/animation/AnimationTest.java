@@ -37,6 +37,7 @@ import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.TestAnimationMount;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
 import com.facebook.litho.widget.Text;
@@ -1302,5 +1303,73 @@ public class AnimationTest {
     // Advance to the end of the return transition
     mTransitionTestRule.step(5);
     assertThat(view.getX()).describedAs("x pos after return transition").isEqualTo(160);
+  }
+
+  @Test
+  public void
+      animation_disappearAnimationOnNestedLithoViews_elementShouldDisappearAnimatingAlpha() {
+    final boolean useTransitionsExtension = ComponentsConfiguration.useTransitionsExtension;
+    ComponentsConfiguration.useTransitionsExtension = true;
+    final StateCaller innerStateCaller = new StateCaller();
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.ALPHA)
+                    .appearFrom(0)
+                    .disappearTo(0))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Column.create(componentContext)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.YELLOW))
+                        .child(
+                            TestAnimationMount.create(componentContext)
+                                .stateCaller(innerStateCaller))
+                        .child(
+                            !state
+                                ? Row.create(componentContext)
+                                    .heightDip(50)
+                                    .widthDip(50)
+                                    .backgroundColor(Color.RED)
+                                    .viewTag(TRANSITION_KEY)
+                                    .transitionKey(TRANSITION_KEY)
+                                    .key(TRANSITION_KEY)
+                                : null)
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    // We move 10 frames to account for the appear animation.
+    mTransitionTestRule.step(10);
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View innerView = mLithoViewRule.findViewWithTag("TestAnimationMount");
+    // Here we get inner LithoView
+    LithoView innerLithoView = (LithoView) innerView.getParent();
+
+    // Update state on both
+    mStateCaller.update();
+    innerStateCaller.update();
+    // We look for the same view
+    innerView = mLithoViewRule.findViewWithTag("TestAnimationMount");
+
+    assertThat(innerLithoView)
+        .describedAs("We mantain the same LithoView")
+        .isEqualTo(innerView.getParent());
+
+    ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
   }
 }

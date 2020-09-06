@@ -186,6 +186,11 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
+  public @Nullable MountItem getRootItem() {
+    return mIndexToMountedItemMap != null ? mIndexToMountedItemMap.get(ROOT_HOST_ID) : null;
+  }
+
+  @Override
   public Object getContentAt(int position) {
     final MountItem mountItem = getItemAt(position);
     if (mountItem == null) {

@@ -54,6 +54,9 @@ public class MountDelegate {
 
     boolean isRootItem(int position);
 
+    @Nullable
+    MountItem getRootItem();
+
     Object getContentAt(int position);
 
     Object getContentById(long id);

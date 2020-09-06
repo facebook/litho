@@ -2708,6 +2708,11 @@ class MountState
     return mountItem == mIndexToItemMap.get(ROOT_HOST_ID);
   }
 
+  @Override
+  public @Nullable MountItem getRootItem() {
+    return mIndexToItemMap != null ? mIndexToItemMap.get(ROOT_HOST_ID) : null;
+  }
+
   int getItemCount() {
     assertMainThread();
     return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;

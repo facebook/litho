@@ -512,22 +512,23 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     disappearingGroup.add(type, item);
   }
 
-  private static void remountHostToRootIfNeeded(int index, MountItem mountItem) {
-    final Object content = mountItem.getContent();
-    final Host host = mountItem.getHost();
-
-    if (host == null) {
+  private void remountHostToRootIfNeeded(int index, MountItem mountItem) {
+    final Host rootHost = getMountTarget().getRootItem().getHost();
+    final Host originalHost = mountItem.getHost();
+    if (originalHost == null) {
       throw new IllegalStateException(
           "Disappearing item host should never be null. Index: " + index);
     }
+
+    if (rootHost == originalHost) {
+      // Already mounted to the root
+      return;
+    }
+
+    final Object content = mountItem.getContent();
     if (content == null) {
       throw new IllegalStateException(
           "Disappearing item content should never be null. Index: " + index);
-    }
-
-    if (!(host.getParent() instanceof Host)) {
-      // Already mounted to the root
-      return;
     }
 
     // Before unmounting item get its position inside the root
@@ -535,18 +536,12 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     int top = 0;
     int right;
     int bottom;
-    Host itemHost = host;
-    Host rootHost = host;
     // Get left/top position of the item's host first
-    while (itemHost != null) {
-      left += itemHost.getLeft();
-      top += itemHost.getTop();
-      if (itemHost.getParent() instanceof Host) {
-        itemHost = (Host) itemHost.getParent();
-      } else {
-        rootHost = itemHost;
-        itemHost = null;
-      }
+    Host host = originalHost;
+    while (host != rootHost) {
+      left += host.getLeft();
+      top += host.getTop();
+      host = (Host) host.getParent();
     }
 
     if (content instanceof View) {
@@ -564,7 +559,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
 
     // Unmount from the current host
-    host.unmount(mountItem);
+    originalHost.unmount(mountItem);
 
     // Apply new bounds to the content as it will be mounted in the root now
     BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
