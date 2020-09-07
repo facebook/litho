@@ -49,6 +49,7 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.core.util.ObjectsCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -509,7 +510,7 @@ class TextInputSpec {
     if (SDK_INT >= JELLY_BEAN_MR1) {
       editText.setTextAlignment(textAlignment);
     }
-    if (text != null && !equals(editText.getText().toString(), text.toString())) {
+    if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
     }
   }
@@ -551,82 +552,82 @@ class TextInputSpec {
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedView,
       @State Diff<AtomicReference<CharSequence>> savedText) {
-    if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
+    if (!ObjectsCompat.equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
     }
-    if (!equals(initialText.getPrevious(), initialText.getNext())) {
+    if (!ObjectsCompat.equals(initialText.getPrevious(), initialText.getNext())) {
       return true;
     }
-    if (!equals(hint.getPrevious(), hint.getNext())) {
+    if (!ObjectsCompat.equals(hint.getPrevious(), hint.getNext())) {
       return true;
     }
-    if (!equals(shadowRadius.getPrevious(), shadowRadius.getNext())) {
+    if (!ObjectsCompat.equals(shadowRadius.getPrevious(), shadowRadius.getNext())) {
       return true;
     }
-    if (!equals(shadowDx.getPrevious(), shadowDx.getNext())) {
+    if (!ObjectsCompat.equals(shadowDx.getPrevious(), shadowDx.getNext())) {
       return true;
     }
-    if (!equals(shadowDy.getPrevious(), shadowDy.getNext())) {
+    if (!ObjectsCompat.equals(shadowDy.getPrevious(), shadowDy.getNext())) {
       return true;
     }
-    if (!equals(shadowColor.getPrevious(), shadowColor.getNext())) {
+    if (!ObjectsCompat.equals(shadowColor.getPrevious(), shadowColor.getNext())) {
       return true;
     }
-    if (!equals(textColorStateList.getPrevious(), textColorStateList.getNext())) {
+    if (!ObjectsCompat.equals(textColorStateList.getPrevious(), textColorStateList.getNext())) {
       return true;
     }
-    if (!equals(hintColorStateList.getPrevious(), hintColorStateList.getNext())) {
+    if (!ObjectsCompat.equals(hintColorStateList.getPrevious(), hintColorStateList.getNext())) {
       return true;
     }
-    if (!equals(highlightColor.getPrevious(), highlightColor.getNext())) {
+    if (!ObjectsCompat.equals(highlightColor.getPrevious(), highlightColor.getNext())) {
       return true;
     }
-    if (!equals(textSize.getPrevious(), textSize.getNext())) {
+    if (!ObjectsCompat.equals(textSize.getPrevious(), textSize.getNext())) {
       return true;
     }
-    if (!equals(typeface.getPrevious(), typeface.getNext())) {
+    if (!ObjectsCompat.equals(typeface.getPrevious(), typeface.getNext())) {
       return true;
     }
-    if (!equals(textAlignment.getPrevious(), textAlignment.getNext())) {
+    if (!ObjectsCompat.equals(textAlignment.getPrevious(), textAlignment.getNext())) {
       return true;
     }
-    if (!equals(gravity.getPrevious(), gravity.getNext())) {
+    if (!ObjectsCompat.equals(gravity.getPrevious(), gravity.getNext())) {
       return true;
     }
-    if (!equals(editable.getPrevious(), editable.getNext())) {
+    if (!ObjectsCompat.equals(editable.getPrevious(), editable.getNext())) {
       return true;
     }
-    if (!equals(inputType.getPrevious(), inputType.getNext())) {
+    if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
       return true;
     }
-    if (!equals(imeOptions.getPrevious(), imeOptions.getNext())) {
+    if (!ObjectsCompat.equals(imeOptions.getPrevious(), imeOptions.getNext())) {
       return true;
     }
     if (!equalInputFilters(inputFilters.getPrevious(), inputFilters.getNext())) {
       return true;
     }
-    if (!equals(ellipsize.getPrevious(), ellipsize.getNext())) {
+    if (!ObjectsCompat.equals(ellipsize.getPrevious(), ellipsize.getNext())) {
       return true;
     }
-    if (!equals(multiline.getPrevious(), multiline.getNext())) {
+    if (!ObjectsCompat.equals(multiline.getPrevious(), multiline.getNext())) {
       return true;
     }
     // Minimum and maximum line count should only get checked if multiline is set
     if (multiline.getNext()) {
-      if (!equals(minLines.getPrevious(), minLines.getNext())) {
+      if (!ObjectsCompat.equals(minLines.getPrevious(), minLines.getNext())) {
         return true;
       }
-      if (!equals(maxLines.getPrevious(), maxLines.getNext())) {
+      if (!ObjectsCompat.equals(maxLines.getPrevious(), maxLines.getNext())) {
         return true;
       }
     }
-    if (!equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
+    if (!ObjectsCompat.equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
       return true;
     }
-    if (!equals(movementMethod.getPrevious(), movementMethod.getNext())) {
+    if (!ObjectsCompat.equals(movementMethod.getPrevious(), movementMethod.getNext())) {
       return true;
     }
-    if (!equals(error.getPrevious(), error.getNext())) {
+    if (!ObjectsCompat.equals(error.getPrevious(), error.getNext())) {
       return true;
     }
 
@@ -658,16 +659,13 @@ class TextInputSpec {
         // The best we can do here is compare getConstantState. This can result in spurious updates;
         // they might be different objects representing the same drawable. But it's the best we can
         // do without actually comparing bitmaps (which is too expensive).
-        if (!equals(previousBackground.getConstantState(), nextBackground.getConstantState())) {
+        if (!ObjectsCompat.equals(
+            previousBackground.getConstantState(), nextBackground.getConstantState())) {
           return true;
         }
       }
     }
     return false;
-  }
-
-  private static boolean equals(Object a, Object b) {
-    return (a == null) ? b == null : a.equals(b);
   }
 
   /** LengthFilter and AllCaps do not implement isEqual. Correct for the deficiency. */
@@ -697,7 +695,7 @@ class TextInputSpec {
         }
       }
       // Best we can do in this case is call equals().
-      if (!equals(fa, fb)) {
+      if (!ObjectsCompat.equals(fa, fb)) {
         return false;
       }
     }
