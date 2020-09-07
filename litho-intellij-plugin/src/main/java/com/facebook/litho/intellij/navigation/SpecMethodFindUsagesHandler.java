@@ -57,7 +57,7 @@ public class SpecMethodFindUsagesHandler extends FindUsagesHandler {
         .map(
             methods -> {
               final Map<String, String> data = new HashMap<>();
-              data.put(EventLogger.KEY_TARGET, "method");
+              data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_NAVIGATION_TARGET_METHOD);
               data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_FIND_USAGES);
               LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NAVIGATION, data);
               return ArrayUtil.mergeArrays(methods, super.getPrimaryElements());

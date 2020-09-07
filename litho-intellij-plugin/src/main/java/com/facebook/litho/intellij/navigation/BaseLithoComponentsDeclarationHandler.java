@@ -79,7 +79,7 @@ class BaseLithoComponentsDeclarationHandler {
         .peek(
             psiClass -> {
               final Map<String, String> data = new HashMap<>();
-              data.put(EventLogger.KEY_TARGET, "class");
+              data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_NAVIGATION_TARGET_CLASS);
               data.put(EventLogger.KEY_CLASS, tag);
               data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_GOTO);
               logger.log(EventLogger.EVENT_NAVIGATION, data);
