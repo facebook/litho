@@ -69,7 +69,7 @@ public abstract class EditorValue {
     R isBool(EditorBool bool);
   }
 
-  public static class DefaultEditorVisitor implements EditorVisitor<Void> {
+  public abstract static class DefaultEditorVisitor implements EditorVisitor<Void> {
 
     public Void isShape(EditorShape object) {
       return null;
@@ -103,10 +103,10 @@ public abstract class EditorValue {
 
     boolean isString(String[] path, EditorString string);
 
-    boolean isBool(String[] path, EditorBool string);
+    boolean isBool(String[] path, EditorBool bool);
   }
 
-  public static class DefaultEditorPrimitiveVisitor implements EditorPrimitiveVisitor {
+  public abstract static class DefaultEditorPrimitiveVisitor implements EditorPrimitiveVisitor {
 
     @Override
     public boolean isNumber(String[] path, EditorNumber number) {
