@@ -94,6 +94,53 @@ public final class EditorRegistry {
     return editor.write(f, node, values);
   }
 
+  /**
+   * This helper gives the EditorValue of a value that is not a field of a class. If the value is a
+   * field, use {@link #read(Class, Field, Object)} instead.
+   *
+   * @param <T> type of the value
+   * @param c runtime Class of the value
+   * @param value data to update
+   * @return the EditorValue representation
+   */
+  public static @Nullable <T> EditorValue readValueThatIsNotAField(final Class<T> c, T value) {
+    return read(c, TransientField.CONTENT_FIELD, new TransientField<>(value));
+  }
+
+  /**
+   * This helper writes an EditorValue to a value that is not a field of a class. If the value is a
+   * field, use {@link #write(Class, Field, Object, EditorValue)} instead.
+   *
+   * @param <T> type of the value
+   * @param c runtime Class of the value
+   * @param value data to update
+   * @param values EditorValue used to update the value
+   * @return whether the field has been updated correctly
+   */
+  public static @Nullable <T> Boolean writeValueThatIsNotAField(
+      final Class<T> c, T value, final EditorValue values) {
+    return write(c, TransientField.CONTENT_FIELD, new TransientField<>(value), values);
+  }
+
+  /**
+   * This class exists for the cases where you have to update a value that is **not** a field. One
+   * example are elements inside a Collection
+   *
+   * <p>Note that updating the whole reference immutably wouldn't affect the original value, just
+   * the value of this transient class.
+   *
+   * @param <T>
+   */
+  private static final class TransientField<T> {
+    public final T content;
+
+    private TransientField(T t) {
+      this.content = t;
+    }
+
+    public static final Field CONTENT_FIELD = TransientField.class.getDeclaredFields()[0];
+  }
+
   static {
     registerEditor(int.class, new NumberEditorInstance<>(int.class));
     registerEditor(float.class, new NumberEditorInstance<>(float.class));
