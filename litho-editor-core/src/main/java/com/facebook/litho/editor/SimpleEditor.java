@@ -219,6 +219,18 @@ public final class SimpleEditor {
     void writeBoolProperty(T value, String property, boolean newValue);
   }
 
+  public abstract static class DefaultMutablePropertyEditor<T> implements MutablePropertyEditor<T> {
+
+    @Override
+    public void writeStringProperty(T value, String property, String newValue) {}
+
+    @Override
+    public void writeNumberProperty(T value, String property, Number newValue) {}
+
+    @Override
+    public void writeBoolProperty(T value, String property, boolean newValue) {}
+  }
+
   public interface ImmutablePropertyEditor<T> extends PropertyReader<T> {
     T writeProperties(
         T value,
