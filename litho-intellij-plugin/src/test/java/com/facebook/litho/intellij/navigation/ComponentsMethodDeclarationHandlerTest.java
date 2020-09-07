@@ -26,6 +26,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Collection;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,7 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
   }
 
   @Test
-  public void getGotoDeclarationTargets() {
+  public void getGotoDeclarationTargets_findMethods_found() {
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
@@ -47,9 +48,8 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
                       .getFixture()
                       .configureByFile("ComponentsMethodDeclarationHandlerTest.java");
               PsiClass testSpecClass = findClass("TestSpec", file);
-              PsiSearchUtils.addMock("TestSpec", testSpecClass);
               final PsiIdentifier componentMethodCall =
-                  findIdentifier(testSpecClass.findMethodsByName("test", false)[0], "method1");
+                  findIdentifier(testSpecClass.findMethodsByName("test1", false)[0], "method1");
 
               final PsiElement[] specMethods =
                   new ComponentsMethodDeclarationHandler()
@@ -62,11 +62,38 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
             });
   }
 
+  @Test
+  public void getGotoDeclarationTargets_findProps_found() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiFile file =
+                  testHelper
+                      .getFixture()
+                      .configureByFile("ComponentsMethodDeclarationHandlerTest.java");
+              PsiClass testSpecClass = findClass("TestSpec", file);
+              final PsiIdentifier componentMethodCall =
+                  findIdentifier(testSpecClass.findMethodsByName("test2", false)[0], "prop");
+
+              final PsiElement[] specElements =
+                  new ComponentsMethodDeclarationHandler()
+                      .getGotoDeclarationTargets(
+                          componentMethodCall, 0, testHelper.getFixture().getEditor());
+              assertThat(specElements.length).isOne();
+              PsiParameter targetProp = (PsiParameter) specElements[0];
+              assertThat(targetProp.getName()).isEqualTo("prop");
+            });
+  }
+
   @Nullable
   private PsiClass findClass(String name, PsiFile file) {
     for (PsiElement element : file.getChildren()) {
-      if (element instanceof PsiClass && name.equals(((PsiClass) element).getName())) {
-        return (PsiClass) element;
+      if (element instanceof PsiClass) {
+        final PsiClass cls = (PsiClass) element;
+        if (name.equals(cls.getName())) {
+          PsiSearchUtils.addMock(name, cls);
+          return cls;
+        }
       }
     }
     return null;

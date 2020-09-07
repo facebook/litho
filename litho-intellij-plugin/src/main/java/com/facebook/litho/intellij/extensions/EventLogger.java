@@ -44,6 +44,9 @@ public interface EventLogger {
   String VALUE_COMPLETION_TARGET_CALL = "call";
   String VALUE_COMPLETION_TARGET_METHOD = "method";
   String VALUE_COMPLETION_TARGET_PARAMETER = "parameter";
+  String VALUE_NAVIGATION_TARGET_CLASS = "class";
+  String VALUE_NAVIGATION_TARGET_METHOD = "method";
+  String VALUE_NAVIGATION_TARGET_PARAMETER = "parameter";
   String VALUE_NAVIGATION_TYPE_FIND_USAGES = "find_usages";
   String VALUE_NAVIGATION_TYPE_GOTO = "goto";
 
