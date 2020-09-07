@@ -59,6 +59,31 @@ public final class SimpleEditor {
     };
   }
 
+  public static <T> Editor makeImmutable(final ImmutablePropertyEditor<T> propertyEditor) {
+    return new Editor() {
+      @Override
+      public EditorValue read(Field f, Object node) {
+        return makeValue(f, node, propertyEditor);
+      }
+
+      @Override
+      public boolean write(final Field f, final Object node, final EditorValue values) {
+        final T value = EditorUtils.getNodeUNSAFE(f, node);
+        values.when(
+            new EditorValue.DefaultEditorVisitor() {
+              @Override
+              public Void isShape(EditorShape object) {
+                return object
+                    .value
+                    .get(f.getName())
+                    .when(writeImmutable(f, node, propertyEditor, value));
+              }
+            });
+        return true;
+      }
+    };
+  }
+
   // Read data
 
   private static <T> EditorValue makeValue(Field f, Object node, PropertyReader<T> propertyReader) {
@@ -114,6 +139,72 @@ public final class SimpleEditor {
     };
   }
 
+  private static <T> EditorValue.EditorVisitor<Void> writeImmutable(
+      final Field f,
+      final Object node,
+      final ImmutablePropertyEditor<T> propertyEditor,
+      final T value) {
+    return new EditorValue.DefaultEditorVisitor() {
+      @Override
+      public Void isShape(EditorShape shape) {
+        final Map<String, SimpleEditorValue> properties = propertyEditor.readProperties(value);
+        final Map<String, String> stringProperties = new HashMap<>();
+        final Map<String, Number> numberProperties = new HashMap<>();
+        final Map<String, Boolean> boolProperties = new HashMap<>();
+        for (final Map.Entry<String, SimpleEditorValue> property : properties.entrySet()) {
+          property
+              .getValue()
+              .value
+              .whenPrimitive(
+                  classifyValue(
+                      property.getKey(), stringProperties, numberProperties, boolProperties));
+        }
+        final Map<String, EditorValue> updates = shape.value;
+        for (Map.Entry<String, EditorValue> updatedProperty : updates.entrySet()) {
+          final SimpleEditorValue newValue =
+              SimpleEditorValue.fromEditorValueOrNull(updatedProperty.getValue());
+          final String propertyKey = updatedProperty.getKey();
+          final SimpleEditorValue oldValue = properties.get(propertyKey);
+          if (newValue != null && oldValue != null && newValue.type == oldValue.type) {
+            newValue.value.whenPrimitive(
+                classifyValue(propertyKey, stringProperties, numberProperties, boolProperties));
+          }
+        }
+        final T newValue =
+            propertyEditor.writeProperties(
+                value, stringProperties, numberProperties, boolProperties);
+        EditorUtils.setNodeUNSAFE(f, node, newValue);
+        return null;
+      }
+    };
+  }
+
+  private static EditorValue.EditorPrimitiveVisitor classifyValue(
+      final String key,
+      final Map<String, String> stringProperties,
+      final Map<String, Number> numberProperties,
+      final Map<String, Boolean> boolProperties) {
+    return new EditorValue.EditorPrimitiveVisitor() {
+      @Override
+      public boolean isNumber(String[] path, EditorNumber number) {
+        numberProperties.put(key, number.value);
+        return false;
+      }
+
+      @Override
+      public boolean isString(String[] path, EditorString string) {
+        stringProperties.put(key, string.value);
+        return false;
+      }
+
+      @Override
+      public boolean isBool(String[] path, EditorBool bool) {
+        boolProperties.put(key, bool.value);
+        return false;
+      }
+    };
+  }
+
   // Types
 
   public interface PropertyReader<T> {
@@ -126,6 +217,14 @@ public final class SimpleEditor {
     void writeNumberProperty(T value, String property, Number newValue);
 
     void writeBoolProperty(T value, String property, boolean newValue);
+  }
+
+  public interface ImmutablePropertyEditor<T> extends PropertyReader<T> {
+    T writeProperties(
+        T value,
+        Map<String, String> newStringValues,
+        Map<String, Number> newNumberValues,
+        Map<String, Boolean> newBoolValues);
   }
 
   private static final int PRIMITIVE_TYPE_NUMBER = 0;
