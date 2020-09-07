@@ -136,7 +136,7 @@ class ComponentStructureView implements Disposable {
     data.put(EventLogger.KEY_RESULT, "fail");
     final JComponent newView =
         Optional.ofNullable(selectedClass)
-            .map(cls -> cls.getUserData(ComponentGenerateService.KEY_SPEC_MODEL))
+            .map(ComponentGenerateService::getSpecModel)
             .map(
                 model -> {
                   structureView = createStructureView(model, selectedEditor, selectedFile, project);
