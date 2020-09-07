@@ -16,7 +16,13 @@
 
 package com.facebook.litho.intellij;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiFile;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,7 +33,21 @@ public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void getFirstLayoutSpec() {
+  public void getFirstClass_findNestedChildWithName_found() throws IOException {
+    final PsiFile file = testHelper.configure("LithoPluginUtilsTest.java");
+    final AtomicReference<PsiClass> found = new AtomicReference<>();
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              found.set(
+                  LithoPluginUtils.getFirstClass(file, cls -> "InnerClass2".equals(cls.getName()))
+                      .orElse(null));
+            });
+    assertThat(found.get()).isNotNull();
+  }
+
+  @Test
+  public void getFirstLayoutSpec_findDirectChild_found() {
     testHelper.getPsiClass(
         psiClasses -> {
           Assert.assertNotNull(psiClasses);
