@@ -2090,6 +2090,11 @@ public class LayoutState
   }
 
   @Override
+  public AnimatableItem getAnimatableRootItem() {
+    return LayoutOutput.getLayoutOutput(getMountableOutputAt(0));
+  }
+
+  @Override
   public ArrayList<RenderTreeNode> getMountableOutputTops() {
     return mMountableOutputTops;
   }

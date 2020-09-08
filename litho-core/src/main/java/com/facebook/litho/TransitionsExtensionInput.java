@@ -53,4 +53,6 @@ public interface TransitionsExtensionInput extends MountDelegate.MountDelegateIn
 
   @Nullable
   TransitionId getRootTransitionId();
+
+  AnimatableItem getAnimatableRootItem();
 }
