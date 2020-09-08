@@ -19,10 +19,10 @@ package com.facebook.litho.animation;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.AnimatableItem;
-import com.facebook.litho.LithoView;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.utils.BoundsUtils;
@@ -242,8 +242,8 @@ public final class AnimatedProperties {
     public void set(Object mountContent, float value) {
       if (mountContent instanceof Host) {
         final Host view = (Host) mountContent;
-        if (view instanceof LithoView) {
-          ((LithoView) view).setAnimatedWidth((int) value);
+        if (view instanceof AnimatedRootHost) {
+          ((AnimatedRootHost) view).setAnimatedWidth((int) value);
         } else {
           final int left = view.getLeft();
           BoundsUtils.applyBoundsToMountContent(
@@ -309,8 +309,8 @@ public final class AnimatedProperties {
     public void set(Object mountContent, float value) {
       if (mountContent instanceof Host) {
         final Host view = (Host) mountContent;
-        if (view instanceof LithoView) {
-          ((LithoView) view).setAnimatedHeight((int) value);
+        if (view instanceof AnimatedRootHost) {
+          ((AnimatedRootHost) view).setAnimatedHeight((int) value);
         } else {
           final int top = view.getTop();
           BoundsUtils.applyBoundsToMountContent(
