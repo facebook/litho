@@ -19,12 +19,12 @@ package com.facebook.litho.animation;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.AnimatableItem;
-import com.facebook.litho.BoundsHelper;
 import com.facebook.litho.LithoView;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +139,7 @@ public final class AnimatedProperties {
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
         float parentX = getPositionRelativeToRootHost(getHostView(drawable), true);
-        BoundsHelper.applyXYToDrawableForAnimation(
+        TransitionUtils.applyXYToDrawableForAnimation(
             drawable, (int) (value - parentX), drawable.getBounds().top);
       } else {
         throw new UnsupportedOperationException(
@@ -196,7 +196,7 @@ public final class AnimatedProperties {
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
         float parentY = getPositionRelativeToRootHost(getHostView(drawable), false);
-        BoundsHelper.applyXYToDrawableForAnimation(
+        TransitionUtils.applyXYToDrawableForAnimation(
             drawable, drawable.getBounds().left, (int) (value - parentY));
       } else {
         throw new UnsupportedOperationException(
@@ -255,7 +255,7 @@ public final class AnimatedProperties {
           final int width = (int) value;
           final int height = view.getHeight();
           for (int index = 0; index < animatingDrawables.size(); ++index) {
-            BoundsHelper.applySizeToDrawableForAnimation(
+            TransitionUtils.applySizeToDrawableForAnimation(
                 animatingDrawables.get(index), width, height);
           }
         }
@@ -269,7 +269,7 @@ public final class AnimatedProperties {
         final Drawable drawable = (Drawable) mountContent;
         final int width = (int) value;
         final int height = drawable.getBounds().height();
-        BoundsHelper.applySizeToDrawableForAnimation(drawable, width, height);
+        TransitionUtils.applySizeToDrawableForAnimation(drawable, width, height);
       } else {
         throw new UnsupportedOperationException(
             "Setting width on unsupported mount content: " + mountContent);
@@ -322,7 +322,7 @@ public final class AnimatedProperties {
           final int width = view.getWidth();
           final int height = (int) value;
           for (int index = 0; index < animatingDrawables.size(); ++index) {
-            BoundsHelper.applySizeToDrawableForAnimation(
+            TransitionUtils.applySizeToDrawableForAnimation(
                 animatingDrawables.get(index), width, height);
           }
         }
@@ -336,7 +336,7 @@ public final class AnimatedProperties {
         final Drawable drawable = (Drawable) mountContent;
         final int width = drawable.getBounds().width();
         final int height = (int) value;
-        BoundsHelper.applySizeToDrawableForAnimation(drawable, width, height);
+        TransitionUtils.applySizeToDrawableForAnimation(drawable, width, height);
       } else {
         throw new UnsupportedOperationException(
             "Setting height on unsupported mount content: " + mountContent);

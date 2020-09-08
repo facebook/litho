@@ -24,8 +24,8 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionValues;
-import com.facebook.litho.BoundsHelper;
 import com.facebook.litho.ComponentHost;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +72,7 @@ public class ComponentHostChangeBoundsTransition extends ChangeBounds {
                     return;
                   }
                   for (int index = 0; index < animatingDrawables.size(); ++index) {
-                    BoundsHelper.applySizeToDrawableForAnimation(
+                    TransitionUtils.applySizeToDrawableForAnimation(
                         animatingDrawables.get(index),
                         endValues.view.getRight() - endValues.view.getLeft(),
                         endValues.view.getBottom() - endValues.view.getTop());

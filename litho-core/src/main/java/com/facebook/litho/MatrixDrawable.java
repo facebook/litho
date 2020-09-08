@@ -31,11 +31,12 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import javax.annotation.Nullable;
 
 /** A Drawable that wraps another drawable. */
 public class MatrixDrawable<T extends Drawable> extends Drawable
-    implements Drawable.Callback, Touchable {
+    implements Drawable.Callback, Touchable, TransitionUtils.BoundsCallback {
 
   public static final int UNSET = -1;
 
@@ -317,4 +318,12 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
         && event.getActionMasked() == MotionEvent.ACTION_DOWN
         && getBounds().contains((int) event.getX(), (int) event.getY());
   }
+
+  @Override
+  public void onWidthHeightBoundsApplied(int width, int height) {
+    bind(width, height);
+  }
+
+  @Override
+  public void onXYBoundsApplied(int x, int y) {}
 }
