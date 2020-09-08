@@ -293,8 +293,8 @@ public class LayoutState
   private StateHandler mStateHandler;
   private List<Component> mComponentsNeedingPreviousRenderData;
   @Nullable private TransitionId mCurrentTransitionId;
-  @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
-  private final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> mTransitionIdMapping =
+  @Nullable private OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
+  private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private List<Transition> mTransitions;
@@ -863,13 +863,13 @@ public class LayoutState
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
 
     final TransitionId currentTransitionId = layoutState.mCurrentTransitionId;
-    final OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputAffinityGroup =
+    final OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
 
     layoutState.mCurrentTransitionId = getTransitionIdForNode(node);
     layoutState.mCurrentLayoutOutputAffinityGroup =
         layoutState.mCurrentTransitionId != null
-            ? new OutputUnitsAffinityGroup<LayoutOutput>()
+            ? new OutputUnitsAffinityGroup<AnimatableItem>()
             : null;
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
@@ -1291,7 +1291,7 @@ public class LayoutState
   }
 
   private static void maybeAddLayoutOutputToAffinityGroup(
-      OutputUnitsAffinityGroup<LayoutOutput> group,
+      OutputUnitsAffinityGroup<AnimatableItem> group,
       @OutputUnitType int outputType,
       LayoutOutput layoutOutput) {
     if (group != null) {
@@ -1300,7 +1300,7 @@ public class LayoutState
   }
 
   private static void addCurrentAffinityGroupToTransitionMapping(LayoutState layoutState) {
-    final OutputUnitsAffinityGroup<LayoutOutput> group =
+    final OutputUnitsAffinityGroup<AnimatableItem> group =
         layoutState.mCurrentLayoutOutputAffinityGroup;
     if (group == null || group.isEmpty()) {
       return;
@@ -2296,14 +2296,14 @@ public class LayoutState
 
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
   @Override
-  public Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping() {
+  public Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> getTransitionIdMapping() {
     return mTransitionIdMapping;
   }
 
   /** Gets a group of LayoutOutput given transition key */
   @Override
   @Nullable
-  public OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
+  public OutputUnitsAffinityGroup<AnimatableItem> getLayoutOutputsForTransitionId(
       TransitionId transitionId) {
     return mTransitionIdMapping.get(transitionId);
   }

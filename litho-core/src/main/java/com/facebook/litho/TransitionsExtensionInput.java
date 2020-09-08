@@ -37,10 +37,11 @@ public interface TransitionsExtensionInput extends MountDelegate.MountDelegateIn
 
   int getComponentTreeId();
 
-  Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping();
+  Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> getTransitionIdMapping();
 
   @Nullable
-  OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(TransitionId transitionId);
+  OutputUnitsAffinityGroup<AnimatableItem> getLayoutOutputsForTransitionId(
+      TransitionId transitionId);
 
   @Nullable
   List<Component> getComponentsNeedingPreviousRenderData();

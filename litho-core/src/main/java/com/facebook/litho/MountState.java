@@ -2878,10 +2878,10 @@ class MountState
   }
 
   private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
-    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+    final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionMapping =
         newLayoutState.getTransitionIdMapping();
     if (transitionMapping != null) {
-      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transition :
           transitionMapping.entrySet()) {
         if (!mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
@@ -2891,9 +2891,9 @@ class MountState
           mAnimationLockedIndices = new int[newLayoutState.getMountableOutputCount()];
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
+        final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
-          final LayoutOutput layoutOutput = group.getAt(j);
+          final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
           final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
           updateAnimationLockCount(newLayoutState, position, true);
         }
@@ -3013,7 +3013,7 @@ class MountState
         }
       }
 
-      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
+      final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
           mLastMountedLayoutState.getLayoutOutputsForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
@@ -3028,7 +3028,7 @@ class MountState
         }
       } else {
         for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-          final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+          final LayoutOutput layoutOutput = (LayoutOutput) layoutOutputGroup.getAt(i);
           final int position = layoutOutput.getIndex();
           updateAnimationLockCount(mLastMountedLayoutState, position, false);
         }

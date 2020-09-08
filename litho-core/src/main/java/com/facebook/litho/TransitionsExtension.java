@@ -224,18 +224,18 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   private void regenerateAnimationLockedIndices(TransitionsExtensionInput input) {
-    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+    final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionMapping =
         input.getTransitionIdMapping();
     if (transitionMapping != null) {
-      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transition :
           transitionMapping.entrySet()) {
         if (!mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
+        final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
-          final LayoutOutput layoutOutput = group.getAt(j);
+          final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
           final int position = input.getLayoutOutputPositionForId(layoutOutput.getId());
           updateAnimationLockCount(input, position, true, true);
         }
@@ -334,7 +334,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   private void createNewTransitions(TransitionsExtensionInput input, Transition rootTransition) {
     prepareTransitionManager();
 
-    Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> lastTransitions =
+    Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> lastTransitions =
         mLastTransitionsExtensionInput == null
             ? null
             : mLastTransitionsExtensionInput.getTransitionIdMapping();
@@ -364,7 +364,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         }
       }
 
-      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
+      final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
           mLastTransitionsExtensionInput.getLayoutOutputsForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
@@ -373,7 +373,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       }
 
       for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-        final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+        final LayoutOutput layoutOutput = (LayoutOutput) layoutOutputGroup.getAt(i);
         final int position = layoutOutput.getIndex();
         updateAnimationLockCount(mLastTransitionsExtensionInput, position, false, false);
       }
