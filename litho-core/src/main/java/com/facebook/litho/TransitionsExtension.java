@@ -327,7 +327,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
   private void prepareTransitionManager() {
     if (mTransitionManager == null) {
-      mTransitionManager = new TransitionManager(this, null);
+      mTransitionManager = new TransitionManager(this);
     }
   }
 

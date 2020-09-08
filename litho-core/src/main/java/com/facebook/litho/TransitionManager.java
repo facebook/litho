@@ -54,10 +54,10 @@ import java.util.Set;
  * transition keys and handles which transitions to run and when.
  *
  * <p>This class is tightly coupled to MountState. When creating new animations, the expected usage
- * of this class is: 1. {@link #setupTransitions} is called with the current and next LayoutStates.
- * 2. {@link #isAnimating} and {@link #isDisappearing} can be called to determine what is/will be
- * animating 3. MountState updates the mount content for changing content. 4. {@link
- * #runTransitions} is called to restore initial states for the transition and run the new
+ * of this class is: 1. {@link #setupTransitions} is called with the current and next {@link
+ * TransitionsExtensionInput}. 2. {@link #isAnimating} and {@link #isDisappearing} can be called to
+ * determine what is/will be animating 3. MountState updates the mount content for changing content.
+ * 4. {@link #runTransitions} is called to restore initial states for the transition and run the new
  * animations.
  *
  * <p>Additionally, any time the {@link MountState} is re-used for a different component tree (e.g.
@@ -90,9 +90,9 @@ import java.util.Set;
  *
  * <p>As such, our rule is that we should have a {@link PropertyState} on the corresponding {@link
  * AnimationState} for any property that has a value no necessarily reflected by the most up to date
- * {@link LayoutOutput} for that transition key in the most recent {@link LayoutState}. Put another
- * way, animation doesn't always imply movement, but a temporary change from a canonical {@link
- * LayoutOutput}.
+ * {@link LayoutOutput} for that transition key in the most recent {@link
+ * TransitionsExtensionInput}. Put another way, animation doesn't always imply movement, but a
+ * temporary change from a canonical {@link LayoutOutput}.
  */
 public class TransitionManager {
 
@@ -158,8 +158,8 @@ public class TransitionManager {
     public @Nullable OutputUnitsAffinityGroup<Object> mountContentGroup;
 
     /**
-     * Whether the last LayoutState diff that had this content in it showed the content appearing,
-     * disappearing or changing.
+     * Whether the last {@link TransitionsExtensionInput} diff that had this content in it showed
+     * the content appearing, disappearing or changing.
      */
     public int changeType = ChangeType.UNSET;
 
@@ -171,7 +171,7 @@ public class TransitionManager {
 
     /**
      * Whether this transition key was seen in the last transition, either in the current or next
-     * {@link LayoutState}s.
+     * {@link TransitionsExtensionInput}.
      */
     public boolean seenInLastTransition = false;
 
@@ -195,21 +195,20 @@ public class TransitionManager {
   private final RootAnimationListener mRootAnimationListener = new RootAnimationListener();
   private final TransitionsResolver mResolver = new TransitionsResolver();
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
-  private final MountState mMountState;
   private AnimationBinding mRootAnimationToRun;
 
-  public TransitionManager(
-      OnAnimationCompleteListener onAnimationCompleteListener, MountState mountState) {
+  public TransitionManager(OnAnimationCompleteListener onAnimationCompleteListener) {
     mOnAnimationCompleteListener = onAnimationCompleteListener;
-    mMountState = mountState;
   }
 
   void setupTransitions(
-      LayoutState currentLayoutState, LayoutState nextLayoutState, Transition rootTransition) {
+      TransitionsExtensionInput currentInput,
+      TransitionsExtensionInput nextInput,
+      Transition rootTransition) {
     final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> nextTransitionIds =
-        nextLayoutState.getTransitionIdMapping();
+        nextInput.getTransitionIdMapping();
     final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> currentTransitionIds =
-        currentLayoutState == null ? null : currentLayoutState.getTransitionIdMapping();
+        currentInput == null ? null : currentInput.getTransitionIdMapping();
     setupTransitions(currentTransitionIds, nextTransitionIds, rootTransition);
   }
 

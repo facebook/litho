@@ -58,8 +58,7 @@ public class TransitionManagerAnimationCreationTest {
 
               @Override
               public void onAnimationUnitComplete(PropertyHandle propertyHandle, Object data) {}
-            },
-            mock(MountState.class));
+            });
     mTestVerificationAnimator =
         new Transition.TransitionAnimator() {
           @Override
