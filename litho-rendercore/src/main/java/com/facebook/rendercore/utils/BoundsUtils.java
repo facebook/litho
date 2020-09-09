@@ -29,9 +29,7 @@ public class BoundsUtils {
 
   public static void applyBoundsToMountContent(
       RenderTreeNode renderTreeNode, Object content, boolean force) {
-    final Rect bounds = new Rect();
-    renderTreeNode.getMountBounds(bounds); // Gets the relative bounds of the Render Tree Node.
-
+    final Rect bounds = renderTreeNode.getBounds();
     BoundsUtils.applyBoundsToMountContent(
         bounds, renderTreeNode.getResolvedPadding(), content, force);
   }

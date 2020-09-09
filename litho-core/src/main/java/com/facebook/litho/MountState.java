@@ -952,7 +952,7 @@ class MountState
 
     mPreviousTopsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.bottom <= layoutOutputTops.get(i).getBounds().top) {
+      if (localVisibleRect.bottom <= layoutOutputTops.get(i).getAbsoluteBounds(sTempRect).top) {
         mPreviousTopsIndex = i;
         break;
       }
@@ -960,7 +960,7 @@ class MountState
 
     mPreviousBottomsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.top < layoutOutputBottoms.get(i).getBounds().bottom) {
+      if (localVisibleRect.top < layoutOutputBottoms.get(i).getAbsoluteBounds(sTempRect).bottom) {
         mPreviousBottomsIndex = i;
         break;
       }
@@ -3263,7 +3263,10 @@ class MountState
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top
-              >= layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
+              >= layoutOutputBottoms
+                  .get(mPreviousBottomsIndex)
+                  .getAbsoluteBounds(sTempRect)
+                  .bottom) {
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
@@ -3275,7 +3278,10 @@ class MountState
 
       while (mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              < layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
+              < layoutOutputBottoms
+                  .get(mPreviousBottomsIndex - 1)
+                  .getAbsoluteBounds(sTempRect)
+                  .bottom) {
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
@@ -3297,7 +3303,8 @@ class MountState
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (mPreviousTopsIndex < count
-          && localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
+          && localVisibleRect.bottom
+              > layoutOutputTops.get(mPreviousTopsIndex).getAbsoluteBounds(sTempRect).top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final int layoutOutputIndex =
@@ -3315,7 +3322,7 @@ class MountState
 
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              <= layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
+              <= layoutOutputTops.get(mPreviousTopsIndex - 1).getAbsoluteBounds(sTempRect).top) {
         mPreviousTopsIndex--;
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = getLayoutOutput(node).getId();

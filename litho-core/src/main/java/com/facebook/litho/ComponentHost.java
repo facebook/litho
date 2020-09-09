@@ -116,9 +116,7 @@ public class ComponentHost extends Host {
 
   @Override
   public void mount(int index, MountItem mountItem) {
-    Rect bounds = new Rect();
-    mountItem.getRenderTreeNode().getMountBounds(bounds);
-    mount(index, mountItem, bounds);
+    mount(index, mountItem, mountItem.getRenderTreeNode().getBounds());
   }
 
   public ComponentHost(ComponentContext context) {

@@ -134,8 +134,6 @@ public class Reducer {
             renderUnit,
             layoutResult.getLayoutData(),
             new Rect(x, y, x + layoutResult.getWidth(), y + layoutResult.getHeight()),
-            0, // TODO: (T65833147) Actual values need to passed as method parameters.
-            0, // TODO: (T65833147) Actual values need to passed as method parameters.
             padding,
             parent != null ? parent.getChildrenCount() : 0);
 

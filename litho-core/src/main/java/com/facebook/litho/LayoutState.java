@@ -494,7 +494,7 @@ public class LayoutState
       final RenderTreeNode hostOutput =
           layoutState.mMountableOutputs.get(layoutState.mCurrentHostOutputPosition);
 
-      final Rect hostBounds = hostOutput.getBounds();
+      final Rect hostBounds = hostOutput.getAbsoluteBounds(new Rect());
       hostTranslationX = hostBounds.left;
       hostTranslationY = hostBounds.top;
     } else {

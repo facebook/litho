@@ -98,11 +98,13 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mComponent;
   }
 
-  void getMountBounds(Rect outRect) {
+  Rect getMountBounds(Rect outRect) {
     outRect.left = mBounds.left - mHostTranslationX;
     outRect.top = mBounds.top - mHostTranslationY;
     outRect.right = mBounds.right - mHostTranslationX;
     outRect.bottom = mBounds.bottom - mHostTranslationY;
+
+    return outRect;
   }
 
   @Override
@@ -253,9 +255,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
         parent,
         lithoRenderUnit,
         data,
-        output.getBounds(),
-        output.mHostTranslationX,
-        output.mHostTranslationY,
+        output.getMountBounds(new Rect()),
         output.getViewNodeInfo() != null ? output.getViewNodeInfo().getPadding() : null,
         parent != null ? parent.getChildrenCount() : 0);
   }

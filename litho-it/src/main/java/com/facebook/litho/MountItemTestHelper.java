@@ -40,7 +40,7 @@ public class MountItemTestHelper {
             info,
             viewInfo,
             component,
-            bounds,
+            bounds != null ? bounds : new Rect(),
             hostTranslationX,
             hostTranslationY,
             flags,

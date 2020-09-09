@@ -68,17 +68,27 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
-    assertThat(layoutState.getMountableOutputTops().get(0).getBounds().top).isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(1).getBounds().top).isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(2).getBounds().top).isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(3).getBounds().top).isEqualTo(10);
-    assertThat(layoutState.getMountableOutputTops().get(4).getBounds().top).isEqualTo(50);
+    assertThat(layoutState.getMountableOutputTops().get(0).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(1).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(2).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(3).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(10);
+    assertThat(layoutState.getMountableOutputTops().get(4).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(50);
 
-    assertThat(layoutState.getMountableOutputBottoms().get(0).getBounds().bottom).isEqualTo(40);
-    assertThat(layoutState.getMountableOutputBottoms().get(1).getBounds().bottom).isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(2).getBounds().bottom).isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(70);
-    assertThat(layoutState.getMountableOutputBottoms().get(4).getBounds().bottom).isEqualTo(70);
+    assertThat(layoutState.getMountableOutputBottoms().get(0).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(40);
+    assertThat(layoutState.getMountableOutputBottoms().get(1).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(2).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(3).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(70);
+    assertThat(layoutState.getMountableOutputBottoms().get(4).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(70);
 
     assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
@@ -127,15 +137,23 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
 
-    assertThat(layoutState.getMountableOutputTops().get(0).getBounds().top).isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(1).getBounds().top).isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(2).getBounds().top).isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(3).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(0).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(1).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(2).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(3).getAbsoluteBounds(new Rect()).top)
+        .isEqualTo(0);
 
-    assertThat(layoutState.getMountableOutputBottoms().get(0).getBounds().bottom).isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(1).getBounds().bottom).isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(2).getBounds().bottom).isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(0).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(1).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(2).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(3).getAbsoluteBounds(new Rect()).bottom)
+        .isEqualTo(50);
 
     assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(0).getLayoutData());
