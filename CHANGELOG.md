@@ -1,20 +1,20 @@
 # Changelog
 
-## Version 0.37.2-SNAPSHOT
+## Version 0.38.0
 
-_release-date_
+_2020-09-11_
 
 * New: `ComponentLifecycle.dispatchErrorEvent(ComponentContext, Exception)` has become deprecated for public use. Instead, use `ComponentUtils.raise(ComponentContext, Exception)`.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.37.1...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.37.1...v0.38.0).
 
 
 ## Version 0.37.1
 
 _2020-07-24_
 
-* New: Add `LithoGestureDetector` wrapper class that ensures gestures are processed on UI thread.
 * **Breaking:** Ignore mount calls after `setVisibilityHint(false)` was called on a LithoView until `setVisibilityHint(true)` is called. For more details see the docs about [changing LithoView visibility](https://fblitho.com/docs/visibility-handling).
+* New: Add `LithoGestureDetector` wrapper class that ensures gestures are processed on UI thread.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.37.0...v0.37.1).
 
