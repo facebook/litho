@@ -16,8 +16,24 @@
 
 package com.facebook.rendercore;
 
+import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaNode;
+import java.util.List;
 
-public interface YogaPropsProvider<RenderContext> {
-  void applyToNode(RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
+public interface YogaLayoutDataProvider<RenderContext> {
+
+  YogaConfig getYogaConfig();
+
+  boolean nodeCanMeasure(Node node);
+
+  void applyYogaPropsFromNode(
+      Node node, RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
+
+  void applyYogaPropsFromLayoutParams(
+      Node node, RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
+
+  RenderUnit getRenderUnitForNode(
+      Node node, RenderState.LayoutContext<RenderContext> layoutContext);
+
+  List<? extends Node> getYogaChildren(Node node);
 }

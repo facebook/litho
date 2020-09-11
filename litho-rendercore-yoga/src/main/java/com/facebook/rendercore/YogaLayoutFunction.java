@@ -67,17 +67,23 @@ public class YogaLayoutFunction {
   private YogaLayoutFunction() {}
 
   public static LayoutResult calculateLayout(
-      LayoutContext context, Node node, int widthSpec, int heightSpec) {
+      LayoutContext context,
+      Node node,
+      YogaLayoutDataProvider yogaLayoutDataProvider,
+      int widthSpec,
+      int heightSpec) {
     final Context androidContext = context.getAndroidContext();
 
     RenderCoreSystrace.beginSection("CreateYogaNodes");
 
     final List<FlexboxLayoutResult> pendingSubTrees = new ArrayList<>();
     final YogaConfig yogaConfig =
-        node instanceof YogaConfigProvider
-            ? ((YogaConfigProvider) node).getYogaConfig()
+        yogaLayoutDataProvider.getYogaConfig() != null
+            ? yogaLayoutDataProvider.getYogaConfig()
             : DEFAULT_YOGA_CONFIG;
-    final FlexboxLayoutResult layoutResult = buildTree(context, node, pendingSubTrees, yogaConfig);
+
+    final FlexboxLayoutResult layoutResult =
+        buildTree(context, node, pendingSubTrees, yogaConfig, yogaLayoutDataProvider);
     layoutResult.setMeasureSpecs(widthSpec, heightSpec);
     RenderCoreSystrace.endSection();
 
@@ -147,7 +153,9 @@ public class YogaLayoutFunction {
       final LayoutContext<RenderContext> context,
       final Node node,
       List<FlexboxLayoutResult> pendingSubtrees,
-      YogaConfig yogaConfig) {
+      YogaConfig yogaConfig,
+      YogaLayoutDataProvider yogaLayoutDataProvider) {
+
     final LayoutResult cachedResult = context.getLayoutCache().get(node);
     if (cachedResult != null && cachedResult instanceof FlexboxLayoutResult) {
       return buildTreeFromCache((FlexboxLayoutResult) cachedResult, context, pendingSubtrees);
@@ -156,15 +164,10 @@ public class YogaLayoutFunction {
     final FlexboxLayoutResult layoutResult;
     final YogaNode yogaNode = YogaNodeFactory.create(yogaConfig);
 
-    if (node instanceof YogaPropsProvider) {
-      ((YogaPropsProvider) node).applyToNode(context, yogaNode);
-    }
+    yogaLayoutDataProvider.applyYogaPropsFromNode(node, context, yogaNode);
+    yogaLayoutDataProvider.applyYogaPropsFromLayoutParams(node, context, yogaNode);
 
-    if (node.getLayoutParams() instanceof YogaPropsProvider) {
-      ((YogaPropsProvider) node.getLayoutParams()).applyToNode(context, yogaNode);
-    }
-
-    if (delegatesToNode(node)) {
+    if (yogaLayoutDataProvider.nodeCanMeasure(node)) {
       layoutResult =
           new FlexboxLayoutResult(
               context,
@@ -181,18 +184,20 @@ public class YogaLayoutFunction {
       pendingSubtrees.add(layoutResult);
       yogaNode.setMeasureFunction(layoutResult);
     } else {
-      final YogaChildrenProvider<? extends Node, RenderContext> yogaChildrenProvider =
-          (YogaChildrenProvider<? extends Node, RenderContext>) node;
       layoutResult =
           new FlexboxLayoutResult(
-              context, node, yogaNode, null, yogaChildrenProvider.getRenderUnit(context));
+              context,
+              node,
+              yogaNode,
+              null,
+              yogaLayoutDataProvider.getRenderUnitForNode(node, context));
       context.getLayoutCache().put(node, layoutResult);
 
-      final List<? extends Node> children = yogaChildrenProvider.getYogaChildren();
+      final List<? extends Node> children = yogaLayoutDataProvider.getYogaChildren(node);
       for (int i = 0; i < children.size(); i++) {
         final Node child = children.get(i);
         final FlexboxLayoutResult childLayoutResult =
-            buildTree(context, child, pendingSubtrees, yogaConfig);
+            buildTree(context, child, pendingSubtrees, yogaConfig, yogaLayoutDataProvider);
         if (childLayoutResult.mYogaNode.getDisplay() != YogaDisplay.NONE) {
           yogaNode.addChildAt(childLayoutResult.mYogaNode, layoutResult.mYogaNode.getChildCount());
           layoutResult.addChild(childLayoutResult);
@@ -201,14 +206,6 @@ public class YogaLayoutFunction {
     }
 
     return layoutResult;
-  }
-
-  /**
-   * If the node we are trying to measure is not a Yoga node we should delegate to the node's
-   * calculate layout
-   */
-  private static boolean delegatesToNode(Node node) {
-    return !(node instanceof YogaChildrenProvider) || ((YogaChildrenProvider) node).canMeasure();
   }
 
   private static FlexboxLayoutResult buildTreeFromCache(
