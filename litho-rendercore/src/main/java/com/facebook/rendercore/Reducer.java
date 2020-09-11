@@ -84,7 +84,7 @@ public class Reducer {
     if (renderUnit != null && layoutResult.getChildrenCount() > 0) { // The render unit is a host
 
       // Create new host node;
-      RenderTreeNode node = createRenderTreeNode(layoutResult, renderUnit, parent, x, y);
+      RenderTreeNode node = createRenderTreeNode(layoutResult, renderUnit, bounds, parent);
       flattenedTree.add(node);
 
       // Add new child to the parent.
@@ -100,7 +100,7 @@ public class Reducer {
     } else if (renderUnit != null) { // The render unit is a leaf.
 
       // Create new content node;
-      RenderTreeNode content = createRenderTreeNode(layoutResult, renderUnit, parent, x, y);
+      RenderTreeNode content = createRenderTreeNode(layoutResult, renderUnit, bounds, parent);
       flattenedTree.add(content);
 
       // Add new child to the parent.
@@ -136,11 +136,10 @@ public class Reducer {
   }
 
   private static RenderTreeNode createRenderTreeNode(
-      Node.LayoutResult layoutResult,
-      @Nullable RenderUnit renderUnit,
-      @Nullable RenderTreeNode parent,
-      int x,
-      int y) {
+      LayoutResult<?> layoutResult,
+      RenderUnit<?> renderUnit,
+      Rect bounds,
+      @Nullable RenderTreeNode parent) {
 
     final boolean hasPadding =
         layoutResult.getPaddingLeft() != 0
@@ -161,7 +160,7 @@ public class Reducer {
             parent,
             renderUnit,
             layoutResult.getLayoutData(),
-            new Rect(x, y, x + layoutResult.getWidth(), y + layoutResult.getHeight()),
+            bounds,
             padding,
             parent != null ? parent.getChildrenCount() : 0);
 
@@ -178,8 +177,10 @@ public class Reducer {
     final ArrayList<RenderTreeNode> flattenedTree = new ArrayList<>();
     final Map<RenderCoreExtension<?>, Object> results = populate(extensions);
 
+    final Rect bounds = new Rect(0, 0, layoutResult.getWidth(), layoutResult.getHeight());
+
     RenderTreeNode rootHostNode =
-        createRenderTreeNode(layoutResult, sRootHostRenderUnit, null, 0, 0);
+        createRenderTreeNode(layoutResult, sRootHostRenderUnit, bounds, null);
     flattenedTree.add(rootHostNode);
     reduceTree(context, layoutResult, rootHostNode, 0, 0, flattenedTree, results);
     RenderTreeNode[] trimmedRenderNodeTree =
