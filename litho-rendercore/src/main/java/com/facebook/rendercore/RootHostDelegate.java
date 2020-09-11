@@ -78,6 +78,7 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     if (mCurrentRenderTree != null) {
       beforeMount();
       mMountState.mount(mCurrentRenderTree);
+      afterMount();
     }
   }
 
@@ -133,6 +134,18 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
         final MountExtension extension = e.getMountExtension();
         if (extension != null) {
           extension.beforeMount(state, sVisibleRect);
+        }
+      }
+    }
+  }
+
+  private void afterMount() {
+    RenderCoreExtension<?>[] extensions = mRenderState.getExtensions();
+    if (extensions != null) {
+      for (RenderCoreExtension<?> e : extensions) {
+        final MountExtension extension = e.getMountExtension();
+        if (extension != null) {
+          extension.afterMount();
         }
       }
     }
