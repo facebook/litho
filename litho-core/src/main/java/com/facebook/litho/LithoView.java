@@ -57,6 +57,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   public static final String TEXTURE_TOO_BIG = "TextureTooBig";
+  public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
   private static final int TOO_BIG_TEXTURE_SIZE = 4096;
   private static final String TAG = LithoView.class.getSimpleName();
   private final boolean mDisableTransitionsExtension;
@@ -494,7 +495,23 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
             "Trying to layout a LithoView holding onto a released ComponentTree");
       }
 
-      if (bottom - top >= TOO_BIG_TEXTURE_SIZE || right - left >= TOO_BIG_TEXTURE_SIZE) {
+      final int height = bottom - top;
+      final int width = right - left;
+      if (height <= 0 || width <= 0) {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            TEXTURE_ZERO_DIM,
+            "LithoView is <= 0 in one dimension. Size: "
+                + width
+                + "x"
+                + height
+                + ", component: "
+                + (mComponentTree.getRoot() != null
+                    ? mComponentTree.getRoot().getSimpleName()
+                    : null)
+                + ", tree: "
+                + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()));
+      } else if (height >= TOO_BIG_TEXTURE_SIZE || width >= TOO_BIG_TEXTURE_SIZE) {
         if (isDeviceThatCantHandleTooBigTextures()) {
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR,
@@ -502,9 +519,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
               "LithoView has measured greater than "
                   + TOO_BIG_TEXTURE_SIZE
                   + " in one dimension. Size: "
-                  + (right - left)
+                  + width
                   + "x"
-                  + (bottom - top)
+                  + height
                   + ", component: "
                   + (mComponentTree.getRoot() != null
                       ? mComponentTree.getRoot().getSimpleName()

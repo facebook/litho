@@ -23,6 +23,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import javax.annotation.Nullable;
@@ -437,10 +438,12 @@ public final class DebugLayoutNode {
   }
 
   public float getLayoutWidth() {
-    return mNode.getYogaNode().getLayoutWidth();
+    YogaNode yogaNode = mNode.getYogaNode();
+    return yogaNode != null ? yogaNode.getLayoutWidth() : -1;
   }
 
   public float getLayoutHeight() {
-    return mNode.getYogaNode().getLayoutHeight();
+    YogaNode yogaNode = mNode.getYogaNode();
+    return yogaNode != null ? yogaNode.getLayoutHeight() : -1;
   }
 }
