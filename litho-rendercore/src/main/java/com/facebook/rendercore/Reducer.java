@@ -19,8 +19,12 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.extensions.LayoutResultVisitor;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Reduces a tree of Node into a flattened tree of RenderTreeNode. As part of the reduction process
@@ -47,11 +51,27 @@ public class Reducer {
       final RenderTreeNode parent,
       final int x,
       final int y,
-      final ArrayList<RenderTreeNode> flattenedTree) {
+      final ArrayList<RenderTreeNode> flattenedTree,
+      final @Nullable Map<RenderCoreExtension<?>, Object> extensions) {
 
     // If width & height are 0 then do not return the tree.
     if (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0) {
       return;
+    }
+
+    final Rect bounds = new Rect(x, y, x + layoutResult.getWidth(), y + layoutResult.getHeight());
+    final int absoluteX = parent.getAbsoluteX() + x;
+    final int absoluteY = parent.getAbsoluteY() + y;
+
+    if (extensions != null) {
+      for (Map.Entry<RenderCoreExtension<?>, Object> entry : extensions.entrySet()) {
+        final RenderCoreExtension<?> e = entry.getKey();
+        final LayoutResultVisitor visitor = e.getLayoutVisitor();
+        if (visitor != null) {
+          final Object state = entry.getValue();
+          visitor.visit(layoutResult, bounds, absoluteX, absoluteY, state);
+        }
+      }
     }
 
     final RenderUnit renderUnit = layoutResult.getRenderUnit();
@@ -110,7 +130,8 @@ public class Reducer {
           nextParent,
           layoutResult.getXForChildAtIndex(i) + xTranslation,
           layoutResult.getYForChildAtIndex(i) + yTranslation,
-          flattenedTree);
+          flattenedTree,
+          extensions);
     }
   }
 
@@ -148,15 +169,40 @@ public class Reducer {
   }
 
   public static RenderTree getReducedTree(
-      Context context, Node.LayoutResult layoutResult, int widthSpec, int heightSpec) {
-    ArrayList<RenderTreeNode> flattenedTree = new ArrayList<>();
+      final Context context,
+      final LayoutResult<?> layoutResult,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable RenderCoreExtension<?>[] extensions) {
+
+    final ArrayList<RenderTreeNode> flattenedTree = new ArrayList<>();
+    final Map<RenderCoreExtension<?>, Object> results = populate(extensions);
+
     RenderTreeNode rootHostNode =
         createRenderTreeNode(layoutResult, sRootHostRenderUnit, null, 0, 0);
     flattenedTree.add(rootHostNode);
-    reduceTree(context, layoutResult, rootHostNode, 0, 0, flattenedTree);
+    reduceTree(context, layoutResult, rootHostNode, 0, 0, flattenedTree, results);
     RenderTreeNode[] trimmedRenderNodeTree =
         flattenedTree.toArray(new RenderTreeNode[flattenedTree.size()]);
 
-    return new RenderTree(rootHostNode, trimmedRenderNodeTree, widthSpec, heightSpec);
+    return new RenderTree(rootHostNode, trimmedRenderNodeTree, widthSpec, heightSpec, results);
+  }
+
+  private static @Nullable Map<RenderCoreExtension<?>, Object> populate(
+      final @Nullable RenderCoreExtension<?>[] extensions) {
+    if (extensions == null || extensions.length == 0) {
+      return null;
+    }
+
+    final Map<RenderCoreExtension<?>, Object> results = new ArrayMap<>(extensions.length);
+    for (int i = 0; i < extensions.length; i++) {
+      final LayoutResultVisitor<?> visitor = extensions[i].getLayoutVisitor();
+      if (visitor != null) {
+        final Object state = extensions[i].createState();
+        results.put(extensions[i], state);
+      }
+    }
+
+    return results;
   }
 }

@@ -105,7 +105,7 @@ public class RenderResult<State> {
       final int heightSpec,
       final @Nullable State state) {
     return new RenderResult<>(
-        Reducer.getReducedTree(c.getAndroidContext(), layoutResult, widthSpec, heightSpec),
+        Reducer.getReducedTree(c.getAndroidContext(), layoutResult, widthSpec, heightSpec, null),
         lazyTree,
         node,
         c.getLayoutCache(),

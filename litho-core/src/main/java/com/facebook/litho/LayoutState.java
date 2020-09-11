@@ -1695,7 +1695,7 @@ public class LayoutState
       flatList[i] = mMountableOutputs.get(i);
     }
 
-    final RenderTree renderTree = new RenderTree(root, flatList, mWidthSpec, mHeightSpec);
+    final RenderTree renderTree = new RenderTree(root, flatList, mWidthSpec, mHeightSpec, null);
     renderTree.setRenderTreeData(this);
     return renderTree;
   }
