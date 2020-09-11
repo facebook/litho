@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Node.LayoutResult;
 import java.util.ArrayList;
 
 /**
@@ -41,68 +42,74 @@ public class Reducer {
       };
 
   private static void reduceTree(
-      Context context,
-      Node.LayoutResult layoutResult,
-      RenderTreeNode latestHost,
-      int xTranslation,
-      int yTranslation,
-      int x,
-      int y,
-      ArrayList<RenderTreeNode> flattenedTree) {
+      final Context context,
+      final LayoutResult<?> layoutResult,
+      final RenderTreeNode parent,
+      final int x,
+      final int y,
+      final ArrayList<RenderTreeNode> flattenedTree) {
+
+    // If width & height are 0 then do not return the tree.
     if (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0) {
       return;
     }
+
     final RenderUnit renderUnit = layoutResult.getRenderUnit();
 
-    if (renderUnit != null && layoutResult.getChildrenCount() > 0) { // The renderUnit is a host
-      // The translated position keeps into account all the parent Layouts that did not render
-      // to any host.
-      final int translatedXPosition = x + xTranslation;
-      final int translatedYPosition = y + yTranslation;
+    final int xTranslation;
+    final int yTranslation;
 
-      RenderTreeNode newHost =
-          createRenderTreeNode(
-              layoutResult, renderUnit, latestHost, translatedXPosition, translatedYPosition);
-      flattenedTree.add(newHost);
-      latestHost.child(newHost);
-      latestHost = newHost;
+    final RenderTreeNode nextParent;
+
+    if (renderUnit != null && layoutResult.getChildrenCount() > 0) { // The render unit is a host
+
+      // Create new host node;
+      RenderTreeNode node = createRenderTreeNode(layoutResult, renderUnit, parent, x, y);
+      flattenedTree.add(node);
+
+      // Add new child to the parent.
+      parent.child(node);
+
+      // Set it as the parent for its children.
+      nextParent = node;
+
+      // The child do not need to be translated.
       xTranslation = 0;
       yTranslation = 0;
-      // If this Node also has a RenderUnit its position inside the Host will be 0,0
-      x = 0;
-      y = 0;
-    } else if (renderUnit != null) { // The renderUnit is a leaf content
-      if (layoutResult.getChildrenCount() > 0) {
-        throw new IllegalStateException(
-            "Only nodes without children can have content. A layoutResult with content "
-                + renderUnit
-                + " has "
-                + layoutResult.getChildrenCount()
-                + " children");
-      }
-      final int translatedXPosition = x + xTranslation;
-      final int translatedYPosition = y + yTranslation;
 
-      RenderTreeNode content =
-          createRenderTreeNode(
-              layoutResult, renderUnit, latestHost, translatedXPosition, translatedYPosition);
+    } else if (renderUnit != null) { // The render unit is a leaf.
+
+      // Create new content node;
+      RenderTreeNode content = createRenderTreeNode(layoutResult, renderUnit, parent, x, y);
       flattenedTree.add(content);
-      latestHost.child(content);
-    } else if (layoutResult.getChildrenCount() > 0) { // No render unit, update the translated
-      // position.
-      xTranslation += x;
-      yTranslation += y;
+
+      // Add new child to the parent.
+      parent.child(content);
+
+      // The next parent is irrelevant because there are not children.
+      nextParent = parent;
+
+      // The translations are irrelevant because there are not children.
+      xTranslation = 0;
+      yTranslation = 0;
+
+    } else { // No render unit.
+
+      // The next parent for any children will be the current parent.
+      nextParent = parent;
+
+      // The translations for any children will be inherited from the parent.
+      xTranslation = x;
+      yTranslation = y;
     }
 
     for (int i = 0; i < layoutResult.getChildrenCount(); i++) {
       reduceTree(
           context,
           layoutResult.getChildAt(i),
-          latestHost,
-          xTranslation,
-          yTranslation,
-          layoutResult.getXForChildAtIndex(i),
-          layoutResult.getYForChildAtIndex(i),
+          nextParent,
+          layoutResult.getXForChildAtIndex(i) + xTranslation,
+          layoutResult.getYForChildAtIndex(i) + yTranslation,
           flattenedTree);
     }
   }
@@ -146,7 +153,7 @@ public class Reducer {
     RenderTreeNode rootHostNode =
         createRenderTreeNode(layoutResult, sRootHostRenderUnit, null, 0, 0);
     flattenedTree.add(rootHostNode);
-    reduceTree(context, layoutResult, rootHostNode, 0, 0, 0, 0, flattenedTree);
+    reduceTree(context, layoutResult, rootHostNode, 0, 0, flattenedTree);
     RenderTreeNode[] trimmedRenderNodeTree =
         flattenedTree.toArray(new RenderTreeNode[flattenedTree.size()]);
 

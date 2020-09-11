@@ -21,6 +21,7 @@ import static com.facebook.rendercore.testing.ViewAssertions.MatchAssertionBuild
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.rendercore.RootHost;
 import java.util.ArrayList;
 import org.assertj.core.api.Java6Assertions;
 
@@ -62,6 +63,7 @@ public class ViewMatchNode extends MatchNode {
   private final ArrayList<ViewMatchNode> mChildren = new ArrayList<>();
   private Rect mBounds;
   private Rect mPadding;
+  private Rect mAbsoluteBounds;
 
   private ViewMatchNode(Class type) {
     super(type);
@@ -74,6 +76,11 @@ public class ViewMatchNode extends MatchNode {
 
   public ViewMatchNode padding(int left, int top, int right, int bottom) {
     mPadding = new Rect(left, top, right, bottom);
+    return this;
+  }
+
+  public ViewMatchNode absoluteBounds(int x, int y, int width, int height) {
+    mAbsoluteBounds = new Rect(x, y, width, height);
     return this;
   }
 
@@ -97,6 +104,13 @@ public class ViewMatchNode extends MatchNode {
               new Rect(view.getLeft(), view.getTop(), view.getWidth(), view.getHeight()))
           .describedAs(getDescription("Bounds on " + viewToString(view)))
           .isEqualTo(mBounds);
+    }
+
+    if (mAbsoluteBounds != null) {
+      final Rect bounds = getAbsoluteBounds(view);
+      Java6Assertions.assertThat(bounds)
+          .describedAs(getDescription("Absolute bounds on " + viewToString(view)))
+          .isEqualTo(mAbsoluteBounds);
     }
 
     if (mPadding != null) {
@@ -123,5 +137,17 @@ public class ViewMatchNode extends MatchNode {
         mChildren.get(i).assertMatches(viewGroup.getChildAt(i), debugContext);
       }
     }
+  }
+
+  public static Rect getAbsoluteBounds(View target) {
+    View parent = (View) target.getParent();
+    int x = target.getLeft();
+    int y = target.getTop();
+    while (parent != null && !(parent instanceof RootHost)) {
+      x += parent.getLeft();
+      y += parent.getTop();
+      parent = (View) parent.getParent();
+    }
+    return new Rect(x, y, target.getWidth(), target.getHeight());
   }
 }
