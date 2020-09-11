@@ -29,7 +29,6 @@ import androidx.annotation.Px;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.utils.LayoutUtils;
 import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaConfigFactory;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaDisplay;
@@ -59,7 +58,7 @@ import java.util.List;
  */
 public class YogaLayoutFunction {
 
-  public static final YogaConfig DEFAULT_YOGA_CONFIG = YogaConfigFactory.create();
+  public static final YogaConfig DEFAULT_YOGA_CONFIG = com.facebook.yoga.YogaConfigFactory.create();
 
   static {
     DEFAULT_YOGA_CONFIG.setUseWebDefaults(true);

@@ -4,10 +4,9 @@ load(
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_RENDERCORE_TARGET",
     "LITHO_YOGA_TARGET",
-    "litho_android_library",
 )
 
-litho_android_library(
+android_library(
     name = "litho-rendercore-yoga",
     srcs = glob(["src/main/java/**/*.java"]),
     visibility = [
