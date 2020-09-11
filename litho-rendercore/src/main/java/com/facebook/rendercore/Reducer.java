@@ -136,10 +136,10 @@ public class Reducer {
   }
 
   private static RenderTreeNode createRenderTreeNode(
-      LayoutResult<?> layoutResult,
-      RenderUnit<?> renderUnit,
-      Rect bounds,
-      @Nullable RenderTreeNode parent) {
+      final LayoutResult<?> layoutResult,
+      final RenderUnit<?> renderUnit,
+      final Rect bounds,
+      final @Nullable RenderTreeNode parent) {
 
     final boolean hasPadding =
         layoutResult.getPaddingLeft() != 0
@@ -174,19 +174,19 @@ public class Reducer {
       final int heightSpec,
       final @Nullable RenderCoreExtension<?>[] extensions) {
 
-    final ArrayList<RenderTreeNode> flattenedTree = new ArrayList<>();
     final Map<RenderCoreExtension<?>, Object> results = populate(extensions);
-
+    final ArrayList<RenderTreeNode> nodes = new ArrayList<>();
     final Rect bounds = new Rect(0, 0, layoutResult.getWidth(), layoutResult.getHeight());
 
-    RenderTreeNode rootHostNode =
+    final RenderTreeNode root =
         createRenderTreeNode(layoutResult, sRootHostRenderUnit, bounds, null);
-    flattenedTree.add(rootHostNode);
-    reduceTree(context, layoutResult, rootHostNode, 0, 0, flattenedTree, results);
-    RenderTreeNode[] trimmedRenderNodeTree =
-        flattenedTree.toArray(new RenderTreeNode[flattenedTree.size()]);
+    nodes.add(root);
 
-    return new RenderTree(rootHostNode, trimmedRenderNodeTree, widthSpec, heightSpec, results);
+    reduceTree(context, layoutResult, root, 0, 0, nodes, results);
+
+    RenderTreeNode[] nodesArray = nodes.toArray(new RenderTreeNode[nodes.size()]);
+
+    return new RenderTree(root, nodesArray, widthSpec, heightSpec, results);
   }
 
   private static @Nullable Map<RenderCoreExtension<?>, Object> populate(
