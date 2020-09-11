@@ -25,6 +25,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.concurrent.Callable;
@@ -73,6 +74,7 @@ public class RenderState<State, RenderContext> {
   private final Context mContext;
   private final Delegate<State> mDelegate;
   private final @Nullable RenderContext mRenderContext;
+  private final @Nullable RenderCoreExtension<?>[] extensions;
   private final int mId = ID_GENERATOR.incrementAndGet();
 
   @ThreadConfined(ThreadConfined.UI)
@@ -94,9 +96,18 @@ public class RenderState<State, RenderContext> {
 
   public RenderState(
       Context context, @Nullable RenderContext renderContext, Delegate<State> delegate) {
+    this(context, delegate, renderContext, null);
+  }
+
+  public RenderState(
+      final Context context,
+      final Delegate<State> delegate,
+      final @Nullable RenderContext renderContext,
+      final @Nullable RenderCoreExtension<?>[] extensions) {
     mContext = context;
     mDelegate = delegate;
     mRenderContext = renderContext;
+    this.extensions = extensions;
   }
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -344,6 +355,11 @@ public class RenderState<State, RenderContext> {
 
   public int getId() {
     return mId;
+  }
+
+  @Nullable
+  RenderCoreExtension<?>[] getExtensions() {
+    return extensions;
   }
 
   private static class RenderResultFuture<State, RenderContext> {
