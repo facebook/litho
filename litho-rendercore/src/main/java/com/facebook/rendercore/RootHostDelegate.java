@@ -39,6 +39,42 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     mMountState = new MountState(mHost);
   }
 
+  @ThreadConfined(ThreadConfined.UI)
+  @Override
+  public void setRenderState(RenderState renderState) {
+    if (mRenderState == renderState) {
+      return;
+    }
+
+    if (mRenderState != null) {
+      mRenderState.detach();
+    }
+
+    mRenderState = renderState;
+
+    if (renderState != null) {
+      renderState.attach(this);
+      onUIRenderTreeUpdated(renderState.getUIRenderTree());
+    } else {
+      onUIRenderTreeUpdated(null);
+    }
+  }
+
+  @Override
+  public void onUIRenderTreeUpdated(RenderTree newRenderTree) {
+    if (mCurrentRenderTree == newRenderTree) {
+      return;
+    }
+
+    if (newRenderTree == null) {
+      mMountState.unmountAllItems();
+    }
+
+    mCurrentRenderTree = newRenderTree;
+
+    mHost.requestLayout();
+  }
+
   /**
    * Returns true if the delegate has defined a size and filled the measureOutput array, returns
    * false if not in which case the hosting view should call super.onMeasure.
@@ -82,43 +118,7 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     }
   }
 
-  @ThreadConfined(ThreadConfined.UI)
-  @Override
-  public void setRenderState(RenderState renderState) {
-    if (mRenderState == renderState) {
-      return;
-    }
-
-    if (mRenderState != null) {
-      mRenderState.detach();
-    }
-
-    mRenderState = renderState;
-
-    if (renderState != null) {
-      renderState.attach(this);
-      onUIRenderTreeUpdated(renderState.getUIRenderTree());
-    } else {
-      onUIRenderTreeUpdated(null);
-    }
-  }
-
-  @Override
-  public void onUIRenderTreeUpdated(RenderTree newRenderTree) {
-    if (mCurrentRenderTree == newRenderTree) {
-      return;
-    }
-
-    if (newRenderTree == null) {
-      mMountState.unmountAllItems();
-    }
-
-    mCurrentRenderTree = newRenderTree;
-
-    mHost.requestLayout();
-  }
-
-  public Object findMountContentById(long id) {
+  public @Nullable Object findMountContentById(long id) {
     return mMountState.findMountContentById(id);
   }
 

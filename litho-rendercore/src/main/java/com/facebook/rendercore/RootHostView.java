@@ -35,6 +35,11 @@ public class RootHostView extends HostView implements RootHost {
   }
 
   @Override
+  public void setRenderState(@Nullable RenderState renderState) {
+    mRootHostDelegate.setRenderState(renderState);
+  }
+
+  @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     if (mRootHostDelegate.onMeasure(widthMeasureSpec, heightMeasureSpec, MEASURE_OUTPUTS)) {
       setMeasuredDimension(MEASURE_OUTPUTS[0], MEASURE_OUTPUTS[1]);
@@ -47,6 +52,10 @@ public class RootHostView extends HostView implements RootHost {
   void performLayout(boolean changed, int l, int t, int r, int b) {
     mRootHostDelegate.onLayout(changed, l, t, r, b);
     performLayoutOnChildrenIfNecessary(this);
+  }
+
+  public @Nullable Object findMountContentById(long id) {
+    return mRootHostDelegate.findMountContentById(id);
   }
 
   private static void performLayoutOnChildrenIfNecessary(HostView host) {
@@ -66,14 +75,5 @@ public class RootHostView extends HostView implements RootHost {
         performLayoutOnChildrenIfNecessary((HostView) child);
       }
     }
-  }
-
-  @Override
-  public void setRenderState(@Nullable RenderState renderState) {
-    mRootHostDelegate.setRenderState(renderState);
-  }
-
-  public Object findMountContentById(long id) {
-    return mRootHostDelegate.findMountContentById(id);
   }
 }
