@@ -196,7 +196,7 @@ public class IncrementalMountExtension
       // TODO (T64830748): extract animations logic out of this.
       final boolean isMountable =
           isMountedHostWithChildContent(content)
-              || Rect.intersects(localVisibleRect, renderTreeNode.getAbsoluteBounds(sTempRect))
+              || Rect.intersects(localVisibleRect, getLayoutOutput(renderTreeNode).getBounds())
               || isRootItem(i);
       final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
       if (isMountable && !hasAcquiredMountRef) {
@@ -258,9 +258,8 @@ public class IncrementalMountExtension
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top
-              >= layoutOutputBottoms
-                  .get(mPreviousBottomsIndex)
-                  .getAbsoluteBounds(sTempRect)
+              >= getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex))
+                  .getBounds()
                   .bottom) {
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
@@ -274,9 +273,8 @@ public class IncrementalMountExtension
 
       while (mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              < layoutOutputBottoms
-                  .get(mPreviousBottomsIndex - 1)
-                  .getAbsoluteBounds(sTempRect)
+              < getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex - 1))
+                  .getBounds()
                   .bottom) {
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
@@ -295,7 +293,7 @@ public class IncrementalMountExtension
       // that has changed.
       while (mPreviousTopsIndex < count
           && localVisibleRect.bottom
-              > layoutOutputTops.get(mPreviousTopsIndex).getAbsoluteBounds(sTempRect).top) {
+              > getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex)).getBounds().top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         if (!ownsReference(node)) {
@@ -308,7 +306,7 @@ public class IncrementalMountExtension
 
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              <= layoutOutputTops.get(mPreviousTopsIndex - 1).getAbsoluteBounds(sTempRect).top) {
+              <= getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex - 1)).getBounds().top) {
         mPreviousTopsIndex--;
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
@@ -352,7 +350,7 @@ public class IncrementalMountExtension
 
     mPreviousTopsIndex = mInput.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.bottom <= layoutOutputTops.get(i).getAbsoluteBounds(sTempRect).top) {
+      if (localVisibleRect.bottom <= getLayoutOutput(layoutOutputTops.get(i)).getBounds().top) {
         mPreviousTopsIndex = i;
         break;
       }
@@ -360,7 +358,7 @@ public class IncrementalMountExtension
 
     mPreviousBottomsIndex = mInput.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.top < layoutOutputBottoms.get(i).getAbsoluteBounds(sTempRect).bottom) {
+      if (localVisibleRect.top < getLayoutOutput(layoutOutputBottoms.get(i)).getBounds().bottom) {
         mPreviousBottomsIndex = i;
         break;
       }

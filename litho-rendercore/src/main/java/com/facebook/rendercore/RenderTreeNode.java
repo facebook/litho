@@ -48,8 +48,8 @@ public class RenderTreeNode {
     mRenderUnit = renderUnit;
     mLayoutData = layoutData;
     mBounds = bounds;
-    mAbsoluteX = parent != null ? parent.getAbsoluteX() + bounds.left : bounds.left;
-    mAbsoluteY = parent != null ? parent.getAbsoluteY() + bounds.top : bounds.top;
+    mAbsoluteX = parent != null ? parent.getAbsoluteX() + bounds.left : 0;
+    mAbsoluteY = parent != null ? parent.getAbsoluteY() + bounds.top : 0;
     mResolvedPadding = resolvedPadding;
     mPositionInParent = positionInParent;
   }
