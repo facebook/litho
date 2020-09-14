@@ -107,6 +107,13 @@ public final class EditorRegistry {
     return read(c, TransientField.CONTENT_FIELD, new TransientField<>(value));
   }
 
+  public interface WrittenValue<T> {
+    @Nullable
+    Boolean hasUpdated();
+
+    T value();
+  }
+
   /**
    * This helper writes an EditorValue to a value that is not a field of a class. If the value is a
    * field, use {@link #write(Class, Field, Object, EditorValue)} instead.
@@ -115,11 +122,24 @@ public final class EditorRegistry {
    * @param c runtime Class of the value
    * @param value data to update
    * @param values EditorValue used to update the value
-   * @return whether the field has been updated correctly
+   * @return if the field has been updated correctly and the value after passing through the editor
    */
-  public static @Nullable <T> Boolean writeValueThatIsNotAField(
+  public static <T> WrittenValue<T> writeValueThatIsNotAField(
       final Class<T> c, T value, final EditorValue values) {
-    return write(c, TransientField.CONTENT_FIELD, new TransientField<>(value), values);
+    final TransientField<T> wrapper = new TransientField<>(value);
+    final Boolean result = write(c, TransientField.CONTENT_FIELD, wrapper, values);
+    return new WrittenValue<T>() {
+      @Override
+      @Nullable
+      public Boolean hasUpdated() {
+        return result;
+      }
+
+      @Override
+      public T value() {
+        return wrapper.content;
+      }
+    };
   }
 
   /**
