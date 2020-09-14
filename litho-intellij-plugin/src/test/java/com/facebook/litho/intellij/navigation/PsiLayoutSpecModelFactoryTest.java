@@ -16,15 +16,13 @@
 
 package com.facebook.litho.intellij.navigation;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
+import com.facebook.litho.specmodels.processor.LayoutSpecModelFactoryTestHelper;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
@@ -60,29 +58,17 @@ public class PsiLayoutSpecModelFactoryTest extends LithoPluginIntellijTest {
 
   @Test
   public void layoutSpec_initModel_populateGenericSpecInfo() {
-    assertThat(mLayoutSpecModel.getSpecName()).isEqualTo("TestLayoutSpec");
-    assertThat(mLayoutSpecModel.getComponentName()).isEqualTo("TestLayoutComponentName");
-    assertThat(mLayoutSpecModel.getDelegateMethods()).hasSize(4);
-    assertThat(mLayoutSpecModel.getProps()).hasSize(4);
-    assertThat(mLayoutSpecModel.getStateValues()).hasSize(2);
-    assertThat(mLayoutSpecModel.hasInjectedDependencies()).isTrue();
-    assertThat(mLayoutSpecModel.getDependencyInjectionHelper())
-        .isSameAs(mDependencyInjectionHelper);
+    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateGenericSpecInfo(
+        mLayoutSpecModel, mDependencyInjectionHelper);
   }
 
   @Test
   public void layoutSpec_initModel_populateOnAttachInfo() {
-    final SpecMethodModel<DelegateMethod, Void> onAttached =
-        mLayoutSpecModel.getDelegateMethods().get(2);
-    assertThat(onAttached.name).isEqualTo("onAttached");
-    assertThat(onAttached.methodParams).hasSize(3);
+    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateOnAttachInfo(mLayoutSpecModel);
   }
 
   @Test
   public void layoutSpec_initModel_populateOnDetachInfo() {
-    final SpecMethodModel<DelegateMethod, Void> onDetached =
-        mLayoutSpecModel.getDelegateMethods().get(3);
-    assertThat(onDetached.name).isEqualTo("onDetached");
-    assertThat(onDetached.methodParams).hasSize(3);
+    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateOnDetachInfo(mLayoutSpecModel);
   }
 }
