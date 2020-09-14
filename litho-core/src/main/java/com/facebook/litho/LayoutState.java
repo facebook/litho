@@ -1229,8 +1229,6 @@ public class LayoutState
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(drawable);
-    drawableComponent.setScopedContext(
-        ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;
     if (recycle != null) {
       isOutputUpdated =

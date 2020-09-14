@@ -22,12 +22,14 @@ import com.facebook.litho.drawable.DrawableUtils;
 
 class DrawableComponent<T extends Drawable> extends Component {
 
+  private static final String SIMPLE_NAME = "DrawableComponent";
+
   Drawable mDrawable;
   int mDrawableWidth;
   int mDrawableHeight;
 
   private DrawableComponent(Drawable drawable) {
-    super("DrawableComponent");
+    super(SIMPLE_NAME);
     mDrawable = drawable;
   }
 
@@ -54,6 +56,36 @@ class DrawableComponent<T extends Drawable> extends Component {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
 
     mountedDrawable.bind(getDrawableWidth(), getDrawableHeight());
+  }
+
+  @Override
+  void bind(ComponentContext c, Object mountedContent) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("onBind:" + SIMPLE_NAME);
+    }
+    try {
+      onBind(c, mountedContent);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  @Override
+  void mount(ComponentContext c, Object mountedContent) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("onMount:" + SIMPLE_NAME);
+    }
+    try {
+      onMount(c, mountedContent);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
   }
 
   @Override
