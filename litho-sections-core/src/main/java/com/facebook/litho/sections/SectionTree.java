@@ -299,7 +299,7 @@ public class SectionTree {
   }
 
   private synchronized void bindTriggerHandler(Section section) {
-    section.recordEventTrigger(mEventTriggersContainer);
+    section.recordEventTrigger(section.getScopedContext(), mEventTriggersContainer);
 
     final List<Section> children = section.getChildren();
     if (children != null) {

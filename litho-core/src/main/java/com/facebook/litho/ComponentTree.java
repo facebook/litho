@@ -1380,7 +1380,7 @@ public class ComponentTree {
 
   private void bindTriggerHandler(Component component) {
     synchronized (mEventTriggersContainer) {
-      component.recordEventTrigger(mEventTriggersContainer);
+      component.recordEventTrigger(component.getScopedContext(), mEventTriggersContainer);
     }
   }
 

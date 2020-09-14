@@ -21,5 +21,5 @@ package com.facebook.litho;
  * into a {@link EventTriggersContainer}
  */
 public interface HasEventTrigger {
-  void recordEventTrigger(EventTriggersContainer container);
+  void recordEventTrigger(ComponentContext c, EventTriggersContainer container);
 }

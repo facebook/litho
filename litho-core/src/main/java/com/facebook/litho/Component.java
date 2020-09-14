@@ -338,7 +338,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Override
-  public void recordEventTrigger(EventTriggersContainer container) {
+  public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
     // Do nothing by default
   }
 

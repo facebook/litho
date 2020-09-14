@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -54,6 +55,7 @@ public class TriggerGeneratorTest {
 
     @OnTrigger(TestEvent.class)
     public Object testTriggerMethod1(
+        ComponentContext c,
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
@@ -64,7 +66,7 @@ public class TriggerGeneratorTest {
     }
 
     @OnTrigger(Object.class)
-    public void testTriggerMethod2(@Prop boolean arg0, @State int arg1) {}
+    public void testTriggerMethod2(ComponentContext c, @Prop boolean arg0, @State int arg1) {}
   }
 
   @Event(returnType = Object.class)
@@ -96,6 +98,7 @@ public class TriggerGeneratorTest {
                 + "    case -773082596: {\n"
                 + "      com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent _event = (com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent) eventState;\n"
                 + "      return testTriggerMethod1(\n"
+                + "            (com.facebook.litho.ComponentContext) eventTrigger.mComponentContext,\n"
                 + "            eventTrigger.mTriggerTarget,\n"
                 + "            (java.lang.Object) params[0],\n"
                 + "            (T) params[1],\n"
@@ -104,6 +107,7 @@ public class TriggerGeneratorTest {
                 + "    case 969727739: {\n"
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testTriggerMethod2(\n"
+                + "            (com.facebook.litho.ComponentContext) eventTrigger.mComponentContext,\n"
                 + "            eventTrigger.mTriggerTarget);\n"
                 + "      return null;\n"
                 + "    }\n"
@@ -119,12 +123,16 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs()).hasSize(2);
 
-    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+    String result = dataHolder.getMethodSpecs().get(0).toString();
+    System.out.println(result);
+    assertThat(result)
         .isEqualTo(
-            "private java.lang.Object testTriggerMethod1(com.facebook.litho.EventTriggerTarget _abstract,\n"
-                + "    java.lang.Object arg2, T arg3, long arg4) {\n"
+            "private java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.EventTriggerTarget _abstract,"
+                + " java.lang.Object arg2, T arg3, long arg4) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  java.lang.Object _result = (java.lang.Object) TestSpec.testTriggerMethod1(\n"
+                + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
                 + "    (int) _ref.mStateContainer.arg1,\n"
                 + "    arg2,\n"
@@ -133,11 +141,15 @@ public class TriggerGeneratorTest {
                 + "  return _result;\n"
                 + "}\n");
 
-    assertThat(dataHolder.getMethodSpecs().get(1).toString())
+    String result2 = dataHolder.getMethodSpecs().get(1).toString();
+    System.out.println(result2);
+    assertThat(result2)
         .isEqualTo(
-            "private void testTriggerMethod2(com.facebook.litho.EventTriggerTarget _abstract) {\n"
+            "private void testTriggerMethod2(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.EventTriggerTarget _abstract) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestSpec.testTriggerMethod2(\n"
+                + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
                 + "    (int) _ref.mStateContainer.arg1);\n"
                 + "}\n");
@@ -201,6 +213,7 @@ public class TriggerGeneratorTest {
                 + "    java.lang.Object arg2, T arg3, long arg4) {\n"
                 + "  Test component = (Test) c.getComponentScope();\n"
                 + "  return component.testTriggerMethod1(\n"
+                + "      c,\n"
                 + "      (com.facebook.litho.EventTriggerTarget) component,\n"
                 + "      arg2,\n"
                 + "      arg3,\n"
@@ -247,6 +260,7 @@ public class TriggerGeneratorTest {
             "static void testTriggerMethod2(com.facebook.litho.ComponentContext c) {\n"
                 + "  Test component = (Test) c.getComponentScope();\n"
                 + "  component.testTriggerMethod2(\n"
+                + "      c,\n"
                 + "      (com.facebook.litho.EventTriggerTarget) component);\n"
                 + "}\n");
   }
