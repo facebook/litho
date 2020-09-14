@@ -18,9 +18,11 @@ package com.facebook.rendercore;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
 
+@DoNotStrip
 public class RenderTreeNode {
 
   private static final int DEFAULT_SIZE = 4;
