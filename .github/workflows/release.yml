@@ -131,7 +131,7 @@ jobs:
       uses: weareyipyip/walking-tag-action@v2
       with:
         tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
-        tag-message: ""
+        tag-message: "haha"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   validate-job:
