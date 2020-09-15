@@ -16,12 +16,14 @@
 
 package com.facebook.rendercore;
 
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaNode;
 import java.util.List;
 
 public interface YogaLayoutDataProvider<RenderContext> {
 
+  @Nullable
   YogaConfig getYogaConfig();
 
   boolean nodeCanMeasure(Node node);
@@ -32,6 +34,7 @@ public interface YogaLayoutDataProvider<RenderContext> {
   void applyYogaPropsFromLayoutParams(
       Node node, RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
 
+  @Nullable
   RenderUnit getRenderUnitForNode(
       Node node, RenderState.LayoutContext<RenderContext> layoutContext);
 
