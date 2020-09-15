@@ -11,7 +11,7 @@ The framework currently supports six types of Visibility Event:
 - [Invisible Event](/javadoc/com/facebook/litho/InvisibleEvent.html): this event is triggered when the Component no longer has any pixels on the screen.
 - [Focused Visible Event](/javadoc/com/facebook/litho/FocusedVisibleEvent.html): this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
 - [Unfocused Visible Event](/javadoc/com/facebook/litho/UnfocusedVisibleEvent.html): this event is triggered when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.
-- [Full Impression Visible Event](/javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): this event is triggered when the entire Component has passed through the viewport at some point.
+- [Full Impression Visible Event](/javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): If the Component is smaller than the viewport, this event is triggered when the entire Component is visible in the viewport. If the Component is bigger than the viewport then just covering the viewport won't trigger the event, it will be triggered when all the edges have passed through the viewport once.
 - [VisibilityChangedEvent](/javadoc/com/facebook/litho/VisibilityChangedEvent.html): this event is triggered when the visibility of the Component on the screen changes.
 
 ### Usage
@@ -85,7 +85,7 @@ VisibilityChangedEvents should be used with particular care since they will be d
 :::
 
 ### Custom visibility percentage
-By default, a visibility event is triggered when a Component is fully visible. In some cases you may want to listen to custom visibility events and perform an action when the Component is only partially visible.
+By default, `VisibleEvent` is triggered when at least 1 pixel of the Component is visible. In some cases you may want to listen to custom visibility events and perform an action when the Component is only partially visible.
 You can specify a ratio of the Component width or height for when the visibility event is dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
 
 ```java
