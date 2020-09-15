@@ -124,10 +124,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set Git tag
-      uses: weareyipyip/walking-tag-action@v2
+      uses: tvdias/github-tagger@v0.0.1
       with:
-        tag-name: ${{ needs.check-release-job.outputs.release-version-info }}
-        tag-message: ""
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: ${{ needs.check-release-job.outputs.release-version-info }}
   validate-job:
     name: Validate uploads
     runs-on: ubuntu-latest
