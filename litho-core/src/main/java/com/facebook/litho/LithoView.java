@@ -498,19 +498,21 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       final int height = bottom - top;
       final int width = right - left;
       if (height <= 0 || width <= 0) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            TEXTURE_ZERO_DIM,
-            "LithoView is <= 0 in one dimension. Size: "
-                + width
-                + "x"
-                + height
-                + ", component: "
-                + (mComponentTree.getRoot() != null
-                    ? mComponentTree.getRoot().getSimpleName()
-                    : null)
-                + ", tree: "
-                + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()));
+        if (ComponentsConfiguration.emitMessageForZeroSizedTexture) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR,
+              TEXTURE_ZERO_DIM,
+              "LithoView is <= 0 in one dimension. Size: "
+                  + width
+                  + "x"
+                  + height
+                  + ", component: "
+                  + (mComponentTree.getRoot() != null
+                      ? mComponentTree.getRoot().getSimpleName()
+                      : null)
+                  + ", tree: "
+                  + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()));
+        }
       } else if (height >= TOO_BIG_TEXTURE_SIZE || width >= TOO_BIG_TEXTURE_SIZE) {
         if (isDeviceThatCantHandleTooBigTextures()) {
           ComponentsReporter.emitMessage(

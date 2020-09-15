@@ -252,4 +252,6 @@ public class ComponentsConfiguration {
 
   /** Keeps the internal nodes used for layout. This will increase memory use. */
   public static boolean keepInternalNodes = false;
+
+  public static boolean emitMessageForZeroSizedTexture = false;
 }
