@@ -15,9 +15,10 @@
 
 name: Publish on release commits
 
-# This workflow detects commits with the message "Release version X.Y.Z" and tags them as releases.
-# After the release is tagged it runs tests in parallel before publishing and uploading it.
-# When the upload is complete a script checks whether the artifacts are available.
+# This workflow detects commits with the message "Release version X.Y.Z" and kickstarts a build.
+# Afterwards it runs tests in parallel before publishing and uploading it.
+# When the upload is complete the revision is tagged them as a release
+# and a script checks whether the artifacts are available.
 #
 # If the workflow fails any commit with the same version message
 # will retag and trigger the workflow again.
@@ -28,29 +29,26 @@ on:
       - master
 
 jobs:
-  push-tags-job:
-    name: Push tags if new release
+  check-release-job:
+    name: Check if new release
     runs-on: ubuntu-latest
     outputs:
-      is-new-release: ${{ steps.push_tag.outcome == 'success' }}
+      is-new-release: ${{ steps.check_version.outcome == 'success' }}
     steps:
     - uses: actions/checkout@v2
     - name: Extract version info
       id: version_info
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '^[rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
-    - name: Set Git tag
-      id: push_tag
+    - name: Check version
+      id: check_version
       if: ${{ steps.version_info.outputs.VERSION_INFO != 'v' }}
-      uses: weareyipyip/walking-tag-action@v2
-      with:
-        tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
-        tag-message: ""
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION_INFO: ${{ steps.version_info.outputs.VERSION_INFO }}
+      run: echo $VERSION_INFO
   new-release:
     name: Skip all if not a new release
-    needs: [push-tags-job]
-    if: ${{ needs.push-tags-job.outputs.is-new-release == 'true' }}
+    needs: [check-release-job]
+    if: ${{ needs.check-release-job.outputs.is-new-release == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - name: Check step
@@ -70,7 +68,7 @@ jobs:
     - uses: nick-invision/retry@v1
       with:
         timeout_minutes: 30
-        max_attempts: 3
+        max_attempts: 5
         command: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
   sample-java-job:
     name: Assemble sample app
@@ -118,6 +116,24 @@ jobs:
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
       run: |
         BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
+  push-tags-job:
+    name: Push tags if new release
+    runs-on: ubuntu-latest
+    needs: [publish-job]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Extract version info
+      id: version_info
+      run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '^[rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
+    - name: Set Git tag
+      id: push_tag
+      if: ${{ steps.version_info.outputs.VERSION_INFO != 'v' }}
+      uses: weareyipyip/walking-tag-action@v2
+      with:
+        tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
+        tag-message: ""
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   validate-job:
     name: Validate uploads
     runs-on: ubuntu-latest
