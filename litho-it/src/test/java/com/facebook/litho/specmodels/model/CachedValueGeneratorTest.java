@@ -204,8 +204,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(expensiveValueMethod)
         .isEqualTo(
-            "private java.lang.String getExpensiveValue() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getExpensiveValue(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueInputs inputs = new ExpensiveValueInputs(globalKey);\n"
                 + "  java.lang.String expensiveValue = (java.lang.String) c.getCachedValue(inputs);\n"
@@ -284,8 +283,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(expensiveValue)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithContext() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getExpensiveValueWithContext(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueWithContextInputs inputs = new ExpensiveValueWithContextInputs(globalKey);\n"
                 + "  java.lang.String expensiveValueWithContext = (java.lang.String) c.getCachedValue(inputs);\n"
@@ -369,8 +367,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(valueWithGeneric)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithGeneric() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getExpensiveValueWithGeneric(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueWithGenericInputs inputs = new ExpensiveValueWithGenericInputs(globalKey,genericArg);\n"
                 + "  java.lang.String expensiveValueWithGeneric = (java.lang.String) c.getCachedValue(inputs);\n"
@@ -460,8 +457,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(valueWithMoreGenerics)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithMoreGenerics() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getExpensiveValueWithMoreGenerics(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueWithMoreGenericsInputs inputs = new ExpensiveValueWithMoreGenericsInputs(globalKey,genericArg,genericArg2);\n"
                 + "  java.lang.String expensiveValueWithMoreGenerics = (java.lang.String) c.getCachedValue(inputs);\n"
@@ -553,8 +549,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(valueWithMoreGenericsAndContext)
         .isEqualTo(
-            "private java.lang.String getExpensiveValueWithMoreGenericsAndContext() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getExpensiveValueWithMoreGenericsAndContext(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final ExpensiveValueWithMoreGenericsAndContextInputs inputs = new ExpensiveValueWithMoreGenericsAndContextInputs(globalKey,genericArg,genericArg2);\n"
                 + "  java.lang.String expensiveValueWithMoreGenericsAndContext = (java.lang.String) c.getCachedValue(inputs);\n"
@@ -644,8 +639,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(moreExpensiveValue)
         .isEqualTo(
-            "private java.lang.String getMoreExpensiveValue() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getMoreExpensiveValue(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final MoreExpensiveValueInputs inputs = new MoreExpensiveValueInputs(globalKey,arg0,mStateContainer.arg1);\n"
                 + "  java.lang.String moreExpensiveValue = (java.lang.String) c.getCachedValue(inputs);\n"
@@ -735,8 +729,7 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(moreExpensiveValueWithContext)
         .isEqualTo(
-            "private java.lang.String getMoreExpensiveValueWithContext() {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+            "private java.lang.String getMoreExpensiveValueWithContext(com.facebook.litho.ComponentContext c) {\n"
                 + "  String globalKey = c.getGlobalKey();\n"
                 + "  final MoreExpensiveValueWithContextInputs inputs = new MoreExpensiveValueWithContextInputs(globalKey,arg0,mStateContainer.arg1);\n"
                 + "  java.lang.String moreExpensiveValueWithContext = (java.lang.String) c.getCachedValue(inputs);\n"

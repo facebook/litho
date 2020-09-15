@@ -25,6 +25,7 @@ import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -210,6 +211,9 @@ public class EventGenerator {
     }
 
     delegation.indent();
+
+    final String contextParamName = getContextParamName(specModel, eventMethodModel);
+
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
@@ -234,7 +238,7 @@ public class EventGenerator {
             "($T) $L.$L",
             methodParamModel.getTypeName(),
             REF_VARIABLE_NAME,
-            getImplAccessor(specModel, methodParamModel));
+            getImplAccessor(specModel, methodParamModel, contextParamName));
       }
 
       if (i < size - 1) {
@@ -253,6 +257,21 @@ public class EventGenerator {
     }
 
     return methodSpec.build();
+  }
+
+  /** @return the name of the defined ComponentContext param on this event method. */
+  static String getContextParamName(SpecModel specModel, SpecMethodModel eventMethodModel) {
+    for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
+      final ImmutableList<MethodParamModel> models = eventMethodModel.methodParams;
+      final MethodParamModel methodParamModel = models.get(i);
+
+      if ((methodParamModel.getAnnotations() == null || methodParamModel.getAnnotations().isEmpty())
+          && methodParamModel.getTypeName().equals(specModel.getContextClass())) {
+        return methodParamModel.getName();
+      }
+    }
+
+    return null;
   }
 
   /** Generate a dispatchOnEvent() implementation for the component. */

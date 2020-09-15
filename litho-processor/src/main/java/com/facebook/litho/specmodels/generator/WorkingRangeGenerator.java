@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
 
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -131,11 +132,14 @@ public class WorkingRangeGenerator {
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
     delegation.add("$L.$L(\n", sourceDelegateAccessor, methodModel.name);
     delegation.indent();
+
     for (int i = 0, size = methodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = methodModel.methodParams.get(i);
 
       delegation.add(
-          "($T) $L", methodParamModel.getTypeName(), getImplAccessor(specModel, methodParamModel));
+          "($T) $L",
+          methodParamModel.getTypeName(),
+          getImplAccessor(specModel, methodParamModel, "c"));
       delegation.add((i < methodModel.methodParams.size() - 1) ? ",\n" : ");\n");
     }
     delegation.unindent();

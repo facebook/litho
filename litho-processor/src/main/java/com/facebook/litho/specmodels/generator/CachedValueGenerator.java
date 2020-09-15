@@ -116,8 +116,8 @@ public class CachedValueGenerator {
     MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(getCachedValueGetterName(cachedValueName))
             .addModifiers(Modifier.PRIVATE)
+            .addParameter(specModel.getContextClass(), "c")
             .returns(cachedValueType)
-            .addStatement("$T c = getScopedContext()", specModel.getContextClass())
             .addStatement("String globalKey = c.getGlobalKey()");
 
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
@@ -167,7 +167,7 @@ public class CachedValueGenerator {
         if (MethodParamModelUtils.isComponentContextParam(methodParamModel)) {
           argName = "c";
         } else {
-          argName = ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel);
+          argName = ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel, "c");
         }
         if (i < paramSize - 1) {
           delegation.add("$L,", argName);
@@ -303,7 +303,7 @@ public class CachedValueGenerator {
 
     @Override
     public String getAccessor(SpecModel specModel) {
-      return ComponentBodyGenerator.getImplAccessor(specModel, mMethodParamModel);
+      return ComponentBodyGenerator.getImplAccessor(specModel, mMethodParamModel, "c");
     }
 
     @Override

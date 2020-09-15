@@ -192,6 +192,7 @@ public class TriggerGenerator {
     }
 
     delegation.indent();
+
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
@@ -206,7 +207,7 @@ public class TriggerGenerator {
             "($T) $L.$L",
             methodParamModel.getTypeName(),
             REF_VARIABLE_NAME,
-            getImplAccessor(specModel, methodParamModel));
+            getImplAccessor(specModel, methodParamModel, "c"));
       }
 
       delegation.add((i < eventMethodModel.methodParams.size() - 1) ? ",\n" : ");\n");

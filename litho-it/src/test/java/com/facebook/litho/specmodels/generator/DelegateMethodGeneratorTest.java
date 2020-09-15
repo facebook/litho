@@ -104,6 +104,7 @@ public class DelegateMethodGeneratorTest {
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
             .componentClass(ClassNames.COMPONENT)
+            .contextClassName(ClassNames.COMPONENT_CONTEXT)
             .delegateMethods(ImmutableList.of(mDelegateMethodModel))
             .representedObject(new Object())
             .build();
@@ -112,6 +113,7 @@ public class DelegateMethodGeneratorTest {
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
             .componentClass(ClassNames.COMPONENT)
+            .contextClassName(ClassNames.COMPONENT_CONTEXT)
             .delegateMethods(ImmutableList.of(mDelegateMethodModel))
             .dependencyInjectionHelper(mDependencyInjectionHelper)
             .representedObject(new Object())

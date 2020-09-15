@@ -194,7 +194,7 @@ public class ComponentBodyGenerator {
 
       copyBuilder.addStatement("$L = $L.$L", name, copyParamName, name);
       recordBuilder.addStatement(
-          "$L = $L.$L", name, recordParamName, getImplAccessor(specModel, modelToDiff));
+          "$L = $L.$L", name, recordParamName, getImplAccessor(specModel, modelToDiff, null));
     }
 
     return renderInfoClassBuilder
@@ -644,7 +644,7 @@ public class ComponentBodyGenerator {
       String implInstanceName,
       MethodParamModel field,
       EnumSet<RunMode> runMode) {
-    final String implAccessor = getImplAccessor(specModel, field, true);
+    final String implAccessor = getImplAccessor(specModel, field, null, true);
 
     return getCompareStatement(field, implAccessor, implInstanceName + "." + implAccessor, runMode);
   }
@@ -817,20 +817,30 @@ public class ComponentBodyGenerator {
     return Comparable.OTHER;
   }
 
-  static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {
-    return getImplAccessor(specModel, methodParamModel, false);
+  static String getImplAccessor(
+      SpecModel specModel, MethodParamModel methodParamModel, String contextParamName) {
+    return getImplAccessor(specModel, methodParamModel, contextParamName, false);
   }
 
   static String getImplAccessor(
-      SpecModel specModel, MethodParamModel methodParamModel, boolean shallow) {
+      SpecModel specModel,
+      MethodParamModel methodParamModel,
+      String contextParamName,
+      boolean shallow) {
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
     } else if (methodParamModel instanceof CachedValueParamModel) {
+      if (contextParamName == null) {
+        throw new IllegalStateException("Need a scoped context to access cached values.");
+      }
+
       return "get"
           + methodParamModel.getName().substring(0, 1).toUpperCase()
           + methodParamModel.getName().substring(1)
-          + "()";
+          + "("
+          + contextParamName
+          + ")";
     } else if (methodParamModel instanceof PropModel
         && ((PropModel) methodParamModel).isDynamic()
         && !shallow) {

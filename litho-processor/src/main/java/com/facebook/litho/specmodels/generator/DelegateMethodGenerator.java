@@ -103,7 +103,13 @@ public class DelegateMethodGenerator {
       methodSpec.addAnnotation(annotation);
     }
 
+    String contextParamName = null;
+
     for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
+      if (methodDescription.definedParameterTypes.get(i) == specModel.getContextClass()) {
+        contextParamName = delegateMethod.methodParams.get(i).getName();
+      }
+
       methodSpec.addParameter(
           methodDescription.definedParameterTypes.get(i),
           delegateMethod.methodParams.get(i).getName());
@@ -152,7 +158,7 @@ public class DelegateMethodGenerator {
           registerDelegation.add(
               "($T) $L",
               methodParamModel.getTypeName(),
-              getImplAccessor(specModel, methodParamModel));
+              getImplAccessor(specModel, methodParamModel, contextParamName));
           registerDelegation.add(
               (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
         }
@@ -168,6 +174,19 @@ public class DelegateMethodGenerator {
     return methodSpec.build();
   }
 
+  private static String getContextParamName(
+      SpecModel specModel,
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
+      DelegateMethodDescription methodDescription) {
+    for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
+      if (methodDescription.definedParameterTypes.get(i) == specModel.getContextClass()) {
+        return delegateMethod.methodParams.get(i).getName();
+      }
+    }
+
+    return null;
+  }
+
   public static CodeBlock getDelegationCode(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
@@ -178,6 +197,10 @@ public class DelegateMethodGenerator {
 
     final List<ParamTypeAndName> delegationParams =
         new ArrayList<>(delegateMethod.methodParams.size());
+
+    final String contextParamName =
+        getContextParamName(specModel, delegateMethod, methodDescription);
+
     for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
       final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
@@ -201,8 +224,8 @@ public class DelegateMethodGenerator {
             methodParamModel.getTypeName(),
             methodParamModel.getName(),
             methodParamModel.getTypeName(),
-            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
-            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
+            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel, contextParamName),
+            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel, contextParamName));
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
       } else if (isOutputType(methodParamModel.getTypeName())) {
@@ -217,7 +240,9 @@ public class DelegateMethodGenerator {
           releaseStatements.beginControlFlow("if ($L.get() != null)", localOutputName);
         }
         releaseStatements.addStatement(
-            "$L = $L.get()", getImplAccessor(specModel, methodParamModel), localOutputName);
+            "$L = $L.get()",
+            getImplAccessor(specModel, methodParamModel, contextParamName),
+            localOutputName);
         if (isPropOutput) {
           releaseStatements.endControlFlow();
         }
@@ -235,7 +260,7 @@ public class DelegateMethodGenerator {
 
         releaseStatements.addStatement(
             "$L = $L.get()",
-            getImplAccessor(specModel, methodParamModel),
+            getImplAccessor(specModel, methodParamModel, contextParamName),
             methodParamModel.getName());
 
         if (delegateMethod.name.toString().equals("createInitialState")) {
@@ -258,7 +283,7 @@ public class DelegateMethodGenerator {
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
                     methodParamModel.getName())
-                .add("$L);\n", getImplAccessor(specModel, methodParamModel))
+                .add("$L);\n", getImplAccessor(specModel, methodParamModel, contextParamName))
                 .unindent()
                 .build();
         acquireStatements.add(block);
@@ -266,7 +291,8 @@ public class DelegateMethodGenerator {
       } else {
         delegationParams.add(
             ParamTypeAndName.create(
-                methodParamModel.getTypeName(), getImplAccessor(specModel, methodParamModel)));
+                methodParamModel.getTypeName(),
+                getImplAccessor(specModel, methodParamModel, contextParamName)));
       }
     }
 

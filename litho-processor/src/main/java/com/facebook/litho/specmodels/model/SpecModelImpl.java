@@ -45,6 +45,7 @@ public final class SpecModelImpl implements SpecModel {
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
+  private final ClassName mContextClassName;
   private final SpecElementType mSpecElementType;
   private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
@@ -83,6 +84,7 @@ public final class SpecModelImpl implements SpecModel {
       String qualifiedSpecClassName,
       String componentClassName,
       ClassName componentClass,
+      ClassName contextClassName,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
@@ -110,6 +112,7 @@ public final class SpecModelImpl implements SpecModel {
     mSpecName = getSpecName(qualifiedSpecClassName);
     mSpecTypeName = ClassName.bestGuess(qualifiedSpecClassName);
     mComponentClass = componentClass;
+    mContextClassName = contextClassName;
     mComponentName = getComponentName(componentClassName, qualifiedSpecClassName);
     mComponentTypeName = getComponentTypeName(componentClassName, qualifiedSpecClassName);
     mDelegateMethods = delegateMethods;
@@ -346,7 +349,7 @@ public final class SpecModelImpl implements SpecModel {
 
   @Override
   public ClassName getContextClass() {
-    throw new RuntimeException("Don't delegate to this method!");
+    return mContextClassName;
   }
 
   @Override
@@ -1072,6 +1075,7 @@ public final class SpecModelImpl implements SpecModel {
     private String mQualifiedSpecClassName;
     private String mComponentClassName;
     private ClassName mComponentClass;
+    private ClassName mContextClassName;
     private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethodModels;
@@ -1116,6 +1120,11 @@ public final class SpecModelImpl implements SpecModel {
 
     public Builder componentClass(ClassName componentClass) {
       mComponentClass = componentClass;
+      return this;
+    }
+
+    public Builder contextClassName(ClassName contextClassName) {
+      mContextClassName = contextClassName;
       return this;
     }
 
@@ -1257,6 +1266,7 @@ public final class SpecModelImpl implements SpecModel {
           mQualifiedSpecClassName,
           mComponentClassName,
           mComponentClass,
+          mContextClassName,
           mDelegateMethodModels,
           mEventMethodModels,
           mTriggerMethodModels,
