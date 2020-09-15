@@ -110,12 +110,12 @@ jobs:
         chmod +x buck-master.pex && \
         mv buck-master.pex buck && \
         ls -l buck
-    # - name: Publish to maven
-    #   env:
-    #     BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-    #     BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-    #   run: |
-    #     BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
+    - name: Publish to maven
+      env:
+        BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+        BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+      run: |
+        BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
   push-tags-job:
     name: Push tags if new release
     runs-on: ubuntu-latest
