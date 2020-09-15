@@ -121,8 +121,6 @@ jobs:
     name: Push tags if new release
     runs-on: ubuntu-latest
     needs: [check-release-job, publish-job]
-    needs: []
-      if: ${{ is-new-release == 'true' }}
     steps:
     - uses: actions/checkout@v2
     - name: Set tag
