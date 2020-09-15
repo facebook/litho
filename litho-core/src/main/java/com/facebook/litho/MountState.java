@@ -72,12 +72,12 @@ import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
-import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
@@ -204,15 +204,15 @@ class MountState
   }
 
   @Override
-  public void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+  public void registerMountDelegateExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this);
     }
-    mMountDelegate.addExtension(mountDelegateExtension);
+    mMountDelegate.addExtension(mountExtension);
 
     // Used for testing incremental mount extension until TransitionsExtension is testable.
-    if (mountDelegateExtension instanceof TransitionsExtension) {
-      mTransitionsExtension = (TransitionsExtension) mountDelegateExtension;
+    if (mountExtension instanceof TransitionsExtension) {
+      mTransitionsExtension = (TransitionsExtension) mountExtension;
     }
   }
 
@@ -952,7 +952,7 @@ class MountState
 
     mPreviousTopsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.bottom <= layoutOutputTops.get(i).getBounds().top) {
+      if (localVisibleRect.bottom <= getLayoutOutput(layoutOutputTops.get(i)).getBounds().top) {
         mPreviousTopsIndex = i;
         break;
       }
@@ -960,7 +960,7 @@ class MountState
 
     mPreviousBottomsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.top < layoutOutputBottoms.get(i).getBounds().bottom) {
+      if (localVisibleRect.top < getLayoutOutput(layoutOutputBottoms.get(i)).getBounds().bottom) {
         mPreviousBottomsIndex = i;
         break;
       }
@@ -1403,6 +1403,10 @@ class MountState
               ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
               : false;
 
+      if (hasUnmountDelegate) {
+        continue;
+      }
+
       // Just skip disappearing items here
       if (disappearingItems.size() > disappearingItemsPointer
           && disappearingItems.get(disappearingItemsPointer) == i) {
@@ -1413,7 +1417,7 @@ class MountState
         continue;
       }
 
-      if (newPosition == -1 || hasUnmountDelegate) {
+      if (newPosition == -1) {
         unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
@@ -2704,6 +2708,11 @@ class MountState
     return mountItem == mIndexToItemMap.get(ROOT_HOST_ID);
   }
 
+  @Override
+  public @Nullable MountItem getRootItem() {
+    return mIndexToItemMap != null ? mIndexToItemMap.get(ROOT_HOST_ID) : null;
+  }
+
   int getItemCount() {
     assertMainThread();
     return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
@@ -2869,10 +2878,10 @@ class MountState
   }
 
   private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
-    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+    final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionMapping =
         newLayoutState.getTransitionIdMapping();
     if (transitionMapping != null) {
-      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transition :
           transitionMapping.entrySet()) {
         if (!mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
@@ -2882,9 +2891,9 @@ class MountState
           mAnimationLockedIndices = new int[newLayoutState.getMountableOutputCount()];
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
+        final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
-          final LayoutOutput layoutOutput = group.getAt(j);
+          final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
           final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
           updateAnimationLockCount(newLayoutState, position, true);
         }
@@ -3004,7 +3013,7 @@ class MountState
         }
       }
 
-      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
+      final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
           mLastMountedLayoutState.getLayoutOutputsForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
@@ -3019,7 +3028,7 @@ class MountState
         }
       } else {
         for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-          final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+          final LayoutOutput layoutOutput = (LayoutOutput) layoutOutputGroup.getAt(i);
           final int position = layoutOutput.getIndex();
           updateAnimationLockCount(mLastMountedLayoutState, position, false);
         }
@@ -3254,7 +3263,9 @@ class MountState
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top
-              >= layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
+              >= getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex))
+                  .getBounds()
+                  .bottom) {
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
@@ -3266,7 +3277,9 @@ class MountState
 
       while (mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              < layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
+              < getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex - 1))
+                  .getBounds()
+                  .bottom) {
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
@@ -3288,7 +3301,8 @@ class MountState
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (mPreviousTopsIndex < count
-          && localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
+          && localVisibleRect.bottom
+              > getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex)).getBounds().top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final int layoutOutputIndex =
@@ -3306,7 +3320,7 @@ class MountState
 
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              <= layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
+              <= getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex - 1)).getBounds().top) {
         mPreviousTopsIndex--;
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = getLayoutOutput(node).getId();
@@ -3335,7 +3349,7 @@ class MountState
 
   private void prepareTransitionManager() {
     if (mTransitionManager == null) {
-      mTransitionManager = new TransitionManager(this, this);
+      mTransitionManager = new TransitionManager(this);
     }
   }
 

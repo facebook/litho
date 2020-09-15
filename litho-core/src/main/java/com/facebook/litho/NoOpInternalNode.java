@@ -541,9 +541,6 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
-  @Override
-  public void setRootComponent(Component component) {}
-
   @Nullable
   @Override
   public StateListAnimator getStateListAnimator() {
@@ -825,6 +822,11 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public @Nullable InternalNode transitionKeyType(@Nullable Transition.TransitionKeyType type) {
+    return null;
+  }
+
+  @Override
+  public @Nullable String getTransitionGlobalKey() {
     return null;
   }
 

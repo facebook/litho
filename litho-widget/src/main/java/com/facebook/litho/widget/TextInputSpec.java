@@ -43,11 +43,13 @@ import android.text.method.MovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.core.util.ObjectsCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -188,7 +190,7 @@ class TextInputSpec {
    * Dummy drawable used for differentiating user-provided null background drawable from default
    * drawable of the spec
    */
-  private static final Drawable UNSET_DRAWABLE = new ColorDrawable(TRANSPARENT);
+  static final Drawable UNSET_DRAWABLE = new ColorDrawable(TRANSPARENT);
 
   @PropDefault
   protected static final ColorStateList textColorStateList = ColorStateList.valueOf(Color.BLACK);
@@ -273,13 +275,91 @@ class TextInputSpec {
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
-      @State AtomicReference<CharSequence> savedText,
-      @State int measureSeqNumber) {
+      @State AtomicReference<CharSequence> savedText) {
+    EditText forMeasure =
+        TextInputSpec.createAndMeasureEditText(
+            c,
+            layout,
+            widthSpec,
+            heightSpec,
+            size,
+            hint,
+            inputBackground,
+            shadowRadius,
+            shadowDx,
+            shadowDy,
+            shadowColor,
+            textColorStateList,
+            hintColorStateList,
+            highlightColor,
+            textSize,
+            typeface,
+            textAlignment,
+            gravity,
+            editable,
+            inputType,
+            imeOptions,
+            inputFilters,
+            multiline,
+            ellipsize,
+            minLines,
+            maxLines,
+            cursorDrawableRes,
+            error,
+            errorDrawable,
+            // onMeasure happens:
+            // 1. After initState before onMount: savedText = initText.
+            // 2. After onMount before onUnmount: savedText preserved from underlying editText.
+            savedText.get());
 
+    setSizeForView(size, widthSpec, heightSpec, forMeasure);
+  }
+
+  static void setSizeForView(Size size, int widthSpec, int heightSpec, View forMeasure) {
+    size.height = forMeasure.getMeasuredHeight();
+
+    // For width we always take all available space, or collapse to 0 if unspecified.
+    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+      size.width = 0;
+    } else {
+      size.width = Math.min(SizeSpec.getSize(widthSpec), forMeasure.getMeasuredWidth());
+    }
+  }
+
+  static EditText createAndMeasureEditText(
+      ComponentContext c,
+      ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,
+      CharSequence hint,
+      Drawable inputBackground,
+      float shadowRadius,
+      float shadowDx,
+      float shadowDy,
+      int shadowColor,
+      ColorStateList textColorStateList,
+      ColorStateList hintColorStateList,
+      Integer highlightColor,
+      int textSize,
+      Typeface typeface,
+      int textAlignment,
+      int gravity,
+      boolean editable,
+      int inputType,
+      int imeOptions,
+      List<InputFilter> inputFilters,
+      boolean multiline,
+      TextUtils.TruncateAt ellipsize,
+      int minLines,
+      int maxLines,
+      int cursorDrawableRes,
+      CharSequence error,
+      Drawable errorDrawable,
+      CharSequence text) {
     // The height should be the measured height of EditText with relevant params
     final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
     // If text contains Spans, we don't want it to be mutable for the measurement case
-    CharSequence text = savedText.get();
     if (text instanceof Spannable) {
       text = text.toString();
     }
@@ -309,26 +389,15 @@ class TextInputSpec {
         maxLines,
         cursorDrawableRes,
         forMeasure.getMovementMethod(),
-        // onMeasure happens:
-        // 1. After initState before onMount: savedText = initText.
-        // 2. After onMount before onUnmount: savedText preserved from underlying editText.
         text,
         error,
         errorDrawable);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
-
-    size.height = forMeasure.getMeasuredHeight();
-
-    // For width we always take all available space, or collapse to 0 if unspecified.
-    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-      size.width = 0;
-    } else {
-      size.width = Math.min(SizeSpec.getSize(widthSpec), forMeasure.getMeasuredWidth());
-    }
+    return forMeasure;
   }
 
-  private static void setParams(
+  static void setParams(
       EditText editText,
       @Nullable CharSequence hint,
       @Nullable Drawable background,
@@ -441,7 +510,7 @@ class TextInputSpec {
     if (SDK_INT >= JELLY_BEAN_MR1) {
       editText.setTextAlignment(textAlignment);
     }
-    if (text != null && !equals(editText.getText().toString(), text.toString())) {
+    if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
     }
   }
@@ -483,82 +552,82 @@ class TextInputSpec {
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedView,
       @State Diff<AtomicReference<CharSequence>> savedText) {
-    if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
+    if (!ObjectsCompat.equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
     }
-    if (!equals(initialText.getPrevious(), initialText.getNext())) {
+    if (!ObjectsCompat.equals(initialText.getPrevious(), initialText.getNext())) {
       return true;
     }
-    if (!equals(hint.getPrevious(), hint.getNext())) {
+    if (!ObjectsCompat.equals(hint.getPrevious(), hint.getNext())) {
       return true;
     }
-    if (!equals(shadowRadius.getPrevious(), shadowRadius.getNext())) {
+    if (!ObjectsCompat.equals(shadowRadius.getPrevious(), shadowRadius.getNext())) {
       return true;
     }
-    if (!equals(shadowDx.getPrevious(), shadowDx.getNext())) {
+    if (!ObjectsCompat.equals(shadowDx.getPrevious(), shadowDx.getNext())) {
       return true;
     }
-    if (!equals(shadowDy.getPrevious(), shadowDy.getNext())) {
+    if (!ObjectsCompat.equals(shadowDy.getPrevious(), shadowDy.getNext())) {
       return true;
     }
-    if (!equals(shadowColor.getPrevious(), shadowColor.getNext())) {
+    if (!ObjectsCompat.equals(shadowColor.getPrevious(), shadowColor.getNext())) {
       return true;
     }
-    if (!equals(textColorStateList.getPrevious(), textColorStateList.getNext())) {
+    if (!ObjectsCompat.equals(textColorStateList.getPrevious(), textColorStateList.getNext())) {
       return true;
     }
-    if (!equals(hintColorStateList.getPrevious(), hintColorStateList.getNext())) {
+    if (!ObjectsCompat.equals(hintColorStateList.getPrevious(), hintColorStateList.getNext())) {
       return true;
     }
-    if (!equals(highlightColor.getPrevious(), highlightColor.getNext())) {
+    if (!ObjectsCompat.equals(highlightColor.getPrevious(), highlightColor.getNext())) {
       return true;
     }
-    if (!equals(textSize.getPrevious(), textSize.getNext())) {
+    if (!ObjectsCompat.equals(textSize.getPrevious(), textSize.getNext())) {
       return true;
     }
-    if (!equals(typeface.getPrevious(), typeface.getNext())) {
+    if (!ObjectsCompat.equals(typeface.getPrevious(), typeface.getNext())) {
       return true;
     }
-    if (!equals(textAlignment.getPrevious(), textAlignment.getNext())) {
+    if (!ObjectsCompat.equals(textAlignment.getPrevious(), textAlignment.getNext())) {
       return true;
     }
-    if (!equals(gravity.getPrevious(), gravity.getNext())) {
+    if (!ObjectsCompat.equals(gravity.getPrevious(), gravity.getNext())) {
       return true;
     }
-    if (!equals(editable.getPrevious(), editable.getNext())) {
+    if (!ObjectsCompat.equals(editable.getPrevious(), editable.getNext())) {
       return true;
     }
-    if (!equals(inputType.getPrevious(), inputType.getNext())) {
+    if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
       return true;
     }
-    if (!equals(imeOptions.getPrevious(), imeOptions.getNext())) {
+    if (!ObjectsCompat.equals(imeOptions.getPrevious(), imeOptions.getNext())) {
       return true;
     }
     if (!equalInputFilters(inputFilters.getPrevious(), inputFilters.getNext())) {
       return true;
     }
-    if (!equals(ellipsize.getPrevious(), ellipsize.getNext())) {
+    if (!ObjectsCompat.equals(ellipsize.getPrevious(), ellipsize.getNext())) {
       return true;
     }
-    if (!equals(multiline.getPrevious(), multiline.getNext())) {
+    if (!ObjectsCompat.equals(multiline.getPrevious(), multiline.getNext())) {
       return true;
     }
     // Minimum and maximum line count should only get checked if multiline is set
     if (multiline.getNext()) {
-      if (!equals(minLines.getPrevious(), minLines.getNext())) {
+      if (!ObjectsCompat.equals(minLines.getPrevious(), minLines.getNext())) {
         return true;
       }
-      if (!equals(maxLines.getPrevious(), maxLines.getNext())) {
+      if (!ObjectsCompat.equals(maxLines.getPrevious(), maxLines.getNext())) {
         return true;
       }
     }
-    if (!equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
+    if (!ObjectsCompat.equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
       return true;
     }
-    if (!equals(movementMethod.getPrevious(), movementMethod.getNext())) {
+    if (!ObjectsCompat.equals(movementMethod.getPrevious(), movementMethod.getNext())) {
       return true;
     }
-    if (!equals(error.getPrevious(), error.getNext())) {
+    if (!ObjectsCompat.equals(error.getPrevious(), error.getNext())) {
       return true;
     }
 
@@ -590,7 +659,8 @@ class TextInputSpec {
         // The best we can do here is compare getConstantState. This can result in spurious updates;
         // they might be different objects representing the same drawable. But it's the best we can
         // do without actually comparing bitmaps (which is too expensive).
-        if (!equals(previousBackground.getConstantState(), nextBackground.getConstantState())) {
+        if (!ObjectsCompat.equals(
+            previousBackground.getConstantState(), nextBackground.getConstantState())) {
           return true;
         }
       }
@@ -598,12 +668,8 @@ class TextInputSpec {
     return false;
   }
 
-  private static boolean equals(Object a, Object b) {
-    return (a == null) ? b == null : a.equals(b);
-  }
-
   /** LengthFilter and AllCaps do not implement isEqual. Correct for the deficiency. */
-  private static boolean equalInputFilters(List<InputFilter> a, List<InputFilter> b) {
+  static boolean equalInputFilters(List<InputFilter> a, List<InputFilter> b) {
     if (a == null && b == null) {
       return true;
     }
@@ -629,7 +695,7 @@ class TextInputSpec {
         }
       }
       // Best we can do in this case is call equals().
-      if (!equals(fa, fb)) {
+      if (!ObjectsCompat.equals(fa, fb)) {
         return false;
       }
     }
@@ -713,15 +779,37 @@ class TextInputSpec {
       final ComponentContext c,
       EditTextWithEventHandlers editText,
       @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+    onBindEditText(
+        c,
+        editText,
+        textWatchers,
+        TextInput.getTextChangedEventHandler(c),
+        TextInput.getSelectionChangedEventHandler(c),
+        TextInput.getKeyUpEventHandler(c),
+        TextInput.getKeyPreImeEventHandler(c),
+        TextInput.getEditorActionEventHandler(c),
+        TextInput.getInputConnectionEventHandler(c));
+  }
+
+  static void onBindEditText(
+      final ComponentContext c,
+      EditTextWithEventHandlers editText,
+      @Nullable List<TextWatcher> textWatchers,
+      EventHandler textChangedEventHandler,
+      EventHandler selectionChangedEventHandler,
+      EventHandler keyUpEventHandler,
+      EventHandler keyPreImeEventHandler,
+      EventHandler EditorActionEventHandler,
+      EventHandler inputConnectionEventHandler) {
     editText.attachWatchers(textWatchers);
 
     editText.setComponentContext(c);
-    editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
-    editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
-    editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
-    editText.setKeyPreImeEventEventHandler(TextInput.getKeyPreImeEventHandler(c));
-    editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
-    editText.setInputConnectionEventHandler(TextInput.getInputConnectionEventHandler(c));
+    editText.setTextChangedEventHandler(textChangedEventHandler);
+    editText.setSelectionChangedEventHandler(selectionChangedEventHandler);
+    editText.setKeyUpEventHandler(keyUpEventHandler);
+    editText.setKeyPreImeEventEventHandler(keyPreImeEventHandler);
+    editText.setEditorActionEventHandler(EditorActionEventHandler);
+    editText.setInputConnectionEventHandler(inputConnectionEventHandler);
   }
 
   @OnUnmount
@@ -798,16 +886,27 @@ class TextInputSpec {
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
       @State AtomicReference<CharSequence> savedText,
       @FromTrigger CharSequence text) {
+    boolean shouldRemeasure = setTextEditText(mountedView, savedText, text);
+    if (shouldRemeasure) {
+      TextInput.remeasureForUpdatedTextSync(c);
+    }
+  }
+
+  static boolean setTextEditText(
+      AtomicReference<EditTextWithEventHandlers> mountedView,
+      AtomicReference<CharSequence> savedText,
+      CharSequence text) {
     ThreadUtils.assertMainThread();
 
-    EditTextWithEventHandlers view = mountedView.get();
-    if (view != null) {
-      // If line count changes state update will be triggered by view
-      view.setText(text);
-    } else {
+    EditTextWithEventHandlers editText = mountedView.get();
+    if (editText == null) {
       savedText.set(text);
-      com.facebook.litho.widget.TextInput.remeasureForUpdatedTextSync(c);
+      return true;
     }
+
+    // If line count changes state update will be triggered by view
+    editText.setText(text);
+    return false;
   }
 
   @OnTrigger(DispatchKeyEvent.class)
@@ -993,7 +1092,7 @@ class TextInputSpec {
       }
     }
 
-    private void setSoftInputVisibility(boolean visible) {
+    void setSoftInputVisibility(boolean visible) {
       final InputMethodManager imm =
           (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
       if (imm == null) {

@@ -32,12 +32,13 @@
       android:debuggable="true"
       android:supportsRtl="true"
       android:theme="@style/NoTitleBarWhiteBG">
-    <activity android:name=".DemoListActivity">
+    <activity android:name=".SampleRootActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+    <activity android:name=".DemoListActivity" />
     <activity android:name=".ComponentDemoActivity" />
     <activity android:name=".lithography.LithographyActivity" />
     <activity android:name=".bordereffects.BorderEffectsActivity" />
@@ -61,12 +62,14 @@
     <activity android:name=".changesetdebug.ItemsRerenderingActivity"/>
     <activity android:name=".changesetdebug.PropUpdatingActivity"/>
     <activity android:name=".changesetdebug.ScrollingToBottomActivity" />
+    <activity android:name=".incrementalmount.IncrementalMountWithCustomViewContainerActivity" />
     <activity android:name=".stateupdates.StateUpdateFromOutsideTreeActivity" />
     <activity android:name=".triggers.ClearTextTriggerExampleActivity" />
     <activity android:name=".triggers.CustomEventTriggerExampleActivity" />
     <activity android:name=".triggers.TooltipTriggerExampleActivity" />
     <activity android:name=".lifecycle.LifecycleDelegateActivity" />
     <activity android:name=".animations.sharedelements.SharedElementsActivity" />
+    <activity android:name=".animations.sharedelements.SharedElementsFragmentActivity" />
     <activity android:name=".animations.sharedelements.DetailActivity" />
   </application>
 

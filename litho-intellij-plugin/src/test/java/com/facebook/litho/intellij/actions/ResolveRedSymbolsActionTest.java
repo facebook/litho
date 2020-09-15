@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -57,6 +58,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
     super("testdata/actions");
   }
 
+  @Ignore("T73932936")
   @Test
   public void resolveRedSymbols() throws IOException {
     final Project project = testHelper.getFixture().getProject();

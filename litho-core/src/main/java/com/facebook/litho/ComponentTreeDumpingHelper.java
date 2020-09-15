@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Helper class in charge of dumping the component hierarchy related to a provided {@link
@@ -34,9 +33,6 @@ public class ComponentTreeDumpingHelper {
   /** Dumps the tree related to the provided component context */
   @Nullable
   public static String dumpContextTree(@Nullable ComponentContext componentContext) {
-    if (!ComponentsConfiguration.isDebugModeEnabled) {
-      return "Dumping of the component" + " tree is not support on non-internal builds";
-    }
     if (componentContext == null) {
       return "ComponentContext is null";
     }
@@ -72,6 +68,12 @@ public class ComponentTreeDumpingHelper {
     sb.append(lithoView != null && lithoView.getVisibility() == View.VISIBLE ? "V" : "H");
     if (layout != null && layout.getClickHandler() != null) {
       sb.append(" [clickable]");
+    }
+    if (layout != null) {
+      sb.append(" ");
+      sb.append(layout.getLayoutWidth());
+      sb.append("x");
+      sb.append(layout.getLayoutHeight());
     }
 
     sb.append('}');

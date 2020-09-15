@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import androidx.annotation.Nullable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class TimeOutSemaphore {
 
   private final Semaphore mSemaphore;
+  private @Nullable Throwable mException;
 
   public TimeOutSemaphore(int numPermits) {
     mSemaphore = new Semaphore(numPermits, true);
@@ -34,11 +36,14 @@ public class TimeOutSemaphore {
   public void acquire() {
     try {
       if (!mSemaphore.tryAcquire(5, TimeUnit.SECONDS)) {
+        checkException();
         throw new RuntimeException("Timed out!");
       }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+
+    checkException();
   }
 
   public void release() {
@@ -47,5 +52,19 @@ public class TimeOutSemaphore {
 
   public void drainPermits() {
     mSemaphore.drainPermits();
+  }
+
+  /**
+   * Set an Exception to indicate an Exception that should be raised occurred that should be
+   * communicated to whoever is acquiring this semaphore.
+   */
+  public void setException(Throwable t) {
+    mException = t;
+  }
+
+  private void checkException() {
+    if (mException != null) {
+      throw new RuntimeException("Exception from signaling thread", mException);
+    }
   }
 }

@@ -50,9 +50,9 @@ public class DemoListComponentTest {
   @Before
   public void setUp() {
     mComponent =
-        DemoListComponent.create(mComponentsRule.getContext())
-            .dataModels(new ArrayList<DemoListActivity.DemoListDataModel>())
-            .parentIndices(null)
+        DemoListRootComponent.create(mComponentsRule.getContext())
+            .demos(new ArrayList<Demos.DemoGrouping>())
+            .previousIndices(null)
             .build();
   }
 

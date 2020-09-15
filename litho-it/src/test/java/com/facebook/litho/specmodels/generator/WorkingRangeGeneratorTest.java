@@ -83,8 +83,7 @@ public class WorkingRangeGeneratorTest {
     assertThat(WorkingRangeGenerator.generateDispatchOnEnteredRangeMethod(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public void dispatchOnEnteredRange(java.lang.String name) {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+                + "public void dispatchOnEnteredRange(com.facebook.litho.ComponentContext c, java.lang.String name) {\n"
                 + "  switch (name) {\n"
                 + "    case \"enter\": {\n"
                 + "      testEnteredRangeMethod(c);\n"
@@ -103,8 +102,7 @@ public class WorkingRangeGeneratorTest {
     assertThat(WorkingRangeGenerator.generateDispatchOnExitedRangeMethod(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public void dispatchOnExitedRange(java.lang.String name) {\n"
-                + "  com.facebook.litho.ComponentContext c = getScopedContext();\n"
+                + "public void dispatchOnExitedRange(com.facebook.litho.ComponentContext c, java.lang.String name) {\n"
                 + "  switch (name) {\n"
                 + "    case \"exit\": {\n"
                 + "      testExitedRangeMethod(c);\n"

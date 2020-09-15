@@ -101,9 +101,6 @@ public class ComponentsConfiguration {
    */
   public static boolean forceEnableTransitionsForInstrumentationTests = false;
 
-  /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
-  public static boolean enableOnErrorHandling = false;
-
   public static boolean enableErrorBoundaryComponent = false;
 
   /**
@@ -252,4 +249,9 @@ public class ComponentsConfiguration {
   public static boolean isIncrementalMountGloballyDisabled = false;
 
   public static boolean skipIncrementalMountOnSetVisibilityHintFalse = false;
+
+  /** Keeps the internal nodes used for layout. This will increase memory use. */
+  public static boolean keepInternalNodes = false;
+
+  public static boolean emitMessageForZeroSizedTexture = false;
 }

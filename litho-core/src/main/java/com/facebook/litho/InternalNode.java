@@ -230,8 +230,6 @@ public interface InternalNode
   @Nullable
   Component getTailComponent();
 
-  void setRootComponent(Component component);
-
   @Nullable
   StateListAnimator getStateListAnimator();
 
@@ -266,6 +264,9 @@ public interface InternalNode
 
   @Nullable
   String getTransitionOwnerKey();
+
+  @Nullable
+  String getTransitionGlobalKey();
 
   @Nullable
   Transition.TransitionKeyType getTransitionKeyType();

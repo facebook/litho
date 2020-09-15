@@ -299,7 +299,7 @@ public class SectionTree {
   }
 
   private synchronized void bindTriggerHandler(Section section) {
-    section.recordEventTrigger(mEventTriggersContainer);
+    section.recordEventTrigger(section.getScopedContext(), mEventTriggersContainer);
 
     final List<Section> children = section.getChildren();
     if (children != null) {
@@ -1720,7 +1720,7 @@ public class SectionTree {
           if (TextUtils.isEmpty(childKey)) {
             final String errorMessage =
                 "Your Section "
-                    + child.getClass().getSimpleName()
+                    + child.getSimpleName()
                     + " has an empty key. Please specify a key.";
             throw new IllegalStateException(errorMessage);
           }

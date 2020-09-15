@@ -22,17 +22,22 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class LithoViewTestHelperTest {
+
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+
   @Before
   public void skipIfRelease() {
     Assume.assumeTrue(
@@ -91,5 +96,38 @@ public class LithoViewTestHelperTest {
                 + "  litho.Column\\{\\w+ V.E..... .. 0,0-100,200\\}\n"
                 + "    litho.SimpleMountSpecTester\\{\\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
                 + "    litho.Text\\{\\w+ V.E..... .. 0,100-100,200 text=\"Hello, World\"\\}");
+  }
+
+  @Test
+  public void viewToStringForE2E_withExtraDescription_componentKeyIsPrinted() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component =
+        Column.create(c)
+            .key("column")
+            .child(SimpleMountSpecTester.create(c).key("simple").widthPx(100).heightPx(100).build())
+            .child(Text.create(c).key("text").widthPx(100).heightPx(100).text("Hello, World"))
+            .build();
+
+    mLithoViewRule
+        .setRootAndSizeSpec(
+            component, makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED))
+        .measure()
+        .layout();
+    final String string =
+        LithoViewTestHelper.viewToStringForE2E(
+            mLithoViewRule.getLithoView(),
+            0,
+            false,
+            new DebugComponentDescriptionHelper.ExtraDescription() {
+              @Override
+              public void applyExtraDescription(DebugComponent debugComponent, StringBuilder sb) {
+                sb.append(", key=").append(debugComponent.getKey());
+              }
+            });
+    assertThat(string)
+        .containsPattern(
+            "litho.Column\\{\\w+ V.E..... .. 0,0-100,200, key=column\\}\n"
+                + "  litho.SimpleMountSpecTester\\{\\w+ V.E..... .. 0,0-100,100, key=simple\\}\n"
+                + "  litho.Text\\{\\w+ V.E..... .. 0,100-100,200 text=\"Hello, World\", key=text\\}");
   }
 }

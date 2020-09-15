@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
+@com.facebook.litho.annotations.LayoutSpec
 class TestSpec {
 
-  void test() {
+  @com.facebook.litho.annotations.OnCreateLayout
+  static Component onCreateLayout(com.facebook.litho.ComponentContext c, @com.facebook.litho.annotations.Prop int prop) {}
+
+  void test1() {
     Test.method1();
+  }
+
+  void test2() {
+    Test.prop(1);
   }
 
   static void method1() {}
 
   class Test extends ComponentLifecycle {
     static void method1() {}
+
+    @com.facebook.litho.annotations.PropSetter( value = "prop", required = true)
+    static void prop(int prop) {}
   }
 
   static class ComponentLifecycle {}

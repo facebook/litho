@@ -63,6 +63,7 @@ dependencies {
     // Support Library
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
+    implementation deps.supportTransition
 
     // Integration test only
     androidTestImplementation project(':litho-espresso')

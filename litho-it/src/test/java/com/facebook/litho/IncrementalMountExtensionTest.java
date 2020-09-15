@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -101,8 +102,9 @@ public class IncrementalMountExtensionTest {
         final LayoutOutput layoutOutput = mock(LayoutOutput.class);
         RenderTreeNode renderTreeNode = mock(RenderTreeNode.class);
         when(renderTreeNode.getLayoutData()).thenReturn(layoutOutput);
-        when(renderTreeNode.getBounds()).thenReturn(bounds);
+        when(renderTreeNode.getAbsoluteBounds(any(Rect.class))).thenReturn(bounds);
         when(layoutOutput.getComponent()).thenReturn(mock(Component.class));
+        when(layoutOutput.getBounds()).thenReturn(bounds);
 
         RenderUnit renderUnit = new LithoRenderUnit(layoutOutput);
         when(renderUnit.getId()).thenReturn((i + 1) * 1L);

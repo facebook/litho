@@ -17,6 +17,8 @@
 package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
+import java.util.Map;
 
 /** TODO add javadoc */
 public class RenderTree {
@@ -25,13 +27,21 @@ public class RenderTree {
   private final RenderTreeNode[] mFlatList;
   private final int mWidthSpec;
   private final int mHeightSpec;
+  private final @Nullable Map<RenderCoreExtension<?>, Object> mResults;
+
   private @Nullable Object mRenderTreeData;
 
-  public RenderTree(RenderTreeNode root, RenderTreeNode[] flatList, int widthSpec, int heightSpec) {
+  public RenderTree(
+      final RenderTreeNode root,
+      final RenderTreeNode[] flatList,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable Map<RenderCoreExtension<?>, Object> results) {
     mRoot = root;
     mFlatList = flatList;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
+    mResults = results;
   }
 
   public int getWidth() {
@@ -66,6 +76,10 @@ public class RenderTree {
 
   public int getMountableOutputCount() {
     return mFlatList.length;
+  }
+
+  public @Nullable Map<RenderCoreExtension<?>, Object> getExtensionResults() {
+    return mResults;
   }
 
   @Nullable

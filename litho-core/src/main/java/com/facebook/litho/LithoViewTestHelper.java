@@ -105,6 +105,11 @@ public class LithoViewTestHelper {
     return viewToString(view, false).trim();
   }
 
+  @DoNotStrip
+  public static String viewToStringForE2E(View view, int depth, boolean withProps) {
+    return viewToStringForE2E(view, depth, withProps, null);
+  }
+
   /**
    * Provide a nested string representation of a LithoView and its nested components for E2E testing
    * purposes. Note: this method is called via reflection to prevent direct or shared dependencies.
@@ -114,7 +119,11 @@ public class LithoViewTestHelper {
    * @param withProps if to dump extra properties
    */
   @DoNotStrip
-  public static String viewToStringForE2E(View view, int depth, boolean withProps) {
+  public static String viewToStringForE2E(
+      View view,
+      int depth,
+      boolean withProps,
+      @Nullable DebugComponentDescriptionHelper.ExtraDescription extraDescription) {
     if (!(view instanceof LithoView)) {
       return "";
     }
@@ -124,7 +133,7 @@ public class LithoViewTestHelper {
       return "";
     }
     final StringBuilder sb = new StringBuilder();
-    viewToString(root, sb, true, withProps, depth, 0, 0);
+    viewToString(root, sb, true, withProps, depth, 0, 0, extraDescription);
     return sb.toString();
   }
 
@@ -145,7 +154,7 @@ public class LithoViewTestHelper {
     final StringBuilder sb = new StringBuilder();
     int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
     sb.append("\n");
-    viewToString(root, sb, embedded, false, depth, 0, 0);
+    viewToString(root, sb, embedded, false, depth, 0, 0, null);
     return sb.toString();
   }
 
@@ -157,15 +166,17 @@ public class LithoViewTestHelper {
       boolean withProps,
       int depth,
       int leftOffset,
-      int topOffset) {
+      int topOffset,
+      @Nullable DebugComponentDescriptionHelper.ExtraDescription extraDescription) {
     writeIndentByDepth(sb, depth);
     DebugComponentDescriptionHelper.addViewDescription(
-        component, sb, leftOffset, topOffset, embedded, withProps);
+        component, sb, leftOffset, topOffset, embedded, withProps, extraDescription);
     sb.append("\n");
 
     final Rect bounds = component.getBoundsInLithoView();
     for (DebugComponent child : component.getChildComponents()) {
-      viewToString(child, sb, embedded, withProps, depth + 1, bounds.left, bounds.top);
+      viewToString(
+          child, sb, embedded, withProps, depth + 1, bounds.left, bounds.top, extraDescription);
     }
   }
 

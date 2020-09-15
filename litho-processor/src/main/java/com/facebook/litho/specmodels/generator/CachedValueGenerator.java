@@ -352,7 +352,11 @@ public class CachedValueGenerator {
     @Override
     public CodeBlock createCompareStatement(String otherObjectName, EnumSet<RunMode> runMode) {
       return CodeBlock.builder()
-          .beginControlFlow("if (!$L.equals($L))", getName(), otherObjectName + "." + getName())
+          .beginControlFlow(
+              "if (!$L.equals($L, $L))",
+              ClassNames.COMMON_UTILS,
+              getName(),
+              otherObjectName + "." + getName())
           .addStatement("return false")
           .endControlFlow()
           .build();

@@ -22,6 +22,7 @@ import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SINGLE
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.Diff;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -62,7 +63,8 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Integer> spanSize,
       @Prop(optional = true) Diff<Boolean> isFullSpan,
       @Prop(optional = true) Diff<Map<String, Object>> customAttributes,
-      @Prop(optional = true) Diff<Object> data) {
+      @Prop(optional = true) Diff<Object> data,
+      @Prop(optional = true) Diff<ComponentsLogger> componentsLogger) {
     final Object prevData = data.getPrevious();
     final Object nextData = data.getNext();
     final Component prevComponent = component.getPrevious();
@@ -96,7 +98,11 @@ public class SingleComponentSectionSpec {
       changeSet.insert(
           0,
           addCustomAttributes(
-                  ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
+                  ComponentRenderInfo.create(),
+                  customAttributes.getNext(),
+                  context,
+                  component,
+                  componentsLogger)
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -134,7 +140,11 @@ public class SingleComponentSectionSpec {
       changeSet.update(
           0,
           addCustomAttributes(
-                  ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
+                  ComponentRenderInfo.create(),
+                  customAttributes.getNext(),
+                  context,
+                  component,
+                  componentsLogger)
               .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -150,7 +160,8 @@ public class SingleComponentSectionSpec {
       ComponentRenderInfo.Builder builder,
       @Nullable Map<String, Object> attributes,
       SectionContext c,
-      Diff<Component> component) {
+      Diff<Component> component,
+      @Nullable Diff<ComponentsLogger> componentsLogger) {
     if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
       builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV, component.getPrevious());
@@ -164,6 +175,8 @@ public class SingleComponentSectionSpec {
     for (Map.Entry<String, Object> entry : attributes.entrySet()) {
       builder.customAttribute(entry.getKey(), entry.getValue());
     }
+
+    builder.componentsLogger(componentsLogger != null ? componentsLogger.getNext() : null);
 
     return builder;
   }

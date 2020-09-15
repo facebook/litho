@@ -16,11 +16,17 @@
 
 package com.facebook.rendercore;
 
+import android.graphics.Rect;
 import android.view.View.MeasureSpec;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
+import java.util.Map;
 
 public class RootHostDelegate implements RenderState.HostListener, RootHost {
+
+  private static final Rect sVisibleRect = new Rect();
 
   private final Host mHost;
   private final MountState mMountState;
@@ -31,45 +37,6 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
   public RootHostDelegate(Host host) {
     mHost = host;
     mMountState = new MountState(mHost);
-  }
-
-  /**
-   * Returns true if the delegate has defined a size and filled the measureOutput array, returns
-   * false if not in which case the hosting view should call super.onMeasure.
-   */
-  public boolean onMeasure(int widthMeasureSpec, int heightMeasureSpec, int[] measureOutput) {
-    int width = MeasureSpec.getSize(widthMeasureSpec);
-    int height = MeasureSpec.getSize(heightMeasureSpec);
-    if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
-        && MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
-      // If the measurements are exact, postpone LayoutState calculation from measure to layout.
-      // This is part of the fix for android's double measure bug. Doing this means that if we get
-      // remeasured with different exact measurements, we don't compute two layouts.
-      mDoMeasureInLayout = true;
-      measureOutput[0] = width;
-      measureOutput[1] = height;
-      return true;
-    }
-
-    if (mRenderState != null) {
-      mRenderState.measure(widthMeasureSpec, heightMeasureSpec, measureOutput);
-      mDoMeasureInLayout = false;
-      return true;
-    }
-
-    return false;
-  }
-
-  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    if (mDoMeasureInLayout && mRenderState != null) {
-      mRenderState.measure(
-          MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
-          null);
-      mDoMeasureInLayout = false;
-    }
-
-    mMountState.mount(mCurrentRenderTree);
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -108,7 +75,79 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     mHost.requestLayout();
   }
 
-  public Object findMountContentById(long id) {
+  /**
+   * Returns true if the delegate has defined a size and filled the measureOutput array, returns
+   * false if not in which case the hosting view should call super.onMeasure.
+   */
+  public boolean onMeasure(int widthMeasureSpec, int heightMeasureSpec, int[] measureOutput) {
+    int width = MeasureSpec.getSize(widthMeasureSpec);
+    int height = MeasureSpec.getSize(heightMeasureSpec);
+    if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY
+        && MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+      // If the measurements are exact, postpone LayoutState calculation from measure to layout.
+      // This is part of the fix for android's double measure bug. Doing this means that if we get
+      // remeasured with different exact measurements, we don't compute two layouts.
+      mDoMeasureInLayout = true;
+      measureOutput[0] = width;
+      measureOutput[1] = height;
+      return true;
+    }
+
+    if (mRenderState != null) {
+      mRenderState.measure(widthMeasureSpec, heightMeasureSpec, measureOutput);
+      mDoMeasureInLayout = false;
+      return true;
+    }
+
+    return false;
+  }
+
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    if (mDoMeasureInLayout && mRenderState != null) {
+      mRenderState.measure(
+          MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
+          null);
+      mDoMeasureInLayout = false;
+    }
+
+    if (mCurrentRenderTree != null) {
+      beforeMount();
+      mMountState.mount(mCurrentRenderTree);
+      afterMount();
+    }
+  }
+
+  public @Nullable Object findMountContentById(long id) {
     return mMountState.findMountContentById(id);
+  }
+
+  private void beforeMount() {
+    Map<RenderCoreExtension<?>, Object> results = mCurrentRenderTree.getExtensionResults();
+    RenderCoreExtension<?>[] extensions = mRenderState.getExtensions();
+
+    // Update the state of all the extensions that have a mount phase.
+    if (extensions != null) {
+      mHost.getLocalVisibleRect(sVisibleRect);
+      for (RenderCoreExtension<?> e : extensions) {
+        final Object state = results != null ? results.get(e) : null;
+        final MountExtension extension = e.getMountExtension();
+        if (extension != null) {
+          extension.beforeMount(state, sVisibleRect);
+        }
+      }
+    }
+  }
+
+  private void afterMount() {
+    RenderCoreExtension<?>[] extensions = mRenderState.getExtensions();
+    if (extensions != null) {
+      for (RenderCoreExtension<?> e : extensions) {
+        final MountExtension extension = e.getMountExtension();
+        if (extension != null) {
+          extension.afterMount();
+        }
+      }
+    }
   }
 }

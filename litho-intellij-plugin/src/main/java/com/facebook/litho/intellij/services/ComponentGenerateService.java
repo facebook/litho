@@ -57,7 +57,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ComponentGenerateService {
   private static final Logger LOG = Logger.getInstance(ComponentGenerateService.class);
-  public static final Key<SpecModel> KEY_SPEC_MODEL =
+  private static final Key<SpecModel> KEY_SPEC_MODEL =
       Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
@@ -142,6 +142,11 @@ public class ComponentGenerateService {
     copy.forEach(listener -> listener.onSpecModelUpdated(layoutSpecCls));
 
     return updateComponent(componentQN, model, layoutSpecCls.getProject());
+  }
+
+  @Nullable
+  public static SpecModel getSpecModel(PsiClass layoutSpecClass) {
+    return layoutSpecClass.getUserData(KEY_SPEC_MODEL);
   }
 
   /** Updates generated Component file from the given Spec model. */

@@ -25,9 +25,16 @@ public class ComponentDemoActivity extends NavigatableDemoActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    DemoListActivity.DemoListDataModel model = getDataModel();
+    Demos.DemoItem model = getDataModel();
     LithoView lithoView = new LithoView(this);
-    lithoView.setComponent(model.componentCreator.create(lithoView.getComponentContext()));
+
+    if (!(model instanceof Demos.SingleDemo)
+        || ((Demos.SingleDemo) model).componentCreator == null) {
+      throw new RuntimeException("Invalid model: " + model);
+    }
+
+    lithoView.setComponent(
+        ((Demos.SingleDemo) model).componentCreator.create(lithoView.getComponentContext()));
     setContentView(lithoView);
   }
 }

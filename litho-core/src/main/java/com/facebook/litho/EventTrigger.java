@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 public class EventTrigger<E> {
 
   @Nullable public EventTriggerTarget mTriggerTarget;
+  @Nullable public ComponentContext mComponentContext;
   public final int mId;
   private final String mKey;
   @Nullable private final Handle mHandle;

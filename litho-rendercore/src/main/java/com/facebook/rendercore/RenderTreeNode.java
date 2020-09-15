@@ -18,9 +18,11 @@ package com.facebook.rendercore;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
 
+@DoNotStrip
 public class RenderTreeNode {
 
   private static final int DEFAULT_SIZE = 4;
@@ -29,8 +31,8 @@ public class RenderTreeNode {
   private final RenderUnit mRenderUnit;
   private final @Nullable Object mLayoutData;
   private final Rect mBounds;
-  private final int mHostTranslationX;
-  private final int mHostTranslationY;
+  private final int mAbsoluteX;
+  private final int mAbsoluteY;
   private final @Nullable Rect mResolvedPadding;
 
   final int mPositionInParent;
@@ -38,20 +40,18 @@ public class RenderTreeNode {
   private List<RenderTreeNode> mChildren;
 
   public RenderTreeNode(
-      @Nullable RenderTreeNode parent,
-      RenderUnit renderUnit,
-      @Nullable Object layoutData,
-      Rect bounds,
-      int hostTranslationX,
-      int hostTranslationY,
-      @Nullable Rect resolvedPadding,
-      int positionInParent) {
+      final @Nullable RenderTreeNode parent,
+      final RenderUnit renderUnit,
+      final @Nullable Object layoutData,
+      final Rect bounds,
+      final @Nullable Rect resolvedPadding,
+      final int positionInParent) {
     mParent = parent;
     mRenderUnit = renderUnit;
     mLayoutData = layoutData;
     mBounds = bounds;
-    mHostTranslationX = hostTranslationX;
-    mHostTranslationY = hostTranslationY;
+    mAbsoluteX = parent != null ? parent.getAbsoluteX() + bounds.left : 0;
+    mAbsoluteY = parent != null ? parent.getAbsoluteY() + bounds.top : 0;
     mResolvedPadding = resolvedPadding;
     mPositionInParent = positionInParent;
   }
@@ -68,26 +68,27 @@ public class RenderTreeNode {
     return mBounds;
   }
 
-  public int getHostTranslationX() {
-    return mHostTranslationX;
+  int getAbsoluteX() {
+    return mAbsoluteX;
   }
 
-  public int getHostTranslationY() {
-    return mHostTranslationY;
+  int getAbsoluteY() {
+    return mAbsoluteY;
   }
 
   /**
-   * Sets the relative bounds of this render tree node in {@param outRect}; i.e. returns the bounds
-   * of this render tree node within its host view. This method should be used during mounting
-   * because {@link #mBounds} can be the absolute bounds.
+   * Sets the absolutes bounds of this render tree node in {@param outRect}; i.e. returns the bounds
+   * of this render tree node within its {@link RootHost}.
    *
-   * @param outRect the calculated relative bounds.
+   * @param outRect the calculated absolute bounds.
    */
-  public void getMountBounds(Rect outRect) {
-    outRect.left = mBounds.left - mHostTranslationX;
-    outRect.top = mBounds.top - mHostTranslationY;
-    outRect.right = mBounds.right - mHostTranslationX;
-    outRect.bottom = mBounds.bottom - mHostTranslationY;
+  public Rect getAbsoluteBounds(Rect outRect) {
+    outRect.left = mAbsoluteX;
+    outRect.top = mAbsoluteY;
+    outRect.right = mAbsoluteX + mBounds.width();
+    outRect.bottom = mAbsoluteY + mBounds.height();
+
+    return outRect;
   }
 
   @Nullable

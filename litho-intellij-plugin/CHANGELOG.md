@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.5.9
+
+_2020-09-11
+
+* New: `Prop` navigation.
+
 ## Version 1.5.8
 
 _2020-08-10_

@@ -580,21 +580,22 @@ public class LayoutStateCalculateTest {
     assertThat(getTextFromTextComponent(layoutState, 9)).isEqualTo("textLeft2");
 
     // Check that the backgrounds have the same size of the components to which they are associated
-    assertThat(layoutState.getMountableOutputAt(3).getBounds())
-        .isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
-    assertThat(layoutState.getMountableOutputAt(6).getBounds())
-        .isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
+    assertThat(layoutState.getMountableOutputAt(3).getAbsoluteBounds(new Rect()))
+        .isEqualTo(layoutState.getMountableOutputAt(2).getAbsoluteBounds(new Rect()));
+    assertThat(layoutState.getMountableOutputAt(6).getAbsoluteBounds(new Rect()))
+        .isEqualTo(layoutState.getMountableOutputAt(2).getAbsoluteBounds(new Rect()));
 
-    final Rect textLayoutBounds = layoutState.getMountableOutputAt(9).getBounds();
-    final Rect textBackgroundBounds = layoutState.getMountableOutputAt(8).getBounds();
+    final Rect textLayoutBounds = layoutState.getMountableOutputAt(9).getAbsoluteBounds(new Rect());
+    final Rect textBackgroundBounds =
+        layoutState.getMountableOutputAt(8).getAbsoluteBounds(new Rect());
 
     assertThat(textLayoutBounds.left - paddingSize).isEqualTo(textBackgroundBounds.left);
     assertThat(textLayoutBounds.top - paddingSize).isEqualTo(textBackgroundBounds.top);
     assertThat(textLayoutBounds.right + paddingSize).isEqualTo(textBackgroundBounds.right);
     assertThat(textLayoutBounds.bottom + paddingSize).isEqualTo(textBackgroundBounds.bottom);
 
-    assertThat(layoutState.getMountableOutputAt(8).getBounds())
-        .isEqualTo(layoutState.getMountableOutputAt(7).getBounds());
+    assertThat(layoutState.getMountableOutputAt(8).getAbsoluteBounds(new Rect()))
+        .isEqualTo(layoutState.getMountableOutputAt(7).getAbsoluteBounds(new Rect()));
 
     final ViewNodeInfo viewNodeInfo =
         getLayoutOutput(layoutState.getMountableOutputAt(10)).getViewNodeInfo();

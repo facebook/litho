@@ -114,8 +114,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (ComponentsConfiguration.enableOnErrorHandling
-        && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
 
@@ -161,14 +160,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   Component createComponentLayout(ComponentContext c) {
     Component layoutComponent = null;
 
-    try {
-      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-        layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
-      } else {
-        layoutComponent = onCreateLayout(c);
-      }
-    } catch (Exception e) {
-      dispatchErrorEvent(c, e);
+    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+      layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
+    } else {
+      layoutComponent = onCreateLayout(c);
     }
 
     return layoutComponent;
@@ -254,11 +249,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected void createInitialState(ComponentContext c) {}
 
-  protected void dispatchOnEnteredRange(String name) {
+  protected void dispatchOnEnteredRange(ComponentContext c, String name) {
     // Do nothing by default
   }
 
-  protected void dispatchOnExitedRange(String name) {
+  protected void dispatchOnExitedRange(ComponentContext c, String name) {
     // Do nothing by default
   }
 
@@ -431,7 +426,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param e The exception caught.
    */
   protected void onError(ComponentContext c, Exception e) {
-    EventHandler<ErrorEvent> eventHandler = c.getComponentScope().getErrorHandler();
+    EventHandler<ErrorEvent> eventHandler = c.getErrorEventHandler();
     if (eventHandler == null) {
       if (e instanceof RuntimeException) {
         throw (RuntimeException) e;
@@ -576,42 +571,20 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   /**
-   * Reraise an error event up the hierarchy so it can be caught by another component, or reach the
-   * root and cause the application to crash.
-   *
-   * @param c The component context the error event was caught in.
-   * @param e The original exception.
+   * For internal use, only. In order to reraise an error event up the hierarchy use {@link
+   * ComponentUtils#raise(ComponentContext, Exception)} instead.
    */
-  public static void dispatchErrorEvent(ComponentContext c, Exception e) {
-    if (ComponentsConfiguration.enableOnErrorHandling) {
-      final ErrorEvent errorEvent = new ErrorEvent();
-      errorEvent.exception = e;
-
-      dispatchErrorEvent(c, errorEvent);
-    } else {
-      if (e instanceof RuntimeException) {
-        throw (RuntimeException) e;
-      } else {
-        throw new RuntimeException(e);
-      }
-    }
+  protected static void dispatchErrorEvent(ComponentContext c, Exception e) {
+    final ErrorEvent errorEvent = new ErrorEvent();
+    errorEvent.exception = e;
+    dispatchErrorEvent(c, errorEvent);
   }
 
-  /**
-   * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
-   */
+  /** For internal use, only. */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
-    final Component scope = c.getComponentScope();
-    if (scope == null) {
-      throw new RuntimeException(
-          "No component scope found for handler to throw error", e.exception);
-    }
-    final EventHandler<ErrorEvent> errorHandler = scope.getErrorHandler();
-
-    // TODO(T26533980): This check is only necessary as long as we have the configuration flag as
-    //                  the enabled state could theoretically change at runtime.
-    if (errorHandler != null) {
-      errorHandler.dispatchEvent(e);
+    final EventHandler<ErrorEvent> handler = c.getErrorEventHandler();
+    if (handler != null) {
+      handler.dispatchEvent(e);
     }
   }
 

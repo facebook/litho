@@ -69,6 +69,29 @@ public abstract class EditorValue {
     R isBool(EditorBool bool);
   }
 
+  public abstract static class DefaultEditorVisitor implements EditorVisitor<Void> {
+
+    public Void isShape(EditorShape object) {
+      return null;
+    }
+
+    public Void isArray(EditorArray array) {
+      return null;
+    }
+
+    public Void isNumber(EditorNumber number) {
+      return null;
+    }
+
+    public Void isString(EditorString string) {
+      return null;
+    }
+
+    public Void isBool(EditorBool bool) {
+      return null;
+    }
+  }
+
   /** Depth-first traversal of the tree nodes. Shortcircuits on true. */
   public void whenPrimitive(EditorPrimitiveVisitor visitor) {
     whenPrimitive(visitor, new ArrayDeque<String>());
@@ -80,10 +103,10 @@ public abstract class EditorValue {
 
     boolean isString(String[] path, EditorString string);
 
-    boolean isBool(String[] path, EditorBool string);
+    boolean isBool(String[] path, EditorBool bool);
   }
 
-  public static class DefaultEditorPrimitiveVisitor implements EditorPrimitiveVisitor {
+  public abstract static class DefaultEditorPrimitiveVisitor implements EditorPrimitiveVisitor {
 
     @Override
     public boolean isNumber(String[] path, EditorNumber number) {

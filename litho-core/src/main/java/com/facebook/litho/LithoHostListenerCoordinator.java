@@ -19,17 +19,17 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Helper for dispatching events to multiple MountListenerExtensions in Litho. */
-public class LithoHostListenerCoordinator implements HostListenerExtension<Object> {
+public class LithoHostListenerCoordinator extends MountExtension<Object> {
 
-  private final List<HostListenerExtension> mMountExtensions;
+  private final List<MountExtension> mMountExtensions;
   private IncrementalMountExtension mIncrementalMountExtension;
   private VisibilityOutputsExtension mVisibilityOutputsExtension;
   private TransitionsExtension mTransitionsExtension;
@@ -48,7 +48,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   @Override
   public void beforeMount(Object input, Rect localVisibleRect) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      HostListenerExtension hostListenerExtension = mMountExtensions.get(i);
+      MountExtension hostListenerExtension = mMountExtensions.get(i);
       hostListenerExtension.beforeMount(input, localVisibleRect);
     }
   }
@@ -152,7 +152,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     mTransitionsExtension.collectAllTransitions(layoutState, componentTree);
   }
 
-  private void registerListener(HostListenerExtension mountListenerExtension) {
+  private void registerListener(MountExtension mountListenerExtension) {
     mMountExtensions.add(mountListenerExtension);
   }
 

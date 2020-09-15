@@ -37,7 +37,6 @@ import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -197,13 +196,10 @@ public class LithoPluginUtils {
 
   public static Optional<PsiClass> getFirstClass(PsiFile psiFile, Predicate<PsiClass> classFilter) {
     return Optional.of(psiFile)
-        .map(currentFile -> PsiTreeUtil.getChildrenOfType(currentFile, PsiClass.class))
+        .map(currentFile -> PsiTreeUtil.findChildrenOfType(currentFile, PsiClass.class))
         .flatMap(
             currentClasses ->
-                Arrays.stream(currentClasses)
-                    .filter(Objects::nonNull)
-                    .filter(classFilter)
-                    .findFirst());
+                currentClasses.stream().filter(Objects::nonNull).filter(classFilter).findFirst());
   }
 
   public static void showInfo(String infoMessage, @Nullable Project project) {

@@ -67,7 +67,7 @@ class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
                   return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
                 })
             .orElseGet(super::getPrimaryElements);
-    data.put(EventLogger.KEY_TARGET, "class");
+    data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_NAVIGATION_TARGET_CLASS);
     data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_FIND_USAGES);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NAVIGATION, data);
     return results;

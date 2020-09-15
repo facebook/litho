@@ -58,9 +58,9 @@ public class WorkingRangeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override.class)
             .returns(TypeName.VOID)
+            .addParameter(specModel.getContextClass(), "c")
             .addParameter(ClassNames.STRING, "name");
 
-    methodBuilder.addStatement("$T c = getScopedContext()", ClassNames.COMPONENT_CONTEXT);
     methodBuilder.beginControlFlow("switch (name)");
 
     for (WorkingRangeMethodModel model : specModel.getWorkingRangeMethods()) {
@@ -83,9 +83,9 @@ public class WorkingRangeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override.class)
             .returns(TypeName.VOID)
+            .addParameter(specModel.getContextClass(), "c")
             .addParameter(ClassNames.STRING, "name");
 
-    methodBuilder.addStatement("$T c = getScopedContext()", ClassNames.COMPONENT_CONTEXT);
     methodBuilder.beginControlFlow("switch (name)");
 
     for (WorkingRangeMethodModel model : specModel.getWorkingRangeMethods()) {

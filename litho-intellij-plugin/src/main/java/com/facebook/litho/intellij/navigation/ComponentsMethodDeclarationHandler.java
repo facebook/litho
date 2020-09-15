@@ -16,10 +16,14 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -34,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
-/** Navigates from Component method to Spec method(s) with the same name. */
+/** Navigates from Component method to Spec elements. */
 public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBase {
   private static final EventLogger LOGGER = new DebounceEventLogger(4_000);
 
@@ -57,32 +61,32 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
     }
     final Project project = sourceElement.getProject();
     return BaseLithoComponentsDeclarationHandler.resolve(sourceElement)
-        // Filter Methods
         .filter(PsiMethod.class::isInstance)
         .map(PsiMethod.class::cast)
-        .map(method -> findSpecMethods(method, project))
+        .map(method -> findSpecElements(method, project))
+        .filter(result -> result.length > 0)
         .findFirst()
         .map(
             result -> {
               final Map<String, String> data = new HashMap<>();
-              data.put(EventLogger.KEY_TARGET, "method");
+              data.put(
+                  EventLogger.KEY_TARGET,
+                  result[0] instanceof PsiMethod
+                      ? EventLogger.VALUE_NAVIGATION_TARGET_METHOD
+                      : EventLogger.VALUE_NAVIGATION_TARGET_PARAMETER);
               data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_GOTO);
               LOGGER.log(EventLogger.EVENT_NAVIGATION, data);
               return result;
             })
-        .orElse(PsiMethod.EMPTY_ARRAY);
+        .orElse(PsiElement.EMPTY_ARRAY);
   }
 
-  private static PsiMethod[] findSpecMethods(PsiMethod componentMethod, Project project) {
-    if (!componentMethod.getModifierList().hasModifierProperty(PsiModifier.STATIC)) {
-      return PsiMethod.EMPTY_ARRAY;
-    }
-
+  private static PsiElement[] findSpecElements(PsiMethod componentMethod, Project project) {
     final PsiClass containingCls =
-        (PsiClass) PsiTreeUtil.findFirstParent(componentMethod, PsiClass.class::isInstance);
+        LithoPluginUtils.getFirstClass(
+                componentMethod.getContainingFile(), LithoPluginUtils::isGeneratedClass)
+            .orElse(null);
     if (containingCls == null) return PsiMethod.EMPTY_ARRAY;
-
-    if (!LithoPluginUtils.isGeneratedClass(containingCls)) return PsiMethod.EMPTY_ARRAY;
 
     // For Unit testing we don't care about package
     final String containingClsName =
@@ -94,6 +98,33 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
             project, LithoPluginUtils.getLithoComponentSpecNameFromComponent(containingClsName));
     if (specCls == null) return PsiMethod.EMPTY_ARRAY;
 
-    return specCls.findMethodsByName(componentMethod.getName(), true);
+    final PropSetter propSetter =
+        PsiAnnotationProxyUtils.findAnnotationInHierarchy(componentMethod, PropSetter.class);
+    if (propSetter != null) {
+      return findSpecProps(propSetter, specCls);
+    }
+    return findSpecMethods(componentMethod, specCls);
+  }
+
+  private static PsiElement[] findSpecMethods(PsiMethod componentMethod, PsiClass specCls) {
+    if (componentMethod.getModifierList().hasModifierProperty(PsiModifier.STATIC)) {
+      return specCls.findMethodsByName(componentMethod.getName(), false);
+    }
+    return PsiMethod.EMPTY_ARRAY;
+  }
+
+  private static PsiElement[] findSpecProps(PropSetter propSetter, PsiClass specCls) {
+    SpecModel specModel = ComponentGenerateService.getSpecModel(specCls);
+    if (specModel == null) {
+      ComponentGenerateService.getInstance().updateLayoutComponentSync(specCls);
+      specModel = ComponentGenerateService.getSpecModel(specCls);
+    }
+    if (specModel == null) return PsiElement.EMPTY_ARRAY;
+
+    final String prop = propSetter.value();
+    return specModel.getProps().stream()
+        .filter(propModel -> prop.equals(propModel.getName()))
+        .map(propModel -> (PsiElement) propModel.getRepresentedObject())
+        .toArray(PsiElement[]::new);
   }
 }

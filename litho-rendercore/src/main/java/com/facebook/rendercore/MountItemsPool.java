@@ -25,6 +25,7 @@ import android.content.ContextWrapper;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pools;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,7 +76,7 @@ public class MountItemsPool {
   }
 
   static void release(Context context, RenderUnit renderUnit, Object mountContent) {
-    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getClass());
+    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getRenderContentType());
     if (pool != null) {
       pool.release(mountContent);
     }
@@ -98,10 +99,16 @@ public class MountItemsPool {
     Pools.SimplePool pool = poolsMap.get(lifecycle);
     if (pool == null) {
       pool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
-      poolsMap.put(lifecycle.getClass(), pool);
+      poolsMap.put(lifecycle, pool);
     }
 
     return pool;
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static void clear() {
+    sMountContentPoolsByContext.clear();
+    sDestroyedRootContexts.clear();
   }
 
   /**

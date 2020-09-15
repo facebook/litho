@@ -16,7 +16,7 @@ contains a full example of using error boundaries in a Sections-powered list.
 
 :::note
  Error boundaries are still considered experimental and disabled by
-default. To use them, you have to enable `ComponentsConfiguration.enableOnErrorHandling`.
+default. To use them, you have to enable `ComponentsConfiguration.enableErrorBoundaryComponent`.
 The supported delegate methods are currently limited to:
 - `onCreateLayout`
 - `onCreateLayoutWithSizeSpec`
@@ -37,11 +37,11 @@ public class ErrorBoundarySpec {
   static Component onCreateLayout(ComponentContext c, @Prop Component child) {
     return child;
   }
-  
+
   @OnError
   static void onError(ComponentContext c, Exception error) {
     Log.e("ErrorBoundary", "Exception caught at boundary.", error);
-    
+
     if (safeToIgnore(error)) {
       return;
     } else {
@@ -89,7 +89,7 @@ public class ErrorBoundarySpec {
 
     return child;
   }
-  
+
 ```
 
 Instead of simply returning the child, we now receive a state value for an
@@ -143,7 +143,7 @@ commenting function.
 You can re-raise an exception from within an `onError` delegate so that it
 propagates up the component tree until it is either caught by another error
 boundary or hits the root and causes a crash. This is done by calling
-[`ComponentLifecycle.dispatchErrorEvent`](/javadoc/com/facebook/litho/ComponentLifecycle.html#dispatchErrorEvent-com.facebook.litho.ComponentContext-java.lang.Exception-) with your context and the exception.
+[`ComponentUtils.raise`](/javadoc/com/facebook/litho/ComponentUtils.html#raise-com.facebook.litho.ComponentContext-java.lang.Exception-) with your context and the exception.
 
 ```java
 @OnError
@@ -151,7 +151,7 @@ static void onError(ComponentContext c, Exception error) {
   if (canHandle(error)) {
     ErrorBoundary.updateError(c, error);
   } else {
-    ComponentLifecycle.dispatchErrorEvent(c, error);
+    ComponentUtils.raise(c, error);
   }
 }
 ```
@@ -190,7 +190,7 @@ need to provide higher-level infrastructure to give you access to those errors.
 - Error boundaries are a highly experimental feature. There are many ways in
   which errors can happen and there could be cases which we fail to correctly
   recover from, leaving Litho in an inconsistent state.
-  
+
 - Errors thrown in the error boundary itself are not caught but propagated
   further up the chain. For instance, if the `onCreateLayout` inside your
   `ErrorBoundarySpec` raises an exception, it won't be passed to the `onError`
@@ -201,10 +201,10 @@ need to provide higher-level infrastructure to give you access to those errors.
   control flow. Error boundaries exist to deal with the realities of application
   development and improve user experience, not to structure your applications
   around them.
-  
+
 - Not all delegate methods are supported yet. We plan to expand support in the
   future, so ensure that your error boundaries can handle exceptions from all
   component code.
-  
+
 - Exceptions that happen during state updates or in event handlers are not
   supported at the moment.

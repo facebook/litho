@@ -16,4 +16,30 @@
 
 package com.facebook.rendercore.transitions;
 
-public class TransitionUtils {}
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+
+public class TransitionUtils {
+  public interface BoundsCallback {
+    void onWidthHeightBoundsApplied(int width, int height);
+
+    void onXYBoundsApplied(int x, int y);
+  }
+
+  public static void applySizeToDrawableForAnimation(Drawable drawable, int width, int height) {
+    final Rect bounds = drawable.getBounds();
+    drawable.setBounds(bounds.left, bounds.top, bounds.left + width, bounds.top + height);
+
+    if (drawable instanceof BoundsCallback) {
+      ((BoundsCallback) drawable).onWidthHeightBoundsApplied(width, height);
+    }
+  }
+
+  public static void applyXYToDrawableForAnimation(Drawable drawable, int x, int y) {
+    final Rect bounds = drawable.getBounds();
+    drawable.setBounds(x, y, bounds.width() + x, bounds.height() + y);
+    if (drawable instanceof BoundsCallback) {
+      ((BoundsCallback) drawable).onXYBoundsApplied(x, y);
+    }
+  }
+}

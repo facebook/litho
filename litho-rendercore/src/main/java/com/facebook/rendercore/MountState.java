@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 
@@ -185,6 +186,11 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
+  public @Nullable MountItem getRootItem() {
+    return mIndexToMountedItemMap != null ? mIndexToMountedItemMap.get(ROOT_HOST_ID) : null;
+  }
+
+  @Override
   public Object getContentAt(int position) {
     final MountItem mountItem = getItemAt(position);
     if (mountItem == null) {
@@ -215,11 +221,11 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+  public void registerMountDelegateExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this);
     }
-    mMountDelegate.addExtension(mountDelegateExtension);
+    mMountDelegate.addExtension(mountExtension);
   }
 
   @Override
@@ -384,7 +390,11 @@ public class MountState implements MountDelegateTarget {
               ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
               : false;
 
-      if (newPosition == -1 || hasUnmountDelegate) {
+      if (hasUnmountDelegate) {
+        continue;
+      }
+
+      if (newPosition == -1) {
         // if oldItem is null it was previously unmounted so there is nothing we need to do.
         if (oldItem != null) {
           unmountItemRecursively(oldItem.getRenderTreeNode());

@@ -22,8 +22,8 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.extensions.MountExtension;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,13 +52,13 @@ public class MountDelegateCanPreventMountTest {
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isTrue();
 
     // When no extensions prevent mounting, calls to isLockedForMount default to true
-    MountDelegateExtension mountDelegateExtension = mock(MountDelegateExtension.class);
-    mountDelegate.addExtension(mountDelegateExtension);
+    MountExtension mountExtension = mock(MountExtension.class);
+    mountDelegate.addExtension(mountExtension);
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isTrue();
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isTrue();
 
     // When an extension can prevent mounting, calls to isLockedForMount default to false.
-    MountDelegateExtension mountDelegateExtensionPreventMount = mock(MountDelegateExtension.class);
+    MountExtension mountDelegateExtensionPreventMount = mock(MountExtension.class);
     when(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true);
     mountDelegate.addExtension(mountDelegateExtensionPreventMount);
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isFalse();
@@ -85,7 +85,7 @@ public class MountDelegateCanPreventMountTest {
     MountDelegate.MountDelegateTarget mountDelegateTarget =
         mock(MountDelegate.MountDelegateTarget.class);
     MountDelegate mountDelegate = new MountDelegate(mountDelegateTarget);
-    MountDelegateExtension mountDelegateExtensionPreventMount = mock(MountDelegateExtension.class);
+    MountExtension mountDelegateExtensionPreventMount = mock(MountExtension.class);
     when(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true);
     mountDelegate.addExtension(mountDelegateExtensionPreventMount);
 

@@ -18,9 +18,9 @@ package com.facebook.litho.dataflow;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 import androidx.collection.SimpleArrayMap;
 import com.facebook.litho.ComponentsReporter;
-import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;

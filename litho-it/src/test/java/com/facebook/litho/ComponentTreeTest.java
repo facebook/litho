@@ -24,7 +24,6 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
@@ -53,6 +52,7 @@ import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1867,8 +1867,8 @@ public class ComponentTreeTest {
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
 
-    Thread thread =
-        new Thread(
+    TimeOutSemaphore bgSetRoot =
+        runOnBackgroundThread(
             new Runnable() {
               @Override
               public void run() {
@@ -1877,17 +1877,15 @@ public class ComponentTreeTest {
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
                 // TODO T62608123 This actually never runs
-                assertFalse(root3.hasRunLayout);
-                assertTrue(root2.hasRunLayout);
+                //                assertFalse(root3.hasRunLayout);
+                //                assertTrue(root2.hasRunLayout);
               }
             });
-
-    // Schedule second thread to start
-    thread.start();
 
     // Unblock the first thread to continue through onCreateLayout. The second thread will only
     // unblock once the first thread's onCreateLayout finishes
     lockOnCreateLayoutFinish.countDown();
+    bgSetRoot.acquire();
   }
 
   @Test
@@ -2075,7 +2073,11 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                runnable.run();
+                try {
+                  runnable.run();
+                } catch (Exception | AssertionFailedError e) {
+                  latch.setException(e);
+                }
                 latch.release();
               }
             })

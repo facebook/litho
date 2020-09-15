@@ -27,7 +27,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiClass;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,8 +57,7 @@ public class ComponentsCacheService implements Disposable {
   }
 
   /**
-   * Use {@link PsiClass#getUserData(Key)} with {@link ComponentGenerateService#KEY_SPEC_MODEL}
-   * instead for most purposes.
+   * Use {@link ComponentGenerateService#getSpecModel(PsiClass)} instead for most purposes.
    *
    * @return component already present in the cache by its full-qualified name or null if it's
    *     absent.

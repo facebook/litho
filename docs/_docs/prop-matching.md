@@ -402,4 +402,4 @@ public void testComplexTestSpecAdvancedProps() {
 ## Next
 
 Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Testing InjectProps](/docs/injectprops-matching).
+continue with the next section, [Testing Tree Props](/docs/testing-treeprops).

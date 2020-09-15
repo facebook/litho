@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * A method annotation used in classes that are annotated with {@link MountSpec}.
  *
- * <p>Methods annotated with {@link OnUnbind} take an Android Context as the first parameter, the
- * Object that the MountSpec mounts as the second parameter, followed by any number of {@link
- * Prop}s.
+ * <p>Methods annotated with {@link OnUnbind} take a {@code ComponentContext} as the first
+ * parameter, the Object that the {@link MountSpec} mounts as the second parameter, followed by any
+ * number of {@link Prop}s.
  *
  * <p>The method should return void. This callback will be invoked every time the mounted object is
  * not active anymore but has not been unmounted yet. This happens for example when a LithoView can

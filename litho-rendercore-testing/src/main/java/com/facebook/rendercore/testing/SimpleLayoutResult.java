@@ -18,38 +18,79 @@ package com.facebook.rendercore.testing;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node;
+import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleLayoutResult implements Node.LayoutResult {
+/**
+ * Create simple layout result hierarchies for writing tests. The layout resutl can we used with to
+ * render with {@link RendercoreTestDriver}.
+ *
+ * <pre>
+ *   SimpleLayoutResult.create()
+ *     .x(0).y(0)
+ *     .width(1920).height(1080)
+ *     .child(
+ *       SimpleLayoutResult.create()
+ *         .x(10).y(10)
+ *         .width(100).height(100)
+ *         .renderUnit(new SimpleViewUnit(new View(), 42)
+ *         .build()
+ *     )
+ *     .build()
+ * </pre>
+ */
+public class SimpleLayoutResult implements LayoutResult {
 
-  private final @Nullable RenderUnit mRenderUnit;
+  private final @Nullable RenderUnit<?> mRenderUnit;
   private final int mX;
   private final int mY;
   private final int mWidth;
   private final int mHeight;
-  private final List<Node.LayoutResult> mChildren;
+  private final int paddingTop;
+  private final int paddingRight;
+  private final int paddingBottom;
+  private final int paddingLeft;
+  private final List<LayoutResult<?>> mChildren;
   private final Object mLayoutData;
 
   public SimpleLayoutResult(
-      @Nullable RenderUnit renderUnit, Object layoutData, int x, int y, int width, int height) {
-    mRenderUnit = renderUnit;
+      int x,
+      int y,
+      int width,
+      int height,
+      int paddingTop,
+      int paddingRight,
+      int paddingBottom,
+      int paddingLeft,
+      List<LayoutResult<?>> children,
+      @Nullable RenderUnit<?> renderUnit,
+      @Nullable Object layoutData) {
     mX = x;
     mY = y;
     mWidth = width;
     mHeight = height;
-    mChildren = new ArrayList<>();
+    this.paddingTop = paddingTop;
+    this.paddingRight = paddingRight;
+    this.paddingBottom = paddingBottom;
+    this.paddingLeft = paddingLeft;
+    mChildren = children;
+    mRenderUnit = renderUnit;
     mLayoutData = layoutData;
   }
 
-  public SimpleLayoutResult(RenderUnit renderUnit, int x, int y, int width, int height) {
+  public SimpleLayoutResult(
+      @Nullable RenderUnit<?> renderUnit, Object layoutData, int x, int y, int width, int height) {
+    this(x, y, width, height, 0, 0, 0, 0, new ArrayList<LayoutResult<?>>(), renderUnit, layoutData);
+  }
+
+  public SimpleLayoutResult(RenderUnit<?> renderUnit, int x, int y, int width, int height) {
     this(renderUnit, null, x, y, width, height);
   }
 
   @Override
-  public @Nullable RenderUnit getRenderUnit() {
+  public @Nullable RenderUnit<?> getRenderUnit() {
     return mRenderUnit;
   }
 
@@ -65,7 +106,7 @@ public class SimpleLayoutResult implements Node.LayoutResult {
   }
 
   @Override
-  public Node.LayoutResult getChildAt(int index) {
+  public LayoutResult<?> getChildAt(int index) {
     return mChildren.get(index);
   }
 
@@ -91,22 +132,22 @@ public class SimpleLayoutResult implements Node.LayoutResult {
 
   @Override
   public int getPaddingTop() {
-    return 0;
+    return paddingTop;
   }
 
   @Override
   public int getPaddingRight() {
-    return 0;
+    return paddingRight;
   }
 
   @Override
   public int getPaddingBottom() {
-    return 0;
+    return paddingBottom;
   }
 
   @Override
   public int getPaddingLeft() {
-    return 0;
+    return paddingLeft;
   }
 
   @Override
@@ -119,7 +160,91 @@ public class SimpleLayoutResult implements Node.LayoutResult {
     return View.MeasureSpec.makeMeasureSpec(mHeight, View.MeasureSpec.EXACTLY);
   }
 
-  public List<Node.LayoutResult> getChildren() {
+  public static SimpleLayoutResult.Builder create() {
+    return new Builder();
+  }
+
+  public List<LayoutResult<?>> getChildren() {
     return mChildren;
+  }
+
+  public static class Builder {
+
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+    private int paddingTop;
+    private int paddingRight;
+    private int paddingBottom;
+    private int paddingLeft;
+
+    private List<LayoutResult<?>> children = new ArrayList<>();
+
+    private @Nullable RenderUnit<?> renderUnit;
+    private @Nullable Object layoutData;
+
+    public Builder x(int x) {
+      this.x = x;
+      return this;
+    }
+
+    public Builder y(int y) {
+      this.y = y;
+      return this;
+    }
+
+    public Builder width(int width) {
+      this.width = width;
+      return this;
+    }
+
+    public Builder height(int height) {
+      this.height = height;
+      return this;
+    }
+
+    public Builder padding(int t, int r, int b, int l) {
+      this.paddingTop = t;
+      this.paddingRight = r;
+      this.paddingBottom = b;
+      this.paddingLeft = l;
+      return this;
+    }
+
+    public Builder child(LayoutResult<?> child) {
+      this.children.add(child);
+      return this;
+    }
+
+    public Builder child(Builder builder) {
+      this.children.add(builder.build());
+      return this;
+    }
+
+    public Builder renderUnit(@Nullable RenderUnit<?> renderUnit) {
+      this.renderUnit = renderUnit;
+      return this;
+    }
+
+    public Builder layoutData(@Nullable Object layoutData) {
+      this.layoutData = layoutData;
+      return this;
+    }
+
+    public SimpleLayoutResult build() {
+      return new SimpleLayoutResult(
+          x,
+          y,
+          width,
+          height,
+          paddingTop,
+          paddingRight,
+          paddingBottom,
+          paddingLeft,
+          children,
+          renderUnit,
+          layoutData);
+    }
   }
 }

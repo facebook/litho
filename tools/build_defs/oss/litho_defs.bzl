@@ -38,6 +38,8 @@ LITHO_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path("litho-widget/src/main/java/
 
 LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget")
 
+LITHO_WIDGET_MATERIAL_TARGET = make_dep_path("litho-widget-material/src/main/java/com/facebook/litho/widget:widget")
+
 LITHO_WIDGET_RES_TARGET = make_dep_path("litho-widget:res")
 
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")
@@ -114,6 +116,8 @@ LITHO_ANDROIDSUPPORT_LIFECYCLE_EXT_TARGET = make_dep_path("lib/androidx:androidx
 
 LITHO_ANDROIDSUPPORT_MATERIAL_TARGET = make_dep_path("lib/androidx:androidx-material")
 
+LITHO_ANDROIDSUPPORT_TRANSITION_TARGET = make_dep_path("lib/androidx:androidx-transition")
+
 LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testing")
 
 LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET = make_dep_path("lib/androidx:androidx-testing-core")
@@ -169,6 +173,8 @@ LITHO_SCREENSHOT_TARGET = make_dep_path("lib/screenshot:screenshot")
 LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore:rendercore-stub")
 
 LITHO_RENDERCORE_TESTING_TARGET = make_dep_path("litho-rendercore-testing:litho-rendercore-testing")
+
+LITHO_RENDERCORE_TEXT_TARGET = make_dep_path("litho-rendercore-text:rendercore-text")
 
 LITHO_RENDERCORE_VISIBILITY_TARGET = make_dep_path("litho-rendercore-visibility:rendercore-visibility-stub")
 

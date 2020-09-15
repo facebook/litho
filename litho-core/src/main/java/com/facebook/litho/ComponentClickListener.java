@@ -28,7 +28,24 @@ class ComponentClickListener implements View.OnClickListener {
   @Override
   public void onClick(View view) {
     if (mEventHandler != null) {
-      dispatchOnClick(mEventHandler, view);
+      final boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        String componentClassName = "";
+        if (mEventHandler.mHasEventDispatcher != null) {
+          componentClassName = mEventHandler.mHasEventDispatcher.getClass().getName();
+          if (componentClassName.length() > 100) {
+            componentClassName = "";
+          }
+        }
+        ComponentsSystrace.beginSection("onClick_<cls>" + componentClassName + "</cls>");
+      }
+      try {
+        dispatchOnClick(mEventHandler, view);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+      }
     }
   }
 

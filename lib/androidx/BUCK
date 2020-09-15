@@ -354,7 +354,39 @@ fb_java_library(
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":androidx-appcompat-aar",
+        ":androidx-cardview-aar",
         ":androidx-material-aar",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-cardview-aar",
+    aar = ":androidx-cardview.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-cardview.aar",
+    sha1 = "158dbc2e2bc502815821191b04446b8f663c1874",
+    url = "mvn:androidx.cardview:cardview:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-transition-aar",
+    aar = ":androidx-transition.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-transition.aar",
+    sha1 = "f3556ce8f251984acb24014c3ba055ff235929ff",
+    url = "mvn:androidx.transition:transition:aar:1.0.0",
+)
+
+fb_java_library(
+    name = "androidx-transition",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":androidx-appcompat-aar",
+        ":androidx-transition-aar",
     ],
 )
 

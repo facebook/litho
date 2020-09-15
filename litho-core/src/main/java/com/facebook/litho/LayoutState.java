@@ -58,7 +58,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.IncrementalMountExtension.IncrementalMountExtensionInput;
-import com.facebook.litho.TransitionsExtension.TransitionsExtensionInput;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
@@ -294,8 +293,8 @@ public class LayoutState
   private StateHandler mStateHandler;
   private List<Component> mComponentsNeedingPreviousRenderData;
   @Nullable private TransitionId mCurrentTransitionId;
-  @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
-  private final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> mTransitionIdMapping =
+  @Nullable private OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
+  private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private List<Transition> mTransitions;
@@ -495,7 +494,7 @@ public class LayoutState
       final RenderTreeNode hostOutput =
           layoutState.mMountableOutputs.get(layoutState.mCurrentHostOutputPosition);
 
-      final Rect hostBounds = hostOutput.getBounds();
+      final Rect hostBounds = LayoutOutput.getLayoutOutput(hostOutput).getBounds();
       hostTranslationX = hostBounds.left;
       hostTranslationY = hostBounds.top;
     } else {
@@ -864,13 +863,13 @@ public class LayoutState
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
 
     final TransitionId currentTransitionId = layoutState.mCurrentTransitionId;
-    final OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputAffinityGroup =
+    final OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
 
     layoutState.mCurrentTransitionId = getTransitionIdForNode(node);
     layoutState.mCurrentLayoutOutputAffinityGroup =
         layoutState.mCurrentTransitionId != null
-            ? new OutputUnitsAffinityGroup<LayoutOutput>()
+            ? new OutputUnitsAffinityGroup<AnimatableItem>()
             : null;
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
@@ -1230,8 +1229,6 @@ public class LayoutState
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(drawable);
-    drawableComponent.setScopedContext(
-        ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;
     if (recycle != null) {
       isOutputUpdated =
@@ -1292,7 +1289,7 @@ public class LayoutState
   }
 
   private static void maybeAddLayoutOutputToAffinityGroup(
-      OutputUnitsAffinityGroup<LayoutOutput> group,
+      OutputUnitsAffinityGroup<AnimatableItem> group,
       @OutputUnitType int outputType,
       LayoutOutput layoutOutput) {
     if (group != null) {
@@ -1301,7 +1298,7 @@ public class LayoutState
   }
 
   private static void addCurrentAffinityGroupToTransitionMapping(LayoutState layoutState) {
-    final OutputUnitsAffinityGroup<LayoutOutput> group =
+    final OutputUnitsAffinityGroup<AnimatableItem> group =
         layoutState.mCurrentLayoutOutputAffinityGroup;
     if (group == null || group.isEmpty()) {
       return;
@@ -1696,7 +1693,7 @@ public class LayoutState
       flatList[i] = mMountableOutputs.get(i);
     }
 
-    final RenderTree renderTree = new RenderTree(root, flatList, mWidthSpec, mHeightSpec);
+    final RenderTree renderTree = new RenderTree(root, flatList, mWidthSpec, mHeightSpec, null);
     renderTree.setRenderTreeData(this);
     return renderTree;
   }
@@ -1772,22 +1769,27 @@ public class LayoutState
     if (!c.isReconciliationEnabled()
         && !ComponentsConfiguration.useInternalNodesForLayoutDiffing
         && !ComponentsConfiguration.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun) {
+        && !ComponentsConfiguration.isEndToEndTestRun
+        && !ComponentsConfiguration.keepInternalNodes) {
       layoutState.mLayoutRoot = null;
     }
   }
 
   private static void sortTops(LayoutState layoutState) {
+    final List<RenderTreeNode> unsortedNodes = new ArrayList<>(layoutState.mMountableOutputTops);
     try {
       Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
-      final int size = layoutState.mMountableOutputTops.size();
+      final int size = unsortedNodes.size();
       errorMessage.append("Error while sorting LayoutState tops. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = layoutState.mMountableOutputTops.get(i);
-        errorMessage.append("   Index " + i + " top: " + node.getBounds().top).append("\n");
+        final RenderTreeNode node = unsortedNodes.get(i);
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
+        errorMessage
+            .append("   Index " + layoutOutput.getIndex() + " top: " + layoutOutput.getBounds().top)
+            .append("\n");
       }
 
       throw new IllegalStateException(errorMessage.toString());
@@ -1795,16 +1797,24 @@ public class LayoutState
   }
 
   private static void sortBottoms(LayoutState layoutState) {
+    final List<RenderTreeNode> unsortedNodes = new ArrayList<>(layoutState.mMountableOutputBottoms);
     try {
       Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
-      final int size = layoutState.mMountableOutputBottoms.size();
+      final int size = unsortedNodes.size();
       errorMessage.append("Error while sorting LayoutState bottoms. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = layoutState.mMountableOutputBottoms.get(i);
-        errorMessage.append("   Index " + i + " bottom: " + node.getBounds().bottom).append("\n");
+        final RenderTreeNode node = unsortedNodes.get(i);
+        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
+        errorMessage
+            .append(
+                "   Index "
+                    + layoutOutput.getIndex()
+                    + " bottom: "
+                    + layoutOutput.getBounds().bottom)
+            .append("\n");
       }
 
       throw new IllegalStateException(errorMessage.toString());
@@ -2078,6 +2088,11 @@ public class LayoutState
   }
 
   @Override
+  public AnimatableItem getAnimatableRootItem() {
+    return LayoutOutput.getLayoutOutput(getMountableOutputAt(0));
+  }
+
+  @Override
   public ArrayList<RenderTreeNode> getMountableOutputTops() {
     return mMountableOutputTops;
   }
@@ -2279,14 +2294,14 @@ public class LayoutState
 
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
   @Override
-  public Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping() {
+  public Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> getTransitionIdMapping() {
     return mTransitionIdMapping;
   }
 
   /** Gets a group of LayoutOutput given transition key */
   @Override
   @Nullable
-  public OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
+  public OutputUnitsAffinityGroup<AnimatableItem> getLayoutOutputsForTransitionId(
       TransitionId transitionId) {
     return mTransitionIdMapping.get(transitionId);
   }
@@ -2422,7 +2437,11 @@ public class LayoutState
   }
 
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
-    return TransitionUtils.createTransitionId(node);
+    return TransitionUtils.createTransitionId(
+        node.getTransitionKey(),
+        node.getTransitionKeyType(),
+        node.getTransitionOwnerKey(),
+        node.getTransitionGlobalKey());
   }
 
   @Override

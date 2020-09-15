@@ -39,16 +39,21 @@ public class WorkingRangeContainerTest {
   private WorkingRange mWorkingRange;
   private Component mComponent;
   private Component mComponent2;
+  private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
     mWorkingRangeContainer = new WorkingRangeContainer();
+
+    mComponentContext = mock(ComponentContext.class);
 
     mWorkingRange = new TestWorkingRange();
     mComponent = mock(Component.class);
     when(mComponent.getGlobalKey()).thenReturn("component");
     mComponent2 = mock(Component.class);
     when(mComponent2.getGlobalKey()).thenReturn("component2");
+    when(mComponent.getScopedContext()).thenReturn(mComponentContext);
+    when(mComponent2.getScopedContext()).thenReturn(mComponentContext);
   }
 
   @Test
@@ -96,15 +101,19 @@ public class WorkingRangeContainerTest {
 
     final WorkingRangeStatusHandler statusHandler = new WorkingRangeStatusHandler();
     statusHandler.setStatus(NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
-    doNothing().when(mComponent).dispatchOnExitedRange(isA(String.class));
+    doNothing()
+        .when(mComponent)
+        .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
 
     statusHandler.setStatus(NAME, mComponent2, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
-    doNothing().when(mComponent2).dispatchOnExitedRange(isA(String.class));
+    doNothing()
+        .when(mComponent2)
+        .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
 
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler);
 
-    verify(mComponent, times(1)).dispatchOnExitedRange(NAME);
-    verify(mComponent2, times(0)).dispatchOnExitedRange(NAME);
+    verify(mComponent, times(1)).dispatchOnExitedRange(mComponentContext, NAME);
+    verify(mComponent2, times(0)).dispatchOnExitedRange(mComponentContext, NAME);
   }
 
   private static class TestWorkingRange implements WorkingRange {

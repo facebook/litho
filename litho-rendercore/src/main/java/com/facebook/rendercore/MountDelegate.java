@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
+import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
 public class MountDelegate {
 
   private final LongSparseArray<Integer> mReferenceCountMap = new LongSparseArray<>();
-  private final List<MountDelegateExtension> mMountDelegateExtensions = new ArrayList<>();
+  private final List<MountExtension> mMountExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
   private boolean mReferenceCountingEnabled = false;
 
@@ -53,13 +54,16 @@ public class MountDelegate {
 
     boolean isRootItem(int position);
 
+    @Nullable
+    MountItem getRootItem();
+
     Object getContentAt(int position);
 
     Object getContentById(long id);
 
     int getContentCount();
 
-    void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);
+    void registerMountDelegateExtension(MountExtension mountExtension);
 
     ArrayList<Host> getHosts();
 
@@ -83,18 +87,17 @@ public class MountDelegate {
     mMountDelegateTarget = mountDelegateTarget;
   }
 
-  public void addExtension(MountDelegateExtension mountDelegateExtension) {
-    mMountDelegateExtensions.add(mountDelegateExtension);
-    mountDelegateExtension.registerToDelegate(this);
-    mReferenceCountingEnabled =
-        mReferenceCountingEnabled || mountDelegateExtension.canPreventMount();
+  public void addExtension(MountExtension mountExtension) {
+    mMountExtensions.add(mountExtension);
+    mountExtension.registerToDelegate(this);
+    mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
   }
 
-  Object getContentAt(int position) {
+  public Object getContentAt(int position) {
     return mMountDelegateTarget.getContentAt(position);
   }
 
-  boolean isRootItem(int position) {
+  public boolean isRootItem(int position) {
     return mMountDelegateTarget.isRootItem(position);
   }
 

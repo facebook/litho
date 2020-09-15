@@ -24,15 +24,14 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.HostListenerExtension;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VisibilityOutputsExtension
-    implements HostListenerExtension<VisibilityOutputsExtensionInput> {
+public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputsExtensionInput> {
 
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -122,12 +121,13 @@ public class VisibilityOutputsExtension
         continue;
       }
 
-      final Function visibleHandler = visibilityOutput.getVisibleEventHandler();
-      final Function focusedHandler = visibilityOutput.getFocusedEventHandler();
-      final Function unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
-      final Function fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
-      final Function invisibleHandler = visibilityOutput.getInvisibleEventHandler();
-      final Function visibilityChangedHandler = visibilityOutput.getVisibilityChangedEventHandler();
+      final Function<Void> visibleHandler = visibilityOutput.getVisibleEventHandler();
+      final Function<Void> focusedHandler = visibilityOutput.getFocusedEventHandler();
+      final Function<Void> unfocusedHandler = visibilityOutput.getUnfocusedEventHandler();
+      final Function<Void> fullImpressionHandler = visibilityOutput.getFullImpressionEventHandler();
+      final Function<Void> invisibleHandler = visibilityOutput.getInvisibleEventHandler();
+      final Function<Void> visibilityChangedHandler =
+          visibilityOutput.getVisibilityChangedEventHandler();
 
       final boolean isCurrentlyVisible =
           boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
@@ -304,9 +304,10 @@ public class VisibilityOutputsExtension
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
 
       if (visibilityItem != null) {
-        final Function invisibleHandler = visibilityItem.getInvisibleHandler();
-        final Function unfocusedHandler = visibilityItem.getUnfocusedHandler();
-        final Function visibilityChangedHandler = visibilityItem.getVisibilityChangedHandler();
+        final Function<Void> invisibleHandler = visibilityItem.getInvisibleHandler();
+        final Function<Void> unfocusedHandler = visibilityItem.getUnfocusedHandler();
+        final Function<Void> visibilityChangedHandler =
+            visibilityItem.getVisibilityChangedHandler();
 
         if (invisibleHandler != null) {
           VisibilityUtils.dispatchOnInvisible(invisibleHandler);

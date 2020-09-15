@@ -58,8 +58,7 @@ public class TransitionManagerAnimationCreationTest {
 
               @Override
               public void onAnimationUnitComplete(PropertyHandle propertyHandle, Object data) {}
-            },
-            mock(MountState.class));
+            });
     mTestVerificationAnimator =
         new Transition.TransitionAnimator() {
           @Override
@@ -378,7 +377,7 @@ public class TransitionManagerAnimationCreationTest {
   /** @return a mock LayoutState that only has a transition key -> LayoutOutput mapping. */
   private LayoutState createMockLayoutState(
       TransitionSet transitions, LayoutOutput... layoutOutputs) {
-    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionIdMapping =
+    final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionIdMapping =
         new LinkedHashMap<>();
     for (int i = 0; i < layoutOutputs.length; i++) {
       final LayoutOutput layoutOutput = layoutOutputs[i];
@@ -386,7 +385,7 @@ public class TransitionManagerAnimationCreationTest {
       if (transitionId == null) {
         continue;
       }
-      OutputUnitsAffinityGroup<LayoutOutput> group = transitionIdMapping.get(transitionId);
+      OutputUnitsAffinityGroup<AnimatableItem> group = transitionIdMapping.get(transitionId);
       if (group == null) {
         group = new OutputUnitsAffinityGroup<>();
         transitionIdMapping.put(transitionId, group);
@@ -402,9 +401,9 @@ public class TransitionManagerAnimationCreationTest {
     when(layoutState.getTransitionIdMapping()).thenReturn(transitionIdMapping);
     when(layoutState.getLayoutOutputsForTransitionId(any()))
         .then(
-            new Answer<OutputUnitsAffinityGroup<LayoutOutput>>() {
+            new Answer<OutputUnitsAffinityGroup<AnimatableItem>>() {
               @Override
-              public OutputUnitsAffinityGroup<LayoutOutput> answer(InvocationOnMock invocation)
+              public OutputUnitsAffinityGroup<AnimatableItem> answer(InvocationOnMock invocation)
                   throws Throwable {
                 final TransitionId transitionId = (TransitionId) invocation.getArguments()[0];
                 return transitionIdMapping.get(transitionId);

@@ -16,10 +16,11 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import com.facebook.litho.Decoration
 import com.facebook.litho.Dp
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
+import com.facebook.litho.Style
+import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flex
@@ -32,21 +33,26 @@ import com.facebook.samples.litho.kotlin.lithography.data.Decade
 import com.facebook.yoga.YogaAlign.CENTER
 
 class DecadeSeparator(decade: Decade) : KComponent({
-  Decoration(background = drawableColor(0xFFFAFAFA)) {
-    Row(alignItems = CENTER, style = padding(16.dp)) {
-      +Decoration(background = drawableColor(0xFFAAAAAA)) {
-        Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
-      }
+  Row(alignItems = CENTER, style = Style
+      .padding(16.dp)
+      .background(drawableColor(0xFFFAFAFA))) {
 
-      +Text(
-          text = "${decade.year}",
-          textSize = 14.sp,
-          textColor = 0xFFAAAAAA.toInt(),
-          style = margin(horizontal = 10.dp) + flex(shrink = 0f))
+    +Row(style = Style
+        .size(height = Dp.Hairline)
+        .flex(grow = 1f)
+        .background(drawableColor(0xFFAAAAAA)))
 
-      +Decoration(background = drawableColor(0xFFAAAAAA)) {
-        Row(style = size(height = Dp.Hairline) + flex(grow = 1f))
-      }
-    }
+    +Text(
+        text = "${decade.year}",
+        textSize = 14.sp,
+        textColor = 0xFFAAAAAA.toInt(),
+        style = Style
+            .margin(horizontal = 10.dp)
+            .flex(shrink = 0f))
+
+    +Row(style = Style
+        .size(height = Dp.Hairline)
+        .flex(grow = 1f)
+        .background(drawableColor(0xFFAAAAAA)))
   }
 })

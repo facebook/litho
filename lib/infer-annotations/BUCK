@@ -15,6 +15,6 @@ fb_native.prebuilt_jar(
 
 fb_native.remote_file(
     name = "infer-annotations.jar",
-    sha1 = "e74d55a20c1a149e7b2103a98f15626ed228dc43",
-    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.17.0",
+    sha1 = "27539793fe93ed7d92b6376281c16cda8278ab2f",
+    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.18.0",
 )

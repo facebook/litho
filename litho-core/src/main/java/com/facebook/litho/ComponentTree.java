@@ -67,6 +67,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -1379,7 +1380,7 @@ public class ComponentTree {
 
   private void bindTriggerHandler(Component component) {
     synchronized (mEventTriggersContainer) {
-      component.recordEventTrigger(mEventTriggersContainer);
+      component.recordEventTrigger(component.getScopedContext(), mEventTriggersContainer);
     }
   }
 
@@ -2556,7 +2557,7 @@ public class ComponentTree {
     private final int heightSpec;
     private final boolean diffingEnabled;
     @Nullable private final TreeProps treeProps;
-    private final FutureTask<LayoutState> futureTask;
+    private final RunnableFuture<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
     private final int layoutVersion;
@@ -2594,25 +2595,27 @@ public class ComponentTree {
       this.layoutVersion = layoutVersion;
 
       this.futureTask =
-          new FutureTask<>(
-              new Callable<LayoutState>() {
-                @Override
-                public @Nullable LayoutState call() {
-                  synchronized (LayoutStateFuture.this) {
-                    if (released) {
-                      return null;
+          FutureInstrumenter.instrument(
+              new FutureTask<>(
+                  new Callable<LayoutState>() {
+                    @Override
+                    public @Nullable LayoutState call() {
+                      synchronized (LayoutStateFuture.this) {
+                        if (released) {
+                          return null;
+                        }
+                      }
+                      final LayoutState result = calculateLayoutStateInternal();
+                      synchronized (LayoutStateFuture.this) {
+                        if (released) {
+                          return null;
+                        } else {
+                          return result;
+                        }
+                      }
                     }
-                  }
-                  final LayoutState result = calculateLayoutStateInternal();
-                  synchronized (LayoutStateFuture.this) {
-                    if (released) {
-                      return null;
-                    } else {
-                      return result;
-                    }
-                  }
-                }
-              });
+                  }),
+              "LayoutStateFuture_calculateLayout");
     }
 
     private LayoutState calculateLayoutStateInternal() {

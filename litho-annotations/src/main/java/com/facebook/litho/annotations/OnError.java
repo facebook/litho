@@ -22,7 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Annotate a method inside your component with {@literal @}OnError to receive a callback when an
  * exception inside supported delegate methods of a child component happens. You then get a chance
- * to either trigger a state update or reraise the exception using <code>dispatchErrorEvent</code>.
+ * to either trigger a state update or reraise the exception using <code>ComponentUtils.raise</code>
+ * .
  *
  * <p>The method will receive a ComponentContext, and an {@link Exception}.
  *

@@ -25,6 +25,14 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        javaCompileOptions {
+            annotationProcessorOptions {
+                // We transitively depend on auto-value which we don't want to
+                // use as annotation processor at this time, so we can safely
+                // disable this warning.
+                includeCompileClasspath false
+            }
+        }
     }
 
     buildTypes {
@@ -59,8 +67,13 @@ dependencies {
     implementation deps.supportCore
 
     // Testing deps
-    implementation deps.assertjCore
     implementation deps.junit
+    implementation deps.jsr305
+    implementation deps.assertjCore
+    implementation deps.guava
+    implementation(deps.robolectric) {
+        exclude group: "com.google.guava", module: "guava"
+    }
 }
 
 apply from: rootProject.file('gradle/release.gradle')

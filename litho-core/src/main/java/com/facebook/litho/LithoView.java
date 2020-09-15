@@ -35,6 +35,9 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat.Accessibility
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.RenderState;
+import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.rendercore.visibility.VisibilityUtils;
@@ -48,11 +51,13 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends Host {
+public class LithoView extends ComponentHost implements RootHost, AnimatedRootHost {
 
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
+  public static final String TEXTURE_TOO_BIG = "TextureTooBig";
+  public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
   private static final int TOO_BIG_TEXTURE_SIZE = 4096;
   private static final String TAG = LithoView.class.getSimpleName();
   private final boolean mDisableTransitionsExtension;
@@ -490,21 +495,41 @@ public class LithoView extends Host {
             "Trying to layout a LithoView holding onto a released ComponentTree");
       }
 
-      if (bottom - top >= TOO_BIG_TEXTURE_SIZE || right - left >= TOO_BIG_TEXTURE_SIZE) {
-        if (isDeviceThatCantHandleTooBigTextures()) {
+      final int height = bottom - top;
+      final int width = right - left;
+      if (height <= 0 || width <= 0) {
+        if (ComponentsConfiguration.emitMessageForZeroSizedTexture) {
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR,
-              "TextureTooBig",
-              "LithoView has measured greater than "
-                  + TOO_BIG_TEXTURE_SIZE
-                  + " in one dimension. Size: "
-                  + (right - left)
+              TEXTURE_ZERO_DIM,
+              "LithoView is <= 0 in one dimension. Size: "
+                  + width
                   + "x"
-                  + (bottom - top)
+                  + height
                   + ", component: "
                   + (mComponentTree.getRoot() != null
                       ? mComponentTree.getRoot().getSimpleName()
-                      : null),
+                      : null)
+                  + ", tree: "
+                  + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()));
+        }
+      } else if (height >= TOO_BIG_TEXTURE_SIZE || width >= TOO_BIG_TEXTURE_SIZE) {
+        if (isDeviceThatCantHandleTooBigTextures()) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR,
+              TEXTURE_TOO_BIG,
+              "LithoView has measured greater than "
+                  + TOO_BIG_TEXTURE_SIZE
+                  + " in one dimension. Size: "
+                  + width
+                  + "x"
+                  + height
+                  + ", component: "
+                  + (mComponentTree.getRoot() != null
+                      ? mComponentTree.getRoot().getSimpleName()
+                      : null)
+                  + ", tree: "
+                  + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()),
               100);
         }
       }
@@ -1559,5 +1584,10 @@ public class LithoView extends Host {
           loggingInfo.startupLoggerAttribution);
       loggingInfo.lastMountLogged[0] = true;
     }
+  }
+
+  @Override
+  public void setRenderState(RenderState renderState) {
+    throw new UnsupportedOperationException("Not currently supported by Litho");
   }
 }

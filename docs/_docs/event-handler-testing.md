@@ -131,31 +131,6 @@ As you can see here, we can match against a click handler just like any other
 prop set on a sub-component. Matching against a specific instance of an
 `EventHandler` is currently not supported.
 
-## Testing event handlers
-
-We have now verified that the event handler is properly set, but not what
-actually happens when the callback is invoked. How can we do that? Remember that
-Component Specs ideally consist of only pure and hence static functions. This
-means that you can test every function in isolation. For our example here, we
-can directly test the `incrementClickCount` method, completely independent of
-its use within the click handler.
-
-```java
-@Test
-public void testIncrementClickCount() {
-  final StateValue<Integer> count = new StateValue<>();
-  count.set(0);
-  LearningStateComponentSpec.incrementClickCount(count);
-
-  LithoAssertions.assertThat(count).valueEqualTo(1);
-}
-```
-
-Note how we don't use a component instance or even the generated code from the
-spec. You can also see how the `StateValue` can be compared directly with
-`LithoAssertions.assertThat`, which has a special method for peeking inside the
-container to compare values.
-
 ## Next
 
 Either head back to the [testing overview](/docs/testing-overview.html) or

@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 public class NavigatableDemoActivity extends AppCompatActivity {
 
-  private DemoListActivity.DemoListDataModel mDataModel;
+  private Demos.DemoItem mDataModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class NavigatableDemoActivity extends AppCompatActivity {
     if (indices != null) {
       mDataModel = getDataModel(indices);
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      setTitle(mDataModel.name);
+      setTitle(mDataModel.getName());
     }
   }
 
@@ -63,23 +63,35 @@ public class NavigatableDemoActivity extends AppCompatActivity {
       return null;
     }
 
-    final Intent parentIntent = new Intent(this, DemoListActivity.class);
-    if (indices.length > 1) {
-      parentIntent.putExtra(DemoListActivity.INDICES, Arrays.copyOf(indices, indices.length - 1));
+    // Keep popping indices off the route until we get to an Activity we can navigate back to.
+    // If we can't find one, pop back to the root.
+    int[] parentIndices = indices;
+    Demos.DemoItem item = null;
+    while (parentIndices.length > 1 && !(item instanceof Demos.NavigableDemoItem)) {
+      parentIndices = Arrays.copyOf(indices, parentIndices.length - 1);
+      item = getDataModel(parentIndices);
     }
 
-    return parentIntent;
+    if (item != null && item instanceof Demos.NavigableDemoItem) {
+      return ((Demos.NavigableDemoItem) item).getIntent(this, parentIndices);
+    } else {
+      return new Intent(this, SampleRootActivity.class);
+    }
   }
 
-  private DemoListActivity.DemoListDataModel getDataModel(int[] indices) {
-    DemoListActivity.DemoListDataModel model = DemoListActivity.DATA_MODELS.get(indices[0]);
+  private Demos.DemoItem getDataModel(int[] indices) {
+    Demos.DemoItem model = Demos.DEMOS.get(indices[0]);
     for (int i = 1; i < indices.length; i++) {
-      model = model.datamodels.get(indices[i]);
+      if (model instanceof Demos.HasChildrenDemos) {
+        model = ((Demos.HasChildrenDemos) model).getDemos().get(indices[i]);
+      } else {
+        throw new RuntimeException("Unexpected type: " + model);
+      }
     }
     return model;
   }
 
-  protected DemoListActivity.DemoListDataModel getDataModel() {
+  protected Demos.DemoItem getDataModel() {
     return mDataModel;
   }
 }

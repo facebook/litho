@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor;
 
+import com.facebook.litho.editor.instances.AtomicReferenceEditorInstance;
 import com.facebook.litho.editor.instances.BoolEditorInstance;
 import com.facebook.litho.editor.instances.NumberEditorInstance;
 import com.facebook.litho.editor.instances.StringEditorInstance;
@@ -23,6 +24,7 @@ import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
@@ -94,20 +96,93 @@ public final class EditorRegistry {
     return editor.write(f, node, values);
   }
 
+  /**
+   * This helper gives the EditorValue of a value that is not a field of a class. If the value is a
+   * field, use {@link #read(Class, Field, Object)} instead.
+   *
+   * @param <T> type of the value
+   * @param c runtime Class of the value
+   * @param value data to update
+   * @return the EditorValue representation
+   */
+  public static @Nullable <T> EditorValue readValueThatIsNotAField(final Class<T> c, T value) {
+    return read(c, TransientField.CONTENT_FIELD, new TransientField<>(value));
+  }
+
+  public interface WrittenValue<T> {
+    @Nullable
+    Boolean hasUpdated();
+
+    T value();
+  }
+
+  /**
+   * This helper writes an EditorValue to a value that is not a field of a class. If the value is a
+   * field, use {@link #write(Class, Field, Object, EditorValue)} instead.
+   *
+   * @param <T> type of the value
+   * @param c runtime Class of the value
+   * @param value data to update
+   * @param values EditorValue used to update the value
+   * @return if the field has been updated correctly and the value after passing through the editor
+   */
+  public static <T> WrittenValue<T> writeValueThatIsNotAField(
+      final Class<T> c, T value, final EditorValue values) {
+    final TransientField<T> wrapper = new TransientField<>(value);
+    final Boolean result = write(c, TransientField.CONTENT_FIELD, wrapper, values);
+    return new WrittenValue<T>() {
+      @Override
+      @Nullable
+      public Boolean hasUpdated() {
+        return result;
+      }
+
+      @Override
+      public T value() {
+        return wrapper.content;
+      }
+    };
+  }
+
+  /**
+   * This class exists for the cases where you have to update a value that is **not** a field. One
+   * example are elements inside a Collection
+   *
+   * <p>Note that updating the whole reference immutably wouldn't affect the original value, just
+   * the value of this transient class.
+   *
+   * @param <T>
+   */
+  private static final class TransientField<T> {
+    public final T content;
+
+    private TransientField(T t) {
+      this.content = t;
+    }
+
+    public static final Field CONTENT_FIELD = TransientField.class.getDeclaredFields()[0];
+  }
+
   static {
-    final NumberEditorInstance numberEditor = new NumberEditorInstance();
-    registerEditor(Number.class, numberEditor);
-    registerEditor(int.class, numberEditor);
-    registerEditor(float.class, numberEditor);
-    registerEditor(double.class, numberEditor);
-    registerEditor(long.class, numberEditor);
-    registerEditor(short.class, numberEditor);
-    registerEditor(byte.class, numberEditor);
+    registerEditor(int.class, new NumberEditorInstance<>(int.class));
+    registerEditor(float.class, new NumberEditorInstance<>(float.class));
+    registerEditor(double.class, new NumberEditorInstance<>(double.class));
+    registerEditor(long.class, new NumberEditorInstance<>(long.class));
+    registerEditor(short.class, new NumberEditorInstance<>(short.class));
+    registerEditor(byte.class, new NumberEditorInstance<>(byte.class));
+    registerEditor(Integer.class, new NumberEditorInstance<>(Integer.class));
+    registerEditor(Float.class, new NumberEditorInstance<>(Float.class));
+    registerEditor(Double.class, new NumberEditorInstance<>(Double.class));
+    registerEditor(Long.class, new NumberEditorInstance<>(Long.class));
+    registerEditor(Short.class, new NumberEditorInstance<>(Short.class));
+    registerEditor(Byte.class, new NumberEditorInstance<>(Byte.class));
 
     registerEditor(CharSequence.class, new StringEditorInstance());
 
     final BoolEditorInstance boolEditor = new BoolEditorInstance();
     registerEditor(Boolean.class, boolEditor);
     registerEditor(boolean.class, boolEditor);
+
+    registerEditor(AtomicReference.class, new AtomicReferenceEditorInstance());
   }
 }

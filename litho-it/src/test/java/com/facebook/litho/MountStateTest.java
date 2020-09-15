@@ -21,11 +21,14 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
+import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
+import com.facebook.litho.widget.Progress;
 import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.TextInput;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -118,6 +121,84 @@ public class MountStateTest {
     final Component emptyRoot = Wrapper.create(mContext).delegate(null).build();
 
     mLithoViewRule.setRoot(emptyRoot);
+
+    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
+    ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
+  }
+
+  @Test
+  public void onSetRootWithSimilarComponent_MountContentShouldUsePools() {
+    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
+    final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
+
+    ComponentsConfiguration.delegateToRenderCoreMount = true;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
+    ComponentsConfiguration.useIncrementalMountExtension = true;
+
+    final Component root =
+        Column.create(mContext)
+            .child(TextInput.create(mContext).widthDip(100).heightDip(100))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    View view = mLithoViewRule.getLithoView().getChildAt(0);
+
+    final Component newRoot =
+        Row.create(mContext)
+            .child(TextInput.create(mContext).initialText("testing").widthDip(120).heightDip(120))
+            .build();
+
+    mLithoViewRule
+        .setRoot(newRoot)
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
+
+    View newView = mLithoViewRule.getLithoView().getChildAt(0);
+
+    assertThat(newView).isSameAs(view);
+
+    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
+    ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
+  }
+
+  @Test
+  public void onSetRootWithDifferentComponent_MountContentPoolsShouldNoCollide() {
+    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
+    final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
+
+    ComponentsConfiguration.delegateToRenderCoreMount = true;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
+    ComponentsConfiguration.useIncrementalMountExtension = true;
+
+    final Component root =
+        Column.create(mContext)
+            .child(TextInput.create(mContext).widthDip(100).heightDip(100))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final Component newRoot =
+        Column.create(mContext)
+            .child(Progress.create(mContext).widthDip(100).heightDip(100))
+            .build();
+
+    mLithoViewRule
+        .setRoot(newRoot)
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;

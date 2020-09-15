@@ -47,6 +47,11 @@ subprojects {
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
             environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+
+            def offlineDepsDir = System.getProperty('robolectric.dependency.dir')
+            if (offlineDepsDir != null) {
+                systemProperty 'robolectric.dependency.dir', "${rootDir}/$offlineDepsDir"
+            }
         }
     }
 }
@@ -80,6 +85,7 @@ ext.deps = [
         supportMultidex    : 'androidx.multidex:multidex:2.0.0',
         supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
         supportMaterial    : 'com.google.android.material:material:1.0.0',
+        supportTransition  : 'androidx.transition:transition:1.0.0',
         // Arch
         archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
         // First-party
@@ -87,11 +93,11 @@ ext.deps = [
         soloader           : 'com.facebook.soloader:soloader:0.8.2',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.5.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
-        flipper            : 'com.facebook.flipper:flipper:0.30.2',
-        flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.30.2',
+        flipper            : 'com.facebook.flipper:flipper:0.56.0',
+        flipperLithoPlugin : 'com.facebook.flipper:flipper-litho-plugin:0.56.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
-        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.17.0',
+        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.18.0',
         // Debugging and testing
         guava              : 'com.google.guava:guava:27.0.1-android',
         robolectric        : 'org.robolectric:robolectric:4.3',

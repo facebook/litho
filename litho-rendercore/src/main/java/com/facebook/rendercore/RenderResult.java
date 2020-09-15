@@ -56,8 +56,7 @@ public class RenderResult<State> {
     }
     final RenderResult renderResult;
 
-    if (previousResult != null
-        && shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
+    if (shouldReuseResult(result.first, widthSpec, heightSpec, previousResult)) {
       renderResult =
           new RenderResult<>(
               previousResult.getRenderTree(),
@@ -106,7 +105,7 @@ public class RenderResult<State> {
       final int heightSpec,
       final @Nullable State state) {
     return new RenderResult<>(
-        Reducer.getReducedTree(c.getAndroidContext(), layoutResult, widthSpec, heightSpec),
+        Reducer.getReducedTree(c.getAndroidContext(), layoutResult, widthSpec, heightSpec, null),
         lazyTree,
         node,
         c.getLayoutCache(),
@@ -161,7 +160,7 @@ public class RenderResult<State> {
   }
 
   @Nullable
-  State getState() {
+  public State getState() {
     return mState;
   }
 

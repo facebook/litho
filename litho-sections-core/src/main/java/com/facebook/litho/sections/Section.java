@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Equivalence;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
@@ -74,7 +75,7 @@ public abstract class Section extends SectionLifecycle
   }
 
   @Override
-  public void recordEventTrigger(EventTriggersContainer container) {
+  public void recordEventTrigger(ComponentContext c, EventTriggersContainer container) {
     // Do nothing by default
   }
 

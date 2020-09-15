@@ -16,8 +16,13 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
+
 /** Exception class used to print the Components' hierarchy involved in a crash. */
 class ComponentsChainException extends RuntimeException {
+
+  @Nullable Exception original;
+  @Nullable EventHandler<ErrorEvent> handler;
 
   ComponentsChainException(Component c, Throwable cause) {
     super(c.getSimpleName());

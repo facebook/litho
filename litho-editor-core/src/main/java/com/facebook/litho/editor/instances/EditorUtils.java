@@ -50,4 +50,15 @@ public final class EditorUtils {
       throw new RuntimeException(e);
     }
   }
+
+  @SuppressWarnings("unchecked")
+  public static Field geFieldUNSAFE(Class<?> clazz, String field) {
+    try {
+      return clazz.getDeclaredField(field);
+    } catch (SecurityException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

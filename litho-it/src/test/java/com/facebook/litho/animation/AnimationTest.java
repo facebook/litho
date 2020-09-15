@@ -37,6 +37,7 @@ import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.TestAnimationMount;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
 import com.facebook.litho.widget.Text;
@@ -105,20 +106,7 @@ public class AnimationTest {
                     .TestComponent() { // This could be a lambda but it fails ci.
                   @Override
                   public Component getComponent(ComponentContext componentContext, boolean state) {
-                    return Row.create(componentContext)
-                        .heightDip(200)
-                        .widthDip(200)
-                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
-                        .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
-                        .child(
-                            Row.create(componentContext)
-                                .heightDip(40)
-                                .widthDip(40)
-                                .backgroundColor(Color.parseColor("#ee1111"))
-                                .transitionKey(TRANSITION_KEY)
-                                .viewTag(TRANSITION_KEY)
-                                .build())
-                        .build();
+                    return getAnimatingXPropertyComponent();
                   }
                 })
             .build();
@@ -1192,6 +1180,86 @@ public class AnimationTest {
     mTransitionTestRule.step(1000);
   }
 
+  @Test
+  public void
+      animationProperties_animatingPropertyOnRootComponent_elementShouldAnimateInTheXAxis() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X)
+                    .animate(AnimatedProperties.Y)
+                    .animate(AnimatedProperties.WIDTH)
+                    .animate(AnimatedProperties.HEIGHT))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .heightDip(state ? 200 : 100)
+                        .widthDip(state ? 200 : 100)
+                        .backgroundColor(Color.RED)
+                        .positionPx(YogaEdge.LEFT, !state ? 0 : 100)
+                        .positionPx(YogaEdge.TOP, !state ? 0 : 100)
+                        .transitionKey(TRANSITION_KEY)
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    View lithoView = mLithoViewRule.getLithoView();
+
+    // 160 is equal to height and width of 200 - 40 for the size of the row.
+    assertThat(lithoView.getX())
+        .describedAs("view X axis should be at start position")
+        .isEqualTo(0);
+    assertThat(lithoView.getY())
+        .describedAs("view Y axis should be at start position")
+        .isEqualTo(0);
+    assertThat(lithoView.getWidth())
+        .describedAs("view Width should be at start position")
+        .isEqualTo(320);
+    assertThat(lithoView.getHeight())
+        .describedAs("view Height should be at start position")
+        .isEqualTo(422);
+
+    mStateCaller.update();
+
+    // X after state update should be at 0 because is going to be animated.
+    assertThat(lithoView.getX()).describedAs("view X axis after toggle").isEqualTo(0);
+    // Y after state update should be at 0 because is going to be animated.
+    assertThat(lithoView.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
+    // Width after state update should be at 320 because is going to be animated.
+    assertThat(lithoView.getWidth()).describedAs("view Width after toggle").isEqualTo(320);
+    // Height after state update should be at 422 because is going to be animated.
+    assertThat(lithoView.getHeight()).describedAs("view Height after toggle").isEqualTo(422);
+    mTransitionTestRule.step(5);
+
+    // Check java doc for how we calculate this value.
+    assertThat(lithoView.getX()).describedAs("view X axis after 5 frames").isEqualTo(41.31759f);
+    assertThat(lithoView.getY()).describedAs("view Y axis after 5 frames").isEqualTo(28.238356f);
+    assertThat(lithoView.getWidth()).describedAs("view Width axis after 5 frames").isEqualTo(128);
+    assertThat(lithoView.getHeight()).describedAs("view Height axis after 5 frames").isEqualTo(128);
+
+    // Enough frames to finish all animations
+    mTransitionTestRule.step(500);
+
+    assertThat(lithoView.getX()).describedAs("view X axis after animation finishes").isEqualTo(100);
+    assertThat(lithoView.getY()).describedAs("view Y axis after animation finishes").isEqualTo(100);
+    assertThat(lithoView.getWidth())
+        .describedAs("view Width after animation finishes")
+        .isEqualTo(200);
+    assertThat(lithoView.getHeight())
+        .describedAs("view Height after animation finishes")
+        .isEqualTo(200);
+  }
+
   private Component getAnimatingXPropertyComponent() {
     return TestAnimationsComponent.create(mLithoViewRule.getContext())
         .stateCaller(mStateCaller)
@@ -1247,5 +1315,128 @@ public class AnimationTest {
               }
             })
         .build();
+  }
+
+  @Test
+  public void transitionAnimation_interruption_overridesCurrentTransition() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(160, null))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec.TestComponent() {
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .widthDip(200)
+                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(40)
+                                .widthDip(40)
+                                .transitionKey(TRANSITION_KEY)
+                                .viewTag(TRANSITION_KEY)
+                                .build())
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    final View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    assertThat(view.getX()).describedAs("x pos before transition").isEqualTo(160);
+
+    // Start the transition by changing the state
+    mStateCaller.update();
+
+    // Advance to the mid point of the transition
+    mTransitionTestRule.step(6);
+    assertThat(view.getX()).describedAs("x pos at transition midpoint").isEqualTo(80f);
+
+    // Trigger a new transition that interrupts the current transition and  returns the component to
+    // its original position. NB: The Transition is fixed time, so it will take longer to return
+    mStateCaller.update();
+
+    // Advance to the mid point of the return transition
+    mTransitionTestRule.step(6);
+    assertThat(view.getX()).describedAs("x pos at return transition midpoint").isEqualTo(120);
+
+    // Advance to the end of the return transition
+    mTransitionTestRule.step(5);
+    assertThat(view.getX()).describedAs("x pos after return transition").isEqualTo(160);
+  }
+
+  @Test
+  public void
+      animation_disappearAnimationOnNestedLithoViews_elementShouldDisappearAnimatingAlpha() {
+    final boolean useTransitionsExtension = ComponentsConfiguration.useTransitionsExtension;
+    ComponentsConfiguration.useTransitionsExtension = true;
+    final StateCaller innerStateCaller = new StateCaller();
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.ALPHA)
+                    .appearFrom(0)
+                    .disappearTo(0))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Column.create(componentContext)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.YELLOW))
+                        .child(
+                            TestAnimationMount.create(componentContext)
+                                .stateCaller(innerStateCaller))
+                        .child(
+                            !state
+                                ? Row.create(componentContext)
+                                    .heightDip(50)
+                                    .widthDip(50)
+                                    .backgroundColor(Color.RED)
+                                    .viewTag(TRANSITION_KEY)
+                                    .transitionKey(TRANSITION_KEY)
+                                    .key(TRANSITION_KEY)
+                                : null)
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    // We move 10 frames to account for the appear animation.
+    mTransitionTestRule.step(10);
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View innerView = mLithoViewRule.findViewWithTag("TestAnimationMount");
+    // Here we get inner LithoView
+    LithoView innerLithoView = (LithoView) innerView.getParent();
+
+    // Update state on both
+    mStateCaller.update();
+    innerStateCaller.update();
+    // We look for the same view
+    innerView = mLithoViewRule.findViewWithTag("TestAnimationMount");
+
+    assertThat(innerLithoView)
+        .describedAs("We mantain the same LithoView")
+        .isEqualTo(innerView.getParent());
+
+    ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
   }
 }

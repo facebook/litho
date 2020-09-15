@@ -94,7 +94,10 @@ public class TriggerGenerator {
           "eventState");
 
       final CodeBlock.Builder eventTriggerParams =
-          CodeBlock.builder().indent().add("\n$L", "eventTrigger.mTriggerTarget");
+          CodeBlock.builder()
+              .indent()
+              .add("\n($L) eventTrigger.mComponentContext", specModel.getContextClass());
+      eventTriggerParams.add(",\n$L", "eventTrigger.mTriggerTarget");
 
       int paramIndex = 0;
       for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
@@ -130,6 +133,7 @@ public class TriggerGenerator {
         MethodSpec.methodBuilder("recordEventTrigger")
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override.class)
+            .addParameter(ClassNames.COMPONENT_CONTEXT, "c")
             .addParameter(ParameterSpec.builder(EVENT_TRIGGER_CONTAINER, "container").build());
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
@@ -137,6 +141,7 @@ public class TriggerGenerator {
       String trigger = ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
       methodBuilder
           .beginControlFlow("if ($L != null)", trigger)
+          .addStatement("$L.mComponentContext = c", trigger)
           .addStatement("$L.mTriggerTarget = this", trigger)
           .addStatement("container.recordEventTrigger($L)", trigger)
           .endControlFlow();
@@ -163,6 +168,7 @@ public class TriggerGenerator {
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PRIVATE)
             .returns(eventMethodModel.returnType)
+            .addParameter(specModel.getContextClass(), "c")
             .addParameter(ClassNames.EVENT_TRIGGER_TARGET, ABSTRACT_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
@@ -194,8 +200,7 @@ public class TriggerGenerator {
         methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         delegation.add(methodParamModel.getName());
       } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
-        delegation.add(
-            "($T) $L.getScopedContext()", methodParamModel.getTypeName(), REF_VARIABLE_NAME);
+        delegation.add("c", methodParamModel.getTypeName());
       } else {
         delegation.add(
             "($T) $L.$L",
@@ -386,8 +391,8 @@ public class TriggerGenerator {
     triggerMethod.addStatement(
         "$L component = ($L) c.$L()", componentClass, componentClass, scopeMethodName);
 
-    final CodeBlock.Builder eventTriggerParams =
-        CodeBlock.builder().add("\n($T) $L", ClassNames.EVENT_TRIGGER_TARGET, "component");
+    final CodeBlock.Builder eventTriggerParams = CodeBlock.builder().add("\nc");
+    eventTriggerParams.add(",\n($T) $L", ClassNames.EVENT_TRIGGER_TARGET, "component");
 
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {

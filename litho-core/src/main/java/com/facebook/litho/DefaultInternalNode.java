@@ -768,12 +768,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void setRootComponent(Component component) {
-    mComponents.clear();
-    mComponents.add(component);
-  }
-
-  @Override
   public @Nullable StateListAnimator getStateListAnimator() {
     return mStateListAnimator;
   }
@@ -873,6 +867,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public @Nullable ArrayList<Transition> getTransitions() {
     return mTransitions;
+  }
+
+  @Override
+  public @Nullable String getTransitionGlobalKey() {
+    final Component component = getTailComponent();
+    return component != null ? component.getGlobalKey() : null;
   }
 
   @Override

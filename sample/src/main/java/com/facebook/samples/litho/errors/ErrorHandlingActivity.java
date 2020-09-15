@@ -19,7 +19,6 @@ package com.facebook.samples.litho.errors;
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 import java.util.Arrays;
 
@@ -39,10 +38,6 @@ public class ErrorHandlingActivity extends NavigatableDemoActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    // This feature is currently experimental and not enabled by default.
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
     setContentView(
         LithoView.create(
             this,

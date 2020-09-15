@@ -29,14 +29,13 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.Function;
-import com.facebook.rendercore.HostListenerExtension;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegate.MountDelegateInput;
-import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,9 +45,8 @@ import java.util.Map;
 import java.util.Set;
 
 /** Extension for performing transitions. */
-public class TransitionsExtension extends MountDelegateExtension
-    implements HostListenerExtension<TransitionsExtension.TransitionsExtensionInput>,
-        TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
+public class TransitionsExtension extends MountExtension<TransitionsExtensionInput>
+    implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
         UnmountDelegateExtension {
 
   private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
@@ -72,7 +70,7 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   @Override
-  public void unmount(int index, MountItem mountItem, com.facebook.rendercore.Host host) {
+  public void unmount(int index, MountItem mountItem, Host host) {
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final TransitionId transitionId = layoutOutput.getTransitionId();
     final OutputUnitsAffinityGroup<MountItem> group = mDisappearingMountItems.get(transitionId);
@@ -87,36 +85,6 @@ public class TransitionsExtension extends MountDelegateExtension
     }
   }
 
-  public interface TransitionsExtensionInput extends MountDelegateInput {
-    int getMountableOutputCount();
-
-    RenderTreeNode getMountableOutputAt(int index);
-
-    boolean needsToRerunTransitions();
-
-    void setNeedsToRerunTransitions(boolean needsToRerunTransitions);
-
-    int getComponentTreeId();
-
-    Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping();
-
-    @Nullable
-    OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
-        TransitionId transitionId);
-
-    @Nullable
-    List<Component> getComponentsNeedingPreviousRenderData();
-
-    @Nullable
-    String getRootComponentName();
-
-    @Nullable
-    List<Transition> getTransitions();
-
-    @Nullable
-    TransitionId getRootTransitionId();
-  }
-
   public TransitionsExtension(Host lithoView) {
     mLithoView = lithoView;
   }
@@ -129,7 +97,6 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void beforeMount(TransitionsExtensionInput input, Rect localVisibleRect) {
-    resetAcquiredReferences();
     mInput = input;
 
     if (input.getComponentTreeId() != mLastMountedComponentTreeId) {
@@ -218,7 +185,7 @@ public class TransitionsExtension extends MountDelegateExtension
       if (mTransitionManager != null) {
         mTransitionManager.finishUndeclaredTransitions();
       }
-
+      resetAcquiredReferences();
       if (!mAnimatingTransitionIds.isEmpty()) {
         regenerateAnimationLockedIndices(input);
       }
@@ -248,6 +215,8 @@ public class TransitionsExtension extends MountDelegateExtension
     for (OutputUnitsAffinityGroup<MountItem> group : mDisappearingMountItems.values()) {
       endUnmountDisappearingItem(group);
     }
+
+    resetAcquiredReferences();
     mDisappearingMountItems.clear();
     mLockedDisappearingMountitems.clear();
     mAnimatingTransitionIds.clear();
@@ -255,18 +224,18 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   private void regenerateAnimationLockedIndices(TransitionsExtensionInput input) {
-    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+    final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionMapping =
         input.getTransitionIdMapping();
     if (transitionMapping != null) {
-      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transition :
           transitionMapping.entrySet()) {
         if (!mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
+        final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
-          final LayoutOutput layoutOutput = group.getAt(j);
+          final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
           final int position = input.getLayoutOutputPositionForId(layoutOutput.getId());
           updateAnimationLockCount(input, position, true, true);
         }
@@ -358,14 +327,14 @@ public class TransitionsExtension extends MountDelegateExtension
 
   private void prepareTransitionManager() {
     if (mTransitionManager == null) {
-      mTransitionManager = new TransitionManager(this, null);
+      mTransitionManager = new TransitionManager(this);
     }
   }
 
   private void createNewTransitions(TransitionsExtensionInput input, Transition rootTransition) {
     prepareTransitionManager();
 
-    Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> lastTransitions =
+    Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> lastTransitions =
         mLastTransitionsExtensionInput == null
             ? null
             : mLastTransitionsExtensionInput.getTransitionIdMapping();
@@ -395,7 +364,7 @@ public class TransitionsExtension extends MountDelegateExtension
         }
       }
 
-      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
+      final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
           mLastTransitionsExtensionInput.getLayoutOutputsForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
@@ -404,7 +373,7 @@ public class TransitionsExtension extends MountDelegateExtension
       }
 
       for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-        final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+        final LayoutOutput layoutOutput = (LayoutOutput) layoutOutputGroup.getAt(i);
         final int position = layoutOutput.getIndex();
         updateAnimationLockCount(mLastTransitionsExtensionInput, position, false, false);
       }
@@ -483,6 +452,9 @@ public class TransitionsExtension extends MountDelegateExtension
         remountHostToRootIfNeeded(i, disappearingItem);
 
         mapDisappearingItemWithTransitionId(disappearingItem);
+
+        getMountTarget().notifyUnmount(i);
+
         i = lastDescendantIndex;
       }
     }
@@ -492,7 +464,7 @@ public class TransitionsExtension extends MountDelegateExtension
     mLockedDisappearingMountitems.remove(mountItem);
     final Object content = mountItem.getContent();
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
-      final com.facebook.rendercore.Host contentHost = (com.facebook.rendercore.Host) content;
+      final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
         unmountDisappearingItem(contentHost.getMountItemAt(j), false);
@@ -540,22 +512,23 @@ public class TransitionsExtension extends MountDelegateExtension
     disappearingGroup.add(type, item);
   }
 
-  private static void remountHostToRootIfNeeded(int index, MountItem mountItem) {
-    final Object content = mountItem.getContent();
-    final com.facebook.rendercore.Host host = mountItem.getHost();
-
-    if (host == null) {
+  private void remountHostToRootIfNeeded(int index, MountItem mountItem) {
+    final Host rootHost = getMountTarget().getRootItem().getHost();
+    final Host originalHost = mountItem.getHost();
+    if (originalHost == null) {
       throw new IllegalStateException(
           "Disappearing item host should never be null. Index: " + index);
     }
+
+    if (rootHost == originalHost) {
+      // Already mounted to the root
+      return;
+    }
+
+    final Object content = mountItem.getContent();
     if (content == null) {
       throw new IllegalStateException(
           "Disappearing item content should never be null. Index: " + index);
-    }
-
-    if (!(host.getParent() instanceof com.facebook.rendercore.Host)) {
-      // Already mounted to the root
-      return;
     }
 
     // Before unmounting item get its position inside the root
@@ -563,18 +536,12 @@ public class TransitionsExtension extends MountDelegateExtension
     int top = 0;
     int right;
     int bottom;
-    com.facebook.rendercore.Host itemHost = host;
-    com.facebook.rendercore.Host rootHost = host;
     // Get left/top position of the item's host first
-    while (itemHost != null) {
-      left += itemHost.getLeft();
-      top += itemHost.getTop();
-      if (itemHost.getParent() instanceof com.facebook.rendercore.Host) {
-        itemHost = (com.facebook.rendercore.Host) itemHost.getParent();
-      } else {
-        rootHost = itemHost;
-        itemHost = null;
-      }
+    Host host = originalHost;
+    while (host != rootHost) {
+      left += host.getLeft();
+      top += host.getTop();
+      host = (Host) host.getParent();
     }
 
     if (content instanceof View) {
@@ -592,7 +559,7 @@ public class TransitionsExtension extends MountDelegateExtension
     }
 
     // Unmount from the current host
-    host.unmount(mountItem);
+    originalHost.unmount(mountItem);
 
     // Apply new bounds to the content as it will be mounted in the root now
     BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
@@ -763,7 +730,7 @@ public class TransitionsExtension extends MountDelegateExtension
   // TODO: T68620328 Remove after test is done.
   public void bind(
       Context context,
-      com.facebook.rendercore.Host host,
+      Host host,
       Object content,
       LithoRenderUnit lithoRenderUnit,
       @Nullable Object layoutData) {

@@ -73,8 +73,6 @@ public class ComponentHost extends Host {
   private CharSequence mContentDescription;
   private SparseArray<Object> mViewTags;
 
-  private boolean mDisallowIntercept;
-
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
 
   private int[] mChildDrawingOrder = new int[0];
@@ -118,9 +116,7 @@ public class ComponentHost extends Host {
 
   @Override
   public void mount(int index, MountItem mountItem) {
-    Rect bounds = new Rect();
-    mountItem.getRenderTreeNode().getMountBounds(bounds);
-    mount(index, mountItem, bounds);
+    mount(index, mountItem, mountItem.getRenderTreeNode().getBounds());
   }
 
   public ComponentHost(ComponentContext context) {
@@ -232,15 +228,7 @@ public class ComponentHost extends Host {
    * @param mountItem
    */
   void startUnmountDisappearingItem(MountItem mountItem) {
-    final int index;
-    final int indexOfValue = mMountItems.indexOfValue(mountItem);
-    // If an item was moved to this same index in a previous pass, we'll find the index in the
-    // mScrapMountItemsArray.
-    if (indexOfValue == -1) {
-      index = mScrapMountItemsArray.keyAt(mScrapMountItemsArray.indexOfValue(mountItem));
-    } else {
-      index = mMountItems.keyAt(indexOfValue);
-    }
+    final int index = mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
     startUnmountDisappearingItem(index, mountItem);
   }
 
@@ -496,10 +484,6 @@ public class ComponentHost extends Host {
     } else if (content instanceof View) {
       mIsChildDrawingOrderDirty = true;
 
-      if (!mDisallowIntercept) {
-        startTemporaryDetach(((View) content));
-      }
-
       if (mViewMountItems.get(newIndex) != null) {
         ensureScrapViewMountItemsArray();
 
@@ -519,10 +503,6 @@ public class ComponentHost extends Host {
     ComponentHostUtils.moveItem(oldIndex, newIndex, mMountItems, mScrapMountItemsArray);
 
     releaseScrapDataStructuresIfNeeded();
-
-    if (!mDisallowIntercept && content instanceof View) {
-      finishTemporaryDetach(((View) content));
-    }
   }
 
   /**
@@ -601,22 +581,11 @@ public class ComponentHost extends Host {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    int action = ev.getAction();
-    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-      mDisallowIntercept = false;
-    }
-
     if (mOnInterceptTouchEventHandler != null) {
       return EventDispatcherUtils.dispatchOnInterceptTouch(mOnInterceptTouchEventHandler, this, ev);
     }
 
     return super.onInterceptTouchEvent(ev);
-  }
-
-  @Override
-  public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-    super.requestDisallowInterceptTouchEvent(disallowIntercept);
-    this.mDisallowIntercept = disallowIntercept;
   }
 
   /** @return The previous set touch listener. */
@@ -699,13 +668,6 @@ public class ComponentHost extends Host {
     }
 
     mIsChildDrawingOrderDirty = true;
-
-    // A host has been recycled and is already attached.
-    if (view instanceof ComponentHost && view.getParent() == this) {
-      finishTemporaryDetach(view);
-      view.setVisibility(VISIBLE);
-      return;
-    }
 
     LayoutParams lp = view.getLayoutParams();
     if (lp == null) {
@@ -1305,21 +1267,6 @@ public class ComponentHost extends Host {
     if (mScrapDrawableMountItems == null) {
       mScrapDrawableMountItems = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
     }
-  }
-
-  private static void startTemporaryDetach(View view) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      // Cancel any pending clicks.
-      view.cancelPendingInputEvents();
-    }
-
-    // The ComponentHost's parent will send an ACTION_CANCEL if it's going to receive
-    // other motion events for the recycled child.
-    ViewCompat.dispatchStartTemporaryDetach(view);
-  }
-
-  private static void finishTemporaryDetach(View view) {
-    ViewCompat.dispatchFinishTemporaryDetach(view);
   }
 
   /**

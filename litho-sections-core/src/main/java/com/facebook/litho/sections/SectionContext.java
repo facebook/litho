@@ -187,8 +187,9 @@ public class SectionContext extends ComponentContext {
     super.setTreeProps(treeProps);
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   @Override
-  protected @Nullable TreeProps getTreeProps() {
+  public @Nullable TreeProps getTreeProps() {
     return super.getTreeProps();
   }
 }

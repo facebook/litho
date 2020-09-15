@@ -50,7 +50,8 @@ public class BackgroundLayoutLooperRule implements TestRule {
         try {
           base.evaluate();
         } finally {
-          mMessageQueue.add(new Message(MessageType.QUIT));
+          quitSync();
+          layoutLooper.quitUnchecked();
         }
       }
     };
@@ -74,6 +75,12 @@ public class BackgroundLayoutLooperRule implements TestRule {
     final TimeOutSemaphore semaphore = new TimeOutSemaphore(0);
     mMessageQueue.add(new Message(MessageType.DRAIN_ALL, semaphore));
     return semaphore;
+  }
+
+  private void quitSync() {
+    final TimeOutSemaphore semaphore = new TimeOutSemaphore(0);
+    mMessageQueue.add(new Message(MessageType.QUIT, semaphore));
+    semaphore.acquire();
   }
 
   private enum MessageType {
@@ -123,6 +130,7 @@ public class BackgroundLayoutLooperRule implements TestRule {
                     break;
                   case QUIT:
                     keepGoing = false;
+                    message.mSemaphore.release();
                     break;
                 }
               }
