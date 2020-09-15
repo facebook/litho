@@ -65,39 +65,39 @@ jobs:
         chmod +x buck-master.pex && \
         mv buck-master.pex buck && \
         ls -l buck
-    - uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 30
-        max_attempts: 5
-        command: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
+    # - uses: nick-invision/retry@v1
+    #   with:
+    #     timeout_minutes: 30
+    #     max_attempts: 5
+    #     command: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
   sample-java-job:
     name: Assemble sample app
     needs: [new-release]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Assemble sample app
-      run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleRelease --stacktrace
+    # - name: Fetch buck
+    #   run: |
+    #     wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
+    #     chmod +x buck-master.pex && \
+    #     mv buck-master.pex buck && \
+    #     ls -l buck
+    # - name: Assemble sample app
+    #   run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleRelease --stacktrace
   sample-kotlin-job:
     name: Assemble kotlin app
     needs: [new-release]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Assemble kotlin sample
-      run: BUCK_PATH=`realpath buck` ./gradlew :sample-kotlin:assembleRelease --stacktrace
+    # - name: Fetch buck
+    #   run: |
+    #     wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
+    #     chmod +x buck-master.pex && \
+    #     mv buck-master.pex buck && \
+    #     ls -l buck
+    # - name: Assemble kotlin sample
+    #   run: BUCK_PATH=`realpath buck` ./gradlew :sample-kotlin:assembleRelease --stacktrace
   publish-job:
     name: Maven Publish
     runs-on: ubuntu-latest
