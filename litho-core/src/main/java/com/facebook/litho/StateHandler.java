@@ -168,6 +168,7 @@ public class StateHandler {
 
     final String key = component.getGlobalKey();
     final StateContainer currentStateContainer;
+    final ComponentContext scopedContext = component.getScopedContext();
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
@@ -179,7 +180,9 @@ public class StateHandler {
     } else {
       final ComponentTree componentTree = component.getScopedContext().getComponentTree();
       if (componentTree != null && componentTree.getInitialStateContainer() != null) {
-        componentTree.getInitialStateContainer().createOrGetInitialStateForComponent(component);
+        componentTree
+            .getInitialStateContainer()
+            .createOrGetInitialStateForComponent(component, scopedContext);
       } else {
         component.createInitialState(component.getScopedContext());
       }

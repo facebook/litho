@@ -1524,7 +1524,8 @@ class MountState
       mMountStats.mountedNames.add(component.getSimpleName());
       mMountStats.mountedCount++;
       mMountStats.extras.add(
-          LogTreePopulator.getAnnotationBundleFromLogger(component, context.getLogger()));
+          LogTreePopulator.getAnnotationBundleFromLogger(
+              component.getScopedContext(), context.getLogger()));
     }
   }
 

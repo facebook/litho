@@ -102,17 +102,17 @@ public final class LogTreePopulator {
   }
 
   /**
-   * Extract treeprops from a scoped {@link ComponentContext} of a given {@link Component} and turn
-   * them into a single colon-separated string.
+   * Extract treeprops from a scoped {@link ComponentContext} and turn them into a single
+   * colon-separated string.
    *
-   * @param component Component to extract tree props from.
+   * @param scopedContext ComponentContext to extract tree props from.
    * @param logger ComponentsLogger to convert treeprops into perf event annotations.
    * @return String of extracted props with key-value pairs separated by ':'.
    * @see #populatePerfEventFromLogger(ComponentContext, ComponentsLogger, PerfEvent)
    */
   @Nullable
-  public static String getAnnotationBundleFromLogger(Component component, ComponentsLogger logger) {
-    @Nullable final ComponentContext scopedContext = component.getScopedContext();
+  public static String getAnnotationBundleFromLogger(
+      ComponentContext scopedContext, ComponentsLogger logger) {
     if (scopedContext == null) {
       return null;
     }

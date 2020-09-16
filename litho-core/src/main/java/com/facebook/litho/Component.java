@@ -561,8 +561,10 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    applyStateUpdates(parentContext);
-    generateErrorEventHandler(parentContext);
+    final ComponentContext scopedContext = ComponentContext.withComponentScope(parentContext, this);
+    setScopedContext(scopedContext);
+    applyStateUpdates(parentContext, scopedContext);
+    generateErrorEventHandler(parentContext, scopedContext);
 
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {
@@ -577,18 +579,19 @@ public abstract class Component extends ComponentLifecycle
    *
    * @param c component context
    */
-  private void applyStateUpdates(ComponentContext c) {
-    setScopedContext(ComponentContext.withComponentScope(c, this));
-    populateTreeProps(getScopedContext().getTreeProps());
+  private void applyStateUpdates(
+      final ComponentContext parentContext, final ComponentContext scopedContext) {
+    populateTreeProps(scopedContext.getTreeProps());
     if (hasState()) {
-      c.getStateHandler().applyStateUpdatesForComponent(this);
+      parentContext.getStateHandler().applyStateUpdatesForComponent(this);
     }
   }
 
-  private void generateErrorEventHandler(ComponentContext parentContext) {
+  private void generateErrorEventHandler(
+      final ComponentContext parentContext, final ComponentContext scopedContext) {
     if (hasOwnErrorHandler()) {
       mErrorEventHandler =
-          new EventHandler<>(this, ERROR_EVENT_HANDLER_ID, new Object[] {getScopedContext()});
+          new EventHandler<>(this, ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
     } else {
       mErrorEventHandler = parentContext.getErrorEventHandler();
     }

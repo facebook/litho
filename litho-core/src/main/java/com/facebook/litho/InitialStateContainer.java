@@ -88,7 +88,7 @@ public class InitialStateContainer {
    * If an initial state for this component has already been created just transfers it to it.
    * Otherwise onCreateInitialState gets called for the component and its result cached.
    */
-  void createOrGetInitialStateForComponent(Component component) {
+  void createOrGetInitialStateForComponent(Component component, ComponentContext scopedContext) {
     Object stateLock;
     synchronized (this) {
       stateLock = mCreateInitialStateLocks.get(component.getGlobalKey());
@@ -101,7 +101,7 @@ public class InitialStateContainer {
     synchronized (stateLock) {
       final StateContainer stateContainer = mInitialStates.get(component.getGlobalKey());
       if (stateContainer == null) {
-        component.createInitialState(component.getScopedContext());
+        component.createInitialState(scopedContext);
         mInitialStates.put(component.getGlobalKey(), component.getStateContainer());
       } else {
         component.transferState(stateContainer, component.getStateContainer());
