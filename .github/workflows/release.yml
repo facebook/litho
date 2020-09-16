@@ -131,12 +131,14 @@ jobs:
   validate-job:
     name: Validate uploads
     runs-on: ubuntu-latest
-    needs: [push-tags-job, publish-job]
+    needs: [publish-job]
     steps:
     - uses: actions/checkout@v2
     - name: Get tag info
       id: tag_info
-      run: echo ::set-output name=TAG_INFO::`git describe --tags | cut -d v -f2`
+      env:
+        VERSION_INFO:  ${{ needs.check-release-job.outputs.release-version-info }}
+      run: echo ::set-output name=TAG_INFO::`echo $VERSION_INFO | cut -d v -f2`
     - name: Run validation script
       env:
         TAG: ${{ steps.tag_info.outputs.TAG_INFO }}
