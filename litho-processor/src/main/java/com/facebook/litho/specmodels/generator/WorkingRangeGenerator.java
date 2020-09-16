@@ -19,7 +19,6 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
 
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
