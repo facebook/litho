@@ -15,12 +15,13 @@
 
 name: Publish on release commits
 
-# This workflow detects commits with the message "Release version X.Y.Z" and tags them as releases.
-# After the release is tagged it runs tests in parallel before publishing and uploading it.
-# When the upload is complete a script checks whether the artifacts are available.
+# This workflow detects commits where the message starts with "Release version X.Y.Z".
+# It runs tests in parallel before publishing and uploading it.
+# When the upload is complete the revision is tagged as a release
+# and a script checks whether the artifacts are available.
 #
-# If the workflow fails any commit with the same version message
-# will retag and trigger the workflow again.
+# If the workflow fails any commit with the same version message marker
+# will trigger the workflow again.
 
 on:
   push:
@@ -28,36 +29,34 @@ on:
       - master
 
 jobs:
-  push-tags-job:
-    name: Push tags if new release
+  check-release-job:
+    name: Check for release marker
     runs-on: ubuntu-latest
     outputs:
-      is-new-release: ${{ steps.push_tag.outcome == 'success' }}
+      is-release: ${{ steps.check_version.outcome == 'success' }}
+      release-version-info: ${{ steps.version_info.outputs.VERSION_INFO }}
     steps:
     - uses: actions/checkout@v2
     - name: Extract version info
       id: version_info
       run: echo ::set-output name=VERSION_INFO::`git log --format=%B -n 1 . | egrep '^[rR]elease version' | egrep -o '([[:digit:]]+\.){2}[[:digit:]]+' | xargs -0 printf v%s`
-    - name: Set Git tag
-      id: push_tag
+    - name: Check version
+      id: check_version
       if: ${{ steps.version_info.outputs.VERSION_INFO != 'v' }}
-      uses: weareyipyip/walking-tag-action@v2
-      with:
-        tag-name: ${{ steps.version_info.outputs.VERSION_INFO }}
-        tag-message: ""
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  new-release:
-    name: Skip all if not a new release
-    needs: [push-tags-job]
-    if: ${{ needs.push-tags-job.outputs.is-new-release == 'true' }}
+        VERSION_INFO: ${{ steps.version_info.outputs.VERSION_INFO }}
+      run: echo $VERSION_INFO
+  start-release-job:
+    name: Skip all if not a release
+    needs: [check-release-job]
+    if: ${{ needs.check-release-job.outputs.is-release == 'true' }}
     runs-on: ubuntu-latest
     steps:
     - name: Check step
-      run: echo "Starting a new release"
+      run: echo "Starting a release"
   test-job:
     name: Run all tests
-    needs: [new-release]
+    needs: [start-release-job]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -74,7 +73,7 @@ jobs:
         command: BUCK_PATH=`realpath buck` ./gradlew test --stacktrace
   sample-java-job:
     name: Assemble sample app
-    needs: [new-release]
+    needs: [start-release-job]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -88,7 +87,7 @@ jobs:
       run: BUCK_PATH=`realpath buck` ./gradlew :sample:assembleRelease --stacktrace
   sample-kotlin-job:
     name: Assemble kotlin app
-    needs: [new-release]
+    needs: [start-release-job]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -118,15 +117,28 @@ jobs:
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
       run: |
         BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
+  push-tags-job:
+    name: Push tags if release succeeded
+    runs-on: ubuntu-latest
+    needs: [check-release-job, publish-job]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set Git tag
+      uses: tvdias/github-tagger@v0.0.1
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: ${{ needs.check-release-job.outputs.release-version-info }}
   validate-job:
     name: Validate uploads
     runs-on: ubuntu-latest
-    needs: [publish-job]
+    needs: [check-release-job, publish-job]
     steps:
     - uses: actions/checkout@v2
     - name: Get tag info
       id: tag_info
-      run: echo ::set-output name=TAG_INFO::`git describe --tags | cut -d v -f2`
+      env:
+        VERSION_INFO:  ${{ needs.check-release-job.outputs.release-version-info }}
+      run: echo ::set-output name=TAG_INFO::`echo $VERSION_INFO | cut -d v -f2`
     - name: Run validation script
       env:
         TAG: ${{ steps.tag_info.outputs.TAG_INFO }}
