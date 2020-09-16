@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.navigation;
+package com.facebook.litho.specmodels.processor;
 
 import static org.mockito.Mockito.mock;
 
@@ -22,8 +22,6 @@ import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
-import com.facebook.litho.specmodels.processor.LayoutSpecModelFactoryTestHelper;
-import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
 import org.junit.Before;
@@ -37,7 +35,7 @@ public class PsiLayoutSpecModelFactoryTest extends LithoPluginIntellijTest {
   private LayoutSpecModel mLayoutSpecModel;
 
   public PsiLayoutSpecModelFactoryTest() {
-    super("testdata/navigation");
+    super("testdata/processor");
   }
 
   @Before
