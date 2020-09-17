@@ -31,6 +31,7 @@ import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderTreeHostView;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.RootHostView;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -66,6 +67,7 @@ public class RenderCoreTestRule implements TestRule {
   private @Nullable Node rootNode;
   private int widthSpec = DEFAULT_WIDTH_SPEC;
   private int heightSpec = DEFAULT_HEIGHT_SPEC;
+  private RenderCoreExtension<?>[] extensions;
 
   @Override
   public Statement apply(final Statement base, Description description) {
@@ -81,6 +83,7 @@ public class RenderCoreTestRule implements TestRule {
           rootHost = null;
           renderTreeHost = null;
           rootNode = null;
+          extensions = null;
         }
       }
     };
@@ -150,6 +153,15 @@ public class RenderCoreTestRule implements TestRule {
     return this;
   }
 
+  /**
+   * Sets a new list of {@link RenderCoreExtension} which should be used for rendering the next
+   * {@link RenderTree} using the {@link #render()} method.
+   */
+  public RenderCoreTestRule useExtensions(RenderCoreExtension[] extensions) {
+    this.extensions = extensions;
+    return this;
+  }
+
   /** Sets the width and height that should be used to measure the {@link RootHost}. */
   public RenderCoreTestRule setSizePx(int widthPx, int heightPx) {
     widthSpec = makeMeasureSpec(widthPx, EXACTLY);
@@ -172,7 +184,8 @@ public class RenderCoreTestRule implements TestRule {
     checkRootHost();
     final View rootHostView = (View) getRootHost();
 
-    final RenderState renderState = new RenderState(rootHostView.getContext(), DELEGATE);
+    final RenderState renderState =
+        new RenderState(rootHostView.getContext(), DELEGATE, null, extensions);
     renderState.setTree(new SimpleLazyTree(getRootNode()));
     getRootHost().setRenderState(renderState);
 
@@ -194,6 +207,7 @@ public class RenderCoreTestRule implements TestRule {
         RenderResult.resolve(
             rootHost.getContext(),
             new SimpleLazyTree(getRootNode()),
+            null,
             null,
             null,
             -1,

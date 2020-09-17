@@ -17,21 +17,48 @@
 package com.facebook.rendercore.testing;
 
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
-import java.util.List;
 
-public class TestRenderCoreExtension extends RenderCoreExtension<List<LayoutResult<?>>> {
+public class TestRenderCoreExtension extends RenderCoreExtension {
 
-  @Override
-  public @Nullable LayoutResultVisitor<List<LayoutResult<?>>> getLayoutVisitor() {
-    return new TestLayoutResultVisitor();
+  private final LayoutResultVisitor mLayoutResultVisitor;
+  private final MountExtension mMountExtension;
+
+  public TestRenderCoreExtension() {
+    this(new TestLayoutResultVisitor(), new TestMountExtension());
+  }
+
+  public TestRenderCoreExtension(final @Nullable LayoutResultVisitor layoutResultVisitor) {
+    this(layoutResultVisitor, new TestMountExtension());
+  }
+
+  public TestRenderCoreExtension(final @Nullable MountExtension mountExtension) {
+    this(new TestLayoutResultVisitor(), mountExtension);
+  }
+
+  public TestRenderCoreExtension(
+      final @Nullable LayoutResultVisitor layoutResultVisitor,
+      final @Nullable MountExtension mountExtension) {
+    mLayoutResultVisitor = layoutResultVisitor;
+    mMountExtension = mountExtension;
   }
 
   @Override
-  public @Nullable List<LayoutResult<?>> createState() {
+  public @Nullable LayoutResultVisitor getLayoutVisitor() {
+    return mLayoutResultVisitor;
+  }
+
+  @Nullable
+  @Override
+  public MountExtension getMountExtension() {
+    return mMountExtension;
+  }
+
+  @Override
+  public @Nullable Object createState() {
     return new ArrayList<>();
   }
 }

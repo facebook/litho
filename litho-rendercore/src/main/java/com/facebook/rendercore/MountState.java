@@ -16,14 +16,18 @@
 
 package com.facebook.rendercore;
 
+import static com.facebook.rendercore.extensions.RenderCoreExtension.shouldUpdate;
+
 import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MountState implements MountDelegateTarget {
 
@@ -105,13 +109,17 @@ public class MountState implements MountDelegateTarget {
       throw new IllegalStateException("Trying to mount while already mounting!");
     }
 
-    if (renderTree == mRenderTree && !mNeedsRemount) {
+    if (!updateRenderTree(renderTree)) {
       return;
     }
 
     RenderCoreSystrace.beginSection("Mount");
-    mRenderTree = renderTree;
+
     mIsMounting = true;
+
+    RenderCoreSystrace.beginSection("RenderCoreExtension#beforeMount");
+    RenderCoreExtension.beforeMount(mRootHost, mRenderTree.getExtensionResults());
+    RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("PrepareMount");
     prepareMount();
@@ -141,6 +149,10 @@ public class MountState implements MountDelegateTarget {
 
     mNeedsRemount = false;
     mIsMounting = false;
+    RenderCoreSystrace.endSection();
+
+    RenderCoreSystrace.beginSection("RenderCoreExtension#afterMount");
+    RenderCoreExtension.afterMount(mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
   }
 
@@ -220,6 +232,8 @@ public class MountState implements MountDelegateTarget {
     return mRenderUnitIds == null ? 0 : mRenderUnitIds.length;
   }
 
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
   @Override
   public void registerMountDelegateExtension(MountExtension mountExtension) {
     if (mMountDelegate == null) {
@@ -322,6 +336,28 @@ public class MountState implements MountDelegateTarget {
 
     BoundsUtils.applyBoundsToMountContent(
         item.getRenderTreeNode(), item.getContent(), forceTraversal /* force */);
+  }
+
+  /** Updates the extensions of this {@link MountState} from the new {@link RenderTree}. */
+  private boolean updateRenderTree(RenderTree renderTree) {
+
+    // If the trees are same or if no remount is required, then no update is required.
+    if (renderTree == mRenderTree && !mNeedsRemount) {
+      return false;
+    }
+
+    // If the extensions have changed, un-register the current and register the new extensions.
+    if (mRenderTree == null) {
+      addExtensions(renderTree.getExtensionResults());
+    } else if (shouldUpdate(mRenderTree.getExtensionResults(), renderTree.getExtensionResults())) {
+      unregisterAllExtensions();
+      addExtensions(renderTree.getExtensionResults());
+    }
+
+    // Update the current render tree.
+    mRenderTree = renderTree;
+
+    return true;
   }
 
   /** Prepare the {@link MountState} to mount a new {@link RenderTree}. */
@@ -562,6 +598,26 @@ public class MountState implements MountDelegateTarget {
     }
 
     return mIndexToMountedItemMap.get(mRenderUnitIds[i]);
+  }
+
+  private void addExtensions(@Nullable Map<RenderCoreExtension<?>, Object> extensions) {
+    if (extensions != null) {
+      if (mMountDelegate == null) {
+        mMountDelegate = new MountDelegate(this);
+      }
+      for (Map.Entry<RenderCoreExtension<?>, Object> e : extensions.entrySet()) {
+        final MountExtension<?> extension = e.getKey().getMountExtension();
+        if (extension != null) {
+          mMountDelegate.addExtension(extension);
+        }
+      }
+    }
+  }
+
+  private void unregisterAllExtensions() {
+    if (mMountDelegate != null) {
+      mMountDelegate.unregisterAllExtensions();
+    }
   }
 
   private static void mountRenderUnitToContent(

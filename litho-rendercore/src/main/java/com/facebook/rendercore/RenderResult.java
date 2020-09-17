@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderState.LazyTree;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 
 /**
@@ -37,9 +38,10 @@ public class RenderResult<State> {
 
   public static <State, RenderContext> RenderResult<State> resolve(
       final Context context,
-      LazyTree<State> lazyTree,
-      @Nullable RenderContext renderContext,
-      @Nullable final RenderResult<State> previousResult,
+      final LazyTree<State> lazyTree,
+      final @Nullable RenderContext renderContext,
+      final @Nullable RenderCoreExtension<?>[] extensions,
+      final @Nullable RenderResult<State> previousResult,
       final int layoutVersion,
       final int widthSpec,
       final int heightSpec) {
@@ -71,7 +73,7 @@ public class RenderResult<State> {
           buildCache(previousResult == null ? null : previousResult.getLayoutCache());
 
       final LayoutContext<RenderContext> layoutContext =
-          new LayoutContext<>(context, renderContext, layoutVersion, layoutCache);
+          new LayoutContext<>(context, renderContext, layoutVersion, layoutCache, extensions);
 
       final Node.LayoutResult layoutResult =
           result.first.calculateLayout(layoutContext, widthSpec, heightSpec);
@@ -105,7 +107,8 @@ public class RenderResult<State> {
       final int heightSpec,
       final @Nullable State state) {
     return new RenderResult<>(
-        Reducer.getReducedTree(c.getAndroidContext(), layoutResult, widthSpec, heightSpec, null),
+        Reducer.getReducedTree(
+            c.getAndroidContext(), layoutResult, widthSpec, heightSpec, c.getExtensions()),
         lazyTree,
         node,
         c.getLayoutCache(),

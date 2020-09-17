@@ -167,7 +167,7 @@ public class RendercoreTestDriver {
       Context context = rootHostAsView.getContext();
       RenderResult renderResult =
           RenderResult.resolve(
-              context, createLazyTree(mRootNode), null, null, -1, mWidthSpec, mHeightSpec);
+              context, createLazyTree(mRootNode), null, null, null, -1, mWidthSpec, mHeightSpec);
 
       mRenderTreeHost.setRenderTree(renderResult.getRenderTree());
 

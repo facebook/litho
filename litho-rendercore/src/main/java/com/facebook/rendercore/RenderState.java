@@ -170,8 +170,9 @@ public class RenderState<State, RenderContext> {
       future =
           new RenderResultFuture<>(
               mContext,
-              mRenderContext,
               lazyTree,
+              mRenderContext,
+              extensions,
               mCommittedRenderResult,
               setRootId,
               mWidthSpec,
@@ -276,8 +277,9 @@ public class RenderState<State, RenderContext> {
         future =
             new RenderResultFuture<>(
                 mContext,
-                mRenderContext,
                 mLatestLazyTree,
+                mRenderContext,
+                extensions,
                 mCommittedRenderResult,
                 setRootId,
                 mWidthSpec,
@@ -374,9 +376,10 @@ public class RenderState<State, RenderContext> {
 
     private RenderResultFuture(
         final Context context,
-        final @Nullable RenderContext renderContext,
         LazyTree<State> lazyTree,
-        final RenderResult<State> previousResult,
+        final @Nullable RenderContext renderContext,
+        final @Nullable RenderCoreExtension<?>[] extensions,
+        final @Nullable RenderResult<State> previousResult,
         final int setRootId,
         final int widthSpec,
         final int heightSpec) {
@@ -394,6 +397,7 @@ public class RenderState<State, RenderContext> {
                       context,
                       mLazyTree,
                       renderContext,
+                      extensions,
                       mPreviousResult,
                       mSetRootId,
                       mWidthSpec,
@@ -465,17 +469,20 @@ public class RenderState<State, RenderContext> {
     private final int layoutVersion;
     private @Nullable LayoutCache layoutCache;
     private final @Nullable RenderContext mRenderContext;
+    private final @Nullable RenderCoreExtension<?>[] extensions;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public LayoutContext(
-        Context androidContext,
-        @Nullable RenderContext renderContext,
-        int layoutVersion,
-        LayoutCache layoutCache) {
+        final Context androidContext,
+        final @Nullable RenderContext renderContext,
+        final int layoutVersion,
+        final LayoutCache layoutCache,
+        final @Nullable RenderCoreExtension<?>[] extensions) {
       this.androidContext = androidContext;
       this.layoutVersion = layoutVersion;
       this.layoutCache = layoutCache;
       this.mRenderContext = renderContext;
+      this.extensions = extensions;
     }
 
     public @Nullable RenderContext getRenderContext() {
@@ -501,6 +508,11 @@ public class RenderState<State, RenderContext> {
 
     void clearCache() {
       layoutCache = null;
+    }
+
+    @Nullable
+    RenderCoreExtension<?>[] getExtensions() {
+      return extensions;
     }
   }
 }

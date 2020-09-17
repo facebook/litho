@@ -63,6 +63,8 @@ public class MountDelegate {
 
     int getContentCount();
 
+    /** @deprecated Only used for Litho's integration. Marked for removal. */
+    @Deprecated
     void registerMountDelegateExtension(MountExtension mountExtension);
 
     ArrayList<Host> getHosts();
@@ -90,6 +92,11 @@ public class MountDelegate {
     mMountExtensions.add(mountExtension);
     mountExtension.registerToDelegate(this);
     mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
+  }
+
+  void unregisterAllExtensions() {
+    mMountExtensions.clear();
+    mReferenceCountingEnabled = false;
   }
 
   public Object getContentAt(int position) {

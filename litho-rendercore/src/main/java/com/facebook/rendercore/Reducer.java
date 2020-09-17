@@ -197,11 +197,8 @@ public class Reducer {
 
     final Map<RenderCoreExtension<?>, Object> results = new ArrayMap<>(extensions.length);
     for (int i = 0; i < extensions.length; i++) {
-      final LayoutResultVisitor<?> visitor = extensions[i].getLayoutVisitor();
-      if (visitor != null) {
-        final Object state = extensions[i].createState();
-        results.put(extensions[i], state);
-      }
+      final Object state = extensions[i].createState();
+      results.put(extensions[i], state);
     }
 
     return results;

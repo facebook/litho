@@ -16,17 +16,11 @@
 
 package com.facebook.rendercore;
 
-import android.graphics.Rect;
 import android.view.View.MeasureSpec;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.rendercore.extensions.MountExtension;
-import com.facebook.rendercore.extensions.RenderCoreExtension;
-import java.util.Map;
 
 public class RootHostDelegate implements RenderState.HostListener, RootHost {
-
-  private static final Rect sVisibleRect = new Rect();
 
   private final Host mHost;
   private final MountState mMountState;
@@ -112,42 +106,11 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     }
 
     if (mCurrentRenderTree != null) {
-      beforeMount();
       mMountState.mount(mCurrentRenderTree);
-      afterMount();
     }
   }
 
   public @Nullable Object findMountContentById(long id) {
     return mMountState.findMountContentById(id);
-  }
-
-  private void beforeMount() {
-    Map<RenderCoreExtension<?>, Object> results = mCurrentRenderTree.getExtensionResults();
-    RenderCoreExtension<?>[] extensions = mRenderState.getExtensions();
-
-    // Update the state of all the extensions that have a mount phase.
-    if (extensions != null) {
-      mHost.getLocalVisibleRect(sVisibleRect);
-      for (RenderCoreExtension<?> e : extensions) {
-        final Object state = results != null ? results.get(e) : null;
-        final MountExtension extension = e.getMountExtension();
-        if (extension != null) {
-          extension.beforeMount(state, sVisibleRect);
-        }
-      }
-    }
-  }
-
-  private void afterMount() {
-    RenderCoreExtension<?>[] extensions = mRenderState.getExtensions();
-    if (extensions != null) {
-      for (RenderCoreExtension<?> e : extensions) {
-        final MountExtension extension = e.getMountExtension();
-        if (extension != null) {
-          extension.afterMount();
-        }
-      }
-    }
   }
 }

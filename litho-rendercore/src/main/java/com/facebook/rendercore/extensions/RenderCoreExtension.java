@@ -16,8 +16,12 @@
 
 package com.facebook.rendercore.extensions;
 
+import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.Node.LayoutResult;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The base class for all RenderCore Extensions.
@@ -26,13 +30,16 @@ import com.facebook.rendercore.Node.LayoutResult;
  */
 public class RenderCoreExtension<State> {
 
+  /** {@link Rect} to get the current visible bounds during the mount phase. */
+  private static final Rect sVisibleRect = new Rect();
+
   /**
    * The extension can optionally return a {@link LayoutResultVisitor} for every layout pass which
    * will visit every {@link LayoutResult}. The visitor should be functional and immutable.
    *
    * @return a {@link LayoutResultVisitor}.
    */
-  public @Nullable LayoutResultVisitor<State> getLayoutVisitor() {
+  public @Nullable LayoutResultVisitor<? extends State> getLayoutVisitor() {
     return null;
   }
 
@@ -43,7 +50,7 @@ public class RenderCoreExtension<State> {
    *
    * @return a {@link MountExtension}.
    */
-  public @Nullable MountExtension<State> getMountExtension() {
+  public @Nullable MountExtension<? extends State> getMountExtension() {
     return null;
   }
 
@@ -54,5 +61,57 @@ public class RenderCoreExtension<State> {
    */
   public @Nullable State createState() {
     return null;
+  }
+
+  /**
+   * Calls {@link MountExtension#beforeMount(Object, Rect)} for each {@link RenderCoreExtension}
+   * that has a mount phase.
+   */
+  public static void beforeMount(
+      final Host host, final @Nullable Map<RenderCoreExtension<?>, Object> results) {
+    if (results != null) {
+      host.getLocalVisibleRect(sVisibleRect);
+      for (Map.Entry<RenderCoreExtension<?>, Object> entry : results.entrySet()) {
+        final Object state = entry.getValue();
+        final MountExtension extension = entry.getKey().getMountExtension();
+        if (extension != null) {
+          extension.beforeMount(state, sVisibleRect);
+        }
+      }
+    }
+  }
+
+  /**
+   * Calls {@link MountExtension#afterMount()} for each {@link RenderCoreExtension} that has a mount
+   * phase.
+   */
+  public static void afterMount(final @Nullable Map<RenderCoreExtension<?>, Object> results) {
+    if (results != null) {
+      for (Map.Entry<RenderCoreExtension<?>, Object> entry : results.entrySet()) {
+        final MountExtension extension = entry.getKey().getMountExtension();
+        if (extension != null) {
+          extension.afterMount();
+        }
+      }
+    }
+  }
+
+  /** returns {@code false} iff the results have the same {@link RenderCoreExtension}s. */
+  public static boolean shouldUpdate(
+      final @Nullable Map<RenderCoreExtension<?>, Object> currentResults,
+      final @Nullable Map<RenderCoreExtension<?>, Object> nextResults) {
+
+    Set<RenderCoreExtension<?>> current = currentResults != null ? currentResults.keySet() : null;
+    Set<RenderCoreExtension<?>> next = nextResults != null ? nextResults.keySet() : null;
+
+    if (current == next) {
+      return false;
+    }
+
+    if (current == null || next == null) {
+      return true;
+    }
+
+    return !current.equals(next);
   }
 }
