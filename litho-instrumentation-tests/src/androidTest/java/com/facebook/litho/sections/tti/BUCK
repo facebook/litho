@@ -2,6 +2,7 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
+    "LITHO_CONTACT_NAME",
     "LITHO_ESPRESSO_TARGET",
     "LITHO_JUNIT_TARGET",
     "LITHO_TESTING_ESPRESSO_TARGET",
@@ -13,6 +14,7 @@ instrumentation_test(
     name = "tti",
     srcs = glob(["*Test.java"]),
     apk_under_test = "litho",
+    contacts = LITHO_CONTACT_NAME,
     is_androidx = True,
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
