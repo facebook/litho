@@ -20,7 +20,6 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 
 import android.view.View;
-import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;

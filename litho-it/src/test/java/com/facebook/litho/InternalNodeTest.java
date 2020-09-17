@@ -44,7 +44,6 @@ import static org.mockito.Mockito.when;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Pair;
-import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;

@@ -37,7 +37,6 @@ import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
-import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
