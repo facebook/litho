@@ -2,7 +2,7 @@
 
 ## Version 0.38.0
 
-_2020-09-11_
+_2020-09-17_
 
 * New: `ComponentLifecycle.dispatchErrorEvent(ComponentContext, Exception)` has become deprecated for public use. Instead, use `ComponentUtils.raise(ComponentContext, Exception)`.
 
