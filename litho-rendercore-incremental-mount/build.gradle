@@ -23,42 +23,11 @@ version = VERSION_NAME
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
-
-    // We're on an old version of Robolectric which requires this, sadly.
-    useLibrary 'org.apache.http.legacy'
-
-    defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
-    }
-
-    buildTypes {
-        def internalBuildField = 'IS_INTERNAL_BUILD'
-        def useIncrementalMountHelper = 'USE_INCREMENTAL_MOUNT_HELPER'
-
-        debug {
-            buildConfigField 'boolean', internalBuildField, 'true'
-            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
-        }
-
-        release {
-            buildConfigField 'boolean', internalBuildField, 'false';
-            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
-        }
-    }
-
-    // TODO(#62): Re-enable abort on error.
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
     // Project dependencies
-    api project(':litho-annotations')
     api project(':litho-rendercore')
-    api project(':litho-rendercore-incremental-mount')
-    api project(':litho-rendercore-visibility')
-    api project(':litho-rendercore-transitions')
 
     // Annotations
     compileOnly deps.jsr305
@@ -66,20 +35,9 @@ dependencies {
     // of the POM.
     implementation deps.inferAnnotations
 
-    compileOnly deps.proguardAnnotations
-
     // Android Support Library
     compileOnly deps.supportAnnotations
     implementation deps.supportCore
-    implementation deps.supportCustomView
-    implementation deps.supportViewPager
-
-    // First-party dependencies
-    if (project.isRelease()) {
-        api deps.yoga
-    } else {
-        api project(':yogajni')
-    }
 }
 
 apply from: rootProject.file('gradle/release.gradle')

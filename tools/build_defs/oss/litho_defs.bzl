@@ -383,9 +383,9 @@ def define_yogajni_targets():
         soname = "libyoga.$(ext)",
         visibility = LITHO_VISIBILITY,
         deps = [
-            make_dep_path("lib/yoga/src/main/cpp:yoga"),
-            LITHO_JNI_TARGET,
             ":ndklog",
+            LITHO_JNI_TARGET,
+            make_dep_path("lib/yoga/src/main/cpp:yoga"),
         ],
     )
 
