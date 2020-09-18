@@ -31,8 +31,7 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs',
-          activeBasePath: 'docs',
+          to: 'docs/getting-started',
           label: 'Docs',
           position: 'right',
         },
@@ -43,7 +42,6 @@ module.exports = {
         },
         {
           to: 'docs/tutorial',
-          activeBasePath: 'docs/tutorial',
           label: 'Tutorial',
           position: 'right',
         },
@@ -71,7 +69,7 @@ module.exports = {
           items: [
             {
               label: 'Getting Started',
-              to: 'docs',
+              to: 'docs/getting-started',
             },
             {
               label: 'API',
@@ -126,8 +124,6 @@ module.exports = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          // It is recommended to set document id as docs home page (`docs/` path).
-          homePageId: 'getting-started',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/facebook/litho/edit/master/website/',
         },
