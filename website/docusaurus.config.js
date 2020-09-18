@@ -37,7 +37,7 @@ module.exports = {
           position: 'right',
         },
         {
-          to: 'javadoc',
+          to: 'pathname:///javadoc',
           label: 'API',
           position: 'right',
         },

@@ -3,7 +3,7 @@ id: codegen
 title: Code Generation
 ---
 
-As explained in [Writing Components](writing-components), Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called [SpecModels](/javadoc/com/facebook/litho/specmodels/model/SpecModel.html), which are immutable java objects. 
+As explained in [Writing Components](writing-components), Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called [SpecModels](pathname:///javadoc/com/facebook/litho/specmodels/model/SpecModel.html), which are immutable java objects.
 
 Code generation comprises three main steps: 
 
@@ -17,7 +17,7 @@ Spec models are created at compile time using an annotation processor, which is 
 In the future, we will add the ability to create Spec Models in other ways. For example, we want to be able to create Spec Models directly in Android Studio/Intellij, which would allow us to generate Components without having to build the source code. 
 
 #### Spec Model Validation
-Spec Models have a method called `validate()`, which returns a list of [SpecModelValidationErrors](/javadoc/com/facebook/litho/specmodels/model/SpecModelValidationError.html). If this list is empty then the Spec is well-formed and may be used to generate a valid Component. If not, then it will contain a list of errors that need fixing up before a valid Component may be generated. 
+Spec Models have a method called `validate()`, which returns a list of [SpecModelValidationErrors](pathname:///javadoc/com/facebook/litho/specmodels/model/SpecModelValidationError.html). If this list is empty then the Spec is well-formed and may be used to generate a valid Component. If not, then it will contain a list of errors that need fixing up before a valid Component may be generated.
 
 #### Component Generation
 If the validation step on a Spec Model is successful, then the `generate` method may be called. This will create a [Javapoet](https://github.com/square/javapoet) `TypeSpec` which can then be easily used to create a Component class file. 

@@ -69,7 +69,7 @@ Immutability in Java usually comes at the cost of having to do many more allocat
 
 Litho offers both synchronous and asynchronous APIs for layout computation. Both APIs are thread safe and can be invoked from any thread. The final layout will always represent the Component that was set last with calls to `setRoot()` or `setRootAsync()`.
 
-Synchronous layout calculation ensures that immediately after calling `setRoot()` on a [ComponentTree](/javadoc/com/facebook/litho/ComponentTree.html), the result of the layout calculation is available to be mounted on a [LithoView](/javadoc/com/facebook/litho/LithoView.html).  
+Synchronous layout calculation ensures that immediately after calling `setRoot()` on a [ComponentTree](pathname:///javadoc/com/facebook/litho/ComponentTree.html), the result of the layout calculation is available to be mounted on a [LithoView](pathname:///javadoc/com/facebook/litho/LithoView.html).
 The main disadvantage of this is that the computation happens on the caller thread, therefore calling `setRoot()` from the main thread is not advisable. On the other hand there are situations in which you cannot wait for a background thread to compute a layout before showing something on screen, for example when the item you want to display is already in the viewport. In these cases calling `setRoot()` synchronously is the best route.
 Having synchronous operations also makes it very easy to integrate Litho with pre-existing threading models. If your application already has a complex and structured thread design you might want to fit the layout calculation into it without relying on Litho's built-in threads.
 

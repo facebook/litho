@@ -47,10 +47,10 @@ class AnotherComponentSpec {
 }
 ```
 
-The reason is that, by default, transition keys are only visible within the scope of the component spec where it is used. This “visibility” of transition keys is determined by [`TransitionKeyType`](/javadoc/com/facebook/litho/Transition.TransitionKeyType.html). There are two options:
+The reason is that, by default, transition keys are only visible within the scope of the component spec where it is used. This “visibility” of transition keys is determined by [`TransitionKeyType`](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html). There are two options:
 
-* [**`LOCAL`**](/javadoc/com/facebook/litho/Transition.TransitionKeyType.html#LOCAL) - the default type, only visible within `ComponentSpec` where it is used
-* [**`GLOBAL`**](/javadoc/com/facebook/litho/Transition.TransitionKeyType.html#GLOBAL) - makes a transition key visible through the whole `ComponentTree`. The drawback here is that the keys should be unique within the tree. Thus it usually takes an extra effort to use several component of the same type that assign `GLOBAL` transition keys within one tree and avoid transition keys collisions.
+* [**`LOCAL`**](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html#LOCAL) - the default type, only visible within `ComponentSpec` where it is used
+* [**`GLOBAL`**](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html#GLOBAL) - makes a transition key visible through the whole `ComponentTree`. The drawback here is that the keys should be unique within the tree. Thus it usually takes an extra effort to use several component of the same type that assign `GLOBAL` transition keys within one tree and avoid transition keys collisions.
 
 :::note
 Litho throws an exception when a transition keys collision occurs, which may not be trivial to debug and resolve in case of `GLOBAL` transition keys. Thus we encourage you to use `LOCAL` transition keys and assign transition keys within the same Spec that defines transitions that target those keys.
@@ -58,8 +58,8 @@ Litho throws an exception when a transition keys collision occurs, which may not
 
 There are two steps to take to change transition key type:
 
-1. Use [`Component.Builder#transitionKeyType()`](/javadoc/com/facebook/litho/Component.Builder.html#transitionKeyType-com.facebook.litho.Transition.TransitionKeyType-) when assigning a key to a `Component`.
-2. When creating a `Transition` use a version of [`Transition.create()`](/javadoc/com/facebook/litho/Transition.html#create-com.facebook.litho.Transition.TransitionKeyType-java.lang.String-) that takes `TransitionKeyType` argument along with the key itself.
+1. Use [`Component.Builder#transitionKeyType()`](pathname:///javadoc/com/facebook/litho/Component.Builder.html#transitionKeyType-com.facebook.litho.Transition.TransitionKeyType-) when assigning a key to a `Component`.
+2. When creating a `Transition` use a version of [`Transition.create()`](pathname:///javadoc/com/facebook/litho/Transition.html#create-com.facebook.litho.Transition.TransitionKeyType-java.lang.String-) that takes `TransitionKeyType` argument along with the key itself.
 
 Here is how we would fix the sample using `TransitionKeyType.GLOBAL` (*lines 14, 33*):
 

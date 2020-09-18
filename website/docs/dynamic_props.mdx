@@ -7,7 +7,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 Normally, when the value of a `@Prop` within a `ComponentTree` changes, the framework needs to compute layout and mount the `Component` again.
 However, there is a category of `@Props` that do not affect layout, thus when the value of the `@Prop` changes, the framework can take a "shortcut": apply the new value to the mounted UI element that represents the `Component` right away.
 We call such properties *"dynamic"*.
-[`DynamicValue<T>`](/javadoc/com/facebook/litho/DynamicValue.html) is the interface that makes it possible.
+[`DynamicValue<T>`](pathname:///javadoc/com/facebook/litho/DynamicValue.html) is the interface that makes it possible.
 
 ### Common Dynamic Props
 
@@ -19,8 +19,8 @@ The dynamic properties that are available for **all** `Components` are:
 * Rotation
 * Elevation (from Lollipop and above)
 
-To use this, all you need to do is to create and pass a `DynamicValue<T>` object to the corresponding [`Component.Builder`](/javadoc/com/facebook/litho/Component.Builder.html) method.
-Normally, you would hold on to this object, and use its [`set()`](/javadoc/com/facebook/litho/DynamicValue.html#set-T-) method to update the actual value.
+To use this, all you need to do is to create and pass a `DynamicValue<T>` object to the corresponding [`Component.Builder`](pathname:///javadoc/com/facebook/litho/Component.Builder.html) method.
+Normally, you would hold on to this object, and use its [`set()`](pathname:///javadoc/com/facebook/litho/DynamicValue.html#set-T-) method to update the actual value.
 
 In the following sample we have a `Component` that renders a yellow square in the middle of the screen.
 We also have two regular Android `SeekBars` "outside" of the `Components` hierarchy that control the alpha and the scale levels of the square.
@@ -197,7 +197,7 @@ At the same time it will keep the version of this method that takes "static" val
    }
 }
 ```
-**Second thing** is to create a [`@OnBindDynamicValue`](/javadoc/com/facebook/litho/annotations/OnBindDynamicValue.html) method - *lines 12-17* in `ClockComponentSpec.java` - that should set the value to the mounted content.
+**Second thing** is to create a [`@OnBindDynamicValue`](pathname:///javadoc/com/facebook/litho/annotations/OnBindDynamicValue.html) method - *lines 12-17* in `ClockComponentSpec.java` - that should set the value to the mounted content.
 This method should always takes 2 arguments - mounted content, and the `@Prop` itself. You need to create one such method for every dynamic `@Prop` you define.
 Then, it is the responsibility of the framework to invoke these methods to keep changes to the `DynamicValue`.
 

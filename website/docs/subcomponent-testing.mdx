@@ -249,7 +249,7 @@ We can still use various combinators as well as mix and match with `allOf()` and
 ## DIY Conditions
 
 If you look at
-[ComponentConditions](/javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
+[ComponentConditions](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
 you can find a growing collection of matchers that can be used in
 `subComponentWith` and `deepSubComponentWith`. But don't let the existing list
 limit your creativity! Writing your own conditions is a piece of cake.
@@ -258,7 +258,7 @@ All you need to do to write your own condition is implement the
 `Condition<InspectableComponent>` interface which consists of a single method:
 `matches(InspectableComponent)`.
 
-[InspectableComponent](/javadoc/com/facebook/litho/testing/subcomponents/InspectableComponent.html)
+[InspectableComponent](pathname:///javadoc/com/facebook/litho/testing/subcomponents/InspectableComponent.html)
 is a wrapper around a `Component` with additional information we have about the
 component at test time.
 
@@ -301,7 +301,7 @@ public void testHasBackground() {
 
 For very simple cases, it can sometimes be enough to verify the mere presence
 of a sub-component of a certain class. For these cases, we have the
-[SubComponent.of](/javadoc/com/facebook/litho/testing/SubComponent.html) API which
+[SubComponent.of](pathname:///javadoc/com/facebook/litho/testing/SubComponent.html) API which
 works without any code generation.
 
 In the following example, we use the `hasSubComponents` method on the AssertJ
@@ -347,7 +347,7 @@ public class StoryTest {
 The example above may look a bit foreign as it doesn't work with `has` and is
 thus not composable with other matchers. We provide a bridge interface so you
 can combine the best from the old and new world of sub-component testing with 
-[legacySubComponent](/javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html#legacySubComponent-com.facebook.litho.testing.subcomponents.SubComponent-).
+[legacySubComponent](pathname:///javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html#legacySubComponent-com.facebook.litho.testing.subcomponents.SubComponent-).
 
 It accepts an existing `SubComponent` and works with both shallow and deep
 sub-component traversals. This is great if you want to ensure that a property
@@ -377,7 +377,7 @@ continue with the next section, [Matching Props](prop-matching).
 
 To learn more, check out these resources:
 
-- [LithoViewSubComponentExtractor](/javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentExtractor.html)
-- [LithoViewSubComponentDeepExtractor](/javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentDeepExtractor.html)
-- [ComponentConditions](/javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
+- [LithoViewSubComponentExtractor](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentExtractor.html)
+- [LithoViewSubComponentDeepExtractor](pathname:///javadoc/com/facebook/litho/testing/assertj/LithoViewSubComponentDeepExtractor.html)
+- [ComponentConditions](pathname:///javadoc/com/facebook/litho/testing/assertj/ComponentConditions.html)
 - [AssertJ Conditions](http://joel-costigliola.github.io/assertj/assertj-core-conditions.html)

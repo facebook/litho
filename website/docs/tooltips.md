@@ -6,7 +6,7 @@ Litho tooltip APIs provide methods for displaying a floating view anchored to a 
 
 If you want to show an Android [PopupWindow](https://developer.android.com/reference/android/widget/PopupWindow) anchored on a component, you need to have access to the view wrapping that component to use it as an anchor. However, in Litho, most components won't be wrapped in views and even if they are you don't have access to them.
 
-Litho provides a utility class called [LithoTooltipController](/javadoc/com/facebook/litho/LithoTooltipController.html) as a Tooltip API that allows you to show a tooltip anchored on a Component without dealing with view search.
+Litho provides a utility class called [LithoTooltipController](pathname:///javadoc/com/facebook/litho/LithoTooltipController.html) as a Tooltip API that allows you to show a tooltip anchored on a Component without dealing with view search.
 
 Here's how you'd use the Tooltip API to show a tooltip on a component 1. when that component becomes visible and 2. on a click event:
 
@@ -46,7 +46,7 @@ public class TooltipTriggerExampleComponentSpec {
 }
 ```
 
-[LithoTooltip](/javadoc/com/facebook/litho/LithoTooltip.html) is an interface that requires you to implement a method for showing a tooltip given a host view and the bounds of the anchor component relative to the host view. This enables you to use a custom tooltip implementation.
+[LithoTooltip](pathname:///javadoc/com/facebook/litho/LithoTooltip.html) is an interface that requires you to implement a method for showing a tooltip given a host view and the bounds of the anchor component relative to the host view. This enables you to use a custom tooltip implementation.
 
 The interface forces the implementation of `showLithoTooltip`, a method that shows a tooltip given the bounds of the anchor Component inside a hosting view.
 

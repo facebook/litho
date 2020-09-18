@@ -25,7 +25,7 @@ We plan to expand them to more delegates in the future.
 :::
 
 A component becomes an error boundary when it defines an
-[`OnError`](/javadoc/com/facebook/litho/annotations/OnError.html) delegate method.
+[`OnError`](pathname:///javadoc/com/facebook/litho/annotations/OnError.html) delegate method.
 The method will receive all exceptions that occur are raised in supported
 methods of components sitting underneath the error boundary in the tree.
 
@@ -143,7 +143,7 @@ commenting function.
 You can re-raise an exception from within an `onError` delegate so that it
 propagates up the component tree until it is either caught by another error
 boundary or hits the root and causes a crash. This is done by calling
-[`ComponentUtils.raise`](/javadoc/com/facebook/litho/ComponentUtils.html#raise-com.facebook.litho.ComponentContext-java.lang.Exception-) with your context and the exception.
+[`ComponentUtils.raise`](pathname:///javadoc/com/facebook/litho/ComponentUtils.html#raise-com.facebook.litho.ComponentContext-java.lang.Exception-) with your context and the exception.
 
 ```java
 @OnError
