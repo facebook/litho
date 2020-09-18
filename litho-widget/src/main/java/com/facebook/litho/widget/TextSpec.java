@@ -799,6 +799,11 @@ class TextSpec {
           ellipsisOffset = ellipsisStart;
         }
       }
+      if (ellipsisOffset < 0) {
+        ellipsisOffset = 0;
+      } else if (ellipsisOffset > text.length()) {
+        ellipsisOffset = text.length();
+      }
       return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
     } else {
       return text;
