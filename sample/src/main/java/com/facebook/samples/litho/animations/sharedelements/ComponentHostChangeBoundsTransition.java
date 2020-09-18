@@ -17,6 +17,7 @@
 package com.facebook.samples.litho.animations.sharedelements;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.drawable.Drawable;
@@ -66,21 +67,31 @@ public class ComponentHostChangeBoundsTransition extends ChangeBounds {
               new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                  final List<Drawable> animatingDrawables =
-                      ((ComponentHost) endValues.view).getLinkedDrawablesForAnimation();
-                  if (animatingDrawables == null) {
-                    return;
-                  }
-                  for (int index = 0; index < animatingDrawables.size(); ++index) {
-                    TransitionUtils.applySizeToDrawableForAnimation(
-                        animatingDrawables.get(index),
-                        endValues.view.getRight() - endValues.view.getLeft(),
-                        endValues.view.getBottom() - endValues.view.getTop());
-                  }
+                  applyBoundsToLinkedDrawables(endValues);
                 }
               });
+      forListener.addListener(
+          new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+              applyBoundsToLinkedDrawables(endValues);
+            }
+          });
     }
-
     return animator;
+  }
+
+  private static void applyBoundsToLinkedDrawables(final TransitionValues endValues) {
+    final List<Drawable> animatingDrawables =
+        ((ComponentHost) endValues.view).getLinkedDrawablesForAnimation();
+    if (animatingDrawables == null) {
+      return;
+    }
+    for (int index = 0; index < animatingDrawables.size(); ++index) {
+      TransitionUtils.applySizeToDrawableForAnimation(
+          animatingDrawables.get(index),
+          endValues.view.getRight() - endValues.view.getLeft(),
+          endValues.view.getBottom() - endValues.view.getTop());
+    }
   }
 }
