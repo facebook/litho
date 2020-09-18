@@ -27,7 +27,7 @@ Props](prop-matching) guide.
 
 ## Matching InjectProps
 
-Litho provides a pluggable mechanism for dependency injection. [This tutorial](injectprops-matching)
+Litho provides a pluggable mechanism for dependency injection. [This tutorial](injectprop-matching)
 shows you how to test props which were injected via `@InjectProp`.
 
 ## Testing Event Handlers

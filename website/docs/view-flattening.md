@@ -14,7 +14,7 @@ First, Litho can completely skip containers after layout calculation because the
 
 Second, Litho can mount either a view or a drawable. In fact, most of the core widgets in the framework, such as Text and Image, mount drawables, not views.
 
-As a result of these optimizations, the component for the UI in the example would actually be rendered as a single, completely flat, view. You can see this in the following screenshot with the [Show layout bounds developer option enabled](developer-options#debughighlightmountbounds).
+As a result of these optimizations, the component for the UI in the example would actually be rendered as a single, completely flat, view. You can see this in the following screenshot with the [Show layout bounds developer option enabled](dev-options#debughighlightmountbounds).
 
 ![View Flattening](/images/viewflattening.png)
 
