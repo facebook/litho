@@ -30,7 +30,7 @@ You can learn more about how to create sections by checking out some of the [bui
 
 ### Horizontal lists
 
-`RecyclerCollectionComponent` takes a `RecyclerConfiguration` prop for determining what layout manager to use. By default, if this prop is not specified, it uses an implementation of `RecyclerConfiguration` called `ListRecyclerConfiguration` which will create a [LinearLayoutManager]() with vertical orientation to be used by the `RecyclerCollectionComponent`.
+`RecyclerCollectionComponent` takes a `RecyclerConfiguration` prop for determining what layout manager to use. By default, if this prop is not specified, it uses an implementation of `RecyclerConfiguration` called `ListRecyclerConfiguration` which will create a LinearLayoutManager with vertical orientation to be used by the `RecyclerCollectionComponent`.
 
 For a horizontal layout, you pass a `ListRecyclerConfiguration` with a horizontal orientation:
 

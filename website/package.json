@@ -11,11 +11,11 @@
     "prettier:diff": "prettier --config .prettierrc --list-different \"**/*.{js,md}\""
   },
   "dependencies": {
-    "@docusaurus/core": "^2.0.0-alpha.58",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.58",
+    "@docusaurus/core": "^2.0.0-alpha.63",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.63",
     "clsx": "^1.1.1",
     "docusaurus-plugin-internaldocs-fb": "^0.3.6",
-    "docusaurus-plugin-sass": "^0.1.9",
+    "docusaurus-plugin-sass": "^0.1.10",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },

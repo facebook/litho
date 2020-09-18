@@ -29,15 +29,15 @@ module.exports = {
         alt: 'Litho Logo',
         src: 'images/logo.svg',
       },
-      links: [
+      items: [
         {
-          to: 'docs/',
+          to: 'docs',
           activeBasePath: 'docs',
           label: 'Docs',
           position: 'right',
         },
         {
-          href: '/javadoc/',
+          to: 'javadoc',
           label: 'API',
           position: 'right',
         },
@@ -71,11 +71,11 @@ module.exports = {
           items: [
             {
               label: 'Getting Started',
-              to: 'docs/',
+              to: 'docs',
             },
             {
               label: 'API',
-              href: '/javadoc/',
+              to: 'javadoc',
             },
           ],
         },
