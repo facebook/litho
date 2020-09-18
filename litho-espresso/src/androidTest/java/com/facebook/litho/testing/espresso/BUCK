@@ -8,6 +8,7 @@ load(
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_CONTACT_NAME",
     "LITHO_ESPRESSO_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JUNIT_TARGET",
@@ -24,6 +25,7 @@ instrumentation_test(
     name = "espresso",
     srcs = glob(["*Test.java"]),
     apk_under_test = "litho",
+    contacts = LITHO_CONTACT_NAME,
     is_androidx = True,
     deps = [
         ":testutil",
