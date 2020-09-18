@@ -20,7 +20,6 @@ import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.util.LongSparseArray;
 import android.view.View;
@@ -30,79 +29,26 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /** Extension for performing incremental mount. */
-public class IncrementalMountExtension
-    extends MountExtension<IncrementalMountExtension.IncrementalMountExtensionInput> {
-
-  private static final Rect sTempRect = new Rect();
+public class IncrementalMountExtension extends MountExtension<IncrementalMountExtensionInput> {
 
   private final Host mLithoView;
-  private int mPreviousTopsIndex;
-  private int mPreviousBottomsIndex;
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
-  private IncrementalMountExtensionInput mInput;
-  private final AttachDetachBinder mAttachDetachBinder = new AttachDetachBinder();
+  private final IncrementalMountBinder mAttachDetachBinder = new IncrementalMountBinder();
   private final LongSparseArray<RenderTreeNode> mPendingImmediateRemoval = new LongSparseArray<>();
 
-  public RenderUnit.Binder getAttachDetachBinder() {
-    return mAttachDetachBinder;
-  }
-
-  public interface IncrementalMountExtensionInput extends MountDelegateInput {
-    int getMountableOutputCount();
-
-    List<RenderTreeNode> getMountableOutputTops();
-
-    List<RenderTreeNode> getMountableOutputBottoms();
-
-    int getLayoutOutputPositionForId(long id);
-  }
-
-  final class AttachDetachBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
-
-    private boolean isUpdating = false;
-
-    @Override
-    public boolean shouldUpdate(
-        LithoRenderUnit currentValue,
-        LithoRenderUnit newValue,
-        @Nullable Object currentLayoutData,
-        @Nullable Object nextLayoutData) {
-      isUpdating = true;
-      return true;
-    }
-
-    @Override
-    public void bind(
-        Context context,
-        Object content,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {
-      if (!isUpdating) {
-        return;
-      }
-
-      isUpdating = false;
-
-      final LayoutOutput output = lithoRenderUnit.output;
-      final Component component = output.getComponent();
-
-      onItemUpdated(content, component);
-    }
-
-    @Override
-    public void unbind(
-        Context context, Object o, LithoRenderUnit lithoRenderUnit, @Nullable Object layoutData) {}
-  }
+  private IncrementalMountExtensionInput mInput;
+  private int mPreviousTopsIndex;
+  private int mPreviousBottomsIndex;
 
   public IncrementalMountExtension(Host lithoView) {
     mLithoView = lithoView;
@@ -161,14 +107,36 @@ public class IncrementalMountExtension
     LithoStats.incrementComponentMountCount();
   }
 
-  private void setVisibleRect(@Nullable Rect localVisibleRect) {
-    if (localVisibleRect != null) {
-      mPreviousLocalVisibleRect.set(localVisibleRect);
+  @Override
+  public void onUnbind() {}
+
+  @Override
+  protected void acquireMountReference(
+      final RenderTreeNode renderTreeNode,
+      final int position,
+      final MountDelegate.MountDelegateInput input,
+      final boolean isMounting) {
+    // Make sure the host is mounted before the child.
+    final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
+    if (hostTreeNode != null) {
+      final long hostId = hostTreeNode.getRenderUnit().getId();
+      if (!ownsReference(hostId)) {
+        final int hostIndex = mInput.getLayoutOutputPositionForId(hostId);
+        acquireMountReference(hostTreeNode, hostIndex, input, isMounting);
+      }
     }
+
+    super.acquireMountReference(renderTreeNode, position, input, isMounting);
   }
 
   @Override
-  public void onUnbind() {}
+  public boolean canPreventMount() {
+    return true;
+  }
+
+  public RenderUnit.Binder getAttachDetachBinder() {
+    return mAttachDetachBinder;
+  }
 
   private void releaseAcquiredReferencesForRemovedItems(IncrementalMountExtensionInput input) {
     if (mInput == null) {
@@ -218,28 +186,9 @@ public class IncrementalMountExtension
     setupPreviousMountableOutputData(localVisibleRect);
   }
 
-  @Override
-  protected void acquireMountReference(
-      RenderTreeNode renderTreeNode,
-      int position,
-      MountDelegate.MountDelegateInput input,
-      boolean isMounting) {
-    // Make sure the host is mounted before the child.
-    final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
-    if (hostTreeNode != null) {
-      final long hostId = hostTreeNode.getRenderUnit().getId();
-      if (!ownsReference(hostId)) {
-        final int hostIndex = mInput.getLayoutOutputPositionForId(hostId);
-        acquireMountReference(hostTreeNode, hostIndex, input, isMounting);
-      }
-    }
-
-    super.acquireMountReference(renderTreeNode, position, input, isMounting);
-  }
-
-  private void onItemUpdated(Object content, Component component) {
-    if (component.hasChildLithoViews()) {
-      mountItemIncrementally(content, component);
+  private void setVisibleRect(@Nullable Rect localVisibleRect) {
+    if (localVisibleRect != null) {
+      mPreviousLocalVisibleRect.set(localVisibleRect);
     }
   }
 
@@ -365,6 +314,22 @@ public class IncrementalMountExtension
     }
   }
 
+  @VisibleForTesting
+  int getPreviousTopsIndex() {
+    return mPreviousTopsIndex;
+  }
+
+  @VisibleForTesting
+  int getPreviousBottomsIndex() {
+    return mPreviousBottomsIndex;
+  }
+
+  static void onItemUpdated(Object content, Component component) {
+    if (component.hasChildLithoViews()) {
+      mountItemIncrementally(content, component);
+    }
+  }
+
   private static boolean isMountedHostWithChildContent(@Nullable Object content) {
     if (!(content instanceof ComponentHost)) {
       return false;
@@ -407,20 +372,5 @@ public class IncrementalMountExtension
         mountViewIncrementally(childView, mountingAll);
       }
     }
-  }
-
-  @Override
-  public boolean canPreventMount() {
-    return true;
-  }
-
-  @VisibleForTesting
-  int getPreviousTopsIndex() {
-    return mPreviousTopsIndex;
-  }
-
-  @VisibleForTesting
-  int getPreviousBottomsIndex() {
-    return mPreviousBottomsIndex;
   }
 }
