@@ -18,14 +18,15 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static com.facebook.litho.specmodels.processor.MethodExtractorUtilsTestHelper.assertOnAttachedHasInfoForAllParams;
+import static com.facebook.litho.specmodels.processor.MethodExtractorUtilsTestHelper.assertOnAttachedHasNoTypeVars;
+import static com.facebook.litho.specmodels.processor.MethodExtractorUtilsTestHelper.assertOnDetachedHasInfoForAllTypeVars;
+import static com.facebook.litho.specmodels.processor.MethodExtractorUtilsTestHelper.assertOnDetachedHasNoParams;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.google.testing.compile.CompilationRule;
-import com.squareup.javapoet.TypeVariableName;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.processing.Messager;
@@ -51,62 +52,34 @@ public class MethodExtractorUtilsTest {
 
   @Test
   public void getMethodParams_forMethodWithNoParams_returnsEmptyList() {
-    assertThat(
-            getMethodParams(
-                methods.get(1),
-                mock(Messager.class),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList()))
-        .isEmpty();
+    assertOnDetachedHasNoParams(
+        getMethodParams(
+            methods.get(1),
+            mock(Messager.class),
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList()));
   }
 
   @Test
   public void getMethodParams_forMethodwithParams_returnsInfoForAllParams() {
-    final List<MethodParamModel> onAttachedMethodParams =
+    assertOnAttachedHasInfoForAllParams(
         getMethodParams(
             methods.get(0),
             mock(Messager.class),
             Collections.singletonList(Prop.class),
             Collections.emptyList(),
-            Collections.emptyList());
-
-    assertThat(onAttachedMethodParams).hasSize(3);
-
-    assertThat(onAttachedMethodParams.get(0).getName()).isEqualTo("c");
-    assertThat(onAttachedMethodParams.get(0).getTypeName().toString())
-        .isEqualTo("com.facebook.litho.ComponentContext");
-    assertThat(onAttachedMethodParams.get(0).getAnnotations()).isEmpty();
-
-    assertThat(onAttachedMethodParams.get(1).getName()).isEqualTo("num");
-    assertThat(onAttachedMethodParams.get(1).getTypeName().toString()).isEqualTo("int");
-    assertThat(onAttachedMethodParams.get(1).getAnnotations()).isEmpty();
-
-    assertThat(onAttachedMethodParams.get(2).getName()).isEqualTo("prop");
-    assertThat(onAttachedMethodParams.get(2).getTypeName().toString())
-        .isEqualTo("java.lang.Object");
-    assertThat(onAttachedMethodParams.get(2).getAnnotations()).hasSize(1);
-    assertThat(onAttachedMethodParams.get(2).getAnnotations().get(0).annotationType().getTypeName())
-        .isEqualTo("com.facebook.litho.annotations.Prop");
+            Collections.emptyList()));
   }
 
   @Test
   public void getTypeVariables_forMethodWithNoTypeVars_returnsEmptyList() {
-    assertThat(getTypeVariables(methods.get(0))).isEmpty();
+    assertOnAttachedHasNoTypeVars(getTypeVariables(methods.get(0)));
   }
 
   @Test
   public void getTypeVariables_forMethodWithTypeVars_returnsInfoForAllTypeVars() {
-    final List<TypeVariableName> onDetachedTypeVars = getTypeVariables(methods.get(1));
-
-    assertThat(onDetachedTypeVars).hasSize(2);
-
-    assertThat(onDetachedTypeVars.get(0).name).isEqualTo("T");
-    assertThat(onDetachedTypeVars.get(0).bounds).isEmpty();
-
-    assertThat(onDetachedTypeVars.get(1).name).isEqualTo("U");
-    assertThat(onDetachedTypeVars.get(1).bounds).hasSize(1);
-    assertThat(onDetachedTypeVars.get(1).bounds.get(0).toString()).isEqualTo("java.util.List");
+    assertOnDetachedHasInfoForAllTypeVars(getTypeVariables(methods.get(1)));
   }
 
   static class TestClass {

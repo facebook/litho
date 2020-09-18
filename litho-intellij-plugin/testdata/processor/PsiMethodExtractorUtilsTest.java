@@ -18,7 +18,7 @@ static class TestClass {
   static void onAttached(
       com.facebook.litho.ComponentContext c,
       int num,
-      @com.facebook.litho.annotations.Prop Object prop) {}
+      @com.facebook.litho.annotations.Prop java.lang.Object prop) {}
 
   static <T, U extends java.util.List> void onDetached() {}
 }
