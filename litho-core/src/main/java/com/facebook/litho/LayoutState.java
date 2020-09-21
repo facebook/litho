@@ -140,8 +140,17 @@ public class LayoutState
           LayoutOutput rhs = LayoutOutput.getLayoutOutput(r);
           final int lhsTop = lhs.getBounds().top;
           final int rhsTop = rhs.getBounds().top;
+
           // Lower indices should be higher for tops so that they are mounted first if possible.
-          return lhsTop == rhsTop ? lhs.getIndex() - rhs.getIndex() : lhsTop - rhsTop;
+          if (lhsTop == rhsTop) {
+            if (lhs.getIndex() == rhs.getIndex()) {
+              return 0;
+            }
+
+            return lhs.getIndex() > rhs.getIndex() ? 1 : -1;
+          } else {
+            return lhsTop > rhsTop ? 1 : -1;
+          }
         }
       };
 
@@ -153,8 +162,17 @@ public class LayoutState
           LayoutOutput rhs = LayoutOutput.getLayoutOutput(r);
           final int lhsBottom = lhs.getBounds().bottom;
           final int rhsBottom = rhs.getBounds().bottom;
+
           // Lower indices should be lower for bottoms so that they are mounted first if possible.
-          return lhsBottom == rhsBottom ? rhs.getIndex() - lhs.getIndex() : lhsBottom - rhsBottom;
+          if (lhsBottom == rhsBottom) {
+            if (rhs.getIndex() == lhs.getIndex()) {
+              return 0;
+            }
+
+            return rhs.getIndex() > lhs.getIndex() ? 1 : -1;
+          } else {
+            return lhsBottom > rhsBottom ? 1 : -1;
+          }
         }
       };
 

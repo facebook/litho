@@ -34,6 +34,9 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.rendercore.RenderTreeNode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -263,6 +266,154 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         }
       }
     }
+  }
+
+  @Test
+  public void testTopsComparatorWithOverflow() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return SimpleMountSpecTester.create(c).build();
+          }
+        };
+
+    final RenderTreeNode maxIntTop = createLayoutOutput(component, Integer.MAX_VALUE, 20, 0);
+    final RenderTreeNode largeNegativeTop = createLayoutOutput(component, -2147483646, 20, 1);
+    final RenderTreeNode minIntTop = createLayoutOutput(component, Integer.MIN_VALUE, 20, 2);
+    final RenderTreeNode largePositiveTop = createLayoutOutput(component, 2147483646, 20, 3);
+
+    assertThat(sTopsComparator.compare(maxIntTop, largeNegativeTop)).isPositive();
+    assertThat(sTopsComparator.compare(largeNegativeTop, maxIntTop)).isNegative();
+
+    assertThat(sTopsComparator.compare(minIntTop, largePositiveTop)).isNegative();
+    assertThat(sTopsComparator.compare(largePositiveTop, minIntTop)).isPositive();
+
+    assertThat(sTopsComparator.compare(minIntTop, maxIntTop)).isNegative();
+    assertThat(sTopsComparator.compare(maxIntTop, minIntTop)).isPositive();
+  }
+
+  @Test
+  public void testBottomComparatorWithOverflow() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return SimpleMountSpecTester.create(c).build();
+          }
+        };
+
+    final RenderTreeNode maxIntBottom = createLayoutOutput(component, 20, Integer.MAX_VALUE, 0);
+    final RenderTreeNode largeNegativeBottom = createLayoutOutput(component, 20, -2147483646, 1);
+    final RenderTreeNode minIntBottom = createLayoutOutput(component, 20, Integer.MIN_VALUE, 2);
+    final RenderTreeNode largePositiveBottom = createLayoutOutput(component, 20, 2147483646, 3);
+
+    assertThat(sBottomsComparator.compare(maxIntBottom, largeNegativeBottom)).isPositive();
+    assertThat(sBottomsComparator.compare(largeNegativeBottom, maxIntBottom)).isNegative();
+
+    assertThat(sBottomsComparator.compare(minIntBottom, largePositiveBottom)).isNegative();
+    assertThat(sBottomsComparator.compare(largePositiveBottom, minIntBottom)).isPositive();
+
+    assertThat(sBottomsComparator.compare(minIntBottom, maxIntBottom)).isNegative();
+    assertThat(sBottomsComparator.compare(maxIntBottom, minIntBottom)).isPositive();
+  }
+
+  @Test
+  public void testTopsComparatorAdheresToContract() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return SimpleMountSpecTester.create(c).build();
+          }
+        };
+
+    final List<RenderTreeNode> nodes = new ArrayList<>();
+    int currentIndex = 0;
+
+    nodes.add(createLayoutOutput(component, 0, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 0, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 21, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 47, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 21, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 21, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483628, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483617, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483617, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483617, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483617, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483568, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483557, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483557, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483646, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483477, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483278, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483612, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, -2147483611, 10, currentIndex++));
+    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+
+    Collections.sort(nodes, sTopsComparator);
+  }
+
+  @Test
+  public void testBottomsComparatorAdheresToContract() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return SimpleMountSpecTester.create(c).build();
+          }
+        };
+
+    final List<RenderTreeNode> nodes = new ArrayList<>();
+    int currentIndex = 0;
+
+    nodes.add(createLayoutOutput(component, 20, 0, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 0, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 21, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 47, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 21, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 21, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483628, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483568, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483557, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483557, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483646, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483477, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483278, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483612, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, -2147483611, currentIndex++));
+    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+
+    Collections.sort(nodes, sBottomsComparator);
   }
 
   private static LayoutState calculateLayoutState(
