@@ -42,7 +42,7 @@ public class HostView extends Host {
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
   private boolean mInLayout;
-  private InterceptTouchHandler mOnInterceptTouchEventHandler;
+  private @Nullable InterceptTouchHandler mOnInterceptTouchEventHandler;
   private @Nullable MountItem[] mScrapMountItemsArray;
   private @Nullable Object mViewTag;
   private @Nullable SparseArray<Object> mViewTags;
@@ -178,7 +178,8 @@ public class HostView extends Host {
    *
    * @param interceptTouchEventHandler the handler to be set on this host.
    */
-  public void setInterceptTouchEventHandler(InterceptTouchHandler interceptTouchEventHandler) {
+  public void setInterceptTouchEventHandler(
+      @Nullable InterceptTouchHandler interceptTouchEventHandler) {
     mOnInterceptTouchEventHandler = interceptTouchEventHandler;
   }
 
