@@ -20,12 +20,15 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+import android.widget.TextView;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecWithShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
+import com.facebook.litho.widget.TextViewCounter;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -198,6 +201,23 @@ public class LayoutDiffingTest {
 
     // Similar to the previous test, but the object changes on the second layout instead.
     assertThat(operations).containsExactly(LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_MOUNT);
+  }
+
+  @Test
+  public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
+            .build();
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    final View view = mLithoViewRule.getLithoView().getChildAt(0);
+    assertThat(view).isNotNull();
+    assertThat(view).isInstanceOf(TextView.class);
+    assertThat(((TextView) view).getText()).isEqualTo("0");
+    view.callOnClick();
+    assertThat(((TextView) view).getText()).isEqualTo("1");
   }
 
   private static Component createRootComponentWithStateUpdater(

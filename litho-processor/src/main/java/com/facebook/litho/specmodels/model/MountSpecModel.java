@@ -308,7 +308,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public boolean shouldCheckIdInIsEquivalentToMethod() {
-    return true;
+    return false;
   }
 
   @Override
