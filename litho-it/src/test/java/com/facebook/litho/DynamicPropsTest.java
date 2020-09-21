@@ -30,6 +30,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsResetValueTester;
 import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountItem;
 import org.junit.Before;
 import org.junit.Rule;
@@ -252,13 +253,14 @@ public class DynamicPropsTest {
         DynamicPropsResetValueTester.create(mContext).caller(stateUpdateCaller).build();
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        mLithoViewRule.getLithoView().getMountDelegateTarget();
 
     long text1HostId = -1;
     long text2HostId = -1;
 
-    for (int i = 0, size = mountState.getMountItemCount(); i < size; i++) {
-      final MountItem mountItem = mountState.getItemAt(i);
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
 
       if (mountItem != null) {
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
@@ -281,8 +283,8 @@ public class DynamicPropsTest {
     ComponentHost text1Host = null;
     ComponentHost text2Host = null;
 
-    for (int i = 0, size = mountState.getMountItemCount(); i < size; i++) {
-      final MountItem mountItem = mountState.getItemAt(i);
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
 
       if (mountItem != null) {
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
@@ -311,8 +313,8 @@ public class DynamicPropsTest {
 
     ComponentHost stateUpdateText1Host = null;
 
-    for (int i = 0, size = mountState.getMountItemCount(); i < size; i++) {
-      final MountItem mountItem = mountState.getItemAt(i);
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
 
       if (mountItem != null) {
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);

@@ -31,10 +31,14 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
+import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.yoga.YogaEdge;
+import java.util.List;
 import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
@@ -806,8 +810,7 @@ public class IncrementalVisibilityEventsTest {
             10,
             15);
 
-    Map<String, VisibilityItem> visibilityItemLongSparseArray =
-        lithoView.getMountState().getVisibilityIdToItemMap();
+    Map<String, VisibilityItem> visibilityItemLongSparseArray = getVisibilityIdToItemMap(lithoView);
     for (String key : visibilityItemLongSparseArray.keySet()) {
       VisibilityItem item = visibilityItemLongSparseArray.get(key);
       assertThat(item.wasFullyVisible()).isTrue();
@@ -1322,5 +1325,25 @@ public class IncrementalVisibilityEventsTest {
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
         .isTrue();
+  }
+
+  private Map<String, VisibilityItem> getVisibilityIdToItemMap(LithoView lithoView) {
+    if (!lithoView.usingExtensionsWithMountDelegate()) {
+      return ((MountState) lithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
+    }
+
+    LithoHostListenerCoordinator lithoHostListenerCoordinator =
+        Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
+    List<MountExtension> extensions =
+        Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
+    for (int i = 0, size = extensions.size(); i < size; i++) {
+      if (extensions.get(i) instanceof VisibilityOutputsExtension) {
+        VisibilityOutputsExtension visibilityOutputsExtension =
+            (VisibilityOutputsExtension) extensions.get(i);
+        return visibilityOutputsExtension.getVisibilityIdToItemMap();
+      }
+    }
+
+    return null;
   }
 }

@@ -63,7 +63,8 @@ public class MountStateTest {
         .measure()
         .layout();
 
-    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
+    final MountState mountState =
+        (MountState) mLithoViewRule.getLithoView().getMountDelegateTarget();
     final DynamicPropsManager dynamicPropsManager = mountState.getDynamicPropsManager();
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isTrue();
 
@@ -88,7 +89,8 @@ public class MountStateTest {
         .measure()
         .layout();
 
-    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
+    final MountState mountState =
+        (MountState) mLithoViewRule.getLithoView().getMountDelegateTarget();
     final DynamicPropsManager dynamicPropsManager = mountState.getDynamicPropsManager();
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isTrue();
 

@@ -22,6 +22,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -272,11 +273,12 @@ public final class DebugComponent {
       return null;
     }
 
-    final MountState mountState = lithoView.getMountState();
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        lithoView.getMountDelegateTarget();
     final StringBuilder sb = new StringBuilder();
 
-    for (int i = 0, size = mountState.getItemCount(); i < size; i++) {
-      final MountItem mountItem = mountState.getItemAt(i);
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
           mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
       if (mountItemComponent != null) {
@@ -307,9 +309,10 @@ public final class DebugComponent {
     }
 
     final Component component = getComponent();
-    final MountState mountState = lithoView.getMountState();
-    for (int i = 0, size = mountState.getItemCount(); i < size; i++) {
-      final MountItem mountItem = mountState.getItemAt(i);
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        lithoView.getMountDelegateTarget();
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
           mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
       if (mountItemComponent != null && mountItemComponent.getId() == component.getId()) {
@@ -339,9 +342,10 @@ public final class DebugComponent {
     if (lithoView == null) {
       return null;
     }
-
-    for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
-      final MountItem mountItem = lithoView.getMountState().getItemAt(i);
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        lithoView.getMountDelegateTarget();
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
           mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
@@ -424,11 +428,12 @@ public final class DebugComponent {
     final ComponentContext context = mNode.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
     final LithoView view = tree == null ? null : tree.getLithoView();
-    final MountState mountState = view == null ? null : view.getMountState();
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        view == null ? null : view.getMountDelegateTarget();
 
-    if (mountState != null) {
-      for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
-        final MountItem mountItem = mountState.getItemAt(i);
+    if (mountDelegateTarget != null) {
+      for (int i = 0, count = mountDelegateTarget.getMountItemCount(); i < count; i++) {
+        final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
         final Component component =
             mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
 

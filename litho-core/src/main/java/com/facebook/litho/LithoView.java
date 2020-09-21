@@ -1299,10 +1299,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return mMountState.needsRemount();
   }
 
-  MountState getMountState() {
-    return mUseExtensions && !mDelegateToRenderCore
-        ? (MountState) mMountDelegateTarget
-        : mMountState;
+  @Nullable
+  MountDelegateTarget getMountDelegateTarget() {
+    return mUseExtensions ? mMountDelegateTarget : mMountState;
   }
 
   // Used for Transitions - When using extensions, TransitionsExtension gets this information

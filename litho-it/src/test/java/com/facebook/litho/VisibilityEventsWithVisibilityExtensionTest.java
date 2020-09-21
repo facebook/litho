@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import com.facebook.yoga.YogaEdge;
@@ -121,7 +122,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
           Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
       lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);
     } else {
-      final MountState mountState = lithoView.getMountState();
+      final MountDelegate.MountDelegateTarget mountState = lithoView.getMountDelegateTarget();
       Whitebox.setInternalState(
           mountState, "mVisibilityOutputsExtension", visibilityOutputsExtension);
     }

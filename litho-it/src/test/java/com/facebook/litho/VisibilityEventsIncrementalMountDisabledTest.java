@@ -1693,7 +1693,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap(LithoView lithoView) {
     if (!mUseMountDelegateTarget) {
-      return lithoView.getMountState().getVisibilityIdToItemMap();
+      return ((MountState) lithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
     }
 
     LithoHostListenerCoordinator lithoHostListenerCoordinator =

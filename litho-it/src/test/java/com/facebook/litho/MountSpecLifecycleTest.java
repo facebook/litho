@@ -24,7 +24,6 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
-import androidx.collection.LongSparseArray;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -33,7 +32,7 @@ import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
-import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.MountDelegate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -474,16 +473,19 @@ public class MountSpecLifecycleTest {
 
     mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
-    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
-    LongSparseArray<MountItem> mountedItems = mountState.getIndexToItemMap();
-    assertThat(mountedItems.size()).isGreaterThan(1);
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        mLithoViewRule.getLithoView().getMountDelegateTarget();
+    assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1);
+    assertThat(mountDelegateTarget.getMountItemAt(1)).isNotNull();
+    assertThat(mountDelegateTarget.getMountItemAt(2)).isNotNull();
 
     info_child1.reset();
     info_child2.reset();
     mLithoViewRule.getLithoView().unmountAllItems();
 
-    assertThat(mountState.getIndexToItemMap().size()).isEqualTo(1);
-    assertThat(mountState.getIndexToItemMap().get(0)).isNotNull();
+    assertThat(mountDelegateTarget.getMountItemAt(1)).isNull();
+    assertThat(mountDelegateTarget.getMountItemAt(2)).isNull();
+    assertThat(mountDelegateTarget.getMountItemAt(0)).isNotNull();
 
     assertThat(info_child1.getSteps())
         .describedAs("Should call the following lifecycle methods in the following order:")
@@ -527,9 +529,9 @@ public class MountSpecLifecycleTest {
         ComponentTree.create(mLithoViewRule.getContext()).isReconciliationEnabled(false).build());
     mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
-    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
-    LongSparseArray<MountItem> mountedItems = mountState.getIndexToItemMap();
-    assertThat(mountedItems.size()).isGreaterThan(1);
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        mLithoViewRule.getLithoView().getMountDelegateTarget();
+    assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1);
 
     info_child1.reset();
     info_child2.reset();

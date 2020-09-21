@@ -146,7 +146,7 @@ public class DuplicateParentChildrenStateTest {
         ComponentTestHelper.mountComponent(
             new ComponentContext(getApplicationContext()), component);
 
-    final Object secondMountedItem = lv.getMountState().getMountItemAt(1).getContent();
+    final Object secondMountedItem = lv.getMountDelegateTarget().getMountItemAt(1).getContent();
     assertTrue(secondMountedItem instanceof ComponentHost);
     assertTrue(((ComponentHost) secondMountedItem).addStatesFromChildren());
   }

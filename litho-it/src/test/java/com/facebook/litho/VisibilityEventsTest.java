@@ -1822,7 +1822,7 @@ public class VisibilityEventsTest {
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     if (!mUseMountDelegateTarget) {
-      return mLithoView.getMountState().getVisibilityIdToItemMap();
+      return ((MountState) mLithoView.getMountDelegateTarget()).getVisibilityIdToItemMap();
     }
 
     LithoHostListenerCoordinator lithoHostListenerCoordinator =
