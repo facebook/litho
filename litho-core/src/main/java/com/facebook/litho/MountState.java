@@ -171,6 +171,7 @@ class MountState
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
   private @Nullable VisibilityOutputsExtension mVisibilityOutputsExtension;
   private @Nullable TransitionsExtension mTransitionsExtension;
+  private @Nullable MountStateLogMessageProvider mMountStateLogMessageProvider;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -190,6 +191,7 @@ class MountState
     if (!mLithoView.usingExtensionsWithMountDelegate()
         && ComponentsConfiguration.useIncrementalMountExtension) {
       mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
+      mMountStateLogMessageProvider = new MountStateLogMessageProvider();
       registerMountDelegateExtension(mIncrementalMountExtension);
     }
 
@@ -525,6 +527,72 @@ class MountState
     mount(layoutState, true);
   }
 
+  private class MountStateLogMessageProvider implements ComponentHost.ExceptionLogMessageProvider {
+
+    private @Nullable LayoutState mLayoutState;
+
+    @Override
+    public StringBuilder getLogMessage() {
+      final StringBuilder sb = new StringBuilder();
+      if (mLayoutState == null) {
+        sb.append("No layout state");
+
+        return sb;
+      }
+
+      sb.append("{\n").append(" mountableOutputs: {\n");
+      for (int i = 0, size = mLayoutState.getMountableOutputCount(); i < size; i++) {
+        final RenderTreeNode renderTreeNode = mLayoutState.getMountableOutputAt(i);
+        if (renderTreeNode == null) {
+          sb.append("  ").append(i).append(": null,\n");
+        } else {
+          final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
+          sb.append("  ")
+              .append(i)
+              .append(": {\n")
+              .append("    id: ")
+              .append(layoutOutput.getId())
+              .append(",\n")
+              .append("    bounds: ")
+              .append(layoutOutput.getBounds())
+              .append(",\n")
+              .append("    component: ")
+              .append(layoutOutput.getComponent().getSimpleName())
+              .append(",\n")
+              .append("    isMountable: ")
+              .append(isMountable(renderTreeNode, i))
+              .append("\n  },\n");
+        }
+      }
+      sb.append(" }\n");
+
+      sb.append(" mountedItems: {\n");
+      for (int i = 0, size = getItemCount(); i < size; i++) {
+        final MountItem mountItem = getItemAt(i);
+        if (mountItem == null) {
+          sb.append("  ").append(i).append(": null,\n");
+        } else {
+          final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+          sb.append("  ")
+              .append(i)
+              .append(": {\n")
+              .append("    id: ")
+              .append(layoutOutput.getId())
+              .append(",\n")
+              .append("    contentName: ")
+              .append(mountItem.getContent().getClass().getSimpleName())
+              .append(",\n")
+              .append("    host: ")
+              .append(layoutOutput.getHostMarker())
+              .append("\n  },\n");
+        }
+      }
+      sb.append(" }\n").append("}");
+
+      return sb;
+    }
+  }
+
   /**
    * Mount only. Similar shape to RenderCore's mount. For extras such as incremental mount,
    * visibility outputs etc register an extension. To do: extract transitions logic from here.
@@ -534,6 +602,10 @@ class MountState
 
     if (layoutState == null) {
       throw new IllegalStateException("Trying to mount a null layoutState");
+    }
+
+    if (mMountStateLogMessageProvider != null) {
+      mMountStateLogMessageProvider.mLayoutState = layoutState;
     }
 
     if (mIsMounting) {
@@ -1491,6 +1563,10 @@ class MountState
     final Object content =
         ComponentsPools.acquireMountContent(
             mContext.getAndroidContext(), component, mRecyclingMode);
+
+    if (mMountStateLogMessageProvider != null) {
+      host.mExceptionLogMessageProvider = mMountStateLogMessageProvider;
+    }
 
     final ComponentContext context = getContextForComponent(component);
     component.mount(context, content);
