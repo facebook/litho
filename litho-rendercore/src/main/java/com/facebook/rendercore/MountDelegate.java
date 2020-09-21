@@ -107,11 +107,28 @@ public class MountDelegate {
     return mMountDelegateTarget.isRootItem(position);
   }
 
+  /** @return true if this item needs to be mounted. */
+  public boolean maybeLockForMount(RenderTreeNode renderTreeNode, int index) {
+    if (!mReferenceCountingEnabled) {
+      return true;
+    }
+
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      mMountExtensions.get(i).beforeMountItem(renderTreeNode, index);
+    }
+
+    return hasAcquiredRef(renderTreeNode);
+  }
+
   public boolean isLockedForMount(RenderTreeNode renderTreeNode) {
     if (!mReferenceCountingEnabled) {
       return true;
     }
 
+    return hasAcquiredRef(renderTreeNode);
+  }
+
+  private boolean hasAcquiredRef(RenderTreeNode renderTreeNode) {
     final long renderUnitId = renderTreeNode.getRenderUnit().getId();
     final Integer refCount = mReferenceCountMap.get(renderUnitId);
 

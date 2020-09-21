@@ -45,13 +45,19 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
   private final IncrementalMountBinder mAttachDetachBinder = new IncrementalMountBinder();
   private final LongSparseArray<RenderTreeNode> mPendingImmediateRemoval = new LongSparseArray<>();
+  private final boolean mAcquireReferencesDuringMount;
 
   private IncrementalMountExtensionInput mInput;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
 
   public IncrementalMountExtension(Host lithoView) {
+    this(lithoView, false);
+  }
+
+  public IncrementalMountExtension(Host lithoView, boolean acquireReferencesDuringMount) {
     mLithoView = lithoView;
+    mAcquireReferencesDuringMount = acquireReferencesDuringMount;
   }
 
   @Override
@@ -60,12 +66,27 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     mInput = input;
     mPreviousLocalVisibleRect.setEmpty();
 
-    initIncrementalMount(localVisibleRect, false);
+    if (!mAcquireReferencesDuringMount) {
+      initIncrementalMount(localVisibleRect, false);
+    }
+
     setVisibleRect(localVisibleRect);
   }
 
   @Override
+  public void beforeMountItem(RenderTreeNode renderTreeNode, int index) {
+    if (!mAcquireReferencesDuringMount) {
+      return;
+    }
+    maybeAcquireReference(mPreviousLocalVisibleRect, renderTreeNode, index, false);
+  }
+
+  @Override
   public void afterMount() {
+    if (mAcquireReferencesDuringMount) {
+      setupPreviousMountableOutputData(mPreviousLocalVisibleRect);
+    }
+
     // remove everything that was marked as needing to be removed.
     // At this point we know that all items have been moved to the appropriate hosts.
     for (int i = 0, size = mPendingImmediateRemoval.size(); i < size; i++) {
@@ -122,7 +143,8 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       final long hostId = hostTreeNode.getRenderUnit().getId();
       if (!ownsReference(hostId)) {
         final int hostIndex = mInput.getLayoutOutputPositionForId(hostId);
-        acquireMountReference(hostTreeNode, hostIndex, input, isMounting);
+        acquireMountReference(
+            hostTreeNode, hostIndex, input, isMounting || mAcquireReferencesDuringMount);
       }
     }
 
@@ -155,35 +177,40 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = mInput.getMountableOutputAt(i);
-      final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
-      final Component component = layoutOutput.getComponent();
-      final Object content = getContentAt(i);
-
-      // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
-      // override that if the item is outside the visible bounds.
-      // TODO (T64830748): extract animations logic out of this.
-      final boolean isMountable =
-          isMountedHostWithChildContent(content)
-              || Rect.intersects(localVisibleRect, getLayoutOutput(renderTreeNode).getBounds())
-              || isRootItem(i);
-      final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
-      if (isMountable && !hasAcquiredMountRef) {
-        acquireMountReference(renderTreeNode, i, mInput, isMounting);
-      } else if (!isMountable && hasAcquiredMountRef) {
-        if (!isMounting) {
-          mPendingImmediateRemoval.put(i, renderTreeNode);
-        } else {
-          releaseMountReference(renderTreeNode, i, true);
-        }
-      } else if (isMountable && hasAcquiredMountRef && isMounting) {
-        // If we're in the process of mounting now, we know the item we're updating is already
-        // mounted and that MountState.mount will not be called. We have to call the binder
-        // ourselves.
-        onItemUpdated(content, component);
-      }
+      maybeAcquireReference(localVisibleRect, renderTreeNode, i, isMounting);
     }
 
     setupPreviousMountableOutputData(localVisibleRect);
+  }
+
+  private void maybeAcquireReference(
+      Rect localVisibleRect, RenderTreeNode renderTreeNode, int position, boolean isMounting) {
+    final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
+    final Component component = layoutOutput.getComponent();
+    final Object content = getContentAt(position);
+
+    // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
+    // override that if the item is outside the visible bounds.
+    // TODO (T64830748): extract animations logic out of this.
+    final boolean isMountable =
+        isMountedHostWithChildContent(content)
+            || Rect.intersects(localVisibleRect, getLayoutOutput(renderTreeNode).getBounds())
+            || isRootItem(position);
+    final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
+    if (isMountable && !hasAcquiredMountRef) {
+      acquireMountReference(renderTreeNode, position, mInput, isMounting);
+    } else if (!isMountable && hasAcquiredMountRef) {
+      if (!isMounting) {
+        mPendingImmediateRemoval.put(position, renderTreeNode);
+      } else {
+        releaseMountReference(renderTreeNode, position, true);
+      }
+    } else if (isMountable && hasAcquiredMountRef && isMounting) {
+      // If we're in the process of mounting now, we know the item we're updating is already
+      // mounted and that MountState.mount will not be called. We have to call the binder
+      // ourselves.
+      onItemUpdated(content, component);
+    }
   }
 
   private void setVisibleRect(@Nullable Rect localVisibleRect) {

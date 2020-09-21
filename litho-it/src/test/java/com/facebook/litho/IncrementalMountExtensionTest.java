@@ -22,18 +22,49 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class IncrementalMountExtensionTest {
+
+  private boolean mExtensionAcquireDuringMountDefault;
+  private final boolean mExtensionAcquireDuringMount;
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "extensionAcquireDuringMount={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
+
+  public IncrementalMountExtensionTest(boolean extensionAcquireDuringMount) {
+    mExtensionAcquireDuringMount = extensionAcquireDuringMount;
+  }
+
+  @Before
+  public void setup() {
+    mExtensionAcquireDuringMountDefault = ComponentsConfiguration.extensionAcquireDuringMount;
+    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMount;
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
+  }
 
   @Test
   public void testDirtyMountWithEmptyRect() {
@@ -47,13 +78,26 @@ public class IncrementalMountExtensionTest {
     final IncrementalMountExtensionInput incrementalMountExtensionInput = new TestInput(10);
 
     extension.beforeMount(incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
+    for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
+        i < size;
+        i++) {
+      final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
+      extension.beforeMountItem(node, i);
+    }
+    extension.afterMount();
+
     assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex()).isEqualTo(5);
 
     final IncrementalMountExtensionInput incrementalMountExtensionInput2 = new TestInput(3);
     extension.beforeMount(incrementalMountExtensionInput2, new Rect(0, 0, 0, 0));
-
-    // extension.onViewOffset();
+    for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
+        i < size;
+        i++) {
+      final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
+      extension.beforeMountItem(node, i);
+    }
+    extension.afterMount();
 
     extension.onVisibleBoundsChanged(new Rect(0, 0, 10, 50));
 
@@ -73,11 +117,26 @@ public class IncrementalMountExtensionTest {
     final IncrementalMountExtensionInput incrementalMountExtensionInput = new TestInput(10);
 
     extension.beforeMount(incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
+    for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
+        i < size;
+        i++) {
+      final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
+      extension.beforeMountItem(node, i);
+    }
+    extension.afterMount();
+
     assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex()).isEqualTo(5);
 
     final IncrementalMountExtensionInput incrementalMountExtensionInput2 = new TestInput(3);
     extension.beforeMount(incrementalMountExtensionInput2, new Rect(0, 0, 10, 0));
+    for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
+        i < size;
+        i++) {
+      final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
+      extension.beforeMountItem(node, i);
+    }
+    extension.afterMount();
 
     extension.onVisibleBoundsChanged(new Rect(0, 0, 10, 50));
 

@@ -106,6 +106,8 @@ public class MountExtension<Input> {
    */
   public void beforeMount(Input input, @Nullable Rect localVisibleRect) {}
 
+  public void beforeMountItem(RenderTreeNode renderTreeNode, int index) {}
+
   /** Called immediately after mounting. */
   public void afterMount() {}
 

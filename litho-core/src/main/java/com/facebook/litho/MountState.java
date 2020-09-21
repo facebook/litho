@@ -123,6 +123,7 @@ class MountState
   // A map from test key to a list of one or more `TestItem`s which is only allocated
   // and populated during test runs.
   private final Map<String, Deque<TestItem>> mTestItemMap;
+  private boolean mAcquireReferencesDuringMount;
 
   // Both these arrays are updated in prepareMount(), thus during mounting they hold the information
   // about the LayoutState that is being mounted, not mLastMountedLayoutState
@@ -190,7 +191,9 @@ class MountState
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
     if (!mLithoView.usingExtensionsWithMountDelegate()
         && ComponentsConfiguration.useIncrementalMountExtension) {
-      mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
+      mAcquireReferencesDuringMount = ComponentsConfiguration.extensionAcquireDuringMount;
+      mIncrementalMountExtension =
+          new IncrementalMountExtension(mLithoView, mAcquireReferencesDuringMount);
       mMountStateLogMessageProvider = new MountStateLogMessageProvider();
       registerMountDelegateExtension(mIncrementalMountExtension);
     }
@@ -777,7 +780,10 @@ class MountState
       return true;
     }
 
-    final boolean isLockedForMount = mMountDelegate.isLockedForMount(renderTreeNode);
+    final boolean isLockedForMount =
+        mAcquireReferencesDuringMount
+            ? mMountDelegate.maybeLockForMount(renderTreeNode, position)
+            : mMountDelegate.isLockedForMount(renderTreeNode);
 
     if (mTransitionsExtension == null) {
       if (mIncrementalMountExtension == null) {

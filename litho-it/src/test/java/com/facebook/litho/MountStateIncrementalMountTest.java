@@ -79,6 +79,7 @@ import org.robolectric.shadows.ShadowLooper;
 public class MountStateIncrementalMountTest {
 
   private final boolean mUseIncrementalMountExtensionInMountState;
+  private final boolean mExtensionAcquireDuringMount;
   private ComponentContext mContext;
   boolean useMountWithExtensions;
   boolean useIncMountOnlyExtension;
@@ -88,33 +89,41 @@ public class MountStateIncrementalMountTest {
   private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  private boolean mExtensionAcquireDuringMountDefault;
 
   @ParameterizedRobolectricTestRunner.Parameters(
       name =
-          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useIncrementalMountExtensionInMountState={2}")
+          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useIncrementalMountExtensionInMountState={2}, extensionAcquireDuringMount={3}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {true, true, false},
-          {false, false, true}
+          {false, false, false, false},
+          {true, false, false, false},
+          {true, true, false, false},
+          {false, false, true, false},
+          {true, false, false, true},
+          {true, true, false, true},
+          {false, false, true, true},
         });
   }
 
   public MountStateIncrementalMountTest(
       boolean useMountDelegateTarget,
       boolean delegateToRenderCoreMount,
-      boolean useIncrementalMountExtensionInMountState) {
+      boolean useIncrementalMountExtensionInMountState,
+      boolean extensionAcquireDuringMount) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
     mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
+    mExtensionAcquireDuringMount = extensionAcquireDuringMount;
   }
 
   @Before
   public void setup() {
     ComponentsConfiguration.useIncrementalMountExtension =
         mUseIncrementalMountExtensionInMountState;
+    mExtensionAcquireDuringMountDefault = ComponentsConfiguration.extensionAcquireDuringMount;
+    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMount;
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
@@ -126,6 +135,7 @@ public class MountStateIncrementalMountTest {
   @After
   public void cleanup() {
     ComponentsConfiguration.useIncrementalMountExtension = configUseIncrementalMountExtension;
+    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
