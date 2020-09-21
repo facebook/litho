@@ -254,4 +254,10 @@ public class ComponentsConfiguration {
   public static boolean keepInternalNodes = false;
 
   public static boolean emitMessageForZeroSizedTexture = false;
+  /**
+   * When true, Layout-scoped info such as a Component's scoped Context are fetched from a
+   * LayoutState based on the Component's global key instead of reading fields from the Component
+   * instance.
+   */
+  public static boolean useStatelessComponent = false;
 }

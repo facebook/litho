@@ -570,10 +570,19 @@ public class ComponentContext {
    * @return a new ComponentContext instance scoped to the given component
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ComponentContext withComponentScope(ComponentContext context, Component scope) {
+  public static ComponentContext withComponentScope(
+      ComponentContext context, Component scope, @Nullable String globalKey) {
     ComponentContext componentContext = context.makeNewCopy();
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = context.mComponentTree;
+
+    if (ComponentsConfiguration.useStatelessComponent
+        && globalKey != null
+        && componentContext.getLayoutStateContext() != null) {
+      componentContext
+          .getLayoutStateContext()
+          .addScopedComponentInfo(globalKey, scope, componentContext);
+    }
 
     return componentContext;
   }
@@ -605,6 +614,11 @@ public class ComponentContext {
     } else {
       return ComponentsConfiguration.isReconciliationEnabled;
     }
+  }
+
+  @Nullable
+  LayoutStateContext getLayoutStateContext() {
+    return mLayoutStateContext;
   }
 
   void markLayoutUninterruptible() {

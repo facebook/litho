@@ -549,9 +549,10 @@ public abstract class Component extends ComponentLifecycle
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(ComponentContext parentContext) {
+    String globalKey = getGlobalKey();
+
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      if (getGlobalKey() == null) {
-        final String globalKey;
+      if (globalKey == null) {
         if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
           globalKey = LayoutState.generateGlobalKey(parentContext, this);
         } else {
@@ -561,7 +562,8 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    final ComponentContext scopedContext = ComponentContext.withComponentScope(parentContext, this);
+    final ComponentContext scopedContext =
+        ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext);
     generateErrorEventHandler(parentContext, scopedContext);

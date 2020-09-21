@@ -424,7 +424,7 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testRemountSameSubTreeWithDifferentParentHost() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
     final TestComponent firstComponent =
         TestDrawableComponent.create(scopedContext, false, true, true, false)
             .widthPx(100)

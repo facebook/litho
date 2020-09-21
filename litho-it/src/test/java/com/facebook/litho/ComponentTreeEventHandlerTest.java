@@ -39,7 +39,7 @@ public class ComponentTreeEventHandlerTest {
   @Test
   public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
     Component component = mock(Component.class);
     ComponentTree componentTree = ComponentTree.create(scopedContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
@@ -73,7 +73,7 @@ public class ComponentTreeEventHandlerTest {
   @Test
   public void testClearUnusedEntries() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
     Component component = mock(Component.class);
     ComponentTree componentTree = ComponentTree.create(scopedContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();

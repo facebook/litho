@@ -53,7 +53,8 @@ public class EventTriggerTest {
         ComponentContext.withComponentScope(
             ComponentContext.withComponentTree(
                 lithoView.getComponentContext(), lithoView.getComponentTree()),
-            component);
+            component,
+            "globalKey");
 
     assertThat(ComponentWithTrigger.testTriggerMethod(mComponentContext, handle)).isEqualTo("A");
   }
@@ -76,7 +77,8 @@ public class EventTriggerTest {
         ComponentContext.withComponentScope(
             ComponentContext.withComponentTree(
                 lithoView.getComponentContext(), lithoView.getComponentTree()),
-            component);
+            component,
+            "globalKey");
 
     assertThat(ComponentWithTrigger.testTriggerMethod(mComponentContext, handle)).isEqualTo("A");
   }
