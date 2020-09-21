@@ -157,6 +157,8 @@ public class RCTextView extends View {
     }
   }
 
+  // Note: if renaming this method, we have use reflection to access this in
+  // EndToEndDumpsysHelper.java
   public CharSequence getText() {
     return mText;
   }
