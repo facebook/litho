@@ -35,6 +35,8 @@ final class LayoutStateContext {
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private final @Nullable Map<String, Component> mGlobalKeyToComponent;
   private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
+  private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction =
+      ComponentsConfiguration.useStatelessComponent ? new LithoYogaMeasureFunction(this) : null;
 
   private static @Nullable LayoutState sTestLayoutState;
 
@@ -79,6 +81,11 @@ final class LayoutStateContext {
   @Nullable
   LayoutState getLayoutState() {
     return mLayoutStateRef;
+  }
+
+  @Nullable
+  LithoYogaMeasureFunction getLithoYogaMeasureFunction() {
+    return mLithoYogaMeasureFunction;
   }
 
   public @Nullable LayoutStateFuture getLayoutStateFuture() {

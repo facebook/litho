@@ -53,7 +53,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
       "ComponentLifecycle:WrongContextForEventHandler";
-  static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
+  private static final @Nullable YogaMeasureFunction sMeasureFunction =
+      ComponentsConfiguration.useStatelessComponent ? null : new LithoYogaMeasureFunction(null);
+
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
 
@@ -76,6 +78,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       //noinspection ConstantConditions
       return sTypeIdByComponentType.get(type);
     }
+  }
+
+  static YogaMeasureFunction getYogaMeasureFunction(
+      @Nullable LayoutStateContext layoutStateContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      return layoutStateContext.getLithoYogaMeasureFunction();
+    }
+
+    return sMeasureFunction;
   }
 
   ComponentLifecycle() {
