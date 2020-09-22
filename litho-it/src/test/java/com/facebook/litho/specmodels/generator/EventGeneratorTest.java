@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnEvent;
@@ -59,6 +60,11 @@ public class EventGeneratorTest {
 
   private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
 
+  @Event
+  private static class TestEventClass {
+
+  }
+
   @LayoutSpec
   static class TestSpec<T extends CharSequence> {
     @PropDefault protected static boolean arg0 = true;
@@ -85,6 +91,7 @@ public class EventGeneratorTest {
     Elements elements = mCompilationRule.getElements();
     Types types = mCompilationRule.getTypes();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
+    TypeElement eventTypeElement = elements.getTypeElement(TestEventClass.class.getCanonicalName());
     mSpecModel =
         mLayoutSpecModelFactory.create(
             elements, types, typeElement, mock(Messager.class), RunMode.normal(), null, null);
@@ -100,7 +107,7 @@ public class EventGeneratorTest {
                 new FieldModel(
                     FieldSpec.builder(TypeName.INT, "field2", Modifier.PUBLIC).build(),
                     new Object())),
-            new Object());
+            eventTypeElement);
     when(mMockSpecModel.getEventDeclarations()).thenReturn(ImmutableList.of(eventDeclarationModel));
     when(mMockSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
     when(mMockSpecModel.getComponentName()).thenReturn("Test");
@@ -235,6 +242,9 @@ public class EventGeneratorTest {
 
   @Test
   public void testGenerateEventDispatchersIgnoresGenericTypesInFields() {
+    Elements elements = mCompilationRule.getElements();
+    TypeElement eventTypeElement = elements.getTypeElement(TestEventClass.class.getCanonicalName());
+
     FieldModel fieldWithTypeArguments =
         new FieldModel(
             FieldSpec.builder(
@@ -247,7 +257,7 @@ public class EventGeneratorTest {
             ClassName.OBJECT,
             ClassName.OBJECT,
             ImmutableList.of(fieldWithTypeArguments),
-            new Object());
+            eventTypeElement);
     when(mMockSpecModel.getEventDeclarations()).thenReturn(ImmutableList.of(eventDeclarationModel));
 
     TypeSpecDataHolder dataHolder = EventGenerator.generateEventDispatchers(mMockSpecModel);
