@@ -21,29 +21,35 @@ import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 public class TestRenderCoreExtension extends RenderCoreExtension {
 
   private final LayoutResultVisitor mLayoutResultVisitor;
   private final MountExtension mMountExtension;
+  private final Supplier mStateSupplier;
 
   public TestRenderCoreExtension() {
-    this(new TestLayoutResultVisitor(), new TestMountExtension());
-  }
-
-  public TestRenderCoreExtension(final @Nullable LayoutResultVisitor layoutResultVisitor) {
-    this(layoutResultVisitor, new TestMountExtension());
-  }
-
-  public TestRenderCoreExtension(final @Nullable MountExtension mountExtension) {
-    this(new TestLayoutResultVisitor(), mountExtension);
+    this(new TestLayoutResultVisitor(), new TestMountExtension(), ArrayList::new);
   }
 
   public TestRenderCoreExtension(
       final @Nullable LayoutResultVisitor layoutResultVisitor,
-      final @Nullable MountExtension mountExtension) {
+      final @Nullable Supplier stateSupplier) {
+    this(layoutResultVisitor, new TestMountExtension(), stateSupplier);
+  }
+
+  public TestRenderCoreExtension(final @Nullable MountExtension mountExtension) {
+    this(new TestLayoutResultVisitor(), mountExtension, ArrayList::new);
+  }
+
+  public TestRenderCoreExtension(
+      final @Nullable LayoutResultVisitor layoutResultVisitor,
+      final @Nullable MountExtension mountExtension,
+      final @Nullable Supplier stateSupplier) {
     mLayoutResultVisitor = layoutResultVisitor;
     mMountExtension = mountExtension;
+    mStateSupplier = stateSupplier;
   }
 
   @Override
@@ -59,6 +65,6 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
 
   @Override
   public @Nullable Object createState() {
-    return new ArrayList<>();
+    return mStateSupplier != null ? mStateSupplier.get() : super.createState();
   }
 }

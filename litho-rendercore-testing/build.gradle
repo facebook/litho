@@ -47,6 +47,10 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     // TODO(#62): Re-enable abort on error.
     lintOptions {
         abortOnError false

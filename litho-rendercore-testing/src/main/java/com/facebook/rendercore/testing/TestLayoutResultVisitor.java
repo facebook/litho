@@ -20,9 +20,10 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
+import com.facebook.rendercore.testing.TestLayoutResultVisitor.Result;
 import java.util.List;
 
-public class TestLayoutResultVisitor implements LayoutResultVisitor<List<LayoutResult<?>>> {
+public class TestLayoutResultVisitor implements LayoutResultVisitor<List<Result>> {
 
   @Override
   public void visit(
@@ -30,10 +31,23 @@ public class TestLayoutResultVisitor implements LayoutResultVisitor<List<LayoutR
       final Rect bounds,
       final int x,
       final int y,
-      final @Nullable List<LayoutResult<?>> results) {
-    if (results == null) {
-      throw new RuntimeException("Expects a non-null result to write into");
+      final @Nullable List<Result> results) {
+    if (results != null) {
+      results.add(new Result(result, bounds, x, y));
     }
-    results.add(result);
+  }
+
+  public static class Result {
+    public final LayoutResult result;
+    public final Rect bounds;
+    public final int x;
+    public final int y;
+
+    public Result(LayoutResult<?> result, Rect bounds, int x, int y) {
+      this.result = result;
+      this.bounds = bounds;
+      this.x = x;
+      this.y = y;
+    }
   }
 }

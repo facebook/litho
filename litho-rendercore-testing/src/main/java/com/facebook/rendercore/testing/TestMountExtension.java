@@ -24,6 +24,8 @@ import com.facebook.rendercore.extensions.MountExtension;
 
 public class TestMountExtension extends MountExtension {
 
+  private Object state;
+
   @Override
   public void registerToDelegate(MountDelegate mountDelegate) {
     super.registerToDelegate(mountDelegate);
@@ -87,6 +89,7 @@ public class TestMountExtension extends MountExtension {
   @Override
   public void beforeMount(Object o, @Nullable Rect localVisibleRect) {
     super.beforeMount(o, localVisibleRect);
+    this.state = o;
   }
 
   @Override
@@ -107,5 +110,9 @@ public class TestMountExtension extends MountExtension {
   @Override
   public void onUnbind() {
     super.onUnbind();
+  }
+
+  public Object getState() {
+    return state;
   }
 }

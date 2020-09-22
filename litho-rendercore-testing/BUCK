@@ -12,6 +12,8 @@ load(
 litho_android_library(
     name = "litho-rendercore-testing",
     srcs = glob(["src/main/java/**/*.java"]),
+    source = "8",
+    target = "8",
     visibility = [
         "PUBLIC",
     ],
