@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.view.View.MeasureSpec;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 
 public class RootHostDelegate implements RenderState.HostListener, RootHost {
 
@@ -108,6 +109,11 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     if (mCurrentRenderTree != null) {
       mMountState.mount(mCurrentRenderTree);
     }
+  }
+
+  public void notifyVisibleBoundsChanged() {
+    RenderCoreExtension.notifyVisibleBoundsChanged(
+        mHost, mCurrentRenderTree != null ? mCurrentRenderTree.getExtensionResults() : null);
   }
 
   public @Nullable Object findMountContentById(long id) {

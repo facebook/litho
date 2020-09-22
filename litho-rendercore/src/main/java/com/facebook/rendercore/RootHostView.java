@@ -53,7 +53,35 @@ public class RootHostView extends HostView implements RootHost {
     performLayoutOnChildrenIfNecessary(this);
   }
 
+  @Override
+  public void offsetTopAndBottom(int offset) {
+    super.offsetTopAndBottom(offset);
+    notifyVisibleBoundsChanged();
+  }
+
+  @Override
+  public void offsetLeftAndRight(int offset) {
+    super.offsetLeftAndRight(offset);
+    notifyVisibleBoundsChanged();
+  }
+
+  @Override
+  public void setTranslationX(float translationX) {
+    super.setTranslationX(translationX);
+    notifyVisibleBoundsChanged();
+  }
+
+  @Override
+  public void setTranslationY(float translationY) {
+    super.setTranslationY(translationY);
+    notifyVisibleBoundsChanged();
+  }
+
   public @Nullable Object findMountContentById(long id) {
     return mRootHostDelegate.findMountContentById(id);
+  }
+
+  private void notifyVisibleBoundsChanged() {
+    mRootHostDelegate.notifyVisibleBoundsChanged();
   }
 }

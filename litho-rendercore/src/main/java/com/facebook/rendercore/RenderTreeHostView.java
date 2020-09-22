@@ -17,6 +17,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.util.AttributeSet;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 
 public class RenderTreeHostView extends HostView implements RenderTreeHost {
 
@@ -62,5 +63,34 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
 
     mCurrentRenderTree = tree;
     this.requestLayout();
+  }
+
+  @Override
+  public void offsetTopAndBottom(int offset) {
+    super.offsetTopAndBottom(offset);
+    notifyVisibleBoundsChanged();
+  }
+
+  @Override
+  public void offsetLeftAndRight(int offset) {
+    super.offsetLeftAndRight(offset);
+    notifyVisibleBoundsChanged();
+  }
+
+  @Override
+  public void setTranslationX(float translationX) {
+    super.setTranslationX(translationX);
+    notifyVisibleBoundsChanged();
+  }
+
+  @Override
+  public void setTranslationY(float translationY) {
+    super.setTranslationY(translationY);
+    notifyVisibleBoundsChanged();
+  }
+
+  private void notifyVisibleBoundsChanged() {
+    RenderCoreExtension.notifyVisibleBoundsChanged(
+        this, mCurrentRenderTree != null ? mCurrentRenderTree.getExtensionResults() : null);
   }
 }
