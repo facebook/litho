@@ -42,6 +42,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
@@ -1414,5 +1415,10 @@ public class ComponentHost extends Host {
     }
 
     return super.performAccessibilityAction(action, arguments);
+  }
+
+  @Override
+  public boolean hasOverlappingRendering() {
+    return ComponentsConfiguration.hostHasOverlappingRendering;
   }
 }
