@@ -360,7 +360,7 @@ public class TransitionManager {
       return;
     }
     final OutputUnitsAffinityGroup<Object> mountContentGroup = animationState.mountContentGroup;
-    if (mountContentGroup == null || mountContentGroup.get(type) == null) {
+    if (mountContentGroup == null || mountContentGroup.getContentType(type) == null) {
       return;
     }
 
@@ -814,7 +814,7 @@ public class TransitionManager {
   private void recursivelySetChildClippingForGroup(
       OutputUnitsAffinityGroup<Object> mountContentGroup, boolean clipChildren) {
     // We only need to set clipping to view containers (OutputUnitType.HOST)
-    recursivelySetChildClipping(mountContentGroup.get(OutputUnitType.HOST), clipChildren);
+    recursivelySetChildClipping(mountContentGroup.getContentType(OutputUnitType.HOST), clipChildren);
   }
 
   /**

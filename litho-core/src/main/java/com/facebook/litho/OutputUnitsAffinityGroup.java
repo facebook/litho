@@ -65,7 +65,7 @@ public class OutputUnitsAffinityGroup<T> {
     }
   }
 
-  public T get(@OutputUnitType int type) {
+  public T getContentType(@OutputUnitType int type) {
     return (T) mContent[type];
   }
 
@@ -92,20 +92,20 @@ public class OutputUnitsAffinityGroup<T> {
   }
 
   public T getAt(int index) {
-    return get(typeAt(index));
+    return getContentType(typeAt(index));
   }
 
   public T getMostSignificantUnit() {
     if (mContent[OutputUnitType.HOST] != null) {
-      return get(OutputUnitType.HOST);
+      return getContentType(OutputUnitType.HOST);
     } else if (mContent[OutputUnitType.CONTENT] != null) {
-      return get(OutputUnitType.CONTENT);
+      return getContentType(OutputUnitType.CONTENT);
     } else if (mContent[OutputUnitType.BACKGROUND] != null) {
-      return get(OutputUnitType.BACKGROUND);
+      return getContentType(OutputUnitType.BACKGROUND);
     } else if (mContent[OutputUnitType.FOREGROUND] != null) {
-      return get(OutputUnitType.FOREGROUND);
+      return getContentType(OutputUnitType.FOREGROUND);
     } else {
-      return get(OutputUnitType.BORDER);
+      return getContentType(OutputUnitType.BORDER);
     }
   }
 
