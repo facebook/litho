@@ -70,6 +70,12 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     mHost.requestLayout();
   }
 
+  @Override
+  public void notifyVisibleBoundsChanged() {
+    RenderCoreExtension.notifyVisibleBoundsChanged(
+        mHost, mCurrentRenderTree != null ? mCurrentRenderTree.getExtensionResults() : null);
+  }
+
   /**
    * Returns true if the delegate has defined a size and filled the measureOutput array, returns
    * false if not in which case the hosting view should call super.onMeasure.
@@ -109,11 +115,6 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     if (mCurrentRenderTree != null) {
       mMountState.mount(mCurrentRenderTree);
     }
-  }
-
-  public void notifyVisibleBoundsChanged() {
-    RenderCoreExtension.notifyVisibleBoundsChanged(
-        mHost, mCurrentRenderTree != null ? mCurrentRenderTree.getExtensionResults() : null);
   }
 
   public @Nullable Object findMountContentById(long id) {

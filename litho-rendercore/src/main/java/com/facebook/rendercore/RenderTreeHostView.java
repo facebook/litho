@@ -66,6 +66,12 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   }
 
   @Override
+  public void notifyVisibleBoundsChanged() {
+    RenderCoreExtension.notifyVisibleBoundsChanged(
+        this, mCurrentRenderTree != null ? mCurrentRenderTree.getExtensionResults() : null);
+  }
+
+  @Override
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
     notifyVisibleBoundsChanged();
@@ -87,10 +93,5 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   public void setTranslationY(float translationY) {
     super.setTranslationY(translationY);
     notifyVisibleBoundsChanged();
-  }
-
-  private void notifyVisibleBoundsChanged() {
-    RenderCoreExtension.notifyVisibleBoundsChanged(
-        this, mCurrentRenderTree != null ? mCurrentRenderTree.getExtensionResults() : null);
   }
 }

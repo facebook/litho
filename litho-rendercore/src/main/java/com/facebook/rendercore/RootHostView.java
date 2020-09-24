@@ -39,6 +39,11 @@ public class RootHostView extends HostView implements RootHost {
   }
 
   @Override
+  public void notifyVisibleBoundsChanged() {
+    mRootHostDelegate.notifyVisibleBoundsChanged();
+  }
+
+  @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     if (mRootHostDelegate.onMeasure(widthMeasureSpec, heightMeasureSpec, MEASURE_OUTPUTS)) {
       setMeasuredDimension(MEASURE_OUTPUTS[0], MEASURE_OUTPUTS[1]);
@@ -79,9 +84,5 @@ public class RootHostView extends HostView implements RootHost {
 
   public @Nullable Object findMountContentById(long id) {
     return mRootHostDelegate.findMountContentById(id);
-  }
-
-  private void notifyVisibleBoundsChanged() {
-    mRootHostDelegate.notifyVisibleBoundsChanged();
   }
 }

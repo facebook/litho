@@ -16,7 +16,15 @@
 
 package com.facebook.rendercore;
 
-public interface RootHost extends RenderCoreExtensionHost {
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 
-  void setRenderState(RenderState renderState);
+/**
+ * This interface collates the APIs which maybe used by a {@link RenderCoreExtension}. This allow
+ * both {@link RootHost} and {@link RenderTreeHost} remain distinct while sharing APIs common to
+ * between them.
+ */
+public interface RenderCoreExtensionHost {
+
+  /** Notifies the host the its visible bounds may have potentially changed. */
+  void notifyVisibleBoundsChanged();
 }

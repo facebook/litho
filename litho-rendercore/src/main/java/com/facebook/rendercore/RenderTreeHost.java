@@ -20,6 +20,6 @@ package com.facebook.rendercore;
  * An implementation of this interface should contain a {@link RenderTree} without relying on {@link
  * RenderState} to prepare it.
  */
-public interface RenderTreeHost {
+public interface RenderTreeHost extends RenderCoreExtensionHost {
   void setRenderTree(RenderTree tree);
 }

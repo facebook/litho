@@ -992,6 +992,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
   }
 
+  @Override
   public void notifyVisibleBoundsChanged() {
     if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
