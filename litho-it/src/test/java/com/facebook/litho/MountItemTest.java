@@ -278,7 +278,8 @@ public class MountItemTest {
   @Test
   public void testUpdateDoesntChangeFlags() {
     LayoutOutput output =
-        new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
     RenderTreeNode node = LayoutOutput.create(output, null, null, null);
 
     View view = new View(getApplicationContext());

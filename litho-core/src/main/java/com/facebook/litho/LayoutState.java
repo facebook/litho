@@ -549,6 +549,7 @@ public class LayoutState
     }
 
     return new LayoutOutput(
+        layoutState.getLayoutStateContext(),
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
         component,
@@ -1637,6 +1638,7 @@ public class LayoutState
       component.updateInternalChildState(mContext);
       final LayoutOutput output =
           new LayoutOutput(
+              getLayoutStateContext(),
               null,
               null,
               component,

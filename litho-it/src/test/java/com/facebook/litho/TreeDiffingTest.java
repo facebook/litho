@@ -815,7 +815,7 @@ public class TreeDiffingTest {
 
   private static RenderTreeNode createNode(final Component component) {
     LayoutOutput output =
-        new LayoutOutput(null, null, component, new Rect(), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(null, null, null, component, new Rect(), 0, 0, 0, 0, 0, 0, null);
     return LayoutOutput.create(output, null, null, new HashMap<>());
   }
 

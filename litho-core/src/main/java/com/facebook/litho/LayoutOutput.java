@@ -54,6 +54,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final int mHostTranslationX;
   private final int mHostTranslationY;
   private final int mFlags;
+  private final LayoutStateContext mLayoutStateContext;
 
   private final int mImportantForAccessibility;
   private final int mOrientation;
@@ -65,6 +66,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mUpdateState = STATE_UNKNOWN;
 
   public LayoutOutput(
+      LayoutStateContext layoutStateContext,
       @Nullable NodeInfo nodeInfo,
       @Nullable ViewNodeInfo viewNodeInfo,
       Component component,
@@ -84,6 +86,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
+    mLayoutStateContext = layoutStateContext;
     mBounds = bounds;
     mHostTranslationX = hostTranslationX;
     mHostTranslationY = hostTranslationY;
@@ -96,6 +99,10 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   Component getComponent() {
     return mComponent;
+  }
+
+  LayoutStateContext getLayoutStateContext() {
+    return mLayoutStateContext;
   }
 
   Rect getMountBounds(Rect outRect) {
