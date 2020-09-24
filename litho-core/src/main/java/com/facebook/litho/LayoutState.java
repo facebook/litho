@@ -1495,6 +1495,7 @@ public class LayoutState
       final InternalNode root =
           layoutCreatedInWillRender == null
               ? Layout.createAndMeasureComponent(
+                  layoutStateContext,
                   c,
                   component,
                   widthSpec,

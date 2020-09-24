@@ -47,14 +47,17 @@ class Layout {
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
   static InternalNode createAndMeasureComponent(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
       final int widthSpec,
       final int heightSpec) {
-    return createAndMeasureComponent(c, component, widthSpec, heightSpec, null, null, null);
+    return createAndMeasureComponent(
+        layoutStateContext, c, component, widthSpec, heightSpec, null, null, null);
   }
 
   static InternalNode createAndMeasureComponent(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
       final int widthSpec,
@@ -89,7 +92,7 @@ class Layout {
 
     } else {
       Component updated = update(c, component, true);
-      layout = current.reconcile(c, updated);
+      layout = current.reconcile(layoutStateContext, c, updated);
     }
 
     if (layoutStatePerfEvent != null) {

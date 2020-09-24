@@ -2212,7 +2212,11 @@ public class LayoutStateCalculateTest {
 
     final InternalNode node =
         createAndMeasureComponent(
-            c, component, makeSizeSpec(width, AT_MOST), makeSizeSpec(height, AT_MOST));
+            c.getLayoutStateContext(),
+            c,
+            component,
+            makeSizeSpec(width, AT_MOST),
+            makeSizeSpec(height, AT_MOST));
 
     assertThat(node.getWidth()).isEqualTo(width);
     assertThat(node.getHeight()).isEqualTo(height);

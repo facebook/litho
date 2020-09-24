@@ -45,6 +45,7 @@ public class InternalNodeResolvedPaddingTest {
 
     mInternalNode =
         createAndMeasureComponent(
+            context.getLayoutStateContext(),
             context,
             Column.create(context).build(),
             makeSizeSpec(0, UNSPECIFIED),

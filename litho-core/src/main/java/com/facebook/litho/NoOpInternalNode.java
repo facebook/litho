@@ -980,7 +980,8 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode reconcile(ComponentContext c, Component next) {
+  public InternalNode reconcile(
+      LayoutStateContext layoutStateContext, ComponentContext c, Component next) {
     return this;
   }
 
