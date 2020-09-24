@@ -1713,6 +1713,7 @@ class MountState
     final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
     if (viewNodeInfo != null) {
       final boolean isHostSpec = isHostSpec(component);
+      setViewLayerType(view, viewNodeInfo);
       setViewStateListAnimator(view, viewNodeInfo);
       if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
         setViewBackground(view, viewNodeInfo);
@@ -1737,6 +1738,20 @@ class MountState
 
         setViewLayoutDirection(view, viewNodeInfo);
       }
+    }
+  }
+
+  private static void setViewLayerType(final View view, final ViewNodeInfo info) {
+    final int type = info.getLayerType();
+    if (type != LayerType.LAYER_TYPE_NOT_SET) {
+      view.setLayerType(info.getLayerType(), info.getLayoutPaint());
+    }
+  }
+
+  private static void unsetViewLayerType(final View view, final int mountFlags) {
+    int type = LithoMountData.getOriginalLayerType(mountFlags);
+    if (type != LayerType.LAYER_TYPE_NOT_SET) {
+      view.setLayerType(type, null);
     }
   }
 
@@ -1827,6 +1842,8 @@ class MountState
         unsetViewLayoutDirection(view);
       }
     }
+
+    unsetViewLayerType(view, mountFlags);
   }
 
   /**

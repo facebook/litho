@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -38,6 +39,8 @@ class ViewNodeInfo {
   private YogaDirection mLayoutDirection;
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
+  private int mLayoutType = LayerType.LAYER_TYPE_NOT_SET;
+  private @Nullable Paint mLayerPaint;
 
   void setBackground(@Nullable Drawable background) {
     mBackground = background;
@@ -153,6 +156,20 @@ class ViewNodeInfo {
 
   void setStateListAnimatorRes(@DrawableRes int resId) {
     mStateListAnimatorRes = resId;
+  }
+
+  void setLayerType(@LayerType int type, @Nullable Paint paint) {
+    mLayoutType = type;
+    mLayerPaint = paint;
+  }
+
+  @LayerType
+  int getLayerType() {
+    return mLayoutType;
+  }
+
+  public @Nullable Paint getLayoutPaint() {
+    return mLayerPaint;
   }
 
   /**

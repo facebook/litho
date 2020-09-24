@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
+import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
@@ -164,6 +165,21 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public @Nullable InternalNode foregroundRes(int resId) {
+    return null;
+  }
+
+  @Override
+  public InternalNode layerType(@LayerType int layoutType, Paint layerPaint) {
+    return null;
+  }
+
+  @Override
+  public @LayerType int getLayerType() {
+    return LayerType.LAYER_TYPE_NOT_SET;
+  }
+
+  @Override
+  public @Nullable Paint getLayerPaint() {
     return null;
   }
 

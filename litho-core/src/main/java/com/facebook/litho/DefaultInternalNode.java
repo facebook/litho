@@ -35,6 +35,7 @@ import static com.facebook.yoga.YogaEdge.VERTICAL;
 import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -160,12 +161,14 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable String mTestKey;
   private @Nullable Set<DebugComponent> mDebugComponents;
   private @Nullable List<Component> mUnresolvedComponents;
+  private @Nullable Paint mLayerPaint;
 
   private boolean mDuplicateParentState;
   private boolean mDuplicateChildrenStates;
   private boolean mForceViewWrapping;
   private boolean mCachedMeasuresValid;
 
+  private int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private @DrawableRes int mStateListAnimatorRes;
 
@@ -459,6 +462,25 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
 
     return foreground(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+  }
+
+  @Override
+  public InternalNode layerType(final @LayerType int type, final Paint paint) {
+    if (type != LayerType.LAYER_TYPE_NOT_SET) {
+      mLayerType = type;
+      mLayerPaint = paint;
+    }
+    return this;
+  }
+
+  @Override
+  public int getLayerType() {
+    return mLayerType;
+  }
+
+  @Override
+  public @Nullable Paint getLayerPaint() {
+    return mLayerPaint;
   }
 
   @Override
@@ -1573,6 +1595,9 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
     if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0L) {
       target.stateListAnimatorRes(mStateListAnimatorRes);
+    }
+    if (mLayerType != LayerType.LAYER_TYPE_NOT_SET) {
+      target.layerType(mLayerType, mLayerPaint);
     }
   }
 

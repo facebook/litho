@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
@@ -189,6 +190,8 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   void transitionKey(@Nullable String key, @Nullable String ownerKey);
 
   void transitionKeyType(@Nullable Transition.TransitionKeyType type);
+
+  void layerType(@LayerType int type, Paint paint);
 
   @Nullable
   Transition.TransitionKeyType getTransitionKeyType();

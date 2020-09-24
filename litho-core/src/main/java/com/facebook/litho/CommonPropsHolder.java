@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
 import android.animation.StateListAnimator;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
@@ -612,6 +613,11 @@ class CommonPropsHolder implements CommonProps {
     getOrCreateOtherProps().transitionKeyType(type);
   }
 
+  @Override
+  public void layerType(@LayerType int type, Paint paint) {
+    getOrCreateOtherProps().layerType(type, paint);
+  }
+
   @Nullable
   @Override
   public Transition.TransitionKeyType getTransitionKeyType() {
@@ -709,6 +715,8 @@ class CommonPropsHolder implements CommonProps {
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
     @DrawableRes private int mStateListAnimatorRes;
+    private int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
+    private @Nullable Paint mLayerPaint;
 
     private void importantForAccessibility(int importantForAccessibility) {
       mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
@@ -808,6 +816,11 @@ class CommonPropsHolder implements CommonProps {
       mStateListAnimatorRes = resId;
     }
 
+    void layerType(@LayerType int type, @Nullable Paint paint) {
+      mLayerType = type;
+      mLayerPaint = paint;
+    }
+
     void copyInto(InternalNode node) {
       if ((mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) != 0L) {
         node.importantForAccessibility(mImportantForAccessibility);
@@ -871,6 +884,7 @@ class CommonPropsHolder implements CommonProps {
       if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET) != 0L) {
         node.stateListAnimatorRes(mStateListAnimatorRes);
       }
+      node.layerType(mLayerType, mLayerPaint);
     }
   }
 

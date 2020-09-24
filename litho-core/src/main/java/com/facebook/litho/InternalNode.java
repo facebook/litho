@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
+import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
@@ -102,6 +103,14 @@ public interface InternalNode
   InternalNode foregroundColor(@ColorInt int foregroundColor);
 
   InternalNode foregroundRes(@DrawableRes int resId);
+
+  InternalNode layerType(@LayerType int layoutType, Paint layerPaint);
+
+  @LayerType
+  int getLayerType();
+
+  @Nullable
+  Paint getLayerPaint();
 
   InternalNode fullImpressionHandler(
       @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);

@@ -33,6 +33,8 @@ public class LithoMountData {
   private static final int FLAG_VIEW_FOCUSABLE = 1 << 2;
   private static final int FLAG_VIEW_ENABLED = 1 << 3;
   private static final int FLAG_VIEW_SELECTED = 1 << 4;
+  private static final int FLAG_VIEW_LAYER_TYPE_0 = 1 << 5;
+  private static final int FLAG_VIEW_LAYER_TYPE_1 = 1 << 6;
 
   // Flags that track view-related behaviour of mounted view content.
   final int mDefaultAttributeValuesFlags;
@@ -71,6 +73,16 @@ public class LithoMountData {
   /** @return Whether the view associated with this MountItem is setSelected. */
   static boolean isViewSelected(int flags) {
     return (flags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+  }
+
+  static @LayerType int getOriginalLayerType(final int flags) {
+    if ((flags & FLAG_VIEW_LAYER_TYPE_0) == 0) {
+      return LayerType.LAYER_TYPE_NOT_SET;
+    } else if ((flags & FLAG_VIEW_LAYER_TYPE_1) == FLAG_VIEW_LAYER_TYPE_1) {
+      return LayerType.LAYER_TYPE_HARDWARE;
+    } else {
+      return LayerType.LAYER_TYPE_SOFTWARE;
+    }
   }
 
   void releaseMountContent(
@@ -159,6 +171,20 @@ public class LithoMountData {
 
       if (view.isSelected()) {
         flags |= FLAG_VIEW_SELECTED;
+      }
+
+      final int layerType = view.getLayerType();
+      switch (layerType) {
+        case View.LAYER_TYPE_NONE:
+          break;
+        case View.LAYER_TYPE_SOFTWARE:
+          flags |= FLAG_VIEW_LAYER_TYPE_0;
+          break;
+        case View.LAYER_TYPE_HARDWARE:
+          flags |= FLAG_VIEW_LAYER_TYPE_1;
+          break;
+        default:
+          throw new IllegalArgumentException("Unhandled layer type encountered.");
       }
     }
 

@@ -30,6 +30,7 @@ import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
@@ -1989,6 +1990,11 @@ public abstract class Component extends ComponentLifecycle
 
     public T wrapInView() {
       mComponent.getOrCreateCommonProps().wrapInView();
+      return getThis();
+    }
+
+    public T layerType(@LayerType int type, @Nullable Paint paint) {
+      mComponent.getOrCreateCommonProps().layerType(type, paint);
       return getThis();
     }
 

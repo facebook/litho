@@ -511,6 +511,7 @@ public class LayoutState
           t - hostTranslationY,
           r - hostTranslationX,
           b - hostTranslationY);
+      viewNodeInfo.setLayerType(node.getLayerType(), node.getLayerPaint());
       layoutOutputViewNodeInfo = viewNodeInfo;
     } else {
       l += paddingLeft;
@@ -659,7 +660,8 @@ public class LayoutState
     return hasBackgroundOrForeground
         || hasAccessibilityContent
         || node.isDuplicateChildrenStatesEnabled()
-        || hasViewAttributes(nodeInfo);
+        || hasViewAttributes(nodeInfo)
+        || node.getLayerType() != LayerType.LAYER_TYPE_NOT_SET;
   }
 
   private static boolean hasViewAttributes(@Nullable NodeInfo nodeInfo) {
