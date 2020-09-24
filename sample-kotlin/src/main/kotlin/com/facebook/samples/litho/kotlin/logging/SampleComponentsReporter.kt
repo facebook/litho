@@ -32,6 +32,16 @@ class SampleComponentsReporter : ComponentsReporter.Reporter {
       message: String,
       samplingFrequency: Int
   ) {
+    emitMessage(level, categoryKey, message, samplingFrequency, null)
+  }
+
+  override fun emitMessage(
+      level: ComponentsReporter.LogLevel,
+      categoryKey: String,
+      message: String,
+      samplingFrequency: Int,
+      metadata: Map<String, Any>?
+  ) {
     when (level) {
       ComponentsReporter.LogLevel.WARNING -> {
         Log.w(tag, message)

@@ -29,6 +29,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -48,7 +49,9 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used by
@@ -58,6 +61,8 @@ import java.util.List;
 @DoNotStrip
 public class ComponentHost extends Host {
 
+  public static final String TEXTURE_TOO_BIG = "TextureTooBig";
+  public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
   private SparseArrayCompat<MountItem> mMountItems;
@@ -788,6 +793,7 @@ public class ComponentHost extends Host {
   @Override
   protected final void onLayout(boolean changed, int l, int t, int r, int b) {
     mInLayout = true;
+    maybeEmitLayoutError(r - l, b - t);
     performLayout(changed, l, t, r, b);
     mInLayout = false;
   }
@@ -1420,5 +1426,82 @@ public class ComponentHost extends Host {
   @Override
   public boolean hasOverlappingRendering() {
     return ComponentsConfiguration.hostHasOverlappingRendering;
+  }
+
+  private void maybeEmitLayoutError(int width, int height) {
+    final @Nullable String category = getLayoutErrorCategory(width, height);
+    if (category == null) {
+      return;
+    }
+
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.ERROR,
+        category,
+        "abnormally sized litho layout (" + width + ", " + height + ")",
+        /* take default */ 0,
+        getLayoutErrorMetadata(width, height));
+  }
+
+  protected Map<String, Object> getLayoutErrorMetadata(int width, int height) {
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("uptimeMs", SystemClock.uptimeMillis());
+    metadata.put("identity", Integer.toHexString(System.identityHashCode(this)));
+    metadata.put("width", width);
+    metadata.put("height", height);
+    metadata.put("layerType", layerTypeToString(getLayerType()));
+    final Map<String, Object>[] mountItems = new Map[getMountItemCount()];
+    for (int i = 0; i < getMountItemCount(); i++) {
+      mountItems[i] = getMountInfo(getMountItemAt(i));
+    }
+    metadata.put("mountItems", mountItems);
+
+    return metadata;
+  }
+
+  private static String layerTypeToString(int layerType) {
+    switch (layerType) {
+      case LAYER_TYPE_NONE:
+        return "none";
+      case LAYER_TYPE_SOFTWARE:
+        return "sw";
+      case LAYER_TYPE_HARDWARE:
+        return "hw";
+      default:
+        return "unknown";
+    }
+  }
+
+  private @Nullable String getLayoutErrorCategory(int width, int height) {
+    if (height <= 0 || width <= 0) {
+      if (ComponentsConfiguration.emitMessageForZeroSizedTexture) {
+        return TEXTURE_ZERO_DIM;
+      }
+    } else if (height >= ComponentsConfiguration.textureSizeWarningLimit
+        || width >= ComponentsConfiguration.textureSizeWarningLimit) {
+      return TEXTURE_TOO_BIG;
+    }
+
+    return null;
+  }
+
+  @SuppressLint({"BadMethodUse-java.lang.Class.getName", "ReflectionMethodUse"})
+  private Map<String, Object> getMountInfo(MountItem mountItem) {
+    final Object content = mountItem.getContent();
+    final LayoutOutput output = getLayoutOutput(mountItem);
+    final Rect bounds = output.getMountBounds(new Rect());
+
+    final Map<String, Object> mountInfo = new HashMap<>();
+    mountInfo.put("class", content.getClass().getName());
+    mountInfo.put("identity", Integer.toHexString(System.identityHashCode(content)));
+    if (content instanceof View) {
+      final int layerType = ((View) content).getLayerType();
+      mountInfo.put("layerType", layerTypeToString(layerType));
+    }
+    mountInfo.put("left", bounds.left);
+    mountInfo.put("right", bounds.right);
+    mountInfo.put("top", bounds.top);
+    mountInfo.put("bottom", bounds.bottom);
+
+    return mountInfo;
   }
 }

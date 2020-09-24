@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
+import java.util.Map;
+
 /**
  * This is intended as a hook into {@code android.util.Log}, but allows you to provide your own
  * functionality. Use it as
@@ -55,6 +58,23 @@ public class ComponentsReporter {
      * @param samplingFrequency sampling frequency to override default one
      */
     void emitMessage(LogLevel level, String categoryKey, String message, int samplingFrequency);
+
+    /**
+     * Emit a message that can be logged or escalated by the logger implementation.
+     *
+     * @param level
+     * @param categoryKey Unique key for aggregating all occurrences of given error in error
+     *     aggregation systems
+     * @param message Message to log
+     * @param samplingFrequency sampling frequency to override default one
+     * @param metadata map of metadata associated with the message
+     */
+    void emitMessage(
+        LogLevel level,
+        String categoryKey,
+        String message,
+        int samplingFrequency,
+        @Nullable Map<String, Object> metadata);
   }
 
   private ComponentsReporter() {}
@@ -87,6 +107,25 @@ public class ComponentsReporter {
   public static void emitMessage(
       LogLevel level, String categoryKey, String message, int samplingFrequency) {
     getInstance().emitMessage(level, categoryKey, message, samplingFrequency);
+  }
+
+  /**
+   * Emit a message that can be logged or escalated by the logger implementation.
+   *
+   * @param level One of {@link LogLevel#WARNING}, {@link LogLevel#ERROR}, {@link LogLevel#FATAL}.
+   * @param categoryKey Unique key for aggregating all occurrences of given error in error
+   *     aggregation systems
+   * @param message Message to log
+   * @param samplingFrequency sampling frequency to override default one
+   * @param metadata map of metadata associated with the message
+   */
+  public static void emitMessage(
+      LogLevel level,
+      String categoryKey,
+      String message,
+      int samplingFrequency,
+      @Nullable Map<String, Object> metadata) {
+    getInstance().emitMessage(level, categoryKey, message, samplingFrequency, metadata);
   }
 
   private static Reporter getInstance() {

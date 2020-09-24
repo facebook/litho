@@ -23,7 +23,6 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -56,9 +55,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
-  public static final String TEXTURE_TOO_BIG = "TextureTooBig";
-  public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
-  private static final int TOO_BIG_TEXTURE_SIZE = 4096;
   private static final String TAG = LithoView.class.getSimpleName();
   private final boolean mDisableTransitionsExtension;
   private boolean mIsMountStateDirty;
@@ -493,45 +489,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (mComponentTree.isReleased()) {
         throw new IllegalStateException(
             "Trying to layout a LithoView holding onto a released ComponentTree");
-      }
-
-      final int height = bottom - top;
-      final int width = right - left;
-      if (height <= 0 || width <= 0) {
-        if (ComponentsConfiguration.emitMessageForZeroSizedTexture) {
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR,
-              TEXTURE_ZERO_DIM,
-              "LithoView is <= 0 in one dimension. Size: "
-                  + width
-                  + "x"
-                  + height
-                  + ", component: "
-                  + (mComponentTree.getRoot() != null
-                      ? mComponentTree.getRoot().getSimpleName()
-                      : null)
-                  + ", tree: "
-                  + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()));
-        }
-      } else if (height >= TOO_BIG_TEXTURE_SIZE || width >= TOO_BIG_TEXTURE_SIZE) {
-        if (isDeviceThatCantHandleTooBigTextures()) {
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR,
-              TEXTURE_TOO_BIG,
-              "LithoView has measured greater than "
-                  + TOO_BIG_TEXTURE_SIZE
-                  + " in one dimension. Size: "
-                  + width
-                  + "x"
-                  + height
-                  + ", component: "
-                  + (mComponentTree.getRoot() != null
-                      ? mComponentTree.getRoot().getSimpleName()
-                      : null)
-                  + ", tree: "
-                  + ComponentTreeDumpingHelper.dumpContextTree(mComponentTree.getContext()),
-              100);
-        }
       }
 
       if (mDoMeasureInLayout || mComponentTree.getMainThreadLayoutState() == null) {
@@ -1458,20 +1415,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     forceRelayout();
   }
 
-  private static boolean isDeviceThatCantHandleTooBigTextures() {
-    switch (Build.MODEL) {
-      case "SM-J610F":
-      case "SM-J415F":
-      case "SM-J415FN":
-      case "SM-J610G":
-      case "SM-J610FN":
-      case "SM-J415G":
-        return true;
-      default:
-        return false;
-    }
-  }
-
   /**
    * LayoutParams that override the LayoutManager.
    *
@@ -1588,5 +1531,28 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   @Override
   public void setRenderState(RenderState renderState) {
     throw new UnsupportedOperationException("Not currently supported by Litho");
+  }
+
+  @Override
+  protected Map<String, Object> getLayoutErrorMetadata(int width, int height) {
+    final Map<String, Object> metadata = super.getLayoutErrorMetadata(width, height);
+
+    final @Nullable ComponentTree tree = getComponentTree();
+    if (tree == null) {
+      metadata.put("lithoView", null);
+      return metadata;
+    }
+
+    final Map<String, Object> lithoSpecific = new HashMap<>();
+    metadata.put("lithoView", lithoSpecific);
+    if (tree.getRoot() == null) {
+      lithoSpecific.put("root", null);
+      return metadata;
+    }
+
+    lithoSpecific.put("root", tree.getRoot().getSimpleName());
+    lithoSpecific.put("tree", ComponentTreeDumpingHelper.dumpContextTree(tree.getContext()));
+
+    return metadata;
   }
 }

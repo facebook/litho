@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import android.util.Log;
+import androidx.annotation.Nullable;
+import java.util.Map;
 
 public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
   private static final String CATEGORY_PREFIX = "Litho:";
@@ -32,6 +34,16 @@ public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
       String categoryKey,
       String message,
       int samplingFrequency) {
+    emitMessage(level, categoryKey, message, samplingFrequency, null);
+  }
+
+  @Override
+  public void emitMessage(
+      ComponentsReporter.LogLevel level,
+      String categoryKey,
+      String message,
+      int samplingFrequency,
+      @Nullable Map<String, Object> metadata) {
     switch (level) {
       case WARNING:
         Log.w(CATEGORY_PREFIX + categoryKey, message);
