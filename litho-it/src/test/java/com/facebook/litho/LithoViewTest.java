@@ -41,7 +41,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -93,12 +92,11 @@ public class LithoViewTest {
     ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertThat(getInternalMountItems(mLithoView)).hasSize(2);
+    assertThat(getInternalMountItems(mLithoView)).isEqualTo(2);
   }
 
-  private static long[] getInternalMountItems(LithoView lithoView) {
-    MountState mountState = Whitebox.getInternalState(lithoView, "mMountState");
-    return Whitebox.getInternalState(mountState, "mLayoutOutputsIds");
+  private static int getInternalMountItems(LithoView lithoView) {
+    return lithoView.getMountDelegateTarget().getMountItemCount();
   }
 
   @Test
@@ -169,7 +167,7 @@ public class LithoViewTest {
     ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertThat(getInternalMountItems(mLithoView)).isNull();
+    assertThat(getInternalMountItems(mLithoView)).isEqualTo(0);
   }
 
   /** This verifies that the width is correct with at most layout params. */
@@ -201,7 +199,7 @@ public class LithoViewTest {
     ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertThat(getInternalMountItems(mLithoView)).hasSize(2);
+    assertThat(getInternalMountItems(mLithoView)).isEqualTo(2);
   }
 
   @Test

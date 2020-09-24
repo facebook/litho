@@ -2744,7 +2744,8 @@ class MountState
     if (item.isBound()) {
       unbindComponentFromContent(item, component, content);
     }
-    if (mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
+    if (!mLithoView.usingExtensionsWithMountDelegate()
+        && mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
       component.unmount(context, content);
     }
   }

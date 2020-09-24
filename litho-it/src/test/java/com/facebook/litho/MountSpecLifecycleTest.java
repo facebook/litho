@@ -24,6 +24,7 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -34,21 +35,48 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.rendercore.MountDelegate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.shadows.ShadowLooper;
 
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountSpecLifecycleTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public final @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
 
+  final boolean mUseMountDelegateTarget;
+  private boolean mConfigUseMountDelegateTarget;
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useMountDelegateTarget={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
+
+  public MountSpecLifecycleTest(boolean useMountDelegateTarget) {
+    mUseMountDelegateTarget = useMountDelegateTarget;
+  }
+
+  @Before
+  public void before() {
+    mConfigUseMountDelegateTarget = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = mUseMountDelegateTarget;
+  }
+
   @After
-  public void after() {}
+  public void after() {
+    ComponentsConfiguration.useExtensionsWithMountDelegate = mConfigUseMountDelegateTarget;
+  }
 
   @Test
   public void lifecycle_onSetComponentWithoutLayout_shouldNotCallLifecycleMethods() {

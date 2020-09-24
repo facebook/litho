@@ -21,14 +21,12 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
-import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import androidx.collection.LongSparseArray;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -38,6 +36,7 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,11 +65,11 @@ public class MountStateRemountTest {
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    final MountState mountState = getInternalState(lithoView, "mMountState");
-    final LongSparseArray<MountItem> items = getInternalState(mountState, "mIndexToItemMap");
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        lithoView.getMountDelegateTarget();
 
-    for (int i = 0; i < items.size(); i++) {
-      MountItem item = items.valueAt(i);
+    for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
+      MountItem item = mountDelegateTarget.getMountItemAt(i);
       assertThat(item.getMountData()).isOfAnyClassIn(LithoMountData.class);
     }
   }
@@ -97,13 +96,12 @@ public class MountStateRemountTest {
     assertThat(component3.isMounted()).isFalse();
     assertThat(component4.isMounted()).isFalse();
 
-    final MountState mountState = getInternalState(lithoView, "mMountState");
-    final LongSparseArray<MountItem> indexToItemMap =
-        getInternalState(mountState, "mIndexToItemMap");
+    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+        lithoView.getMountDelegateTarget();
 
     final List<Component> components = new ArrayList<>();
-    for (int i = 0; i < indexToItemMap.size(); i++) {
-      components.add(getLayoutOutput(indexToItemMap.valueAt(i)).getComponent());
+    for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
+      components.add(getLayoutOutput(mountDelegateTarget.getMountItemAt(i)).getComponent());
     }
 
     assertThat(containsRef(components, component1)).isFalse();
