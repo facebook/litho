@@ -75,7 +75,13 @@ public class OnEventGenerateUtils {
     final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
 
     final PsiType methodReturnType = PsiEventDeclarationsExtractor.getReturnPsiType(eventClass);
-    final String methodName = "on" + eventClass.getName();
+    String methodName = "on" + eventClass.getName();
+    int postfix = 1;
+    while (context.findMethodsByName(methodName).length > 0) {
+      methodName = "on" + eventClass.getName() + postfix;
+      postfix++;
+    }
+
     final PsiMethod method = factory.createMethod(methodName, methodReturnType, context);
 
     final PsiParameterList parameterList = method.getParameterList();
