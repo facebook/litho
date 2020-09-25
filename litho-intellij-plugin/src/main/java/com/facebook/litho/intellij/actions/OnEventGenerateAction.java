@@ -35,13 +35,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiParameter;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,14 +135,9 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     protected ClassMember[] chooseOriginalMembers(PsiClass aClass, Project project) {
       return Optional.ofNullable(eventChooser.choose(aClass, project))
           .map(
-              eventClass -> {
-                final List<PsiParameter> propsAndStates =
-                    LithoPluginUtils.getPsiParameterStream(null, aClass.getMethods())
-                        .filter(LithoPluginUtils::isPropOrState)
-                        .collect(Collectors.toList());
-                return OnEventGenerateUtils.createOnEventMethod(aClass, eventClass, propsAndStates);
-              })
-          .map(onEventMethod -> onEventRefactorer.changeSignature(project, onEventMethod, aClass))
+              eventClass ->
+                  OnEventGenerateUtils.createOnEventMethod(
+                      aClass, eventClass, Collections.emptyList()))
           .map(
               customMethod -> {
                 OnEventGenerateUtils.addComment(aClass, customMethod);
