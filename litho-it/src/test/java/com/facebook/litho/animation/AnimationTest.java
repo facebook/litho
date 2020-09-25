@@ -36,7 +36,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestAnimationMount;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
@@ -44,10 +43,14 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
+import java.util.Arrays;
+import java.util.Collection;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
@@ -79,7 +82,7 @@ import org.robolectric.android.controller.ActivityController;
  * <p>Final position: 160 + 0.4131759 * (-160) = 93.891856
  */
 @SuppressLint("ColorConstantUsageIssue")
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class AnimationTest {
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
@@ -87,9 +90,50 @@ public class AnimationTest {
   private final StateCaller mStateCaller = new StateCaller();
   private ActivityController<Activity> mActivityController;
 
+  final boolean mUseMountDelegateTarget;
+  final boolean mDelegateToRenderCoreMount;
+  final boolean mUseTransitionExtension;
+
+  boolean mConfigUseMountDelegateTarget;
+  boolean mConfigDelegateToRenderCoreMount;
+  boolean mConfigUseTransitionExtension;
+
+  @ParameterizedRobolectricTestRunner.Parameters(
+      name =
+          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useTransitionExtension={2}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false, false, false}, {false, false, true}, {true, false, false}, {true, true, false},
+        });
+  }
+
+  public AnimationTest(
+      boolean useMountDelegateTarget,
+      boolean delegateToRenderCoreMount,
+      boolean useTransitionExtension) {
+    mUseMountDelegateTarget = useMountDelegateTarget;
+    mDelegateToRenderCoreMount = delegateToRenderCoreMount;
+    mUseTransitionExtension = useTransitionExtension;
+  }
+
   @Before
   public void setUp() {
     mActivityController = Robolectric.buildActivity(Activity.class, new Intent());
+    mConfigUseMountDelegateTarget = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    mConfigDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
+    mConfigUseTransitionExtension = ComponentsConfiguration.useTransitionsExtension;
+
+    ComponentsConfiguration.useExtensionsWithMountDelegate = mUseMountDelegateTarget;
+    ComponentsConfiguration.delegateToRenderCoreMount = mDelegateToRenderCoreMount;
+    ComponentsConfiguration.useTransitionsExtension = mUseTransitionExtension;
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.useExtensionsWithMountDelegate = mConfigUseMountDelegateTarget;
+    ComponentsConfiguration.delegateToRenderCoreMount = mConfigDelegateToRenderCoreMount;
+    ComponentsConfiguration.useTransitionsExtension = mConfigUseTransitionExtension;
   }
 
   @Test
