@@ -191,20 +191,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable Copyable mLayoutParams;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
-    this(componentContext, true);
+    this(componentContext, NodeConfig.createYogaNode());
   }
 
   protected DefaultInternalNode(ComponentContext componentContext, YogaNode yogaNode) {
-    this(componentContext, yogaNode, true);
-  }
-
-  protected DefaultInternalNode(
-      ComponentContext componentContext, boolean createDebugComponentsInCtor) {
-    this(componentContext, NodeConfig.createYogaNode(), createDebugComponentsInCtor);
-  }
-
-  protected DefaultInternalNode(
-      ComponentContext componentContext, YogaNode yogaNode, boolean createDebugComponentsInCtor) {
     super();
     mComponentContext = componentContext;
 
@@ -213,9 +203,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
     mYogaNode = yogaNode;
 
-    if (createDebugComponentsInCtor) {
-      mDebugComponents = new HashSet<>();
-    }
+    mDebugComponents = new HashSet<>();
   }
 
   @Override
