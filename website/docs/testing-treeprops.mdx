@@ -2,6 +2,7 @@
 id: testing-treeprops
 title: Testing Tree Props
 ---
+import {VersionedCodeBlock} from './components/versionedCodeBlock';
 
 ## Prerequisites
 
@@ -9,9 +10,9 @@ The package is shipped as a separate module. It is available via maven as
 `com.facebook.litho:litho-testing`. To include it in your gradle build, add this
 line to your `dependencies` block:
 
-```groovy
-testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
-```
+export const dependencyCode = `testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'`;
+
+<VersionedCodeBlock language="groovy" code={dependencyCode} />
 
 ## Testing components with @TreeProp
 
