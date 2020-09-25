@@ -39,4 +39,7 @@ public interface YogaLayoutDataProvider<RenderContext> {
       Node node, RenderState.LayoutContext<RenderContext> layoutContext);
 
   List<? extends Node> getYogaChildren(Node node);
+
+  @Nullable
+  YogaRootLayoutParams getYogaRootLayoutParams(Node root);
 }

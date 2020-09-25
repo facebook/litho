@@ -104,16 +104,15 @@ public class YogaLayoutFunction {
         (heightMode == View.MeasureSpec.UNSPECIFIED || heightMode == View.MeasureSpec.AT_MOST)
             ? YogaConstants.UNDEFINED
             : heightSize;
-
-    final Object layoutParams = node.getLayoutParams();
+    final YogaRootLayoutParams yogLayoutParams =
+        yogaLayoutDataProvider.getYogaRootLayoutParams(node);
 
     if (widthMode == View.MeasureSpec.EXACTLY) {
       layoutResult.mYogaNode.setWidth(widthSize);
     } else if (widthMode == View.MeasureSpec.AT_MOST) {
       layoutResult.mYogaNode.setMaxWidth(widthSize);
 
-      if (layoutParams != null && layoutParams instanceof YogaRootLayoutParams) {
-        YogaRootLayoutParams yogLayoutParams = (YogaRootLayoutParams) layoutParams;
+      if (yogLayoutParams != null) {
         if (yogLayoutParams.usePercentDimensAtRoot() && yogLayoutParams.hasPercentWidth()) {
           layoutResult.mYogaNode.setWidth(widthSize * 0.01f * yogLayoutParams.getWidthPercent());
         }
@@ -125,8 +124,7 @@ public class YogaLayoutFunction {
     } else if (heightMode == View.MeasureSpec.AT_MOST) {
       layoutResult.mYogaNode.setMaxHeight(heightSize);
 
-      if (layoutParams != null && layoutParams instanceof YogaRootLayoutParams) {
-        YogaRootLayoutParams yogLayoutParams = (YogaRootLayoutParams) layoutParams;
+      if (yogLayoutParams != null) {
         if (yogLayoutParams.usePercentDimensAtRoot() && yogLayoutParams.hasPercentHeight()) {
           layoutResult.mYogaNode.setHeight(heightSize * 0.01f * yogLayoutParams.getHeightPercent());
         }
