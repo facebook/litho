@@ -27,7 +27,6 @@ import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
