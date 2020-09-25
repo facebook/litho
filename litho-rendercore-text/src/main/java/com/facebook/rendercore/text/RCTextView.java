@@ -37,8 +37,10 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 
 /** A pared-down TextView that only displays text. */
+@DoNotStrip
 public class RCTextView extends View {
 
   private CharSequence mText;
@@ -159,6 +161,7 @@ public class RCTextView extends View {
 
   // Note: if renaming this method, we have use reflection to access this in
   // EndToEndDumpsysHelper.java
+  @DoNotStrip
   public CharSequence getText() {
     return mText;
   }
