@@ -108,13 +108,16 @@ If not specified, the default width or height ratio is 1f.
 
 ### Changing LithoView visibility
 There are cases when you need to trigger visibility events on the LithoView components because the UI visibility changed, but the UI did not receive any callback to inform it of this change. An example is when a new activity is added to the back stack, covering the UI. In such cases you can call `setVisibilityHint` on the `LithoView` to tell the UI whether it is visible or not. You may want to do this when `Fragment#setUserVisibleHint` or `onResume/onPause` are called.
-An example is when `Fragment#setUserVisibleHint` or `onResume/onPaused` are called.
 
 Example usage:
 ```java
 LithoView.setVisibilityHint(true); // This will dispatch visible/focused events as necessary on all components inside this LithoView
 LithoView.setVisibilityHint(false); // This will dispatch invisible/unfocused events as necessary on all components inside this LithoView
 ```
+
+After calling `LithoView.setVisibilityHint(false)`, the LithoView will consider itself not visible and will ignore any requests to mount until `setVisibilityHint(true)` is called.
+You may still unmount the entire LithoView content by calling `unmountAll` if the visibility hint was set to false.
+Resetting the visibility hint to true after it was set to false will also trigger a mount pass, in case the visible bounds changed while the LithoView was ignoring mount requests.
 
 ### Troubleshooting
 If you are not seeing your visibility event fired when you expect it to be, you can take the following steps: 
