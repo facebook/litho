@@ -761,12 +761,12 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     return mMountUnmountBinder;
   }
 
-  final class AttachDetachBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
+  final class AttachDetachBinder implements RenderUnit.Binder<RenderUnit, Object> {
 
     @Override
     public boolean shouldUpdate(
-        LithoRenderUnit currentValue,
-        LithoRenderUnit newValue,
+        RenderUnit currentValue,
+        RenderUnit newValue,
         @Nullable Object currentLayoutData,
         @Nullable Object nextLayoutData) {
       return true;
@@ -774,23 +774,19 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
     @Override
     public void bind(
-        Context context,
-        Object content,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {
-      final LayoutOutput output = lithoRenderUnit.output;
-      if (ownsReference(lithoRenderUnit.getId()) && output.getComponent().hasChildLithoViews()) {
-        final View view = (View) content;
-        MountUtils.ensureAllLithoViewChildrenAreMounted(view);
+        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
+      if (renderUnit instanceof LithoRenderUnit) {
+        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+        if (ownsReference(renderUnit.getId()) && output.getComponent().hasChildLithoViews()) {
+          final View view = (View) content;
+          MountUtils.ensureAllLithoViewChildrenAreMounted(view);
+        }
       }
     }
 
     @Override
     public void unbind(
-        Context context,
-        Object content,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {
+        Context context, Object content, RenderUnit lithoRenderUnit, @Nullable Object layoutData) {
       if (mLastMountedComponentTreeId != mInput.getComponentTreeId()) {
         if (content instanceof ComponentHost) {
           removeDisappearingMountContentFromComponentHost((ComponentHost) content);
@@ -799,12 +795,12 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
   }
 
-  final class MountUnmountBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
+  final class MountUnmountBinder implements RenderUnit.Binder<RenderUnit, Object> {
 
     @Override
     public boolean shouldUpdate(
-        LithoRenderUnit currentValue,
-        LithoRenderUnit newValue,
+        RenderUnit currentValue,
+        RenderUnit newValue,
         @Nullable Object currentLayoutData,
         @Nullable Object nextLayoutData) {
       return false;
@@ -812,26 +808,22 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
     @Override
     public void bind(
-        Context context,
-        Object content,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {}
+        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {}
 
     @Override
     public void unbind(
-        Context context,
-        Object content,
-        LithoRenderUnit lithoRenderUnit,
-        @Nullable Object layoutData) {
+        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
       // If this item is a host and contains disappearing items, we need to remove them.
       if (content instanceof ComponentHost) {
         removeDisappearingMountContentFromComponentHost((ComponentHost) content);
       }
-      final LayoutOutput output = lithoRenderUnit.output;
-      if (output.getTransitionId() != null) {
-        final @OutputUnitType int type =
-            LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
-        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+      if (renderUnit instanceof LithoRenderUnit) {
+        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+        if (output.getTransitionId() != null) {
+          final @OutputUnitType int type =
+              LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
+          maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+        }
       }
     }
   }
