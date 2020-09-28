@@ -365,7 +365,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       }
 
       final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
-          mLastTransitionsExtensionInput.getLayoutOutputsForTransitionId(transitionId);
+          mLastTransitionsExtensionInput.getAnimatableItemForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
         // was removed from the component.

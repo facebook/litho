@@ -399,7 +399,7 @@ public class TransitionManagerAnimationCreationTest {
     when(layoutState.getTransitions())
         .thenReturn(transitions != null ? transitions.getChildren() : null);
     when(layoutState.getTransitionIdMapping()).thenReturn(transitionIdMapping);
-    when(layoutState.getLayoutOutputsForTransitionId(any()))
+    when(layoutState.getAnimatableItemForTransitionId(any()))
         .then(
             new Answer<OutputUnitsAffinityGroup<AnimatableItem>>() {
               @Override

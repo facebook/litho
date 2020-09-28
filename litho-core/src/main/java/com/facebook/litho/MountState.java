@@ -3116,7 +3116,7 @@ class MountState
       }
 
       final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
-          mLastMountedLayoutState.getLayoutOutputsForTransitionId(transitionId);
+          mLastMountedLayoutState.getAnimatableItemForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
         // was removed from the component.

@@ -40,7 +40,7 @@ public interface TransitionsExtensionInput extends MountDelegate.MountDelegateIn
   Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> getTransitionIdMapping();
 
   @Nullable
-  OutputUnitsAffinityGroup<AnimatableItem> getLayoutOutputsForTransitionId(
+  OutputUnitsAffinityGroup<AnimatableItem> getAnimatableItemForTransitionId(
       TransitionId transitionId);
 
   @Nullable

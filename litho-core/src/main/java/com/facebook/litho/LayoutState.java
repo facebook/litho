@@ -2280,7 +2280,7 @@ public class LayoutState
   /** Gets a group of LayoutOutput given transition key */
   @Override
   @Nullable
-  public OutputUnitsAffinityGroup<AnimatableItem> getLayoutOutputsForTransitionId(
+  public OutputUnitsAffinityGroup<AnimatableItem> getAnimatableItemForTransitionId(
       TransitionId transitionId) {
     return mTransitionIdMapping.get(transitionId);
   }
