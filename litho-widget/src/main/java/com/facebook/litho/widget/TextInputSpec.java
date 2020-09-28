@@ -78,6 +78,7 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
@@ -1131,7 +1132,7 @@ class TextInputSpec {
       private final List<TextWatcher> mTextWatchers;
 
       CompositeTextWatcher(List<TextWatcher> textWatchers) {
-        mTextWatchers = textWatchers;
+        mTextWatchers = new ArrayList<>(textWatchers);
       }
 
       @Override
