@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.collection.SimpleArrayMap;
-import com.facebook.litho.ComponentsReporter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -179,14 +178,6 @@ public class DataFlowGraph {
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
       mSortedNodes.add(next);
-      NodeState nodeState = mNodeStates.get(next);
-      if (nodeState == null) {
-        String message =
-            next.getClass().getSimpleName() + " : InputNames " + next.buildDebugInputsString();
-        // Added for debugging T67342661
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR, STATE_NOT_INTIALIZED_FOR_VALUE_NODE, message);
-      }
       for (ValueNode input : next.getAllInputs()) {
         final int outputsLeft = nodesToOutputsLeft.get(input) - 1;
         nodesToOutputsLeft.put(input, outputsLeft);

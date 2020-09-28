@@ -22,8 +22,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.Choreographer;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.WorkContinuationInstrumenter;
+import com.facebook.rendercore.utils.ThreadUtils;
 import javax.annotation.Nullable;
 
 /**

@@ -50,7 +50,7 @@ public interface ChoreographerCompat {
             new Choreographer.FrameCallback() {
               @Override
               public void doFrame(long frameTimeNanos) {
-                ChoreographerCompat.FrameCallback.this.doFrameInternal(frameTimeNanos);
+                FrameCallback.this.doFrameInternal(frameTimeNanos);
               }
             };
       }
