@@ -359,12 +359,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   }
 
   private static boolean isMountedHostWithChildContent(@Nullable Object content) {
-    if (!(content instanceof ComponentHost)) {
-      return false;
-    }
-
-    final ComponentHost host = (ComponentHost) content;
-    return host.getMountItemCount() > 0;
+    return content instanceof Host && ((Host) content).getMountItemCount() > 0;
   }
 
   private static void recursivelyNotifyVisibleBoundsChanged(Object content) {
