@@ -22,7 +22,12 @@ import com.facebook.rendercore.RenderUnit;
 
 public class IncrementalMountBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
 
+  private final IncrementalMountExtension extension;
   private boolean isUpdating = false;
+
+  public IncrementalMountBinder(IncrementalMountExtension extension) {
+    this.extension = extension;
+  }
 
   @Override
   public boolean shouldUpdate(
@@ -45,11 +50,7 @@ public class IncrementalMountBinder implements RenderUnit.Binder<LithoRenderUnit
     }
 
     isUpdating = false;
-
-    final LayoutOutput output = lithoRenderUnit.output;
-    final Component component = output.getComponent();
-
-    IncrementalMountExtension.onItemUpdated(content, component);
+    extension.recursivelyNotifyVisibleBoundsChanged(lithoRenderUnit.getId(), content);
   }
 
   @Override

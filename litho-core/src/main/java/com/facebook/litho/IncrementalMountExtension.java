@@ -43,7 +43,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private final RenderCoreExtensionHost mHost;
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
-  private final IncrementalMountBinder mAttachDetachBinder = new IncrementalMountBinder();
+  private final IncrementalMountBinder mAttachDetachBinder;
   private final LongSparseArray<RenderTreeNode> mPendingImmediateRemoval = new LongSparseArray<>();
   private final boolean mAcquireReferencesDuringMount;
 
@@ -59,6 +59,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       final RenderCoreExtensionHost host, final boolean acquireReferencesDuringMount) {
     mHost = host;
     mAcquireReferencesDuringMount = acquireReferencesDuringMount;
+    mAttachDetachBinder = new IncrementalMountBinder(this);
   }
 
   @Override
@@ -186,10 +187,8 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   private void maybeAcquireReference(
       Rect localVisibleRect, RenderTreeNode renderTreeNode, int position, boolean isMounting) {
-    final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
-    final Component component = layoutOutput.getComponent();
     final Object content = getContentAt(position);
-
+    final long id = renderTreeNode.getRenderUnit().getId();
     // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
     // override that if the item is outside the visible bounds.
     // TODO (T64830748): extract animations logic out of this.
@@ -210,7 +209,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       // If we're in the process of mounting now, we know the item we're updating is already
       // mounted and that MountState.mount will not be called. We have to call the binder
       // ourselves.
-      onItemUpdated(content, component);
+      recursivelyNotifyVisibleBoundsChanged(id, content);
     }
   }
 
@@ -297,15 +296,13 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode node = mInput.getMountableOutputAt(i);
-      final LayoutOutput layoutOutput = getLayoutOutput(node);
-      final long layoutOutputId = layoutOutput.getId();
+      final long id = node.getRenderUnit().getId();
 
-      if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
-        final Component component = layoutOutput.getComponent();
-        if (component.hasChildLithoViews() && isLockedForMount(node)) {
-          final int layoutOutputPosition = mInput.getLayoutOutputPositionForId(layoutOutputId);
+      if (!mComponentIdsMountedInThisFrame.contains(id)) {
+        if (isLockedForMount(node)) {
+          final int layoutOutputPosition = mInput.getLayoutOutputPositionForId(id);
           if (layoutOutputPosition != -1) {
-            recursivelyNotifyVisibleBoundsChanged(getContentAt(i));
+            recursivelyNotifyVisibleBoundsChanged(id, getContentAt(i));
           }
         }
       }
@@ -352,17 +349,17 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     return mPreviousBottomsIndex;
   }
 
-  static void onItemUpdated(Object content, Component component) {
-    if (component.hasChildLithoViews()) {
-      recursivelyNotifyVisibleBoundsChanged(content);
-    }
-  }
-
   private static boolean isMountedHostWithChildContent(@Nullable Object content) {
     return content instanceof Host && ((Host) content).getMountItemCount() > 0;
   }
 
-  private static void recursivelyNotifyVisibleBoundsChanged(Object content) {
+  void recursivelyNotifyVisibleBoundsChanged(final long id, final Object content) {
+    if (mInput != null && mInput.renderUnitWithIdHostsRenderTrees(id)) {
+      recursivelyNotifyVisibleBoundsChanged(content);
+    }
+  }
+
+  private static void recursivelyNotifyVisibleBoundsChanged(final Object content) {
     assertMainThread();
     if (content instanceof RenderCoreExtensionHost) {
       final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;

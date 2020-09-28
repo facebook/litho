@@ -29,4 +29,6 @@ public interface IncrementalMountExtensionInput extends MountDelegate.MountDeleg
   List<RenderTreeNode> getMountableOutputBottoms();
 
   int getLayoutOutputPositionForId(long id);
+
+  boolean renderUnitWithIdHostsRenderTrees(long id);
 }

@@ -2251,6 +2251,13 @@ public class LayoutState
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
   }
 
+  @Override
+  public boolean renderUnitWithIdHostsRenderTrees(long id) {
+    RenderTreeNode node = getMountableOutputAt(getLayoutOutputPositionForId(id));
+    final LayoutOutput output = LayoutOutput.getLayoutOutput(node);
+    return output.getComponent().hasChildLithoViews();
+  }
+
   /** @return a {@link LayoutOutput} for a given {@param layoutOutputId} */
   @Nullable
   LayoutOutput getLayoutOutput(long layoutOutputId) {

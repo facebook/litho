@@ -193,6 +193,11 @@ public class IncrementalMountExtensionTest {
     }
 
     @Override
+    public boolean renderUnitWithIdHostsRenderTrees(long id) {
+      return true;
+    }
+
+    @Override
     public RenderTreeNode getMountableOutputAt(int position) {
       return mountableOutputs.get(position);
     }
