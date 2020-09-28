@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
@@ -29,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -40,7 +40,7 @@ import java.util.Set;
 /** Extension for performing incremental mount. */
 public class IncrementalMountExtension extends MountExtension<IncrementalMountExtensionInput> {
 
-  private final Host mLithoView;
+  private final RenderCoreExtensionHost mHost;
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
   private final IncrementalMountBinder mAttachDetachBinder = new IncrementalMountBinder();
@@ -51,12 +51,13 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
 
-  public IncrementalMountExtension(Host lithoView) {
-    this(lithoView, false);
+  public IncrementalMountExtension(final RenderCoreExtensionHost host) {
+    this(host, false);
   }
 
-  public IncrementalMountExtension(Host lithoView, boolean acquireReferencesDuringMount) {
-    mLithoView = lithoView;
+  public IncrementalMountExtension(
+      final RenderCoreExtensionHost host, final boolean acquireReferencesDuringMount) {
+    mHost = host;
     mAcquireReferencesDuringMount = acquireReferencesDuringMount;
   }
 
@@ -263,7 +264,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       }
     }
 
-    final int height = mLithoView.getHeight();
+    final int height = ((Host) mHost).getHeight();
     if (localVisibleRect.bottom < height || mPreviousLocalVisibleRect.bottom < height) {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
@@ -304,7 +305,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         if (component.hasChildLithoViews() && isLockedForMount(node)) {
           final int layoutOutputPosition = mInput.getLayoutOutputPositionForId(layoutOutputId);
           if (layoutOutputPosition != -1) {
-            mountItemIncrementally(getContentAt(i), component);
+            recursivelyNotifyVisibleBoundsChanged(getContentAt(i));
           }
         }
       }
@@ -353,7 +354,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   static void onItemUpdated(Object content, Component component) {
     if (component.hasChildLithoViews()) {
-      mountItemIncrementally(content, component);
+      recursivelyNotifyVisibleBoundsChanged(content);
     }
   }
 
@@ -366,37 +367,16 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     return host.getMountItemCount() > 0;
   }
 
-  private static void mountItemIncrementally(Object content, Component component) {
-    if (!isMountViewSpec(component)) {
-      return;
-    }
-
-    // We can't just use the bounds of the View since we need the bounds relative to the
-    // hosting LithoView (which is what the localVisibleRect is measured relative to).
-    final View view = (View) content;
-
-    mountViewIncrementally(view, false);
-  }
-
-  private static void mountViewIncrementally(View view, boolean mountingAll) {
+  private static void recursivelyNotifyVisibleBoundsChanged(Object content) {
     assertMainThread();
-
-    if (view instanceof LithoView) {
-      final LithoView lithoView = (LithoView) view;
-      if (lithoView.isIncrementalMountEnabled()) {
-        if (mountingAll) {
-          lithoView.notifyVisibleBoundsChanged(
-              new Rect(0, 0, view.getWidth(), view.getHeight()), false);
-        } else {
-          lithoView.notifyVisibleBoundsChanged();
-        }
-      }
-    } else if (view instanceof ViewGroup) {
-      final ViewGroup viewGroup = (ViewGroup) view;
-
-      for (int i = 0; i < viewGroup.getChildCount(); i++) {
-        final View childView = viewGroup.getChildAt(i);
-        mountViewIncrementally(childView, mountingAll);
+    if (content instanceof RenderCoreExtensionHost) {
+      final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
+      host.notifyVisibleBoundsChanged();
+    } else if (content instanceof ViewGroup) {
+      final ViewGroup parent = (ViewGroup) content;
+      for (int i = 0; i < parent.getChildCount(); i++) {
+        final View child = parent.getChildAt(i);
+        recursivelyNotifyVisibleBoundsChanged(child);
       }
     }
   }
