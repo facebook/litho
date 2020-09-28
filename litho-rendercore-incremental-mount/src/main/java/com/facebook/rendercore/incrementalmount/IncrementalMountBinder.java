@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.incrementalmount;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderUnit;
 
-public class IncrementalMountBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
+public class IncrementalMountBinder implements RenderUnit.Binder<RenderUnit, Object> {
 
   private final IncrementalMountExtension extension;
   private boolean isUpdating = false;
@@ -31,8 +31,8 @@ public class IncrementalMountBinder implements RenderUnit.Binder<LithoRenderUnit
 
   @Override
   public boolean shouldUpdate(
-      final LithoRenderUnit currentValue,
-      final LithoRenderUnit newValue,
+      final RenderUnit currentValue,
+      final RenderUnit newValue,
       final @Nullable Object currentLayoutData,
       final @Nullable Object nextLayoutData) {
     isUpdating = true;
@@ -43,7 +43,7 @@ public class IncrementalMountBinder implements RenderUnit.Binder<LithoRenderUnit
   public void bind(
       final Context context,
       final Object content,
-      final LithoRenderUnit lithoRenderUnit,
+      final RenderUnit lithoRenderUnit,
       final @Nullable Object layoutData) {
     if (!isUpdating) {
       return;
@@ -57,6 +57,6 @@ public class IncrementalMountBinder implements RenderUnit.Binder<LithoRenderUnit
   public void unbind(
       final Context context,
       final Object o,
-      final LithoRenderUnit lithoRenderUnit,
+      final RenderUnit lithoRenderUnit,
       final @Nullable Object layoutData) {}
 }

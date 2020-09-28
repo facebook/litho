@@ -26,6 +26,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import java.util.ArrayList;
 import java.util.Arrays;

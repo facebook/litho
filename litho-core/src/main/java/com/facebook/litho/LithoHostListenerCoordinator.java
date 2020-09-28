@@ -19,9 +19,11 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,7 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
     // We first mount and then we process visibility outputs.
     if (mIncrementalMountExtension != null) {
       mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
+      LithoStats.incrementComponentMountCount();
     }
 
     if (mTransitionsExtension != null) {

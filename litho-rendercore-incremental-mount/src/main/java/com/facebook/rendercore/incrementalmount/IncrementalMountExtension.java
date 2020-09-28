@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.incrementalmount;
 
-import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.utils.ThreadUtils.isMainThread;
 
 import android.graphics.Rect;
 import android.util.LongSparseArray;
@@ -24,14 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
-import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -114,7 +112,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
    */
   @Override
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
-    assertMainThread();
+    isMainThread();
 
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (mPreviousLocalVisibleRect.isEmpty()
@@ -127,8 +125,6 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     }
 
     setVisibleRect(localVisibleRect);
-
-    LithoStats.incrementComponentMountCount();
   }
 
   @Override
@@ -163,6 +159,12 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     return mAttachDetachBinder;
   }
 
+  void recursivelyNotifyVisibleBoundsChanged(final long id, final Object content) {
+    if (mInput != null && mInput.renderUnitWithIdHostsRenderTrees(id)) {
+      recursivelyNotifyVisibleBoundsChanged(content);
+    }
+  }
+
   private void releaseAcquiredReferencesForRemovedItems(IncrementalMountExtensionInput input) {
     if (mInput == null) {
       return;
@@ -187,7 +189,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   }
 
   private void maybeAcquireReference(
-      Rect localVisibleRect, RenderTreeNode renderTreeNode, int position, boolean isMounting) {
+      final Rect localVisibleRect,
+      final RenderTreeNode renderTreeNode,
+      final int position,
+      final boolean isMounting) {
     final Object content = getContentAt(position);
     final long id = renderTreeNode.getRenderUnit().getId();
     // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
@@ -339,12 +344,12 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   }
 
   @VisibleForTesting
-  int getPreviousTopsIndex() {
+  public int getPreviousTopsIndex() {
     return mPreviousTopsIndex;
   }
 
   @VisibleForTesting
-  int getPreviousBottomsIndex() {
+  public int getPreviousBottomsIndex() {
     return mPreviousBottomsIndex;
   }
 
@@ -352,14 +357,8 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     return content instanceof Host && ((Host) content).getMountItemCount() > 0;
   }
 
-  void recursivelyNotifyVisibleBoundsChanged(final long id, final Object content) {
-    if (mInput != null && mInput.renderUnitWithIdHostsRenderTrees(id)) {
-      recursivelyNotifyVisibleBoundsChanged(content);
-    }
-  }
-
   private static void recursivelyNotifyVisibleBoundsChanged(final Object content) {
-    assertMainThread();
+    isMainThread();
     if (content instanceof RenderCoreExtensionHost) {
       final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
       host.notifyVisibleBoundsChanged();
