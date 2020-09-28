@@ -237,7 +237,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
           final int position = input.getLayoutOutputPositionForId(layoutOutput.getId());
-          updateAnimationLockCount(input, position, true, true);
+          updateAnimationLockCount(input, position, true);
         }
       }
     }
@@ -375,7 +375,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
         final LayoutOutput layoutOutput = (LayoutOutput) layoutOutputGroup.getAt(i);
         final int position = layoutOutput.getIndex();
-        updateAnimationLockCount(mLastTransitionsExtensionInput, position, false, false);
+        updateAnimationLockCount(mLastTransitionsExtensionInput, position, false);
       }
     }
   }
@@ -672,7 +672,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
    * items that have a lock count > 0 will not be unmounted during incremental mount.
    */
   private void updateAnimationLockCount(
-      TransitionsExtensionInput input, int index, boolean increment, boolean isMounting) {
+      TransitionsExtensionInput input, int index, boolean increment) {
     // Update children
     final int lastDescendantIndex = findLastDescendantIndex(input, index);
     for (int i = index; i <= lastDescendantIndex; i++) {
