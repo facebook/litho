@@ -220,6 +220,14 @@ public class HostView extends Host {
     final View view = (View) mountItem.getContent();
     mIsChildDrawingOrderDirty = true;
 
+    // Sometime a view is not getting it's 'pressed' state reset before unmount, causing that state
+    // to not be cleared and carried to next reuse, therefore applying wrong drawable state.
+    // Particular case where this might happen is when view is unmounted as soon as click event
+    // is triggered.
+    if (view.isPressed()) {
+      view.setPressed(false);
+    }
+
     if (mInLayout) {
       super.removeViewInLayout(view);
     } else {
