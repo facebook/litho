@@ -510,15 +510,16 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   private void mapDisappearingItemWithTransitionId(MountItem item) {
-    final TransitionId transitionId = getLayoutOutput(item).getTransitionId();
+    final AnimatableItem animatableItem =
+        mLockedDisappearingMountitems.get(item.getRenderTreeNode().getRenderUnit().getId());
+    final TransitionId transitionId = animatableItem.getTransitionId();
     OutputUnitsAffinityGroup<MountItem> disappearingGroup =
         mDisappearingMountItems.get(transitionId);
     if (disappearingGroup == null) {
       disappearingGroup = new OutputUnitsAffinityGroup<>();
       mDisappearingMountItems.put(transitionId, disappearingGroup);
     }
-    final @OutputUnitType int type =
-        LayoutStateOutputIdCalculator.getTypeFromId(getLayoutOutput(item).getId());
+    final @OutputUnitType int type = animatableItem.getOutputType();
     disappearingGroup.add(type, item);
   }
 
