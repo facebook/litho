@@ -487,4 +487,43 @@ public class ComponentUtils {
   public static void raise(ComponentContext c, Exception e) {
     throw new ReThrownException(e, c.getErrorEventHandler());
   }
+
+  /** Utility to dispatch an unhandled exception to a component. To be used by the framework. */
+  static void dispatchErrorEvent(ComponentContext c, Exception e) {
+    final ErrorEvent event = new ErrorEvent();
+    event.exception = e;
+    dispatchErrorEvent(c, event);
+  }
+
+  /** Utility to dispatch an error event to a component. To be used by the generated component. */
+  static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
+    final EventHandler<ErrorEvent> handler = c.getErrorEventHandler();
+    if (handler != null) {
+      handler.dispatchEvent(e);
+    }
+  }
+
+  /**
+   * Utility to get a component to handle an exception gracefully outside the layout phase. If the
+   * component re-raises the exception using {@link #raise(ComponentContext, Exception)} then the
+   * utility will rethrow the exception out of Litho.
+   */
+  static void handle(ComponentContext c, Exception e) {
+    try {
+      dispatchErrorEvent(c, e);
+    } catch (ReThrownException re) {
+      rethrow(e);
+    }
+  }
+
+  /** Utility to re-throw exceptions. */
+  static void rethrow(Exception e) {
+    if (e instanceof ReThrownException) {
+      rethrow(((ReThrownException) e).original);
+    } else if (e instanceof RuntimeException) {
+      throw (RuntimeException) e;
+    } else {
+      throw new RuntimeException(e);
+    }
+  }
 }

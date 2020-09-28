@@ -145,20 +145,20 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   void bind(ComponentContext c, Object mountedContent) {
     c.enterNoStateUpdatesMethod("bind");
-
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
     }
     try {
       onBind(c, mountedContent);
+    } catch (Exception e) {
+      ComponentUtils.handle(c, e);
     } finally {
+      c.exitNoStateUpdatesMethod();
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
     }
-
-    c.exitNoStateUpdatesMethod();
   }
 
   boolean canUsePreviousLayout(ComponentContext context) {
@@ -204,7 +204,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   void mount(ComponentContext c, Object convertContent) {
     c.enterNoStateUpdatesMethod("mount");
-
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("onMount:" + ((Component) this).getSimpleName());
@@ -212,15 +211,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     try {
       onMount(c, convertContent);
     } catch (Exception e) {
-      c.exitNoStateUpdatesMethod();
-      dispatchErrorEvent(c, e);
+      ComponentUtils.handle(c, e);
     } finally {
+      c.exitNoStateUpdatesMethod();
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
     }
-
-    c.exitNoStateUpdatesMethod();
   }
 
   final boolean shouldComponentUpdate(Component previous, Component next) {
@@ -232,11 +229,19 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   void unbind(ComponentContext c, Object mountedContent) {
-    onUnbind(c, mountedContent);
+    try {
+      onUnbind(c, mountedContent);
+    } catch (Exception e) {
+      ComponentUtils.handle(c, e);
+    }
   }
 
   void unmount(ComponentContext c, Object mountedContent) {
-    onUnmount(c, mountedContent);
+    try {
+      onUnmount(c, mountedContent);
+    } catch (Exception e) {
+      ComponentUtils.handle(c, e);
+    }
   }
 
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
@@ -586,17 +591,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * ComponentUtils#raise(ComponentContext, Exception)} instead.
    */
   protected static void dispatchErrorEvent(ComponentContext c, Exception e) {
-    final ErrorEvent errorEvent = new ErrorEvent();
-    errorEvent.exception = e;
-    dispatchErrorEvent(c, errorEvent);
+    ComponentUtils.dispatchErrorEvent(c, e);
   }
 
   /** For internal use, only. */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
-    final EventHandler<ErrorEvent> handler = c.getErrorEventHandler();
-    if (handler != null) {
-      handler.dispatchEvent(e);
-    }
+    ComponentUtils.dispatchErrorEvent(c, e);
   }
 
   protected abstract @Nullable EventHandler<ErrorEvent> getErrorHandler();

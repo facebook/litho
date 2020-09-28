@@ -23,10 +23,6 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
 
   @Override
   public void onError(Exception e) {
-    if (e instanceof RuntimeException) {
-      throw (RuntimeException) e;
-    } else {
-      throw new RuntimeException(e);
-    }
+    ComponentUtils.rethrow(e);
   }
 }

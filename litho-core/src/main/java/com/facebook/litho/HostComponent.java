@@ -75,9 +75,6 @@ class HostComponent extends Component {
     }
     try {
       onMount(c, convertContent);
-    } catch (Exception e) {
-      c.exitNoStateUpdatesMethod();
-      dispatchErrorEvent(c, e);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
