@@ -182,7 +182,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mHostMarker;
   }
 
-  long getId() {
+  @Override
+  public long getId() {
     return mId;
   }
 
@@ -245,6 +246,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Nullable
   public TransitionId getTransitionId() {
     return mTransitionId;
+  }
+
+  @Override
+  public int getOutputType() {
+    return LayoutStateOutputIdCalculator.getTypeFromId(getId());
   }
 
   static RenderTreeNode create(

@@ -2065,6 +2065,11 @@ public class LayoutState
   }
 
   @Override
+  public AnimatableItem getAnimatableItem(long id) {
+    return LayoutOutput.getLayoutOutput(getMountableOutputAt(getLayoutOutputPositionForId(id)));
+  }
+
+  @Override
   public ArrayList<RenderTreeNode> getMountableOutputTops() {
     return mMountableOutputTops;
   }

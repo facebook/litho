@@ -17,9 +17,18 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 
-/** Interface used to expose a limited API of {@link LayoutOutput} to the animations package. */
+/** Interface used to expose a limited API to the animations package. */
 public interface AnimatableItem {
+
+  long getId();
+
+  @Nullable
+  TransitionId getTransitionId();
+
+  @OutputUnitType
+  int getOutputType();
 
   Rect getBounds();
 
