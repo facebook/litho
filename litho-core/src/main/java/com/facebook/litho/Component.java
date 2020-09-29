@@ -178,7 +178,8 @@ public abstract class Component extends ComponentLifecycle
     return this;
   }
 
-  public ComponentContext getScopedContext() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  protected ComponentContext getScopedContext() {
     return mScopedContext;
   }
 
