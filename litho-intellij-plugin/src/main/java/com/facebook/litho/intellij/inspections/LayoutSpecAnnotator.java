@@ -60,7 +60,7 @@ public class LayoutSpecAnnotator implements Annotator {
     DEBUG_LOGGER.debug(element + " under analysis");
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.getSpecModel(layoutSpec))
+        Optional.ofNullable(ComponentGenerateService.getInstance().getSpecModel(layoutSpec))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {

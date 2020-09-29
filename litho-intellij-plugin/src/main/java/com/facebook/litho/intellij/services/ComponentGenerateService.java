@@ -35,7 +35,6 @@ import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
@@ -45,8 +44,10 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
@@ -57,11 +58,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ComponentGenerateService {
   private static final Logger LOG = Logger.getInstance(ComponentGenerateService.class);
-  private static final Key<SpecModel> KEY_SPEC_MODEL =
-      Key.create("com.facebook.litho.intellij.generation.SpecModel");
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
   private final List<String> underAnalysis = Collections.synchronizedList(new LinkedList<>());
+  private final Map<String, SpecModel> specFqnToModelMap =
+      Collections.synchronizedMap(createLRUMap(50));
 
   public interface SpecUpdateNotifier {
     void onSpecModelUpdated(PsiClass specCls);
@@ -134,7 +135,7 @@ public class ComponentGenerateService {
     if (model == null) return null;
 
     // New model might be malformed to generate component, but it's accurate to the Spec
-    layoutSpecCls.putUserData(KEY_SPEC_MODEL, model);
+    specFqnToModelMap.put(layoutSpecCls.getQualifiedName(), model);
     Set<SpecUpdateNotifier> copy;
     synchronized (listeners) {
       copy = new HashSet<>(listeners);
@@ -145,8 +146,8 @@ public class ComponentGenerateService {
   }
 
   @Nullable
-  public static SpecModel getSpecModel(PsiClass layoutSpecClass) {
-    return layoutSpecClass.getUserData(KEY_SPEC_MODEL);
+  public SpecModel getSpecModel(PsiClass layoutSpecClass) {
+    return specFqnToModelMap.get(layoutSpecClass.getQualifiedName());
   }
 
   /** Updates generated Component file from the given Spec model. */
@@ -235,5 +236,14 @@ public class ComponentGenerateService {
         .skipJavaLangImports(true)
         .build()
         .toString();
+  }
+
+  private static <K, V> Map<K, V> createLRUMap(final int maxEntries) {
+    return new LinkedHashMap<K, V>(maxEntries * 10 / 7, 0.7f, true) {
+      @Override
+      protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > maxEntries;
+      }
+    };
   }
 }

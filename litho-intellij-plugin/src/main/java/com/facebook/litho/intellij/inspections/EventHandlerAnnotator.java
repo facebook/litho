@@ -74,7 +74,7 @@ public class EventHandlerAnnotator implements Annotator {
     if (parentCls == null) {
       return;
     }
-    final SpecModel parentModel = ComponentGenerateService.getSpecModel(parentCls);
+    final SpecModel parentModel = ComponentGenerateService.getInstance().getSpecModel(parentCls);
     if (parentModel == null) {
       return;
     }

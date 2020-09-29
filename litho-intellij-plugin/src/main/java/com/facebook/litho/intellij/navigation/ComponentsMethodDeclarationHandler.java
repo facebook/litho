@@ -114,10 +114,10 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
   }
 
   private static PsiElement[] findSpecProps(PropSetter propSetter, PsiClass specCls) {
-    SpecModel specModel = ComponentGenerateService.getSpecModel(specCls);
+    SpecModel specModel = ComponentGenerateService.getInstance().getSpecModel(specCls);
     if (specModel == null) {
       ComponentGenerateService.getInstance().updateLayoutComponentSync(specCls);
-      specModel = ComponentGenerateService.getSpecModel(specCls);
+      specModel = ComponentGenerateService.getInstance().getSpecModel(specCls);
     }
     if (specModel == null) return PsiElement.EMPTY_ARRAY;
 

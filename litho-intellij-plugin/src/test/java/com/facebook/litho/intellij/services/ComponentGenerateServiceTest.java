@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -84,6 +85,29 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
               final PsiClass componentChanged =
                   ComponentsCacheService.getInstance(project).getComponent("Layout");
               assertThat(componentChanged).isNotSameAs(cls);
+            });
+  }
+
+  @Test
+  public void
+      getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameQfnExists_returnsExistingSpecModel()
+          throws IOException {
+    final PsiFile psiFile1 = testHelper.configure("LayoutSpec.java");
+    final PsiFile psiFile2 = testHelper.configure("LayoutSpec.java");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiClass psiClass1 = LithoPluginUtils.getFirstLayoutSpec(psiFile1).get();
+              final PsiClass psiClass2 = LithoPluginUtils.getFirstLayoutSpec(psiFile2).get();
+              assertThat(psiClass1.getQualifiedName()).isEqualTo(psiClass2.getQualifiedName());
+
+              ComponentGenerateService.getInstance().updateLayoutComponentSync(psiClass1);
+              final SpecModel specModel1 =
+                  ComponentGenerateService.getInstance().getSpecModel(psiClass1);
+              final SpecModel specModel2 =
+                  ComponentGenerateService.getInstance().getSpecModel(psiClass2);
+              assertThat(specModel2).isNotNull();
+              assertThat(specModel2).isEqualTo(specModel1);
             });
   }
 }
