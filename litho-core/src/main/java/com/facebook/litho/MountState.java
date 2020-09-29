@@ -194,8 +194,7 @@ class MountState
     if (!mLithoView.usingExtensionsWithMountDelegate()
         && ComponentsConfiguration.useIncrementalMountExtension) {
       mAcquireReferencesDuringMount = ComponentsConfiguration.extensionAcquireDuringMount;
-      mIncrementalMountExtension =
-          new IncrementalMountExtension(mLithoView, mAcquireReferencesDuringMount);
+      mIncrementalMountExtension = new IncrementalMountExtension(mAcquireReferencesDuringMount);
       mMountStateLogMessageProvider = new MountStateLogMessageProvider();
       registerMountDelegateExtension(mIncrementalMountExtension);
     }

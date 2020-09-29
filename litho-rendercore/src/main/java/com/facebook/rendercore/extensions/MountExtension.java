@@ -20,9 +20,11 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +47,15 @@ public class MountExtension<Input> {
 
   protected void resetAcquiredReferences() {
     mLayoutOutputMountRefs = new HashSet<>();
+  }
+
+  protected final @Nullable Host getRootHost() {
+    MountItem root = mMountDelegate.getMountDelegateTarget().getRootItem();
+    if (root != null) {
+      return (Host) root.getContent();
+    } else {
+      return null;
+    }
   }
 
   protected boolean isRootItem(int position) {

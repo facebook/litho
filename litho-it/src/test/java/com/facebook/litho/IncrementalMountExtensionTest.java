@@ -72,7 +72,7 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
-    final IncrementalMountExtension extension = new IncrementalMountExtension(lithoView);
+    final IncrementalMountExtension extension = new IncrementalMountExtension();
 
     extension.registerToDelegate(mountDelegate);
 
@@ -111,7 +111,7 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
-    final IncrementalMountExtension extension = new IncrementalMountExtension(lithoView);
+    final IncrementalMountExtension extension = new IncrementalMountExtension();
 
     extension.registerToDelegate(mountDelegate);
 

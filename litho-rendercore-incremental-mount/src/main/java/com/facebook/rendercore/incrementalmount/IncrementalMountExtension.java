@@ -39,7 +39,6 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   private static final Rect sTempRect = new Rect();
 
-  private final RenderCoreExtensionHost mHost;
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
   private final IncrementalMountBinder mAttachDetachBinder;
@@ -50,13 +49,11 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
 
-  public IncrementalMountExtension(final RenderCoreExtensionHost host) {
-    this(host, false);
+  public IncrementalMountExtension() {
+    this(false);
   }
 
-  public IncrementalMountExtension(
-      final RenderCoreExtensionHost host, final boolean acquireReferencesDuringMount) {
-    mHost = host;
+  public IncrementalMountExtension(final boolean acquireReferencesDuringMount) {
     mAcquireReferencesDuringMount = acquireReferencesDuringMount;
     mAttachDetachBinder = new IncrementalMountBinder(this);
   }
@@ -269,7 +266,8 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       }
     }
 
-    final int height = ((Host) mHost).getHeight();
+    Host root = getRootHost();
+    final int height = root != null ? root.getHeight() : 0;
     if (localVisibleRect.bottom < height || mPreviousLocalVisibleRect.bottom < height) {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
