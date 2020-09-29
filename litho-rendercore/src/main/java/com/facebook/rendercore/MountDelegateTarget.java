@@ -24,8 +24,7 @@ import java.util.ArrayList;
 /** Exposes Some RenderCore {@link MountState} API to {@link RenderCoreExtension} */
 public interface MountDelegateTarget {
 
-  void notifyMount(
-      final MountDelegateInput input, final RenderTreeNode renderTreeNode, final int position);
+  void notifyMount(final RenderTreeNode node, final int position);
 
   void notifyUnmount(int position);
 

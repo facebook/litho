@@ -85,14 +85,13 @@ public class MountDelegate {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void acquireMountRef(
-      RenderTreeNode renderTreeNode, int i, MountDelegateInput input, boolean isMounting) {
-    incrementExtensionRefCount(renderTreeNode);
+  public void acquireMountRef(RenderTreeNode node, int i, boolean isMounting) {
+    incrementExtensionRefCount(node);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
     if (isMounting) {
-      mMountDelegateTarget.notifyMount(input, renderTreeNode, i);
+      mMountDelegateTarget.notifyMount(node, i);
     }
   }
 

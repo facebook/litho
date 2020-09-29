@@ -432,11 +432,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
               releaseMountReference(
                   mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
             }
-            acquireMountReference(
-                mLastTransitionsExtensionInput.getMountableOutputAt(j),
-                j,
-                mLastTransitionsExtensionInput,
-                true);
+            acquireMountReference(mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
             // Here we have to release the ref count without mounting.
             releaseMountReference(mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
           }
@@ -687,7 +683,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
       if (increment) {
         if (!ownsReference(renderTreeNode)) {
-          acquireMountReference(renderTreeNode, i, input, false);
+          acquireMountReference(renderTreeNode, i, false);
         }
       } else {
         if (ownsReference(renderTreeNode)) {
@@ -704,7 +700,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(hostIndex);
       if (increment) {
         if (!ownsReference(renderTreeNode)) {
-          acquireMountReference(renderTreeNode, hostIndex, input, false);
+          acquireMountReference(renderTreeNode, hostIndex, false);
         }
       } else {
         if (ownsReference(renderTreeNode)) {

@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -129,22 +128,18 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   @Override
   protected void acquireMountReference(
-      final RenderTreeNode renderTreeNode,
-      final int position,
-      final MountDelegateInput input,
-      final boolean isMounting) {
+      final RenderTreeNode node, final int position, final boolean isMounting) {
     // Make sure the host is mounted before the child.
-    final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
+    final RenderTreeNode hostTreeNode = node.getParent();
     if (hostTreeNode != null) {
       final long hostId = hostTreeNode.getRenderUnit().getId();
       if (!ownsReference(hostId)) {
         final int hostIndex = mInput.getPositionForId(hostId);
-        acquireMountReference(
-            hostTreeNode, hostIndex, input, isMounting || mAcquireReferencesDuringMount);
+        acquireMountReference(hostTreeNode, hostIndex, isMounting || mAcquireReferencesDuringMount);
       }
     }
 
-    super.acquireMountReference(renderTreeNode, position, input, isMounting);
+    super.acquireMountReference(node, position, isMounting);
   }
 
   @Override
@@ -201,7 +196,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
             || isRootItem(position);
     final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
     if (isMountable && !hasAcquiredMountRef) {
-      acquireMountReference(renderTreeNode, position, mInput, isMounting);
+      acquireMountReference(renderTreeNode, position, isMounting);
     } else if (!isMountable && hasAcquiredMountRef) {
       if (!isMounting) {
         mPendingImmediateRemoval.put(position, renderTreeNode);
@@ -260,7 +255,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         if (!ownsReference(node)) {
           final long id = node.getRenderUnit().getId();
-          acquireMountReference(node, mInput.getPositionForId(id), mInput, true);
+          acquireMountReference(node, mInput.getPositionForId(id), true);
           mComponentIdsMountedInThisFrame.add(id);
         }
       }
@@ -277,7 +272,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = node.getRenderUnit().getId();
         if (!ownsReference(node)) {
-          acquireMountReference(node, mInput.getPositionForId(id), mInput, true);
+          acquireMountReference(node, mInput.getPositionForId(id), true);
           mComponentIdsMountedInThisFrame.add(id);
         }
         mPreviousTopsIndex++;

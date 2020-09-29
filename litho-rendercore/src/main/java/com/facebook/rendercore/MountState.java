@@ -76,12 +76,12 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
+  public void notifyMount(RenderTreeNode node, int position) {
     if (getItemAt(position) != null) {
       return;
     }
 
-    mountRenderUnit(position, renderTreeNode);
+    mountRenderUnit(position, node);
   }
 
   @Override

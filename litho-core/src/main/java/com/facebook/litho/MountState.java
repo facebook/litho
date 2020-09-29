@@ -71,7 +71,6 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
@@ -799,20 +798,12 @@ class MountState
   }
 
   @Override
-  public void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
+  public void notifyMount(RenderTreeNode node, int position) {
     if (getItemAt(position) != null) {
       return;
     }
-    // We need the LayoutState here to get the parent host. Check out D4182567
-    // Temporary - will get rid of passing this MountDelegateInput around.
-    // We either also keep the parent host on the LayoutOutput or we move to use
-    // RenderTreeNode.
-    if (input instanceof LayoutState) {
-      LayoutState layoutState = (LayoutState) input;
-      mountLayoutOutput(position, renderTreeNode, getLayoutOutput(renderTreeNode), layoutState);
-    } else {
-      throw new IllegalStateException("This is not supported for now");
-    }
+
+    mountLayoutOutput(position, node, getLayoutOutput(node), mLastMountedLayoutState);
   }
 
   @Override

@@ -19,7 +19,6 @@ package com.facebook.rendercore.testing;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -49,9 +48,8 @@ public class TestMountExtension extends MountExtension {
   }
 
   @Override
-  protected void acquireMountReference(
-      RenderTreeNode renderTreeNode, int position, MountDelegateInput input, boolean isMounting) {
-    super.acquireMountReference(renderTreeNode, position, input, isMounting);
+  protected void acquireMountReference(RenderTreeNode node, int position, boolean isMounting) {
+    super.acquireMountReference(node, position, isMounting);
   }
 
   @Override

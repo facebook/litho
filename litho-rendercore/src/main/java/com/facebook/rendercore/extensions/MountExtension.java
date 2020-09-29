@@ -22,7 +22,6 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
@@ -66,14 +65,13 @@ public class MountExtension<Input> {
     return mMountDelegate.getContentAt(position);
   }
 
-  protected void acquireMountReference(
-      RenderTreeNode renderTreeNode, int position, MountDelegateInput input, boolean isMounting) {
-    if (ownsReference(renderTreeNode)) {
+  protected void acquireMountReference(RenderTreeNode node, int position, boolean isMounting) {
+    if (ownsReference(node)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
 
-    mLayoutOutputMountRefs.add(renderTreeNode.getRenderUnit().getId());
-    mMountDelegate.acquireMountRef(renderTreeNode, position, input, isMounting);
+    mLayoutOutputMountRefs.add(node.getRenderUnit().getId());
+    mMountDelegate.acquireMountRef(node, position, isMounting);
   }
 
   protected void releaseMountReference(
