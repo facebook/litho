@@ -21,6 +21,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateInput;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,10 +56,7 @@ public class MountExtension<Input> {
   }
 
   protected void acquireMountReference(
-      RenderTreeNode renderTreeNode,
-      int position,
-      MountDelegate.MountDelegateInput input,
-      boolean isMounting) {
+      RenderTreeNode renderTreeNode, int position, MountDelegateInput input, boolean isMounting) {
     if (ownsReference(renderTreeNode)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
@@ -95,7 +94,7 @@ public class MountExtension<Input> {
     return false;
   }
 
-  public MountDelegate.MountDelegateTarget getMountTarget() {
+  public MountDelegateTarget getMountTarget() {
     return mMountDelegate.getMountDelegateTarget();
   }
 

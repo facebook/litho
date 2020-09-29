@@ -22,7 +22,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -273,8 +273,7 @@ public final class DebugComponent {
       return null;
     }
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
-        lithoView.getMountDelegateTarget();
+    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
     final StringBuilder sb = new StringBuilder();
 
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
@@ -309,8 +308,7 @@ public final class DebugComponent {
     }
 
     final Component component = getComponent();
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
-        lithoView.getMountDelegateTarget();
+    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
@@ -342,8 +340,7 @@ public final class DebugComponent {
     if (lithoView == null) {
       return null;
     }
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
-        lithoView.getMountDelegateTarget();
+    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
       final Component mountItemComponent =
@@ -428,7 +425,7 @@ public final class DebugComponent {
     final ComponentContext context = mNode.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
     final LithoView view = tree == null ? null : tree.getLithoView();
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+    final MountDelegateTarget mountDelegateTarget =
         view == null ? null : view.getMountDelegateTarget();
 
     if (mountDelegateTarget != null) {

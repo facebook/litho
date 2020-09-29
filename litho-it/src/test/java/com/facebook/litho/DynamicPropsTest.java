@@ -30,7 +30,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsResetValueTester;
 import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import org.junit.Before;
 import org.junit.Rule;
@@ -253,7 +253,7 @@ public class DynamicPropsTest {
         DynamicPropsResetValueTester.create(mContext).caller(stateUpdateCaller).build();
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+    final MountDelegateTarget mountDelegateTarget =
         mLithoViewRule.getLithoView().getMountDelegateTarget();
 
     long text1HostId = -1;

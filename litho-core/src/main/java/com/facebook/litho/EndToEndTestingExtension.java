@@ -19,8 +19,8 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.MountDelegateInput;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.Deque;
@@ -37,12 +37,12 @@ public class EndToEndTestingExtension
   private final MountDelegateTarget mMountDelegateTarget;
   private EndToEndTestingExtensionInput mInput;
 
-  public interface EndToEndTestingExtensionInput extends MountDelegate.MountDelegateInput {
+  public interface EndToEndTestingExtensionInput extends MountDelegateInput {
     int getTestOutputCount();
 
     TestOutput getTestOutputAt(int position);
 
-    int getLayoutOutputPositionForId(long id);
+    int getPositionForId(long id);
 
     RenderTreeNode getMountableOutputAt(int position);
 

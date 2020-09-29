@@ -71,7 +71,8 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.MountDelegateInput;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
@@ -799,8 +800,7 @@ class MountState
   }
 
   @Override
-  public void notifyMount(
-      MountDelegate.MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
+  public void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
     if (getItemAt(position) != null) {
       return;
     }
@@ -1554,7 +1554,7 @@ class MountState
 
     if (host == null) {
       // Host has not yet been mounted - mount it now.
-      final int hostMountIndex = layoutState.getLayoutOutputPositionForId(hostMarker);
+      final int hostMountIndex = layoutState.getPositionForId(hostMarker);
       final RenderTreeNode hostNode = layoutState.getMountableOutputAt(hostMountIndex);
       final LayoutOutput hostLayoutOutput = getLayoutOutput(hostNode);
       mountLayoutOutput(hostMountIndex, hostNode, hostLayoutOutput, layoutState);
@@ -2996,7 +2996,7 @@ class MountState
         final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
-          final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+          final int position = newLayoutState.getPositionForId(layoutOutput.getId());
           updateAnimationLockCount(newLayoutState, position, true);
         }
       }
@@ -3024,7 +3024,7 @@ class MountState
           return i - 1;
         }
 
-        final int parentIndex = layoutState.getLayoutOutputPositionForId(curentHostId);
+        final int parentIndex = layoutState.getPositionForId(curentHostId);
         final LayoutOutput parent = getLayoutOutput(layoutState.getMountableOutputAt(parentIndex));
         curentHostId = parent.getHostMarker();
       }
@@ -3057,7 +3057,7 @@ class MountState
     // Update parents
     long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getHostMarker();
     while (hostId != ROOT_HOST_ID) {
-      final int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
+      final int hostIndex = layoutState.getPositionForId(hostId);
       if (increment) {
         mAnimationLockedIndices[hostIndex]++;
       } else {
@@ -3370,7 +3370,7 @@ class MountState
                   .bottom) {
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final long id = getLayoutOutput(node).getId();
-        final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
+        final int layoutOutputIndex = layoutState.getPositionForId(id);
         if (!isAnimationLocked(node, layoutOutputIndex)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
         }
@@ -3385,14 +3385,10 @@ class MountState
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
-        final int layoutOutputIndex =
-            layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+        final int layoutOutputIndex = layoutState.getPositionForId(layoutOutput.getId());
         if (getItemAt(layoutOutputIndex) == null) {
           mountLayoutOutput(
-              layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
-              node,
-              layoutOutput,
-              layoutState);
+              layoutState.getPositionForId(layoutOutput.getId()), node, layoutOutput, layoutState);
           mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
         }
       }
@@ -3407,14 +3403,10 @@ class MountState
               > getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex)).getBounds().top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
-        final int layoutOutputIndex =
-            layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+        final int layoutOutputIndex = layoutState.getPositionForId(layoutOutput.getId());
         if (getItemAt(layoutOutputIndex) == null) {
           mountLayoutOutput(
-              layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
-              node,
-              layoutOutput,
-              layoutState);
+              layoutState.getPositionForId(layoutOutput.getId()), node, layoutOutput, layoutState);
           mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
         }
         mPreviousTopsIndex++;
@@ -3426,7 +3418,7 @@ class MountState
         mPreviousTopsIndex--;
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = getLayoutOutput(node).getId();
-        final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
+        final int layoutOutputIndex = layoutState.getPositionForId(id);
         if (!isAnimationLocked(node, layoutOutputIndex)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
         }
@@ -3437,7 +3429,7 @@ class MountState
       final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
       final long layoutOutputId = mCanMountIncrementallyMountItems.keyAt(i);
       if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
-        final int layoutOutputPosition = layoutState.getLayoutOutputPositionForId(layoutOutputId);
+        final int layoutOutputPosition = layoutState.getPositionForId(layoutOutputId);
         if (layoutOutputPosition != -1) {
           mountItemIncrementally(mountItem, processVisibilityOutputs);
         }

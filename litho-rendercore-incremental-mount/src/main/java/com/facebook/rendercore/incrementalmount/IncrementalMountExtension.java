@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -134,14 +134,14 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   protected void acquireMountReference(
       final RenderTreeNode renderTreeNode,
       final int position,
-      final MountDelegate.MountDelegateInput input,
+      final MountDelegateInput input,
       final boolean isMounting) {
     // Make sure the host is mounted before the child.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
     if (hostTreeNode != null) {
       final long hostId = hostTreeNode.getRenderUnit().getId();
       if (!ownsReference(hostId)) {
-        final int hostIndex = mInput.getLayoutOutputPositionForId(hostId);
+        final int hostIndex = mInput.getPositionForId(hostId);
         acquireMountReference(
             hostTreeNode, hostIndex, input, isMounting || mAcquireReferencesDuringMount);
       }
@@ -173,7 +173,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode node = mInput.getMountableOutputAt(i);
       final long id = node.getRenderUnit().getId();
-      if (input.getLayoutOutputPositionForId(id) < 0 && ownsReference(id)) {
+      if (input.getPositionForId(id) < 0 && ownsReference(id)) {
         releaseMountReference(node, i, false);
       }
     }
@@ -246,7 +246,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
                   .bottom) {
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final long id = node.getRenderUnit().getId();
-        final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(id);
+        final int layoutOutputIndex = mInput.getPositionForId(id);
         if (ownsReference(node)) {
           releaseMountReference(node, layoutOutputIndex, true);
         }
@@ -263,7 +263,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         if (!ownsReference(node)) {
           final long id = node.getRenderUnit().getId();
-          acquireMountReference(node, mInput.getLayoutOutputPositionForId(id), mInput, true);
+          acquireMountReference(node, mInput.getPositionForId(id), mInput, true);
           mComponentIdsMountedInThisFrame.add(id);
         }
       }
@@ -279,7 +279,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = node.getRenderUnit().getId();
         if (!ownsReference(node)) {
-          acquireMountReference(node, mInput.getLayoutOutputPositionForId(id), mInput, true);
+          acquireMountReference(node, mInput.getPositionForId(id), mInput, true);
           mComponentIdsMountedInThisFrame.add(id);
         }
         mPreviousTopsIndex++;
@@ -291,7 +291,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         mPreviousTopsIndex--;
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = node.getRenderUnit().getId();
-        final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(id);
+        final int layoutOutputIndex = mInput.getPositionForId(id);
         if (ownsReference(node)) {
           releaseMountReference(node, layoutOutputIndex, true);
         }
@@ -304,7 +304,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
       if (!mComponentIdsMountedInThisFrame.contains(id)) {
         if (isLockedForMount(node)) {
-          final int layoutOutputPosition = mInput.getLayoutOutputPositionForId(id);
+          final int layoutOutputPosition = mInput.getPositionForId(id);
           if (layoutOutputPosition != -1) {
             recursivelyNotifyVisibleBoundsChanged(id, getContentAt(i));
           }

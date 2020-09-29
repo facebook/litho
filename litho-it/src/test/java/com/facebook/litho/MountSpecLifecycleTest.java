@@ -34,7 +34,7 @@ import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -502,7 +502,7 @@ public class MountSpecLifecycleTest {
 
     mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+    final MountDelegateTarget mountDelegateTarget =
         mLithoViewRule.getLithoView().getMountDelegateTarget();
     assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1);
     assertThat(mountDelegateTarget.getMountItemAt(1)).isNotNull();
@@ -558,7 +558,7 @@ public class MountSpecLifecycleTest {
         ComponentTree.create(mLithoViewRule.getContext()).isReconciliationEnabled(false).build());
     mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+    final MountDelegateTarget mountDelegateTarget =
         mLithoViewRule.getLithoView().getMountDelegateTarget();
     assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1);
 

@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.facebook.rendercore.incrementalmount;
+package com.facebook.rendercore;
 
-import com.facebook.rendercore.MountDelegateInput;
-import com.facebook.rendercore.RenderTreeNode;
-import java.util.List;
+/** @deprecated Marked for removal; check out D4182567 for context. */
+@Deprecated
+public interface MountDelegateInput {
 
-public interface IncrementalMountExtensionInput extends MountDelegateInput {
+  /** Returns the position of {@link RenderUnit} given its id. */
+  int getPositionForId(long id);
 
-  int getMountableOutputCount();
-
-  List<RenderTreeNode> getMountableOutputTops();
-
-  List<RenderTreeNode> getMountableOutputBottoms();
-
-  boolean renderUnitWithIdHostsRenderTrees(long id);
+  /** Returns the {@link RenderTreeNode} given its absolute position. */
+  RenderTreeNode getMountableOutputAt(int position);
 }

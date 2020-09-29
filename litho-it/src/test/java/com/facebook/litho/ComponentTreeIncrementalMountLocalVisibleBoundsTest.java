@@ -32,7 +32,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,8 +57,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
             .build();
 
     mLithoView = mock(TestLithoView.class);
-    when(mLithoView.getMountDelegateTarget())
-        .thenReturn(mock(MountDelegate.MountDelegateTarget.class));
+    when(mLithoView.getMountDelegateTarget()).thenReturn(mock(MountDelegateTarget.class));
     Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
     Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
 

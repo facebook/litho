@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -33,56 +32,6 @@ public class MountDelegate {
   private final List<MountExtension> mMountExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
   private boolean mReferenceCountingEnabled = false;
-
-  // RenderCore MountState API
-  public interface MountDelegateTarget {
-    void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position);
-
-    void notifyUnmount(int position);
-
-    boolean needsRemount();
-
-    void mount(RenderTree renderTree);
-
-    void attach();
-
-    void detach();
-
-    void unmountAllItems();
-
-    void unbindMountItem(MountItem mountItem);
-
-    boolean isRootItem(int position);
-
-    @Nullable
-    MountItem getRootItem();
-
-    Object getContentAt(int position);
-
-    Object getContentById(long id);
-
-    int getContentCount();
-
-    /** @deprecated Only used for Litho's integration. Marked for removal. */
-    @Deprecated
-    void registerMountDelegateExtension(MountExtension mountExtension);
-
-    ArrayList<Host> getHosts();
-
-    @Nullable
-    MountItem getMountItemAt(int position);
-
-    int getMountItemCount();
-
-    void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension);
-  }
-
-  // IGNORE - Will be removed. Check out D4182567 for context.
-  public interface MountDelegateInput {
-    int getLayoutOutputPositionForId(long id);
-
-    RenderTreeNode getMountableOutputAt(int position);
-  }
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;

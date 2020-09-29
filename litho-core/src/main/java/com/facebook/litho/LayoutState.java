@@ -2066,7 +2066,7 @@ public class LayoutState
 
   @Override
   public AnimatableItem getAnimatableItem(long id) {
-    return LayoutOutput.getLayoutOutput(getMountableOutputAt(getLayoutOutputPositionForId(id)));
+    return LayoutOutput.getLayoutOutput(getMountableOutputAt(getPositionForId(id)));
   }
 
   @Override
@@ -2252,13 +2252,13 @@ public class LayoutState
    *     {@link LayoutState}
    */
   @Override
-  public int getLayoutOutputPositionForId(long layoutOutputId) {
+  public int getPositionForId(long layoutOutputId) {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
   }
 
   @Override
   public boolean renderUnitWithIdHostsRenderTrees(long id) {
-    RenderTreeNode node = getMountableOutputAt(getLayoutOutputPositionForId(id));
+    RenderTreeNode node = getMountableOutputAt(getPositionForId(id));
     final LayoutOutput output = LayoutOutput.getLayoutOutput(node);
     return output.getComponent().hasChildLithoViews();
   }
@@ -2266,7 +2266,7 @@ public class LayoutState
   /** @return a {@link LayoutOutput} for a given {@param layoutOutputId} */
   @Nullable
   LayoutOutput getLayoutOutput(long layoutOutputId) {
-    final int position = getLayoutOutputPositionForId(layoutOutputId);
+    final int position = getPositionForId(layoutOutputId);
     return position < 0 ? null : LayoutOutput.getLayoutOutput(getMountableOutputAt(position));
   }
 

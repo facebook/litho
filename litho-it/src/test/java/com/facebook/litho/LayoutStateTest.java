@@ -40,6 +40,6 @@ public class LayoutStateTest {
 
     final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(0);
     final long id = renderTreeNode.getRenderUnit().getId();
-    assertThat(layoutState.getLayoutOutputPositionForId(id)).isEqualTo(0);
+    assertThat(layoutState.getPositionForId(id)).isEqualTo(0);
   }
 }

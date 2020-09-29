@@ -36,7 +36,7 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +65,7 @@ public class MountStateRemountTest {
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
-        lithoView.getMountDelegateTarget();
+    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
 
     for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
       MountItem item = mountDelegateTarget.getMountItemAt(i);
@@ -96,8 +95,7 @@ public class MountStateRemountTest {
     assertThat(component3.isMounted()).isFalse();
     assertThat(component4.isMounted()).isFalse();
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
-        lithoView.getMountDelegateTarget();
+    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {

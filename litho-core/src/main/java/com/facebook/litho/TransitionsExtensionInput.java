@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.Map;
  * Delegate Input needs to implement this interface to provide access to specific transitions
  * information.
  */
-public interface TransitionsExtensionInput extends MountDelegate.MountDelegateInput {
+public interface TransitionsExtensionInput extends MountDelegateInput {
   int getMountableOutputCount();
 
   RenderTreeNode getMountableOutputAt(int index);

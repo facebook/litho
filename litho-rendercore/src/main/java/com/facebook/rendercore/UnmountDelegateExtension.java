@@ -29,7 +29,7 @@ public interface UnmountDelegateExtension {
 
   /**
    * This method is responsible for unmounting the item from the {@link Host} and unbinding the item
-   * from the {@link MountDelegate.MountDelegateTarget}.
+   * from the {@link MountDelegateTarget}.
    *
    * @param index
    * @param mountItem

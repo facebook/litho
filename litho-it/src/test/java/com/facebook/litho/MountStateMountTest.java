@@ -21,7 +21,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CardHeaderComponent;
-import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class MountStateMountTest {
 
     mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
-    final MountDelegate.MountDelegateTarget mountDelegateTarget =
+    final MountDelegateTarget mountDelegateTarget =
         mLithoViewRule.getLithoView().getMountDelegateTarget();
     assertThat(mountDelegateTarget.needsRemount()).isFalse();
 

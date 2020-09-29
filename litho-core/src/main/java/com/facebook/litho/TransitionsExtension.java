@@ -238,7 +238,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
-          final int position = input.getLayoutOutputPositionForId(layoutOutput.getId());
+          final int position = input.getPositionForId(layoutOutput.getId());
           updateAnimationLockCount(input, position, true);
         }
       }
@@ -700,7 +700,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     long hostId = getLayoutOutput(input.getMountableOutputAt(index)).getHostMarker();
 
     while (hostId != ROOT_HOST_ID) {
-      final int hostIndex = input.getLayoutOutputPositionForId(hostId);
+      final int hostIndex = input.getPositionForId(hostId);
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(hostIndex);
       if (increment) {
         if (!ownsReference(renderTreeNode)) {

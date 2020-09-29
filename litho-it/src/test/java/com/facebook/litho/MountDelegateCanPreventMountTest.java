@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.MountExtension;
 import org.junit.Test;
@@ -43,8 +44,7 @@ public class MountDelegateCanPreventMountTest {
     when(layoutOutput2.getRenderUnit()).thenReturn(lithoRenderUnit2);
     when(lithoRenderUnit2.getId()).thenReturn(2l);
 
-    MountDelegate.MountDelegateTarget mountDelegateTarget =
-        mock(MountDelegate.MountDelegateTarget.class);
+    MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
     MountDelegate mountDelegate = new MountDelegate(mountDelegateTarget);
 
     // When no extensions are present, calls to isLockedForMount default to true
@@ -82,8 +82,7 @@ public class MountDelegateCanPreventMountTest {
     when(layoutOutput1.getRenderUnit()).thenReturn(lithoRenderUnit);
     when(lithoRenderUnit.getId()).thenReturn(1l);
 
-    MountDelegate.MountDelegateTarget mountDelegateTarget =
-        mock(MountDelegate.MountDelegateTarget.class);
+    MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
     MountDelegate mountDelegate = new MountDelegate(mountDelegateTarget);
     MountExtension mountDelegateExtensionPreventMount = mock(MountExtension.class);
     when(mountDelegateExtensionPreventMount.canPreventMount()).thenReturn(true);

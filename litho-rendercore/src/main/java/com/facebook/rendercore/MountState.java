@@ -22,7 +22,6 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
-import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
@@ -77,8 +76,7 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public void notifyMount(
-      MountDelegate.MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
+  public void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
     if (getItemAt(position) != null) {
       return;
     }

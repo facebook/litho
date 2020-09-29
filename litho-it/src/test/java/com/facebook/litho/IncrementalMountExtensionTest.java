@@ -189,7 +189,7 @@ public class IncrementalMountExtensionTest {
     }
 
     @Override
-    public int getLayoutOutputPositionForId(long id) {
+    public int getPositionForId(long id) {
       return 0;
     }
 

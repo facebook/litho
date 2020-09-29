@@ -20,7 +20,7 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
-import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;

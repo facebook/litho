@@ -33,7 +33,7 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
