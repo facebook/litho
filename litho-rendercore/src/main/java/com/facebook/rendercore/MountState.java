@@ -451,10 +451,12 @@ public class MountState implements MountDelegateTarget {
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
           unmountItemRecursively(oldItem.getRenderTreeNode());
-        } else if (newPosition != i) {
-          // If a MountItem for this id exists and the hostMarker has not changed but its position
-          // in the outputs array has changed we need to update the position in the Host to ensure
+        } else if (oldItem.getRenderTreeNode().getPositionInParent()
+            != renderTreeNode.getPositionInParent()) {
+          // If a MountItem for this id exists and its Host has not changed but its position
+          // in the Host has changed we need to update the position in the Host to ensure
           // the z-ordering.
+
           oldItem
               .getHost()
               .moveItem(

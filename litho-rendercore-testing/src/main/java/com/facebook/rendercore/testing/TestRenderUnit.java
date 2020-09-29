@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TestRenderUnit extends RenderUnit {
 
-  private static AtomicLong sIdGenerator = new AtomicLong();
+  static AtomicLong sIdGenerator = new AtomicLong();
 
   private long mId;
 
