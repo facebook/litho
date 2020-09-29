@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+const repoUrl = 'https://github.com/facebook/litho';
+
 module.exports = {
+  onBrokenLinks: 'throw',
   title: 'Litho',
   tagline: 'A declarative UI framework for Android',
   url: 'https://fblitho.com',
   baseUrl: '/',
   favicon: 'images/favicon.png',
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'litho', // Usually your repo name.
+  organizationName: 'facebook',
+  projectName: 'litho',
   themeConfig: {
     navbar: {
       title: 'Litho',
@@ -46,11 +49,16 @@ module.exports = {
           position: 'right',
         },
         {
-          href: 'https://github.com/facebook/litho',
+          href: repoUrl,
           label: 'GitHub',
           position: 'right',
         },
       ],
+    },
+    colorMode: {
+      // Current CSS doesn't have high contrast so it needs some work before being enabled.
+      defaultMode: 'light',
+      disableSwitch: true,
     },
     algolia: {
       apiKey: '6502239eccd45af18518695c2b743307',
@@ -73,7 +81,7 @@ module.exports = {
             },
             {
               label: 'API',
-              to: 'javadoc',
+              to: 'pathname:///javadoc',
             },
           ],
         },
@@ -86,7 +94,7 @@ module.exports = {
             },
             {
               label: 'Open Source Projects',
-              to: 'https://opensource.facebook.com',
+              href: 'https://opensource.facebook.com',
             },
           ],
         },
@@ -95,11 +103,11 @@ module.exports = {
           items: [
             {
               label: 'Github',
-              to: 'https://github.com/facebook/litho',
+              href: repoUrl,
             },
             {
               label: 'Twitter',
-              to: 'https://twitter.com/fblitho',
+              href: 'https://twitter.com/fblitho',
             },
           ],
         },
@@ -110,7 +118,7 @@ module.exports = {
         href: 'https://opensource.facebook.com',
       },
       // Please do not remove the credits, help to publicize Docusaurus :)
-      copyright: `Copyright \u00A9 ${new Date().getFullYear()} Facebook, Inc. Built with Docusaurus.`,
+      copyright: `Copyright \u00A9 ${new Date().getFullYear()} Facebook, Inc.`,
     },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
