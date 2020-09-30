@@ -1666,7 +1666,7 @@ public class LayoutState
 
     if (mMountableOutputs.isEmpty()) {
       final Component component = Column.create(mContext).build();
-      component.updateInternalChildState(mContext);
+      final ComponentContext scopedContext = component.updateInternalChildState(mContext);
       final LayoutOutput output =
           new LayoutOutput(
               getLayoutStateContext(),

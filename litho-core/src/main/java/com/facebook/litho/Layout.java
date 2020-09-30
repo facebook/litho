@@ -91,7 +91,8 @@ class Layout {
       }
 
     } else {
-      Component updated = update(c, component, true);
+      ComponentContext updatedScopedContext = update(c, component, true);
+      Component updated = updatedScopedContext.getComponentScope();
       layout = current.reconcile(layoutStateContext, c, updated, updated.getGlobalKey());
     }
 
@@ -147,10 +148,9 @@ class Layout {
       }
 
       // 4. Update the component.
-      component = update(parent, component, reuseGlobalKey);
-
       // 5. Get the scoped context of the updated component.
-      c = component.getScopedContext(parent.getLayoutStateContext());
+      c = update(parent, component, reuseGlobalKey);
+      component = c.getComponentScope();
 
       // 6. Resolve the component into an InternalNode tree.
 
@@ -377,7 +377,7 @@ class Layout {
   }
 
   /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
-  static Component update(
+  static ComponentContext update(
       final ComponentContext parent, final Component original, final boolean reuseGlobalKey) {
 
     final Component component = original.getThreadSafeInstance();
@@ -392,10 +392,8 @@ class Layout {
     component.populateTreeProps(ancestor);
 
     // 2. Update the internal state of the component wrt the parent.
-    component.updateInternalChildState(parent);
-
     // 3. Get the scoped context from the updated component.
-    final ComponentContext c = component.getScopedContext(parent.getLayoutStateContext());
+    final ComponentContext c = component.updateInternalChildState(parent);
 
     // 4. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
@@ -405,7 +403,7 @@ class Layout {
       DebugComponent.applyOverrides(c, component);
     }
 
-    return component;
+    return c;
   }
 
   static void measure(

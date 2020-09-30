@@ -511,14 +511,14 @@ public abstract class Component extends ComponentLifecycle
     clone.copyInterStageImpl(this);
 
     // update the cloned component with the new context.
-    clone.updateInternalChildState(parentContext);
+    final ComponentContext scopedContext = clone.updateInternalChildState(parentContext);
 
     // create updated tree props for children.
     final TreeProps treeProps =
         getTreePropsForChildren(parentContext, parentContext.getTreeProps());
 
     // set updated tree props on the component.
-    clone.getScopedContext(layoutStateContext).setTreeProps(treeProps);
+    scopedContext.setTreeProps(treeProps);
 
     return clone;
   }
@@ -571,7 +571,7 @@ public abstract class Component extends ComponentLifecycle
 
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void updateInternalChildState(ComponentContext parentContext) {
+  protected ComponentContext updateInternalChildState(ComponentContext parentContext) {
     String globalKey = getGlobalKey();
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
@@ -595,6 +595,8 @@ public abstract class Component extends ComponentLifecycle
     if (mLayoutVersionGenerator != null) {
       mLayoutVersionGenerator.set(true);
     }
+
+    return scopedContext;
   }
 
   /**
