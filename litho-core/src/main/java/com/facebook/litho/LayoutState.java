@@ -246,6 +246,7 @@ public class LayoutState
 
   private StateHandler mStateHandler;
   private List<Component> mComponentsNeedingPreviousRenderData;
+  private List<String> mComponentKeysNeedingPreviousRenderData;
   @Nullable private TransitionId mCurrentTransitionId;
   @Nullable private OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
   private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
@@ -966,15 +967,22 @@ public class LayoutState
         }
       }
 
-      final ArrayList<Component> componentsNeedingPreviousRenderData =
+      final Map<String, Component> componentsNeedingPreviousRenderData =
           node.getComponentsNeedingPreviousRenderData();
       if (componentsNeedingPreviousRenderData != null) {
         if (layoutState.mComponentsNeedingPreviousRenderData == null) {
           layoutState.mComponentsNeedingPreviousRenderData = new ArrayList<>();
         }
+
+        if (layoutState.mComponentKeysNeedingPreviousRenderData == null) {
+          layoutState.mComponentKeysNeedingPreviousRenderData = new ArrayList<>();
+        }
         // We'll check for animations in mount
-        layoutState.mComponentsNeedingPreviousRenderData.addAll(
-            componentsNeedingPreviousRenderData);
+
+        for (Map.Entry<String, Component> entry : componentsNeedingPreviousRenderData.entrySet()) {
+          layoutState.mComponentKeysNeedingPreviousRenderData.add(entry.getKey());
+          layoutState.mComponentsNeedingPreviousRenderData.add(entry.getValue());
+        }
       }
     }
 
@@ -2367,6 +2375,12 @@ public class LayoutState
   @Nullable
   public List<Component> getComponentsNeedingPreviousRenderData() {
     return mComponentsNeedingPreviousRenderData;
+  }
+
+  @Override
+  @Nullable
+  public List<String> getComponentKeysNeedingPreviousRenderData() {
+    return mComponentKeysNeedingPreviousRenderData;
   }
 
   @Override

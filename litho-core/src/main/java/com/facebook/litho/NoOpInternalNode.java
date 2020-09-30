@@ -38,6 +38,7 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
@@ -51,7 +52,7 @@ class NoOpInternalNode implements InternalNode {
   public void addChildAt(InternalNode child, int index) {}
 
   @Override
-  public void addComponentNeedingPreviousRenderData(Component component) {}
+  public void addComponentNeedingPreviousRenderData(String key, Component component) {}
 
   @Override
   public void addTransition(Transition transition) {}
@@ -284,7 +285,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public ArrayList<Component> getComponentsNeedingPreviousRenderData() {
+  public Map<String, Component> getComponentsNeedingPreviousRenderData() {
     return null;
   }
 

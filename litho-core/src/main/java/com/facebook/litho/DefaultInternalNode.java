@@ -70,8 +70,10 @@ import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -160,7 +162,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable String mTransitionOwnerKey;
   private @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
-  private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
+  private @Nullable Map<String, Component> mComponentsNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable String mTestKey;
   private @Nullable Set<DebugComponent> mDebugComponents;
@@ -219,11 +221,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void addComponentNeedingPreviousRenderData(Component component) {
+  public void addComponentNeedingPreviousRenderData(String globalKey, Component component) {
     if (mComponentsNeedingPreviousRenderData == null) {
-      mComponentsNeedingPreviousRenderData = new ArrayList<>(1);
+      mComponentsNeedingPreviousRenderData = new HashMap<>(1);
     }
-    mComponentsNeedingPreviousRenderData.add(component);
+    mComponentsNeedingPreviousRenderData.put(globalKey, component);
   }
 
   @Override
@@ -595,7 +597,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable ArrayList<Component> getComponentsNeedingPreviousRenderData() {
+  public @Nullable Map<String, Component> getComponentsNeedingPreviousRenderData() {
     return mComponentsNeedingPreviousRenderData;
   }
 
@@ -1791,7 +1793,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   @Override
   public InternalNode reconcile(
-      LayoutStateContext layoutStateContext, ComponentContext c, Component next, @Nullable String nextKey) {
+      LayoutStateContext layoutStateContext,
+      ComponentContext c,
+      Component next,
+      @Nullable String nextKey) {
     final StateHandler stateHandler = c.getStateHandler();
     final Set<String> keys;
     if (stateHandler == null) {
@@ -1934,9 +1939,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     // 2. Update props.
 
     mComponentsNeedingPreviousRenderData = null;
-    for (Component component : components) {
+    for (int i = 0, size = components.size(); i < size; i++) {
+      final Component component = components.get(i);
+      final String key = componentKeys == null ? component.getGlobalKey() : componentKeys.get(i);
       if (component.needsPreviousRenderData()) {
-        addComponentNeedingPreviousRenderData(component);
+        addComponentNeedingPreviousRenderData(key, component);
       }
     }
 

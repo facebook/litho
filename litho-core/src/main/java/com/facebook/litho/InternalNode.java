@@ -37,6 +37,7 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /** Internal class representing a {@link ComponentLayout}. */
@@ -51,7 +52,7 @@ public interface InternalNode
 
   void addChildAt(InternalNode child, int index);
 
-  void addComponentNeedingPreviousRenderData(Component component);
+  void addComponentNeedingPreviousRenderData(String globalKey, Component component);
 
   void addTransition(Transition transition);
 
@@ -146,7 +147,7 @@ public interface InternalNode
   List<Component> getUnresolvedComponents();
 
   @Nullable
-  ArrayList<Component> getComponentsNeedingPreviousRenderData();
+  Map<String, Component> getComponentsNeedingPreviousRenderData();
 
   ComponentContext getContext();
 

@@ -47,6 +47,9 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
   List<Component> getComponentsNeedingPreviousRenderData();
 
   @Nullable
+  List<String> getComponentKeysNeedingPreviousRenderData();
+
+  @Nullable
   String getRootComponentName();
 
   @Nullable

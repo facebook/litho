@@ -136,6 +136,7 @@ class Layout {
 
     final InternalNode node;
     final ComponentContext c;
+    final String globalKey;
 
     try {
 
@@ -150,6 +151,7 @@ class Layout {
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
       c = update(parent, component, reuseGlobalKey);
+      globalKey = c.getGlobalKey();
       component = c.getComponentScope();
 
       // 6. Resolve the component into an InternalNode tree.
@@ -243,7 +245,7 @@ class Layout {
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {
       if (component.needsPreviousRenderData()) {
-        node.addComponentNeedingPreviousRenderData(component);
+        node.addComponentNeedingPreviousRenderData(globalKey, component);
       } else {
 
         // Calls onCreateTransition on the Spec.
