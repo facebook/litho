@@ -68,13 +68,15 @@ public class AttachDetachHandler {
     }
 
     if (toDetach != null) {
-      for (Component component : toDetach.values()) {
+      for (Map.Entry<String, Component> entry : toDetach.entrySet()) {
+        final Component component = entry.getValue();
         component.onDetached(component.getScopedContext(layoutStateContext));
       }
     }
 
     if (toAttach != null) {
-      for (Component component : toAttach.values()) {
+      for (Map.Entry<String, Component> entry : toAttach.entrySet()) {
+        final Component component = entry.getValue();
         component.onAttached(component.getScopedContext(layoutStateContext));
       }
     }
@@ -90,7 +92,12 @@ public class AttachDetachHandler {
       if (mAttached == null) {
         return;
       }
-      toDetach = new ArrayList<>(mAttached.values());
+      toDetach = new ArrayList<>();
+
+      for (Map.Entry<String, Component> entry : mAttached.entrySet()) {
+        toDetach.add(entry.getValue());
+      }
+
       mAttached.clear();
     }
 
