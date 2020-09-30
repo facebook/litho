@@ -617,7 +617,7 @@ public class ComponentContext {
   }
 
   @Nullable
-  LayoutStateContext getLayoutStateContext() {
+  public LayoutStateContext getLayoutStateContext() {
     return mLayoutStateContext;
   }
 

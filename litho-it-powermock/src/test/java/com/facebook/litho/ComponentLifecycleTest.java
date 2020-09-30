@@ -495,7 +495,7 @@ public class ComponentLifecycleTest {
                 false,
                 mPreviousOnErrorConfig));
 
-    when(component.getScopedContext()).thenReturn(mContext);
+    when(component.getScopedContext(any(LayoutStateContext.class))).thenReturn(mContext);
 
     return component;
   }
@@ -509,7 +509,7 @@ public class ComponentLifecycleTest {
   private static Component createSpyComponent(
       ComponentContext context, TestBaseComponent component) {
     Component spy = spy(component);
-    when(spy.getScopedContext()).thenReturn(context);
+    when(spy.getScopedContext(any(LayoutStateContext.class))).thenReturn(context);
     when(spy.makeShallowCopy()).thenReturn(spy);
     return spy;
   }

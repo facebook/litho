@@ -56,6 +56,7 @@ class WorkingRangeContainer {
    * the component to trigger its delegate method.
    */
   void checkWorkingRangeAndDispatch(
+      LayoutStateContext layoutStateContext,
       int position,
       int firstVisibleIndex,
       int lastVisibleIndex,
@@ -78,7 +79,8 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          component.dispatchOnEnteredRange(component.getScopedContext(), rangeTuple.mName);
+          component.dispatchOnEnteredRange(
+              component.getScopedContext(layoutStateContext), rangeTuple.mName);
           statusHandler.setEnteredRangeStatus(rangeTuple.mName, component);
 
         } else if (statusHandler.isInRange(rangeTuple.mName, component)
@@ -89,7 +91,8 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          component.dispatchOnExitedRange(component.getScopedContext(), rangeTuple.mName);
+          component.dispatchOnExitedRange(
+              component.getScopedContext(layoutStateContext), rangeTuple.mName);
           statusHandler.setExitedRangeStatus(rangeTuple.mName, component);
         }
       }
@@ -100,7 +103,8 @@ class WorkingRangeContainer {
    * Dispatch onExitRange if the status of the component is in the range. This method should only be
    * called when releasing a ComponentTree, thus no status update needed.
    */
-  void dispatchOnExitedRangeIfNeeded(WorkingRangeStatusHandler statusHandler) {
+  void dispatchOnExitedRangeIfNeeded(
+      LayoutStateContext layoutStateContext, WorkingRangeStatusHandler statusHandler) {
     if (mWorkingRanges == null) {
       return;
     }
@@ -110,7 +114,8 @@ class WorkingRangeContainer {
 
       for (Component component : rangeTuple.mComponents) {
         if (statusHandler.isInRange(rangeTuple.mName, component)) {
-          component.dispatchOnExitedRange(component.getScopedContext(), rangeTuple.mName);
+          component.dispatchOnExitedRange(
+              component.getScopedContext(layoutStateContext), rangeTuple.mName);
         }
       }
     }

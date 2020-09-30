@@ -30,7 +30,7 @@ import java.util.Map;
  * the instances directly helps with clearing out the reference from all objects that hold on to it,
  * without having to keep track of all these objects to clear out the references.
  */
-final class LayoutStateContext {
+public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private final @Nullable Map<String, Component> mGlobalKeyToComponent;
@@ -70,6 +70,11 @@ final class LayoutStateContext {
       String globalKey, Component component, ComponentContext scopedContext) {
     mGlobalKeyToComponent.put(globalKey, component);
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
+  }
+
+  @Nullable
+  ComponentContext getScopedContext(String globalKey) {
+    return mGlobalKeyToScopedContext.get(globalKey);
   }
 
   void releaseReference() {

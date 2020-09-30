@@ -79,8 +79,9 @@ public final class DebugComponent {
    *     traversal.
    */
   @Nullable
-  public static DebugComponent getRootInstance(Component component) {
-    return getRootInstance(component.getScopedContext().getComponentTree());
+  public static DebugComponent getRootInstance(
+      LayoutStateContext layoutStateContext, Component component) {
+    return getRootInstance(component.getScopedContext(layoutStateContext).getComponentTree());
   }
 
   @Nullable

@@ -179,11 +179,25 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected ComponentContext getScopedContext() {
+  @Nullable
+  protected ComponentContext getScopedContext(@Nullable LayoutStateContext layoutStateContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      if (layoutStateContext == null) {
+        throw new IllegalStateException(
+            "Should not attempt to get a scoped context outside of a LayoutStateContext");
+      }
+
+      return layoutStateContext.getScopedContext(getGlobalKey());
+    }
+
     return mScopedContext;
   }
 
   public void setScopedContext(ComponentContext scopedContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      return;
+    }
+
     mScopedContext = scopedContext;
 
     if (mLayoutCreatedInWillRender != null) {
@@ -488,6 +502,7 @@ public abstract class Component extends ComponentLifecycle
   /** Returns an updated shallow copy of this component with the same global key. */
   Component makeUpdatedShallowCopy(final ComponentContext parentContext) {
     final Component clone = makeShallowCopy();
+    final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
 
     // set the global key so that it is not generated again and overridden.
     clone.setGlobalKey(getGlobalKey());
@@ -503,7 +518,7 @@ public abstract class Component extends ComponentLifecycle
         getTreePropsForChildren(parentContext, parentContext.getTreeProps());
 
     // set updated tree props on the component.
-    clone.getScopedContext().setTreeProps(treeProps);
+    clone.getScopedContext(layoutStateContext).setTreeProps(treeProps);
 
     return clone;
   }
@@ -593,7 +608,9 @@ public abstract class Component extends ComponentLifecycle
       final ComponentContext parentContext, final ComponentContext scopedContext) {
     populateTreeProps(scopedContext.getTreeProps());
     if (hasState()) {
-      parentContext.getStateHandler().applyStateUpdatesForComponent(this);
+      parentContext
+          .getStateHandler()
+          .applyStateUpdatesForComponent(parentContext.getLayoutStateContext(), this);
     }
   }
 
@@ -683,7 +700,7 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    final ComponentContext scopedContext = component.getScopedContext();
+    final ComponentContext scopedContext = component.getScopedContext(c.getLayoutStateContext());
     if (scopedContext != null) {
       assertSameBaseContext(scopedContext, c);
     }

@@ -40,20 +40,22 @@ public class WorkingRangeContainerTest {
   private Component mComponent;
   private Component mComponent2;
   private ComponentContext mComponentContext;
+  private LayoutStateContext mLayoutStateContext;
 
   @Before
   public void setup() {
     mWorkingRangeContainer = new WorkingRangeContainer();
 
     mComponentContext = mock(ComponentContext.class);
+    mLayoutStateContext = mock(LayoutStateContext.class);
 
     mWorkingRange = new TestWorkingRange();
     mComponent = mock(Component.class);
     when(mComponent.getGlobalKey()).thenReturn("component");
     mComponent2 = mock(Component.class);
     when(mComponent2.getGlobalKey()).thenReturn("component2");
-    when(mComponent.getScopedContext()).thenReturn(mComponentContext);
-    when(mComponent2.getScopedContext()).thenReturn(mComponentContext);
+    when(mComponent.getScopedContext(mLayoutStateContext)).thenReturn(mComponentContext);
+    when(mComponent2.getScopedContext(mLayoutStateContext)).thenReturn(mComponentContext);
   }
 
   @Test
@@ -110,7 +112,7 @@ public class WorkingRangeContainerTest {
         .when(mComponent2)
         .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
 
-    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler);
+    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(mLayoutStateContext, statusHandler);
 
     verify(mComponent, times(1)).dispatchOnExitedRange(mComponentContext, NAME);
     verify(mComponent2, times(0)).dispatchOnExitedRange(mComponentContext, NAME);

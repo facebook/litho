@@ -915,7 +915,8 @@ public class LayoutState
       if (isTracing) {
         ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
       }
-      component.onBoundsDefined(component.getScopedContext(), node);
+      component.onBoundsDefined(
+          component.getScopedContext(layoutState.getLayoutStateContext()), node);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -934,7 +935,10 @@ public class LayoutState
     }
 
     // 4. Extract the Transitions.
-    if (Layout.areTransitionsEnabled(component != null ? component.getScopedContext() : null)) {
+    if (Layout.areTransitionsEnabled(
+        component != null
+            ? component.getScopedContext(layoutState.getLayoutStateContext())
+            : null)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -1064,6 +1068,7 @@ public class LayoutState
         rect.bottom = rect.top + node.getHeight();
       }
 
+      final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
       for (Component delegate : node.getComponents()) {
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
@@ -1071,8 +1076,9 @@ public class LayoutState
         // might not be accessing the correct props and state on the event handlers. The null
         // checkers cover tests, the scope and tree should not be null at this point of the layout
         // calculation.
-        if (delegate.getScopedContext() != null
-            && delegate.getScopedContext().getComponentTree() != null) {
+        final ComponentContext delegateScopedContext =
+            delegate.getScopedContext(layoutStateContext);
+        if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
           }
@@ -2404,6 +2410,7 @@ public class LayoutState
     }
 
     mWorkingRangeContainer.checkWorkingRangeAndDispatch(
+        getLayoutStateContext(),
         position,
         firstVisibleIndex,
         lastVisibleIndex,
@@ -2417,7 +2424,7 @@ public class LayoutState
       return;
     }
 
-    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler);
+    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(getLayoutStateContext(), stateHandler);
   }
 
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {

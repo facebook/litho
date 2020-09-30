@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -140,13 +141,13 @@ public class LogTreePopulatorTest {
 
     final TreeProps treeProps = new TreeProps();
     final Component component = mock(Component.class);
-    when(component.getScopedContext()).thenReturn(mContext);
+    final ComponentContext scopedContext = mContext;
+    when(component.getScopedContext(any(LayoutStateContext.class))).thenReturn(scopedContext);
 
     treeProps.put(MyKey.class, 1337);
     mContext.setTreeProps(treeProps);
 
-    final String res =
-        LogTreePopulator.getAnnotationBundleFromLogger(component.getScopedContext(), logger);
+    final String res = LogTreePopulator.getAnnotationBundleFromLogger(scopedContext, logger);
     assertThat(res).isEqualTo("my_key:1337;other_key:value;");
   }
 

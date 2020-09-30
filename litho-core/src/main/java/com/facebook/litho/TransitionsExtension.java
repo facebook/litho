@@ -320,7 +320,8 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
-      final Transition transition = component.createTransition(component.getScopedContext());
+      // TOOD: will wait until we move the TransitionsExtension out of Litho.
+      final Transition transition = component.createTransition(component.getScopedContext(null));
       if (transition != null) {
         TransitionUtils.addTransitions(transition, outList, input.getRootComponentName());
       }

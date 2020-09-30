@@ -459,6 +459,13 @@ public class ComponentTree {
     return mCommittedLayoutState;
   }
 
+  @VisibleForTesting
+  @Nullable
+  LayoutStateContext getLayoutStateContext() {
+    final LayoutState layoutState = getCommittedLayoutState();
+    return layoutState == null ? null : layoutState.getLayoutStateContext();
+  }
+
   /** Whether this ComponentTree has been mounted at least once. */
   public boolean hasMounted() {
     return mHasMounted;
@@ -1378,9 +1385,10 @@ public class ComponentTree {
     mEventHandlersController.recordEventHandler(component.getGlobalKey(), eventHandler);
   }
 
-  private void bindTriggerHandler(Component component) {
+  private void bindTriggerHandler(LayoutStateContext layoutStateContext, Component component) {
     synchronized (mEventTriggersContainer) {
-      component.recordEventTrigger(component.getScopedContext(), mEventTriggersContainer);
+      component.recordEventTrigger(
+          component.getScopedContext(layoutStateContext), mEventTriggersContainer);
     }
   }
 
@@ -2044,6 +2052,7 @@ public class ComponentTree {
 
     List<Component> components = null;
     @Nullable Map<String, Component> attachables = null;
+    LayoutStateContext layoutStateContext = null;
 
     int rootWidth = 0;
     int rootHeight = 0;
@@ -2088,6 +2097,7 @@ public class ComponentTree {
 
         components = localLayoutState.consumeComponents();
         attachables = localLayoutState.consumeAttachables();
+        layoutStateContext = localLayoutState.getLayoutStateContext();
       }
 
       if (layoutStateStateHandler != null) {
@@ -2121,14 +2131,14 @@ public class ComponentTree {
       }
 
       if (mAttachDetachHandler != null) {
-        mAttachDetachHandler.onAttached(attachables);
+        mAttachDetachHandler.onAttached(layoutStateContext, attachables);
       } else if (attachables != null) {
-        getOrCreateAttachDetachHandler().onAttached(attachables);
+        getOrCreateAttachDetachHandler().onAttached(layoutStateContext, attachables);
       }
     }
 
     if (components != null) {
-      bindEventAndTriggerHandlers(components);
+      bindEventAndTriggerHandlers(layoutStateContext, components);
     }
 
     if (committedNewLayout) {
@@ -2149,13 +2159,14 @@ public class ComponentTree {
     }
   }
 
-  private void bindEventAndTriggerHandlers(List<Component> components) {
+  private void bindEventAndTriggerHandlers(
+      LayoutStateContext layoutStateContext, List<Component> components) {
     clearUnusedTriggerHandlers();
 
     for (final Component component : components) {
       mEventHandlersController.bindEventHandlers(
-          component.getScopedContext(), component, component.getGlobalKey());
-      bindTriggerHandler(component);
+          component.getScopedContext(layoutStateContext), component, component.getGlobalKey());
+      bindTriggerHandler(layoutStateContext, component);
     }
 
     mEventHandlersController.clearUnusedEventHandlers();

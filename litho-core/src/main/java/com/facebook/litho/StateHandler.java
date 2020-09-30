@@ -158,7 +158,7 @@ public class StateHandler {
    * @param component the new component
    */
   @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesForComponent(Component component) {
+  void applyStateUpdatesForComponent(LayoutStateContext layoutStateContext, Component component) {
     maybeInitStateContainers();
     maybeInitNeededStateContainers();
 
@@ -168,7 +168,7 @@ public class StateHandler {
 
     final String key = component.getGlobalKey();
     final StateContainer currentStateContainer;
-    final ComponentContext scopedContext = component.getScopedContext();
+    final ComponentContext scopedContext = component.getScopedContext(layoutStateContext);
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
@@ -178,13 +178,13 @@ public class StateHandler {
     if (currentStateContainer != null) {
       component.transferState(currentStateContainer, component.getStateContainer());
     } else {
-      final ComponentTree componentTree = component.getScopedContext().getComponentTree();
+      final ComponentTree componentTree = scopedContext.getComponentTree();
       if (componentTree != null && componentTree.getInitialStateContainer() != null) {
         componentTree
             .getInitialStateContainer()
             .createOrGetInitialStateForComponent(component, scopedContext);
       } else {
-        component.createInitialState(component.getScopedContext());
+        component.createInitialState(scopedContext);
       }
     }
 

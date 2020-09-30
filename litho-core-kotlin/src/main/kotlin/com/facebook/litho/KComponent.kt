@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.config.ComponentsConfiguration
 import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
@@ -60,9 +61,9 @@ open class KComponent private constructor(
       return false
     }
 
-    if (shouldCompareState) { // Check hooks
-      val hooksHandler = scopedContext?.hooksHandler
-      val otherHooksHandler = other.scopedContext?.hooksHandler
+    if (!ComponentsConfiguration.useStatelessComponent && shouldCompareState) { // Check hooks
+      val hooksHandler = getScopedContext(null)?.hooksHandler
+      val otherHooksHandler = other.getScopedContext(null)?.hooksHandler
       if (hooksHandler !== otherHooksHandler) {
         if (hooksHandler == null || !hooksHandler.isEquivalentTo(otherHooksHandler)) {
           return false

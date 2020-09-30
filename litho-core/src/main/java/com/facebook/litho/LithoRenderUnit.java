@@ -110,7 +110,9 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().mount(output.getComponent().getScopedContext(), content);
+      output
+          .getComponent()
+          .mount(output.getComponent().getScopedContext(output.getLayoutStateContext()), content);
     }
 
     @Override
@@ -120,7 +122,9 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unmount(output.getComponent().getScopedContext(), content);
+      output
+          .getComponent()
+          .unmount(output.getComponent().getScopedContext(output.getLayoutStateContext()), content);
     }
   }
 
@@ -149,7 +153,9 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         }
       }
 
-      output.getComponent().bind(output.getComponent().getScopedContext(), content);
+      output
+          .getComponent()
+          .bind(output.getComponent().getScopedContext(output.getLayoutStateContext()), content);
     }
 
     @Override
@@ -159,7 +165,9 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unbind(output.getComponent().getScopedContext(), content);
+      output
+          .getComponent()
+          .unbind(output.getComponent().getScopedContext(output.getLayoutStateContext()), content);
     }
   }
 

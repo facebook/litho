@@ -1925,13 +1925,14 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     updated.add(head);
 
     // 2. Set parent context for descendants.
-    ComponentContext parentContext = head.getScopedContext();
+    ComponentContext parentContext = head.getScopedContext(layoutStateContext);
 
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
       Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext);
       updated.add(component);
-      parentContext = component.getScopedContext(); // set parent context for descendant
+      parentContext =
+          component.getScopedContext(layoutStateContext); // set parent context for descendant
     }
 
     // 4. Reverse the list so that the root component is at index 0.
@@ -2072,7 +2073,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       final DefaultInternalNode current,
       final Component next,
       final Set<String> keys) {
-    int mode = getReconciliationMode(next.getScopedContext(), current, keys);
+    int mode = getReconciliationMode(next.getScopedContext(layoutStateContext), current, keys);
     final InternalNode layout;
 
     switch (mode) {
@@ -2135,7 +2136,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     // 2. Shallow copy this layout.
     final DefaultInternalNode layout =
         getCleanUpdatedShallowCopy(layoutStateContext, current, next, copiedNode);
-    ComponentContext parentContext = layout.getTailComponent().getScopedContext();
+    ComponentContext parentContext = layout.getTailComponent().getScopedContext(layoutStateContext);
 
     // 3. Clear the nested tree
     if (layout.getNestedTree() != null) {
@@ -2210,7 +2211,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     List<Component> updated = current.getUpdatedComponents(layoutStateContext, head);
 
     // 4. Update the layout with the updated context, components, and YogaNode.
-    layout.updateWith(head.getScopedContext(), node, updated, null);
+    layout.updateWith(head.getScopedContext(layoutStateContext), node, updated, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();

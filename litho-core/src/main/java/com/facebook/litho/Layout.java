@@ -150,7 +150,7 @@ class Layout {
       component = update(parent, component, reuseGlobalKey);
 
       // 5. Get the scoped context of the updated component.
-      c = component.getScopedContext();
+      c = component.getScopedContext(parent.getLayoutStateContext());
 
       // 6. Resolve the component into an InternalNode tree.
 
@@ -285,7 +285,10 @@ class Layout {
     // Find the immediate parent context
     List<Component> components = holder.getComponents();
     if (components.size() > 1) {
-      parentContext = components.get(components.size() - 2).getScopedContext();
+      parentContext =
+          components
+              .get(components.size() - 2)
+              .getScopedContext(parentContext.getLayoutStateContext());
     }
 
     if (component == null) {
@@ -392,7 +395,7 @@ class Layout {
     component.updateInternalChildState(parent);
 
     // 3. Get the scoped context from the updated component.
-    final ComponentContext c = component.getScopedContext();
+    final ComponentContext c = component.getScopedContext(parent.getLayoutStateContext());
 
     // 4. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);

@@ -41,6 +41,8 @@ public class AttachDetachHandler {
   @Nullable
   private Map<String, Component> mAttached;
 
+  private @Nullable LayoutStateContext mLayoutStateContext;
+
   /**
    * Execute {@link OnAttached} method for components in the set of given attachable minus {@link
    * #mAttached}; execute {@link OnDetached} method for components in the set of {@link #mAttached}
@@ -49,7 +51,8 @@ public class AttachDetachHandler {
    * @param attachable contains components that have implemented {@link OnAttached} or {@link
    *     OnDetached} delegate methods.
    */
-  void onAttached(@Nullable Map<String, Component> attachable) {
+  void onAttached(
+      LayoutStateContext layoutStateContext, @Nullable Map<String, Component> attachable) {
     @Nullable final Map<String, Component> toAttach;
     @Nullable final Map<String, Component> toDetach;
     synchronized (this) {
@@ -58,6 +61,7 @@ public class AttachDetachHandler {
 
       if (attachable != null) {
         mAttached = new LinkedHashMap<>(attachable);
+        mLayoutStateContext = layoutStateContext;
       } else {
         mAttached = null;
       }
@@ -65,13 +69,13 @@ public class AttachDetachHandler {
 
     if (toDetach != null) {
       for (Component component : toDetach.values()) {
-        component.onDetached(component.getScopedContext());
+        component.onDetached(component.getScopedContext(layoutStateContext));
       }
     }
 
     if (toAttach != null) {
       for (Component component : toAttach.values()) {
-        component.onAttached(component.getScopedContext());
+        component.onAttached(component.getScopedContext(layoutStateContext));
       }
     }
   }
@@ -92,7 +96,7 @@ public class AttachDetachHandler {
 
     for (int i = 0, size = toDetach.size(); i < size; i++) {
       final Component component = toDetach.get(i);
-      component.onDetached(component.getScopedContext());
+      component.onDetached(component.getScopedContext(mLayoutStateContext));
     }
   }
 

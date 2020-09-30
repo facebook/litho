@@ -174,6 +174,7 @@ class MountState
   private @Nullable VisibilityOutputsExtension mVisibilityOutputsExtension;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable MountStateLogMessageProvider mMountStateLogMessageProvider;
+  private LayoutStateContext mLayoutStateContext;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -335,6 +336,7 @@ class MountState
                 logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
     if (mIsDirty) {
+      mLayoutStateContext = layoutState.getLayoutStateContext();
       updateTransitions(layoutState, componentTree, localVisibleRect);
 
       // Prepare the data structure for the new LayoutState and removes mountItems
@@ -494,6 +496,7 @@ class MountState
     final ComponentTree componentTree = mLithoView.getComponentTree();
 
     if (mIsDirty) {
+      mLayoutStateContext = layoutState.getLayoutStateContext();
       updateTransitions(layoutState, componentTree, localVisibleRect);
     }
 
@@ -526,7 +529,7 @@ class MountState
   @Override
   public void mount(RenderTree renderTree) {
     final LayoutState layoutState = (LayoutState) renderTree.getRenderTreeData();
-
+    mLayoutStateContext = layoutState.getLayoutStateContext();
     mount(layoutState, true);
   }
 
@@ -1598,7 +1601,7 @@ class MountState
       mMountStats.mountedCount++;
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(
-              component.getScopedContext(), context.getLogger()));
+              component.getScopedContext(mLayoutStateContext), context.getLogger()));
     }
   }
 
@@ -3520,7 +3523,9 @@ class MountState
 
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
-      final Transition transition = component.createTransition(component.getScopedContext());
+      final Transition transition =
+          component.createTransition(
+              component.getScopedContext(layoutState.getLayoutStateContext()));
       if (transition != null) {
         TransitionUtils.addTransitions(transition, outList, layoutState.mRootComponentName);
       }
@@ -3546,7 +3551,7 @@ class MountState
    * that is passed to MountState from the LithoView, which is not scoped.
    */
   private ComponentContext getContextForComponent(Component component) {
-    final ComponentContext c = component.getScopedContext();
+    final ComponentContext c = component.getScopedContext(mLayoutStateContext);
     return c == null ? mContext : c;
   }
 
