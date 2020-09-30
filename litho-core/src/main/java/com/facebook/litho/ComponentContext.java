@@ -53,6 +53,9 @@ public class ComponentContext {
   private Component mComponentScope;
 
   @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable String mGlobalKey;
+
+  @ThreadConfined(ThreadConfined.ANY)
   private final ResourceCache mResourceCache;
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -268,6 +271,10 @@ public class ComponentContext {
   }
 
   public String getGlobalKey() {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      return mGlobalKey;
+    }
+
     if (mComponentScope == null) {
       throw new RuntimeException(
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
@@ -579,6 +586,7 @@ public class ComponentContext {
     if (ComponentsConfiguration.useStatelessComponent
         && globalKey != null
         && componentContext.getLayoutStateContext() != null) {
+      componentContext.mGlobalKey = globalKey;
       componentContext
           .getLayoutStateContext()
           .addScopedComponentInfo(globalKey, scope, componentContext);
