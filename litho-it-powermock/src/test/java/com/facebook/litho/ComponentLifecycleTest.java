@@ -170,9 +170,10 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, true);
 
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(mContext);
   }
@@ -181,9 +182,10 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, false);
 
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(mContext);
   }
@@ -192,9 +194,10 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, true);
 
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(mContext);
   }
@@ -203,9 +206,10 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, false);
 
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(mContext);
   }
@@ -214,10 +218,11 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, true);
 
     verify(component).onCreateLayout(mContext);
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
   }
 
@@ -225,10 +230,11 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, false);
 
     verify(component).onCreateLayout(mContext);
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
   }
 
@@ -236,13 +242,14 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
+    component.setGlobalKey("test");
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
     InternalNode node = Layout.create(mContext, component, true);
 
     verify(component)
         .onCreateLayoutWithSizeSpec(mContext, mNestedTreeWidthSpec, mNestedTreeHeightSpec);
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
   }
 
@@ -250,12 +257,13 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
+    component.setGlobalKey("test");
     InternalNode node = Layout.create(mContext, component, false);
 
     verify(component, never()).onCreateLayout((ComponentContext) any());
     verify(component, never())
         .onCreateLayoutWithSizeSpec((ComponentContext) any(), anyInt(), anyInt());
-    verify(node).appendComponent(component);
+    verify(node).appendComponent(component, "test");
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component, never()).onPrepare((ComponentContext) any());
   }

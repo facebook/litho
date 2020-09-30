@@ -61,7 +61,7 @@ public interface InternalNode
 
   InternalNode alignItems(YogaAlign alignItems);
 
-  void appendComponent(Component component);
+  void appendComponent(Component component, String key);
 
   void appendUnresolvedComponent(Component component);
 
@@ -135,6 +135,13 @@ public interface InternalNode
    */
   List<Component> getComponents();
 
+  /**
+   * Return the list of keys of components contributing to this InternalNode. This exists in both
+   * debug and production mode.
+   */
+  @Nullable
+  List<String> getComponentKeys();
+
   @Nullable
   List<Component> getUnresolvedComponents();
 
@@ -159,6 +166,9 @@ public interface InternalNode
 
   @Nullable
   Component getHeadComponent();
+
+  @Nullable
+  String getHeadComponentKey();
 
   int getImportantForAccessibility();
 
@@ -238,6 +248,9 @@ public interface InternalNode
 
   @Nullable
   Component getTailComponent();
+
+  @Nullable
+  String getTailComponentKey();
 
   @Nullable
   StateListAnimator getStateListAnimator();
@@ -420,7 +433,7 @@ public interface InternalNode
    * @param next The new component to reconcile against.
    * @return The reconciled InternalNode which represents {@param next}.
    */
-  InternalNode reconcile(LayoutStateContext layoutStateContext, ComponentContext c, Component next);
+  InternalNode reconcile(LayoutStateContext layoutStateContext, ComponentContext c, Component next, @Nullable String nextKey);
 
   class NestedTreeProps {
     boolean mIsNestedTreeHolder;

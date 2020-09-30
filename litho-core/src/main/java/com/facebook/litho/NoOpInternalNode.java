@@ -70,7 +70,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void appendComponent(Component component) {}
+  public void appendComponent(Component component, String key) {}
 
   @Override
   public void appendUnresolvedComponent(Component component) {}
@@ -270,6 +270,12 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
+  @Override
+  @Nullable
+  public List<String> getComponentKeys() {
+    return null;
+  }
+
   @Nullable
   @Override
   public List<Component> getUnresolvedComponents() {
@@ -372,6 +378,12 @@ class NoOpInternalNode implements InternalNode {
   @Nullable
   @Override
   public Component getHeadComponent() {
+    return null;
+  }
+
+  @javax.annotation.Nullable
+  @Override
+  public String getHeadComponentKey() {
     return null;
   }
 
@@ -554,6 +566,12 @@ class NoOpInternalNode implements InternalNode {
   @Nullable
   @Override
   public Component getTailComponent() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public String getTailComponentKey() {
     return null;
   }
 
@@ -997,7 +1015,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public InternalNode reconcile(
-      LayoutStateContext layoutStateContext, ComponentContext c, Component next) {
+      LayoutStateContext layoutStateContext, ComponentContext c, Component next, @Nullable String nextKey) {
     return this;
   }
 

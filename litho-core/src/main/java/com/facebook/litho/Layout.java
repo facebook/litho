@@ -92,7 +92,7 @@ class Layout {
 
     } else {
       Component updated = update(c, component, true);
-      layout = current.reconcile(layoutStateContext, c, updated);
+      layout = current.reconcile(layoutStateContext, c, updated, updated.getGlobalKey());
     }
 
     if (layoutStatePerfEvent != null) {
@@ -238,7 +238,7 @@ class Layout {
     }
 
     // 10. Add the component to the InternalNode.
-    node.appendComponent(component);
+    node.appendComponent(component, component.getGlobalKey());
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {
