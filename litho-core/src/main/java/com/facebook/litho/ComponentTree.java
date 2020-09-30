@@ -1387,10 +1387,9 @@ public class ComponentTree {
     mEventHandlersController.recordEventHandler(component.getGlobalKey(), eventHandler);
   }
 
-  private void bindTriggerHandler(LayoutStateContext layoutStateContext, Component component) {
+  private void bindTriggerHandler(ComponentContext scopedContext, Component component) {
     synchronized (mEventTriggersContainer) {
-      component.recordEventTrigger(
-          component.getScopedContext(layoutStateContext), mEventTriggersContainer);
+      component.recordEventTrigger(scopedContext, mEventTriggersContainer);
     }
   }
 
@@ -2172,10 +2171,12 @@ public class ComponentTree {
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
       final String globalKey =
-          mUseStatelessComponent ? componentKeys.get(i) : component.getGlobalKey();
-      mEventHandlersController.bindEventHandlers(
-          component.getScopedContext(layoutStateContext), component, globalKey);
-      bindTriggerHandler(layoutStateContext, component);
+          mUseStatelessComponent
+              ? componentKeys.get(i)
+              : component.getGlobalKey();
+      final ComponentContext scopedContext = component.getScopedContext(layoutStateContext);
+      mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
+      bindTriggerHandler(scopedContext, component);
     }
 
     mEventHandlersController.clearUnusedEventHandlers();
