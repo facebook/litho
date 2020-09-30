@@ -37,7 +37,8 @@ class WorkingRangeContainer {
    */
   @Nullable private Map<String, RangeTuple> mWorkingRanges;
 
-  void registerWorkingRange(String name, WorkingRange workingRange, Component component) {
+  void registerWorkingRange(
+      String name, WorkingRange workingRange, Component component, String globalKey) {
     if (mWorkingRanges == null) {
       mWorkingRanges = new LinkedHashMap<>();
     }
@@ -45,9 +46,9 @@ class WorkingRangeContainer {
     final String key = name + "_" + workingRange.hashCode();
     final RangeTuple rangeTuple = mWorkingRanges.get(key);
     if (rangeTuple == null) {
-      mWorkingRanges.put(key, new RangeTuple(name, workingRange, component));
+      mWorkingRanges.put(key, new RangeTuple(name, workingRange, component, globalKey));
     } else {
-      rangeTuple.addComponent(component);
+      rangeTuple.addComponent(component, globalKey);
     }
   }
 
@@ -167,16 +168,20 @@ class WorkingRangeContainer {
     final String mName;
     final WorkingRange mWorkingRange;
     final List<Component> mComponents;
+    final List<String> mComponentKeys;
 
-    RangeTuple(String name, WorkingRange workingRange, Component component) {
+    RangeTuple(String name, WorkingRange workingRange, Component component, String key) {
       mName = name;
       mWorkingRange = workingRange;
       mComponents = new ArrayList<>();
+      mComponentKeys = new ArrayList<>();
       mComponents.add(component);
+      mComponentKeys.add(key);
     }
 
-    void addComponent(Component component) {
+    void addComponent(Component component, String key) {
       mComponents.add(component);
+      mComponentKeys.add(key);
     }
   }
 
@@ -185,11 +190,13 @@ class WorkingRangeContainer {
     final String mName;
     final WorkingRange mWorkingRange;
     final Component mComponent;
+    final String mKey;
 
-    Registration(String name, WorkingRange workingRange, Component component) {
+    Registration(String name, WorkingRange workingRange, Component component, String key) {
       mName = name;
       mWorkingRange = workingRange;
       mComponent = component;
+      mKey = key;
     }
   }
 }

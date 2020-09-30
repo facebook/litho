@@ -60,7 +60,7 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testRegisterWorkingRange() {
-    mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mComponent);
+    mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mComponent, "component");
 
     final Map<String, RangeTuple> workingRanges =
         mWorkingRangeContainer.getWorkingRangesForTestOnly();
@@ -77,7 +77,7 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testIsEnteredRange() {
-    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mComponent);
+    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mComponent, "component");
     WorkingRange workingRange = rangeTuple.mWorkingRange;
 
     assertThat(WorkingRangeContainer.isEnteringRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(true);
@@ -86,7 +86,7 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testIsExitedRange() {
-    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mComponent);
+    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mComponent, "component");
     WorkingRange workingRange = rangeTuple.mWorkingRange;
 
     assertThat(WorkingRangeContainer.isExitingRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(false);
@@ -96,10 +96,10 @@ public class WorkingRangeContainerTest {
   @Test
   public void testDispatchOnExitedRangeIfNeeded() {
     TestWorkingRange workingRange = new TestWorkingRange();
-    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange, mComponent);
+    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange, mComponent, "component");
 
     TestWorkingRange workingRange2 = new TestWorkingRange();
-    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mComponent2);
+    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mComponent2, "component2");
 
     final WorkingRangeStatusHandler statusHandler = new WorkingRangeStatusHandler();
     statusHandler.setStatus(NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);

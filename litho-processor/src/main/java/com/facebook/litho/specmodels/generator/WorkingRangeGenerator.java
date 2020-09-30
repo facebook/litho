@@ -187,7 +187,9 @@ public class WorkingRangeGenerator {
         .addStatement("return")
         .endControlFlow()
         .addStatement("$T component = c.getComponentScope()", ClassNames.COMPONENT)
-        .addStatement("registerWorkingRange(\"$L\", workingRange, component)", nameInAnnotation);
+        .addStatement(
+            "registerWorkingRange(\"$L\", workingRange, component, c.getGlobalKey())",
+            nameInAnnotation);
 
     return registerMethod.build();
   }

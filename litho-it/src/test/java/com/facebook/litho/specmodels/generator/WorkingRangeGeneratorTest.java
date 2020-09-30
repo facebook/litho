@@ -174,7 +174,7 @@ public class WorkingRangeGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.Component component = c.getComponentScope();\n"
-                + "  registerWorkingRange(\"enter\", workingRange, component);\n"
+                + "  registerWorkingRange(\"enter\", workingRange, component, c.getGlobalKey());\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -185,7 +185,7 @@ public class WorkingRangeGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.Component component = c.getComponentScope();\n"
-                + "  registerWorkingRange(\"exit\", workingRange, component);\n"
+                + "  registerWorkingRange(\"exit\", workingRange, component, c.getGlobalKey());\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
@@ -196,7 +196,7 @@ public class WorkingRangeGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.Component component = c.getComponentScope();\n"
-                + "  registerWorkingRange(\"prefetch\", workingRange, component);\n"
+                + "  registerWorkingRange(\"prefetch\", workingRange, component, c.getGlobalKey());\n"
                 + "}\n");
   }
 }

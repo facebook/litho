@@ -1946,8 +1946,9 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
       for (WorkingRangeContainer.Registration old : ranges) {
         final Component component = old.mComponent.makeUpdatedShallowCopy(c);
+        final String key = old.mKey;
         mWorkingRangeRegistrations.add(
-            new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component));
+            new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
       }
     }
   }
