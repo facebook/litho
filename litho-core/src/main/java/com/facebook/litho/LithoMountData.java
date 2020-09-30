@@ -121,6 +121,7 @@ public class LithoMountData {
             null,
             viewNodeInfo,
             HostComponent.create(),
+            null,
             lithoView.getPreviousMountBounds(),
             0,
             0,

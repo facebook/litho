@@ -77,6 +77,7 @@ public class LayoutOutputTest {
         null,
         null,
         mTestComponent,
+        null,
         rect,
         hostTranslationX,
         hostTranslationY,

@@ -99,6 +99,7 @@ public class MountItemTest {
   MountItem create(Object content) {
     return MountItemTestHelper.create(
         mComponent,
+        null,
         mComponentHost,
         content,
         mNodeInfo,
@@ -208,6 +209,7 @@ public class MountItemTest {
             TestDrawableComponent.create(
                     mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
+            null,
             mComponentHost,
             mContent,
             mNodeInfo,
@@ -231,6 +233,7 @@ public class MountItemTest {
             TestDrawableComponent.create(
                     mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
+            null,
             mComponentHost,
             mContent,
             mNodeInfo,
@@ -254,6 +257,7 @@ public class MountItemTest {
             TestDrawableComponent.create(
                     mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
+            null,
             mComponentHost,
             mContent,
             mNodeInfo,
@@ -279,7 +283,7 @@ public class MountItemTest {
   public void testUpdateDoesntChangeFlags() {
     LayoutOutput output =
         new LayoutOutput(
-            null, mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+            null, mNodeInfo, null, mComponent, null, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
     RenderTreeNode node = LayoutOutput.create(output, null, null, null);
 
     View view = new View(getApplicationContext());

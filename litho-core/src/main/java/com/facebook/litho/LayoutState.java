@@ -351,6 +351,7 @@ public class LayoutState
       @Nullable DebugHierarchy.Node hierarchy,
       boolean hasHostView) {
     final Component component = node.getTailComponent();
+    final String componentKey = node.getTailComponentKey();
 
     // Skip empty nodes and layout specs because they don't mount anything.
     if (component == null || component.getMountType() == NONE) {
@@ -363,6 +364,7 @@ public class LayoutState
 
     return createLayoutOutput(
         component,
+        componentKey,
         hostMarker,
         layoutState,
         node,
@@ -408,6 +410,7 @@ public class LayoutState
     final LayoutOutput hostOutput =
         createLayoutOutput(
             hostComponent,
+            null,
             hostMarker,
             layoutState,
             node,
@@ -430,13 +433,18 @@ public class LayoutState
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
-      Component component, LayoutState layoutState, InternalNode node, boolean hasHostView) {
+      Component component,
+      String componentKey,
+      LayoutState layoutState,
+      InternalNode node,
+      boolean hasHostView) {
     // The mount operation will need both the marker for the target host and its matching
     // parent host to ensure the correct hierarchy when nesting the host views.
     long hostMarker = layoutState.mCurrentHostMarker;
 
     return createLayoutOutput(
         component,
+        componentKey,
         hostMarker,
         layoutState,
         node,
@@ -449,6 +457,7 @@ public class LayoutState
 
   private static LayoutOutput createLayoutOutput(
       Component component,
+      String componentKey,
       long hostMarker,
       LayoutState layoutState,
       InternalNode node,
@@ -559,6 +568,7 @@ public class LayoutState
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
         component,
+        componentKey,
         bounds,
         hostTranslationX,
         hostTranslationY,
@@ -1240,6 +1250,7 @@ public class LayoutState
         addDrawableLayoutOutput(
             parent,
             drawableComponent,
+            null,
             layoutState,
             hierarchy,
             node,
@@ -1338,6 +1349,7 @@ public class LayoutState
   private static LayoutOutput addDrawableLayoutOutput(
       final @Nullable RenderTreeNode parent,
       Component drawableComponent,
+      String drawableComponentKey,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
       InternalNode node,
@@ -1357,7 +1369,7 @@ public class LayoutState
 
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
-            drawableComponent, layoutState, node, matchHostBoundsTransitions);
+            drawableComponent, drawableComponentKey, layoutState, node, matchHostBoundsTransitions);
 
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
@@ -1673,6 +1685,7 @@ public class LayoutState
               null,
               null,
               component,
+              scopedContext.getGlobalKey(),
               new Rect(),
               0,
               0,

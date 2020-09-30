@@ -77,6 +77,8 @@ public class ComponentHostTest {
   private TestableComponentHost mHost;
   private Component mDrawableComponent;
   private Component mViewComponent;
+  private static final String sDrawableComponentKey = "drawable_key";
+  private static final String sViewComponentKey = "view_key";
   private ComponentContext mContext;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
@@ -84,8 +86,8 @@ public class ComponentHostTest {
   @Before
   public void setup() throws Exception {
     mContext = mLithoViewRule.getContext();
-    mViewComponent = TestViewComponent.create(mContext).build();
-    mDrawableComponent = SimpleMountSpecTester.create(mContext).build();
+    mViewComponent = TestViewComponent.create(mContext).key(sViewComponentKey).build();
+    mDrawableComponent = SimpleMountSpecTester.create(mContext).key(sDrawableComponentKey).build();
 
     mHost = new TestableComponentHost(mContext);
 
@@ -887,6 +889,7 @@ public class ComponentHostTest {
     MountItem mountItem =
         MountItemTestHelper.create(
             content instanceof Drawable ? mDrawableComponent : mViewComponent,
+            content instanceof Drawable ? sDrawableComponentKey : sViewComponentKey,
             null,
             content,
             nodeInfo,
@@ -923,6 +926,7 @@ public class ComponentHostTest {
     MountItem viewMountItem =
         MountItemTestHelper.create(
             mViewComponent,
+            sViewComponentKey,
             null,
             content,
             null,

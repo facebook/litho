@@ -21,6 +21,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
@@ -41,6 +42,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
   static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
   static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
+  private final ComponentContext mScopedContext;
+  private final String mKey;
 
   @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
   @Retention(RetentionPolicy.SOURCE)
@@ -54,7 +57,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final int mHostTranslationX;
   private final int mHostTranslationY;
   private final int mFlags;
-  private final LayoutStateContext mLayoutStateContext;
 
   private final int mImportantForAccessibility;
   private final int mOrientation;
@@ -66,10 +68,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mUpdateState = STATE_UNKNOWN;
 
   public LayoutOutput(
-      LayoutStateContext layoutStateContext,
+      @Nullable LayoutStateContext layoutStateContext,
       @Nullable NodeInfo nodeInfo,
       @Nullable ViewNodeInfo viewNodeInfo,
       Component component,
+      String key,
       Rect bounds,
       int hostTranslationX,
       int hostTranslationY,
@@ -78,7 +81,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       int importantForAccessibility,
       int orientation,
       @Nullable TransitionId transitionId) {
-
     if (component == null) {
       throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
     }
@@ -86,7 +88,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
-    mLayoutStateContext = layoutStateContext;
+    mKey = key;
+    if (ComponentsConfiguration.useStatelessComponent && layoutStateContext == null) {
+      // The LayoutOutput for the root host is created by MountState before a LayoutState is
+      // calculated.
+      mScopedContext = null;
+    } else {
+      mScopedContext = mComponent.getScopedContext(layoutStateContext);
+    }
     mBounds = bounds;
     mHostTranslationX = hostTranslationX;
     mHostTranslationY = hostTranslationY;
@@ -101,8 +110,12 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mComponent;
   }
 
-  LayoutStateContext getLayoutStateContext() {
-    return mLayoutStateContext;
+  ComponentContext getScopedContext() {
+    return mScopedContext;
+  }
+
+  String getKey() {
+    return mKey;
   }
 
   Rect getMountBounds(Rect outRect) {

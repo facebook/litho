@@ -23,6 +23,7 @@ import com.facebook.rendercore.RenderTreeNode;
 public class MountItemTestHelper {
   public static MountItem create(
       Component component,
+      String globalKey,
       ComponentHost host,
       Object content,
       NodeInfo info,
@@ -41,6 +42,7 @@ public class MountItemTestHelper {
             info,
             viewInfo,
             component,
+            globalKey,
             bounds != null ? bounds : new Rect(),
             hostTranslationX,
             hostTranslationY,
