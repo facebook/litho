@@ -105,6 +105,7 @@ public class ComponentTree {
       "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold";
   private static boolean sBoostPerfLayoutStateFuture = false;
   private final boolean mAreTransitionsEnabled;
+  private final boolean mUseStatelessComponent;
   private boolean mReleased;
   private String mReleasedComponent;
   private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
@@ -344,6 +345,7 @@ public class ComponentTree {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
+    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -2051,6 +2053,7 @@ public class ComponentTree {
     }
 
     List<Component> components = null;
+    List<String> componentKeys = null;
     @Nullable Map<String, Component> attachables = null;
     LayoutStateContext layoutStateContext = null;
 
@@ -2096,6 +2099,7 @@ public class ComponentTree {
         }
 
         components = localLayoutState.consumeComponents();
+        componentKeys = localLayoutState.consumeComponentKeys();
         attachables = localLayoutState.consumeAttachables();
         layoutStateContext = localLayoutState.getLayoutStateContext();
       }
@@ -2138,7 +2142,7 @@ public class ComponentTree {
     }
 
     if (components != null) {
-      bindEventAndTriggerHandlers(layoutStateContext, components);
+      bindEventAndTriggerHandlers(layoutStateContext, components, componentKeys);
     }
 
     if (committedNewLayout) {
@@ -2160,12 +2164,17 @@ public class ComponentTree {
   }
 
   private void bindEventAndTriggerHandlers(
-      LayoutStateContext layoutStateContext, List<Component> components) {
+      LayoutStateContext layoutStateContext,
+      List<Component> components,
+      @Nullable List<String> componentKeys) {
     clearUnusedTriggerHandlers();
 
-    for (final Component component : components) {
+    for (int i = 0, size = components.size(); i < size; i++) {
+      final Component component = components.get(i);
+      final String globalKey =
+          mUseStatelessComponent ? componentKeys.get(i) : component.getGlobalKey();
       mEventHandlersController.bindEventHandlers(
-          component.getScopedContext(layoutStateContext), component, component.getGlobalKey());
+          component.getScopedContext(layoutStateContext), component, globalKey);
       bindTriggerHandler(layoutStateContext, component);
     }
 

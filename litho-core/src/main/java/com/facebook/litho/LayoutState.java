@@ -182,6 +182,7 @@ public class LayoutState
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
   @Nullable private List<Component> mComponents;
+  @Nullable private List<String> mComponentKeys;
 
   /**
    * Holds onto how many clashed global keys exist in the tree. Used for automatically generating
@@ -287,6 +288,10 @@ public class LayoutState
     mOrientation = context.getResources().getConfiguration().orientation;
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
+
+    if (ComponentsConfiguration.useStatelessComponent) {
+      mComponentKeys = new ArrayList<>();
+    }
 
     if (context.getComponentTree() != null) {
       mIncrementalVisibility = context.getComponentTree().hasIncrementalVisibility();
@@ -1071,8 +1076,10 @@ public class LayoutState
         rect.bottom = rect.top + node.getHeight();
       }
 
+      final List<String> componentKeys = node.getComponentKeys();
       final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
-      for (Component delegate : node.getComponents()) {
+      for (int i = 0, size = node.getComponents().size(); i < size; i++) {
+        final Component delegate = node.getComponents().get(i);
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
         // previous ComponentTree with the new component dispatched, otherwise Section children
@@ -1084,6 +1091,11 @@ public class LayoutState
         if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
+            if (layoutState.mComponentKeys != null) {
+              final String delegateKey =
+                  componentKeys == null ? delegate.getGlobalKey() : componentKeys.get(i);
+              layoutState.mComponentKeys.add(delegateKey);
+            }
           }
           if (delegate.hasAttachDetachCallback()) {
             if (layoutState.mAttachableContainer == null) {
@@ -1168,6 +1180,14 @@ public class LayoutState
     mComponents = null;
 
     return components;
+  }
+
+  @Nullable
+  List<String> consumeComponentKeys() {
+    final List<String> componentKeys = mComponentKeys;
+    mComponentKeys = null;
+
+    return componentKeys;
   }
 
   @Nullable
