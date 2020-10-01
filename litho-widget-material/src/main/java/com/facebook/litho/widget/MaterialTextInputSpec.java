@@ -53,6 +53,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.utils.MeasureUtils;
+import com.google.android.material.textfield.MountableTextInputLayout;
 import com.google.android.material.textfield.TextInputLayout;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -182,7 +183,7 @@ class MaterialTextInputSpec {
             error,
             errorDrawable,
             savedText.get());
-    TextInputLayout textInputLayout = new TextInputLayout(c.getAndroidContext());
+    MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(editText, textInputLayout, hint, counterEnabled, counterMaxLength);
 
     textInputLayout.measure(
@@ -263,14 +264,14 @@ class MaterialTextInputSpec {
   }
 
   @OnCreateMountContent
-  protected static TextInputLayout onCreateMountContent(Context c) {
-    return new TextInputLayout(c);
+  protected static MountableTextInputLayout onCreateMountContent(Context c) {
+    return new MountableTextInputLayout(c);
   }
 
   @OnMount
   static void onMount(
       final ComponentContext c,
-      TextInputLayout textInputLayout,
+      MountableTextInputLayout textInputLayout,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable inputBackground,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
@@ -340,7 +341,7 @@ class MaterialTextInputSpec {
 
   static void setParams(
       EditText editText,
-      TextInputLayout textInputLayout,
+      MountableTextInputLayout textInputLayout,
       CharSequence hint,
       boolean counterEnabled,
       int counterMaxLength) {
@@ -353,7 +354,7 @@ class MaterialTextInputSpec {
   @OnBind
   static void onBind(
       final ComponentContext c,
-      TextInputLayout textInputLayout,
+      MountableTextInputLayout textInputLayout,
       @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
@@ -372,15 +373,16 @@ class MaterialTextInputSpec {
   @OnUnmount
   static void onUnmount(
       ComponentContext c,
-      TextInputLayout textInputLayout,
+      MountableTextInputLayout textInputLayout,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onUnmount(c, editText, mountedEditTextRef);
+    textInputLayout.reset();
   }
 
   @OnUnbind
-  static void onUnbind(final ComponentContext c, TextInputLayout textInputLayout) {
+  static void onUnbind(final ComponentContext c, MountableTextInputLayout textInputLayout) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onUnbind(c, editText);
