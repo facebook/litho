@@ -26,6 +26,7 @@ import com.facebook.litho.editor.EditorRegistry;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorNumber;
+import com.facebook.litho.editor.model.EditorPick;
 import com.facebook.litho.editor.model.EditorShape;
 import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
@@ -197,6 +198,12 @@ public class FlipperEditor {
             }
 
             return bb.build();
+          }
+
+          @Override
+          public Object isPick(EditorPick pick) {
+            return InspectorValue.mutable(
+                InspectorValue.Type.Picker, new InspectorValue.Picker(pick.values, pick.selected));
           }
 
           @Override

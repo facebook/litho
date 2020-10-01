@@ -20,12 +20,14 @@ import com.facebook.litho.editor.instances.EditorUtils;
 import com.facebook.litho.editor.model.EditorArray;
 import com.facebook.litho.editor.model.EditorBool;
 import com.facebook.litho.editor.model.EditorNumber;
+import com.facebook.litho.editor.model.EditorPick;
 import com.facebook.litho.editor.model.EditorShape;
 import com.facebook.litho.editor.model.EditorString;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 public final class SimpleEditor {
@@ -131,6 +133,13 @@ public final class SimpleEditor {
                     propertyEditor.writeBoolProperty(value, updatedProperty.getKey(), bool.value);
                     return false;
                   }
+
+                  @Override
+                  public boolean isPick(String[] path, EditorPick pick) {
+                    propertyEditor.writePickProperty(
+                        value, updatedProperty.getKey(), pick.selected);
+                    return false;
+                  }
                 });
           }
         }
@@ -151,13 +160,18 @@ public final class SimpleEditor {
         final Map<String, String> stringProperties = new HashMap<>();
         final Map<String, Number> numberProperties = new HashMap<>();
         final Map<String, Boolean> boolProperties = new HashMap<>();
+        final Map<String, String> pickProperties = new HashMap<>();
         for (final Map.Entry<String, SimpleEditorValue> property : properties.entrySet()) {
           property
               .getValue()
               .value
               .whenPrimitive(
                   classifyValue(
-                      property.getKey(), stringProperties, numberProperties, boolProperties));
+                      property.getKey(),
+                      stringProperties,
+                      numberProperties,
+                      boolProperties,
+                      pickProperties));
         }
         final Map<String, EditorValue> updates = shape.value;
         for (Map.Entry<String, EditorValue> updatedProperty : updates.entrySet()) {
@@ -167,12 +181,17 @@ public final class SimpleEditor {
           final SimpleEditorValue oldValue = properties.get(propertyKey);
           if (newValue != null && oldValue != null && newValue.type == oldValue.type) {
             newValue.value.whenPrimitive(
-                classifyValue(propertyKey, stringProperties, numberProperties, boolProperties));
+                classifyValue(
+                    propertyKey,
+                    stringProperties,
+                    numberProperties,
+                    boolProperties,
+                    pickProperties));
           }
         }
         final T newValue =
             propertyEditor.writeProperties(
-                value, stringProperties, numberProperties, boolProperties);
+                value, stringProperties, numberProperties, boolProperties, pickProperties);
         EditorUtils.setNodeUNSAFE(f, node, newValue);
         return null;
       }
@@ -183,7 +202,8 @@ public final class SimpleEditor {
       final String key,
       final Map<String, String> stringProperties,
       final Map<String, Number> numberProperties,
-      final Map<String, Boolean> boolProperties) {
+      final Map<String, Boolean> boolProperties,
+      final Map<String, String> pickProperties) {
     return new EditorValue.EditorPrimitiveVisitor() {
       @Override
       public boolean isNumber(String[] path, EditorNumber number) {
@@ -202,6 +222,12 @@ public final class SimpleEditor {
         boolProperties.put(key, bool.value);
         return false;
       }
+
+      @Override
+      public boolean isPick(String[] path, EditorPick pick) {
+        pickProperties.put(key, pick.selected);
+        return false;
+      }
     };
   }
 
@@ -217,6 +243,8 @@ public final class SimpleEditor {
     void writeNumberProperty(T value, String property, Number newValue);
 
     void writeBoolProperty(T value, String property, boolean newValue);
+
+    void writePickProperty(T value, String property, String newValue);
   }
 
   public abstract static class DefaultMutablePropertyEditor<T> implements MutablePropertyEditor<T> {
@@ -236,12 +264,14 @@ public final class SimpleEditor {
         T value,
         Map<String, String> newStringValues,
         Map<String, Number> newNumberValues,
-        Map<String, Boolean> newBoolValues);
+        Map<String, Boolean> newBoolValues,
+        Map<String, String> newPickValues);
   }
 
   private static final int PRIMITIVE_TYPE_NUMBER = 0;
   private static final int PRIMITIVE_TYPE_STRING = 1;
   private static final int PRIMITIVE_TYPE_BOOL = 2;
+  private static final int PRIMITIVE_TYPE_PICK = 3;
 
   /** A class that wraps either a number, string or bool */
   public static final class SimpleEditorValue {
@@ -269,11 +299,15 @@ public final class SimpleEditor {
       return new SimpleEditorValue(new EditorBool(b), PRIMITIVE_TYPE_BOOL);
     }
 
-    public static @Nullable SimpleEditorValue fromEditorValueOrNull(EditorValue v) {
-      return v.when(isPrimitive);
+    public static SimpleEditorValue pick(Set<String> otherValues, String selected) {
+      return new SimpleEditorValue(new EditorPick(otherValues, selected), PRIMITIVE_TYPE_PICK);
     }
 
-    private static final EditorValue.EditorVisitor</*@Nullable*/ SimpleEditorValue> isPrimitive =
+    public static @Nullable SimpleEditorValue fromEditorValueOrNull(EditorValue v) {
+      return v.when(asPrimitive);
+    }
+
+    private static final EditorValue.EditorVisitor</*@Nullable*/ SimpleEditorValue> asPrimitive =
         new EditorValue.EditorVisitor</*@Nullable*/ SimpleEditorValue>() {
           @Override
           public @Nullable SimpleEditorValue isShape(EditorShape object) {
@@ -283,6 +317,11 @@ public final class SimpleEditor {
           @Override
           public @Nullable SimpleEditorValue isArray(EditorArray array) {
             return null;
+          }
+
+          @Override
+          public @Nullable SimpleEditorValue isPick(EditorPick pick) {
+            return SimpleEditorValue.pick(pick.values, pick.selected);
           }
 
           @Override

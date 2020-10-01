@@ -20,6 +20,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** A sealed class for values supported by the editor */
@@ -51,6 +52,10 @@ public abstract class EditorValue {
     return new EditorArray(values);
   }
 
+  public static EditorValue pick(String selected, Set<String> otherValues) {
+    return new EditorPick(otherValues, selected);
+  }
+
   // Members
 
   /** Finds the real value of this EditorValue */
@@ -61,6 +66,8 @@ public abstract class EditorValue {
     R isShape(EditorShape object);
 
     R isArray(EditorArray array);
+
+    R isPick(EditorPick pick);
 
     R isNumber(EditorNumber number);
 
@@ -76,6 +83,11 @@ public abstract class EditorValue {
     }
 
     public Void isArray(EditorArray array) {
+      return null;
+    }
+
+    @Override
+    public Void isPick(EditorPick pick) {
       return null;
     }
 
@@ -104,6 +116,8 @@ public abstract class EditorValue {
     boolean isString(String[] path, EditorString string);
 
     boolean isBool(String[] path, EditorBool bool);
+
+    boolean isPick(String[] path, EditorPick pick);
   }
 
   public abstract static class DefaultEditorPrimitiveVisitor implements EditorPrimitiveVisitor {
@@ -120,6 +134,11 @@ public abstract class EditorValue {
 
     @Override
     public boolean isBool(String[] path, EditorBool bool) {
+      return false;
+    }
+
+    @Override
+    public boolean isPick(String[] path, EditorPick pick) {
       return false;
     }
   }
@@ -154,6 +173,11 @@ public abstract class EditorValue {
           }
 
           @Override
+          public Boolean isPick(EditorPick pick) {
+            return isString(new EditorString(pick.selected));
+          }
+
+          @Override
           public Boolean isNumber(EditorNumber number) {
             return visitor.isNumber(path.toArray(new String[] {}), number);
           }
@@ -185,6 +209,12 @@ public abstract class EditorValue {
           @Override
           public Boolean isArray(EditorArray array) {
             ref.set(aggregator.addArray(ref.get(), array));
+            return false;
+          }
+
+          @Override
+          public Boolean isPick(EditorPick pick) {
+            ref.set(aggregator.addString(ref.get(), new EditorString(pick.selected)));
             return false;
           }
 
