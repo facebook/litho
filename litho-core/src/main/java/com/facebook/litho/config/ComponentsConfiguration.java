@@ -271,4 +271,6 @@ public class ComponentsConfiguration {
   public static boolean overlappingRenderingForZeroSizedViews = true;
 
   public static int overlappingRenderingViewSizeLimit = Integer.MAX_VALUE;
+
+  public static int partialAlphaWarningSizeThresold = Integer.MAX_VALUE;
 }

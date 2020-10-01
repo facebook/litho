@@ -63,7 +63,10 @@ public class ComponentHost extends Host {
 
   public static final String TEXTURE_TOO_BIG = "TextureTooBig";
   public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
+  public static final String PARTIAL_ALPHA_TEXTURE_TOO_BIG = "PartialAlphaTextureTooBig";
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
+
+  private static boolean sHasWarnedAboutPartialAlpha = false;
 
   private SparseArrayCompat<MountItem> mMountItems;
   private SparseArrayCompat<MountItem> mScrapMountItemsArray;
@@ -1512,5 +1515,33 @@ public class ComponentHost extends Host {
     mountInfo.put("bottom", bounds.bottom);
 
     return mountInfo;
+  }
+
+  @Override
+  public void setAlpha(float alpha) {
+    if (alpha != 0 && alpha != 1) {
+      if (getWidth() >= ComponentsConfiguration.partialAlphaWarningSizeThresold
+          || getHeight() >= ComponentsConfiguration.partialAlphaWarningSizeThresold) {
+        if (sHasWarnedAboutPartialAlpha) {
+          // Only warn about partial alpha once per process lifetime to avoid spamming (this might
+          // be called frequently from inside an animation)
+          return;
+        }
+
+        sHasWarnedAboutPartialAlpha = true;
+
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            PARTIAL_ALPHA_TEXTURE_TOO_BIG,
+            "Partial alpha ("
+                + alpha
+                + ") with large view ("
+                + getWidth()
+                + ", "
+                + getHeight()
+                + ")");
+      }
+    }
+    super.setAlpha(alpha);
   }
 }
