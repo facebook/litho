@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiMethodCallExpression;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.Test;
@@ -100,6 +101,31 @@ public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
         .invokeAndWait(
             () -> {
               assertThat(isLayoutSpec(layoutSpec)).isTrue();
+            });
+  }
+
+  @Test
+  public void resolveEventName_whenMethodCallArgumentNotOfTypeEventHandler_returnsNull() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              PsiMethodCallExpression psiMethodCallExpression =
+                  (PsiMethodCallExpression)
+                      layoutSpec.getMethods()[0].getBody().getStatements()[0].getChildren()[0];
+              assertThat(LithoPluginUtils.resolveEventName(psiMethodCallExpression)).isNull();
+            });
+  }
+
+  @Test
+  public void resolveEventName_whenMethodCallArgumentOfTypeEventHandler_returnsFqnOfHandledEvent() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              PsiMethodCallExpression psiMethodCallExpression =
+                  (PsiMethodCallExpression)
+                      layoutSpec.getMethods()[0].getBody().getStatements()[1].getChildren()[2];
+              assertThat(LithoPluginUtils.resolveEventName(psiMethodCallExpression))
+                  .isEqualTo("TypeClass");
             });
   }
 }

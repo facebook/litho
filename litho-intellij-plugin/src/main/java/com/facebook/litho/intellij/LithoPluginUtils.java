@@ -27,14 +27,18 @@ import com.google.common.annotations.VisibleForTesting;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.JavaResolveResult;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
+import com.intellij.psi.infos.MethodCandidateInfo;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import java.util.Objects;
@@ -213,5 +217,39 @@ public class LithoPluginUtils {
   private static void showNotification(
       String infoMessage, NotificationType type, @Nullable Project project) {
     NOTIFICATION_GROUP.createNotification(infoMessage, type).notify(project);
+  }
+
+  /**
+   * Tries to guess if the given methodCall requires event handler.
+   *
+   * @return Qualified name of the handled Event or null, if methodCall neither accepts event
+   *     handler, nor require fix.
+   */
+  @Nullable
+  public static String resolveEventName(PsiMethodCallExpression methodCall) {
+    return Optional.of(methodCall.getMethodExpression().multiResolve(true))
+        .map(results -> results.length == 1 ? results[0] : JavaResolveResult.EMPTY)
+        .filter(MethodCandidateInfo.class::isInstance)
+        .map(MethodCandidateInfo.class::cast)
+        .filter(MethodCandidateInfo::isTypeArgumentsApplicable)
+        .filter(info -> !info.isApplicable() && !info.isValidResult())
+        .map(info -> info.getElement().getParameterList().getParameters())
+        .filter(parameters -> parameters.length > 0) // method(EventHandler<T> e)
+        .map(parameters -> parameters[0].getType())
+        .filter(PsiClassType.class::isInstance)
+        .filter(
+            parameterType -> {
+              String fullName = parameterType.getCanonicalText();
+              int genericIndex = fullName.indexOf('<');
+              if (genericIndex <= 0) {
+                return false;
+              }
+              String className = fullName.substring(0, genericIndex);
+              return LithoClassNames.EVENT_HANDLER_CLASS_NAME.equals(className);
+            })
+        .map(parameterType -> ((PsiClassType) parameterType).getParameters())
+        .filter(generics -> generics.length == 1) // <T>
+        .map(generics -> generics[0].getCanonicalText())
+        .orElse(null);
   }
 }

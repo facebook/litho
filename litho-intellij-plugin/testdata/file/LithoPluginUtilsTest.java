@@ -24,4 +24,22 @@ class LayoutSpec {
 class MountSpec {}
 
 @com.facebook.litho.annotations.LayoutSpec
-class LithoActivitySpec {}
+class LithoActivitySpec {
+    @com.facebook.litho.annotations.OnCreateLayout
+    static Component onCreateLayout(ComponentContext c) {
+        dummyMethod();
+        return Text.create(c).clickHandler();
+    }
+
+    static void methodWithoutEventHandlerArgument();
+}
+
+static class Text {
+    static Builder create(ComponentContext context);
+}
+
+static class Builder {
+    static void clickHandler(com.facebook.litho.EventHandler<TypeClass> handler);
+}
+
+static class TypeClass {}

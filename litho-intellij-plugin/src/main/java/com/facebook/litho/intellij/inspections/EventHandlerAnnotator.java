@@ -16,8 +16,9 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import static com.facebook.litho.intellij.LithoPluginUtils.resolveEventName;
+
 import com.facebook.litho.intellij.IntervalLogger;
-import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -32,19 +33,14 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.JavaResolveResult;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpressionList;
 import com.intellij.psi.PsiMethodCallExpression;
-import com.intellij.psi.infos.MethodCandidateInfo;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Nullable;
 
 /** Annotator creates quick fix to add existing EventHandler to the method without arguments. */
 public class EventHandlerAnnotator implements Annotator {
@@ -105,39 +101,5 @@ public class EventHandlerAnnotator implements Annotator {
     }
     AnnotatorUtils.addError(holder, error, fixes);
     DEBUG_LOGGER.logStep("end " + element);
-  }
-
-  /**
-   * Tries to guess if the given methodCall requires event handler.
-   *
-   * @return Qualified name of the handled Event or null, if methodCall neither accepts event
-   *     handler, nor require fix.
-   */
-  @Nullable
-  private static String resolveEventName(PsiMethodCallExpression methodCall) {
-    return Optional.of(methodCall.getMethodExpression().multiResolve(true))
-        .map(results -> results.length == 1 ? results[0] : JavaResolveResult.EMPTY)
-        .filter(MethodCandidateInfo.class::isInstance)
-        .map(MethodCandidateInfo.class::cast)
-        .filter(MethodCandidateInfo::isTypeArgumentsApplicable)
-        .filter(info -> !info.isApplicable() && !info.isValidResult())
-        .map(info -> info.getElement().getParameterList().getParameters())
-        .filter(parameters -> parameters.length > 0) // method(EventHandler<T> e)
-        .map(parameters -> parameters[0].getType())
-        .filter(PsiClassType.class::isInstance)
-        .filter(
-            parameterType -> {
-              String fullName = parameterType.getCanonicalText();
-              int genericIndex = fullName.indexOf('<');
-              if (genericIndex <= 0) {
-                return false;
-              }
-              String className = fullName.substring(0, genericIndex);
-              return LithoClassNames.EVENT_HANDLER_CLASS_NAME.equals(className);
-            })
-        .map(parameterType -> ((PsiClassType) parameterType).getParameters())
-        .filter(generics -> generics.length == 1) // <T>
-        .map(generics -> generics[0].getCanonicalText())
-        .orElse(null);
   }
 }
