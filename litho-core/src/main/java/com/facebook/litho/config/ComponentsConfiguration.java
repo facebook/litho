@@ -267,4 +267,8 @@ public class ComponentsConfiguration {
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
+
+  public static boolean overlappingRenderingForZeroSizedViews = true;
+
+  public static int overlappingRenderingViewSizeLimit = Integer.MAX_VALUE;
 }

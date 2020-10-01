@@ -1425,7 +1425,16 @@ public class ComponentHost extends Host {
 
   @Override
   public boolean hasOverlappingRendering() {
-    return ComponentsConfiguration.hostHasOverlappingRendering;
+    if (ComponentsConfiguration.hostHasOverlappingRendering) {
+      return true;
+    } else if (getWidth() == 0 || getHeight() == 0) {
+      return ComponentsConfiguration.overlappingRenderingForZeroSizedViews;
+    } else if (getWidth() > ComponentsConfiguration.overlappingRenderingViewSizeLimit
+        || getHeight() > ComponentsConfiguration.overlappingRenderingViewSizeLimit) {
+      return false;
+    } else {
+      return super.hasOverlappingRendering();
+    }
   }
 
   private void maybeEmitLayoutError(int width, int height) {
