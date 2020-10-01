@@ -713,17 +713,22 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   private static int findLastDescendantIndex(TransitionsExtensionInput input, int index) {
-    final RenderTreeNode rootRenderTreeNode = input.getMountableOutputAt(index);
+    final long hostId = getLayoutOutput(input.getMountableOutputAt(index)).getId();
+
     for (int i = index + 1, size = input.getMountableOutputCount(); i < size; i++) {
-      RenderTreeNode parentRenderTreeNode = input.getMountableOutputAt(i).getParent();
+      final LayoutOutput layoutOutput = getLayoutOutput(input.getMountableOutputAt(i));
+
       // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
       // reach the root, then it's not a descendant and we can stop.
-      while (parentRenderTreeNode != rootRenderTreeNode) {
-        if (parentRenderTreeNode == null || parentRenderTreeNode.getParent() == null) {
+      long currentHostId = layoutOutput.getHostMarker();
+      while (currentHostId != hostId) {
+        if (currentHostId == ROOT_HOST_ID) {
           return i - 1;
         }
 
-        parentRenderTreeNode = parentRenderTreeNode.getParent();
+        final int parentIndex = input.getPositionForId(currentHostId);
+        final LayoutOutput parent = getLayoutOutput(input.getMountableOutputAt(parentIndex));
+        currentHostId = parent.getHostMarker();
       }
     }
 
