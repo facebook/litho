@@ -18,6 +18,7 @@
 package com.google.android.material.textfield;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 
 public class MountableTextInputLayout extends TextInputLayout {
@@ -30,5 +31,22 @@ public class MountableTextInputLayout extends TextInputLayout {
   public void reset() {
     ((ViewGroup) getChildAt(0)).removeView(editText);
     editText = null;
+  }
+
+  // Delegate the focus listener to the EditText
+  @Override
+  public void setOnFocusChangeListener(View.OnFocusChangeListener l) {
+    if (editText == null) {
+      return;
+    }
+    editText.setOnFocusChangeListener(l);
+  }
+
+  @Override
+  public View.OnFocusChangeListener getOnFocusChangeListener() {
+    if (editText == null) {
+      return null;
+    }
+    return editText.getOnFocusChangeListener();
   }
 }
