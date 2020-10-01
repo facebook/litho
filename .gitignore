@@ -15,6 +15,11 @@ docs/_site/
 .externalNativeBuild
 .gradle
 
+gradle/wrapper/dists/*
+gradle/native/*
+gradle/daemon/*
+gradle/caches/*
+
 # Output files
 build/
 docs/.bundle/
