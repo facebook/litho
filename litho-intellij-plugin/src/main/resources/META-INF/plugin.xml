@@ -82,6 +82,7 @@
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.MethodCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.RequiredPropMethodContributor" order="first"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.LayoutSpecMethodParameterAnnotationsContributor" order="first"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.EventHandlerCompletionContributor"/>
 
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
 
