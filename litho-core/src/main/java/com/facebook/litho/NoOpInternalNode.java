@@ -1016,7 +1016,10 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public InternalNode reconcile(
-      LayoutStateContext layoutStateContext, ComponentContext c, Component next, @Nullable String nextKey) {
+      LayoutStateContext layoutStateContext,
+      ComponentContext c,
+      Component next,
+      @Nullable String nextKey) {
     return this;
   }
 

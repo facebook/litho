@@ -434,7 +434,11 @@ public interface InternalNode
    * @param next The new component to reconcile against.
    * @return The reconciled InternalNode which represents {@param next}.
    */
-  InternalNode reconcile(LayoutStateContext layoutStateContext, ComponentContext c, Component next, @Nullable String nextKey);
+  InternalNode reconcile(
+      LayoutStateContext layoutStateContext,
+      ComponentContext c,
+      Component next,
+      @Nullable String nextKey);
 
   class NestedTreeProps {
     boolean mIsNestedTreeHolder;
