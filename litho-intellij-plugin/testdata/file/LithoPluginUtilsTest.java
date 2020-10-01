@@ -19,3 +19,9 @@ class LayoutSpec {
         static class InnerClass2 {}
     }
 }
+
+@com.facebook.litho.annotations.MountSpec
+class MountSpec {}
+
+@com.facebook.litho.annotations.LayoutSpec
+class LithoActivitySpec {}

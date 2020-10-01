@@ -16,67 +16,90 @@
 
 package com.facebook.litho.intellij;
 
+import static com.facebook.litho.intellij.LithoPluginUtils.getFirstClass;
+import static com.facebook.litho.intellij.LithoPluginUtils.getFirstLayoutSpec;
+import static com.facebook.litho.intellij.LithoPluginUtils.isLayoutSpec;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Assert;
+import java.util.Optional;
 import org.junit.Test;
 
 public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
+  PsiFile psiFile;
+  PsiClass layoutSpec;
 
   public LithoPluginUtilsFileTest() {
     super("testdata/file");
   }
 
-  @Test
-  public void getFirstClass_findNestedChildWithName_found() throws IOException {
-    final PsiFile file = testHelper.configure("LithoPluginUtilsTest.java");
-    final AtomicReference<PsiClass> found = new AtomicReference<>();
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    psiFile = testHelper.configure("LithoPluginUtilsTest.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              found.set(
-                  LithoPluginUtils.getFirstClass(file, cls -> "InnerClass2".equals(cls.getName()))
-                      .orElse(null));
+              layoutSpec = getFirstLayoutSpec(psiFile).get();
             });
-    assertThat(found.get()).isNotNull();
   }
 
   @Test
-  public void getFirstLayoutSpec_findDirectChild_found() {
-    testHelper.getPsiClass(
-        psiClasses -> {
-          Assert.assertNotNull(psiClasses);
-          PsiClass layoutCls = psiClasses.get(0);
-          PsiClass otherCls = psiClasses.get(1);
-
-          Assert.assertTrue(
-              LithoPluginUtils.getFirstLayoutSpec(layoutCls.getContainingFile()).isPresent());
-          Assert.assertFalse(
-              LithoPluginUtils.getFirstLayoutSpec(otherCls.getContainingFile()).isPresent());
-          return true;
-        },
-        "LayoutSpec.java",
-        "MountSpec.java");
+  public void getFirstClass_whenLookingForNestedClassByName_returnsFoundClass() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiClass innerClass2 =
+                  getFirstClass(psiFile, cls -> "InnerClass2".equals(cls.getName())).orElse(null);
+              assertThat(innerClass2).isNotNull();
+            });
   }
 
   @Test
-  public void isLayoutSpec() {
-    testHelper.getPsiClass(
-        psiClasses -> {
-          Assert.assertNotNull(psiClasses);
-          PsiClass layoutCls = psiClasses.get(0);
-          PsiClass otherCls = psiClasses.get(1);
+  public void getFirstLayoutSpec_whenLayoutSpecExists_returnsFoundLayoutSpec() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(getFirstLayoutSpec(psiFile).get()).isNotNull();
+              assertThat(getFirstLayoutSpec(psiFile).get().getQualifiedName())
+                  .isEqualTo("LithoActivitySpec");
+            });
+  }
 
-          Assert.assertTrue(LithoPluginUtils.isLayoutSpec(layoutCls));
-          Assert.assertFalse(LithoPluginUtils.isLayoutSpec(otherCls));
-          return true;
-        },
-        "LayoutSpec.java",
-        "MountSpec.java");
+  @Test
+  public void getFirstLayoutSpec_whenLayoutSpecDoesNotExist_returnsEmptyResult()
+      throws IOException {
+    final PsiFile mountSpecFile = testHelper.configure("MountSpec.java");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(getFirstLayoutSpec(mountSpecFile)).isEqualTo(Optional.empty());
+            });
+  }
+
+  @Test
+  public void isLayoutSpec_whenClassIsNotLayoutSpec_returnsFalse() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiClass mountSpec =
+                  getFirstClass(psiFile, cls -> "MountSpec".equals(cls.getName())).get();
+              assertThat(mountSpec)
+                  .describedAs("Test file should contain MountSpec class")
+                  .isNotNull();
+              assertThat(isLayoutSpec(mountSpec)).isFalse();
+            });
+  }
+
+  @Test
+  public void isLayoutSpec_whenClassIsLayoutSpec_returnsTrue() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(isLayoutSpec(layoutSpec)).isTrue();
+            });
   }
 }
