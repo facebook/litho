@@ -16,14 +16,18 @@
 
 module.exports = {
   mainSidebar: {
-    'Introducing Litho': ['intro', 'motivation', 'uses'],
+    'Introducing Litho': [
+      'intro',
+      'motivation',
+      'uses',
+    ],
     'Quick Start': [
       'getting-started',
       'tutorial',
       'writing-components',
       'using-components',
     ],
-    Reference: [
+    'Reference': [
       'layout-specs',
       'mount-specs',
       'props',
@@ -50,7 +54,7 @@ module.exports = {
       'transition-key-types',
       'transition-faq',
     ],
-    Sections: [
+    'Sections': [
       'sections-intro',
       'sections-tutorial',
       'group-sections',
@@ -65,9 +69,18 @@ module.exports = {
       'sections-architecture',
       'sections-working-ranges',
     ],
-    'Common use cases': ['updating-ui', 'borders', 'tooltips', 'saving-state'],
-    Compatibility: ['styles', 'accessibility', 'rtl'],
-    Testing: [
+    'Common use cases': [
+      'updating-ui',
+       'borders',
+       'tooltips',
+       'saving-state',
+    ],
+    'Compatibility': [
+      'styles',
+      'accessibility',
+      'rtl',
+    ],
+    'Testing': [
       'testing-overview',
       'unit-testing',
       'subcomponent-testing',
@@ -88,15 +101,27 @@ module.exports = {
       'error-boundaries',
       'onattached-ondetached',
     ],
-    Architecture: [
+    'Architecture': [
       'codegen',
       'asynchronous-layout',
       'inc-mount-architecture',
       'view-flattening',
       'recycling',
     ],
-    'Additional Resources': ['best-practices', 'faq', 'glossary'],
-    Tools: ['flipper-plugins', 'debugging', 'dev-options'],
-    Contributing: ['contributing', 'community-showcase', 'repo-structure'],
+    'Additional Resources': [
+      'best-practices',
+      'faq',
+      'glossary',
+    ],
+    'Tools': [
+      'flipper-plugins',
+      'debugging',
+      'dev-options',
+    ],
+    'Contributing': [
+      'contributing',
+      'community-showcase',
+      'repo-structure',
+    ],
   },
 };
