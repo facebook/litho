@@ -62,8 +62,8 @@ open class KComponent private constructor(
     }
 
     if (!ComponentsConfiguration.useStatelessComponent && shouldCompareState) { // Check hooks
-      val hooksHandler = getScopedContext(null)?.hooksHandler
-      val otherHooksHandler = other.getScopedContext(null)?.hooksHandler
+      val hooksHandler = getScopedContext(null, null)?.hooksHandler
+      val otherHooksHandler = other.getScopedContext(null, null)?.hooksHandler
       if (hooksHandler !== otherHooksHandler) {
         if (hooksHandler == null || !hooksHandler.isEquivalentTo(otherHooksHandler)) {
           return false

@@ -80,8 +80,9 @@ public final class DebugComponent {
    */
   @Nullable
   public static DebugComponent getRootInstance(
-      LayoutStateContext layoutStateContext, Component component) {
-    return getRootInstance(component.getScopedContext(layoutStateContext).getComponentTree());
+      LayoutStateContext layoutStateContext, Component component, String globalKey) {
+    return getRootInstance(
+        component.getScopedContext(layoutStateContext, globalKey).getComponentTree());
   }
 
   @Nullable

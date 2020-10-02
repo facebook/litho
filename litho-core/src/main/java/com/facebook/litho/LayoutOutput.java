@@ -94,7 +94,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       // calculated.
       mScopedContext = null;
     } else {
-      mScopedContext = mComponent.getScopedContext(layoutStateContext);
+      mScopedContext = mComponent.getScopedContext(layoutStateContext, key);
     }
     mBounds = bounds;
     mHostTranslationX = hostTranslationX;

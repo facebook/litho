@@ -235,7 +235,9 @@ public class StateUpdatesTest {
     assertThat(
             mTestComponent
                 .getComponentForStateUpdate()
-                .getScopedContext(mComponentTree.getLayoutStateContext())
+                .getScopedContext(
+                    mComponentTree.getLayoutStateContext(),
+                    mTestComponent.getGlobalKey())
                 .getStateHandler()
                 .getAppliedStateUpdates())
         .hasSize(1);

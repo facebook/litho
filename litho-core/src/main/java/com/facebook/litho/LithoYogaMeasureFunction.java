@@ -51,7 +51,9 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode heightMode) {
     final InternalNode node = (InternalNode) cssNode.getData();
     final Component component = node.getTailComponent();
-    final ComponentContext componentScopedContext = component.getScopedContext(mLayoutStateContext);
+    final String componentGlobalKey = node.getTailComponentKey();
+    final ComponentContext componentScopedContext =
+        component.getScopedContext(mLayoutStateContext, componentGlobalKey);
 
     if (componentScopedContext != null && componentScopedContext.wasLayoutCanceled()) {
       return 0;
@@ -86,18 +88,23 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
       // Find the nearest parent component context.
       final Component head = node.getHeadComponent();
+      final String headKey = node.getHeadComponentKey();
       final Component parent;
+      final String parentKey;
 
       if (component != head) { // If the head and tail are different, use the head.
         parent = head;
+        parentKey = headKey;
       } else if (node.getParent() != null) { // Otherwise use the tail of the parent node.
         parent = node.getParent().getTailComponent();
+        parentKey = node.getParent().getTailComponentKey();
       } else {
         parent = null;
+        parentKey = null;
       }
 
       if (parent != null) {
-        context = parent.getScopedContext(mLayoutStateContext);
+        context = parent.getScopedContext(mLayoutStateContext, parentKey);
       }
 
       final InternalNode nestedTree = Layout.create(context, node, widthSpec, heightSpec);

@@ -71,7 +71,9 @@ class WorkingRangeContainer {
     for (String key : mWorkingRanges.keySet()) {
       final RangeTuple rangeTuple = mWorkingRanges.get(key);
 
-      for (Component component : rangeTuple.mComponents) {
+      for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
+        Component component = rangeTuple.mComponents.get(i);
+        String globalKey = rangeTuple.mComponentKeys.get(i);
         if (!statusHandler.isInRange(rangeTuple.mName, component)
             && isEnteringRange(
                 rangeTuple.mWorkingRange,
@@ -81,7 +83,7 @@ class WorkingRangeContainer {
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
           component.dispatchOnEnteredRange(
-              component.getScopedContext(layoutStateContext), rangeTuple.mName);
+              component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
           statusHandler.setEnteredRangeStatus(rangeTuple.mName, component);
 
         } else if (statusHandler.isInRange(rangeTuple.mName, component)
@@ -93,7 +95,7 @@ class WorkingRangeContainer {
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
           component.dispatchOnExitedRange(
-              component.getScopedContext(layoutStateContext), rangeTuple.mName);
+              component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
           statusHandler.setExitedRangeStatus(rangeTuple.mName, component);
         }
       }
@@ -113,10 +115,12 @@ class WorkingRangeContainer {
     for (String key : mWorkingRanges.keySet()) {
       final RangeTuple rangeTuple = mWorkingRanges.get(key);
 
-      for (Component component : rangeTuple.mComponents) {
+      for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
+        Component component = rangeTuple.mComponents.get(i);
+        String globalKey = rangeTuple.mComponentKeys.get(i);
         if (statusHandler.isInRange(rangeTuple.mName, component)) {
           component.dispatchOnExitedRange(
-              component.getScopedContext(layoutStateContext), rangeTuple.mName);
+              component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
         }
       }
     }

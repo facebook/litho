@@ -759,6 +759,7 @@ public class LayoutState
       node.markLayoutSeen();
     }
     final Component component = node.getTailComponent();
+    final String componentGlobalKey = node.getTailComponentKey();
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy;
@@ -932,7 +933,8 @@ public class LayoutState
         ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
       }
       component.onBoundsDefined(
-          component.getScopedContext(layoutState.getLayoutStateContext()), node);
+          component.getScopedContext(layoutState.getLayoutStateContext(), component.getGlobalKey()),
+          node);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -953,7 +955,7 @@ public class LayoutState
     // 4. Extract the Transitions.
     if (Layout.areTransitionsEnabled(
         component != null
-            ? component.getScopedContext(layoutState.getLayoutStateContext())
+            ? component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey)
             : null)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
@@ -1098,6 +1100,8 @@ public class LayoutState
       final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
       for (int i = 0, size = node.getComponents().size(); i < size; i++) {
         final Component delegate = node.getComponents().get(i);
+        final String delegateKey =
+            componentKeys == null ? delegate.getGlobalKey() : componentKeys.get(i);
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
         // previous ComponentTree with the new component dispatched, otherwise Section children
@@ -1105,13 +1109,12 @@ public class LayoutState
         // checkers cover tests, the scope and tree should not be null at this point of the layout
         // calculation.
         final ComponentContext delegateScopedContext =
-            delegate.getScopedContext(layoutStateContext);
+            delegate.getScopedContext(layoutStateContext, delegateKey);
         if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
             if (layoutState.mComponentKeys != null) {
-              final String delegateKey =
-                  componentKeys == null ? delegate.getGlobalKey() : componentKeys.get(i);
+
               layoutState.mComponentKeys.add(delegateKey);
             }
           }

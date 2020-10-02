@@ -190,7 +190,7 @@ public class ComponentTreeTest {
   public void testLayoutState_ContextIsNotScoped() {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
-    Component root = Column.create(scopedContext).build();
+    Component root = Column.create(scopedContext).key("key").build();
 
     ComponentTree componentTree = ComponentTree.create(scopedContext, root).build();
 
@@ -202,7 +202,10 @@ public class ComponentTreeTest {
     ComponentContext c = componentTree.getContext();
     assertThat(c).isNotEqualTo(scopedContext);
     Assert.assertNull(c.getComponentScope());
-    assertThat(layoutState.getRootComponent().getScopedContext(layoutState.getLayoutStateContext()))
+    assertThat(
+            layoutState
+                .getRootComponent()
+                .getScopedContext(layoutState.getLayoutStateContext(), "key"))
         .isNotEqualTo(scopedContext);
   }
 

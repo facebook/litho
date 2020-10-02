@@ -54,8 +54,10 @@ public class WorkingRangeContainerTest {
     when(mComponent.getGlobalKey()).thenReturn("component");
     mComponent2 = mock(Component.class);
     when(mComponent2.getGlobalKey()).thenReturn("component2");
-    when(mComponent.getScopedContext(mLayoutStateContext)).thenReturn(mComponentContext);
-    when(mComponent2.getScopedContext(mLayoutStateContext)).thenReturn(mComponentContext);
+    when(mComponent.getScopedContext(mLayoutStateContext, "component"))
+        .thenReturn(mComponentContext);
+    when(mComponent2.getScopedContext(mLayoutStateContext, "component2"))
+        .thenReturn(mComponentContext);
   }
 
   @Test

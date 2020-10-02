@@ -38,7 +38,7 @@ public class TestLayoutState {
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
 
     component.updateInternalChildState(c);
-    c = component.getScopedContext(c.getLayoutStateContext());
+    c = component.getScopedContext(c.getLayoutStateContext(), null);
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 

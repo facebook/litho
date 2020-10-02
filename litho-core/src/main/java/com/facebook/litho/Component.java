@@ -180,14 +180,15 @@ public abstract class Component extends ComponentLifecycle
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   @Nullable
-  protected ComponentContext getScopedContext(@Nullable LayoutStateContext layoutStateContext) {
+  protected ComponentContext getScopedContext(
+      @Nullable LayoutStateContext layoutStateContext, String globalKey) {
     if (ComponentsConfiguration.useStatelessComponent) {
       if (layoutStateContext == null) {
         throw new IllegalStateException(
             "Should not attempt to get a scoped context outside of a LayoutStateContext");
       }
 
-      return layoutStateContext.getScopedContext(getGlobalKey());
+      return layoutStateContext.getScopedContext(globalKey);
     }
 
     return mScopedContext;
@@ -702,7 +703,8 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    final ComponentContext scopedContext = component.getScopedContext(c.getLayoutStateContext());
+    final ComponentContext scopedContext =
+        component.getScopedContext(c.getLayoutStateContext(), component.getGlobalKey());
     if (scopedContext != null) {
       assertSameBaseContext(scopedContext, c);
     }

@@ -3523,9 +3523,13 @@ class MountState
 
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
+      final String key =
+          ComponentsConfiguration.useStatelessComponent
+              ? layoutState.getComponentKeysNeedingPreviousRenderData().get(i)
+              : component.getGlobalKey();
       final Transition transition =
           component.createTransition(
-              component.getScopedContext(layoutState.getLayoutStateContext()));
+              component.getScopedContext(layoutState.getLayoutStateContext(), key));
       if (transition != null) {
         TransitionUtils.addTransitions(transition, outList, layoutState.mRootComponentName);
       }
@@ -3555,7 +3559,7 @@ class MountState
     if (mUseStatelessComponent) {
       c = layoutOutput.getScopedContext();
     } else {
-      c = component.getScopedContext(null);
+      c = component.getScopedContext(null, null);
     }
 
     return c == null ? mContext : c;

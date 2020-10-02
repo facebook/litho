@@ -142,7 +142,8 @@ public class LogTreePopulatorTest {
     final TreeProps treeProps = new TreeProps();
     final Component component = mock(Component.class);
     final ComponentContext scopedContext = mContext;
-    when(component.getScopedContext(any(LayoutStateContext.class))).thenReturn(scopedContext);
+    when(component.getScopedContext(any(LayoutStateContext.class), any(String.class)))
+        .thenReturn(scopedContext);
 
     treeProps.put(MyKey.class, 1337);
     mContext.setTreeProps(treeProps);

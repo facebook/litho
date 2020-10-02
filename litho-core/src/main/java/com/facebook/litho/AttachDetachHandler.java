@@ -70,14 +70,18 @@ public class AttachDetachHandler {
     if (toDetach != null) {
       for (Map.Entry<String, Component> entry : toDetach.entrySet()) {
         final Component component = entry.getValue();
-        component.onDetached(component.getScopedContext(layoutStateContext));
+        final String key = entry.getKey();
+
+        component.onDetached(component.getScopedContext(layoutStateContext, key));
       }
     }
 
     if (toAttach != null) {
       for (Map.Entry<String, Component> entry : toAttach.entrySet()) {
         final Component component = entry.getValue();
-        component.onAttached(component.getScopedContext(layoutStateContext));
+        final String key = entry.getKey();
+
+        component.onAttached(component.getScopedContext(layoutStateContext, key));
       }
     }
   }
@@ -88,14 +92,18 @@ public class AttachDetachHandler {
    */
   void onDetached() {
     final List<Component> toDetach;
+    final List<String> toDetachKeys;
     synchronized (this) {
       if (mAttached == null) {
         return;
       }
+
       toDetach = new ArrayList<>();
+      toDetachKeys = new ArrayList<>();
 
       for (Map.Entry<String, Component> entry : mAttached.entrySet()) {
         toDetach.add(entry.getValue());
+        toDetachKeys.add(entry.getKey());
       }
 
       mAttached.clear();
@@ -103,7 +111,8 @@ public class AttachDetachHandler {
 
     for (int i = 0, size = toDetach.size(); i < size; i++) {
       final Component component = toDetach.get(i);
-      component.onDetached(component.getScopedContext(mLayoutStateContext));
+      final String globalKey = toDetachKeys.get(i);
+      component.onDetached(component.getScopedContext(mLayoutStateContext, globalKey));
     }
   }
 

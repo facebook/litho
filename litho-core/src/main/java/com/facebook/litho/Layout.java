@@ -286,11 +286,15 @@ class Layout {
 
     // Find the immediate parent context
     List<Component> components = holder.getComponents();
+    List<String> componentKeys = holder.getComponentKeys();
     if (components.size() > 1) {
+      int index = components.size() - 2;
+      final Component parent = components.get(index);
+      final String parentGlobalKey =
+          componentKeys == null ? parent.getGlobalKey() : componentKeys.get(index);
+
       parentContext =
-          components
-              .get(components.size() - 2)
-              .getScopedContext(parentContext.getLayoutStateContext());
+          parent.getScopedContext(parentContext.getLayoutStateContext(), parentGlobalKey);
     }
 
     if (component == null) {

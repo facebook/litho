@@ -168,7 +168,7 @@ public class StateHandler {
 
     final String key = component.getGlobalKey();
     final StateContainer currentStateContainer;
-    final ComponentContext scopedContext = component.getScopedContext(layoutStateContext);
+    final ComponentContext scopedContext = component.getScopedContext(layoutStateContext, key);
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
