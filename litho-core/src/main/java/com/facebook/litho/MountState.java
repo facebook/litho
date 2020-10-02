@@ -2632,6 +2632,18 @@ class MountState
       // Concurrently remove items therefore traverse backwards.
       for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
         final MountItem mountItem = host.getMountItemAt(i);
+        if (mIndexToItemMap.indexOfValue(mountItem) == -1) {
+          final LayoutOutput output = getLayoutOutput(mountItem);
+          final Component component = output.getComponent();
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR,
+              "UnmountItem:ChildNotFound",
+              "Child of mount item not found in MountSate mIndexToItemMap"
+                  + ", child_component: "
+                  + (component != null ? component.getSimpleName() : null)
+                  + ", child_transitionId: "
+                  + output.getTransitionId());
+        }
         final long childLayoutOutputId =
             mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
 
@@ -2644,6 +2656,16 @@ class MountState
       }
 
       if (!hasUnmountDelegate && host.getMountItemCount() > 0) {
+        final LayoutOutput output = getLayoutOutput(item);
+        final Component component = output.getComponent();
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            "UnmountItem:ChildsNotUnmounted",
+            "Recursively unmounting items from a ComponentHost, left some items behind maybe because not tracked by its MountState"
+                + ", component: "
+                + (component != null ? component.getSimpleName() : null)
+                + ", transitionId: "
+                + output.getTransitionId());
         throw new IllegalStateException(
             "Recursively unmounting items from a ComponentHost, left"
                 + " some items behind maybe because not tracked by its MountState");
