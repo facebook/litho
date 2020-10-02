@@ -23,6 +23,7 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
+import java.util.Set;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It
@@ -273,4 +274,6 @@ public class ComponentsConfiguration {
   public static int overlappingRenderingViewSizeLimit = Integer.MAX_VALUE;
 
   public static int partialAlphaWarningSizeThresold = Integer.MAX_VALUE;
+
+  public static @Nullable Set<String> componentPreallocationBlocklist = null;
 }

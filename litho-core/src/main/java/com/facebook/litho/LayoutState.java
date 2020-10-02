@@ -1922,6 +1922,12 @@ public class LayoutState
           continue;
         }
 
+        if (ComponentsConfiguration.componentPreallocationBlocklist != null
+            && ComponentsConfiguration.componentPreallocationBlocklist.contains(
+                component.getSimpleName())) {
+          continue;
+        }
+
         if (Component.isMountViewSpec(component)) {
           if (isTracing) {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
