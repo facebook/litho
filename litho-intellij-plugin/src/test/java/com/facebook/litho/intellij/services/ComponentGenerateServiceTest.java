@@ -90,7 +90,7 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
 
   @Test
   public void
-      getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameQfnExists_returnsExistingSpecModel()
+      getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel()
           throws IOException {
     final PsiFile psiFile1 = testHelper.configure("LayoutSpec.java");
     final PsiFile psiFile2 = testHelper.configure("LayoutSpec.java");
