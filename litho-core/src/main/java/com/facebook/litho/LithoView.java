@@ -1193,16 +1193,16 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
+    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
+
+    if (layoutState == null) {
+      Log.w(TAG, "Main Thread Layout state is not found");
+      return;
+    }
+
     if (mLithoHostListenerCoordinator != null) {
       mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleArea);
     } else {
-      final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
-
-      if (layoutState == null) {
-        Log.w(TAG, "Main Thread Layout state is not found");
-        return;
-      }
-
       mMountState.processVisibilityOutputs(
           layoutState,
           currentVisibleArea,
