@@ -589,7 +589,7 @@ public abstract class Component extends ComponentLifecycle
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
-    applyStateUpdates(parentContext, scopedContext);
+    applyStateUpdates(parentContext, scopedContext, globalKey);
     generateErrorEventHandler(parentContext, scopedContext);
 
     // Needed for tests, mocks can run into this.
@@ -608,12 +608,14 @@ public abstract class Component extends ComponentLifecycle
    * @param c component context
    */
   private void applyStateUpdates(
-      final ComponentContext parentContext, final ComponentContext scopedContext) {
+      final ComponentContext parentContext,
+      final ComponentContext scopedContext,
+      final String globalKey) {
     populateTreeProps(scopedContext.getTreeProps());
     if (hasState()) {
       parentContext
           .getStateHandler()
-          .applyStateUpdatesForComponent(parentContext.getLayoutStateContext(), this);
+          .applyStateUpdatesForComponent(parentContext.getLayoutStateContext(), this, globalKey);
     }
   }
 

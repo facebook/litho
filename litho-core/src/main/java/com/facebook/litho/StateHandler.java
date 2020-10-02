@@ -158,7 +158,8 @@ public class StateHandler {
    * @param component the new component
    */
   @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesForComponent(LayoutStateContext layoutStateContext, Component component) {
+  void applyStateUpdatesForComponent(
+      LayoutStateContext layoutStateContext, Component component, String key) {
     maybeInitStateContainers();
     maybeInitNeededStateContainers();
 
@@ -166,7 +167,6 @@ public class StateHandler {
       return;
     }
 
-    final String key = component.getGlobalKey();
     final StateContainer currentStateContainer;
     final ComponentContext scopedContext = component.getScopedContext(layoutStateContext, key);
 
