@@ -153,7 +153,7 @@ public class HostView extends Host {
     } else {
       mIsChildDrawingOrderDirty = true;
 
-      startTemporaryDetach(((View) content));
+      startTemporaryDetach((View) content);
     }
     ensureSize(newIndex);
 
@@ -168,7 +168,7 @@ public class HostView extends Host {
     releaseScrapDataStructuresIfNeeded();
 
     if (item.getRenderUnit().getRenderType() == VIEW) {
-      finishTemporaryDetach(((View) content));
+      finishTemporaryDetach((View) content);
     }
   }
 
@@ -271,6 +271,7 @@ public class HostView extends Host {
     return false;
   }
 
+  @SuppressLint("ClickableViewAccessibility")
   @Override
   public boolean onTouchEvent(MotionEvent event) {
 
@@ -379,11 +380,9 @@ public class HostView extends Host {
 
     for (int i = 0, size = (mMountItems == null) ? 0 : mMountItems.length; i < size; i++) {
       MountItem mountItem = mMountItems[i];
-      if (mountItem != null) {
-        if (mountItem.getRenderUnit().getRenderType() == DRAWABLE) {
-          final Drawable drawable = (Drawable) mountItem.getContent();
-          drawable.setVisible(visibility == View.VISIBLE, false);
-        }
+      if (mountItem != null && mountItem.getRenderUnit().getRenderType() == DRAWABLE) {
+        final Drawable drawable = (Drawable) mountItem.getContent();
+        drawable.setVisible(visibility == View.VISIBLE, false);
       }
     }
   }
@@ -461,10 +460,6 @@ public class HostView extends Host {
     ViewCompat.dispatchFinishTemporaryDetach(view);
   }
 
-  private static String getMountItemName(MountItem mountItem) {
-    return mountItem.getRenderUnit().getClass().getSimpleName();
-  }
-
   private void updateChildDrawingOrderIfNeeded() {
     if (!mIsChildDrawingOrderDirty) {
       return;
@@ -479,8 +474,7 @@ public class HostView extends Host {
     final int mountItemCount = mMountItems == null ? 0 : mMountItems.length;
     for (int i = 0; i < mountItemCount; i++) {
       final MountItem mountItem = mMountItems[i];
-      if (mountItem != null
-          && mountItem.getRenderUnit().getRenderType() == RenderUnit.RenderType.VIEW) {
+      if (mountItem != null && mountItem.getRenderUnit().getRenderType() == VIEW) {
         final View child = (View) mountItem.getContent();
         mChildDrawingOrder[index++] = indexOfChild(child);
       }
@@ -501,7 +495,7 @@ public class HostView extends Host {
     }
   }
 
-  private boolean isEmpty(MountItem[] scrapMountItemsArray) {
+  private static boolean isEmpty(MountItem[] scrapMountItemsArray) {
     for (int i = 0; i < scrapMountItemsArray.length; i++) {
       if (scrapMountItemsArray[i] != null) {
         return false;
@@ -530,7 +524,7 @@ public class HostView extends Host {
    */
   private class InterleavedDispatchDraw {
 
-    private Canvas mCanvas;
+    private @Nullable Canvas mCanvas;
     private int mDrawIndex;
     private int mItemsToDraw;
 
@@ -551,16 +545,14 @@ public class HostView extends Host {
         return;
       }
 
-      for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : getMountItemCount();
-          i < size;
-          i++) {
+      for (int i = mDrawIndex; i < mItemsToDraw; i++) {
         final MountItem mountItem = mMountItems[i];
 
         // During a ViewGroup's dispatchDraw() call with children drawing order enabled,
         // getChildDrawingOrder() will be called before each child view is drawn. This
         // method will only draw the drawables "between" the child views and the let
         // the host draw its children as usual. This is why views are skipped here.
-        if (mountItem.getRenderUnit().getRenderType() == RenderUnit.RenderType.VIEW) {
+        if (mountItem.getRenderUnit().getRenderType() == VIEW) {
           mDrawIndex = i + 1;
           return;
         }
