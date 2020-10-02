@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.5.10
+
+_2020-10-05
+
+* New: More straightforward `OnEvent` generation.
+* New: Resolve `OnEvent` name conflicts.
+* New: `OnEvent` completion in the method arguments.
+
 ## Version 1.5.9
 
 _2020-09-11
