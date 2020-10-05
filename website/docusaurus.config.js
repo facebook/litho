@@ -40,35 +40,26 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/getting-started',
           label: 'Docs',
+          to: 'docs/getting-started',
           position: 'right',
         },
         {
-          to: 'pathname:///javadoc',
           label: 'API',
+          to: 'pathname:///javadoc',
           position: 'right',
         },
         {
-          to: 'docs/tutorial',
           label: 'Tutorial',
+          to: 'docs/tutorial',
           position: 'right',
         },
         {
-          href: repoUrl,
           label: 'GitHub',
+          href: repoUrl,
           position: 'right',
         },
       ],
-    },
-    colorMode: {
-      // Current CSS doesn't have high contrast so it needs some work before being enabled.
-      defaultMode: 'light',
-      disableSwitch: true,
-    },
-    algolia: {
-      apiKey: '6502239eccd45af18518695c2b743307',
-      indexName: 'fblitho',
     },
     footer: {
       style: 'dark',
@@ -118,13 +109,17 @@ module.exports = {
           ],
         },
       ],
-      logo: {
-        alt: 'Facebook Open Source Logo',
-        src: 'images/oss_logo.png',
-        href: 'https://opensource.facebook.com',
-      },
       // Please do not remove the credits, help to publicize Docusaurus :)
-      copyright: `Copyright \u00A9 ${new Date().getFullYear()} Facebook, Inc.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Facebook, Inc.`,
+    },
+    colorMode: {
+      // Current CSS doesn't have high contrast so it needs some work before being enabled.
+      defaultMode: 'light',
+      disableSwitch: true,
+    },
+    algolia: {
+      apiKey: '6502239eccd45af18518695c2b743307',
+      indexName: 'fblitho',
     },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
