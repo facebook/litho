@@ -35,7 +35,7 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1701,9 +1701,9 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     List<MountExtension> extensions =
         Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
     for (int i = 0, size = extensions.size(); i < size; i++) {
-      if (extensions.get(i) instanceof VisibilityOutputsExtension) {
-        VisibilityOutputsExtension visibilityOutputsExtension =
-            (VisibilityOutputsExtension) extensions.get(i);
+      if (extensions.get(i) instanceof VisibilityMountExtension) {
+        VisibilityMountExtension visibilityOutputsExtension =
+            (VisibilityMountExtension) extensions.get(i);
         return visibilityOutputsExtension.getVisibilityIdToItemMap();
       }
     }

@@ -24,7 +24,7 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
 
   private final List<MountExtension> mMountExtensions;
   private IncrementalMountExtension mIncrementalMountExtension;
-  private VisibilityOutputsExtension mVisibilityOutputsExtension;
+  private VisibilityMountExtension mVisibilityExtension;
   private TransitionsExtension mTransitionsExtension;
   private EndToEndTestingExtension mEndToEndTestingExtension;
   private DynamicPropsBinder mDynamicPropsBinder;
@@ -74,8 +74,8 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
       mTransitionsExtension.onVisibleBoundsChanged(localVisibleRect);
     }
 
-    if (mVisibilityOutputsExtension != null) {
-      mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
+    if (mVisibilityExtension != null) {
+      mVisibilityExtension.onVisibleBoundsChanged(localVisibleRect);
     }
   }
 
@@ -106,14 +106,14 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
   }
 
   void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
-    if (mVisibilityOutputsExtension != null) {
+    if (mVisibilityExtension != null) {
       throw new IllegalStateException(
           "Visibility processing has already been enabled on this coordinator");
     }
 
-    mVisibilityOutputsExtension = new VisibilityOutputsExtension();
-    mountDelegateTarget.registerMountDelegateExtension(mVisibilityOutputsExtension);
-    registerListener(mVisibilityOutputsExtension);
+    mVisibilityExtension = new VisibilityMountExtension();
+    mountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
+    registerListener(mVisibilityExtension);
   }
 
   void enableEndToEndTestProcessing(MountDelegateTarget mountDelegateTarget) {
@@ -127,8 +127,8 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
   }
 
   @Nullable
-  VisibilityOutputsExtension getVisibilityOutputsExtension() {
-    return mVisibilityOutputsExtension;
+  VisibilityMountExtension getVisibilityExtension() {
+    return mVisibilityExtension;
   }
 
   @Nullable
@@ -161,9 +161,9 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
   }
 
   @VisibleForTesting
-  void useVisibilityExtension(VisibilityOutputsExtension extension) {
-    mVisibilityOutputsExtension = extension;
-    registerListener(mVisibilityOutputsExtension);
+  void useVisibilityExtension(VisibilityMountExtension extension) {
+    mVisibilityExtension = extension;
+    registerListener(mVisibilityExtension);
   }
 
   public void enableDynamicProps() {

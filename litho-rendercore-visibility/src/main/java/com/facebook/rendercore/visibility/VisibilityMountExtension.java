@@ -31,7 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputsExtensionInput> {
+public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
+    extends MountExtension<Input> {
 
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -53,7 +54,7 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
   /** @deprecated Only used for Litho's integration. Marked for removal. */
   @Deprecated private @Nullable Host mRootHost;
 
-  public VisibilityOutputsExtension() {
+  public VisibilityMountExtension() {
     mVisibilityIdToItemMap = new HashMap<>();
   }
 
@@ -349,7 +350,7 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
   }
 
   @Override
-  public void beforeMount(VisibilityOutputsExtensionInput input, @Nullable Rect localVisibleRect) {
+  public void beforeMount(Input input, @Nullable Rect localVisibleRect) {
 
     mVisibilityOutputs = input.getVisibilityOutputs();
 

@@ -19,7 +19,7 @@ package com.facebook.rendercore.visibility;
 import java.util.List;
 
 /** This APIs declares that inputs required by the Visibility Extensions. */
-public interface VisibilityOutputsExtensionInput {
+public interface VisibilityExtensionInput {
 
   /** returns a list of items for which visibility events will be processed */
   List<VisibilityOutput> getVisibilityOutputs();

@@ -81,7 +81,7 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -171,7 +171,7 @@ class MountState
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
-  private @Nullable VisibilityOutputsExtension mVisibilityOutputsExtension;
+  private @Nullable VisibilityMountExtension mVisibilityExtension;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable MountStateLogMessageProvider mMountStateLogMessageProvider;
   private LayoutStateContext mLayoutStateContext;
@@ -199,8 +199,8 @@ class MountState
       registerMountDelegateExtension(mIncrementalMountExtension);
     }
 
-    mVisibilityOutputsExtension = new VisibilityOutputsExtension();
-    mVisibilityOutputsExtension.setRootHost(mLithoView);
+    mVisibilityExtension = new VisibilityMountExtension();
+    mVisibilityExtension.setRootHost(mLithoView);
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
@@ -289,8 +289,8 @@ class MountState
       throw new IllegalStateException("Trying to mount a null layoutState");
     }
 
-    if (mVisibilityOutputsExtension != null && mIsDirty) {
-      mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
+    if (mVisibilityExtension != null && mIsDirty) {
+      mVisibilityExtension.beforeMount(layoutState, localVisibleRect);
     }
 
     if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
@@ -937,15 +937,15 @@ class MountState
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
     if (isDirty) {
-      mVisibilityOutputsExtension.afterMount();
+      mVisibilityExtension.afterMount();
     } else {
-      mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
+      mVisibilityExtension.onVisibleBoundsChanged(localVisibleRect);
     }
   }
 
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    return mVisibilityOutputsExtension.getVisibilityIdToItemMap();
+    return mVisibilityExtension.getVisibilityIdToItemMap();
   }
 
   @VisibleForTesting
@@ -1053,7 +1053,7 @@ class MountState
   }
 
   void clearVisibilityItems() {
-    mVisibilityOutputsExtension.clearVisibilityItems();
+    mVisibilityExtension.clearVisibilityItems();
   }
 
   private void registerHost(long id, ComponentHost host) {
@@ -2588,8 +2588,8 @@ class MountState
       mIncrementalMountExtension.onUnmount();
     }
 
-    if (mVisibilityOutputsExtension != null) {
-      mVisibilityOutputsExtension.onUnmount();
+    if (mVisibilityExtension != null) {
+      mVisibilityExtension.onUnmount();
     }
 
     if (mTransitionsExtension != null) {
@@ -3275,8 +3275,8 @@ class MountState
       mIncrementalMountExtension.onUnbind();
     }
 
-    if (mVisibilityOutputsExtension != null) {
-      mVisibilityOutputsExtension.onUnbind();
+    if (mVisibilityExtension != null) {
+      mVisibilityExtension.onUnbind();
     }
 
     if (mTransitionsExtension != null) {

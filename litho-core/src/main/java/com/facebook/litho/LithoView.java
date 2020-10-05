@@ -38,7 +38,7 @@ import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityOutput;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityUtils;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -827,8 +827,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void clearVisibilityItems() {
     if (mUseExtensions && mLithoHostListenerCoordinator != null) {
-      final VisibilityOutputsExtension visibilityOutputsExtension =
-          mLithoHostListenerCoordinator.getVisibilityOutputsExtension();
+      final VisibilityMountExtension visibilityOutputsExtension =
+          mLithoHostListenerCoordinator.getVisibilityExtension();
       if (visibilityOutputsExtension != null) {
         visibilityOutputsExtension.clearVisibilityItems();
       }

@@ -64,9 +64,9 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
+import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtensionInput;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
@@ -92,7 +92,7 @@ import javax.annotation.CheckReturnValue;
 @VisibleForTesting
 public class LayoutState
     implements IncrementalMountExtensionInput,
-        VisibilityOutputsExtensionInput,
+        VisibilityExtensionInput,
         TransitionsExtensionInput,
         EndToEndTestingExtensionInput {
 

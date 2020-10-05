@@ -30,7 +30,7 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTree;
-import com.facebook.rendercore.visibility.VisibilityOutputsExtension;
+import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
@@ -104,8 +104,8 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     mLithoViewRule.getLithoView().setMountStateDirty();
 
-    final VisibilityOutputsExtension visibilityOutputsExtension =
-        mock(VisibilityOutputsExtension.class);
+    final VisibilityMountExtension visibilityOutputsExtension =
+        mock(VisibilityMountExtension.class);
     useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityOutputsExtension);
 
     final Rect rect = new Rect(0, 0, RIGHT, 10);
@@ -116,15 +116,14 @@ public class VisibilityEventsWithVisibilityExtensionTest {
   }
 
   private void useVisibilityOutputsExtension(
-      LithoView lithoView, VisibilityOutputsExtension visibilityOutputsExtension) {
+      LithoView lithoView, VisibilityMountExtension visibilityOutputsExtension) {
     if (mUseMountDelegateTarget) {
       LithoHostListenerCoordinator lithoHostListenerCoordinator =
           Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
       lithoHostListenerCoordinator.useVisibilityExtension(visibilityOutputsExtension);
     } else {
       final MountDelegateTarget mountState = lithoView.getMountDelegateTarget();
-      Whitebox.setInternalState(
-          mountState, "mVisibilityOutputsExtension", visibilityOutputsExtension);
+      Whitebox.setInternalState(mountState, "mVisibilityExtension", visibilityOutputsExtension);
     }
   }
 }

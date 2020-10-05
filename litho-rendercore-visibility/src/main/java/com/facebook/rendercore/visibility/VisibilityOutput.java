@@ -19,6 +19,7 @@ package com.facebook.rendercore.visibility;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.Node.LayoutResult;
 
 /**
  * Stores information about a node which has registered visibility handlers for. The information is
@@ -179,5 +180,21 @@ public class VisibilityOutput {
 
   public @Nullable Function<Void> getVisibilityChangedEventHandler() {
     return mVisibilityChangedEventHandler;
+  }
+
+  /**
+   * The factory that client frameworks must implement to enable {@link VisibilityExtension} to
+   * create a {@link VisibilityOutput} for every visited {@link LayoutResult} during the layout
+   * pass.
+   */
+  public interface Factory<R extends LayoutResult<?>> {
+
+    /**
+     * @param result The {@link LayoutResult} for which a {@link VisibilityOutput} is required
+     * @param absoluteBounds The absolute bounds of {@param result}.
+     * @return an output if the client framework needs visibility events for {@param result}.
+     */
+    @Nullable
+    VisibilityOutput createVisibilityOutput(R result, Rect absoluteBounds);
   }
 }

@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 @ThreadConfined(ThreadConfined.ANY)
 public interface InternalNode
     extends Node,
-        Node.LayoutResult,
+        Node.LayoutResult<Object>,
         ComponentLayout,
         LayoutProps,
         DiffNode,
