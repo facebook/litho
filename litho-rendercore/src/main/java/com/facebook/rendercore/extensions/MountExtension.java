@@ -48,7 +48,7 @@ public class MountExtension<Input> {
     mLayoutOutputMountRefs = new HashSet<>();
   }
 
-  protected final @Nullable Host getRootHost() {
+  protected @Nullable Host getRootHost() {
     MountItem root = mMountDelegate.getMountDelegateTarget().getRootItem();
     if (root != null) {
       return (Host) root.getContent();

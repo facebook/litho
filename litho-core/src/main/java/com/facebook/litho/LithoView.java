@@ -672,7 +672,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     if (mLithoHostListenerCoordinator == null) {
       mLithoHostListenerCoordinator = new LithoHostListenerCoordinator();
 
-      mLithoHostListenerCoordinator.enableVisibilityProcessing(this);
+      mLithoHostListenerCoordinator.enableVisibilityProcessing(this, mMountDelegateTarget);
 
       if (mMountDelegateTarget == null) {
         throw new IllegalStateException(

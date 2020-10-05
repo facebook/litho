@@ -36,7 +36,6 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
 
-  private final Host mHost;
   // Holds a list with information about the components linked to the VisibilityOutputs that are
   // stored in LayoutState. An item is inserted in this map if its corresponding component is
   // visible. When the component exits the viewport, the item associated with it is removed from the
@@ -51,8 +50,10 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
   private VisibilityModuleInput mVisibilityModuleInput;
   private @Nullable Rect mCurrentLocalVisibleRect;
 
-  public VisibilityOutputsExtension(Host host) {
-    mHost = host;
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated private @Nullable Host mRootHost;
+
+  public VisibilityOutputsExtension() {
     mVisibilityIdToItemMap = new HashMap<>();
   }
 
@@ -63,11 +64,12 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
 
       if (mIncrementalVisibilityEnabled) {
         if (mVisibilityModule == null) {
-          if (mHost == null) {
+          Host host = getRootHost();
+          if (host == null) {
             return;
           }
 
-          mVisibilityModule = new VisibilityModule(mHost);
+          mVisibilityModule = new VisibilityModule(host);
         }
 
         mVisibilityModule.processVisibilityOutputs(
@@ -245,7 +247,11 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
 
   /** Returns true if the component is in the focused visible range. */
   private boolean isInFocusedRange(Rect componentBounds, Rect componentVisibleBounds) {
-    final View parent = (View) mHost.getParent();
+    final Host host = getRootHost();
+    if (host == null) {
+      return false;
+    }
+    final View parent = (View) host.getParent();
     if (parent == null) {
       return false;
     }
@@ -380,12 +386,28 @@ public class VisibilityOutputsExtension extends MountExtension<VisibilityOutputs
   }
 
   private boolean hasTransientState() {
-    return IS_JELLYBEAN_OR_HIGHER && mHost.hasTransientState();
+    final Host host = getRootHost();
+    return IS_JELLYBEAN_OR_HIGHER && (host != null && host.hasTransientState());
   }
 
   @Override
   public void onUnbind() {
     clearVisibilityItems();
+  }
+
+  @Override
+  protected @Nullable Host getRootHost() {
+    if (mRootHost == null) {
+      return super.getRootHost();
+    } else {
+      return mRootHost;
+    }
+  }
+
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
+  public void setRootHost(Host root) {
+    mRootHost = root;
   }
 
   public void notifyOnUnbind() {

@@ -105,13 +105,14 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
     addAttachDetachExtension(mIncrementalMountExtension.getAttachDetachBinder());
   }
 
-  void enableVisibilityProcessing(LithoView lithoView) {
+  void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mVisibilityOutputsExtension != null) {
       throw new IllegalStateException(
           "Visibility processing has already been enabled on this coordinator");
     }
 
-    mVisibilityOutputsExtension = new VisibilityOutputsExtension(lithoView);
+    mVisibilityOutputsExtension = new VisibilityOutputsExtension();
+    mountDelegateTarget.registerMountDelegateExtension(mVisibilityOutputsExtension);
     registerListener(mVisibilityOutputsExtension);
   }
 

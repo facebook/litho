@@ -199,7 +199,8 @@ class MountState
       registerMountDelegateExtension(mIncrementalMountExtension);
     }
 
-    mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
+    mVisibilityOutputsExtension = new VisibilityOutputsExtension();
+    mVisibilityOutputsExtension.setRootHost(mLithoView);
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
