@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
+const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
+
 const repoUrl = 'https://github.com/facebook/litho';
+const siteTitle = fbContent({internal: 'Litho @FB', external: 'Litho'});
 
 module.exports = {
   onBrokenLinks: 'throw',
-  title: 'Litho',
+  title: siteTitle,
   tagline: 'A declarative UI framework for Android',
-  url: 'https://fblitho.com',
+  url: fbContent({
+    internal: 'https://litho.thefacebook.com',
+    external: 'https://fblitho.com',
+  }),
   baseUrl: '/',
   favicon: 'images/favicon.png',
   organizationName: 'facebook',
   projectName: 'litho',
   themeConfig: {
     navbar: {
-      title: 'Litho',
+      title: siteTitle,
       logo: {
         alt: 'Litho Logo',
         src: 'images/logo.svg',
