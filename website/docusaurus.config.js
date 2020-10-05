@@ -96,6 +96,19 @@ module.exports = {
           ],
         },
         {
+          title: 'Legal',
+          items: [
+            {
+              label: 'Privacy',
+              href: 'https://opensource.facebook.com/legal/privacy',
+            },
+            {
+              label: 'Terms',
+              href: 'https://opensource.facebook.com/legal/terms',
+            },
+          ],
+        },
+        {
           title: 'Social',
           items: [
             {
