@@ -36,7 +36,6 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
@@ -52,7 +51,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 
 /** Tests {@link ComponentLifecycle} */

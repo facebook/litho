@@ -2171,10 +2171,9 @@ public class ComponentTree {
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
       final String globalKey =
-          mUseStatelessComponent
-              ? componentKeys.get(i)
-              : component.getGlobalKey();
-      final ComponentContext scopedContext = component.getScopedContext(layoutStateContext, globalKey);
+          mUseStatelessComponent ? componentKeys.get(i) : component.getGlobalKey();
+      final ComponentContext scopedContext =
+          component.getScopedContext(layoutStateContext, globalKey);
       mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
       bindTriggerHandler(scopedContext, component);
     }

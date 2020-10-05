@@ -236,8 +236,7 @@ public class StateUpdatesTest {
             mTestComponent
                 .getComponentForStateUpdate()
                 .getScopedContext(
-                    mComponentTree.getLayoutStateContext(),
-                    mTestComponent.getGlobalKey())
+                    mComponentTree.getLayoutStateContext(), mTestComponent.getGlobalKey())
                 .getStateHandler()
                 .getAppliedStateUpdates())
         .hasSize(1);
