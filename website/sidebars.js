@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 module.exports = {
   mainSidebar: {
     'Introducing Litho': [
@@ -123,5 +124,9 @@ module.exports = {
       'community-showcase',
       'repo-structure',
     ],
+    ...fbInternalOnly({
+      'Internal': [
+        'fb/internal-litho',
+      ]}),
   },
 };

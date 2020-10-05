@@ -16,6 +16,7 @@
     "clsx": "^1.1.1",
     "docusaurus-plugin-internaldocs-fb": "^0.4.0",
     "docusaurus-plugin-sass": "^0.1.10",
+    "internaldocs-fb-helpers": "^1.1.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },
