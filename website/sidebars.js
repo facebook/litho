@@ -127,6 +127,7 @@ module.exports = {
     ...fbInternalOnly({
       'Internal': [
         'fb/internal-litho',
+        'fb/video-lessons',
       ]}),
   },
 };
