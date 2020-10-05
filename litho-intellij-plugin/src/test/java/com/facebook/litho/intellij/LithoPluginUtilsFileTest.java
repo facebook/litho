@@ -19,6 +19,7 @@ package com.facebook.litho.intellij;
 import static com.facebook.litho.intellij.LithoPluginUtils.getFirstClass;
 import static com.facebook.litho.intellij.LithoPluginUtils.getFirstLayoutSpec;
 import static com.facebook.litho.intellij.LithoPluginUtils.isLayoutSpec;
+import static com.facebook.litho.intellij.LithoPluginUtils.isMountSpec;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -101,6 +102,26 @@ public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
         .invokeAndWait(
             () -> {
               assertThat(isLayoutSpec(layoutSpec)).isTrue();
+            });
+  }
+
+  @Test
+  public void isMountSpec_whenClassIsNotMountSpec_returnsFalse() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(isMountSpec(layoutSpec)).isFalse();
+            });
+  }
+
+  @Test
+  public void isMountSpec_whenClassIsMountSpec_returnsTrue() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiClass mountSpec =
+                  getFirstClass(psiFile, cls -> "MountSpec".equals(cls.getName())).get();
+              assertThat(isMountSpec(mountSpec)).isTrue();
             });
   }
 

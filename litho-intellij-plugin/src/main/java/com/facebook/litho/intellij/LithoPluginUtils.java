@@ -90,7 +90,7 @@ public class LithoPluginUtils {
     return psiClass != null && hasAnnotation(psiClass, equals(LayoutSpec.class.getName()));
   }
 
-  static boolean isMountSpec(@Nullable PsiClass psiClass) {
+  public static boolean isMountSpec(@Nullable PsiClass psiClass) {
     return psiClass != null && hasAnnotation(psiClass, equals(MountSpec.class.getName()));
   }
 
