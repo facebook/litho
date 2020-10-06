@@ -63,17 +63,7 @@ public class Reducer {
     final int absoluteX = parent.getAbsoluteX() + x;
     final int absoluteY = parent.getAbsoluteY() + y;
 
-    if (extensions != null) {
-      final int size = flattenedTree.size();
-      for (Map.Entry<RenderCoreExtension<?>, Object> entry : extensions.entrySet()) {
-        final RenderCoreExtension<?> e = entry.getKey();
-        final LayoutResultVisitor visitor = e.getLayoutVisitor();
-        if (visitor != null) {
-          final Object state = entry.getValue();
-          visitor.visit(parent, layoutResult, bounds, absoluteX, absoluteY, size, state);
-        }
-      }
-    }
+    visit(parent, layoutResult, bounds, absoluteX, absoluteY, flattenedTree.size(), extensions);
 
     final RenderUnit renderUnit = layoutResult.getRenderUnit();
 
@@ -179,6 +169,8 @@ public class Reducer {
     final ArrayList<RenderTreeNode> nodes = new ArrayList<>();
     final Rect bounds = new Rect(0, 0, layoutResult.getWidth(), layoutResult.getHeight());
 
+    visit(null, layoutResult, bounds, 0, 0, 0, results);
+
     final RenderTreeNode root =
         createRenderTreeNode(layoutResult, sRootHostRenderUnit, bounds, null);
     nodes.add(root);
@@ -203,5 +195,26 @@ public class Reducer {
     }
 
     return results;
+  }
+
+  private static void visit(
+      final @Nullable RenderTreeNode parent,
+      final LayoutResult<?> result,
+      final Rect bounds,
+      final int absoluteX,
+      final int absoluteY,
+      final int size,
+      final @Nullable Map<RenderCoreExtension<?>, Object> extensions) {
+
+    if (extensions != null) {
+      for (Map.Entry<RenderCoreExtension<?>, Object> entry : extensions.entrySet()) {
+        final RenderCoreExtension<?> e = entry.getKey();
+        final LayoutResultVisitor visitor = e.getLayoutVisitor();
+        if (visitor != null) {
+          final Object state = entry.getValue();
+          visitor.visit(parent, result, bounds, absoluteX, absoluteY, size, state);
+        }
+      }
+    }
   }
 }
