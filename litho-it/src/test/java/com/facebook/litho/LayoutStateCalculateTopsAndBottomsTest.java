@@ -34,6 +34,7 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,45 +72,32 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
-    assertThat(layoutState.getMountableOutputTops().get(0).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(1).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(2).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(3).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(10);
-    assertThat(layoutState.getMountableOutputTops().get(4).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(50);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(0).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(1).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(2).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(3).getBounds().top).isEqualTo(10);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(4).getBounds().top).isEqualTo(50);
 
-    assertThat(layoutState.getMountableOutputBottoms().get(0).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(0).getBounds().bottom)
         .isEqualTo(40);
-    assertThat(layoutState.getMountableOutputBottoms().get(1).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(1).getBounds().bottom)
         .isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(2).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(2).getBounds().bottom)
         .isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(3).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(3).getBounds().bottom)
         .isEqualTo(70);
-    assertThat(layoutState.getMountableOutputBottoms().get(4).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(4).getBounds().bottom)
         .isEqualTo(70);
 
-    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(4).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(3).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(4).getLayoutData());
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(2).getIndex()).isEqualTo(2);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(3).getIndex()).isEqualTo(4);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(4).getIndex()).isEqualTo(3);
 
-    assertThat(layoutState.getMountableOutputAt(4).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(0).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(1).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(1).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(3).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(4).getLayoutData());
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(0).getIndex()).isEqualTo(4);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(1).getIndex()).isEqualTo(2);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(2).getIndex()).isEqualTo(1);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(3).getIndex()).isEqualTo(3);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(4).getIndex()).isEqualTo(0);
   }
 
   @Test
@@ -140,41 +128,29 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
 
-    assertThat(layoutState.getMountableOutputTops().get(0).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(1).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(2).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
-    assertThat(layoutState.getMountableOutputTops().get(3).getAbsoluteBounds(new Rect()).top)
-        .isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(0).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(1).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(2).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(3).getBounds().top).isEqualTo(0);
 
-    assertThat(layoutState.getMountableOutputBottoms().get(0).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(0).getBounds().bottom)
         .isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(1).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(1).getBounds().bottom)
         .isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(2).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(2).getBounds().bottom)
         .isEqualTo(50);
-    assertThat(layoutState.getMountableOutputBottoms().get(3).getAbsoluteBounds(new Rect()).bottom)
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(3).getBounds().bottom)
         .isEqualTo(50);
 
-    assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(0).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(1).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(1).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputTops().get(3).getLayoutData());
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(0).getIndex()).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(1).getIndex()).isEqualTo(1);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(2).getIndex()).isEqualTo(2);
+    assertThat(layoutState.getOutputsOrderedByTopBounds().get(3).getIndex()).isEqualTo(3);
 
-    assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(3).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(1).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(1).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
-        .isSameAs(layoutState.getMountableOutputBottoms().get(0).getLayoutData());
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(3).getIndex()).isEqualTo(0);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(2).getIndex()).isEqualTo(1);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(1).getIndex()).isEqualTo(2);
+    assertThat(layoutState.getOutputsOrderedByBottomBounds().get(0).getIndex()).isEqualTo(3);
   }
 
   @Test
@@ -187,22 +163,22 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    RenderTreeNode[] layoutOutputs = new RenderTreeNode[4];
-    layoutOutputs[0] = createLayoutOutput(component, 0, 10, 0);
-    layoutOutputs[1] = createLayoutOutput(component, 0, 10, 1);
-    layoutOutputs[2] = createLayoutOutput(component, 0, 20, 2);
-    layoutOutputs[3] = createLayoutOutput(component, 0, 20, 3);
+    IncrementalMountOutput[] outputs = new IncrementalMountOutput[4];
+    outputs[0] = createIncrementMountOutput(0, 10, 0);
+    outputs[1] = createIncrementMountOutput(0, 10, 1);
+    outputs[2] = createIncrementMountOutput(0, 20, 2);
+    outputs[3] = createIncrementMountOutput(0, 20, 3);
 
     // reflexive
-    for (RenderTreeNode layoutOutput : layoutOutputs) {
-      assertThat(sTopsComparator.compare(layoutOutput, layoutOutput)).isEqualTo(0);
+    for (IncrementalMountOutput output : outputs) {
+      assertThat(sTopsComparator.compare(output, output)).isEqualTo(0);
     }
 
     // symmetric
     for (int i = 0; i < 4; i++) {
       for (int j = i + 1; j < 4; j++) {
-        assertThat(-1 * sTopsComparator.compare(layoutOutputs[j], layoutOutputs[i]))
-            .isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+        assertThat(-1 * sTopsComparator.compare(outputs[j], outputs[i]))
+            .isEqualTo(sTopsComparator.compare(outputs[i], outputs[j]));
       }
     }
 
@@ -211,10 +187,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       for (int j = 0; j < 4; j++) {
         for (int k = 0; k < 4; k++) {
           if (i != j && j != k && i != k) {
-            if (LayoutState.sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j])
-                == LayoutState.sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
-              assertThat(sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k]))
-                  .isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+            if (LayoutState.sTopsComparator.compare(outputs[i], outputs[j])
+                == LayoutState.sTopsComparator.compare(outputs[j], outputs[k])) {
+              assertThat(sTopsComparator.compare(outputs[j], outputs[k]))
+                  .isEqualTo(sTopsComparator.compare(outputs[i], outputs[j]));
             }
           }
         }
@@ -233,22 +209,22 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         };
     ;
 
-    RenderTreeNode[] layoutOutputs = new RenderTreeNode[4];
-    layoutOutputs[0] = createLayoutOutput(component, 0, 10, 0);
-    layoutOutputs[1] = createLayoutOutput(component, 0, 10, 1);
-    layoutOutputs[2] = createLayoutOutput(component, 0, 20, 2);
-    layoutOutputs[3] = createLayoutOutput(component, 0, 20, 3);
+    IncrementalMountOutput[] outputs = new IncrementalMountOutput[4];
+    outputs[0] = createIncrementMountOutput(0, 10, 0);
+    outputs[1] = createIncrementMountOutput(0, 10, 1);
+    outputs[2] = createIncrementMountOutput(0, 20, 2);
+    outputs[3] = createIncrementMountOutput(0, 20, 3);
 
     // reflexive
-    for (RenderTreeNode layoutOutput : layoutOutputs) {
-      assertThat(sBottomsComparator.compare(layoutOutput, layoutOutput)).isEqualTo(0);
+    for (IncrementalMountOutput output : outputs) {
+      assertThat(sBottomsComparator.compare(output, output)).isEqualTo(0);
     }
 
     // symmetric
     for (int i = 0; i < 4; i++) {
       for (int j = i + 1; j < 4; j++) {
-        assertThat(-1 * sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[i]))
-            .isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+        assertThat(-1 * sBottomsComparator.compare(outputs[j], outputs[i]))
+            .isEqualTo(sBottomsComparator.compare(outputs[i], outputs[j]));
       }
     }
 
@@ -257,10 +233,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       for (int j = 0; j < 4; j++) {
         for (int k = 0; k < 4; k++) {
           if (i != j && j != k && i != k) {
-            if (LayoutState.sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j])
-                == LayoutState.sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
-              assertThat(sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k]))
-                  .isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+            if (LayoutState.sBottomsComparator.compare(outputs[i], outputs[j])
+                == LayoutState.sBottomsComparator.compare(outputs[j], outputs[k])) {
+              assertThat(sBottomsComparator.compare(outputs[j], outputs[k]))
+                  .isEqualTo(sBottomsComparator.compare(outputs[i], outputs[j]));
             }
           }
         }
@@ -278,10 +254,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    final RenderTreeNode maxIntTop = createLayoutOutput(component, Integer.MAX_VALUE, 20, 0);
-    final RenderTreeNode largeNegativeTop = createLayoutOutput(component, -2147483646, 20, 1);
-    final RenderTreeNode minIntTop = createLayoutOutput(component, Integer.MIN_VALUE, 20, 2);
-    final RenderTreeNode largePositiveTop = createLayoutOutput(component, 2147483646, 20, 3);
+    final IncrementalMountOutput maxIntTop = createIncrementMountOutput(Integer.MAX_VALUE, 20, 0);
+    final IncrementalMountOutput largeNegativeTop = createIncrementMountOutput(-2147483646, 20, 1);
+    final IncrementalMountOutput minIntTop = createIncrementMountOutput(Integer.MIN_VALUE, 20, 2);
+    final IncrementalMountOutput largePositiveTop = createIncrementMountOutput(2147483646, 20, 3);
 
     assertThat(sTopsComparator.compare(maxIntTop, largeNegativeTop)).isPositive();
     assertThat(sTopsComparator.compare(largeNegativeTop, maxIntTop)).isNegative();
@@ -303,10 +279,14 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    final RenderTreeNode maxIntBottom = createLayoutOutput(component, 20, Integer.MAX_VALUE, 0);
-    final RenderTreeNode largeNegativeBottom = createLayoutOutput(component, 20, -2147483646, 1);
-    final RenderTreeNode minIntBottom = createLayoutOutput(component, 20, Integer.MIN_VALUE, 2);
-    final RenderTreeNode largePositiveBottom = createLayoutOutput(component, 20, 2147483646, 3);
+    final IncrementalMountOutput maxIntBottom =
+        createIncrementMountOutput(20, Integer.MAX_VALUE, 0);
+    final IncrementalMountOutput largeNegativeBottom =
+        createIncrementMountOutput(20, -2147483646, 1);
+    final IncrementalMountOutput minIntBottom =
+        createIncrementMountOutput(20, Integer.MIN_VALUE, 2);
+    final IncrementalMountOutput largePositiveBottom =
+        createIncrementMountOutput(20, 2147483646, 3);
 
     assertThat(sBottomsComparator.compare(maxIntBottom, largeNegativeBottom)).isPositive();
     assertThat(sBottomsComparator.compare(largeNegativeBottom, maxIntBottom)).isNegative();
@@ -328,41 +308,41 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    final List<RenderTreeNode> nodes = new ArrayList<>();
+    final List<IncrementalMountOutput> nodes = new ArrayList<>();
     int currentIndex = 0;
 
-    nodes.add(createLayoutOutput(component, 0, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 0, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 21, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 47, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 21, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 21, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483628, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483617, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483617, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483617, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483617, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483568, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483557, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483557, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483646, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483477, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483278, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483612, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, -2147483611, 10, currentIndex++));
-    nodes.add(createLayoutOutput(component, 2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(0, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(0, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(21, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(47, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(21, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(21, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483628, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483617, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483617, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483617, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483617, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483568, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483557, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483557, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483646, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483477, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483278, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483612, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(-2147483611, 10, currentIndex++));
+    nodes.add(createIncrementMountOutput(2147483647, 20, currentIndex++));
 
     Collections.sort(nodes, sTopsComparator);
   }
@@ -377,41 +357,41 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    final List<RenderTreeNode> nodes = new ArrayList<>();
+    final List<IncrementalMountOutput> nodes = new ArrayList<>();
     int currentIndex = 0;
 
-    nodes.add(createLayoutOutput(component, 20, 0, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 0, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 21, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 47, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 21, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 21, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483628, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483617, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483568, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483557, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483557, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483646, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483477, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483278, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483612, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, -2147483611, currentIndex++));
-    nodes.add(createLayoutOutput(component, 20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 0, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 0, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 21, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 47, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 21, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 21, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483628, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483617, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483617, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483617, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483617, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483568, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483557, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483557, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483646, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483477, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483278, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483612, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, -2147483611, currentIndex++));
+    nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
 
     Collections.sort(nodes, sBottomsComparator);
   }
@@ -447,5 +427,9 @@ public class LayoutStateCalculateTopsAndBottomsTest {
             null);
     layoutOutput.setIndex(index);
     return LayoutOutput.create(layoutOutput, null, null, null);
+  }
+
+  private static IncrementalMountOutput createIncrementMountOutput(int top, int bottom, int index) {
+    return new IncrementalMountOutput(index, new Rect(0, top, 10, bottom));
   }
 }

@@ -78,6 +78,7 @@ import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
@@ -1019,13 +1020,16 @@ class MountState
       return;
     }
 
-    final ArrayList<RenderTreeNode> layoutOutputTops = layoutState.getMountableOutputTops();
-    final ArrayList<RenderTreeNode> layoutOutputBottoms = layoutState.getMountableOutputBottoms();
+    final ArrayList<IncrementalMountOutput> layoutOutputTops =
+        layoutState.getOutputsOrderedByTopBounds();
+    final ArrayList<IncrementalMountOutput> layoutOutputBottoms =
+        layoutState.getOutputsOrderedByBottomBounds();
     final int mountableOutputCount = layoutState.getMountableOutputCount();
 
     mPreviousTopsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.bottom <= getLayoutOutput(layoutOutputTops.get(i)).getBounds().top) {
+      if (localVisibleRect.bottom
+          <= layoutState.getLayoutOutput(layoutOutputTops.get(i)).getBounds().top) {
         mPreviousTopsIndex = i;
         break;
       }
@@ -1033,7 +1037,8 @@ class MountState
 
     mPreviousBottomsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.top < getLayoutOutput(layoutOutputBottoms.get(i)).getBounds().bottom) {
+      if (localVisibleRect.top
+          < layoutState.getLayoutOutput(layoutOutputBottoms.get(i)).getBounds().bottom) {
         mPreviousBottomsIndex = i;
         break;
       }
@@ -3373,8 +3378,10 @@ class MountState
       return false;
     }
 
-    final ArrayList<RenderTreeNode> layoutOutputTops = layoutState.getMountableOutputTops();
-    final ArrayList<RenderTreeNode> layoutOutputBottoms = layoutState.getMountableOutputBottoms();
+    final ArrayList<IncrementalMountOutput> layoutOutputTops =
+        layoutState.getOutputsOrderedByTopBounds();
+    final ArrayList<IncrementalMountOutput> layoutOutputBottoms =
+        layoutState.getOutputsOrderedByBottomBounds();
     final int count = layoutState.getMountableOutputCount();
 
     if (localVisibleRect.top > 0 || mPreviousLocalVisibleRect.top > 0) {
@@ -3382,10 +3389,12 @@ class MountState
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top
-              >= getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex))
+              >= layoutState
+                  .getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex))
                   .getBounds()
                   .bottom) {
-        final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
+        final RenderTreeNode node =
+            layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
         final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getPositionForId(id);
         if (!isAnimationLocked(node, layoutOutputIndex)) {
@@ -3396,11 +3405,13 @@ class MountState
 
       while (mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              < getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex - 1))
+              < layoutState
+                  .getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex - 1))
                   .getBounds()
                   .bottom) {
         mPreviousBottomsIndex--;
-        final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
+        final RenderTreeNode node =
+            layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final int layoutOutputIndex = layoutState.getPositionForId(layoutOutput.getId());
         if (getItemAt(layoutOutputIndex) == null) {
@@ -3417,8 +3428,12 @@ class MountState
       // that has changed.
       while (mPreviousTopsIndex < count
           && localVisibleRect.bottom
-              > getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex)).getBounds().top) {
-        final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
+              > layoutState
+                  .getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex))
+                  .getBounds()
+                  .top) {
+        final RenderTreeNode node =
+            layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
         final LayoutOutput layoutOutput = getLayoutOutput(node);
         final int layoutOutputIndex = layoutState.getPositionForId(layoutOutput.getId());
         if (getItemAt(layoutOutputIndex) == null) {
@@ -3431,9 +3446,13 @@ class MountState
 
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              <= getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex - 1)).getBounds().top) {
+              <= layoutState
+                  .getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex - 1))
+                  .getBounds()
+                  .top) {
         mPreviousTopsIndex--;
-        final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
+        final RenderTreeNode node =
+            layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
         final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getPositionForId(id);
         if (!isAnimationLocked(node, layoutOutputIndex)) {

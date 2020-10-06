@@ -27,6 +27,7 @@ import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import java.util.ArrayList;
@@ -148,8 +149,8 @@ public class IncrementalMountExtensionTest {
 
   final class TestInput implements IncrementalMountExtensionInput, MountDelegateInput {
     final List<RenderTreeNode> mountableOutputs = new ArrayList<>();
-    final List<RenderTreeNode> tops = new ArrayList<>();
-    final List<RenderTreeNode> bottoms = new ArrayList<>();
+    final List<IncrementalMountOutput> tops = new ArrayList<>();
+    final List<IncrementalMountOutput> bottoms = new ArrayList<>();
     private final int mCount;
 
     public TestInput(int count) {
@@ -169,8 +170,8 @@ public class IncrementalMountExtensionTest {
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);
 
         mountableOutputs.add(renderTreeNode);
-        tops.add(renderTreeNode);
-        bottoms.add(renderTreeNode);
+        tops.add(new IncrementalMountOutput(i, bounds));
+        bottoms.add(new IncrementalMountOutput(i, bounds));
       }
     }
 
@@ -180,12 +181,12 @@ public class IncrementalMountExtensionTest {
     }
 
     @Override
-    public List<RenderTreeNode> getMountableOutputTops() {
+    public List<IncrementalMountOutput> getOutputsOrderedByTopBounds() {
       return tops;
     }
 
     @Override
-    public List<RenderTreeNode> getMountableOutputBottoms() {
+    public List<IncrementalMountOutput> getOutputsOrderedByBottomBounds() {
       return bottoms;
     }
 

@@ -16,15 +16,23 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import java.util.List;
+import android.graphics.Rect;
 
-public interface IncrementalMountExtensionInput {
+/** The output object for incremental mount extension */
+public class IncrementalMountOutput {
+  public final int index;
+  public final Rect bounds;
 
-  int getMountableOutputCount();
+  public IncrementalMountOutput(final int index, final Rect bounds) {
+    this.index = index;
+    this.bounds = bounds;
+  }
 
-  List<IncrementalMountOutput> getOutputsOrderedByTopBounds();
+  public int getIndex() {
+    return index;
+  }
 
-  List<IncrementalMountOutput> getOutputsOrderedByBottomBounds();
-
-  boolean renderUnitWithIdHostsRenderTrees(long id);
+  public Rect getBounds() {
+    return bounds;
+  }
 }

@@ -63,6 +63,7 @@ import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;
@@ -132,44 +133,40 @@ public class LayoutState
     int MEASURE_SET_SIZE_SPEC_ASYNC = 7;
   }
 
-  static final Comparator<RenderTreeNode> sTopsComparator =
-      new Comparator<RenderTreeNode>() {
+  static final Comparator<IncrementalMountOutput> sTopsComparator =
+      new Comparator<IncrementalMountOutput>() {
         @Override
-        public int compare(RenderTreeNode l, RenderTreeNode r) {
-          LayoutOutput lhs = LayoutOutput.getLayoutOutput(l);
-          LayoutOutput rhs = LayoutOutput.getLayoutOutput(r);
-          final int lhsTop = lhs.getBounds().top;
-          final int rhsTop = rhs.getBounds().top;
+        public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
+          final int lhsTop = l.getBounds().top;
+          final int rhsTop = r.getBounds().top;
 
           // Lower indices should be higher for tops so that they are mounted first if possible.
           if (lhsTop == rhsTop) {
-            if (lhs.getIndex() == rhs.getIndex()) {
+            if (l.getIndex() == r.getIndex()) {
               return 0;
             }
 
-            return lhs.getIndex() > rhs.getIndex() ? 1 : -1;
+            return l.getIndex() > r.getIndex() ? 1 : -1;
           } else {
             return lhsTop > rhsTop ? 1 : -1;
           }
         }
       };
 
-  static final Comparator<RenderTreeNode> sBottomsComparator =
-      new Comparator<RenderTreeNode>() {
+  static final Comparator<IncrementalMountOutput> sBottomsComparator =
+      new Comparator<IncrementalMountOutput>() {
         @Override
-        public int compare(RenderTreeNode l, RenderTreeNode r) {
-          LayoutOutput lhs = LayoutOutput.getLayoutOutput(l);
-          LayoutOutput rhs = LayoutOutput.getLayoutOutput(r);
-          final int lhsBottom = lhs.getBounds().bottom;
-          final int rhsBottom = rhs.getBounds().bottom;
+        public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
+          final int lhsBottom = l.getBounds().bottom;
+          final int rhsBottom = r.getBounds().bottom;
 
           // Lower indices should be lower for bottoms so that they are mounted first if possible.
           if (lhsBottom == rhsBottom) {
-            if (rhs.getIndex() == lhs.getIndex()) {
+            if (r.getIndex() == l.getIndex()) {
               return 0;
             }
 
-            return rhs.getIndex() > lhs.getIndex() ? 1 : -1;
+            return r.getIndex() > l.getIndex() ? 1 : -1;
           } else {
             return lhsBottom > rhsBottom ? 1 : -1;
           }
@@ -202,8 +199,8 @@ public class LayoutState
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
-  private final ArrayList<RenderTreeNode> mMountableOutputTops = new ArrayList<>();
-  private final ArrayList<RenderTreeNode> mMountableOutputBottoms = new ArrayList<>();
+  private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
+  private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
@@ -1801,16 +1798,16 @@ public class LayoutState
   }
 
   private static void sortTops(LayoutState layoutState) {
-    final List<RenderTreeNode> unsortedNodes = new ArrayList<>(layoutState.mMountableOutputTops);
+    final List<IncrementalMountOutput> unsorted = new ArrayList<>(layoutState.mMountableOutputTops);
     try {
       Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
-      final int size = unsortedNodes.size();
+      final int size = unsorted.size();
       errorMessage.append("Error while sorting LayoutState tops. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = unsortedNodes.get(i);
+        final RenderTreeNode node = layoutState.getMountableOutputAt(unsorted.get(i).getIndex());
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
         errorMessage
             .append("   Index " + layoutOutput.getIndex() + " top: " + layoutOutput.getBounds().top)
@@ -1822,16 +1819,17 @@ public class LayoutState
   }
 
   private static void sortBottoms(LayoutState layoutState) {
-    final List<RenderTreeNode> unsortedNodes = new ArrayList<>(layoutState.mMountableOutputBottoms);
+    final List<IncrementalMountOutput> unsorted =
+        new ArrayList<>(layoutState.mMountableOutputBottoms);
     try {
       Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
-      final int size = unsortedNodes.size();
+      final int size = unsorted.size();
       errorMessage.append("Error while sorting LayoutState bottoms. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = unsortedNodes.get(i);
+        final RenderTreeNode node = layoutState.getMountableOutputAt(unsorted.get(i).getIndex());
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
         errorMessage
             .append(
@@ -2128,13 +2126,11 @@ public class LayoutState
     return LayoutOutput.getLayoutOutput(getMountableOutputAt(getPositionForId(id)));
   }
 
-  @Override
-  public ArrayList<RenderTreeNode> getMountableOutputTops() {
+  public ArrayList<IncrementalMountOutput> getOutputsOrderedByTopBounds() {
     return mMountableOutputTops;
   }
 
-  @Override
-  public ArrayList<RenderTreeNode> getMountableOutputBottoms() {
+  public ArrayList<IncrementalMountOutput> getOutputsOrderedByBottomBounds() {
     return mMountableOutputBottoms;
   }
 
@@ -2372,8 +2368,10 @@ public class LayoutState
     }
 
     layoutState.mMountableOutputs.add(node);
-    layoutState.mMountableOutputTops.add(node);
-    layoutState.mMountableOutputBottoms.add(node);
+    layoutState.mMountableOutputTops.add(
+        new IncrementalMountOutput(layoutOutput.getIndex(), layoutOutput.getBounds()));
+    layoutState.mMountableOutputBottoms.add(
+        new IncrementalMountOutput(layoutOutput.getIndex(), layoutOutput.getBounds()));
   }
 
   /**
@@ -2515,5 +2513,13 @@ public class LayoutState
   @Override
   public @Nullable String getRootComponentName() {
     return mRootComponentName;
+  }
+
+  RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {
+    return getMountableOutputAt(output.getIndex());
+  }
+
+  LayoutOutput getLayoutOutput(IncrementalMountOutput output) {
+    return LayoutOutput.getLayoutOutput(getRenderTreeNode(output));
   }
 }
