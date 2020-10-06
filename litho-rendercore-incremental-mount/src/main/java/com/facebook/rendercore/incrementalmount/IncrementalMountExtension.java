@@ -293,9 +293,9 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
       if (!mComponentIdsMountedInThisFrame.contains(id)) {
         if (isLockedForMount(node)) {
-          final int layoutOutputPosition = ((MountDelegateInput) mInput).getPositionForId(id);
-          if (layoutOutputPosition != -1) {
-            recursivelyNotifyVisibleBoundsChanged(id, getContentAt(i));
+          final Object content = getContentWithId(id);
+          if (content != null) {
+            recursivelyNotifyVisibleBoundsChanged(id, content);
           }
         }
       }
@@ -342,6 +342,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   private int getRenderTreeNodeCount() {
     return ((MountDelegateInput) mInput).getMountableOutputCount();
+  }
+
+  private @Nullable Object getContentWithId(long id) {
+    return getMountTarget().getContentById(id);
   }
 
   @VisibleForTesting
