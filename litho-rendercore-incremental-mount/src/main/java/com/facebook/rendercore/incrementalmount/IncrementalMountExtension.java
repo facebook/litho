@@ -168,7 +168,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     }
 
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
-      final RenderTreeNode node = ((MountDelegateInput) mInput).getMountableOutputAt(i);
+      final RenderTreeNode node = getRenderTreeNodeAt(i);
       final long id = node.getRenderUnit().getId();
       if (((MountDelegateInput) input).getPositionForId(id) < 0 && ownsReference(id)) {
         releaseMountReference(node, i, false);
@@ -178,7 +178,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
-      final RenderTreeNode renderTreeNode = ((MountDelegateInput) mInput).getMountableOutputAt(i);
+      final RenderTreeNode renderTreeNode = getRenderTreeNodeAt(i);
       maybeAcquireReference(localVisibleRect, renderTreeNode, i, isMounting);
     }
 
@@ -333,7 +333,11 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   }
 
   private RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {
-    return ((MountDelegateInput) mInput).getMountableOutputAt(output.getIndex());
+    return getRenderTreeNodeAt(output.getIndex());
+  }
+
+  private RenderTreeNode getRenderTreeNodeAt(int position) {
+    return ((MountDelegateInput) mInput).getMountableOutputAt(position);
   }
 
   @VisibleForTesting
