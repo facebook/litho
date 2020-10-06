@@ -167,7 +167,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       return;
     }
 
-    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
+    for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
       final RenderTreeNode node = getRenderTreeNodeAt(i);
       final long id = node.getRenderUnit().getId();
       if (((MountDelegateInput) input).getPositionForId(id) < 0 && ownsReference(id)) {
@@ -177,7 +177,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   }
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
-    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
+    for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = getRenderTreeNodeAt(i);
       maybeAcquireReference(localVisibleRect, renderTreeNode, i, isMounting);
     }
@@ -230,7 +230,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private boolean performIncrementalMount(Rect localVisibleRect) {
     final List<IncrementalMountOutput> byTopBounds = mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds = mInput.getOutputsOrderedByBottomBounds();
-    final int count = mInput.getMountableOutputCount();
+    final int count = getRenderTreeNodeCount();
 
     if (localVisibleRect.top > 0 || mPreviousLocalVisibleRect.top > 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
@@ -287,7 +287,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       }
     }
 
-    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
+    for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
       final RenderTreeNode node = ((MountDelegateInput) mInput).getMountableOutputAt(i);
       final long id = node.getRenderUnit().getId();
 
@@ -313,9 +313,9 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
     final List<IncrementalMountOutput> byTopBounds = mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds = mInput.getOutputsOrderedByBottomBounds();
-    final int mountableOutputCount = mInput.getMountableOutputCount();
+    final int mountableOutputCount = getRenderTreeNodeCount();
 
-    mPreviousTopsIndex = mInput.getMountableOutputCount();
+    mPreviousTopsIndex = mountableOutputCount;
     for (int i = 0; i < mountableOutputCount; i++) {
       if (localVisibleRect.bottom <= byTopBounds.get(i).getBounds().top) {
         mPreviousTopsIndex = i;
@@ -323,7 +323,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       }
     }
 
-    mPreviousBottomsIndex = mInput.getMountableOutputCount();
+    mPreviousBottomsIndex = getRenderTreeNodeCount();
     for (int i = 0; i < mountableOutputCount; i++) {
       if (localVisibleRect.top < byBottomBounds.get(i).getBounds().bottom) {
         mPreviousBottomsIndex = i;
@@ -338,6 +338,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   private RenderTreeNode getRenderTreeNodeAt(int position) {
     return ((MountDelegateInput) mInput).getMountableOutputAt(position);
+  }
+
+  private int getRenderTreeNodeCount() {
+    return ((MountDelegateInput) mInput).getMountableOutputCount();
   }
 
   @VisibleForTesting

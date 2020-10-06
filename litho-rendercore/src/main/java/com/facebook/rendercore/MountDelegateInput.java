@@ -25,4 +25,6 @@ public interface MountDelegateInput {
 
   /** Returns the {@link RenderTreeNode} given its absolute position. */
   RenderTreeNode getMountableOutputAt(int position);
+
+  int getMountableOutputCount();
 }

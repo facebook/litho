@@ -20,8 +20,6 @@ import java.util.List;
 
 public interface IncrementalMountExtensionInput {
 
-  int getMountableOutputCount();
-
   List<IncrementalMountOutput> getOutputsOrderedByTopBounds();
 
   List<IncrementalMountOutput> getOutputsOrderedByBottomBounds();
