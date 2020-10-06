@@ -239,6 +239,9 @@ public final class SimpleEditor {
 
     @Override
     public void writeBoolProperty(T value, String property, boolean newValue) {}
+
+    @Override
+    public void writePickProperty(T value, String property, String newValue) {}
   }
 
   public interface ImmutablePropertyEditor<T> extends PropertyReader<T> {
@@ -255,7 +258,7 @@ public final class SimpleEditor {
   private static final int PRIMITIVE_TYPE_BOOL = 2;
   private static final int PRIMITIVE_TYPE_PICK = 3;
 
-  /** A class that wraps either a number, string or bool */
+  /** A class that wraps either a number, string, bool or pick */
   public static final class SimpleEditorValue {
 
     public final EditorValue value;
