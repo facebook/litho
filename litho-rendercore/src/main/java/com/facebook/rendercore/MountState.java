@@ -317,6 +317,11 @@ public class MountState implements MountDelegateTarget {
     }
   }
 
+  @Nullable
+  RenderTree getRenderTree() {
+    return mRenderTree;
+  }
+
   private boolean isMountable(RenderTreeNode renderTreeNode) {
     return mMountDelegate == null ? true : mMountDelegate.isLockedForMount(renderTreeNode);
   }
