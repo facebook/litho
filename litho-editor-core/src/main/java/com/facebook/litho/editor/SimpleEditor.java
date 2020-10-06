@@ -46,16 +46,7 @@ public final class SimpleEditor {
       @Override
       public boolean write(final Field f, final Object node, final EditorValue values) {
         final T value = EditorUtils.getNodeUNSAFE(f, node);
-        values.when(
-            new EditorValue.DefaultEditorVisitor() {
-              @Override
-              public Void isShape(EditorShape object) {
-                final EditorValue editorValue = object.value.get(f.getName());
-                return editorValue != null
-                    ? editorValue.when(writeMutable(propertyEditor, value))
-                    : null;
-              }
-            });
+        values.when(writeMutable(propertyEditor, value));
         return true;
       }
     };
@@ -71,16 +62,7 @@ public final class SimpleEditor {
       @Override
       public boolean write(final Field f, final Object node, final EditorValue values) {
         final T value = EditorUtils.getNodeUNSAFE(f, node);
-        values.when(
-            new EditorValue.DefaultEditorVisitor() {
-              @Override
-              public Void isShape(EditorShape object) {
-                return object
-                    .value
-                    .get(f.getName())
-                    .when(writeImmutable(f, node, propertyEditor, value));
-              }
-            });
+        values.when(writeImmutable(f, node, propertyEditor, value));
         return true;
       }
     };

@@ -77,7 +77,8 @@ public class FlipperEditor {
       final @Nullable SetDataOperations.FlipperValueHint hint,
       FlipperDynamic dynamic) {
     EditorValue edit = parseEditorValue(hint, dynamic);
-    for (int i = path.length - 1; i > 0; i--) {
+    // Strip Props/State with -1 and the field name with > 1
+    for (int i = path.length - 1; i > 1; i--) {
       HashMap<String, EditorValue> content = new HashMap<>();
       content.put(path[i], edit);
       edit = EditorValue.shape(content);

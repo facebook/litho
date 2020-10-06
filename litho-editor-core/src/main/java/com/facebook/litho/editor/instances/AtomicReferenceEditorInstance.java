@@ -18,7 +18,6 @@ package com.facebook.litho.editor.instances;
 
 import com.facebook.litho.editor.Editor;
 import com.facebook.litho.editor.EditorRegistry;
-import com.facebook.litho.editor.model.EditorShape;
 import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,20 +43,12 @@ public class AtomicReferenceEditorInstance implements Editor {
     if (o == null) {
       return true;
     }
-    values.when(
-        new EditorValue.DefaultEditorVisitor() {
-          @Override
-          public Void isShape(EditorShape object) {
-            EditorValue element = object.value.get(f.getName());
-            final EditorRegistry.WrittenValue<Object> newValue =
-                EditorRegistry.writeValueThatIsNotAField((Class<Object>) o.getClass(), o, element);
-            final Boolean hasUpdated = newValue.hasUpdated();
-            if (hasUpdated != null && hasUpdated) {
-              reference.set(newValue.value());
-            }
-            return null;
-          }
-        });
+    final EditorRegistry.WrittenValue<Object> newValue =
+        EditorRegistry.writeValueThatIsNotAField((Class<Object>) o.getClass(), o, values);
+    final Boolean hasUpdated = newValue.hasUpdated();
+    if (hasUpdated != null && hasUpdated) {
+      reference.set(newValue.value());
+    }
     return true;
   }
 }
