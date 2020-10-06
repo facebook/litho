@@ -139,7 +139,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     if (hostTreeNode != null) {
       final long hostId = hostTreeNode.getRenderUnit().getId();
       if (!ownsReference(hostId)) {
-        final int hostIndex = ((MountDelegateInput) mInput).getPositionForId(hostId);
+        final int hostIndex = mInput.getPositionForId(hostId);
         acquireMountReference(hostTreeNode, hostIndex, isMounting || mAcquireReferencesDuringMount);
       }
     }
@@ -170,7 +170,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
       final RenderTreeNode node = getRenderTreeNodeAt(i);
       final long id = node.getRenderUnit().getId();
-      if (((MountDelegateInput) input).getPositionForId(id) < 0 && ownsReference(id)) {
+      if (input.getPositionForId(id) < 0 && ownsReference(id)) {
         releaseMountReference(node, i, false);
       }
     }
@@ -239,7 +239,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
           && localVisibleRect.top >= byBottomBounds.get(mPreviousBottomsIndex).getBounds().bottom) {
         final RenderTreeNode node = getRenderTreeNode(byBottomBounds.get(mPreviousBottomsIndex));
         final long id = node.getRenderUnit().getId();
-        final int layoutOutputIndex = ((MountDelegateInput) mInput).getPositionForId(id);
+        final int layoutOutputIndex = mInput.getPositionForId(id);
         if (ownsReference(node)) {
           releaseMountReference(node, layoutOutputIndex, true);
         }
@@ -253,7 +253,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         final RenderTreeNode node = getRenderTreeNode(byBottomBounds.get(mPreviousBottomsIndex));
         if (!ownsReference(node)) {
           final long id = node.getRenderUnit().getId();
-          acquireMountReference(node, ((MountDelegateInput) mInput).getPositionForId(id), true);
+          acquireMountReference(node, mInput.getPositionForId(id), true);
           mComponentIdsMountedInThisFrame.add(id);
         }
       }
@@ -269,7 +269,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         final RenderTreeNode node = getRenderTreeNode(byTopBounds.get(mPreviousTopsIndex));
         final long id = node.getRenderUnit().getId();
         if (!ownsReference(node)) {
-          acquireMountReference(node, ((MountDelegateInput) mInput).getPositionForId(id), true);
+          acquireMountReference(node, mInput.getPositionForId(id), true);
           mComponentIdsMountedInThisFrame.add(id);
         }
         mPreviousTopsIndex++;
@@ -280,7 +280,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
         mPreviousTopsIndex--;
         final RenderTreeNode node = getRenderTreeNode(byTopBounds.get(mPreviousTopsIndex));
         final long id = node.getRenderUnit().getId();
-        final int layoutOutputIndex = ((MountDelegateInput) mInput).getPositionForId(id);
+        final int layoutOutputIndex = mInput.getPositionForId(id);
         if (ownsReference(node)) {
           releaseMountReference(node, layoutOutputIndex, true);
         }

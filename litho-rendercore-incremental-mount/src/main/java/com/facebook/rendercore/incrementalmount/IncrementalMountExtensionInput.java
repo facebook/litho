@@ -16,9 +16,13 @@
 
 package com.facebook.rendercore.incrementalmount;
 
+import com.facebook.rendercore.RenderUnit;
 import java.util.List;
 
 public interface IncrementalMountExtensionInput {
+
+  /** Returns the position of {@link RenderUnit} given its id. */
+  int getPositionForId(long id);
 
   List<IncrementalMountOutput> getOutputsOrderedByTopBounds();
 
