@@ -24,4 +24,5 @@
   <OnDetached method="/* TODO: https://fblitho.com/docs/onattached-ondetached */@com.facebook.litho.annotations.OnDetached static void OnDetached(com.facebook.litho.ComponentContext c) {}"/>
   <OnUpdateState method="/* TODO: https://fblitho.com/docs/state#defining-state-updates */@com.facebook.litho.annotations.OnUpdateState static void OnUpdateState() {}"/>
   <OnUpdateStateWithTransition method="/* TODO: https://fblitho.com/docs/transition-definitions#onupdatestatewithtransition */@com.facebook.litho.annotations.OnUpdateStateWithTransition static com.facebook.litho.Transition OnUpdateStateWithTransition() {return com.facebook.litho.Transition.create();}"/>
+  <OnCreateMountContent method="/* TODO: https://fblitho.com/docs/mount-specs#mounting */@androidx.annotation.UiThread @com.facebook.litho.annotations.OnCreateMountContent static android.graphics.drawable.ColorDrawable onCreateMountContent(android.content.Context context) {return new android.graphics.drawable.ColorDrawable();}"/>
 </templateSet>
