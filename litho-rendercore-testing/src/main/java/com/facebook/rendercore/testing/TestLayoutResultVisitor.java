@@ -19,6 +19,7 @@ package com.facebook.rendercore.testing;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.testing.TestLayoutResultVisitor.Result;
 import java.util.List;
@@ -27,10 +28,12 @@ public class TestLayoutResultVisitor implements LayoutResultVisitor<List<Result>
 
   @Override
   public void visit(
+      final @Nullable RenderTreeNode parent,
       final LayoutResult<?> result,
       final Rect bounds,
       final int x,
       final int y,
+      final int position,
       final @Nullable List<Result> results) {
     if (results != null) {
       results.add(new Result(result, bounds, x, y));

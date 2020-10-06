@@ -19,6 +19,7 @@ package com.facebook.rendercore.visibility;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -87,10 +88,12 @@ public class VisibilityExtension extends RenderCoreExtension<Results> {
 
     @Override
     public void visit(
+        final @Nullable RenderTreeNode parent,
         final Node.LayoutResult<?> layoutResult,
         final Rect bounds,
         final int x,
         final int y,
+        final int position,
         final @Nullable Results results) {
       if (layoutResult instanceof VisibilityOutput.Factory && results != null) {
         Rect absoluteBounds = new Rect(x, y, x + bounds.width(), y + bounds.height());

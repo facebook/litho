@@ -19,6 +19,7 @@ package com.facebook.rendercore.extensions;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderTreeNode;
 
 /**
  * The {@link LayoutResultVisitor} API is used by RenderCore to allow a {@link RenderCoreExtension}
@@ -34,16 +35,20 @@ public interface LayoutResultVisitor<State> {
   /**
    * This API is called for every LayoutResult during a layout pass.
    *
+   * @param parent
    * @param result The {@link LayoutResult} being visited.
    * @param bounds The bounds of this {@link LayoutResult} relative to its parent.
    * @param x The absolute x position.
    * @param y The absolute y position.
+   * @param position The position of the layout result.
    * @param state The state the visitor can write to.
    */
   void visit(
+      final @Nullable RenderTreeNode parent,
       final LayoutResult<?> result,
       final Rect bounds,
       final int x,
       final int y,
+      int position,
       final @Nullable State state);
 }

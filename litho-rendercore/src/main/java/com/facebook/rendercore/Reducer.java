@@ -64,12 +64,13 @@ public class Reducer {
     final int absoluteY = parent.getAbsoluteY() + y;
 
     if (extensions != null) {
+      final int size = flattenedTree.size();
       for (Map.Entry<RenderCoreExtension<?>, Object> entry : extensions.entrySet()) {
         final RenderCoreExtension<?> e = entry.getKey();
         final LayoutResultVisitor visitor = e.getLayoutVisitor();
         if (visitor != null) {
           final Object state = entry.getValue();
-          visitor.visit(layoutResult, bounds, absoluteX, absoluteY, state);
+          visitor.visit(parent, layoutResult, bounds, absoluteX, absoluteY, size, state);
         }
       }
     }
