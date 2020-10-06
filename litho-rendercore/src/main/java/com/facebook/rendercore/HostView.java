@@ -545,8 +545,13 @@ public class HostView extends Host {
         return;
       }
 
-      for (int i = mDrawIndex; i < mItemsToDraw; i++) {
+      for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : getMountItemCount();
+          i < size;
+          i++) {
         final MountItem mountItem = mMountItems[i];
+        if (mountItem == null) {
+          continue;
+        }
 
         // During a ViewGroup's dispatchDraw() call with children drawing order enabled,
         // getChildDrawingOrder() will be called before each child view is drawn. This
