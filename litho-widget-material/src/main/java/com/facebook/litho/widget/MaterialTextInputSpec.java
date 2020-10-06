@@ -184,7 +184,8 @@ class MaterialTextInputSpec {
             errorDrawable,
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
-    setParams(editText, textInputLayout, hint, counterEnabled, counterMaxLength);
+    setParams(
+        editText, textInputLayout, hint, hintColorStateList, counterEnabled, counterMaxLength);
 
     textInputLayout.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
@@ -335,7 +336,8 @@ class MaterialTextInputSpec {
         savedText.get(),
         error,
         errorDrawable);
-    setParams(editText, textInputLayout, hint, counterEnabled, counterMaxLength);
+    setParams(
+        editText, textInputLayout, hint, hintColorStateList, counterEnabled, counterMaxLength);
     editText.setTextState(savedText);
   }
 
@@ -343,11 +345,13 @@ class MaterialTextInputSpec {
       EditText editText,
       MountableTextInputLayout textInputLayout,
       CharSequence hint,
+      ColorStateList hintColorStateList,
       boolean counterEnabled,
       int counterMaxLength) {
     textInputLayout.setHint(hint);
     textInputLayout.setCounterEnabled(counterEnabled);
     textInputLayout.setCounterMaxLength(counterMaxLength);
+    textInputLayout.setDefaultHintTextColor(hintColorStateList);
     textInputLayout.addView(editText);
   }
 
