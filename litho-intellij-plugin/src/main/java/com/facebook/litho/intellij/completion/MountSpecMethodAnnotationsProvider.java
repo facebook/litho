@@ -19,6 +19,7 @@ package com.facebook.litho.intellij.completion;
 import static com.facebook.litho.intellij.completion.MethodCompletionContributor.createMethodLookup;
 
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -59,6 +60,7 @@ public class MountSpecMethodAnnotationsProvider extends CompletionProvider<Compl
     ANNOTATION_QUALIFIED_NAMES.add(OnEvent.class.getTypeName());
     */
     ANNOTATION_QUALIFIED_NAMES.add(OnCreateMountContent.class.getTypeName());
+    ANNOTATION_QUALIFIED_NAMES.add(OnPrepare.class.getTypeName());
   }
 
   @Override
