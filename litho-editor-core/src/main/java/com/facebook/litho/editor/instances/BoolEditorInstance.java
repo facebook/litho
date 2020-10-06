@@ -24,8 +24,11 @@ import java.lang.reflect.Field;
 public class BoolEditorInstance implements Editor {
 
   @Override
-  public EditorValue read(Field f, Object node) {
-    return EditorValue.bool(EditorUtils.<Boolean>getNodeUNSAFE(f, node));
+  public EditorValue read(final Field f, final Object node) {
+    // If you use Boolean here it causes an exception when attempting to do implicit conversion to
+    // boolean
+    final Object b = EditorUtils.<Object>getNodeUNSAFE(f, node);
+    return b == null ? EditorValue.string("null") : EditorValue.bool((Boolean) b);
   }
 
   @Override
@@ -33,7 +36,7 @@ public class BoolEditorInstance implements Editor {
     values.when(
         new EditorValue.DefaultEditorVisitor() {
           @Override
-          public Void isBool(EditorBool bool) {
+          public Void isBool(final EditorBool bool) {
             EditorUtils.setNodeUNSAFE(f, node, bool.value);
             return null;
           }
