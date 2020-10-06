@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import android.graphics.Rect;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
@@ -76,7 +77,7 @@ public class IncrementalMountExtensionTest {
 
     extension.registerToDelegate(mountDelegate);
 
-    final IncrementalMountExtensionInput incrementalMountExtensionInput = new TestInput(10);
+    final TestInput incrementalMountExtensionInput = new TestInput(10);
 
     extension.beforeMount(incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
     for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
@@ -115,7 +116,7 @@ public class IncrementalMountExtensionTest {
 
     extension.registerToDelegate(mountDelegate);
 
-    final IncrementalMountExtensionInput incrementalMountExtensionInput = new TestInput(10);
+    final TestInput incrementalMountExtensionInput = new TestInput(10);
 
     extension.beforeMount(incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
     for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
@@ -145,7 +146,7 @@ public class IncrementalMountExtensionTest {
     assertThat(extension.getPreviousTopsIndex()).isEqualTo(3);
   }
 
-  final class TestInput implements IncrementalMountExtensionInput {
+  final class TestInput implements IncrementalMountExtensionInput, MountDelegateInput {
     final List<RenderTreeNode> mountableOutputs = new ArrayList<>();
     final List<RenderTreeNode> tops = new ArrayList<>();
     final List<RenderTreeNode> bottoms = new ArrayList<>();

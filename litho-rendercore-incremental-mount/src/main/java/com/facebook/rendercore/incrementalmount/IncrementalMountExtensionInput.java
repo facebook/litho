@@ -16,11 +16,10 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.List;
 
-public interface IncrementalMountExtensionInput extends MountDelegateInput {
+public interface IncrementalMountExtensionInput {
 
   int getMountableOutputCount();
 
