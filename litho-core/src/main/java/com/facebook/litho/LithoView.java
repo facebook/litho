@@ -36,6 +36,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RootHost;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.rendercore.visibility.VisibilityOutput;
@@ -57,6 +58,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String TAG = LithoView.class.getSimpleName();
   private final boolean mDisableTransitionsExtension;
+  private final @Nullable VisiblityExtensionProvider mVisibilityExtensionsProvider;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
   private final boolean mDelegateToRenderCore;
@@ -75,6 +77,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   public interface OnPostDrawListener {
     void onPostDraw();
+  }
+
+  public interface VisiblityExtensionProvider {
+    MountExtension getVisibilityExtension(LithoView lithoView);
   }
 
   @Nullable private ComponentTree mComponentTree;
@@ -191,7 +197,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   public LithoView(ComponentContext context, boolean useExtensions, boolean delegateToRenderCore) {
-    this(context, null, useExtensions, delegateToRenderCore);
+    this(context, null, useExtensions, delegateToRenderCore, null);
   }
 
   public LithoView(ComponentContext context, AttributeSet attrs) {
@@ -199,19 +205,22 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         context,
         attrs,
         ComponentsConfiguration.useExtensionsWithMountDelegate,
-        ComponentsConfiguration.delegateToRenderCoreMount);
+        ComponentsConfiguration.delegateToRenderCoreMount,
+            null);
   }
 
   public LithoView(
       ComponentContext context,
       AttributeSet attrs,
       final boolean useExtensions,
-      final boolean delegateToRenderCore) {
+      final boolean delegateToRenderCore,
+      @Nullable VisiblityExtensionProvider visiblityExtensionProvider) {
     super(context, attrs);
     mComponentContext = context;
 
     mUseExtensions = useExtensions;
     mDelegateToRenderCore = delegateToRenderCore;
+    mVisibilityExtensionsProvider = visiblityExtensionProvider;
 
     if (mUseExtensions) {
       if (mDelegateToRenderCore) {
@@ -229,6 +238,17 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
     mDisableTransitionsExtension =
         ComponentsConfiguration.disableTransitionsExtensionForMountDelegate;
+  }
+
+  MountExtension getVisibilityOutputsExtension() {
+    if (mVisibilityExtensionsProvider == null) {
+      final VisibilityMountExtension visibilityExtension = new VisibilityMountExtension();
+      visibilityExtension.setRootHost(this);
+
+      return visibilityExtension;
+    }
+
+    return mVisibilityExtensionsProvider.getVisibilityExtension(this);
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {

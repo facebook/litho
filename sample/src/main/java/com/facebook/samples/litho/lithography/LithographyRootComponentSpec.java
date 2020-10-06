@@ -18,6 +18,7 @@ package com.facebook.samples.litho.lithography;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -26,8 +27,12 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.RenderEvent;
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
+import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.List;
 
@@ -40,15 +45,40 @@ public class LithographyRootComponentSpec {
   static Component onCreateLayout(ComponentContext c, @Prop List<Datum> dataModels) {
 
     return RecyclerCollectionComponent.create(c)
-        .disablePTR(true)
-        .section(
-            DataDiffSection.<Datum>create(new SectionContext(c))
-                .data(dataModels)
-                .renderEventHandler(LithographyRootComponent.onRender(c))
-                .build())
-        .paddingDip(YogaEdge.TOP, 8)
-        .testKey(MAIN_SCREEN)
-        .build();
+            .disablePTR(true)
+            .recyclerConfiguration(
+                    ListRecyclerConfiguration.create()
+                            .recyclerBinderConfiguration(
+                                    RecyclerBinderConfiguration.create()
+                                            .lithoViewFactory(
+                                                    new LithoViewFactory() {
+                                                      @Override
+                                                      public LithoView createLithoView(ComponentContext context) {
+                                                        return new LithoView(
+                                                                context,
+                                                                null,
+                                                                false,
+                                                                false,
+                                                                new LithoView.VisiblityExtensionProvider() {
+                                                                  @Override
+                                                                  public MountExtension getVisibilityExtension(
+                                                                          LithoView lithoView) {
+                                                                    return new CustomVisibilityExtension(lithoView);
+                                                                  }
+                                                                });
+                                                      }
+                                                    })
+                                            .build())
+                            .build())
+            .section(
+                    DataDiffSection.<Datum>create(new SectionContext(c))
+                            .data(dataModels)
+                            .renderEventHandler(
+                                    com.facebook.samples.litho.lithography.LithographyRootComponent.onRender(c))
+                            .build())
+            .paddingDip(YogaEdge.TOP, 8)
+            .testKey(MAIN_SCREEN)
+            .build();
   }
 
   @OnEvent(RenderEvent.class)

@@ -80,6 +80,7 @@ import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
+import com.facebook.rendercore.visibility.VisibilityExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import java.util.ArrayList;
@@ -171,7 +172,7 @@ class MountState
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
-  private @Nullable VisibilityMountExtension mVisibilityExtension;
+  private @Nullable MountExtension mVisibilityExtension;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable MountStateLogMessageProvider mMountStateLogMessageProvider;
   private LayoutStateContext mLayoutStateContext;
@@ -199,8 +200,7 @@ class MountState
       registerMountDelegateExtension(mIncrementalMountExtension);
     }
 
-    mVisibilityExtension = new VisibilityMountExtension();
-    mVisibilityExtension.setRootHost(mLithoView);
+    mVisibilityExtension = mLithoView.getVisibilityOutputsExtension();
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
@@ -945,7 +945,11 @@ class MountState
 
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    return mVisibilityExtension.getVisibilityIdToItemMap();
+    if (mVisibilityExtension instanceof VisibilityMountExtension) {
+      return ((VisibilityMountExtension) mVisibilityExtension).getVisibilityIdToItemMap();
+    }
+
+    return null;
   }
 
   @VisibleForTesting
@@ -1053,7 +1057,7 @@ class MountState
   }
 
   void clearVisibilityItems() {
-    mVisibilityExtension.clearVisibilityItems();
+    mVisibilityExtension.onUnbind();
   }
 
   private void registerHost(long id, ComponentHost host) {
