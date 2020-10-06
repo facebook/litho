@@ -90,7 +90,9 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     for (int i = 0, size = mPendingImmediateRemoval.size(); i < size; i++) {
       final long position = mPendingImmediateRemoval.keyAt(i);
       final RenderTreeNode node = mPendingImmediateRemoval.get(position);
-      releaseMountReference(node, (int) position, true);
+      if (ownsReference(node)) {
+        releaseMountReference(node, (int) position, true);
+      }
     }
     mPendingImmediateRemoval.clear();
   }
@@ -99,6 +101,8 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   public void onUnmount() {
     resetAcquiredReferences();
     mPreviousLocalVisibleRect.setEmpty();
+    mPendingImmediateRemoval.clear();
+    mComponentIdsMountedInThisFrame.clear();
   }
 
   /**
@@ -201,7 +205,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     } else if (!isMountable && hasAcquiredMountRef) {
       if (!isMounting) {
         mPendingImmediateRemoval.put(position, renderTreeNode);
-      } else {
+      } else if (ownsReference(renderTreeNode)) {
         releaseMountReference(renderTreeNode, position, true);
       }
     } else if (isMountable && hasAcquiredMountRef && isMounting) {
