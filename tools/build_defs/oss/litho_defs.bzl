@@ -50,6 +50,10 @@ LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/
 
 LITHO_YOGA_FACTORY_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/yoga:yoga")
 
+LITHO_EDITOR_CORE_TARGET = make_dep_path("litho-editor-core/src/main/java/com/facebook/litho/editor:editor")
+
+LITHO_EDITOR_FLIPPER_TARGET = make_dep_path("litho-editor-flipper/src/main/java/com/facebook/litho/editor/flipper:editor")
+
 # Kotlin targets
 LITHO_KOTLIN_TARGET = make_dep_path("litho-core-kotlin/src/main/kotlin/com/facebook/litho:litho-kotlin")
 

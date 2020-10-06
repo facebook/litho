@@ -42,6 +42,7 @@ import com.facebook.samples.litho.changesetdebug.ScrollingToBottomActivity;
 import com.facebook.samples.litho.changesetdebug.StateResettingActivity;
 import com.facebook.samples.litho.duplicatestate.DuplicateStateActivity;
 import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
+import com.facebook.samples.litho.editor.SimpleEditorExampleActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
@@ -186,8 +187,13 @@ public class Demos {
                               "Clear Text Trigger", ClearTextTriggerExampleActivity.class),
                           new SingleDemo(
                               "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
+                          new SingleDemo("Tooltip Trigger", TooltipTriggerExampleActivity.class))),
+                  new DemoGrouping(
+                      "Editor",
+                      Arrays.asList(
                           new SingleDemo(
-                              "Tooltip Trigger", TooltipTriggerExampleActivity.class))))),
+                              "SimpleEditor for Props and State",
+                              SimpleEditorExampleActivity.class))))),
           new DemoList(
               "Internal Debugging Samples",
               Arrays.asList(
