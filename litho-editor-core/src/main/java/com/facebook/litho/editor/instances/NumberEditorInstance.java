@@ -31,7 +31,9 @@ public class NumberEditorInstance<T extends Number> implements Editor {
 
   @Override
   public EditorValue read(Field f, Object node) {
-    return EditorValue.number(EditorUtils.<Number>getNodeUNSAFE(f, node).floatValue());
+    // If you use Number here it causes an exception when attempting to do implicit conversion
+    Object n = EditorUtils.<Object>getNodeUNSAFE(f, node);
+    return n == null ? EditorValue.string("null") : EditorValue.number(((Number) n).floatValue());
   }
 
   @Override
