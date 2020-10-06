@@ -45,6 +45,8 @@ dependencies {
     implementation project(':litho-fresco')
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
+    implementation project(':litho-editor-core')
+    implementation project(':litho-editor-flipper')
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')

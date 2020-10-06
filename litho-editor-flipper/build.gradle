@@ -23,19 +23,29 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
     }
 
     // TODO(#62): Re-enable abort on error.
     lintOptions {
         abortOnError false
     }
-}
 
-dependencies {
-    implementation project(':litho-editor-core')
-    implementation deps.flipper
-    compileOnly deps.jsr305
-    compileOnly deps.proguardAnnotations
+    dependencies {
+        implementation project(':litho-core')
+        implementation project(':litho-widget')
+        implementation project(':litho-editor-core')
+        implementation project(':litho-sections-core')
+        implementation project(':litho-sections-debug')
+        implementation deps.flipper
+        implementation deps.supportAppCompat
+        compileOnly deps.jsr305
+        compileOnly deps.proguardAnnotations
+        compileOnly project(':litho-annotations')
+
+        testImplementation deps.junit
+        testImplementation deps.robolectric
+    }
 }
 
 apply from: rootProject.file('gradle/release.gradle')
