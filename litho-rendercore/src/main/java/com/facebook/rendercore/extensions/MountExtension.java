@@ -44,7 +44,7 @@ public class MountExtension<Input> {
     mMountDelegate = mountDelegate;
   }
 
-  protected void resetAcquiredReferences() {
+  public void resetAcquiredReferences() {
     mLayoutOutputMountRefs = new HashSet<>();
   }
 

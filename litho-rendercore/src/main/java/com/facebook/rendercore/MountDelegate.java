@@ -44,8 +44,21 @@ public class MountDelegate {
   }
 
   void unregisterAllExtensions() {
+    resetExtensionReferenceCount();
     mMountExtensions.clear();
     mReferenceCountingEnabled = false;
+  }
+
+  void unBind() {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      mMountExtensions.get(i).onUnbind();
+    }
+  }
+
+  void unMount() {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      mMountExtensions.get(i).onUnmount();
+    }
   }
 
   public Object getContentAt(int position) {
@@ -108,6 +121,10 @@ public class MountDelegate {
   public void resetExtensionReferenceCount() {
     if (!mReferenceCountingEnabled) {
       return;
+    }
+
+    for (MountExtension<?> extension : mMountExtensions) {
+      extension.resetAcquiredReferences();
     }
 
     mReferenceCountMap.clear();

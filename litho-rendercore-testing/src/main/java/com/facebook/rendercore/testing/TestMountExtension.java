@@ -33,7 +33,7 @@ public class TestMountExtension extends MountExtension {
   }
 
   @Override
-  protected void resetAcquiredReferences() {
+  public void resetAcquiredReferences() {
     super.resetAcquiredReferences();
   }
 

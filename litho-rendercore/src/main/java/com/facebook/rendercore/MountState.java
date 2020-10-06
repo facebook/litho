@@ -156,6 +156,8 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public void unmountAllItems() {
+    unregisterAllExtensions();
+
     if (mRenderUnitIds == null) {
       return;
     }
@@ -176,10 +178,6 @@ public class MountState implements MountDelegateTarget {
       mIndexToMountedItemMap.remove(ROOT_HOST_ID);
       unmountRenderUnitFromContent(
           mContext, rootRenderTreeNode, rootRenderTreeNode.getRenderUnit(), item.getContent());
-    }
-
-    if (mMountDelegate != null) {
-      mMountDelegate.resetExtensionReferenceCount();
     }
 
     mNeedsRemount = true;
@@ -621,6 +619,8 @@ public class MountState implements MountDelegateTarget {
 
   private void unregisterAllExtensions() {
     if (mMountDelegate != null) {
+      mMountDelegate.unBind();
+      mMountDelegate.unMount();
       mMountDelegate.unregisterAllExtensions();
     }
   }
