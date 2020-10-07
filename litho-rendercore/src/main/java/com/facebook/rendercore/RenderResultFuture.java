@@ -78,6 +78,10 @@ public class RenderResultFuture<State, RenderContext> {
     return mFutureTask.isDone();
   }
 
+  public boolean isRunning() {
+    return mRunningThreadId.get() != -1;
+  }
+
   public void cancel() {
     mFutureTask.cancel(false);
   }
