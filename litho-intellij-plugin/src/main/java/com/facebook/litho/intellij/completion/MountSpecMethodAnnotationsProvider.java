@@ -61,6 +61,9 @@ public class MountSpecMethodAnnotationsProvider extends CompletionProvider<Compl
   static final Set<String> ANNOTATION_QUALIFIED_NAMES = new HashSet<>();
 
   static {
+    for (Class permittedMethod : MountSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS) {
+      ANNOTATION_QUALIFIED_NAMES.add(permittedMethod.getTypeName());
+    }
     /*
     OnEvent is added via other mechanism
     ANNOTATION_QUALIFIED_NAMES.add(OnEvent.class.getTypeName());
