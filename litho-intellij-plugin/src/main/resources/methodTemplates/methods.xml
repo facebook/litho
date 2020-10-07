@@ -33,4 +33,5 @@
   <OnMeasure method="/* TODO: https://fblitho.com/docs/mount-specs#measurement */@com.facebook.litho.annotations.OnMeasure static void onMeasure(com.facebook.litho.ComponentContext c, com.facebook.litho.ComponentLayout layout, int widthSpec, int heightSpec, com.facebook.litho.Size size) {}"/>
   <OnMount method="/* TODO: https://fblitho.com/docs/mount-specs#mounting */@androidx.annotation.UiThread @com.facebook.litho.annotations.OnMount static void onMount(com.facebook.litho.ComponentContext c, android.graphics.drawable.ColorDrawable colorDrawable) {}"/>
   <ShouldUpdate method="/* https://fblitho.com/docs/mount-specs#shouldupdate */@com.facebook.litho.annotations.ShouldUpdate static boolean shouldUpdate() {return false;}"/>
+  <OnCalculateCachedValue method="/* TODO: https://fblitho.com/docs/cached-values */@com.facebook.litho.annotations.OnCalculateCachedValue(name = &quot;expensiveValue&quot;) static int onCalculateCachedValue() {return 0;}"/>
 </templateSet>
