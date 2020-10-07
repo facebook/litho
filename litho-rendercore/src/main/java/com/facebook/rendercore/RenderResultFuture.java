@@ -54,7 +54,6 @@ public class RenderResultFuture<State, RenderContext> {
             });
   }
 
-  @Nullable
   public RenderResult<State> runAndGet() {
     if (mRunningThreadId.compareAndSet(-1, Process.myTid())) {
       mFutureTask.run();
