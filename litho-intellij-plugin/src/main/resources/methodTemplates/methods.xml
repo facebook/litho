@@ -27,4 +27,5 @@
   <OnCreateMountContent method="/* TODO: https://fblitho.com/docs/mount-specs#mounting */@androidx.annotation.UiThread @com.facebook.litho.annotations.OnCreateMountContent static android.graphics.drawable.ColorDrawable onCreateMountContent(android.content.Context context) {return new android.graphics.drawable.ColorDrawable();}"/>
   <OnPrepare method="/* TODO: https://fblitho.com/docs/mount-specs#inter-stage-inputs-and-outputs */@com.facebook.litho.annotations.OnPrepare static void onPrepare(com.facebook.litho.ComponentContext c) {}"/>
   <OnBoundsDefined method="/* TODO: https://fblitho.com/docs/mount-specs */@com.facebook.litho.annotations.OnBoundsDefined static void onBoundsDefined(com.facebook.litho.ComponentContext c, com.facebook.litho.ComponentLayout layout) {}"/>
+  <OnUnbind method="/* TODO: https://fblitho.com/docs/mount-specs */@androidx.annotation.UiThread @com.facebook.litho.annotations.OnUnbind static void onUnbind(com.facebook.litho.ComponentContext c, android.graphics.drawable.ColorDrawable colorDrawable) {}"/>
 </templateSet>
