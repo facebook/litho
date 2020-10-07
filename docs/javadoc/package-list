@@ -47,7 +47,10 @@ com.facebook.litho.yoga
 com.facebook.rendercore
 com.facebook.rendercore.annotations
 com.facebook.rendercore.extensions
+com.facebook.rendercore.incrementalmount
 com.facebook.rendercore.renderunits
+com.facebook.rendercore.transitions
 com.facebook.rendercore.utils
+com.facebook.rendercore.visibility
 com.facebook.widget.accessibility.delegates
 com.facebook.yoga
