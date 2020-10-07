@@ -1,14 +1,12 @@
 # Changelog
 
-## Version 0.38.1-SNAPSHOT
+## Version 0.39.0
 
-_release-date_
+_2020-10-07_
 
 * **Breaking:** Component.getScopedContext() access changed from public to package-private.
 
- * TBA
-
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.38.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.38.0...v.39.0).
 
 
 ## Version 0.38.0
