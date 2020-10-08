@@ -87,7 +87,9 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -97,6 +99,8 @@ import org.robolectric.shadows.ShadowLooper;
 /** Tests for {@link RecyclerBinder} */
 @RunWith(LithoTestRunner.class)
 public class RecyclerBinderTest {
+
+  public @Rule ExpectedException mExpectedException = ExpectedException.none();
 
   public static final NoOpChangeSetCompleteCallback NO_OP_CHANGE_SET_COMPLETE_CALLBACK =
       new NoOpChangeSetCompleteCallback();
@@ -5009,8 +5013,12 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testApplyReadyBatchesInfiniteLoop() {
+    mExpectedException.expect(RuntimeException.class);
+    mExpectedException.expectMessage(
+        "Too many retries -- RecyclerView is stuck in layout. Batch size: 1, isSubAdapter: false, isAttachedToWindow: false");
+
     ShadowLooper.pauseMainLooper();
 
     final RecyclerBinder recyclerBinder =

@@ -1146,7 +1146,14 @@ public class RecyclerBinder
       if (isRecyclerViewTargetComputingLayout()) {
         // Sanity check that we don't get stuck in an infinite loop
         if (retryCount > APPLY_READY_BATCHES_RETRY_LIMIT) {
-          throw new RuntimeException("Too many retries -- RecyclerView is stuck in layout.");
+          final RecyclerView mountedView = mIsSubAdapter ? mSubAdapterRecyclerView : mMountedView;
+          throw new RuntimeException(
+              "Too many retries -- RecyclerView is stuck in layout. Batch size: "
+                  + mAsyncBatches.size()
+                  + ", isSubAdapter: "
+                  + mIsSubAdapter
+                  + ", isAttachedToWindow: "
+                  + (mountedView != null ? mountedView.isAttachedToWindow() : null));
         }
 
         // Making changes to the adapter here will crash us. Just post to the next frame boundary.
