@@ -2368,10 +2368,15 @@ public class LayoutState
     }
 
     layoutState.mMountableOutputs.add(node);
-    layoutState.mMountableOutputTops.add(
-        new IncrementalMountOutput(layoutOutput.getIndex(), layoutOutput.getBounds()));
-    layoutState.mMountableOutputBottoms.add(
-        new IncrementalMountOutput(layoutOutput.getIndex(), layoutOutput.getBounds()));
+
+    final IncrementalMountOutput incrementalMountOutput =
+        new IncrementalMountOutput(
+            layoutOutput.getId(),
+            layoutOutput.getIndex(),
+            layoutOutput.getBounds(),
+            parent == null ? -1 : parent.getRenderUnit().getId());
+    layoutState.mMountableOutputTops.add(incrementalMountOutput);
+    layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
   }
 
   /**

@@ -22,10 +22,15 @@ import android.graphics.Rect;
 public class IncrementalMountOutput {
   public final int index;
   public final Rect bounds;
+  private final long id;
+  private final long hostId;
 
-  public IncrementalMountOutput(final int index, final Rect bounds) {
+  public IncrementalMountOutput(
+      final long id, final int index, final Rect bounds, final long hostId) {
+    this.id = id;
     this.index = index;
     this.bounds = bounds;
+    this.hostId = hostId;
   }
 
   public int getIndex() {
@@ -34,5 +39,13 @@ public class IncrementalMountOutput {
 
   public Rect getBounds() {
     return bounds;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public long getHostId() {
+    return hostId;
   }
 }

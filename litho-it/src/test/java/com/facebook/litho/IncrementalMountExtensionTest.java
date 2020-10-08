@@ -166,12 +166,15 @@ public class IncrementalMountExtensionTest {
         when(layoutOutput.getBounds()).thenReturn(bounds);
 
         RenderUnit renderUnit = new LithoRenderUnit(layoutOutput);
-        when(renderUnit.getId()).thenReturn((i + 1) * 1L);
+        final long id = (i + 1) * 1L;
+        when(renderUnit.getId()).thenReturn(id);
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);
 
         mountableOutputs.add(renderTreeNode);
-        tops.add(new IncrementalMountOutput(i, bounds));
-        bottoms.add(new IncrementalMountOutput(i, bounds));
+        final IncrementalMountOutput incrementalMountOutput =
+            new IncrementalMountOutput(id, i, bounds, 0);
+        tops.add(incrementalMountOutput);
+        bottoms.add(incrementalMountOutput);
       }
     }
 
