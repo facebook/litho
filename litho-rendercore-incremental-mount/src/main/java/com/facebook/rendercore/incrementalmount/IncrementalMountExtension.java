@@ -37,12 +37,11 @@ import java.util.Set;
 /** Extension for performing incremental mount. */
 public class IncrementalMountExtension extends MountExtension<IncrementalMountExtensionInput> {
 
-  private static final Rect sTempRect = new Rect();
-
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
   private final IncrementalMountBinder mAttachDetachBinder;
-  private final LongSparseArray<RenderTreeNode> mPendingImmediateRemoval = new LongSparseArray<>();
+  private final LongSparseArray<IncrementalMountOutput> mPendingImmediateRemoval =
+      new LongSparseArray<>();
   private final boolean mAcquireReferencesDuringMount;
 
   private IncrementalMountExtensionInput mInput;
@@ -76,7 +75,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     if (!mAcquireReferencesDuringMount) {
       return;
     }
-    maybeAcquireReference(mPreviousLocalVisibleRect, renderTreeNode, index, false);
+
+    final IncrementalMountOutput output = mInput.getIncrementalMountOutputAt(index);
+
+    maybeAcquireReference(mPreviousLocalVisibleRect, output, index, false);
   }
 
   @Override
@@ -89,9 +91,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
     // At this point we know that all items have been moved to the appropriate hosts.
     for (int i = 0, size = mPendingImmediateRemoval.size(); i < size; i++) {
       final long position = mPendingImmediateRemoval.keyAt(i);
-      final RenderTreeNode node = mPendingImmediateRemoval.get(position);
-      if (ownsReference(node)) {
-        releaseMountReference(node, (int) position, true);
+      final IncrementalMountOutput incrementalMountOutput = mPendingImmediateRemoval.get(position);
+      final long id = incrementalMountOutput.getId();
+      if (ownsReference(id)) {
+        releaseMountReference(id, (int) position, true);
       }
     }
     mPendingImmediateRemoval.clear();
@@ -132,19 +135,23 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   public void onUnbind() {}
 
   @Override
-  protected void acquireMountReference(
-      final RenderTreeNode node, final int position, final boolean isMounting) {
+  protected void acquireMountReference(long id, int position, boolean isMounting) {
+    throw new IllegalStateException(
+        "Do not call this method directly, use acquireMountReferenceEnsureHostIsMounted!");
+  }
+
+  private void acquireMountReferenceEnsureHostIsMounted(
+      IncrementalMountOutput incrementalMountOutput, final int position, final boolean isMounting) {
     // Make sure the host is mounted before the child.
-    final RenderTreeNode hostTreeNode = node.getParent();
-    if (hostTreeNode != null) {
-      final long hostId = hostTreeNode.getRenderUnit().getId();
+    final long hostId = incrementalMountOutput.getHostId();
+    if (hostId >= 0) {
       if (!ownsReference(hostId)) {
         final int hostIndex = mInput.getPositionForId(hostId);
-        acquireMountReference(hostTreeNode, hostIndex, isMounting || mAcquireReferencesDuringMount);
+        super.acquireMountReference(hostId, hostIndex, isMounting || mAcquireReferencesDuringMount);
       }
     }
 
-    super.acquireMountReference(node, position, isMounting);
+    super.acquireMountReference(incrementalMountOutput.getId(), position, isMounting);
   }
 
   @Override
@@ -167,19 +174,19 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       return;
     }
 
-    for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
-      final RenderTreeNode node = getRenderTreeNodeAt(i);
-      final long id = node.getRenderUnit().getId();
+    for (int i = 0, size = mInput.getIncrementalMountOutputCount(); i < size; i++) {
+      final IncrementalMountOutput node = mInput.getIncrementalMountOutputAt(i);
+      final long id = node.getId();
       if (input.getPositionForId(id) < 0 && ownsReference(id)) {
-        releaseMountReference(node, i, false);
+        releaseMountReference(id, i, false);
       }
     }
   }
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
-    for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
-      final RenderTreeNode renderTreeNode = getRenderTreeNodeAt(i);
-      maybeAcquireReference(localVisibleRect, renderTreeNode, i, isMounting);
+    for (int i = 0, size = mInput.getIncrementalMountOutputCount(); i < size; i++) {
+      final IncrementalMountOutput node = mInput.getIncrementalMountOutputAt(i);
+      maybeAcquireReference(localVisibleRect, node, i, isMounting);
     }
 
     setupPreviousMountableOutputData(localVisibleRect);
@@ -187,26 +194,26 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
   private void maybeAcquireReference(
       final Rect localVisibleRect,
-      final RenderTreeNode renderTreeNode,
+      final IncrementalMountOutput incrementalMountOutput,
       final int position,
       final boolean isMounting) {
     final Object content = getContentAt(position);
-    final long id = renderTreeNode.getRenderUnit().getId();
+    final long id = incrementalMountOutput.getId();
     // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
     // override that if the item is outside the visible bounds.
     // TODO (T64830748): extract animations logic out of this.
     final boolean isMountable =
         isMountedHostWithChildContent(content)
-            || Rect.intersects(localVisibleRect, renderTreeNode.getAbsoluteBounds(sTempRect))
+            || Rect.intersects(localVisibleRect, incrementalMountOutput.getBounds())
             || isRootItem(position);
-    final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
+    final boolean hasAcquiredMountRef = ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
-      acquireMountReference(renderTreeNode, position, isMounting);
+      acquireMountReferenceEnsureHostIsMounted(incrementalMountOutput, position, isMounting);
     } else if (!isMountable && hasAcquiredMountRef) {
       if (!isMounting) {
-        mPendingImmediateRemoval.put(position, renderTreeNode);
-      } else if (ownsReference(renderTreeNode)) {
-        releaseMountReference(renderTreeNode, position, true);
+        mPendingImmediateRemoval.put(position, incrementalMountOutput);
+      } else if (ownsReference(id)) {
+        releaseMountReference(id, position, true);
       }
     } else if (isMountable && hasAcquiredMountRef && isMounting) {
       // If we're in the process of mounting now, we know the item we're updating is already
@@ -230,18 +237,18 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
   private boolean performIncrementalMount(Rect localVisibleRect) {
     final List<IncrementalMountOutput> byTopBounds = mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds = mInput.getOutputsOrderedByBottomBounds();
-    final int count = getRenderTreeNodeCount();
+    final int count = mInput.getIncrementalMountOutputCount();
 
     if (localVisibleRect.top > 0 || mPreviousLocalVisibleRect.top > 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top >= byBottomBounds.get(mPreviousBottomsIndex).getBounds().bottom) {
-        final RenderTreeNode node = getRenderTreeNode(byBottomBounds.get(mPreviousBottomsIndex));
-        final long id = node.getRenderUnit().getId();
+        final IncrementalMountOutput node = byBottomBounds.get(mPreviousBottomsIndex);
+        final long id = node.getId();
         final int layoutOutputIndex = mInput.getPositionForId(id);
-        if (ownsReference(node)) {
-          releaseMountReference(node, layoutOutputIndex, true);
+        if (ownsReference(id)) {
+          releaseMountReference(id, layoutOutputIndex, true);
         }
         mPreviousBottomsIndex++;
       }
@@ -250,10 +257,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
           && localVisibleRect.top
               < byBottomBounds.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
         mPreviousBottomsIndex--;
-        final RenderTreeNode node = getRenderTreeNode(byBottomBounds.get(mPreviousBottomsIndex));
-        if (!ownsReference(node)) {
-          final long id = node.getRenderUnit().getId();
-          acquireMountReference(node, mInput.getPositionForId(id), true);
+        final IncrementalMountOutput node = byBottomBounds.get(mPreviousBottomsIndex);
+        final long id = node.getId();
+        if (!ownsReference(id)) {
+          acquireMountReferenceEnsureHostIsMounted(node, mInput.getPositionForId(id), true);
           mComponentIdsMountedInThisFrame.add(id);
         }
       }
@@ -266,10 +273,10 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       // that has changed.
       while (mPreviousTopsIndex < count
           && localVisibleRect.bottom > byTopBounds.get(mPreviousTopsIndex).getBounds().top) {
-        final RenderTreeNode node = getRenderTreeNode(byTopBounds.get(mPreviousTopsIndex));
-        final long id = node.getRenderUnit().getId();
-        if (!ownsReference(node)) {
-          acquireMountReference(node, mInput.getPositionForId(id), true);
+        final IncrementalMountOutput node = byTopBounds.get(mPreviousTopsIndex);
+        final long id = node.getId();
+        if (!ownsReference(id)) {
+          acquireMountReferenceEnsureHostIsMounted(node, mInput.getPositionForId(id), true);
           mComponentIdsMountedInThisFrame.add(id);
         }
         mPreviousTopsIndex++;
@@ -278,21 +285,21 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom <= byTopBounds.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
-        final RenderTreeNode node = getRenderTreeNode(byTopBounds.get(mPreviousTopsIndex));
-        final long id = node.getRenderUnit().getId();
+        final IncrementalMountOutput node = byTopBounds.get(mPreviousTopsIndex);
+        final long id = node.getId();
         final int layoutOutputIndex = mInput.getPositionForId(id);
-        if (ownsReference(node)) {
-          releaseMountReference(node, layoutOutputIndex, true);
+        if (ownsReference(id)) {
+          releaseMountReference(id, layoutOutputIndex, true);
         }
       }
     }
 
-    for (int i = 0, size = getRenderTreeNodeCount(); i < size; i++) {
-      final RenderTreeNode node = ((MountDelegateInput) mInput).getMountableOutputAt(i);
-      final long id = node.getRenderUnit().getId();
+    for (int i = 0, size = mInput.getIncrementalMountOutputCount(); i < size; i++) {
+      final IncrementalMountOutput node = mInput.getIncrementalMountOutputAt(i);
+      final long id = node.getId();
 
       if (!mComponentIdsMountedInThisFrame.contains(id)) {
-        if (isLockedForMount(node)) {
+        if (isLockedForMount(id)) {
           final Object content = getContentWithId(id);
           if (content != null) {
             recursivelyNotifyVisibleBoundsChanged(id, content);
@@ -313,7 +320,7 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
 
     final List<IncrementalMountOutput> byTopBounds = mInput.getOutputsOrderedByTopBounds();
     final List<IncrementalMountOutput> byBottomBounds = mInput.getOutputsOrderedByBottomBounds();
-    final int mountableOutputCount = getRenderTreeNodeCount();
+    final int mountableOutputCount = mInput.getIncrementalMountOutputCount();
 
     mPreviousTopsIndex = mountableOutputCount;
     for (int i = 0; i < mountableOutputCount; i++) {
@@ -323,25 +330,13 @@ public class IncrementalMountExtension extends MountExtension<IncrementalMountEx
       }
     }
 
-    mPreviousBottomsIndex = getRenderTreeNodeCount();
+    mPreviousBottomsIndex = mountableOutputCount;
     for (int i = 0; i < mountableOutputCount; i++) {
       if (localVisibleRect.top < byBottomBounds.get(i).getBounds().bottom) {
         mPreviousBottomsIndex = i;
         break;
       }
     }
-  }
-
-  private RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {
-    return getRenderTreeNodeAt(output.getIndex());
-  }
-
-  private RenderTreeNode getRenderTreeNodeAt(int position) {
-    return ((MountDelegateInput) mInput).getMountableOutputAt(position);
-  }
-
-  private int getRenderTreeNodeCount() {
-    return ((MountDelegateInput) mInput).getMountableOutputCount();
   }
 
   private @Nullable Object getContentWithId(long id) {

@@ -199,6 +199,7 @@ public class LayoutState
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
+  private final List<IncrementalMountOutput> mIncrementalMountOutputs = new ArrayList<>(8);
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
@@ -2112,8 +2113,18 @@ public class LayoutState
   }
 
   @Override
+  public int getIncrementalMountOutputCount() {
+    return mIncrementalMountOutputs.size();
+  }
+
+  @Override
   public RenderTreeNode getMountableOutputAt(int index) {
     return mMountableOutputs.get(index);
+  }
+
+  @Override
+  public IncrementalMountOutput getIncrementalMountOutputAt(int index) {
+    return mIncrementalMountOutputs.get(index);
   }
 
   @Override
@@ -2375,6 +2386,7 @@ public class LayoutState
             layoutOutput.getIndex(),
             layoutOutput.getBounds(),
             parent == null ? -1 : parent.getRenderUnit().getId());
+    layoutState.mIncrementalMountOutputs.add(incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
   }

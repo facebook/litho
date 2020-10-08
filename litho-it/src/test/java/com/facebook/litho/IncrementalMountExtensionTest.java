@@ -149,6 +149,7 @@ public class IncrementalMountExtensionTest {
 
   final class TestInput implements IncrementalMountExtensionInput, MountDelegateInput {
     final List<RenderTreeNode> mountableOutputs = new ArrayList<>();
+    final List<IncrementalMountOutput> mIncrementalMountOutputs = new ArrayList<>();
     final List<IncrementalMountOutput> tops = new ArrayList<>();
     final List<IncrementalMountOutput> bottoms = new ArrayList<>();
     private final int mCount;
@@ -173,6 +174,7 @@ public class IncrementalMountExtensionTest {
         mountableOutputs.add(renderTreeNode);
         final IncrementalMountOutput incrementalMountOutput =
             new IncrementalMountOutput(id, i, bounds, 0);
+        mIncrementalMountOutputs.add(incrementalMountOutput);
         tops.add(incrementalMountOutput);
         bottoms.add(incrementalMountOutput);
       }
@@ -191,6 +193,16 @@ public class IncrementalMountExtensionTest {
     @Override
     public List<IncrementalMountOutput> getOutputsOrderedByBottomBounds() {
       return bottoms;
+    }
+
+    @Override
+    public IncrementalMountOutput getIncrementalMountOutputAt(int position) {
+      return mIncrementalMountOutputs.get(position);
+    }
+
+    @Override
+    public int getIncrementalMountOutputCount() {
+      return mCount;
     }
 
     @Override

@@ -28,5 +28,9 @@ public interface IncrementalMountExtensionInput {
 
   List<IncrementalMountOutput> getOutputsOrderedByBottomBounds();
 
+  IncrementalMountOutput getIncrementalMountOutputAt(int position);
+
+  int getIncrementalMountOutputCount();
+
   boolean renderUnitWithIdHostsRenderTrees(long id);
 }
