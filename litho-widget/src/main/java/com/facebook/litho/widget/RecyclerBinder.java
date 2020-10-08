@@ -108,6 +108,7 @@ public class RecyclerBinder
   private static final String DATA_RENDERED_NOT_TRIGGERED =
       "RecyclerBinder:DataRenderedNotTriggered";
   static final int UNSET = -1;
+  static final int APPLY_READY_BATCHES_RETRY_LIMIT = 100;
 
   private static Field mViewHolderField;
 
@@ -277,7 +278,6 @@ public class RecyclerBinder
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
   private boolean mHasFilledViewport = false;
-  private int mApplyReadyBatchesRetries = 0;
   private @Nullable LithoStartupLogger mStartupLogger;
   private String mStartupLoggerAttribution = "";
   private final boolean[] mFirstMountLogged = new boolean[1];
@@ -1110,7 +1110,7 @@ public class RecyclerBinder
   public void removeSubAdapterModeRecyclerView(RecyclerView recyclerView) {
     if (!mIsSubAdapter) {
       throw new IllegalStateException(
-          "Cannot remmove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+          "Cannot remove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
     }
 
     unregisterDrawListener(recyclerView);
@@ -1121,6 +1121,11 @@ public class RecyclerBinder
   @UiThread
   @VisibleForTesting
   void applyReadyBatches() {
+    applyReadyBatchesWithRetry(0);
+  }
+
+  @UiThread
+  private void applyReadyBatchesWithRetry(final int retryCount) {
     ThreadUtils.assertMainThread();
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -1131,7 +1136,6 @@ public class RecyclerBinder
       // Fast check that doesn't acquire lock -- measure() is locking and will post a call to
       // applyReadyBatches when it completes.
       if (!mHasAsyncBatchesToCheck.get() || !mIsMeasured.get() || mIsInMeasure.get()) {
-        mApplyReadyBatchesRetries = 0;
         return;
       }
 
@@ -1141,17 +1145,22 @@ public class RecyclerBinder
       // that changes don't happen while it's in scroll/layout.
       if (isRecyclerViewTargetComputingLayout()) {
         // Sanity check that we don't get stuck in an infinite loop
-        mApplyReadyBatchesRetries++;
-        if (mApplyReadyBatchesRetries > 100) {
+        if (retryCount > APPLY_READY_BATCHES_RETRY_LIMIT) {
           throw new RuntimeException("Too many retries -- RecyclerView is stuck in layout.");
         }
 
         // Making changes to the adapter here will crash us. Just post to the next frame boundary.
-        ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
+        ChoreographerCompatImpl.getInstance()
+            .postFrameCallback(
+                new ChoreographerCompat.FrameCallback() {
+                  @Override
+                  public void doFrame(long frameTimeNanos) {
+                    applyReadyBatchesWithRetry(retryCount + 1);
+                  }
+                });
         return;
       }
 
-      mApplyReadyBatchesRetries = 0;
       boolean appliedBatch = false;
       while (true) {
         final AsyncBatch batch;

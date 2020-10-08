@@ -23,7 +23,6 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -5003,7 +5002,6 @@ public class RecyclerBinderTest {
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
-    System.err.println("done");
     when(recyclerView.isComputingLayout()).thenReturn(false);
 
     ShadowLooper.runUiThreadTasks();
@@ -5040,8 +5038,41 @@ public class RecyclerBinderTest {
     for (int i = 0; i < 10000; i++) {
       ShadowLooper.runMainLooperOneTask();
     }
+  }
 
-    fail("Should have escaped infinite retries with exception.");
+  @Test
+  public void testApplyReadyBatchesMultipleTimesInSameFrameDoesNotTriggerRetryException() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .build(mComponentContext);
+    final ComputingLayoutRecyclerView recyclerView =
+        new ComputingLayoutRecyclerView(mComponentContext.getAndroidContext());
+
+    recyclerBinder.mount(recyclerView);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerView.setComputingLayout(true);
+
+    ShadowLooper.pauseMainLooper();
+
+    for (int i = 0; i < RecyclerBinder.APPLY_READY_BATCHES_RETRY_LIMIT + 1; i++) {
+      recyclerBinder.insertItemAtAsync(
+          0,
+          ComponentRenderInfo.create()
+              .component(SimpleMountSpecTester.create(mComponentContext))
+              .build());
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    }
+
+    recyclerView.setComputingLayout(false);
+
+    ShadowLooper.idleMainLooper();
+
+    assertThat(recyclerBinder.getItemCount())
+        .isEqualTo(RecyclerBinder.APPLY_READY_BATCHES_RETRY_LIMIT + 1);
   }
 
   @Test
@@ -5603,6 +5634,24 @@ public class RecyclerBinderTest {
 
     public Rect getBgPaddingInfo() {
       return mBgPaddingInfo;
+    }
+  }
+
+  private static class ComputingLayoutRecyclerView extends LithoRecylerView {
+
+    private boolean mIsComputingLayout = false;
+
+    public ComputingLayoutRecyclerView(Context context) {
+      super(context);
+    }
+
+    @Override
+    public boolean isComputingLayout() {
+      return mIsComputingLayout;
+    }
+
+    public void setComputingLayout(boolean computingLayout) {
+      mIsComputingLayout = computingLayout;
     }
   }
 }
