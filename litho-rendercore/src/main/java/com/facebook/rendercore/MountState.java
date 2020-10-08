@@ -76,11 +76,17 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public void notifyMount(RenderTreeNode node, int position) {
+  public void notifyMount(long id) {
+    if (mRenderTree == null) {
+      return;
+    }
+
+    final int position = mRenderTree.getRenderTreeNodeIndex(id);
     if (getItemAt(position) != null) {
       return;
     }
 
+    final RenderTreeNode node = mRenderTree.getRenderTreeNodeAtIndex(position);
     mountRenderUnit(position, node);
   }
 

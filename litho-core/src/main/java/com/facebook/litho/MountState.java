@@ -803,11 +803,18 @@ class MountState
   }
 
   @Override
-  public void notifyMount(RenderTreeNode node, int position) {
-    if (getItemAt(position) != null) {
+  public void notifyMount(long id) {
+    if (mLastMountedLayoutState == null) {
       return;
     }
 
+    final int position = mLastMountedLayoutState.getPositionForId(id);
+
+    if (position < 0 || getItemAt(position) != null) {
+      return;
+    }
+
+    final RenderTreeNode node = mLastMountedLayoutState.getMountableOutputAt(position);
     mountLayoutOutput(position, node, getLayoutOutput(node), mLastMountedLayoutState);
   }
 

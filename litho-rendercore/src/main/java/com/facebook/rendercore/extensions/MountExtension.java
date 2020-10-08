@@ -66,26 +66,38 @@ public class MountExtension<Input> {
   }
 
   protected void acquireMountReference(RenderTreeNode node, int position, boolean isMounting) {
-    if (ownsReference(node)) {
+    acquireMountReference(node.getRenderUnit().getId(), position, isMounting);
+  }
+
+  protected void acquireMountReference(long id, int position, boolean isMounting) {
+    if (ownsReference(id)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
 
-    mLayoutOutputMountRefs.add(node.getRenderUnit().getId());
-    mMountDelegate.acquireMountRef(node, position, isMounting);
+    mLayoutOutputMountRefs.add(id);
+    mMountDelegate.acquireMountRef(id, position, isMounting);
   }
 
   protected void releaseMountReference(
       RenderTreeNode renderTreeNode, int position, boolean isMounting) {
-    if (!ownsReference(renderTreeNode)) {
+    releaseMountReference(renderTreeNode.getRenderUnit().getId(), position, isMounting);
+  }
+
+  protected void releaseMountReference(long id, int position, boolean isMounting) {
+    if (!ownsReference(id)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
 
-    mLayoutOutputMountRefs.remove(renderTreeNode.getRenderUnit().getId());
-    mMountDelegate.releaseMountRef(renderTreeNode, position, isMounting);
+    mLayoutOutputMountRefs.remove(id);
+    mMountDelegate.releaseMountRef(id, position, isMounting);
   }
 
   protected boolean isLockedForMount(RenderTreeNode renderTreeNode) {
-    return mMountDelegate.isLockedForMount(renderTreeNode);
+    return isLockedForMount(renderTreeNode.getRenderUnit().getId());
+  }
+
+  protected boolean isLockedForMount(long id) {
+    return mMountDelegate.isLockedForMount(id);
   }
 
   // TODO: T68620328 This method should be roll back to being protected once the transition

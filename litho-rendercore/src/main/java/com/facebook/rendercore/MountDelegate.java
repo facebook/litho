@@ -79,19 +79,22 @@ public class MountDelegate {
       mMountExtensions.get(i).beforeMountItem(renderTreeNode, index);
     }
 
-    return hasAcquiredRef(renderTreeNode);
+    return hasAcquiredRef(renderTreeNode.getRenderUnit().getId());
   }
 
   public boolean isLockedForMount(RenderTreeNode renderTreeNode) {
+    return isLockedForMount(renderTreeNode.getRenderUnit().getId());
+  }
+
+  public boolean isLockedForMount(long id) {
     if (!mReferenceCountingEnabled) {
       return true;
     }
 
-    return hasAcquiredRef(renderTreeNode);
+    return hasAcquiredRef(id);
   }
 
-  private boolean hasAcquiredRef(RenderTreeNode renderTreeNode) {
-    final long renderUnitId = renderTreeNode.getRenderUnit().getId();
+  private boolean hasAcquiredRef(long renderUnitId) {
     final Integer refCount = mReferenceCountMap.get(renderUnitId);
 
     return refCount != null && refCount > 0;
@@ -99,21 +102,29 @@ public class MountDelegate {
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void acquireMountRef(RenderTreeNode node, int i, boolean isMounting) {
-    incrementExtensionRefCount(node);
+    acquireMountRef(node.getRenderUnit().getId(), i, isMounting);
+  }
+
+  public void acquireMountRef(long id, int i, boolean isMounting) {
+    incrementExtensionRefCount(id);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
     if (isMounting) {
-      mMountDelegateTarget.notifyMount(node, i);
+      mMountDelegateTarget.notifyMount(id);
     }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void releaseMountRef(RenderTreeNode renderTreeNode, int i, boolean isMounting) {
-    final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
-    decrementExtensionRefCount(renderTreeNode);
+    releaseMountRef(renderTreeNode.getRenderUnit().getId(), i, isMounting);
+  }
 
-    if (wasLockedForMount && !isLockedForMount(renderTreeNode) && isMounting) {
+  public void releaseMountRef(long id, int i, boolean isMounting) {
+    final boolean wasLockedForMount = isLockedForMount(id);
+    decrementExtensionRefCount(id);
+
+    if (wasLockedForMount && !isLockedForMount(id) && isMounting) {
       mMountDelegateTarget.notifyUnmount(i);
     }
   }
@@ -130,12 +141,11 @@ public class MountDelegate {
     mReferenceCountMap.clear();
   }
 
-  private void incrementExtensionRefCount(RenderTreeNode renderTreeNode) {
+  private void incrementExtensionRefCount(long renderUnitId) {
     if (!mReferenceCountingEnabled) {
       return;
     }
 
-    final long renderUnitId = renderTreeNode.getRenderUnit().getId();
     Integer refCount = mReferenceCountMap.get(renderUnitId);
 
     if (refCount == null) {
@@ -145,12 +155,11 @@ public class MountDelegate {
     mReferenceCountMap.put(renderUnitId, refCount + 1);
   }
 
-  private void decrementExtensionRefCount(RenderTreeNode renderTreeNode) {
+  private void decrementExtensionRefCount(final long renderUnitId) {
     if (!mReferenceCountingEnabled) {
       return;
     }
 
-    final long renderUnitId = renderTreeNode.getRenderUnit().getId();
     Integer refCount = mReferenceCountMap.get(renderUnitId);
 
     if (refCount == null || refCount == 0) {
