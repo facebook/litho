@@ -6,7 +6,7 @@ permalink: /docs/sections-testing
 ---
 
 
-[SectionComponentTestHelper](/javadoc/com/facebook/litho/testing/sections/SectionComponentTestHelper) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
+[SectionComponentTestHelper](/javadoc/com/facebook/litho/testing/sections/SectionsTestHelper) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
 
 To demonstrate the testing functionality, consider this simple group section with a a list of text and an optional image header.
 
