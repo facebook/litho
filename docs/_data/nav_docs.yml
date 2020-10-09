@@ -90,6 +90,9 @@
   - id: inc-mount-architecture
   - id: view-flattening
   - id: recycling
+- title: Experimental
+  items:
+  - id: mount-extensions
 - title: Additional Resources
   items:
   - id: best-practices

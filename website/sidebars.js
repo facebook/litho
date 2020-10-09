@@ -109,6 +109,9 @@ module.exports = {
       'view-flattening',
       'recycling',
     ],
+    'Experimental': [
+      'mount-extensions',
+    ],
     'Additional Resources': [
       'best-practices',
       'faq',
