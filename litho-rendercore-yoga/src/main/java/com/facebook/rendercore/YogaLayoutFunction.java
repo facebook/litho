@@ -165,6 +165,13 @@ public class YogaLayoutFunction {
     yogaLayoutDataProvider.applyYogaPropsFromNode(node, context, yogaNode);
     yogaLayoutDataProvider.applyYogaPropsFromLayoutParams(node, context, yogaNode);
 
+    if (yogaNode.getDisplay() == YogaDisplay.NONE) {
+      final YogaNode emptyYogaNode = YogaNodeFactory.create(yogaConfig);
+      emptyYogaNode.setWidth(0f);
+      emptyYogaNode.setHeight(0f);
+      return new FlexboxLayoutResult(context, node, emptyYogaNode, null, null);
+    }
+
     if (yogaLayoutDataProvider.nodeCanMeasure(node)) {
       layoutResult =
           new FlexboxLayoutResult(
@@ -196,6 +203,9 @@ public class YogaLayoutFunction {
         final Node child = children.get(i);
         final FlexboxLayoutResult childLayoutResult =
             buildTree(context, child, pendingSubtrees, yogaConfig, yogaLayoutDataProvider);
+        // We already checked if this node was NONE when we created it but we want to also check
+        // here so that we don't add it to the hierarchy at all and it doesn't participate in
+        // grow/shrink behaviours.
         if (childLayoutResult.mYogaNode.getDisplay() != YogaDisplay.NONE) {
           yogaNode.addChildAt(childLayoutResult.mYogaNode, layoutResult.mYogaNode.getChildCount());
           layoutResult.addChild(childLayoutResult);
