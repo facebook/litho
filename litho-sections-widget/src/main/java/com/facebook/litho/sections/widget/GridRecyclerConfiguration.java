@@ -151,6 +151,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
+  public boolean getReverseLayout() {
+    return mReverseLayout;
+  }
+
+  @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
     return mGridLayoutInfoFactory.createGridLayoutInfo(
         c.getAndroidContext(), mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);

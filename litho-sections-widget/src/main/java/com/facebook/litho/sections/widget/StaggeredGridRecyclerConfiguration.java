@@ -128,6 +128,11 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   }
 
   @Override
+  public boolean getReverseLayout() {
+    return mReverseLayout;
+  }
+
+  @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
     return mLayoutInfoFactory.createStaggeredGridLayoutInfo(
         mNumSpans, mOrientation, mReverseLayout, mGapStrategy);

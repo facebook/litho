@@ -49,6 +49,8 @@ public interface RecyclerConfiguration {
 
   int getOrientation();
 
+  boolean getReverseLayout();
+
   LayoutInfo getLayoutInfo(ComponentContext c);
 
   RecyclerBinderConfiguration getRecyclerBinderConfiguration();
