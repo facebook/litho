@@ -97,7 +97,7 @@ function Home() {
   const context = useDocusaurusContext();
   const {siteConfig = {}} = context;
   return (
-    <Layout description="Home page of Litho: A declaritive UI framework for Android">
+    <Layout description="Home page of Litho: A declarative UI framework for Android">
       <div className={styles.heroBanner}>
         <div className={styles.heroInner}>
           <img
@@ -105,7 +105,7 @@ function Home() {
             src={useBaseUrl('images/logo.svg')}
           />
           <div className={styles.heroTitle}>
-            {siteConfig.title + ': ' + siteConfig.tagline}
+            {'Litho: ' + siteConfig.tagline}
           </div>
           <div className={styles.buttons}>
             <Link
