@@ -19,6 +19,7 @@ package com.facebook.samples.litho.lithography;
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 import java.util.Arrays;
 
@@ -99,11 +100,24 @@ public class LithographyActivity extends NavigatableDemoActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(
-        LithoView.create(
-            this,
-            LithographyRootComponent.create(new ComponentContext(this))
-                .dataModels(Arrays.asList(DATA))
-                .build()));
+    final ComponentContext context = new ComponentContext(this);
+    LithoView lithoView =
+            new LithoView(
+                    context,
+                    null,
+                    false,
+                    false,
+                    new LithoView.VisiblityExtensionProvider() {
+                      @Override
+                      public MountExtension getVisibilityExtension(LithoView lithoView) {
+                        return new CustomVisibilityExtension(lithoView);
+                      }
+                    });
+    lithoView.setComponent(
+            com.facebook.samples.litho.lithography.LithographyRootComponent.create(context)
+                    .dataModels(Arrays.asList(DATA))
+                    .build());
+
+    setContentView(lithoView);
   }
 }
