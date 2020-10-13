@@ -26,6 +26,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionSorter;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.PrefixMatcher;
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.psi.PsiClass;
@@ -63,12 +64,12 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           replacingConsumer.consume(createCompletionResultFor(OneCls));
           assertThat(mutate.elements).hasSize(1);
           assertThat(mutate.elements.get(0).getLookupString()).isEqualTo("One");
-          assertThat(mutate.elements.get(0)).isInstanceOf(SpecLookupElement.class);
+          assertThat(mutate.elements.get(0)).isInstanceOf(PrioritizedLookupElement.class);
 
           replacingConsumer.consume(createCompletionResultFor(LayoutSpecCls));
           assertThat(mutate.elements).hasSize(2);
           assertThat(mutate.elements.get(1).getLookupString()).isEqualTo("LayoutSpec");
-          assertThat(mutate.elements.get(1)).isNotInstanceOf(SpecLookupElement.class);
+          assertThat(mutate.elements.get(1)).isNotInstanceOf(PrioritizedLookupElement.class);
 
           return true;
         },

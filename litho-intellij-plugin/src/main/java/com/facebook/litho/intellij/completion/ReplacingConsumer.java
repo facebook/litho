@@ -62,9 +62,12 @@ class ReplacingConsumer implements Consumer<CompletionResult> {
             .filter(replacedQualifiedNames::remove)
             .map(
                 qualifiedName ->
+                    SpecLookupElement.create(lookupElement, qualifiedName, insertHandler))
+            .map(
+                newLookupElement ->
                     CompletionUtils.wrap(
                         completionResult,
-                        SpecLookupElement.create(lookupElement, qualifiedName, insertHandler)))
+                        PrioritizedLookupElement.withPriority(newLookupElement, Integer.MAX_VALUE)))
             .orElse(completionResult));
   }
 
