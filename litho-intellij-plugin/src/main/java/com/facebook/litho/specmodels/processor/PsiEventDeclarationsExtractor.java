@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.Event;
-import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.FieldModel;
@@ -40,15 +39,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class PsiEventDeclarationsExtractor {
 
-  public static ImmutableList<EventDeclarationModel> getEventDeclarations(PsiClass psiClass) {
-    final PsiAnnotation layoutSpecAnnotation =
-        AnnotationUtil.findAnnotation(psiClass, LayoutSpec.class.getName());
-    if (layoutSpecAnnotation == null) {
-      throw new RuntimeException("LayoutSpec annotation not found on class");
+  public static ImmutableList<EventDeclarationModel> getEventDeclarations(
+      PsiClass psiClass, Class<?> annotationClass) {
+    final PsiAnnotation specAnnotation =
+        AnnotationUtil.findAnnotation(psiClass, annotationClass.getName());
+    if (specAnnotation == null) {
+      throw new RuntimeException(annotationClass.getName() + " annotation not found on class");
     }
 
-    PsiAnnotationMemberValue psiAnnotationMemberValue =
-        layoutSpecAnnotation.findAttributeValue("events");
+    PsiAnnotationMemberValue psiAnnotationMemberValue = specAnnotation.findAttributeValue("events");
 
     ArrayList<EventDeclarationModel> eventDeclarationModels = new ArrayList<>();
     if (psiAnnotationMemberValue instanceof PsiArrayInitializerMemberValue) {

@@ -97,7 +97,7 @@ public class PsiLayoutSpecModelFactory {
             psiClass, INTER_STAGE_INPUT_ANNOTATIONS, true),
         ImmutableList.<String>of(),
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),
-        PsiEventDeclarationsExtractor.getEventDeclarations(psiClass),
+        PsiEventDeclarationsExtractor.getEventDeclarations(psiClass, LayoutSpec.class),
         PsiAnnotationExtractor.extractValidAnnotations(project, psiClass),
         null,
         classJavadoc,
