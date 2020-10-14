@@ -131,6 +131,13 @@ module.exports = {
       'Internal': [
         'fb/internal-litho',
         'fb/video-lessons',
+        {
+          'Architecture' : [
+            'fb/architecture-sections-in-a-fragment-or-activity',
+            'fb/architecture-thread-safety',
+            'fb/architecture-litho-tricks',
+          ]
+        },
       ]}),
   },
 };
