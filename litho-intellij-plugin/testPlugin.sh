@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,4 +16,5 @@
 # litho-intellij-plugin
 DIR=$(dirname "$0")
 cd "$DIR" || exit 1
-../gradlew :litho-intellij-plugin:test
+echo "./gradlew :litho-intellij-plugin:test"
+../gradlew :litho-intellij-plugin:test &> /dev/null

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,8 @@ set -o pipefail
 DIR=$(dirname "$0")
 cd "$DIR"
 rm -rf build
-echo "========== Building plugin =========="
-../gradlew :litho-intellij-plugin:buildPlugin
+echo "./gradlew :litho-intellij-plugin:buildPlugin"
+../gradlew :litho-intellij-plugin:buildPlugin &> /dev/null
 
 cd build/distributions
 mkdir tmp
@@ -35,10 +35,19 @@ for filename in ./*.jar; do
 done
 
 rm ./*.jar
-jar -cf litho-intellij-plugin.jar -C tmp .
 
-_PATH="$1"
-echo "========== Copying to $_PATH =========="
-if [ -n "$_PATH" ]; then
-  cp litho-intellij-plugin.jar "$_PATH"
-fi
+_JAR="litho-intellij-plugin.jar"
+jar -cf "$_JAR" -C tmp .
+
+echo "$(pwd)/$_JAR"
+
+while getopts "p:" opt; do
+  case $opt in
+    p)
+      cp "$_JAR" "$OPTARG"
+    ;;
+    \?)
+      exit 1
+    ;;
+  esac
+done

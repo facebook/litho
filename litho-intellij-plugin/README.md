@@ -12,6 +12,6 @@ The plugin is currently under development. You can install it from the
 Or you can manually build and install the latest version by following next steps:
 
 ### Gradle
-1. From the litho-intellij-plugin directory run `$./buildPlugin.sh output_path` where `output_path` is an IDE plugin folder.  For example, in MacOS it could be `~/Library/Application\ Support/AndroidStudioX.X`
+1. From the litho-intellij-plugin directory run `$./buildPlugin.sh -p output_path` where `output_path` is an IDE plugin folder.  For example, in MacOS it could be `~/Library/Application\ Support/AndroidStudioX.X`
 2. You will be prompted to restart the IDE so that changes will apply.
 3. Verify that **Preferences - Plugins** contains Litho now. Done.
