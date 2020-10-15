@@ -44,10 +44,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Offers completion for the {@code @Prop} and {@code @State} method parameters in the Litho Spec
- * class.
- */
+/** Offers completion for the {@code @EventHandler} method parameters in the Litho Spec class. */
 public class EventHandlerCompletionContributor extends CompletionContributor {
   public EventHandlerCompletionContributor() {
     extend(CompletionType.BASIC, codeReferencePattern(), typeCompletionProvider());
