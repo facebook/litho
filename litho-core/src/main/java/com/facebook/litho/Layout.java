@@ -545,12 +545,13 @@ class Layout {
         applyDiffNodeToLayoutNode(layoutNode, diffNode);
       }
     } catch (Throwable t) {
+      final LithoMetadataExceptionWrapper e =
+          new LithoMetadataExceptionWrapper(layoutNode.getContext(), t);
       final Component c = layoutNode.getTailComponent();
       if (c != null) {
-        throw new ComponentsChainException(c, t);
+        e.addComponentForLayoutStack(c);
       }
-
-      throw t;
+      throw e;
     }
   }
 
@@ -707,10 +708,10 @@ class Layout {
       original = ((ReThrownException) exception).original;
       handler = ((ReThrownException) exception).handler;
       rethrown = true;
-    } else if (exception instanceof ComponentsChainException) {
-      if (((ComponentsChainException) exception).handler != null) {
-        original = ((ComponentsChainException) exception).original;
-        handler = ((ComponentsChainException) exception).handler;
+    } else if (exception instanceof LithoMetadataExceptionWrapper) {
+      if (((LithoMetadataExceptionWrapper) exception).handler != null) {
+        original = ((LithoMetadataExceptionWrapper) exception).original;
+        handler = ((LithoMetadataExceptionWrapper) exception).handler;
         rethrown = false;
       } else {
         original = null;
@@ -730,25 +731,28 @@ class Layout {
       link = exception;
     }
 
+    final LithoMetadataExceptionWrapper metadataWrapper =
+        (link instanceof LithoMetadataExceptionWrapper)
+            ? (LithoMetadataExceptionWrapper) link
+            : new LithoMetadataExceptionWrapper(parent, link);
+    metadataWrapper.addComponentForLayoutStack(component);
+
     if (handler == nextHandler) { // was and handled
       // propagate with updated component chain exception, handler, and original cause
-      final ComponentsChainException chain = new ComponentsChainException(component, link);
-      chain.original = original;
-      chain.handler = handler;
-      throw chain;
+      metadataWrapper.original = original;
+      metadataWrapper.handler = handler;
+      throw metadataWrapper;
     } else if (nextHandler instanceof ErrorEventHandler) { // at the root
       // update component chain exception and call error handler
-      final ComponentsChainException chain = new ComponentsChainException(component, link);
-      ((ErrorEventHandler) nextHandler).onError(chain);
+      ((ErrorEventHandler) nextHandler).onError(metadataWrapper);
     } else { // Handle again with new handler
       try {
         ComponentLifecycle.dispatchErrorEvent(parent, link);
       } catch (ReThrownException ex) { // exception was raised again
         // propagate with updated component chain, latest handler, and original cause
-        final ComponentsChainException chain = new ComponentsChainException(component, link);
-        chain.original = original;
-        chain.handler = nextHandler;
-        throw chain;
+        metadataWrapper.original = original;
+        metadataWrapper.handler = nextHandler;
+        throw metadataWrapper;
       }
     }
   }

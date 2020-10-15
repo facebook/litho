@@ -908,12 +908,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       canvas.translate(getPaddingLeft(), getPaddingTop());
       super.draw(canvas);
     } catch (Throwable t) {
-      if (mComponentTree != null && mComponentTree.getRoot() != null) {
-        throw new ComponentsChainException(
-            "Component root of the crashing hierarchy:", mComponentTree.getRoot(), t);
-      }
-
-      throw t;
+      throw new LithoMetadataExceptionWrapper(mComponentTree, t);
     }
 
     if (mOnPostDrawListener != null) {

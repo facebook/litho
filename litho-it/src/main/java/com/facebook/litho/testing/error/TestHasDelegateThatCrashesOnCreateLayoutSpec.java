@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho.testing.error;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -22,10 +22,9 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
 @LayoutSpec
-class OnErrorNotPresentChildSpec {
-
+public class TestHasDelegateThatCrashesOnCreateLayoutSpec {
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    return ThrowExceptionGrandChildTester.create(c).build();
+  public static Component onCreateLayout(ComponentContext c) {
+    return TestCrasherOnCreateLayout.create(c).build();
   }
 }

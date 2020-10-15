@@ -61,7 +61,7 @@ public class SizeSpecMountWrapperComponentSpecTest {
 
   @Test
   public void testThrowErrorWithoutUsingSizeSpecMountWrapper() {
-    thrown.expect(ComponentsChainException.class);
+    thrown.expect(LithoMetadataExceptionWrapper.class);
     thrown.expectCause(isA(NullPointerException.class));
     // Throws an exception
     ComponentTestHelper.mountComponent(mContext, SizeTreePropComponent.create(mContext).build());
@@ -81,7 +81,7 @@ public class SizeSpecMountWrapperComponentSpecTest {
 
     // Mount the same component but with different width and height constraints that would throw an
     // IllegalStateException.
-    thrown.expect(ComponentsChainException.class);
+    thrown.expect(LithoMetadataExceptionWrapper.class);
     thrown.expectCause(isA(IllegalStateException.class));
 
     // WidthPercentage would make the width of the wrapped component less than 400, and for the

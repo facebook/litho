@@ -184,7 +184,7 @@ public class ComponentLifecycleErrorTest {
     try {
       final Component component =
           OnErrorPassUpParentTester.create(context)
-              .child(OnErrorNotPresentChild.create(context).info(info).build())
+              .child(OnErrorNotPresentChild.create(context).build())
               .info(info)
               .build();
       mLithoViewRule.setRoot(component);
