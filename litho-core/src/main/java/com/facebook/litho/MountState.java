@@ -538,6 +538,17 @@ class MountState
   private class MountStateLogMessageProvider implements ComponentHost.ExceptionLogMessageProvider {
 
     private @Nullable LayoutState mLayoutState;
+    private StringBuilder sbExtra = new StringBuilder();
+    private boolean shouldLogExtra = false;
+
+    void appendExtraMessage(String extra) {
+      sbExtra.append(extra);
+    }
+
+    void resetExtra() {
+      shouldLogExtra = false;
+      sbExtra = new StringBuilder();
+    }
 
     @Override
     public StringBuilder getLogMessage() {
@@ -548,7 +559,9 @@ class MountState
         return sb;
       }
 
-      sb.append("{\n").append(" mountableOutputs: {\n");
+      sb.append("{\n")
+          .append("extra: { " + sbExtra.toString() + "}\n")
+          .append(" mountableOutputs: {\n");
       for (int i = 0, size = mLayoutState.getMountableOutputCount(); i < size; i++) {
         final RenderTreeNode renderTreeNode = mLayoutState.getMountableOutputAt(i);
         if (renderTreeNode == null) {
@@ -614,6 +627,16 @@ class MountState
 
     if (mMountStateLogMessageProvider != null) {
       mMountStateLogMessageProvider.mLayoutState = layoutState;
+      mMountStateLogMessageProvider.resetExtra();
+
+      for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
+        final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
+        final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
+        if (layoutOutput.getComponent().getSimpleName().contains("CornersClipUnderlay")
+            || layoutOutput.getComponent().getSimpleName().contains("CornersRestoreOverlay")) {
+          mMountStateLogMessageProvider.shouldLogExtra = true;
+        }
+      }
     }
 
     if (mIsMounting) {
@@ -677,6 +700,25 @@ class MountState
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
       final boolean isMountable = isMountable(renderTreeNode, i);
+
+      if (mMountStateLogMessageProvider != null && mMountStateLogMessageProvider.shouldLogExtra) {
+        mMountStateLogMessageProvider.appendExtraMessage(
+            "    Mount index "
+                + i
+                + ": "
+                + component.getSimpleName()
+                + " id "
+                + layoutOutput.getId()
+                + " hostId "
+                + layoutOutput.getHostMarker()
+                + ". IsMounted: "
+                + isMounted
+                + ". IsMountable: "
+                + isMountable
+                + ". Bounds "
+                + layoutOutput.getBounds()
+                + "\n");
+      }
 
       if (!isMountable) {
         ComponentsSystrace.endSection();
@@ -3072,6 +3114,9 @@ class MountState
     for (int i = index; i <= lastDescendantIndex; i++) {
       if (increment) {
         mAnimationLockedIndices[i]++;
+        if (mMountStateLogMessageProvider != null && mMountStateLogMessageProvider.shouldLogExtra) {
+          mMountStateLogMessageProvider.appendExtraMessage("Lock animation for position " + i);
+        }
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
           ComponentsReporter.emitMessage(
@@ -3079,6 +3124,10 @@ class MountState
               INVALID_ANIM_LOCK_INDICES,
               "Decremented animation lock count below 0!");
           mAnimationLockedIndices[i] = 0;
+          if (mMountStateLogMessageProvider != null
+              && mMountStateLogMessageProvider.shouldLogExtra) {
+            mMountStateLogMessageProvider.appendExtraMessage("Unlock animation for position " + i);
+          }
         }
       }
     }
@@ -3089,6 +3138,10 @@ class MountState
       final int hostIndex = layoutState.getPositionForId(hostId);
       if (increment) {
         mAnimationLockedIndices[hostIndex]++;
+        if (mMountStateLogMessageProvider != null && mMountStateLogMessageProvider.shouldLogExtra) {
+          mMountStateLogMessageProvider.appendExtraMessage(
+              "Lock animation for position " + hostIndex);
+        }
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
           ComponentsReporter.emitMessage(
@@ -3096,6 +3149,11 @@ class MountState
               INVALID_ANIM_LOCK_INDICES,
               "Decremented animation lock count below 0!");
           mAnimationLockedIndices[hostIndex] = 0;
+          if (mMountStateLogMessageProvider != null
+              && mMountStateLogMessageProvider.shouldLogExtra) {
+            mMountStateLogMessageProvider.appendExtraMessage(
+                "Unlock animation for position " + hostIndex);
+          }
         }
       }
       hostId = getLayoutOutput(layoutState.getMountableOutputAt(hostIndex)).getHostMarker();
