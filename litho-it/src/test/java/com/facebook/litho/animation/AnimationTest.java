@@ -899,13 +899,7 @@ public class AnimationTest {
   }
 
   @Test
-  public void animationRenderCore_unmountingLithoViewMidAnimation_shouldNotCrash() {
-    final boolean useExtensionsWithMountDelegate =
-        ComponentsConfiguration.useExtensionsWithMountDelegate;
-    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
-    ComponentsConfiguration.delegateToRenderCoreMount = true;
-
+  public void animation_unmountingLithoViewMidAnimation_shouldNotCrash() {
     mLithoViewRule.setRoot(getAnimatingXPropertyComponent());
     mActivityController.get().setContentView(mLithoViewRule.getLithoView());
     mActivityController.resume().visible();
@@ -934,55 +928,10 @@ public class AnimationTest {
 
     // After unmounting all items it should not crash.
     mTransitionTestRule.step(5);
-
-    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensionsWithMountDelegate;
-    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
   }
 
   @Test
-  public void animationTransitionExtension_unmountingLithoViewMidAnimation_shouldNotCrash() {
-    final boolean useTransitionsExtension = ComponentsConfiguration.useTransitionsExtension;
-    ComponentsConfiguration.useTransitionsExtension = true;
-
-    mLithoViewRule.setRoot(getAnimatingXPropertyComponent());
-    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
-    mActivityController.resume().visible();
-
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
-
-    // 160 is equal to height and width of 200 - 40 for the size of the row.
-    assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
-    assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
-
-    mStateCaller.update();
-
-    // X after state update should be at 160 because is going to be animated.
-    assertThat(view.getX()).describedAs("view X axis after toggle").isEqualTo(160);
-    // Y moves without animating
-    assertThat(view.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
-
-    mTransitionTestRule.step(5);
-
-    // Check java doc for how we calculate this value.
-    assertThat(view.getX()).describedAs("view X axis after 5 frames").isEqualTo(93.89186f);
-    assertThat(view.getY()).describedAs("view Y axis after 5 frames").isEqualTo(0);
-
-    // This line would unmount the animating mountitem and the framework should stop the animation.
-    mLithoViewRule.getLithoView().unmountAllItems();
-
-    // After unmounting all items it should not crash.
-    mTransitionTestRule.step(5);
-
-    ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
-  }
-
-  @Test
-  public void
-      animationTransitionsExtension_reUsingLithoViewWithDifferentComponentTrees_shouldNotCrash() {
-    final boolean useExtensionsWithMountDelegate =
-        ComponentsConfiguration.useExtensionsWithMountDelegate;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
-
+  public void animation_reUsingLithoViewWithDifferentComponentTrees_shouldNotCrash() {
     ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoViewRule.setRoot(getNonAnimatingComponent());
@@ -1013,7 +962,6 @@ public class AnimationTest {
     mLithoViewRule.useComponentTree(nonAnimatingComponentTree);
     mLithoViewRule.measure().layout();
     // Should not crash.
-    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensionsWithMountDelegate;
   }
 
   @Test
@@ -1098,8 +1046,6 @@ public class AnimationTest {
   @Test
   public void
       animation_disappearAnimationMovingAnItemToTheSameIndex_elementShouldDisappearWithoutCrashing() {
-    final boolean useTransitionsExtension = ComponentsConfiguration.useTransitionsExtension;
-    ComponentsConfiguration.useTransitionsExtension = true;
     final TestAnimationsComponent component =
         TestAnimationsComponent.create(mLithoViewRule.getContext())
             .stateCaller(mStateCaller)
@@ -1189,7 +1135,6 @@ public class AnimationTest {
     mTransitionTestRule.step(100);
 
     // Do not crash.
-    ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
   }
 
   @Test
@@ -1419,8 +1364,6 @@ public class AnimationTest {
   @Test
   public void
       animation_disappearAnimationOnNestedLithoViews_elementShouldDisappearAnimatingAlpha() {
-    final boolean useTransitionsExtension = ComponentsConfiguration.useTransitionsExtension;
-    ComponentsConfiguration.useTransitionsExtension = true;
     final StateCaller innerStateCaller = new StateCaller();
     final TestAnimationsComponent component =
         TestAnimationsComponent.create(mLithoViewRule.getContext())
@@ -1480,7 +1423,5 @@ public class AnimationTest {
     assertThat(innerLithoView)
         .describedAs("We mantain the same LithoView")
         .isEqualTo(innerView.getParent());
-
-    ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
   }
 }
