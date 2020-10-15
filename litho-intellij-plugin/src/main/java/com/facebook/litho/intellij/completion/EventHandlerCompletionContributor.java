@@ -18,6 +18,8 @@ package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.LithoPluginUtils.resolveEventName;
 
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -42,6 +44,8 @@ import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
+import java.util.HashMap;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /** Offers completion for the {@code @EventHandler} method parameters in the Litho Spec class. */
@@ -112,10 +116,16 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
         .withPresentableText(methodName)
         .withTypeText("EventHandler<" + handler.typeModel.name.simpleName() + ">")
         .withInsertHandler(
-            (context, elem) ->
-                context
-                    .getEditor()
-                    .getCaretModel()
-                    .moveCaretRelatively(-1, 0, false, false, false));
+            (context, elem) -> {
+              context.getEditor().getCaretModel().moveCaretRelatively(-1, 0, false, false, false);
+              log("EventHandler");
+            });
+  }
+
+  private static void log(String cls) {
+    final Map<String, String> data = new HashMap<>();
+    data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_ARGUMENT);
+    data.put(EventLogger.KEY_CLASS, cls);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
   }
 }
