@@ -19,10 +19,10 @@ package com.facebook.litho;
 public class ReThrownException extends RuntimeException {
 
   final Exception original;
-  final EventHandler<ErrorEvent> handler;
+  final EventHandler<ErrorEvent> lastHandler;
 
-  ReThrownException(final Exception original, final EventHandler<ErrorEvent> handler) {
+  ReThrownException(final Exception original, final EventHandler<ErrorEvent> lastHandler) {
     this.original = original;
-    this.handler = handler;
+    this.lastHandler = lastHandler;
   }
 }

@@ -26,8 +26,7 @@ import java.util.Map;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class LithoMetadataExceptionWrapper extends RuntimeException {
 
-  @Nullable Exception original;
-  @Nullable EventHandler<ErrorEvent> handler;
+  @Nullable EventHandler<ErrorEvent> lastHandler;
 
   private final ArrayList<Component> mComponentLayoutStack = new ArrayList<>();
   private final HashMap<String, String> mCustomMetadata = new HashMap<>();

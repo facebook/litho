@@ -700,58 +700,36 @@ class Layout {
 
   private static void handle(ComponentContext parent, Component component, Exception exception) {
     final EventHandler<ErrorEvent> nextHandler = parent.getErrorEventHandler();
-    final EventHandler<ErrorEvent> handler;
-    final Exception original;
-    final boolean rethrown;
+    final EventHandler<ErrorEvent> lastHandler;
+    Exception exceptionToThrow = exception;
 
     if (exception instanceof ReThrownException) {
-      original = ((ReThrownException) exception).original;
-      handler = ((ReThrownException) exception).handler;
-      rethrown = true;
+      exceptionToThrow = ((ReThrownException) exception).original;
+      lastHandler = ((ReThrownException) exception).lastHandler;
     } else if (exception instanceof LithoMetadataExceptionWrapper) {
-      if (((LithoMetadataExceptionWrapper) exception).handler != null) {
-        original = ((LithoMetadataExceptionWrapper) exception).original;
-        handler = ((LithoMetadataExceptionWrapper) exception).handler;
-        rethrown = false;
-      } else {
-        original = null;
-        handler = null;
-        rethrown = false;
-      }
+      lastHandler = ((LithoMetadataExceptionWrapper) exception).lastHandler;
     } else {
-      original = exception;
-      handler = null;
-      rethrown = false;
-    }
-
-    final Exception link;
-    if (rethrown) {
-      link = original;
-    } else {
-      link = exception;
+      lastHandler = null;
     }
 
     final LithoMetadataExceptionWrapper metadataWrapper =
-        (link instanceof LithoMetadataExceptionWrapper)
-            ? (LithoMetadataExceptionWrapper) link
-            : new LithoMetadataExceptionWrapper(parent, link);
+        (exceptionToThrow instanceof LithoMetadataExceptionWrapper)
+            ? (LithoMetadataExceptionWrapper) exceptionToThrow
+            : new LithoMetadataExceptionWrapper(parent, exceptionToThrow);
     metadataWrapper.addComponentForLayoutStack(component);
 
-    if (handler == nextHandler) { // was and handled
-      // propagate with updated component chain exception, handler, and original cause
-      metadataWrapper.original = original;
-      metadataWrapper.handler = handler;
+    // This means it was already handled by this handler so throw it up to the next frame until we
+    // get a new handler or get to the root
+    if (lastHandler == nextHandler) {
+      metadataWrapper.lastHandler = lastHandler;
       throw metadataWrapper;
     } else if (nextHandler instanceof ErrorEventHandler) { // at the root
-      // update component chain exception and call error handler
       ((ErrorEventHandler) nextHandler).onError(metadataWrapper);
     } else { // Handle again with new handler
       try {
-        ComponentLifecycle.dispatchErrorEvent(parent, link);
-      } catch (ReThrownException ex) { // exception was raised again
-        // propagate with updated component chain, latest handler, and original cause
-        metadataWrapper.original = original;
-        metadataWrapper.handler = nextHandler;
+        ComponentLifecycle.dispatchErrorEvent(parent, exceptionToThrow);
+      } catch (ReThrownException ex) { // error handler re-raised the exception
+        metadataWrapper.lastHandler = nextHandler;
         throw metadataWrapper;
       }
     }
