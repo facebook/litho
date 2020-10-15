@@ -24,7 +24,9 @@ import java.util.Map;
 
 /** Exception class used to add additional Litho metadata to a crash. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-class LithoMetadataExceptionWrapper extends RuntimeException {
+public class LithoMetadataExceptionWrapper extends RuntimeException {
+
+  public static final String MSG_PREFIX = "crash context:";
 
   @Nullable EventHandler<ErrorEvent> lastHandler;
 
@@ -66,7 +68,7 @@ class LithoMetadataExceptionWrapper extends RuntimeException {
 
   @Override
   public String getMessage() {
-    final StringBuilder msg = new StringBuilder("crash context:\n");
+    final StringBuilder msg = new StringBuilder(MSG_PREFIX + "\n");
     if (!mComponentLayoutStack.isEmpty()) {
       msg.append("  layout_stack: ");
       for (int i = mComponentLayoutStack.size() - 1; i >= 0; i--) {
