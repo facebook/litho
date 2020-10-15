@@ -42,6 +42,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 /**
@@ -53,6 +54,7 @@ import org.junit.runner.RunWith;
 public class ComponentLifecycleErrorTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+  @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
   @Before
   public void assumeDebug() {
@@ -83,18 +85,12 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnCreateLayoutErrorWithoutBoundaryWhenEnabled() {
-    final ComponentContext c = mComponentsRule.getContext();
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectCause(
+        ThrowableMatcher.forClassWithMessage(Exception.class, "onCreateLayout crash"));
 
-    final TestCrasherOnCreateLayout.Builder builder = TestCrasherOnCreateLayout.create(c);
-
-    RuntimeException exception = null;
-    try {
-      ComponentTestHelper.mountComponent(builder);
-    } catch (RuntimeException e) {
-      exception = e;
-    }
-
-    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayout crash");
+    ComponentTestHelper.mountComponent(
+        TestCrasherOnCreateLayout.create(mComponentsRule.getContext()));
   }
 
   @Test
@@ -138,19 +134,12 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
-  public void testOnMountErrorWithoutBoundaryWhenEnabled() throws Exception {
-    final ComponentContext c = mComponentsRule.getContext();
+  public void testOnMountErrorWithoutBoundaryWhenEnabled() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectCause(
+        ThrowableMatcher.forClassWithMessage(Exception.class, "onMount crash"));
 
-    final TestCrasherOnMount.Builder builder = TestCrasherOnMount.create(c);
-
-    RuntimeException exception = null;
-    try {
-      ComponentTestHelper.mountComponent(builder);
-    } catch (RuntimeException e) {
-      exception = e;
-    }
-
-    assertThat(exception).isNotNull().hasMessageContaining("onMount crash");
+    ComponentTestHelper.mountComponent(TestCrasherOnMount.create(mComponentsRule.getContext()));
   }
 
   @Test

@@ -136,4 +136,20 @@ public class LithoMetadataExceptionWrapperTest {
         .layout()
         .attachToWindow();
   }
+
+  @Test
+  public void onMount_withLogTag_showsLogTagInStack() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("log_tag: myLogTag");
+
+    final ComponentContext c =
+        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+    mLithoViewRule
+        .useComponentTree(ComponentTree.create(c).build())
+        .setSizePx(100, 100)
+        .setRoot(TestCrasherOnCreateLayout.create(c))
+        .measure()
+        .layout()
+        .attachToWindow();
+  }
 }

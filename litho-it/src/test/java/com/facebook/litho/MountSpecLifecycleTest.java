@@ -43,6 +43,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.shadows.ShadowLooper;
@@ -52,6 +53,7 @@ public class MountSpecLifecycleTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public final @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
+  public final @Rule ExpectedException mExpectedException = ExpectedException.none();
 
   final boolean mUseMountDelegateTarget;
   private boolean mConfigUseMountDelegateTarget;
@@ -576,8 +578,11 @@ public class MountSpecLifecycleTest {
         .doesNotContain(ON_CREATE_INITIAL_STATE);
   }
 
-  @Test(expected = CrashingMountableSpec.MountPhaseException.class)
+  @Test
   public void lifecycle_setRootWithCrashingSpec_shouldCrashOnMount() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectCause(
+        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
@@ -586,8 +591,11 @@ public class MountSpecLifecycleTest {
     mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
   }
 
-  @Test(expected = CrashingMountableSpec.MountPhaseException.class)
+  @Test
   public void lifecycle_setRootWithCrashingSpec_shouldCrashOnUnMount() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectCause(
+        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
@@ -597,8 +605,11 @@ public class MountSpecLifecycleTest {
     mLithoViewRule.getLithoView().unmountAllItems();
   }
 
-  @Test(expected = CrashingMountableSpec.MountPhaseException.class)
+  @Test
   public void lifecycle_setRootWithCrashingSpec_shouldCrashOBind() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectCause(
+        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
@@ -607,8 +618,11 @@ public class MountSpecLifecycleTest {
     mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
   }
 
-  @Test(expected = CrashingMountableSpec.MountPhaseException.class)
+  @Test
   public void lifecycle_setRootWithCrashingSpec_shouldCrashOnUnBind() {
+    mExpectedException.expectCause(
+        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
+
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)

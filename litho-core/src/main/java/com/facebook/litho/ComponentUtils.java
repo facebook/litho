@@ -508,11 +508,13 @@ public class ComponentUtils {
    * component re-raises the exception using {@link #raise(ComponentContext, Exception)} then the
    * utility will rethrow the exception out of Litho.
    */
-  static void handle(ComponentContext c, Exception e) {
+  static void handle(ComponentContext c, Exception exception) {
     try {
-      dispatchErrorEvent(c, e);
+      dispatchErrorEvent(c, exception);
     } catch (ReThrownException re) {
-      rethrow(e);
+      wrapAndThrow(c, exception);
+    } catch (Exception e) {
+      wrapAndThrow(c, e);
     }
   }
 
@@ -525,5 +527,12 @@ public class ComponentUtils {
     } else {
       throw new RuntimeException(e);
     }
+  }
+
+  private static void wrapAndThrow(ComponentContext c, Exception e) {
+    if (e instanceof LithoMetadataExceptionWrapper) {
+      throw (LithoMetadataExceptionWrapper) e;
+    }
+    throw new LithoMetadataExceptionWrapper(c, e);
   }
 }
