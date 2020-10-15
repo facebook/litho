@@ -163,7 +163,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
+            "/**\n"
+                + " * This will send the testTriggerMethod1 trigger to the component with the given handle.\n"
+                + " * For more information about using triggers, see https://fblitho.com/docs/trigger-events\n"
+                + " */\n"
+                + "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.Handle handle, java.lang.Object arg2, T arg3, long arg4) {\n"
                 + "  int methodId = -773082596;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, handle);\n"
@@ -180,7 +184,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
+            "/**\n"
+                + " * @deprecated Use {@link #testTriggerMethod1(ComponentContext, Handle)} instead.\n"
+                + " */\n"
+                + "@java.lang.Deprecated\n"
+                + "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key, java.lang.Object arg2, T arg3, long arg4) {\n"
                 + "  int methodId = -773082596;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, key);\n"
@@ -197,7 +205,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.EventTrigger trigger,\n"
+            "/**\n"
+                + " * @deprecated Use {@link #testTriggerMethod1(ComponentContext, Handle)} instead.\n"
+                + " */\n"
+                + "@java.lang.Deprecated\n"
+                + "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.EventTrigger trigger,\n"
                 + "    java.lang.Object arg2, T arg3, long arg4) {\n"
                 + "  com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent _eventState = new com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent();\n"
                 + "  _eventState.arg4 = arg4;\n"
@@ -209,7 +221,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(3).toString())
         .isEqualTo(
-            "static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
+            "/**\n"
+                + " * @deprecated Use {@link #testTriggerMethod1(ComponentContext, Handle)} instead.\n"
+                + " */\n"
+                + "@java.lang.Deprecated\n"
+                + "static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.Object arg2, T arg3, long arg4) {\n"
                 + "  Test component = (Test) c.getComponentScope();\n"
                 + "  return component.testTriggerMethod1(\n"
@@ -222,7 +238,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(4).toString())
         .isEqualTo(
-            "public static void testTriggerMethod2(com.facebook.litho.ComponentContext c,\n"
+            "/**\n"
+                + " * This will send the testTriggerMethod2 trigger to the component with the given handle.\n"
+                + " * For more information about using triggers, see https://fblitho.com/docs/trigger-events\n"
+                + " */\n"
+                + "public static void testTriggerMethod2(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.Handle handle) {\n"
                 + "  int methodId = 969727739;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, handle);\n"
@@ -236,7 +256,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(5).toString())
         .isEqualTo(
-            "public static void testTriggerMethod2(com.facebook.litho.ComponentContext c, java.lang.String key) {\n"
+            "/**\n"
+                + " * @deprecated Use {@link #testTriggerMethod2(ComponentContext, Handle)} instead.\n"
+                + " */\n"
+                + "@java.lang.Deprecated\n"
+                + "public static void testTriggerMethod2(com.facebook.litho.ComponentContext c, java.lang.String key) {\n"
                 + "  int methodId = 969727739;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, key);\n"
                 + "  if (trigger == null) {\n"
@@ -249,7 +273,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(6).toString())
         .isEqualTo(
-            "public static void testTriggerMethod2(com.facebook.litho.EventTrigger trigger) {\n"
+            "/**\n"
+                + " * @deprecated Use {@link #testTriggerMethod2(ComponentContext, Handle)} instead.\n"
+                + " */\n"
+                + "@java.lang.Deprecated\n"
+                + "public static void testTriggerMethod2(com.facebook.litho.EventTrigger trigger) {\n"
                 + "  java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  trigger.dispatchOnTrigger(_eventState, new Object[] {\n"
                 + "      });\n"
@@ -257,7 +285,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(7).toString())
         .isEqualTo(
-            "static void testTriggerMethod2(com.facebook.litho.ComponentContext c) {\n"
+            "/**\n"
+                + " * @deprecated Use {@link #testTriggerMethod2(ComponentContext, Handle)} instead.\n"
+                + " */\n"
+                + "@java.lang.Deprecated\n"
+                + "static void testTriggerMethod2(com.facebook.litho.ComponentContext c) {\n"
                 + "  Test component = (Test) c.getComponentScope();\n"
                 + "  component.testTriggerMethod2(\n"
                 + "      c,\n"
@@ -282,7 +314,8 @@ public class TriggerGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "/**\n"
-                + " * @Deprecated Do not use this method to trigger events. */\n"
+                + " * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #testTriggerMethod1(ComponentContext, Handle)}.\n"
+                + " */\n"
                 + "@java.lang.Deprecated\n"
                 + "public static com.facebook.litho.EventTrigger testTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key) {\n"
@@ -300,7 +333,8 @@ public class TriggerGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(3).toString())
         .isEqualTo(
             "/**\n"
-                + " * @Deprecated Do not use this method to trigger events. */\n"
+                + " * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #testTriggerMethod2(ComponentContext, Handle)}.\n"
+                + " */\n"
                 + "@java.lang.Deprecated\n"
                 + "public static com.facebook.litho.EventTrigger testTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key) {\n"

@@ -45,6 +45,9 @@ import javax.lang.model.element.Modifier;
 /** Class that generates the trigger methods for a Component. */
 public class TriggerGenerator {
 
+  private static final String DEPRECATED_METHOD_JAVADOC =
+      "@deprecated Use {@link #$L(ComponentContext, Handle)} instead.\n";
+
   private TriggerGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
@@ -249,7 +252,9 @@ public class TriggerGenerator {
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
     triggerMethod
-        .addJavadoc("@Deprecated Do not use this method to trigger events.")
+        .addJavadoc(
+            "@deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #$L(ComponentContext, Handle)}.\n",
+            eventMethodModel.name.toString())
         .addAnnotation(java.lang.Deprecated.class)
         .addParameter(contextClassName, "c")
         .addParameter(ClassNames.STRING, "key")
@@ -321,7 +326,7 @@ public class TriggerGenerator {
               specModel.getContextClass(), eventMethodModel));
 
       typeSpecDataHolder.addMethod(
-          generateStateSelfTriggerMethod(
+          generateDeprecatedStateSelfTriggerMethod(
               specModel.getComponentName(),
               specModel.getContextClass(),
               specModel.getScopeMethodName(),
@@ -340,6 +345,16 @@ public class TriggerGenerator {
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+    if (triggerLookup == TriggerLookup.KEY) {
+      triggerMethod
+          .addJavadoc(DEPRECATED_METHOD_JAVADOC, eventMethodModel.name.toString())
+          .addAnnotation(java.lang.Deprecated.class);
+    } else if (triggerLookup == TriggerLookup.HANDLE) {
+      triggerMethod.addJavadoc(
+          "This will send the $L trigger to the component with the given handle.\nFor more information about using triggers, see https://fblitho.com/docs/trigger-events\n",
+          eventMethodModel.name.toString());
+    }
 
     String methodId =
         componentName + ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
@@ -370,6 +385,8 @@ public class TriggerGenerator {
 
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
+            .addJavadoc(DEPRECATED_METHOD_JAVADOC, eventMethodModel.name.toString())
+            .addAnnotation(java.lang.Deprecated.class)
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
     triggerMethod.addParameter(ClassNames.EVENT_TRIGGER, "trigger");
@@ -377,13 +394,16 @@ public class TriggerGenerator {
     return generateCommonStaticTriggerMethodCode(contextClassName, eventMethodModel, triggerMethod);
   }
 
-  private static MethodSpec generateStateSelfTriggerMethod(
+  private static MethodSpec generateDeprecatedStateSelfTriggerMethod(
       String componentClass,
       ClassName contextClassName,
       String scopeMethodName,
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
     MethodSpec.Builder triggerMethod =
-        MethodSpec.methodBuilder(eventMethodModel.name.toString()).addModifiers(Modifier.STATIC);
+        MethodSpec.methodBuilder(eventMethodModel.name.toString())
+            .addModifiers(Modifier.STATIC)
+            .addJavadoc(DEPRECATED_METHOD_JAVADOC, eventMethodModel.name.toString())
+            .addAnnotation(java.lang.Deprecated.class);
 
     triggerMethod.addParameter(contextClassName, "c");
 
