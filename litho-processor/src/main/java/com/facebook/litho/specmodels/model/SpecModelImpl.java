@@ -1147,7 +1147,7 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     public Builder workingRangeRegisterMethod(
-        SpecMethodModel<EventMethod, Void> workingRangeRegisterModel) {
+        @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterModel) {
       mWorkingRangeRegisterModel = workingRangeRegisterModel;
       return this;
     }
