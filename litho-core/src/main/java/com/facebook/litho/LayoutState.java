@@ -104,10 +104,6 @@ public class LayoutState
   static final String KEY_LAYOUT_STATE_ID = "layoutId";
   static final String KEY_PREVIOUS_LAYOUT_STATE_ID = "previousLayoutId";
 
-  private final boolean mIncrementalVisibility;
-  private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
-  private @Nullable LayoutStateContext mLayoutStateContext;
-
   @IntDef({
     CalculateLayoutSource.TEST,
     CalculateLayoutSource.NONE,
@@ -178,8 +174,8 @@ public class LayoutState
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
-  @Nullable private List<Component> mComponents;
-  @Nullable private List<String> mComponentKeys;
+  private @Nullable List<Component> mComponents;
+  private @Nullable List<String> mComponentKeys;
 
   /**
    * Holds onto how many clashed global keys exist in the tree. Used for automatically generating
@@ -196,6 +192,10 @@ public class LayoutState
   private int mWidthSpec;
   private int mHeightSpec;
 
+  private final boolean mIncrementalVisibility;
+  private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
+  private @Nullable LayoutStateContext mLayoutStateContext;
+
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
@@ -206,7 +206,7 @@ public class LayoutState
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
-  @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
+  private @Nullable LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
   private final List<TestOutput> mTestOutputs;
 
@@ -245,8 +245,8 @@ public class LayoutState
   private StateHandler mStateHandler;
   private List<Component> mComponentsNeedingPreviousRenderData;
   private List<String> mComponentKeysNeedingPreviousRenderData;
-  @Nullable private TransitionId mCurrentTransitionId;
-  @Nullable private OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
+  private @Nullable TransitionId mCurrentTransitionId;
+  private @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
   private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
@@ -258,12 +258,12 @@ public class LayoutState
   private volatile boolean mIsInterruptible = true;
 
   private static final Object debugLock = new Object();
-  @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
+  private static @Nullable Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
   /** A container stores components whose OnAttached delegate methods are about to be executed. */
-  @Nullable private Map<String, Component> mAttachableContainer;
+  private @Nullable Map<String, Component> mAttachableContainer;
 
   final boolean mShouldDisableDrawableOutputs =
       ComponentsConfiguration.shouldDisableDrawableOutputs;
@@ -2158,6 +2158,7 @@ public class LayoutState
     return mVisibilityOutputs;
   }
 
+  @Nullable
   @Override
   public VisibilityModuleInput getVisibilityModuleInput() {
     return mVisibilityModuleInput;
