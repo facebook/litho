@@ -85,7 +85,7 @@ ext.deps = [
         supportTestRules   : 'androidx.test:rules:1.1.1',
         supportMultidex    : 'androidx.multidex:multidex:2.0.0',
         supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
-        supportMaterial    : 'com.google.android.material:material:1.0.0',
+        supportMaterial    : 'com.google.android.material:material:1.2.0',
         supportTransition  : 'androidx.transition:transition:1.0.0',
         // Arch
         archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
