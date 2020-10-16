@@ -68,7 +68,7 @@ public class VisibilityExtension extends RenderCoreExtension<Results> {
 
     @Override
     public @Nullable VisibilityModuleInput getVisibilityModuleInput() {
-      throw new UnsupportedOperationException("Visibility Extension does not support this feature");
+      return null;
     }
 
     void addOutput(@Nullable VisibilityOutput output) {
@@ -95,7 +95,7 @@ public class VisibilityExtension extends RenderCoreExtension<Results> {
         final int y,
         final int position,
         final @Nullable Results results) {
-      if (layoutResult instanceof VisibilityOutput.Factory && results != null) {
+      if (results != null) {
         Rect absoluteBounds = new Rect(x, y, x + bounds.width(), y + bounds.height());
         results.addOutput(factory.createVisibilityOutput(layoutResult, absoluteBounds));
       }

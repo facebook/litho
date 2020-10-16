@@ -22,7 +22,7 @@ import java.util.List;
 
 public class VisibilityModuleInput {
   private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
-  private ArrayList<IncrementalModuleItem> mIncrementalVisibilitytemsBottoms;
+  private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsBottoms;
   private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
   private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
   private ArrayList<FocusedIncrementalModuleItem> mIncrementalFocusedItems;
@@ -43,8 +43,8 @@ public class VisibilityModuleInput {
   }
 
   private void clear() {
-    mIncrementalFullImpressionItemsTops = null;
-    mIncrementalFullImpressionItemsBottoms = null;
+    mIncrementalVisibilityItemsTops = null;
+    mIncrementalVisibilityItemsBottoms = null;
     mIncrementalFullImpressionItemsTops = null;
     mIncrementalFullImpressionItemsBottoms = null;
     mIncrementalFocusedItems = null;
@@ -59,12 +59,12 @@ public class VisibilityModuleInput {
 
     if (mIncrementalVisibilityItemsTops == null) {
       mIncrementalVisibilityItemsTops = new ArrayList<>(2);
-      mIncrementalVisibilitytemsBottoms = new ArrayList<>(2);
+      mIncrementalVisibilityItemsBottoms = new ArrayList<>(2);
     }
 
     final VisibleIncrementalModuleItem item = new VisibleIncrementalModuleItem(visibilityOutput);
     mIncrementalVisibilityItemsTops.add(item);
-    mIncrementalVisibilitytemsBottoms.add(item);
+    mIncrementalVisibilityItemsBottoms.add(item);
   }
 
   private void maybeAddFocusedItem(VisibilityOutput visibilityOutput) {
@@ -111,7 +111,7 @@ public class VisibilityModuleInput {
   private void sortItems() {
     if (mIncrementalVisibilityItemsTops != null) {
       Collections.sort(mIncrementalVisibilityItemsTops, IncrementalModule.sTopsComparators);
-      Collections.sort(mIncrementalVisibilitytemsBottoms, IncrementalModule.sBottomsComparator);
+      Collections.sort(mIncrementalVisibilityItemsBottoms, IncrementalModule.sBottomsComparator);
     }
 
     if (mIncrementalFullImpressionItemsTops != null) {
@@ -126,7 +126,7 @@ public class VisibilityModuleInput {
   }
 
   ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
-    return mIncrementalVisibilitytemsBottoms;
+    return mIncrementalVisibilityItemsBottoms;
   }
 
   ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
