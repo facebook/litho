@@ -241,17 +241,17 @@ public class YogaLayoutFunction {
     // for caching.
     if (cachedResult.mMeasure == null) {
       layoutContext.getLayoutCache().put(node, result);
-    }
-    for (int i = 0; i < cachedResult.getChildrenCount(); i++) {
-      LayoutResult childResult = cachedResult.getChildAt(i);
-      FlexboxLayoutResult child =
-          registerClonedNodesRecursively(
-              (FlexboxLayoutResult) childResult,
-              clonedYogaNode.getChildAt(i),
-              layoutContext,
-              pendingSubtrees);
+      for (int i = 0; i < cachedResult.getChildrenCount(); i++) {
+        LayoutResult childResult = cachedResult.getChildAt(i);
+        FlexboxLayoutResult child =
+            registerClonedNodesRecursively(
+                (FlexboxLayoutResult) childResult,
+                clonedYogaNode.getChildAt(i),
+                layoutContext,
+                pendingSubtrees);
 
-      result.addChild(child);
+        result.addChild(child);
+      }
     }
 
     if (result.mMeasure != null) {
