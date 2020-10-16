@@ -826,6 +826,8 @@ public class ComponentTree {
       if (isDirtyMount) {
         recordRenderData(layoutState);
       }
+    } catch (Exception e) {
+      ComponentUtils.wrapWithMetadataAndThrow(this, e);
     } finally {
       mIsMounting = false;
       mRootHeightAnimation = null;

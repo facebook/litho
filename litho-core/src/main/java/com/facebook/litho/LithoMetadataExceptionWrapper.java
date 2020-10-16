@@ -80,10 +80,10 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
       msg.append("\n");
     }
 
-    if (mComponentContext != null) {
-      if (mComponentContext.getLogTag() != null) {
-        msg.append("  log_tag: ").append(mComponentContext.getLogTag()).append("\n");
-      }
+    if (mComponentContext != null && mComponentContext.getLogTag() != null) {
+      msg.append("  log_tag: ").append(mComponentContext.getLogTag()).append("\n");
+    } else if (mComponentTree != null && mComponentTree.getLogTag() != null) {
+      msg.append("  log_tag: ").append(mComponentTree.getLogTag()).append("\n");
     }
 
     final ComponentTree componentTree =
