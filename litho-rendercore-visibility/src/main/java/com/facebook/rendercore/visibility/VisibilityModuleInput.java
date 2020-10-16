@@ -16,17 +16,18 @@
 
 package com.facebook.rendercore.visibility;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class VisibilityModuleInput {
-  private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
-  private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsBottoms;
-  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
-  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
-  private ArrayList<FocusedIncrementalModuleItem> mIncrementalFocusedItems;
-  private ArrayList<VisibilityOutput> mVisibilityChangedOutputs;
+  private @Nullable ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
+  private @Nullable ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsBottoms;
+  private @Nullable ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
+  private @Nullable ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
+  private @Nullable ArrayList<FocusedIncrementalModuleItem> mIncrementalFocusedItems;
+  private @Nullable ArrayList<VisibilityOutput> mVisibilityChangedOutputs;
 
   public void setIncrementalModuleItems(List<VisibilityOutput> visibilityOutputs) {
     clear();
@@ -34,7 +35,7 @@ public class VisibilityModuleInput {
       final VisibilityOutput visibilityOutput = visibilityOutputs.get(i);
 
       maybeAddFocusedItem(visibilityOutput);
-      maybeAddFullImpressionyItem(visibilityOutput);
+      maybeAddFullImpressionItem(visibilityOutput);
       maybeAddVisibilityItem(visibilityOutput);
       maybeAddVisibilityChangedItem(visibilityOutput);
     }
@@ -80,7 +81,7 @@ public class VisibilityModuleInput {
     mIncrementalFocusedItems.add(new FocusedIncrementalModuleItem(visibilityOutput));
   }
 
-  private void maybeAddFullImpressionyItem(VisibilityOutput visibilityOutput) {
+  private void maybeAddFullImpressionItem(VisibilityOutput visibilityOutput) {
     if (visibilityOutput.getFullImpressionEventHandler() == null) {
       return;
     }
@@ -121,27 +122,33 @@ public class VisibilityModuleInput {
     }
   }
 
-  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
+  @Nullable
+  List<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
     return mIncrementalVisibilityItemsTops;
   }
 
-  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
+  @Nullable
+  List<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
     return mIncrementalVisibilityItemsBottoms;
   }
 
-  ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
+  @Nullable
+  List<IncrementalModuleItem> getFullImpressionItemsTops() {
     return mIncrementalFullImpressionItemsTops;
   }
 
-  ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
+  @Nullable
+  List<IncrementalModuleItem> getFullImpressionItemsBottoms() {
     return mIncrementalFullImpressionItemsBottoms;
   }
 
-  ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
+  @Nullable
+  List<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
     return mIncrementalFocusedItems;
   }
 
-  ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
+  @Nullable
+  List<VisibilityOutput> getVisibilityChangedOutputs() {
     return mVisibilityChangedOutputs;
   }
 

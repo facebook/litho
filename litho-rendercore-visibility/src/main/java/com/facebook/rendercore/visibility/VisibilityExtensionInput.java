@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.visibility;
 
+import androidx.annotation.Nullable;
 import java.util.List;
 
 /** This APIs declares that inputs required by the Visibility Extensions. */
@@ -32,5 +33,6 @@ public interface VisibilityExtensionInput {
   boolean isIncrementalVisibilityEnabled();
 
   /** returns the meta data required to process visibility events. */
+  @Nullable
   VisibilityModuleInput getVisibilityModuleInput();
 }

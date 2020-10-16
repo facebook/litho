@@ -30,7 +30,7 @@ public class VisibilityModule {
   private @Nullable IncrementalModule mIncrementalModuleFullImpression;
   private @Nullable IncrementalModule mIncrementalModuleFocused;
 
-  private @Nullable Map<String, VisibilityOutput> mVisibilityRatioChanged;
+  private final Map<String, VisibilityOutput> mVisibilityRatioChanged = new HashMap<>();
   private final List<IncrementalModuleItem> mLazySortTops = new ArrayList<>();
   private final List<IncrementalModuleItem> mLazySortBottoms = new ArrayList<>();
   private View mView;
@@ -40,7 +40,6 @@ public class VisibilityModule {
     mIncrementalModuleVisibility = new IncrementalModule(view);
     mIncrementalModuleFullImpression = new IncrementalModule(view);
     mIncrementalModuleFocused = new IncrementalModule(view);
-    mVisibilityRatioChanged = new HashMap<>();
   }
 
   void processVisibilityOutputs(

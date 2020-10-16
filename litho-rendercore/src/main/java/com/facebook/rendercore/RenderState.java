@@ -70,7 +70,7 @@ public class RenderState<State, RenderContext> {
   private final Context mContext;
   private final Delegate<State> mDelegate;
   private final @Nullable RenderContext mRenderContext;
-  private final @Nullable RenderCoreExtension<?>[] extensions;
+  private final @Nullable RenderCoreExtension<?>[] mExtensions;
   private final int mId = ID_GENERATOR.incrementAndGet();
 
   @ThreadConfined(ThreadConfined.UI)
@@ -103,7 +103,7 @@ public class RenderState<State, RenderContext> {
     mContext = context;
     mDelegate = delegate;
     mRenderContext = renderContext;
-    this.extensions = extensions;
+    mExtensions = extensions;
   }
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -168,7 +168,7 @@ public class RenderState<State, RenderContext> {
               mContext,
               lazyTree,
               mRenderContext,
-              extensions,
+              mExtensions,
               mCommittedRenderResult,
               setRootId,
               mWidthSpec,
@@ -275,7 +275,7 @@ public class RenderState<State, RenderContext> {
                 mContext,
                 mLatestLazyTree,
                 mRenderContext,
-                extensions,
+                mExtensions,
                 mCommittedRenderResult,
                 setRootId,
                 mWidthSpec,
@@ -357,7 +357,7 @@ public class RenderState<State, RenderContext> {
 
   @Nullable
   RenderCoreExtension<?>[] getExtensions() {
-    return extensions;
+    return mExtensions;
   }
 
   private class RenderStateHandler extends Handler {

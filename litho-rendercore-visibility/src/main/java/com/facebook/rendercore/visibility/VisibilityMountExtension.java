@@ -48,7 +48,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
   private boolean mIncrementalVisibilityEnabled;
   private List<VisibilityOutput> mVisibilityOutputs;
-  private VisibilityModuleInput mVisibilityModuleInput;
+  private @Nullable VisibilityModuleInput mVisibilityModuleInput;
   private @Nullable Rect mCurrentLocalVisibleRect;
 
   /** @deprecated Only used for Litho's integration. Marked for removal. */
@@ -367,7 +367,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
   @Override
   public void afterMount() {
-    boolean processVisibilityOutputs = !hasTransientState();
+    final boolean processVisibilityOutputs = !hasTransientState();
 
     if (processVisibilityOutputs) {
       processVisibilityOutputs(mCurrentLocalVisibleRect, true);
@@ -415,8 +415,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     clearVisibilityItems();
   }
 
-  private static boolean isInRatioRange(float ratio, int length, int visiblelength) {
-    return visiblelength >= ratio * length;
+  private static boolean isInRatioRange(float ratio, int length, int visibleLength) {
+    return visibleLength >= ratio * length;
   }
 
   private static int computeRectArea(Rect rect) {
