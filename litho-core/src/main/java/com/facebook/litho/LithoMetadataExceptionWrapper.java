@@ -16,7 +16,9 @@
 
 package com.facebook.litho;
 
+import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +28,7 @@ import java.util.Map;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoMetadataExceptionWrapper extends RuntimeException {
 
-  public static final String MSG_PREFIX = "crash context:";
+  public static final String LITHO_CONTEXT = "Litho Context:";
 
   @Nullable EventHandler<ErrorEvent> lastHandler;
 
@@ -67,8 +69,15 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
   }
 
   @Override
+  @SuppressLint({"BadMethodUse-java.lang.Class.getName", "ReflectionMethodUse"})
   public String getMessage() {
-    final StringBuilder msg = new StringBuilder(MSG_PREFIX + "\n");
+    final Throwable cause = Assertions.assertNotNull(getCause());
+    final StringBuilder msg =
+        new StringBuilder("Real Cause => ")
+            .append(cause.getClass().getCanonicalName())
+            .append(": ")
+            .append(cause.getMessage())
+            .append("\nLitho Context:\n");
     if (!mComponentLayoutStack.isEmpty()) {
       msg.append("  layout_stack: ");
       for (int i = mComponentLayoutStack.size() - 1; i >= 0; i--) {
