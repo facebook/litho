@@ -263,4 +263,22 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       mLastCompletelyVisibleItemPosition = lastCompletelyVisibleItemPosition;
     }
   }
+
+  /**
+   * Sets the viewport visibility of the items in the SectionTree held by this recycler manually.
+   *
+   * <p>You almost definitely don't want to use this. Please talk to the Litho team if you think you
+   * need to!
+   */
+  @Deprecated
+  public void manuallySetViewportChangedFromExternalScroll(
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex) {
+    if (mSectionTree != null) {
+      mSectionTree.viewPortChangedFromScrolling(
+          firstVisibleIndex, lastVisibleIndex, firstFullyVisibleIndex, lastFullyVisibleIndex);
+    }
+  }
 }
