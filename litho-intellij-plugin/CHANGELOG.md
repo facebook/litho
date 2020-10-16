@@ -2,7 +2,7 @@
 
 ## Version 1.5.10
 
-_2020-10-05
+_2020-10-05_
 
 * New: More straightforward `OnEvent` generation.
 * New: Resolve `OnEvent` name conflicts.
@@ -10,7 +10,7 @@ _2020-10-05
 
 ## Version 1.5.9
 
-_2020-09-11
+_2020-09-11_
 
 * New: `Prop` navigation.
 
