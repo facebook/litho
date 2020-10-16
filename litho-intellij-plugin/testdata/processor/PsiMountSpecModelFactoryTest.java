@@ -49,14 +49,12 @@ static class TestTriggerEvent {
   int integer;
 }
 
-static class TestDrawable extends android.graphics.drawable.Drawable {}
-
 @com.facebook.litho.annotations.MountSpec(value = "TestMountComponentName", isPublic = false, isPureRender = true, events = { TestTriggerEvent.class })
 static class TestMountSpec {
 
   @com.facebook.litho.annotations.OnCreateMountContent(mountingType = MountingType.DRAWABLE)
-  static TestDrawable onCreateMountContent(android.content.Context context) {
-    return new ColorDrawable();
+  static android.graphics.drawable.ColorDrawable onCreateMountContent(android.content.Context context) {
+    return new android.graphics.drawable.ColorDrawable();
   }
 
   @com.facebook.litho.annotations.OnCreateInitialState
@@ -98,5 +96,5 @@ static class TestMountSpec {
   static void onDetached(com.facebook.litho.ComponentContext c, @com.facebook.litho.annotations.Prop java.lang.Object prop9, @com.facebook.litho.annotations.State java.lang.Object state4) {}
 
   @com.facebook.litho.annotations.OnBindDynamicValue
-  static void onBindDynamicValue(TestDrawable testDrawable, @com.facebook.litho.annotations.Prop(dynamic = true) int prop10) {}
+  static void onBindDynamicValue(android.graphics.drawable.ColorDrawable colorDrawable, @com.facebook.litho.annotations.Prop(dynamic = true) int prop10) {}
 }

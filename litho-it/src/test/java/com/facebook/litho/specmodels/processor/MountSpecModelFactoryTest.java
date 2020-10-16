@@ -24,9 +24,12 @@ import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.MountingType;
 import com.facebook.litho.annotations.OnAttached;
+import com.facebook.litho.annotations.OnBindDynamicValue;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMount;
@@ -37,12 +40,8 @@ import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MountSpecModel;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.google.testing.compile.CompilationRule;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
@@ -101,8 +100,21 @@ public class MountSpecModelFactoryTest {
     int integer;
   }
 
-  @MountSpec(value = "TestMountComponentName", isPublic = false, isPureRender = true)
+  static class ColorDrawable {};
+
+  static class Context {};
+
+  @MountSpec(
+      value = "TestMountComponentName",
+      isPublic = false,
+      isPureRender = true,
+      events = {TestTriggerEvent.class})
   static class TestMountSpec {
+
+    @OnCreateMountContent(mountingType = MountingType.DRAWABLE)
+    static ColorDrawable onCreateMountContent(Context context) {
+      return new ColorDrawable();
+    }
 
     @OnCreateInitialState
     static void createInitialState(@Prop int prop1) {}
@@ -141,6 +153,9 @@ public class MountSpecModelFactoryTest {
 
     @OnDetached
     static void onDetached(ComponentContext c, @Prop Object prop9, @State Object state4) {}
+
+    @OnBindDynamicValue
+    static void onBindDynamicValue(ColorDrawable colorDrawable, @Prop(dynamic = true) int prop10) {}
   }
 
   @Before
@@ -162,9 +177,8 @@ public class MountSpecModelFactoryTest {
   }
 
   @Test
-  public void testCreate() {
-    assertThat(mMountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
-    assertThat(mMountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
+  public void mountSpec_initModel_populateGenericSpecInfo() {
+    // can't move to helper, because PsiMountSpecModelFactoryTest doesn't support qualified names
     assertThat(mMountSpecModel.getSpecTypeName().toString())
         .isEqualTo(
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMountSpec");
@@ -173,44 +187,17 @@ public class MountSpecModelFactoryTest {
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest."
                 + "TestMountComponentName");
 
-    assertThat(mMountSpecModel.getDelegateMethods()).hasSize(8);
-
-    final SpecMethodModel<DelegateMethod, Void> shouldRemeasureMethod =
-        mMountSpecModel.getDelegateMethods().get(5);
-    assertThat(shouldRemeasureMethod.name).isEqualToIgnoringCase("shouldAlwaysRemeasure");
-    assertThat(shouldRemeasureMethod.methodParams).hasSize(1);
-
-    assertThat(mMountSpecModel.getProps()).hasSize(9);
-    assertThat(mMountSpecModel.getStateValues()).hasSize(4);
-    assertThat(mMountSpecModel.getInterStageInputs()).hasSize(1);
-    assertThat(mMountSpecModel.getTreeProps()).hasSize(1);
-
-    assertThat(mMountSpecModel.isPublic()).isFalse();
-    assertThat(mMountSpecModel.isPureRender()).isTrue();
-
-    assertThat(mMountSpecModel.hasInjectedDependencies()).isTrue();
-    assertThat(mMountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
-
-    assertThat(mMountSpecModel.getTriggerMethods()).hasSize(1);
-    SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel =
-        mMountSpecModel.getTriggerMethods().get(0);
-    assertThat(triggerMethodModel.name).isEqualToIgnoringCase("testTrigger");
-    assertThat(triggerMethodModel.methodParams).hasSize(2);
+    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateGenericSpecInfo(
+        mMountSpecModel, mDependencyInjectionHelper);
   }
 
   @Test
-  public void testOnAttached() {
-    final SpecMethodModel<DelegateMethod, Void> onAttached =
-        mMountSpecModel.getDelegateMethods().get(6);
-    assertThat(onAttached.name).isEqualToIgnoringCase("onAttached");
-    assertThat(onAttached.methodParams).hasSize(3);
+  public void mountSpec_initModel_populateOnAttachInfo() {
+    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnAttachInfo(mMountSpecModel);
   }
 
   @Test
-  public void testOnDetached() {
-    final SpecMethodModel<DelegateMethod, Void> onDetached =
-        mMountSpecModel.getDelegateMethods().get(7);
-    assertThat(onDetached.name).isEqualToIgnoringCase("onDetached");
-    assertThat(onDetached.methodParams).hasSize(3);
+  public void mountSpec_initModel_populateOnDetachInfo() {
+    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnDetachInfo(mMountSpecModel);
   }
 }
