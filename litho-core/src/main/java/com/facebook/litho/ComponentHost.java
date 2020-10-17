@@ -1428,8 +1428,10 @@ public class ComponentHost extends Host {
 
   @Override
   public boolean hasOverlappingRendering() {
-    if (ComponentsConfiguration.hostHasOverlappingRendering) {
-      return true;
+    if (!ComponentsConfiguration.hostHasOverlappingRendering) {
+      // hostHasOverlappingRendering defaults to true. If it's false, then it
+      // means hasOverlappingRendering should always be false.
+      return false;
     } else if (getWidth() == 0 || getHeight() == 0) {
       return ComponentsConfiguration.overlappingRenderingForZeroSizedViews;
     } else if (getWidth() > ComponentsConfiguration.overlappingRenderingViewSizeLimit
