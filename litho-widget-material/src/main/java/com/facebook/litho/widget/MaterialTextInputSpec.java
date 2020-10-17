@@ -100,6 +100,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int minLines = TextInputSpec.minLines;
   @PropDefault protected static final int maxLines = TextInputSpec.maxLines;
   @PropDefault protected static final MovementMethod movementMethod = TextInputSpec.movementMethod;
+  @PropDefault protected static final int boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_NONE;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -150,6 +151,12 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @Prop(optional = true) boolean counterEnabled,
       @Prop(optional = true) int counterMaxLength,
+      @Prop(optional = true) @TextInputLayout.BoxBackgroundMode int boxBackgroundMode,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int boxStrokeWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextStartPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextTopPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextEndPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
         TextInputSpec.createAndMeasureEditText(
@@ -185,7 +192,18 @@ class MaterialTextInputSpec {
             savedText.get());
     MountableTextInputLayout textInputLayout = new MountableTextInputLayout(c.getAndroidContext());
     setParams(
-        editText, textInputLayout, hint, hintColorStateList, counterEnabled, counterMaxLength);
+        editText,
+        textInputLayout,
+        hint,
+        hintColorStateList,
+        counterEnabled,
+        counterMaxLength,
+        boxBackgroundMode,
+        boxStrokeWidth,
+        editTextStartPadding,
+        editTextTopPadding,
+        editTextEndPadding,
+        editTextBottomPadding);
 
     textInputLayout.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
@@ -300,6 +318,12 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @Prop(optional = true) boolean counterEnabled,
       @Prop(optional = true) int counterMaxLength,
+      @Prop(optional = true) int boxBackgroundMode,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int boxStrokeWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextStartPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextTopPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextEndPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c.getAndroidContext());
@@ -337,7 +361,18 @@ class MaterialTextInputSpec {
         error,
         errorDrawable);
     setParams(
-        editText, textInputLayout, hint, hintColorStateList, counterEnabled, counterMaxLength);
+        editText,
+        textInputLayout,
+        hint,
+        hintColorStateList,
+        counterEnabled,
+        counterMaxLength,
+        boxBackgroundMode,
+        boxStrokeWidth,
+        editTextStartPadding,
+        editTextTopPadding,
+        editTextEndPadding,
+        editTextBottomPadding);
     editText.setTextState(savedText);
   }
 
@@ -347,11 +382,24 @@ class MaterialTextInputSpec {
       CharSequence hint,
       ColorStateList hintColorStateList,
       boolean counterEnabled,
-      int counterMaxLength) {
+      int counterMaxLength,
+      int boxBackgroundMode,
+      int boxStrokeWidth,
+      int editTextStartPadding,
+      int editTextTopPadding,
+      int editTextEndPadding,
+      int editTextBottomPadding) {
     textInputLayout.setHint(hint);
     textInputLayout.setCounterEnabled(counterEnabled);
     textInputLayout.setCounterMaxLength(counterMaxLength);
     textInputLayout.setDefaultHintTextColor(hintColorStateList);
+    // Set box background mode and stroke width in order and edit text padding to fix pre-float
+    // vertical center issue
+    textInputLayout.setBoxBackgroundMode(boxBackgroundMode);
+    textInputLayout.setBoxStrokeWidth(boxStrokeWidth);
+    editText.setPaddingRelative(
+        editTextStartPadding, editTextTopPadding, editTextEndPadding, editTextBottomPadding);
+
     textInputLayout.addView(editText);
   }
 
