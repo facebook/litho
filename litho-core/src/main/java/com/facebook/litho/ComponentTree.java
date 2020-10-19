@@ -827,7 +827,7 @@ public class ComponentTree {
         recordRenderData(layoutState);
       }
     } catch (Exception e) {
-      ComponentUtils.wrapWithMetadataAndThrow(this, e);
+      throw ComponentUtils.wrapWithMetadata(this, e);
     } finally {
       mIsMounting = false;
       mRootHeightAnimation = null;

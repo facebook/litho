@@ -512,9 +512,9 @@ public class ComponentUtils {
     try {
       dispatchErrorEvent(c, exception);
     } catch (ReThrownException re) {
-      wrapWithMetadataAndThrow(c, exception);
+      throw wrapWithMetadata(c, exception);
     } catch (Exception e) {
-      wrapWithMetadataAndThrow(c, e);
+      throw wrapWithMetadata(c, e);
     }
   }
 
@@ -531,23 +531,23 @@ public class ComponentUtils {
 
   /**
    * Uses the given ComponentContext to add metadata to a wrapper exception (if the wrapper doesn't
-   * already exist) and rethrows.
+   * already exist) and return it.
    */
-  public static void wrapWithMetadataAndThrow(ComponentContext c, Exception e) {
+  public static LithoMetadataExceptionWrapper wrapWithMetadata(ComponentContext c, Exception e) {
     if (e instanceof LithoMetadataExceptionWrapper) {
-      throw (LithoMetadataExceptionWrapper) e;
+      return (LithoMetadataExceptionWrapper) e;
     }
-    throw new LithoMetadataExceptionWrapper(c, e);
+    return new LithoMetadataExceptionWrapper(c, e);
   }
 
   /**
    * Uses the given ComponentTree to add metadata to a wrapper exception (if the wrapper doesn't
-   * already exist) and rethrows.
+   * already exist) and return it.
    */
-  public static void wrapWithMetadataAndThrow(ComponentTree c, Exception e) {
+  public static LithoMetadataExceptionWrapper wrapWithMetadata(ComponentTree c, Exception e) {
     if (e instanceof LithoMetadataExceptionWrapper) {
-      throw (LithoMetadataExceptionWrapper) e;
+      return (LithoMetadataExceptionWrapper) e;
     }
-    throw new LithoMetadataExceptionWrapper(c, e);
+    return new LithoMetadataExceptionWrapper(c, e);
   }
 }

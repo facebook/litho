@@ -43,7 +43,7 @@ public abstract class InlineLayoutSpec extends Component {
   }
 
   @Override
-  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+  public Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     // no-op
     return null;
   }

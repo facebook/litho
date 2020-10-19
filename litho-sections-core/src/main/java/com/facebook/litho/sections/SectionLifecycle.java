@@ -19,6 +19,8 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.sections.SectionContext.NO_SCOPE_EVENT_HANDLER;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
@@ -83,7 +85,19 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   @Nullable
   @Override
-  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+  public final Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    try {
+      return dispatchOnEventImpl(eventHandler, eventState);
+    } catch (Exception e) {
+      if (eventHandler.params != null && eventHandler.params[0] instanceof ComponentContext) {
+        throw ComponentUtils.wrapWithMetadata((ComponentContext) eventHandler.params[0], e);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
     return null;
   }

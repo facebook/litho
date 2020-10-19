@@ -62,7 +62,7 @@ public class EventGenerator {
             .addTypeSpecDataHolder(generateEventHandlerFactories(specModel));
 
     if (!specModel.getEventMethods().isEmpty()) {
-      builder.addMethod(generateDispatchOnEvent(specModel));
+      builder.addMethod(generateDispatchOnEventImpl(specModel));
     }
 
     return builder.build();
@@ -275,10 +275,10 @@ public class EventGenerator {
   }
 
   /** Generate a dispatchOnEvent() implementation for the component. */
-  static MethodSpec generateDispatchOnEvent(SpecModel specModel) {
+  static MethodSpec generateDispatchOnEventImpl(SpecModel specModel) {
     final MethodSpec.Builder methodBuilder =
-        MethodSpec.methodBuilder("dispatchOnEvent")
-            .addModifiers(Modifier.PUBLIC)
+        MethodSpec.methodBuilder("dispatchOnEventImpl")
+            .addModifiers(Modifier.PROTECTED)
             .addAnnotation(Override.class)
             .returns(TypeName.OBJECT)
             .addParameter(

@@ -168,10 +168,10 @@ public class EventGeneratorTest {
 
   @Test
   public void testGenerateDispatchOnEvent() {
-    assertThat(EventGenerator.generateDispatchOnEvent(mSpecModel).toString())
+    assertThat(EventGenerator.generateDispatchOnEventImpl(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public java.lang.Object dispatchOnEvent(final com.facebook.litho.EventHandler eventHandler,\n"
+                + "protected java.lang.Object dispatchOnEventImpl(final com.facebook.litho.EventHandler eventHandler,\n"
                 + "    final java.lang.Object eventState) {\n"
                 + "  int id = eventHandler.id;\n"
                 + "  switch (id) {\n"

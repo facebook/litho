@@ -124,9 +124,26 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @Override
-  public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+  public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    // We don't want to wrap and throw error events
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
+      return dispatchOnEventImpl(eventHandler, eventState);
+    }
+
+    try {
+      return dispatchOnEventImpl(eventHandler, eventState);
+    } catch (Exception e) {
+      if (eventHandler.params != null && eventHandler.params[0] instanceof ComponentContext) {
+        throw ComponentUtils.wrapWithMetadata((ComponentContext) eventHandler.params[0], e);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
+    if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+      getErrorHandler().dispatchEvent((ErrorEvent) eventState);
     }
 
     // Don't do anything by default, unless we're handling an error.

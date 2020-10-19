@@ -16,15 +16,18 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.TouchExpansionDelegateTest.emulateClickEvent;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
+import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
 import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.OnClickCallbackComponent;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
@@ -151,5 +154,37 @@ public class LithoMetadataExceptionWrapperTest {
         .measure()
         .layout()
         .attachToWindow();
+  }
+
+  @Test
+  public void onClickEvent_withLogTag_showsLogTagInStack() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("log_tag: myLogTag");
+
+    final ComponentContext c =
+        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+    final Component component =
+        Column.create(c)
+            .child(
+                OnClickCallbackComponent.create(c)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(
+                        new View.OnClickListener() {
+                          @Override
+                          public void onClick(View v) {
+                            throw new RuntimeException("Expected test exception");
+                          }
+                        }))
+            .build();
+
+    mLithoViewRule
+        .useComponentTree(ComponentTree.create(c).build())
+        .setRoot(component)
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
   }
 }

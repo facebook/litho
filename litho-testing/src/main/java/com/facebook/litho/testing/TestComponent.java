@@ -174,7 +174,7 @@ public abstract class TestComponent extends Component {
   }
 
   @Override
-  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+  public Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     mDispatchedEventHandlers.put(eventHandler, eventState);
     return null;
   }
