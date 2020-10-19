@@ -95,10 +95,6 @@ public class ComponentContext {
     this(context, null, null, null);
   }
 
-  public ComponentContext(Context context, LayoutStateContext layoutStateContext) {
-    this(context, null, null, null);
-  }
-
   public ComponentContext(Context context, StateHandler stateHandler) {
     this(context, null, null, stateHandler, null);
   }
