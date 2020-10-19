@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
-import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -235,8 +234,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
         final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
-          final LayoutOutput layoutOutput = (LayoutOutput) group.getAt(j);
-          final int position = input.getPositionForId(layoutOutput.getId());
+          final int position = input.getPositionForId(group.getAt(j).getId());
           updateAnimationLockCount(input, position, true);
         }
       }
@@ -366,17 +364,19 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         }
       }
 
-      final OutputUnitsAffinityGroup<AnimatableItem> layoutOutputGroup =
-          mLastTransitionsExtensionInput.getAnimatableItemForTransitionId(transitionId);
-      if (layoutOutputGroup == null) {
+      final OutputUnitsAffinityGroup<AnimatableItem> animatableItemGroup =
+          mLastTransitionsExtensionInput != null
+              ? mLastTransitionsExtensionInput.getAnimatableItemForTransitionId(transitionId)
+              : null;
+      if (animatableItemGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
         // was removed from the component.
         return;
       }
 
-      for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-        final LayoutOutput layoutOutput = (LayoutOutput) layoutOutputGroup.getAt(i);
-        final int position = layoutOutput.getIndex();
+      for (int i = 0, size = animatableItemGroup.size(); i < size; i++) {
+        final int position =
+            mLastTransitionsExtensionInput.getPositionForId(animatableItemGroup.getAt(i).getId());
         updateAnimationLockCount(mLastTransitionsExtensionInput, position, false);
       }
     }
@@ -392,9 +392,11 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       return false;
     }
 
-    final LayoutOutput layoutOutput =
-        getLayoutOutput(mLastTransitionsExtensionInput.getMountableOutputAt(index));
-    final TransitionId transitionId = layoutOutput.getTransitionId();
+    final AnimatableItem animatableItem =
+        mLastTransitionsExtensionInput.getAnimatableItem(
+            mLastTransitionsExtensionInput.getMountableOutputAt(index).getRenderUnit().getId());
+
+    final TransitionId transitionId = animatableItem.getTransitionId();
     if (transitionId == null) {
       return false;
     }
@@ -604,16 +606,18 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       if (mountItem == null) {
         continue;
       }
-      final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-      if (layoutOutput.getTransitionId() == null) {
+      final AnimatableItem animatableItem =
+          mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit().getId());
+
+      if (animatableItem.getTransitionId() == null) {
         continue;
       }
-      final @OutputUnitType int type =
-          LayoutStateOutputIdCalculator.getTypeFromId(layoutOutput.getId());
-      OutputUnitsAffinityGroup<Object> group = animatingContent.get(layoutOutput.getTransitionId());
+      final @OutputUnitType int type = animatableItem.getOutputType();
+      OutputUnitsAffinityGroup<Object> group =
+          animatingContent.get(animatableItem.getTransitionId());
       if (group == null) {
         group = new OutputUnitsAffinityGroup<>();
-        animatingContent.put(layoutOutput.getTransitionId(), group);
+        animatingContent.put(animatableItem.getTransitionId(), group);
       }
       group.replace(type, mountItem.getContent());
     }
@@ -689,21 +693,22 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
 
     // Update parents
-    long hostId = getLayoutOutput(input.getMountableOutputAt(index)).getHostMarker();
-
-    while (hostId != ROOT_HOST_ID) {
-      final int hostIndex = input.getPositionForId(hostId);
-      final RenderTreeNode renderTreeNode = input.getMountableOutputAt(hostIndex);
+    RenderTreeNode parentRenderTreeNode = input.getMountableOutputAt(index).getParent();
+    while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
       if (increment) {
-        if (!ownsReference(renderTreeNode)) {
-          acquireMountReference(renderTreeNode, hostIndex, false);
+        // We use the position as 0 as we are not mounting it, just acquiring reference.
+        if (!ownsReference(parentRenderTreeNode)) {
+          acquireMountReference(parentRenderTreeNode, 0, false);
+        }
+        if (!ownsReference(parentRenderTreeNode)) {
+          acquireMountReference(parentRenderTreeNode, 0, false);
         }
       } else {
-        if (ownsReference(renderTreeNode)) {
-          releaseMountReference(renderTreeNode, hostIndex, false);
+        if (ownsReference(parentRenderTreeNode)) {
+          releaseMountReference(parentRenderTreeNode, 0, false);
         }
       }
-      hostId = getLayoutOutput(input.getMountableOutputAt(hostIndex)).getHostMarker();
+      parentRenderTreeNode = parentRenderTreeNode.getParent();
     }
   }
 

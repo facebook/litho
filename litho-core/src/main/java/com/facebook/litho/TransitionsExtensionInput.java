@@ -27,6 +27,7 @@ import java.util.Map;
  * information.
  */
 public interface TransitionsExtensionInput extends MountDelegateInput {
+  // TODO: remove dependency to MountDelegateInput
   int getMountableOutputCount();
 
   RenderTreeNode getMountableOutputAt(int index);
