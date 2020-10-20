@@ -133,7 +133,7 @@ public class MountState implements MountDelegateTarget {
     for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
 
-      final boolean isMountable = isMountable(renderTreeNode);
+      final boolean isMountable = isMountable(renderTreeNode, i);
       if (!isMountable) {
         continue;
       }
@@ -326,8 +326,8 @@ public class MountState implements MountDelegateTarget {
     return mRenderTree;
   }
 
-  private boolean isMountable(RenderTreeNode renderTreeNode) {
-    return mMountDelegate == null ? true : mMountDelegate.isLockedForMount(renderTreeNode);
+  private boolean isMountable(RenderTreeNode renderTreeNode, int index) {
+    return mMountDelegate == null || mMountDelegate.maybeLockForMount(renderTreeNode, index);
   }
 
   private static void updateBoundsForMountedRenderTreeNode(

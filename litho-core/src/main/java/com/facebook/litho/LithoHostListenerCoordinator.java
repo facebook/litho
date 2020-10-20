@@ -99,7 +99,10 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
           "Incremental mount has already been enabled on this coordinator.");
     }
 
-    mIncrementalMountExtension = new IncrementalMountExtension();
+    mIncrementalMountExtension =
+        new IncrementalMountExtension(
+            mountDelegateTarget instanceof com.facebook.rendercore.MountState);
+
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
     addAttachDetachExtension(mIncrementalMountExtension.getAttachDetachBinder());
