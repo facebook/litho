@@ -91,6 +91,23 @@ module.exports = {
       'event-handler-testing',
       'espresso-testing',
       'tests-in-android-studio',
+      {
+        'Internal' : [
+          'fb/testing',
+          'fb/testing-end-to-end-testing',
+          'fb/testing-unit-testing',
+          'fb/testing-litho-benchmark-tests',
+          {
+            'MobileLab Benchmark Tests' : [
+              'fb/testing-mobilelab-benchmark-tests',
+              'fb/testing-mobilelab-benchmark-tests-getting-started',
+              'fb/testing-mobilelab-benchmark-tests-memory-benchmarks',
+              'fb/testing-mobilelab-benchmark-tests-integrate-into-mobilelab',
+              'fb/testing-mobilelab-benchmark-tests-profiling-benchmarks',
+            ]
+          },
+        ]
+      },
     ],
     'Advanced Guides': [
       'architecture-overview',
