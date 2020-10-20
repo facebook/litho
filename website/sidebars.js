@@ -155,6 +155,12 @@ module.exports = {
             'fb/architecture-litho-tricks',
           ]
         },
+        {
+          'Error Handling' : [
+            'fb/error-handling',
+            'fb/error-handling-setting-a-default-error-event-handler',
+          ]
+        },
       ]}),
   },
 };
