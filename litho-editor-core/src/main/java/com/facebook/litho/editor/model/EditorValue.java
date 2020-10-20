@@ -174,7 +174,7 @@ public abstract class EditorValue {
 
           @Override
           public Boolean isPick(EditorPick pick) {
-            return isString(new EditorString(pick.selected));
+            return visitor.isPick(path.toArray(new String[] {}), pick);
           }
 
           @Override
