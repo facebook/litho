@@ -37,17 +37,17 @@
       <li>Regenerate Component action in Editor menu</li>
     </ul>
     <h2>Change Notes</h2>
-    <h3>1.5.10</h3>
+    <h3>1.5.11</h3>
       <ul>
-        <li>New: Improve OnEvent completion.</li>
+        <li>New: Improved MountSpec completion.</li>
       </ul>
     <h3>Older Versions</h3>
     <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
   ]]>
   </description>
-  <version>1.5.11-SNAPSHOT</version>
+  <version>1.5.11</version>
   <change-notes>
-    <![CDATA[<h3>1.5.10</h3>]]>
+    <![CDATA[<h3>1.5.11</h3>]]>
   </change-notes>
   <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
         Facebook,Inc.

@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Version 1.5.11
+
+_2020-10-20_
+
+* New: `MountSpec` method completion.
+* New: Highlight `Param` as `MountSpec` method parameter.
+
 ## Version 1.5.10
 
 _2020-10-05_
