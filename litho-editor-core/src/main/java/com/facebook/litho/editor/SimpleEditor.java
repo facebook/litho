@@ -28,6 +28,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 public final class SimpleEditor {
@@ -93,36 +94,39 @@ public final class SimpleEditor {
           final SimpleEditorValue newValue =
               SimpleEditorValue.fromEditorValueOrNull(updatedProperty.getValue());
           final SimpleEditorValue oldValue = properties.get(updatedProperty.getKey());
-          if (newValue != null && oldValue != null && newValue.type == oldValue.type) {
-            newValue.value.whenPrimitive(
-                new EditorValue.EditorPrimitiveVisitor() {
-                  @Override
-                  public boolean isNumber(String[] path, EditorNumber number) {
-                    propertyEditor.writeNumberProperty(
-                        value, updatedProperty.getKey(), number.value);
-                    return true;
-                  }
+          if (newValue != null && oldValue != null) {
+            final SimpleEditorValue updatedValue = maybePickFromString(oldValue, newValue);
+            if (updatedValue.type == oldValue.type) {
+              updatedValue.value.whenPrimitive(
+                  new EditorValue.EditorPrimitiveVisitor() {
+                    @Override
+                    public boolean isNumber(String[] path, EditorNumber number) {
+                      propertyEditor.writeNumberProperty(
+                          value, updatedProperty.getKey(), number.value);
+                      return true;
+                    }
 
-                  @Override
-                  public boolean isString(String[] path, EditorString string) {
-                    propertyEditor.writeStringProperty(
-                        value, updatedProperty.getKey(), string.value);
-                    return false;
-                  }
+                    @Override
+                    public boolean isString(String[] path, EditorString string) {
+                      propertyEditor.writeStringProperty(
+                          value, updatedProperty.getKey(), string.value);
+                      return false;
+                    }
 
-                  @Override
-                  public boolean isBool(String[] path, EditorBool bool) {
-                    propertyEditor.writeBoolProperty(value, updatedProperty.getKey(), bool.value);
-                    return false;
-                  }
+                    @Override
+                    public boolean isBool(String[] path, EditorBool bool) {
+                      propertyEditor.writeBoolProperty(value, updatedProperty.getKey(), bool.value);
+                      return false;
+                    }
 
-                  @Override
-                  public boolean isPick(String[] path, EditorPick pick) {
-                    propertyEditor.writePickProperty(
-                        value, updatedProperty.getKey(), pick.selected);
-                    return false;
-                  }
-                });
+                    @Override
+                    public boolean isPick(String[] path, EditorPick pick) {
+                      propertyEditor.writePickProperty(
+                          value, updatedProperty.getKey(), pick.selected);
+                      return false;
+                    }
+                  });
+            }
           }
         }
         return null;
@@ -161,14 +165,17 @@ public final class SimpleEditor {
               SimpleEditorValue.fromEditorValueOrNull(updatedProperty.getValue());
           final String propertyKey = updatedProperty.getKey();
           final SimpleEditorValue oldValue = properties.get(propertyKey);
-          if (newValue != null && oldValue != null && newValue.type == oldValue.type) {
-            newValue.value.whenPrimitive(
-                classifyValue(
-                    propertyKey,
-                    stringProperties,
-                    numberProperties,
-                    boolProperties,
-                    pickProperties));
+          if (newValue != null && oldValue != null) {
+            final SimpleEditorValue updatedValue = maybePickFromString(oldValue, newValue);
+            if (updatedValue.type == oldValue.type) {
+              updatedValue.value.whenPrimitive(
+                  classifyValue(
+                      propertyKey,
+                      stringProperties,
+                      numberProperties,
+                      boolProperties,
+                      pickProperties));
+            }
           }
         }
         final T newValue =
@@ -178,6 +185,31 @@ public final class SimpleEditor {
         return null;
       }
     };
+  }
+
+  // As Flipper doesn't have typed messages, selected Pick values are returned as String
+  // and we have to apply the value to the old Pick
+  private static SimpleEditorValue maybePickFromString(
+      SimpleEditorValue oldValue, final SimpleEditorValue newValue) {
+    if (oldValue.type != PRIMITIVE_TYPE_PICK || newValue.type != PRIMITIVE_TYPE_STRING) {
+      return newValue;
+    }
+    final AtomicReference<SimpleEditorValue> ref = new AtomicReference<>(newValue);
+    oldValue.value.when(
+        new EditorValue.DefaultEditorVisitor() {
+          @Override
+          public Void isPick(final EditorPick pick) {
+            return newValue.value.when(
+                new EditorValue.DefaultEditorVisitor() {
+                  @Override
+                  public Void isString(EditorString string) {
+                    ref.set(SimpleEditorValue.pick(pick.values, string.value));
+                    return null;
+                  }
+                });
+          }
+        });
+    return ref.get();
   }
 
   private static EditorValue.EditorPrimitiveVisitor classifyValue(
