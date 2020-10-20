@@ -88,10 +88,10 @@ public class TriggerGeneratorTest {
 
   @Test
   public void testGenerateAcceptTriggerEvent() {
-    assertThat(TriggerGenerator.generateAcceptTriggerEvent(mSpecModel).toString())
+    assertThat(TriggerGenerator.generateAcceptTriggerEventImpl(mSpecModel).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public java.lang.Object acceptTriggerEvent(final com.facebook.litho.EventTrigger eventTrigger,\n"
+                + "protected java.lang.Object acceptTriggerEventImpl(final com.facebook.litho.EventTrigger eventTrigger,\n"
                 + "    final java.lang.Object eventState, final java.lang.Object[] params) {\n"
                 + "  int id = eventTrigger.mId;\n"
                 + "  switch(id) {\n"

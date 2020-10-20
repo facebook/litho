@@ -31,6 +31,8 @@ import com.facebook.litho.widget.OnClickCallbackComponent;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
+import com.facebook.litho.widget.TriggerCallbackComponent;
+import com.facebook.litho.widget.TriggerCallbackComponentSpec;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -186,5 +188,39 @@ public class LithoMetadataExceptionWrapperTest {
         .layout();
 
     emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
+  }
+
+  @Test
+  public void onTrigger_withLogTag_showsLogTagInStack() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("log_tag: myLogTag");
+
+    final ComponentContext c =
+        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+    final Handle handle = new Handle();
+    final Component component =
+        Column.create(c)
+            .child(
+                TriggerCallbackComponent.create(c)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .handle(handle)
+                    .callback(
+                        new TriggerCallbackComponentSpec.TriggerListener() {
+                          @Override
+                          public void onTriggerCalled() {
+                            throw new RuntimeException("Expected test exception");
+                          }
+                        }))
+            .build();
+
+    mLithoViewRule
+        .useComponentTree(ComponentTree.create(c).build())
+        .setRoot(component)
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    TriggerCallbackComponent.doTrigger(mLithoViewRule.getComponentTree().getContext(), handle);
   }
 }

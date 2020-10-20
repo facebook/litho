@@ -58,7 +58,7 @@ public class TriggerGenerator {
             .addTypeSpecDataHolder(generateStaticTriggerMethods(specModel));
 
     if (!specModel.getTriggerMethods().isEmpty()) {
-      builder.addMethod(generateAcceptTriggerEvent(specModel));
+      builder.addMethod(generateAcceptTriggerEventImpl(specModel));
       builder.addMethod(generateRecordTriggers(specModel));
     }
 
@@ -66,10 +66,10 @@ public class TriggerGenerator {
   }
 
   /** Generate acceptTriggerEvent() implementation for the component. */
-  static MethodSpec generateAcceptTriggerEvent(SpecModel specModel) {
+  static MethodSpec generateAcceptTriggerEventImpl(SpecModel specModel) {
     final MethodSpec.Builder methodBuilder =
-        MethodSpec.methodBuilder("acceptTriggerEvent")
-            .addModifiers(Modifier.PUBLIC)
+        MethodSpec.methodBuilder("acceptTriggerEventImpl")
+            .addModifiers(Modifier.PROTECTED)
             .addAnnotation(Override.class)
             .returns(TypeName.OBJECT)
             .addParameter(

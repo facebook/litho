@@ -103,7 +103,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   @Nullable
-  public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
+  public final Object acceptTriggerEvent(
+      EventTrigger eventTrigger, Object eventState, Object[] params) {
+    try {
+      return acceptTriggerEventImpl(eventTrigger, eventState, params);
+    } catch (Exception e) {
+      if (eventTrigger.mComponentContext != null) {
+        throw ComponentUtils.wrapWithMetadata(eventTrigger.mComponentContext, e);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  protected @Nullable Object acceptTriggerEventImpl(
+      EventTrigger eventTrigger, Object eventState, Object[] params) {
     // Do nothing by default
     return null;
   }
