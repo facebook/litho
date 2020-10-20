@@ -276,4 +276,7 @@ public class ComponentsConfiguration {
   public static int partialAlphaWarningSizeThresold = Integer.MAX_VALUE;
 
   public static @Nullable Set<String> componentPreallocationBlocklist = null;
+
+  /** When {@code true} ComponentTree records state change snapshots */
+  public static boolean isTimelineEnabled = isDebugModeEnabled;
 }

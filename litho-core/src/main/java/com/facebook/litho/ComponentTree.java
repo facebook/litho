@@ -111,6 +111,8 @@ public class ComponentTree {
   private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
 
+  private @Nullable DebugComponentTimeMachine.TreeRevisions mTimeline;
+
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
@@ -1150,6 +1152,70 @@ public class ComponentTree {
   }
 
   /**
+   * Similar to setRoot. This method allows setting a new root with cached TreeProps and
+   * StateHandler. It is used to enable time-traveling through external editors such as Flipper
+   *
+   * @param root component to set the newState for
+   * @param props the props of the tree
+   * @param newState the cached state
+   * @see DebugComponentTimeMachine
+   * @see ComponentTree#getTimeline()
+   */
+  @UiThread
+  synchronized void resetState(Component root, TreeProps props, StateHandler newState) {
+    ThreadUtils.assertMainThread();
+    mStateHandler = newState;
+    mRootTreeProps = props;
+
+    setRootAndSizeSpecInternal(
+        root,
+        SIZE_UNINITIALIZED,
+        SIZE_UNINITIALIZED,
+        false /* isAsync */,
+        null /* output */,
+        CalculateLayoutSource.RELOAD_PREVIOUS_STATE,
+        -1,
+        null,
+        null,
+        false,
+        true);
+  }
+
+  /**
+   * The business logic for this method resides in DebugComponentTimeMachine. ComponentTree only
+   * stores its own timeline
+   *
+   * @see DebugComponentTimeMachine
+   */
+  @Nullable
+  DebugComponentTimeMachine.TreeRevisions getTimeline() {
+    return mTimeline != null ? mTimeline.shallowCopy() : null;
+  }
+
+  /**
+   * The business logic for this method resides in DebugComponentTimeMachine. ComponentTree only
+   * stores its own timeline
+   *
+   * @see DebugComponentTimeMachine
+   */
+  @GuardedBy("this")
+  void appendTimeline(
+      Component root,
+      StateHandler stateHandler,
+      TreeProps props,
+      @LayoutState.CalculateLayoutSource int source,
+      @Nullable String attribution) {
+    assertHoldsLock(this);
+    if (mTimeline == null) {
+      mTimeline =
+          new DebugComponentTimeMachine.TreeRevisions(
+              root, stateHandler, props, source, attribution);
+    } else {
+      mTimeline.setLatest(root, stateHandler, props, source, attribution);
+    }
+  }
+
+  /**
    * Pre-allocate the mount content of all MountSpec in this tree. Must be called after layout is
    * created.
    */
@@ -2084,8 +2150,13 @@ public class ComponentTree {
       final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
         if (layoutStateStateHandler != null) {
-          if (mStateHandler != null) { // we could have been released
-            mStateHandler.commit(layoutStateStateHandler);
+          final StateHandler stateHandler = mStateHandler;
+          if (stateHandler != null) { // we could have been released
+            if (ComponentsConfiguration.isTimelineEnabled) {
+              DebugComponentTimeMachine.saveTimelineSnapshot(
+                  this, root, stateHandler, treeProps, source, extraAttribution);
+            }
+            stateHandler.commit(layoutStateStateHandler);
           }
         }
 
@@ -2688,6 +2759,7 @@ public class ComponentTree {
         case CalculateLayoutSource.SET_ROOT_SYNC:
         case CalculateLayoutSource.UPDATE_STATE_SYNC:
         case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+        case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
           return true;
         default:
           return false;
