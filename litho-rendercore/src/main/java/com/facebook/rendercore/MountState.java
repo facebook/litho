@@ -354,7 +354,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     // If the extensions have changed, un-register the current and register the new extensions.
-    if (mRenderTree == null) {
+    if (mRenderTree == null || mNeedsRemount) {
       addExtensions(renderTree.getExtensionResults());
     } else if (shouldUpdate(mRenderTree.getExtensionResults(), renderTree.getExtensionResults())) {
       unregisterAllExtensions();
@@ -627,7 +627,10 @@ public class MountState implements MountDelegateTarget {
     if (mMountDelegate != null) {
       mMountDelegate.unBind();
       mMountDelegate.unMount();
-      mMountDelegate.unregisterAllExtensions();
+
+      if (mRenderTree != null && mRenderTree.getExtensionResults() != null) {
+        mMountDelegate.unregisterAllExtensions();
+      }
     }
   }
 

@@ -44,6 +44,10 @@ public class MountExtension<Input> {
     mMountDelegate = mountDelegate;
   }
 
+  public void unregisterFromDelegate() {
+    mMountDelegate = null;
+  }
+
   public void resetAcquiredReferences() {
     mLayoutOutputMountRefs = new HashSet<>();
   }
@@ -106,7 +110,7 @@ public class MountExtension<Input> {
     return ownsReference(renderTreeNode.getRenderUnit().getId());
   }
 
-  protected boolean ownsReference(long id) {
+  public boolean ownsReference(long id) {
     return mLayoutOutputMountRefs.contains(id);
   }
 

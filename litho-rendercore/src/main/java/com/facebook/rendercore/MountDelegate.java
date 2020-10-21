@@ -45,6 +45,11 @@ public class MountDelegate {
 
   void unregisterAllExtensions() {
     resetExtensionReferenceCount();
+
+    for (MountExtension mountExtension : mMountExtensions) {
+      mountExtension.unregisterFromDelegate();
+    }
+
     mMountExtensions.clear();
     mReferenceCountingEnabled = false;
   }

@@ -69,7 +69,7 @@ public class TestMountExtension extends MountExtension {
   }
 
   @Override
-  protected boolean ownsReference(long id) {
+  public boolean ownsReference(long id) {
     return super.ownsReference(id);
   }
 
