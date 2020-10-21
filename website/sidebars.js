@@ -156,6 +156,13 @@ module.exports = {
           ]
         },
         {
+          'Analysing Performance' : [
+            'fb/analysing-performance-qpl',
+            'fb/analysing-performance-spotting-performance-issues',
+            'fb/analysing-performance-ttrc',
+          ]
+        },
+        {
           'Error Handling' : [
             'fb/error-handling',
             'fb/error-handling-setting-a-default-error-event-handler',
