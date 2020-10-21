@@ -168,6 +168,13 @@ module.exports = {
             'fb/error-handling-setting-a-default-error-event-handler',
           ]
         },
+        {
+          'Open Source' : [
+            'fb/open-source',
+            'fb/open-source-using-the-open-source-repo',
+            'fb/open-source-releasing-litho',
+          ]
+        },
       ]}),
   },
 };
