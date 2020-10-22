@@ -37,7 +37,9 @@ import com.facebook.flipper.plugins.inspector.descriptors.ObjectDescriptor;
 import com.facebook.flipper.plugins.inspector.descriptors.utils.ContextDescriptorUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.DebugComponent;
+import com.facebook.litho.DebugComponentTimeMachine;
 import com.facebook.litho.DebugLayoutNode;
+import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateContainer;
 import com.facebook.yoga.YogaAlign;
@@ -50,6 +52,7 @@ import com.facebook.yoga.YogaValue;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -190,7 +193,91 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         new Named<>(
             "Theme", ContextDescriptorUtils.themeData(node.getContext().getAndroidContext())));
 
+    final DebugComponentTimeMachine.TreeRevisions timeline =
+        DebugComponentTimeMachine.getTimeline(node);
+    if (timeline != null) {
+      data.add(
+          new Named<>(
+              "Time Traveling",
+              new FlipperObject.Builder()
+                  .put(
+                      "Component Root",
+                      InspectorValue.immutable(InspectorValue.Type.Text, timeline.rootName))
+                  .put(
+                      "Revision",
+                      InspectorValue.mutable(
+                          InspectorValue.Type.Timeline,
+                          new InspectorValue.Timeline(
+                              makeTimeline(timeline), timeline.getSelected().getKey())))
+                  .build()));
+    }
+
     return data;
+  }
+
+  private static List<InspectorValue.Timeline.TimePoint> makeTimeline(
+      DebugComponentTimeMachine.TreeRevisions timeline) {
+    final String selectedKey = timeline.getSelected().key;
+
+    final List<InspectorValue.Timeline.TimePoint> inspectorTimeline = new ArrayList<>();
+    for (final DebugComponentTimeMachine.TreeRevision moment : timeline.revisions) {
+      final Pair<String, String> displayAndColor =
+          makeDisplayAndColor(moment.source, moment.attribution);
+      final String displayString =
+          moment.key.equals(selectedKey)
+              ? String.format(">> %s", displayAndColor.first)
+              : displayAndColor.first;
+      final String color = displayAndColor.second;
+      inspectorTimeline.add(
+          new InspectorValue.Timeline.TimePoint(
+              moment.getKey(),
+              moment.revisionMoment,
+              displayString,
+              color,
+              new HashMap<String, String>() {
+                {
+                  put("Revision number", String.valueOf(moment.revisionNumber));
+                  put(
+                      "Time created",
+                      DebugComponentTimeMachine.TreeRevision.REVISION_DATE_FORMAT.format(
+                          new Date(moment.revisionMoment)));
+                  put("Reason for update", displayAndColor.first);
+                }
+              }));
+    }
+
+    return inspectorTimeline;
+  }
+
+  // The colors are defined in Flipper on ui/components/colors.tsx
+  // RGB values compatible with CSS are also accepted
+  public static Pair<String, String> makeDisplayAndColor(
+      @LayoutState.CalculateLayoutSource int source, @Nullable String attribution) {
+    final String attrib = attribution == null ? "" : ": " + attribution;
+    switch (source) {
+      case LayoutState.CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+        return new Pair<>("Measure set size sync" + attrib, "blue");
+      case LayoutState.CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC:
+        return new Pair<>("Measure set size async" + attrib, "blue");
+      case LayoutState.CalculateLayoutSource.SET_SIZE_SPEC_ASYNC:
+        return new Pair<>("Set size async" + attrib, "blueDark");
+      case LayoutState.CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+        return new Pair<>("Set size sync" + attrib, "blueDark");
+      case LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC:
+        return new Pair<>(attribution + " async", "lemon");
+      case LayoutState.CalculateLayoutSource.UPDATE_STATE_SYNC:
+        return new Pair<>(attribution + " sync", "lemon");
+      case LayoutState.CalculateLayoutSource.NONE:
+        return new Pair<>("None" + attrib, "black");
+      case LayoutState.CalculateLayoutSource.TEST:
+        return new Pair<>("Test" + attrib, "black");
+      case LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC:
+        return new Pair<>("Set root async" + attrib, "white");
+      case LayoutState.CalculateLayoutSource.SET_ROOT_SYNC:
+        return new Pair<>("Set root sync" + attrib, "white");
+      default:
+        return new Pair<>("Unknown" + attrib, "red");
+    }
   }
 
   @Nullable
@@ -350,6 +437,20 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
   @Override
   public void setValue(
+      DebugComponent node,
+      String[] path,
+      @Nullable SetDataOperations.FlipperValueHint kind,
+      FlipperDynamic value) {
+    if (path[0].contains("Time Travel")) {
+      DebugComponentTimeMachine.loadTimelineSnapshot(node, value.asString());
+    } else {
+      // Overrides are not part of the timeline
+      DebugComponentTimeMachine.maybeSkipNextSnapshot(node);
+      setNodeOverrides(node, path, kind, value);
+    }
+  }
+
+  private void setNodeOverrides(
       DebugComponent node,
       String[] path,
       @Nullable SetDataOperations.FlipperValueHint kind,
