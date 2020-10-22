@@ -35,10 +35,10 @@ public class VisibilityOutput {
   private final float mVisibleWidthRatio;
 
   private final @Nullable Function<Void> mVisibleEventHandler;
+  private final @Nullable Function<Void> mInvisibleEventHandler;
   private final @Nullable Function<Void> mFocusedEventHandler;
   private final @Nullable Function<Void> mUnfocusedEventHandler;
   private final @Nullable Function<Void> mFullImpressionEventHandler;
-  private final @Nullable Function<Void> mInvisibleEventHandler;
   private final @Nullable Function<Void> mVisibilityChangedEventHandler;
 
   private float mFocusedRatio;
@@ -50,10 +50,10 @@ public class VisibilityOutput {
       final float visibleHeightRatio,
       final float visibleWidthRatio,
       final @Nullable Function<Void> visibleEventHandler,
+      final @Nullable Function<Void> invisibleEventHandler,
       final @Nullable Function<Void> focusedEventHandler,
       final @Nullable Function<Void> unfocusedEventHandler,
       final @Nullable Function<Void> fullImpressionEventHandler,
-      final @Nullable Function<Void> invisibleEventHandler,
       final @Nullable Function<Void> visibilityChangedEventHandler) {
     mId = id;
     mKey = key;
@@ -61,10 +61,10 @@ public class VisibilityOutput {
     mVisibleHeightRatio = visibleHeightRatio;
     mVisibleWidthRatio = visibleWidthRatio;
     mVisibleEventHandler = visibleEventHandler;
+    mInvisibleEventHandler = invisibleEventHandler;
     mFocusedEventHandler = focusedEventHandler;
     mUnfocusedEventHandler = unfocusedEventHandler;
     mFullImpressionEventHandler = fullImpressionEventHandler;
-    mInvisibleEventHandler = invisibleEventHandler;
     mVisibilityChangedEventHandler = visibilityChangedEventHandler;
   }
 
@@ -162,6 +162,10 @@ public class VisibilityOutput {
     return mVisibleEventHandler;
   }
 
+  public @Nullable Function<Void> getInvisibleEventHandler() {
+    return mInvisibleEventHandler;
+  }
+
   public @Nullable Function<Void> getFocusedEventHandler() {
     return mFocusedEventHandler;
   }
@@ -172,10 +176,6 @@ public class VisibilityOutput {
 
   public @Nullable Function<Void> getFullImpressionEventHandler() {
     return mFullImpressionEventHandler;
-  }
-
-  public @Nullable Function<Void> getInvisibleEventHandler() {
-    return mInvisibleEventHandler;
   }
 
   public @Nullable Function<Void> getVisibilityChangedEventHandler() {

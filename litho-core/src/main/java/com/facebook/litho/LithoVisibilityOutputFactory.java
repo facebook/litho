@@ -33,10 +33,10 @@ public class LithoVisibilityOutputFactory implements VisibilityOutput.Factory<In
           node.getVisibleHeightRatio(),
           node.getVisibleWidthRatio(),
           node.getVisibleHandler(),
+          node.getInvisibleHandler(),
           node.getFocusedHandler(),
           node.getUnfocusedHandler(),
           node.getFullImpressionHandler(),
-          node.getInvisibleHandler(),
           node.getVisibilityChangedHandler());
     } else {
       return null;

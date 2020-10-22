@@ -609,10 +609,10 @@ public class LayoutState
         node.getVisibleHeightRatio(),
         node.getVisibleWidthRatio(),
         visibleHandler,
+        invisibleHandler,
         focusedHandler,
         unfocusedHandler,
         fullImpressionHandler,
-        invisibleHandler,
         visibleRectChangedEventHandler);
   }
 
