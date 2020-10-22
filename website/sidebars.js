@@ -155,6 +155,9 @@ module.exports = {
             'fb/architecture-litho-tricks',
           ]
         },
+        'fb/yoga',
+        'fb/design-components',
+        'fb/dependency-injection',
         {
           'Analysing Performance' : [
             'fb/analysing-performance-qpl',
@@ -168,6 +171,7 @@ module.exports = {
             'fb/error-handling-setting-a-default-error-event-handler',
           ]
         },
+        'fb/experimentation',
         {
           'Open Source' : [
             'fb/open-source',
@@ -175,6 +179,7 @@ module.exports = {
             'fb/open-source-releasing-litho',
           ]
         },
+        'fb/sample-app',
       ]}),
   },
 };
