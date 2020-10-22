@@ -119,6 +119,6 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
   }
 
   public @Nullable Object findMountContentById(long id) {
-    return mMountState.findMountContentById(id);
+    return mMountState.getContentById(id);
   }
 }

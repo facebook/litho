@@ -52,19 +52,6 @@ public class MountState implements MountDelegateTarget {
     mRootHost = rootHost;
   }
 
-  public @Nullable Object findMountContentById(long id) {
-    if (mIndexToMountedItemMap == null) {
-      return null;
-    }
-
-    final MountItem item = mIndexToMountedItemMap.get(id);
-    if (item != null) {
-      return item.getContent();
-    }
-
-    return null;
-  }
-
   /**
    * True if we have manually unmounted content (e.g. via unmountAllItems) which means that while we
    * may not have a new RenderTree, the mounted content does not match what the viewport for the
@@ -215,7 +202,7 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public Object getContentById(long id) {
+  public @Nullable Object getContentById(long id) {
     if (mIndexToMountedItemMap == null) {
       return null;
     }
