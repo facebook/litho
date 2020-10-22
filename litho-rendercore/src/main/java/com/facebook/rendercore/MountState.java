@@ -173,6 +173,7 @@ public class MountState implements MountDelegateTarget {
           mContext, rootRenderTreeNode, rootRenderTreeNode.getRenderUnit(), item.getContent());
     }
 
+    mRenderUnitIds = null;
     mNeedsRemount = true;
   }
 
