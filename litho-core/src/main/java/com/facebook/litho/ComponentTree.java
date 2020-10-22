@@ -1155,6 +1155,7 @@ public class ComponentTree {
    * Similar to setRoot. This method allows setting a new root with cached TreeProps and
    * StateHandler. It is used to enable time-traveling through external editors such as Flipper
    *
+   * @param selectedRevision the revision of the tree we're resetting to
    * @param root component to set the newState for
    * @param props the props of the tree
    * @param newState the cached state
@@ -1162,10 +1163,15 @@ public class ComponentTree {
    * @see ComponentTree#getTimeline()
    */
   @UiThread
-  synchronized void resetState(Component root, TreeProps props, StateHandler newState) {
+  synchronized void resetState(
+      long selectedRevision, Component root, TreeProps props, StateHandler newState) {
     ThreadUtils.assertMainThread();
     mStateHandler = newState;
     mRootTreeProps = props;
+    final DebugComponentTimeMachine.TreeRevisions timeline = mTimeline;
+    if (timeline != null) {
+      timeline.setSelected(selectedRevision);
+    }
 
     setRootAndSizeSpecInternal(
         root,
@@ -1189,7 +1195,8 @@ public class ComponentTree {
    */
   @Nullable
   DebugComponentTimeMachine.TreeRevisions getTimeline() {
-    return mTimeline != null ? mTimeline.shallowCopy() : null;
+    final DebugComponentTimeMachine.TreeRevisions timeline = mTimeline;
+    return timeline != null ? timeline.shallowCopy() : null;
   }
 
   /**

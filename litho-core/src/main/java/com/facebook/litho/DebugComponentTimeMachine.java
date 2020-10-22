@@ -89,8 +89,8 @@ public final class DebugComponentTimeMachine {
     if (treeRevisions != null) {
       final TreeRevision selected = treeRevisions.findByKey(destination);
       if (selected != null) {
-        treeRevisions.setSelected(selected.revisionNumber);
-        oldTree.resetState(selected.root, selected.props, selected.handler);
+        oldTree.resetState(
+            selected.revisionNumber, selected.root, selected.props, selected.handler);
       }
       return true;
     }
