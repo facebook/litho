@@ -37,6 +37,7 @@ litho_robolectric4_test(
         LITHO_PROGUARD_ANNOTATIONS_TARGET,
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
+    use_binary_resources = False,
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

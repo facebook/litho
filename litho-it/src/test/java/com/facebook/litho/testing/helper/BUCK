@@ -26,6 +26,7 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
+    use_binary_resources = False,
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ASSERTJ_TARGET,
