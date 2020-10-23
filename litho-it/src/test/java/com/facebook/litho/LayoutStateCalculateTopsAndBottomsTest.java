@@ -18,11 +18,11 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutState.sBottomsComparator;
-import static com.facebook.litho.LayoutState.sTopsComparator;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension.sBottomsComparator;
+import static com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension.sTopsComparator;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
@@ -35,6 +35,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
+import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -187,8 +188,9 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       for (int j = 0; j < 4; j++) {
         for (int k = 0; k < 4; k++) {
           if (i != j && j != k && i != k) {
-            if (LayoutState.sTopsComparator.compare(outputs[i], outputs[j])
-                == LayoutState.sTopsComparator.compare(outputs[j], outputs[k])) {
+            if (IncrementalMountRenderCoreExtension.sTopsComparator.compare(outputs[i], outputs[j])
+                == IncrementalMountRenderCoreExtension.sTopsComparator.compare(
+                    outputs[j], outputs[k])) {
               assertThat(sTopsComparator.compare(outputs[j], outputs[k]))
                   .isEqualTo(sTopsComparator.compare(outputs[i], outputs[j]));
             }
@@ -233,8 +235,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       for (int j = 0; j < 4; j++) {
         for (int k = 0; k < 4; k++) {
           if (i != j && j != k && i != k) {
-            if (LayoutState.sBottomsComparator.compare(outputs[i], outputs[j])
-                == LayoutState.sBottomsComparator.compare(outputs[j], outputs[k])) {
+            if (IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
+                    outputs[i], outputs[j])
+                == IncrementalMountRenderCoreExtension.sBottomsComparator.compare(
+                    outputs[j], outputs[k])) {
               assertThat(sBottomsComparator.compare(outputs[j], outputs[k]))
                   .isEqualTo(sBottomsComparator.compare(outputs[i], outputs[j]));
             }

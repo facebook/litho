@@ -65,6 +65,7 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
+import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
@@ -72,7 +73,6 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -130,46 +130,6 @@ public class LayoutState
     int MEASURE_SET_SIZE_SPEC_ASYNC = 7;
     int RELOAD_PREVIOUS_STATE = 8;
   }
-
-  static final Comparator<IncrementalMountOutput> sTopsComparator =
-      new Comparator<IncrementalMountOutput>() {
-        @Override
-        public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
-          final int lhsTop = l.getBounds().top;
-          final int rhsTop = r.getBounds().top;
-
-          // Lower indices should be higher for tops so that they are mounted first if possible.
-          if (lhsTop == rhsTop) {
-            if (l.getIndex() == r.getIndex()) {
-              return 0;
-            }
-
-            return l.getIndex() > r.getIndex() ? 1 : -1;
-          } else {
-            return lhsTop > rhsTop ? 1 : -1;
-          }
-        }
-      };
-
-  static final Comparator<IncrementalMountOutput> sBottomsComparator =
-      new Comparator<IncrementalMountOutput>() {
-        @Override
-        public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
-          final int lhsBottom = l.getBounds().bottom;
-          final int rhsBottom = r.getBounds().bottom;
-
-          // Lower indices should be lower for bottoms so that they are mounted first if possible.
-          if (lhsBottom == rhsBottom) {
-            if (r.getIndex() == l.getIndex()) {
-              return 0;
-            }
-
-            return r.getIndex() > l.getIndex() ? 1 : -1;
-          } else {
-            return lhsBottom > rhsBottom ? 1 : -1;
-          }
-        }
-      };
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
@@ -1803,7 +1763,8 @@ public class LayoutState
   private static void sortTops(LayoutState layoutState) {
     final List<IncrementalMountOutput> unsorted = new ArrayList<>(layoutState.mMountableOutputTops);
     try {
-      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+      Collections.sort(
+          layoutState.mMountableOutputTops, IncrementalMountRenderCoreExtension.sTopsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
@@ -1825,7 +1786,9 @@ public class LayoutState
     final List<IncrementalMountOutput> unsorted =
         new ArrayList<>(layoutState.mMountableOutputBottoms);
     try {
-      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+      Collections.sort(
+          layoutState.mMountableOutputBottoms,
+          IncrementalMountRenderCoreExtension.sBottomsComparator);
     } catch (IllegalArgumentException e) {
       final StringBuilder errorMessage = new StringBuilder();
       errorMessage.append(e.getMessage()).append("\n");
