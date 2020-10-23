@@ -125,7 +125,7 @@ class MountState
   // A map from test key to a list of one or more `TestItem`s which is only allocated
   // and populated during test runs.
   private final Map<String, Deque<TestItem>> mTestItemMap;
-  private boolean mAcquireReferencesDuringMount;
+  private final boolean mAcquireReferencesDuringMount;
 
   // Both these arrays are updated in prepareMount(), thus during mounting they hold the information
   // about the LayoutState that is being mounted, not mLastMountedLayoutState
@@ -192,9 +192,9 @@ class MountState
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
+    mAcquireReferencesDuringMount = view.shouldAcquireDuringMount();
     if (!mLithoView.usingExtensionsWithMountDelegate()
         && ComponentsConfiguration.useIncrementalMountExtension) {
-      mAcquireReferencesDuringMount = ComponentsConfiguration.extensionAcquireDuringMount;
       mIncrementalMountExtension = new IncrementalMountExtension(mAcquireReferencesDuringMount);
       mMountStateLogMessageProvider = new MountStateLogMessageProvider();
       registerMountDelegateExtension(mIncrementalMountExtension);

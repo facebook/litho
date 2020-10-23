@@ -100,8 +100,7 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
     }
 
     mIncrementalMountExtension =
-        new IncrementalMountExtension(
-            mountDelegateTarget instanceof com.facebook.rendercore.MountState);
+        new IncrementalMountExtension(lithoView.shouldAcquireDuringMount());
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
