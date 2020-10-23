@@ -106,7 +106,10 @@ public class ComponentTree {
   private static boolean sBoostPerfLayoutStateFuture = false;
   private final boolean mAreTransitionsEnabled;
   private final boolean mUseStatelessComponent;
+
+  @GuardedBy("this")
   private boolean mReleased;
+
   private String mReleasedComponent;
   private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
@@ -2113,7 +2116,7 @@ public class ComponentTree {
             extraAttribution);
 
     if (localLayoutState == null) {
-      if (!mReleased && output != null) {
+      if (!isReleased() && output != null) {
         throw new IllegalStateException(
             "LayoutState is null, but only async operations can return a null LayoutState");
       }
