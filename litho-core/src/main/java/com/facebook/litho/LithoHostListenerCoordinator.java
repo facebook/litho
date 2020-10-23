@@ -194,10 +194,11 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
     mMountUnmountExtensions.add(mountUnmountExtension);
   }
 
-  public @Nullable LithoRenderUnitFactory getLithoRenderUnitFactory() {
+  public @Nullable LithoRenderUnitFactory getLithoRenderUnitFactory(boolean delegateToRenderCore) {
     if (mLithoRenderUnitFactory == null) {
       mLithoRenderUnitFactory =
-          new LithoRenderUnitFactory(mMountUnmountExtensions, mAttachDetachExtensions);
+          new LithoRenderUnitFactory(
+              mMountUnmountExtensions, mAttachDetachExtensions, delegateToRenderCore);
     }
 
     return mLithoRenderUnitFactory;

@@ -27,18 +27,21 @@ public class LithoRenderUnitFactory {
   private final @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mBindExtensions;
   private final int mMountExtensionsCount;
   private final int mBindExtensionsCount;
+  private final boolean mDelegateToRenderCore;
 
   LithoRenderUnitFactory(
       @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mountExtensions,
-      @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> bindExtensions) {
+      @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> bindExtensions,
+      boolean delegateToRenderCore) {
     mMountExtensions = mountExtensions;
     mMountExtensionsCount = mountExtensions == null ? 0 : mountExtensions.size();
     mBindExtensions = bindExtensions;
     mBindExtensionsCount = bindExtensions == null ? 0 : bindExtensions.size();
+    mDelegateToRenderCore = delegateToRenderCore;
   }
 
   public LithoRenderUnit getRenderUnit(LayoutOutput layoutOutput) {
-    final LithoRenderUnit renderUnit = new LithoRenderUnit(layoutOutput);
+    final LithoRenderUnit renderUnit = new LithoRenderUnit(layoutOutput, mDelegateToRenderCore);
     for (int i = 0, size = mMountExtensionsCount; i < size; i++) {
       renderUnit.addMountUnmountExtension(extension(renderUnit, mMountExtensions.get(i)));
     }
