@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.google.common.annotations.VisibleForTesting;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 /**
  * Updates Component file for the given Spec file. Update logic is defined by the {@link
- * ComponentGenerateService}. Currently works with the {@link LayoutSpec} only.
+ * ComponentGenerateService}. Works with {@link LayoutSpec} and {@link MountSpec}.
  */
 public class GenerateComponentAction extends AnAction {
 
@@ -53,6 +54,11 @@ public class GenerateComponentAction extends AnAction {
   static Optional<PsiClass> getValidSpec(AnActionEvent e) {
     return Optional.of(e)
         .map(event -> event.getData(CommonDataKeys.PSI_FILE))
-        .flatMap(LithoPluginUtils::getFirstLayoutSpec);
+        .flatMap(
+            psiFile ->
+                LithoPluginUtils.getFirstClass(
+                    psiFile,
+                    cls ->
+                        LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls)));
   }
 }

@@ -16,17 +16,17 @@
 
 package com.facebook.litho.intellij.actions;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.psi.PsiClass;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
+import java.io.IOException;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class GenerateComponentActionTest extends LithoPluginIntellijTest {
 
@@ -35,42 +35,45 @@ public class GenerateComponentActionTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void getValidSpec_layoutspec() {
-    testHelper.getPsiClass(
-        psiClasses -> {
-          AnActionEvent mock = createEvent(psiClasses.get(0));
-          assertTrue(GenerateComponentAction.getValidSpec(mock).isPresent());
-          return true;
-        },
-        "LayoutSpec.java");
+  public void getValidSpec_whenFileHasLayoutSpec_returnsSpec() throws IOException {
+    final PsiFile psiFile = testHelper.configure("LayoutSpec.java");
+    final AnActionEvent mock = mockEvent(psiFile);
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(GenerateComponentAction.getValidSpec(mock).isPresent()).isTrue();
+              assertThat(GenerateComponentAction.getValidSpec(mock).get().getQualifiedName())
+                  .isEqualTo("LayoutSpec");
+            });
   }
 
   @Test
-  public void getValidSpec_mountspec() {
-    testHelper.getPsiClass(
-        psiClasses -> {
-          AnActionEvent mock = createEvent(psiClasses.get(0));
-          assertFalse(GenerateComponentAction.getValidSpec(mock).isPresent());
-          return true;
-        },
-        "MountSpec.java");
+  public void getValidSpec_whenFileHasMountSpec_returnsSpec() throws IOException {
+    final PsiFile psiFile = testHelper.configure("MountSpec.java");
+    final AnActionEvent mock = mockEvent(psiFile);
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(GenerateComponentAction.getValidSpec(mock).isPresent()).isTrue();
+              assertThat(GenerateComponentAction.getValidSpec(mock).get().getQualifiedName())
+                  .isEqualTo("MountSpec");
+            });
   }
 
   @Test
-  public void getValidSpec_notspec() {
-    testHelper.getPsiClass(
-        psiClasses -> {
-          AnActionEvent mock = createEvent(psiClasses.get(0));
-          assertFalse(GenerateComponentAction.getValidSpec(mock).isPresent());
-          return true;
-        },
-        "NotSpec.java");
+  public void getValidSpec_whenFileHasNoSpecs_returnsNothing() throws IOException {
+    final PsiFile psiFile = testHelper.configure("NotSpec.java");
+    final AnActionEvent mock = mockEvent(psiFile);
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(GenerateComponentAction.getValidSpec(mock).isPresent()).isFalse();
+            });
   }
 
-  private static AnActionEvent createEvent(PsiClass content) {
-    PsiFile containingFile = content.getContainingFile();
+  private static AnActionEvent mockEvent(PsiFile psiFile) {
     AnActionEvent mock = mock(AnActionEvent.class);
-    Mockito.when(mock.getData(CommonDataKeys.PSI_FILE)).thenReturn(containingFile);
+    when(mock.getData(CommonDataKeys.PSI_FILE)).thenReturn(psiFile);
     return mock;
   }
 }
