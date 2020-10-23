@@ -254,8 +254,7 @@ public class ResolveRedSymbolsAction extends AnAction {
                 // Red symbol might exist for present but not-bind class
                 PsiClass component = PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
                 if (component == null) {
-                  component =
-                      ComponentGenerateService.getInstance().updateLayoutComponentSync(specCls);
+                  component = ComponentGenerateService.getInstance().updateComponentSync(specCls);
                 }
                 if (component != null) {
                   redSymbolToClass.put(redSymbol, component);

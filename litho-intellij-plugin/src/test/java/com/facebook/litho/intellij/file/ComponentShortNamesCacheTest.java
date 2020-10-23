@@ -48,7 +48,7 @@ public class ComponentShortNamesCacheTest extends LithoPluginIntellijTest {
               final ComponentShortNamesCache namesCache = new ComponentShortNamesCache(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
-              ComponentGenerateService.getInstance().updateLayoutComponentAsync(cls);
+              ComponentGenerateService.getInstance().updateComponentAsync(cls);
 
               final String[] allClassNames = namesCache.getAllClassNames();
               assertThat(allClassNames.length).isOne();

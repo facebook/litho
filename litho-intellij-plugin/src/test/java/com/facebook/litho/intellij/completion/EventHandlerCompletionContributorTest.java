@@ -47,7 +47,7 @@ public class EventHandlerCompletionContributorTest extends LithoPluginIntellijTe
         .invokeAndWait(
             () -> {
               PsiClass psiClass = LithoPluginUtils.getFirstLayoutSpec(psiFile).get();
-              ComponentGenerateService.getInstance().updateLayoutComponentSync(psiClass);
+              ComponentGenerateService.getInstance().updateComponentSync(psiClass);
               SpecModel test = ComponentGenerateService.getInstance().getSpecModel(psiClass);
               CodeInsightTestFixture fixture = testHelper.getFixture();
               fixture.complete(CompletionType.BASIC);

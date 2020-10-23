@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
@@ -24,6 +25,7 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
+import com.facebook.litho.specmodels.processor.PsiMountSpecModelFactory;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
@@ -53,12 +55,15 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Utility class helping to create {@link LayoutSpecModel}s from the given file and update generated
+ * Utility class helping to create {@link SpecModel}s from the given file and update generated
  * Component files with the new model.
  */
 public class ComponentGenerateService {
   private static final Logger LOG = Logger.getInstance(ComponentGenerateService.class);
-  private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
+  private static final PsiLayoutSpecModelFactory LAYOUT_SPEC_MODEL_FACTORY =
+      new PsiLayoutSpecModelFactory();
+  private static final PsiMountSpecModelFactory MOUNT_SPEC_MODEL_FACTORY =
+      new PsiMountSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
   private final List<String> underAnalysis = Collections.synchronizedList(new LinkedList<>());
   private final Map<String, SpecModel> specFqnToModelMap =
@@ -82,15 +87,15 @@ public class ComponentGenerateService {
 
   /**
    * Updates generated Component file from the given Spec class and shows success notification. Or
-   * do nothing if provided class doesn't contain {@link LayoutSpec}.
+   * do nothing if provided class doesn't contain {@link LayoutSpec} or {@link MountSpec}.
    *
-   * @param layoutSpecCls class containing {@link LayoutSpec} class.
+   * @param specCls class containing {@link LayoutSpec} or {@link MountSpec} class.
    */
-  public void updateLayoutComponentAsync(PsiClass layoutSpecCls) {
-    final Project project = layoutSpecCls.getProject();
+  public void updateComponentAsync(PsiClass specCls) {
+    final Project project = specCls.getProject();
     final Runnable job =
         () -> {
-          final PsiClass component = updateLayoutComponentSync(layoutSpecCls);
+          final PsiClass component = updateComponentSync(specCls);
           if (component != null) {
             showSuccess(component.getName(), project);
           }
@@ -103,21 +108,23 @@ public class ComponentGenerateService {
   }
 
   /** @return false iff class is under analysis. Otherwise starts analysis. */
-  public boolean tryUpdateLayoutComponent(PsiClass layoutSpecCls) {
+  public boolean tryUpdateComponent(PsiClass specCls) {
     LOG.debug("Under update " + underAnalysis);
-    if (underAnalysis.contains(layoutSpecCls.getQualifiedName())) return false;
+    if (underAnalysis.contains(specCls.getQualifiedName())) {
+      return false;
+    }
 
-    updateLayoutComponentSync(layoutSpecCls);
+    updateComponentSync(specCls);
     return true;
   }
 
   @Nullable
-  public PsiClass updateLayoutComponentSync(PsiClass layoutSpecCls) {
-    final String qName = layoutSpecCls.getQualifiedName();
+  public PsiClass updateComponentSync(PsiClass specCls) {
+    final String qName = specCls.getQualifiedName();
     underAnalysis.add(qName);
     PsiClass psiClass;
     try {
-      psiClass = updateLayoutComponent(layoutSpecCls);
+      psiClass = updateComponent(specCls);
     } finally {
       underAnalysis.remove(qName);
     }
@@ -126,28 +133,28 @@ public class ComponentGenerateService {
   }
 
   @Nullable
-  private PsiClass updateLayoutComponent(PsiClass layoutSpecCls) {
+  private PsiClass updateComponent(PsiClass specCls) {
     final String componentQN =
-        LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
+        LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
     if (componentQN == null) return null;
 
-    final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
+    final SpecModel model = createModel(specCls);
     if (model == null) return null;
 
     // New model might be malformed to generate component, but it's accurate to the Spec
-    specFqnToModelMap.put(layoutSpecCls.getQualifiedName(), model);
+    specFqnToModelMap.put(specCls.getQualifiedName(), model);
     Set<SpecUpdateNotifier> copy;
     synchronized (listeners) {
       copy = new HashSet<>(listeners);
     }
-    copy.forEach(listener -> listener.onSpecModelUpdated(layoutSpecCls));
+    copy.forEach(listener -> listener.onSpecModelUpdated(specCls));
 
-    return updateComponent(componentQN, model, layoutSpecCls.getProject());
+    return updateComponent(componentQN, model, specCls.getProject());
   }
 
   @Nullable
-  public SpecModel getSpecModel(PsiClass layoutSpecClass) {
-    return specFqnToModelMap.get(layoutSpecClass.getQualifiedName());
+  public SpecModel getSpecModel(PsiClass specClass) {
+    return specFqnToModelMap.get(specClass.getQualifiedName());
   }
 
   /** Updates generated Component file from the given Spec model. */
@@ -220,14 +227,20 @@ public class ComponentGenerateService {
   }
 
   /**
-   * Generates new {@link LayoutSpecModel} from the given {@link PsiClass}.
+   * Generates new {@link SpecModel} from the given {@link PsiClass}.
    *
-   * @return new {@link LayoutSpecModel} or null if provided class is not a {@link
-   *     com.facebook.litho.annotations.LayoutSpec} class.
+   * @return new {@link SpecModel} or null if provided class is not a {@link
+   *     com.facebook.litho.annotations.LayoutSpec} or {@link
+   *     com.facebook.litho.annotations.MountSpec} class.
    */
   @Nullable
-  private static LayoutSpecModel createLayoutModel(PsiClass layoutSpecCls) {
-    return MODEL_FACTORY.createWithPsi(layoutSpecCls.getProject(), layoutSpecCls, null);
+  private static SpecModel createModel(PsiClass specCls) {
+    final LayoutSpecModel layoutSpecModel =
+        LAYOUT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+    if (layoutSpecModel != null) {
+      return layoutSpecModel;
+    }
+    return MOUNT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
   }
 
   private static String createFileContentFromModel(String clsQualifiedName, SpecModel specModel) {

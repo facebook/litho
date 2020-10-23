@@ -27,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import java.io.IOException;
+import java.util.function.BiConsumer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,64 +45,103 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void updateLayoutComponentAsync_specNotChanged_sameInmemoryComponent() throws IOException {
-    final PsiFile file = testHelper.configure("LayoutSpec2.java");
-    final PsiFile fileNotChanged = testHelper.configure("LayoutSpec3.java");
-    final Project project = testHelper.getProject();
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              final PsiClass spec = LithoPluginUtils.getFirstLayoutSpec(file).get();
-              ComponentGenerateService.getInstance().updateLayoutComponentAsync(spec);
-              final PsiClass cls =
-                  ComponentsCacheService.getInstance(project).getComponent("Layout");
-              assertThat(cls).isNotNull();
-
-              final PsiClass specNotChanged =
-                  LithoPluginUtils.getFirstLayoutSpec(fileNotChanged).get();
-              ComponentGenerateService.getInstance().updateLayoutComponentAsync(specNotChanged);
-              final PsiClass componentNotChanged =
-                  ComponentsCacheService.getInstance(project).getComponent("Layout");
-              assertThat(componentNotChanged).isSameAs(cls);
-            });
+  public void updateLayoutComponentAsync_specNotChanged_sameInMemoryComponent() throws IOException {
+    retrieveInitialAndUpdatedComponents(
+        "InitialLayoutSpec.java",
+        "UpdatedLayoutSpecWithSameInterface.java",
+        "Layout",
+        (initialComponent, updatedComponent) ->
+            assertThat(updatedComponent).isSameAs(initialComponent));
   }
 
   @Test
-  public void updateLayoutComponentAsync_specChanged_notSameInmemoryComponent() throws IOException {
-    final PsiFile file = testHelper.configure("LayoutSpec.java");
-    final PsiFile fileChanged = testHelper.configure("LayoutSpec2.java");
+  public void updateMountComponentAsync_specNotChanged_sameInMemoryComponent() throws IOException {
+    retrieveInitialAndUpdatedComponents(
+        "InitialMountSpec.java",
+        "UpdatedMountSpecWithSameInterface.java",
+        "Mount",
+        (initialComponent, updatedComponent) ->
+            assertThat(updatedComponent).isSameAs(initialComponent));
+  }
+
+  @Test
+  public void updateLayoutComponentAsync_specChanged_notSameInMemoryComponent() throws IOException {
+    retrieveInitialAndUpdatedComponents(
+        "InitialLayoutSpec.java",
+        "UpdatedLayoutSpecWithDifferentInterface.java",
+        "Layout",
+        (initialComponent, updatedComponent) ->
+            assertThat(updatedComponent).isNotSameAs(initialComponent));
+  }
+
+  @Test
+  public void updateMountComponentAsync_specChanged_notSameInMemoryComponent() throws IOException {
+    retrieveInitialAndUpdatedComponents(
+        "InitialMountSpec.java",
+        "UpdatedMountSpecWithDifferentInterface.java",
+        "Mount",
+        (initialComponent, updatedComponent) ->
+            assertThat(updatedComponent).isNotSameAs(initialComponent));
+  }
+
+  private void retrieveInitialAndUpdatedComponents(
+      String fileName,
+      String fileChangedName,
+      String componentName,
+      BiConsumer<PsiClass, PsiClass> assertion)
+      throws IOException {
+    final PsiFile file = testHelper.configure(fileName);
+    final PsiFile fileChanged = testHelper.configure(fileChangedName);
     final Project project = testHelper.getProject();
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              final PsiClass spec = LithoPluginUtils.getFirstLayoutSpec(file).get();
-              ComponentGenerateService.getInstance().updateLayoutComponentAsync(spec);
-              final PsiClass cls =
-                  ComponentsCacheService.getInstance(project).getComponent("Layout");
-              assertThat(cls).isNotNull();
+              final PsiClass spec = LithoPluginUtils.getFirstClass(file, psiClass -> true).get();
+              ComponentGenerateService.getInstance().updateComponentAsync(spec);
+              final PsiClass component =
+                  ComponentsCacheService.getInstance(project).getComponent(componentName);
+              assertThat(component).isNotNull();
 
-              final PsiClass specChanged = LithoPluginUtils.getFirstLayoutSpec(fileChanged).get();
-              ComponentGenerateService.getInstance().updateLayoutComponentAsync(specChanged);
-              final PsiClass componentChanged =
-                  ComponentsCacheService.getInstance(project).getComponent("Layout");
-              assertThat(componentChanged).isNotSameAs(cls);
+              final PsiClass updatedSpec =
+                  LithoPluginUtils.getFirstClass(fileChanged, psiClass -> true).get();
+              ComponentGenerateService.getInstance().updateComponentAsync(updatedSpec);
+              final PsiClass updatedComponent =
+                  ComponentsCacheService.getInstance(project).getComponent(componentName);
+              assertion.accept(component, updatedComponent);
             });
   }
 
   @Test
   public void
-      getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel()
+      getSpecModel_whenLayoutSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel()
           throws IOException {
-    final PsiFile psiFile1 = testHelper.configure("LayoutSpec.java");
-    final PsiFile psiFile2 = testHelper.configure("LayoutSpec.java");
+    getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel(
+        "InitialLayoutSpec.java");
+  }
+
+  @Test
+  public void
+      getSpecModel_whenMountSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel()
+          throws IOException {
+    getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel(
+        "InitialMountSpec.java");
+  }
+
+  private void
+      getSpecModel_whenSpecModelForDifferentPsiClassInstanceWithSameFqnExists_returnsExistingSpecModel(
+          String fileName) throws IOException {
+    final PsiFile psiFile1 = testHelper.configure(fileName);
+    final PsiFile psiFile2 = testHelper.configure(fileName);
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              final PsiClass psiClass1 = LithoPluginUtils.getFirstLayoutSpec(psiFile1).get();
-              final PsiClass psiClass2 = LithoPluginUtils.getFirstLayoutSpec(psiFile2).get();
+              final PsiClass psiClass1 =
+                  LithoPluginUtils.getFirstClass(psiFile1, psiClass -> true).get();
+              final PsiClass psiClass2 =
+                  LithoPluginUtils.getFirstClass(psiFile2, psiClass -> true).get();
               assertThat(psiClass1.getQualifiedName()).isEqualTo(psiClass2.getQualifiedName());
 
-              ComponentGenerateService.getInstance().updateLayoutComponentSync(psiClass1);
+              ComponentGenerateService.getInstance().updateComponentSync(psiClass1);
               final SpecModel specModel1 =
                   ComponentGenerateService.getInstance().getSpecModel(psiClass1);
               final SpecModel specModel2 =

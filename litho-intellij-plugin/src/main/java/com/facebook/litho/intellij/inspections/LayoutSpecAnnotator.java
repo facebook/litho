@@ -50,7 +50,7 @@ public class LayoutSpecAnnotator implements Annotator {
     if (layoutSpec == null) return;
 
     try {
-      if (!ComponentGenerateService.getInstance().tryUpdateLayoutComponent(layoutSpec)) {
+      if (!ComponentGenerateService.getInstance().tryUpdateComponent(layoutSpec)) {
         return;
       }
     } catch (Exception e) {
