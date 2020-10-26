@@ -197,6 +197,51 @@ public class ComponentContext {
     return new ComponentContext(this);
   }
 
+  /**
+   * Creates a new ComponentContext instance and sets the {@link ComponentTree} on the component.
+   *
+   * @param context context scoped to the parent component
+   * @param componentTree component tree associated with the newly created context
+   * @return a new ComponentContext instance
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ComponentContext withComponentTree(
+      ComponentContext context, ComponentTree componentTree) {
+    ComponentContext componentContext =
+        new ComponentContext(context, new StateHandler(), null, null);
+    componentContext.mComponentTree = componentTree;
+    componentContext.mComponentScope = null;
+
+    return componentContext;
+  }
+
+  /**
+   * Creates a new ComponentContext instance scoped to the given component and sets it on the
+   * component.
+   *
+   * @param context context scoped to the parent component
+   * @param scope component associated with the newly created scoped context
+   * @return a new ComponentContext instance scoped to the given component
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ComponentContext withComponentScope(
+      ComponentContext context, Component scope, @Nullable String globalKey) {
+    ComponentContext componentContext = context.makeNewCopy();
+    componentContext.mComponentScope = scope;
+    componentContext.mComponentTree = context.mComponentTree;
+
+    if (ComponentsConfiguration.useStatelessComponent
+        && globalKey != null
+        && componentContext.getLayoutStateContext() != null) {
+      componentContext.mGlobalKey = globalKey;
+      componentContext
+          .getLayoutStateContext()
+          .addScopedComponentInfo(globalKey, scope, componentContext);
+    }
+
+    return componentContext;
+  }
+
   void setLayoutStateContext(LayoutStateContext layoutStateContext) {
     mLayoutStateContext = layoutStateContext;
   }
@@ -544,51 +589,6 @@ public class ComponentContext {
 
       setDefStyle(0, 0);
     }
-  }
-
-  /**
-   * Creates a new ComponentContext instance and sets the {@link ComponentTree} on the component.
-   *
-   * @param context context scoped to the parent component
-   * @param componentTree component tree associated with the newly created context
-   * @return a new ComponentContext instance
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ComponentContext withComponentTree(
-      ComponentContext context, ComponentTree componentTree) {
-    ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null);
-    componentContext.mComponentTree = componentTree;
-    componentContext.mComponentScope = null;
-
-    return componentContext;
-  }
-
-  /**
-   * Creates a new ComponentContext instance scoped to the given component and sets it on the
-   * component.
-   *
-   * @param context context scoped to the parent component
-   * @param scope component associated with the newly created scoped context
-   * @return a new ComponentContext instance scoped to the given component
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ComponentContext withComponentScope(
-      ComponentContext context, Component scope, @Nullable String globalKey) {
-    ComponentContext componentContext = context.makeNewCopy();
-    componentContext.mComponentScope = scope;
-    componentContext.mComponentTree = context.mComponentTree;
-
-    if (ComponentsConfiguration.useStatelessComponent
-        && globalKey != null
-        && componentContext.getLayoutStateContext() != null) {
-      componentContext.mGlobalKey = globalKey;
-      componentContext
-          .getLayoutStateContext()
-          .addScopedComponentInfo(globalKey, scope, componentContext);
-    }
-
-    return componentContext;
   }
 
   /**
