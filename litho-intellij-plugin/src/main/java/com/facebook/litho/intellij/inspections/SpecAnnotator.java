@@ -22,6 +22,7 @@ import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -34,23 +35,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * Annotator that uses {@link LayoutSpecModel} validation to annotate class with error messages.
- * This re-uses Litho compile-time check.
+ * Annotator that uses {@link LayoutSpecModel} and {@link MountSpecModel} validation to annotate
+ * class with error messages. This re-uses Litho compile-time check.
  */
-public class LayoutSpecAnnotator implements Annotator {
-  private static final Logger DEBUG_LOGGER = Logger.getInstance(LayoutSpecAnnotator.class);
+public class SpecAnnotator implements Annotator {
+  private static final Logger DEBUG_LOGGER = Logger.getInstance(SpecAnnotator.class);
   private static final EventLogger LOGGER = new DebounceEventLogger(60_000);
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
-    final PsiClass layoutSpec = getLayoutSpec(element);
-    if (layoutSpec == null) return;
+    PsiClass spec = null;
+    if (element instanceof PsiClass
+        && (LithoPluginUtils.isLayoutSpec((PsiClass) element)
+            || LithoPluginUtils.isMountSpec((PsiClass) element))) {
+      spec = (PsiClass) element;
+    } else if (element instanceof PsiFile) {
+      spec =
+          LithoPluginUtils.getFirstClass(
+                  (PsiFile) element,
+                  cls -> (LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls)))
+              .orElse(null);
+    }
+
+    final String loggingType;
+    // null check performed inside isLayoutSpec() and isMountSpec()
+    if (LithoPluginUtils.isLayoutSpec(spec)) {
+      loggingType = "layout_spec";
+    } else if (LithoPluginUtils.isMountSpec(spec)) {
+      loggingType = "mount_spec";
+    } else {
+      return;
+    }
 
     try {
-      if (!ComponentGenerateService.getInstance().tryUpdateComponent(layoutSpec)) {
+      if (!ComponentGenerateService.getInstance().tryUpdateComponent(spec)) {
         return;
       }
     } catch (Exception e) {
@@ -60,25 +80,14 @@ public class LayoutSpecAnnotator implements Annotator {
     DEBUG_LOGGER.debug(element + " under analysis");
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.getInstance().getSpecModel(layoutSpec))
+        Optional.ofNullable(ComponentGenerateService.getInstance().getSpecModel(spec))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
       final Map<String, String> data = new HashMap<>();
-      data.put(EventLogger.KEY_TYPE, "layout_spec");
+      data.put(EventLogger.KEY_TYPE, loggingType);
       LOGGER.log(EventLogger.EVENT_ANNOTATOR, data);
       errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
-  }
-
-  @Nullable
-  private static PsiClass getLayoutSpec(PsiElement element) {
-    if (element instanceof PsiClass && LithoPluginUtils.isLayoutSpec((PsiClass) element)) {
-      return (PsiClass) element;
-    }
-    if (element instanceof PsiFile) {
-      return LithoPluginUtils.getFirstLayoutSpec((PsiFile) element).orElse(null);
-    }
-    return null;
   }
 }
