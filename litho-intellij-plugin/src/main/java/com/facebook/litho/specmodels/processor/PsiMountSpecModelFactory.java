@@ -85,6 +85,8 @@ public class PsiMountSpecModelFactory {
         PsiWorkingRangesMethodExtractor.getRangesMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
             psiClass, INTER_STAGE_INPUT_ANNOTATIONS, false),
+        PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, true),
         ImmutableList.of(),
         PsiTypeVariablesExtractor.getTypeVariables(psiClass),
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),

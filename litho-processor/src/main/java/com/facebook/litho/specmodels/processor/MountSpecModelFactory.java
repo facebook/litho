@@ -126,6 +126,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+        UpdateStateMethodExtractor.getOnUpdateStateWithTransitionMethods(
+            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         interStageStore == null
             ? ImmutableList.of()
             : CachedPropNameExtractor.getCachedPropNames(

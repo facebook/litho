@@ -97,4 +97,9 @@ static class TestMountSpec {
 
   @com.facebook.litho.annotations.OnBindDynamicValue
   static void onBindDynamicValue(android.graphics.drawable.ColorDrawable colorDrawable, @com.facebook.litho.annotations.Prop(dynamic = true) int prop10) {}
+
+  @com.facebook.litho.annotations.OnUpdateStateWithTransition
+  static com.facebook.litho.Transition onUpdateStateWithTransition(com.facebook.litho.StateValue<java.lang.Object> stateValue) {
+    return null;
+  }
 }

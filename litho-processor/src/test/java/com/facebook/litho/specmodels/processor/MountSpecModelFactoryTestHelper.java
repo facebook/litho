@@ -71,6 +71,12 @@ public class MountSpecModelFactoryTestHelper {
         mMountSpecModel.getTriggerMethods().get(0);
     assertThat(triggerMethodModel.name).isEqualToIgnoringCase("testTrigger");
     assertThat(triggerMethodModel.methodParams).hasSize(2);
+
+    assertThat(mMountSpecModel.getUpdateStateWithTransitionMethods()).hasSize(1);
+    assertThat(mMountSpecModel.getUpdateStateWithTransitionMethods().get(0).name.toString())
+        .isEqualTo("onUpdateStateWithTransition");
+    assertThat(mMountSpecModel.getUpdateStateWithTransitionMethods().get(0).methodParams)
+        .hasSize(1);
   }
 
   public static void mountSpec_initModel_populateOnAttachInfo(MountSpecModel mMountSpecModel) {

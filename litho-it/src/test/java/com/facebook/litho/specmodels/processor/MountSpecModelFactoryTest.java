@@ -20,6 +20,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.StateValue;
+import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromTrigger;
@@ -35,6 +37,7 @@ import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.State;
@@ -156,6 +159,11 @@ public class MountSpecModelFactoryTest {
 
     @OnBindDynamicValue
     static void onBindDynamicValue(ColorDrawable colorDrawable, @Prop(dynamic = true) int prop10) {}
+
+    @OnUpdateStateWithTransition
+    static Transition onUpdateStateWithTransition(StateValue<Object> stateValue) {
+      return null;
+    }
   }
 
   @Before

@@ -47,6 +47,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
       ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -78,6 +79,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .workingRangeRegisterMethod(workingRangeRegisterMethod)
             .workingRangeMethods(workingRangeMethods)
             .updateStateMethods(updateStateMethods)
+            .updateStateWithTransitionMethods(updateStateWithTransitionMethods)
             .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
