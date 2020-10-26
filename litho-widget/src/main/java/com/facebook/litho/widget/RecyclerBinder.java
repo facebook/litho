@@ -759,9 +759,7 @@ public class RecyclerBinder
 
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
-      componentContext =
-          new ComponentContext(
-              c.getAndroidContext(), c.getLogTag(), c.getLogger(), null, c.getTreePropsCopy());
+      componentContext = ComponentContext.makeCopyForNestedTree(c);
 
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case

@@ -236,10 +236,7 @@ class HorizontalScrollSpec {
 
     lastScrollPosition.set(new ScrollPosition(initialScrollPosition));
     childComponentTree.set(
-        ComponentTree.create(
-                new ComponentContext(
-                    c.getAndroidContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy()),
-                contentProps)
+        ComponentTree.create(ComponentContext.makeCopyForNestedTree(c), contentProps)
             .incrementalMount(false)
             .build());
   }

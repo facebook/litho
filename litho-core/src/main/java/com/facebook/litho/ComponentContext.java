@@ -242,6 +242,19 @@ public class ComponentContext {
     return componentContext;
   }
 
+  /**
+   * Creates a new ComponentContext based on the given ComponentContext, propagating log tag,
+   * logger, and tree props. This should be used when creating a ComponentContext for a nested
+   * ComponentTree (e.g. see HorizontalScrollSpec).
+   */
+  public static ComponentContext makeCopyForNestedTree(ComponentContext parentTreeContext) {
+    return new ComponentContext(
+        parentTreeContext.getAndroidContext(),
+        parentTreeContext.getLogTag(),
+        parentTreeContext.getLogger(),
+        parentTreeContext.getTreePropsCopy());
+  }
+
   void setLayoutStateContext(LayoutStateContext layoutStateContext) {
     mLayoutStateContext = layoutStateContext;
   }
