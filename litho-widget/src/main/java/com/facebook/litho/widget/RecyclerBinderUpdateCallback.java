@@ -207,7 +207,10 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     }
   }
 
-  private static String getModelName(Object model) {
+  private static String getModelName(@Nullable Object model) {
+    if (model == null) {
+      return "";
+    }
     return model instanceof DataDiffModelName
         ? ((DataDiffModelName) model).getName()
         : model.getClass().getSimpleName();
