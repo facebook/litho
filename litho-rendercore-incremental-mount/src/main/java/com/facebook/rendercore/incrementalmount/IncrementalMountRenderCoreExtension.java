@@ -85,7 +85,7 @@ public class IncrementalMountRenderCoreExtension
   }
 
   @Override
-  public Results createState() {
+  public Results createInput() {
     return new Results();
   }
 

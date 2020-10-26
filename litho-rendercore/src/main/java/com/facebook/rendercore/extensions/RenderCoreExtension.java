@@ -26,9 +26,9 @@ import java.util.Set;
 /**
  * The base class for all RenderCore Extensions.
  *
- * @param <State> the state the extension operates on.
+ * @param <Input> the state the extension operates on.
  */
-public class RenderCoreExtension<State> {
+public class RenderCoreExtension<Input> {
 
   /** {@link Rect} to get the current visible bounds during the mount phase. */
   private static final Rect sVisibleRect = new Rect();
@@ -39,27 +39,27 @@ public class RenderCoreExtension<State> {
    *
    * @return a {@link LayoutResultVisitor}.
    */
-  public @Nullable LayoutResultVisitor<? extends State> getLayoutVisitor() {
+  public @Nullable LayoutResultVisitor<? extends Input> getLayoutVisitor() {
     return null;
   }
 
   /**
    * The extension can optionally return a {@link MountExtension} which can be used to augment the
-   * RenderCore's mounting phase. The {@link #<State>} collected in the latest layout pass will be
+   * RenderCore's mounting phase. The {@link #< Input >} collected in the latest layout pass will be
    * passed to the extension before mount.
    *
    * @return a {@link MountExtension}.
    */
-  public @Nullable MountExtension<? extends State> getMountExtension() {
+  public @Nullable MountExtension<? extends Input> getMountExtension() {
     return null;
   }
 
   /**
-   * Should return a new {@link #<State>} to which the {@link LayoutResultVisitor} can write into.
+   * Should return a new {@link #< Input >} to which the {@link LayoutResultVisitor} can write into.
    *
-   * @return A new {@link #<State>} for {@link LayoutResultVisitor} to write into.
+   * @return A new {@link #< Input >} for {@link LayoutResultVisitor} to write into.
    */
-  public @Nullable State createState() {
+  public @Nullable Input createInput() {
     return null;
   }
 

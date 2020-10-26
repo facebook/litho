@@ -27,7 +27,7 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
 
   private final LayoutResultVisitor mLayoutResultVisitor;
   private final MountExtension mMountExtension;
-  private final Supplier mStateSupplier;
+  private final Supplier mInputSupplier;
 
   public TestRenderCoreExtension() {
     this(new TestLayoutResultVisitor(), new TestMountExtension(), ArrayList::new);
@@ -35,8 +35,8 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
 
   public TestRenderCoreExtension(
       final @Nullable LayoutResultVisitor layoutResultVisitor,
-      final @Nullable Supplier stateSupplier) {
-    this(layoutResultVisitor, new TestMountExtension(), stateSupplier);
+      final @Nullable Supplier inputSupplier) {
+    this(layoutResultVisitor, new TestMountExtension(), inputSupplier);
   }
 
   public TestRenderCoreExtension(final @Nullable MountExtension mountExtension) {
@@ -46,10 +46,10 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
   public TestRenderCoreExtension(
       final @Nullable LayoutResultVisitor layoutResultVisitor,
       final @Nullable MountExtension mountExtension,
-      final @Nullable Supplier stateSupplier) {
+      final @Nullable Supplier inputSupplier) {
     mLayoutResultVisitor = layoutResultVisitor;
     mMountExtension = mountExtension;
-    mStateSupplier = stateSupplier;
+    mInputSupplier = inputSupplier;
   }
 
   @Override
@@ -64,7 +64,7 @@ public class TestRenderCoreExtension extends RenderCoreExtension {
   }
 
   @Override
-  public @Nullable Object createState() {
-    return mStateSupplier != null ? mStateSupplier.get() : super.createState();
+  public @Nullable Object createInput() {
+    return mInputSupplier != null ? mInputSupplier.get() : super.createInput();
   }
 }

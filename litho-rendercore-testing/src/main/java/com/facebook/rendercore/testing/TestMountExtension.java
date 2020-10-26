@@ -18,98 +18,19 @@ package com.facebook.rendercore.testing;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.MountDelegate;
-import com.facebook.rendercore.MountDelegateTarget;
-import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.extensions.MountExtension;
 
 public class TestMountExtension extends MountExtension {
 
-  private Object state;
-
-  @Override
-  public void registerToDelegate(MountDelegate mountDelegate) {
-    super.registerToDelegate(mountDelegate);
-  }
-
-  @Override
-  public void resetAcquiredReferences() {
-    super.resetAcquiredReferences();
-  }
-
-  @Override
-  protected boolean isRootItem(int position) {
-    return super.isRootItem(position);
-  }
-
-  @Override
-  protected Object getContentAt(int position) {
-    return super.getContentAt(position);
-  }
-
-  @Override
-  protected void acquireMountReference(RenderTreeNode node, int position, boolean isMounting) {
-    super.acquireMountReference(node, position, isMounting);
-  }
-
-  @Override
-  protected void releaseMountReference(
-      RenderTreeNode renderTreeNode, int position, boolean isMounting) {
-    super.releaseMountReference(renderTreeNode, position, isMounting);
-  }
-
-  @Override
-  protected boolean isLockedForMount(RenderTreeNode renderTreeNode) {
-    return super.isLockedForMount(renderTreeNode);
-  }
-
-  @Override
-  public boolean ownsReference(RenderTreeNode renderTreeNode) {
-    return super.ownsReference(renderTreeNode);
-  }
-
-  @Override
-  public boolean ownsReference(long id) {
-    return super.ownsReference(id);
-  }
-
-  @Override
-  public boolean canPreventMount() {
-    return super.canPreventMount();
-  }
-
-  @Override
-  public MountDelegateTarget getMountTarget() {
-    return super.getMountTarget();
-  }
+  private Object input;
 
   @Override
   public void beforeMount(Object o, @Nullable Rect localVisibleRect) {
     super.beforeMount(o, localVisibleRect);
-    this.state = o;
+    this.input = o;
   }
 
-  @Override
-  public void afterMount() {
-    super.afterMount();
-  }
-
-  @Override
-  public void onVisibleBoundsChanged(@Nullable Rect localVisibleRect) {
-    super.onVisibleBoundsChanged(localVisibleRect);
-  }
-
-  @Override
-  public void onUnmount() {
-    super.onUnmount();
-  }
-
-  @Override
-  public void onUnbind() {
-    super.onUnbind();
-  }
-
-  public Object getState() {
-    return state;
+  public Object getInput() {
+    return input;
   }
 }

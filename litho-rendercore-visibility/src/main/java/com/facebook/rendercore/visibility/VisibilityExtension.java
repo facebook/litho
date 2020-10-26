@@ -48,7 +48,7 @@ public class VisibilityExtension extends RenderCoreExtension<Results> {
   }
 
   @Override
-  public Results createState() {
+  public Results createInput() {
     return new Results();
   }
 
