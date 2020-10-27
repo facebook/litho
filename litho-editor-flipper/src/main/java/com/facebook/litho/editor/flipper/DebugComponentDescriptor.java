@@ -221,12 +221,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     final List<InspectorValue.Timeline.TimePoint> inspectorTimeline = new ArrayList<>();
     for (final DebugComponentTimeMachine.TreeRevision moment : timeline.revisions) {
+      final boolean isSelected = moment.key.equals(selectedKey);
       final Pair<String, String> displayAndColor =
-          makeDisplayAndColor(moment.source, moment.attribution);
-      final String displayString =
-          moment.key.equals(selectedKey)
-              ? String.format(">> %s", displayAndColor.first)
-              : displayAndColor.first;
+          makeDisplayAndColor(isSelected, moment.source, moment.attribution);
+      final String displayString = displayAndColor.first;
       final String color = displayAndColor.second;
       inspectorTimeline.add(
           new InspectorValue.Timeline.TimePoint(
@@ -252,31 +250,34 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   // The colors are defined in Flipper on ui/components/colors.tsx
   // RGB values compatible with CSS are also accepted
   public static Pair<String, String> makeDisplayAndColor(
-      @LayoutState.CalculateLayoutSource int source, @Nullable String attribution) {
+      boolean isSelected,
+      @LayoutState.CalculateLayoutSource int source,
+      @Nullable String attribution) {
     final String attrib = attribution == null ? "" : ": " + attribution;
+    final String selectedColor = "white";
     switch (source) {
       case LayoutState.CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
-        return new Pair<>("Measure set size sync" + attrib, "blue");
+        return new Pair<>("Measure set size sync" + attrib, isSelected ? selectedColor : "orange");
       case LayoutState.CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC:
-        return new Pair<>("Measure set size async" + attrib, "blue");
+        return new Pair<>("Measure set size async" + attrib, isSelected ? selectedColor : "orange");
       case LayoutState.CalculateLayoutSource.SET_SIZE_SPEC_ASYNC:
-        return new Pair<>("Set size async" + attrib, "blueDark");
+        return new Pair<>("Set size async" + attrib, isSelected ? selectedColor : "blueDark");
       case LayoutState.CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
-        return new Pair<>("Set size sync" + attrib, "blueDark");
+        return new Pair<>("Set size sync" + attrib, isSelected ? selectedColor : "blueDark");
       case LayoutState.CalculateLayoutSource.UPDATE_STATE_ASYNC:
-        return new Pair<>(attribution + " async", "lemon");
+        return new Pair<>(attribution + " async", isSelected ? selectedColor : "lemon");
       case LayoutState.CalculateLayoutSource.UPDATE_STATE_SYNC:
-        return new Pair<>(attribution + " sync", "lemon");
+        return new Pair<>(attribution + " sync", isSelected ? selectedColor : "lemon");
       case LayoutState.CalculateLayoutSource.NONE:
-        return new Pair<>("None" + attrib, "black");
+        return new Pair<>("None" + attrib, isSelected ? selectedColor : "black");
       case LayoutState.CalculateLayoutSource.TEST:
-        return new Pair<>("Test" + attrib, "black");
+        return new Pair<>("Test" + attrib, isSelected ? selectedColor : "black");
       case LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC:
-        return new Pair<>("Set root async" + attrib, "white");
+        return new Pair<>("Set root async" + attrib, isSelected ? selectedColor : "slate");
       case LayoutState.CalculateLayoutSource.SET_ROOT_SYNC:
-        return new Pair<>("Set root sync" + attrib, "white");
+        return new Pair<>("Set root sync" + attrib, isSelected ? selectedColor : "slate");
       default:
-        return new Pair<>("Unknown" + attrib, "red");
+        return new Pair<>("Unknown" + attrib, isSelected ? selectedColor : "red");
     }
   }
 
