@@ -81,4 +81,7 @@ public class PsiSearchUtils {
 
   /** For testing */
   public static void addMock(String s, PsiClass cls) {}
+
+  /** For testing */
+  public static void clearMocks() {}
 }
