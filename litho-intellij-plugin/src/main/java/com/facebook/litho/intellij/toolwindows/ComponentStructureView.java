@@ -125,13 +125,23 @@ class ComponentStructureView implements Disposable {
     final PsiFile selectedFile = getSelectedFile(selectedEditor, project);
     final PsiClass selectedClass =
         Optional.ofNullable(selectedFile)
-            .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
+            .flatMap(file -> LithoPluginUtils.getFirstClass(file, cls -> true))
             .orElse(null);
+
+    // assumes Litho Spec is always the first top level class in the file
+    String loggingType;
+    if (LithoPluginUtils.isLayoutSpec(selectedClass)) {
+      loggingType = "layout_spec";
+    } else if (LithoPluginUtils.isMountSpec(selectedClass)) {
+      loggingType = "mount_spec";
+    } else {
+      return;
+    }
     if (updatedClass != null && updatedClass != selectedClass) return;
 
     final StructureView oldStructure = structureView;
     final Map<String, String> data = new HashMap<>();
-    data.put(EventLogger.KEY_TYPE, "update");
+    data.put(EventLogger.KEY_TYPE, loggingType);
     // Overridden below
     data.put(EventLogger.KEY_RESULT, "fail");
     final JComponent newView =
