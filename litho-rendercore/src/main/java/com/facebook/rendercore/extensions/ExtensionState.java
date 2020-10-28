@@ -16,13 +16,24 @@
 
 package com.facebook.rendercore.extensions;
 
-import com.facebook.rendercore.RenderTreeHost;
-import com.facebook.rendercore.RootHost;
+import androidx.annotation.Nullable;
+import com.facebook.rendercore.MountDelegate;
 
-/**
- * An interface client frameworks can use to provide the list of {@link RenderCoreExtension}s to be
- * used by the {@link RootHost} and {@link RenderTreeHost}s.
- */
-public interface ExtensionsCreator {
-  RenderCoreExtension<?, ?>[] create();
+public class ExtensionState<State> {
+  private final @Nullable MountDelegate mMountDelegate;
+  private final State mState;
+
+  ExtensionState(final @Nullable MountDelegate mountDelegate, final State state) {
+    mMountDelegate = mountDelegate;
+    mState = state;
+  }
+
+  @Nullable
+  public MountDelegate getMountDelegate() {
+    return mMountDelegate;
+  }
+
+  State getState() {
+    return mState;
+  }
 }

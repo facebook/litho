@@ -70,7 +70,7 @@ public class RenderState<State, RenderContext> {
   private final Context mContext;
   private final Delegate<State> mDelegate;
   private final @Nullable RenderContext mRenderContext;
-  private final @Nullable RenderCoreExtension<?>[] mExtensions;
+  private final @Nullable RenderCoreExtension<?, ?>[] mExtensions;
   private final int mId = ID_GENERATOR.incrementAndGet();
 
   @ThreadConfined(ThreadConfined.UI)
@@ -99,7 +99,7 @@ public class RenderState<State, RenderContext> {
       final Context context,
       final Delegate<State> delegate,
       final @Nullable RenderContext renderContext,
-      final @Nullable RenderCoreExtension<?>[] extensions) {
+      final @Nullable RenderCoreExtension<?, ?>[] extensions) {
     mContext = context;
     mDelegate = delegate;
     mRenderContext = renderContext;
@@ -356,7 +356,7 @@ public class RenderState<State, RenderContext> {
   }
 
   @Nullable
-  RenderCoreExtension<?>[] getExtensions() {
+  RenderCoreExtension<?, ?>[] getExtensions() {
     return mExtensions;
   }
 
@@ -389,7 +389,7 @@ public class RenderState<State, RenderContext> {
     private final int layoutVersion;
     private @Nullable LayoutCache layoutCache;
     private final @Nullable RenderContext mRenderContext;
-    private final @Nullable RenderCoreExtension<?>[] extensions;
+    private final @Nullable RenderCoreExtension<?, ?>[] extensions;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public LayoutContext(
@@ -397,7 +397,7 @@ public class RenderState<State, RenderContext> {
         final @Nullable RenderContext renderContext,
         final int layoutVersion,
         final LayoutCache layoutCache,
-        final @Nullable RenderCoreExtension<?>[] extensions) {
+        final @Nullable RenderCoreExtension<?, ?>[] extensions) {
       this.androidContext = androidContext;
       this.layoutVersion = layoutVersion;
       this.layoutCache = layoutCache;
@@ -431,7 +431,7 @@ public class RenderState<State, RenderContext> {
     }
 
     @Nullable
-    RenderCoreExtension<?>[] getExtensions() {
+    RenderCoreExtension<?, ?>[] getExtensions() {
       return extensions;
     }
   }

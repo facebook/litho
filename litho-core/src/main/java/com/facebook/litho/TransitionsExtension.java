@@ -29,11 +29,11 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Extension for performing transitions. */
-public class TransitionsExtension extends MountExtension<TransitionsExtensionInput>
+public class TransitionsExtension extends MountExtension<TransitionsExtensionInput, Void>
     implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
         UnmountDelegateExtension {
 
@@ -62,6 +62,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
   private final AttachDetachBinder mAttachDetachBinder = new AttachDetachBinder();
   private final MountUnmountBinder mMountUnmountBinder = new MountUnmountBinder();
+  private ExtensionState<Void> mExtensionState;
 
   @Override
   public boolean shouldDelegateUnmount(MountItem mountItem) {
@@ -89,14 +90,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   @Override
-  public void registerToDelegate(MountDelegate mountDelegate) {
-    super.registerToDelegate(mountDelegate);
-    getMountTarget().setUnmountDelegateExtension(this);
+  protected Void createState() {
+    return null;
   }
 
   @Override
-  public void beforeMount(TransitionsExtensionInput input, Rect localVisibleRect) {
+  public void beforeMount(
+      ExtensionState<Void> extensionState, TransitionsExtensionInput input, Rect localVisibleRect) {
     mInput = input;
+    mExtensionState = extensionState;
 
     if (input.getComponentTreeId() != mLastMountedComponentTreeId) {
       mLastTransitionsExtensionInput = null;
@@ -107,7 +109,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   @Override
-  public void afterMount() {
+  public void afterMount(ExtensionState<Void> extensionState) {
     maybeUpdateAnimatingMountContent();
 
     if (shouldAnimateTransitions(mInput) && hasTransitionsToAnimate()) {
@@ -120,15 +122,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     mLastMountedComponentTreeId = mInput.getComponentTreeId();
   }
 
-  public void onVisibleBoundsChanged(Rect localVisibleRect) {}
+  public void onVisibleBoundsChanged(ExtensionState<Void> extensionState, Rect localVisibleRect) {}
 
   @Override
-  public void onUnmount() {
+  public void onUnmount(ExtensionState<Void> extensionState) {
     resetAcquiredReferences();
   }
 
   @Override
-  public void onUnbind() {
+  public void onUnbind(ExtensionState<Void> extensionState) {
     resetAcquiredReferences();
   }
 
@@ -417,7 +419,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
    * <p>- Finally map the disappearing mount item to the transition id
    */
   private void extractDisappearingItems(TransitionsExtensionInput newTransitionsExtensionInput) {
-    int mountItemCount = getMountTarget().getMountItemCount();
+    int mountItemCount = getMountTarget(mExtensionState).getMountItemCount();
     if (mLastTransitionsExtensionInput == null || mountItemCount == 0) {
       return;
     }
@@ -428,21 +430,26 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         // Go though disappearing subtree. Mount anything that's not mounted (without acquiring
         // reference).
         for (int j = i; j <= lastDescendantIndex; j++) {
-          if (getMountTarget().getMountItemAt(j) == null) {
+          if (getMountTarget(mExtensionState).getMountItemAt(j) == null) {
             // We need to release any mount reference to this because we need to force mount here.
             if (ownsReference(mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
               releaseMountReference(
-                  mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+                  mExtensionState,
+                  mLastTransitionsExtensionInput.getMountableOutputAt(j),
+                  j,
+                  false);
             }
-            acquireMountReference(mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
+            acquireMountReference(
+                mExtensionState, mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
             // Here we have to release the ref count without mounting.
-            releaseMountReference(mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+            releaseMountReference(
+                mExtensionState, mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
           }
-          mLockedDisappearingMountitems.add(getMountTarget().getMountItemAt(j));
+          mLockedDisappearingMountitems.add(getMountTarget(mExtensionState).getMountItemAt(j));
         }
 
         // Reference to the root of the disappearing subtree
-        final MountItem disappearingItem = getMountTarget().getMountItemAt(i);
+        final MountItem disappearingItem = getMountTarget(mExtensionState).getMountItemAt(i);
 
         if (disappearingItem == null) {
           throw new IllegalStateException(
@@ -456,7 +463,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
         mapDisappearingItemWithTransitionId(disappearingItem);
 
-        getMountTarget().notifyUnmount(i);
+        getMountTarget(mExtensionState).notifyUnmount(i);
 
         i = lastDescendantIndex;
       }
@@ -490,7 +497,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       host.unmount(mountItem);
     }
 
-    getMountTarget().unbindMountItem(mountItem);
+    getMountTarget(mExtensionState).unbindMountItem(mountItem);
   }
 
   private void endUnmountDisappearingItem(OutputUnitsAffinityGroup<MountItem> group) {
@@ -518,7 +525,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   private void remountHostToRootIfNeeded(int index, MountItem mountItem) {
-    final Host rootHost = getMountTarget().getRootItem().getHost();
+    final Host rootHost = getMountTarget(mExtensionState).getRootItem().getHost();
     final Host originalHost = mountItem.getHost();
     if (originalHost == null) {
       throw new IllegalStateException(
@@ -601,8 +608,8 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     final Map<TransitionId, OutputUnitsAffinityGroup<Object>> animatingContent =
         new LinkedHashMap<>(mAnimatingTransitionIds.size());
 
-    for (int i = 0, size = getMountTarget().getMountItemCount(); i < size; i++) {
-      final MountItem mountItem = getMountTarget().getMountItemAt(i);
+    for (int i = 0, size = getMountTarget(mExtensionState).getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = getMountTarget(mExtensionState).getMountItemAt(i);
       if (mountItem == null) {
         continue;
       }
@@ -683,11 +690,11 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
       if (increment) {
         if (!ownsReference(renderTreeNode)) {
-          acquireMountReference(renderTreeNode, i, false);
+          acquireMountReference(mExtensionState, renderTreeNode, i, false);
         }
       } else {
         if (ownsReference(renderTreeNode)) {
-          releaseMountReference(renderTreeNode, i, false);
+          releaseMountReference(mExtensionState, renderTreeNode, i, false);
         }
       }
     }
@@ -698,14 +705,14 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       if (increment) {
         // We use the position as 0 as we are not mounting it, just acquiring reference.
         if (!ownsReference(parentRenderTreeNode)) {
-          acquireMountReference(parentRenderTreeNode, 0, false);
+          acquireMountReference(mExtensionState, parentRenderTreeNode, 0, false);
         }
         if (!ownsReference(parentRenderTreeNode)) {
-          acquireMountReference(parentRenderTreeNode, 0, false);
+          acquireMountReference(mExtensionState, parentRenderTreeNode, 0, false);
         }
       } else {
         if (ownsReference(parentRenderTreeNode)) {
-          releaseMountReference(parentRenderTreeNode, 0, false);
+          releaseMountReference(mExtensionState, parentRenderTreeNode, 0, false);
         }
       }
       parentRenderTreeNode = parentRenderTreeNode.getParent();

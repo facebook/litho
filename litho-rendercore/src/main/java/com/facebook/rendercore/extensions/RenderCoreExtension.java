@@ -19,6 +19,7 @@ package com.facebook.rendercore.extensions;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Node.LayoutResult;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +29,7 @@ import java.util.Set;
  *
  * @param <Input> the state the extension operates on.
  */
-public class RenderCoreExtension<Input> {
+public class RenderCoreExtension<Input, State> {
 
   /** {@link Rect} to get the current visible bounds during the mount phase. */
   private static final Rect sVisibleRect = new Rect();
@@ -50,7 +51,7 @@ public class RenderCoreExtension<Input> {
    *
    * @return a {@link MountExtension}.
    */
-  public @Nullable MountExtension<? extends Input> getMountExtension() {
+  public @Nullable MountExtension<? extends Input, State> getMountExtension() {
     return null;
   }
 
@@ -64,58 +65,66 @@ public class RenderCoreExtension<Input> {
   }
 
   /**
-   * Calls {@link MountExtension#beforeMount(Object, Rect)} for each {@link RenderCoreExtension}
-   * that has a mount phase.
+   * Calls {@link MountExtension#beforeMount(ExtensionState, Object, Rect)} for each {@link
+   * RenderCoreExtension} that has a mount phase.
    *
    * @param host The {@link Host} of the extensions
    * @param results A map of {@link RenderCoreExtension} to their results from the layout phase.
    */
   public static void beforeMount(
-      final Host host, final @Nullable Map<RenderCoreExtension<?>, Object> results) {
+      final MountDelegateTarget mountDelegateTarget,
+      final Host host,
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
     if (results != null) {
       host.getLocalVisibleRect(sVisibleRect);
-      for (Map.Entry<RenderCoreExtension<?>, Object> entry : results.entrySet()) {
+      for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : results.entrySet()) {
         final Object state = entry.getValue();
         final MountExtension extension = entry.getKey().getMountExtension();
         if (extension != null) {
-          extension.beforeMount(state, sVisibleRect);
+          extension.beforeMount(
+              mountDelegateTarget.getExtensionState(extension), state, sVisibleRect);
         }
       }
     }
   }
 
   /**
-   * Calls {@link MountExtension#afterMount()} for each {@link RenderCoreExtension} that has a mount
-   * phase.
+   * Calls {@link MountExtension#afterMount(ExtensionState)} for each {@link RenderCoreExtension}
+   * that has a mount phase.
    *
    * @param results A map of {@link RenderCoreExtension} to their results from the layout phase.
    */
-  public static void afterMount(final @Nullable Map<RenderCoreExtension<?>, Object> results) {
+  public static void afterMount(
+      final MountDelegateTarget mountDelegateTarget,
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
     if (results != null) {
-      for (Map.Entry<RenderCoreExtension<?>, Object> entry : results.entrySet()) {
-        final MountExtension<?> extension = entry.getKey().getMountExtension();
+      for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : results.entrySet()) {
+        final MountExtension<?, ?> extension = entry.getKey().getMountExtension();
         if (extension != null) {
-          extension.afterMount();
+          extension.afterMount(mountDelegateTarget.getExtensionState(extension));
         }
       }
     }
   }
 
   /**
-   * Calls {@link MountExtension#onVisibleBoundsChanged(Rect)} for each {@link RenderCoreExtension}
-   * that has a mount phase.
+   * Calls {@link MountExtension#onVisibleBoundsChanged(ExtensionState, Rect)} for each {@link
+   * RenderCoreExtension} that has a mount phase.
    *
    * @param host The {@link Host} of the extensions
    * @param results A map of {@link RenderCoreExtension} to their results from the layout phase.
    */
   public static void notifyVisibleBoundsChanged(
-      final Host host, final Map<RenderCoreExtension<?>, Object> results) {
+      final MountDelegateTarget mountDelegateTarget,
+      final Host host,
+      final Map<RenderCoreExtension<?, ?>, Object> results) {
     if (results != null) {
       host.getLocalVisibleRect(sVisibleRect);
-      for (Map.Entry<RenderCoreExtension<?>, Object> e : results.entrySet()) {
-        final MountExtension<?> extension = e.getKey().getMountExtension();
+      for (Map.Entry<RenderCoreExtension<?, ?>, Object> e : results.entrySet()) {
+        final MountExtension<?, ?> extension = e.getKey().getMountExtension();
         if (extension != null) {
-          extension.onVisibleBoundsChanged(sVisibleRect);
+          extension.onVisibleBoundsChanged(
+              mountDelegateTarget.getExtensionState(extension), sVisibleRect);
         }
       }
     }
@@ -123,11 +132,12 @@ public class RenderCoreExtension<Input> {
 
   /** returns {@code false} iff the results have the same {@link RenderCoreExtension}s. */
   public static boolean shouldUpdate(
-      final @Nullable Map<RenderCoreExtension<?>, Object> currentResults,
-      final @Nullable Map<RenderCoreExtension<?>, Object> nextResults) {
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> currentResults,
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> nextResults) {
 
-    Set<RenderCoreExtension<?>> current = currentResults != null ? currentResults.keySet() : null;
-    Set<RenderCoreExtension<?>> next = nextResults != null ? nextResults.keySet() : null;
+    Set<RenderCoreExtension<?, ?>> current =
+        currentResults != null ? currentResults.keySet() : null;
+    Set<RenderCoreExtension<?, ?>> next = nextResults != null ? nextResults.keySet() : null;
 
     if (current == next) {
       return false;

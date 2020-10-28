@@ -27,7 +27,7 @@ public class RenderTree {
   private final RenderTreeNode[] mFlatList;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final @Nullable Map<RenderCoreExtension<?>, Object> mResults;
+  private final @Nullable Map<RenderCoreExtension<?, ?>, Object> mResults;
 
   private @Nullable Object mRenderTreeData;
 
@@ -36,7 +36,7 @@ public class RenderTree {
       final RenderTreeNode[] flatList,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable Map<RenderCoreExtension<?>, Object> results) {
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
     mRoot = root;
     mFlatList = flatList;
     mWidthSpec = widthSpec;
@@ -78,7 +78,7 @@ public class RenderTree {
     return mFlatList.length;
   }
 
-  public @Nullable Map<RenderCoreExtension<?>, Object> getExtensionResults() {
+  public @Nullable Map<RenderCoreExtension<?, ?>, Object> getExtensionResults() {
     return mResults;
   }
 

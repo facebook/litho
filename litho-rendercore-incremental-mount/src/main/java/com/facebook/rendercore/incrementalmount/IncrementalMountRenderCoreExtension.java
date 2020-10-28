@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class IncrementalMountRenderCoreExtension
-    extends RenderCoreExtension<IncrementalMountExtensionInput> {
+    extends RenderCoreExtension<IncrementalMountExtensionInput, Void> {
 
   public static final Comparator<IncrementalMountOutput> sTopsComparator =
       new Comparator<IncrementalMountOutput>() {
@@ -80,7 +80,7 @@ public class IncrementalMountRenderCoreExtension
   }
 
   @Override
-  public MountExtension<IncrementalMountExtensionInput> getMountExtension() {
+  public MountExtension<IncrementalMountExtensionInput, Void> getMountExtension() {
     return mMountExtension;
   }
 

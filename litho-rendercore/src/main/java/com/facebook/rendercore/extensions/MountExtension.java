@@ -35,25 +35,32 @@ import java.util.Set;
  * falls back to its default behaviour.
  */
 @OkToExtend
-public class MountExtension<Input> {
+public abstract class MountExtension<Input, State> {
 
   private Set<Long> mLayoutOutputMountRefs = new HashSet<>();
-  private MountDelegate mMountDelegate;
 
-  public void registerToDelegate(MountDelegate mountDelegate) {
-    mMountDelegate = mountDelegate;
+  public final ExtensionState<State> createExtensionState(@Nullable MountDelegate mountDelegate) {
+    return new ExtensionState(mountDelegate, createState());
   }
 
-  public void unregisterFromDelegate() {
-    mMountDelegate = null;
-  }
+  protected abstract State createState();
 
   public void resetAcquiredReferences() {
     mLayoutOutputMountRefs = new HashSet<>();
   }
 
-  protected @Nullable Host getRootHost() {
-    MountItem root = mMountDelegate.getMountDelegateTarget().getRootItem();
+  protected static @Nullable Host getRootHost(@Nullable ExtensionState extensionState) {
+    if (extensionState == null) {
+      return null;
+    }
+
+    final MountDelegate mountDelegate = extensionState.getMountDelegate();
+
+    if (mountDelegate == null) {
+      return null;
+    }
+
+    MountItem root = mountDelegate.getMountDelegateTarget().getRootItem();
     if (root != null) {
       return (Host) root.getContent();
     } else {
@@ -61,47 +68,55 @@ public class MountExtension<Input> {
     }
   }
 
-  protected boolean isRootItem(int position) {
-    return mMountDelegate.isRootItem(position);
+  protected static boolean isRootItem(ExtensionState extensionState, int position) {
+    return extensionState.getMountDelegate().isRootItem(position);
   }
 
-  protected Object getContentAt(int position) {
-    return mMountDelegate.getContentAt(position);
+  protected static Object getContentAt(ExtensionState extensionState, int position) {
+    return extensionState.getMountDelegate().getContentAt(position);
   }
 
-  protected void acquireMountReference(RenderTreeNode node, int position, boolean isMounting) {
-    acquireMountReference(node.getRenderUnit().getId(), position, isMounting);
+  protected void acquireMountReference(
+      ExtensionState<State> extensionState, RenderTreeNode node, int position, boolean isMounting) {
+    acquireMountReference(extensionState, node.getRenderUnit().getId(), position, isMounting);
   }
 
-  protected void acquireMountReference(long id, int position, boolean isMounting) {
+  protected void acquireMountReference(
+      ExtensionState<State> extensionState, long id, int position, boolean isMounting) {
     if (ownsReference(id)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
 
     mLayoutOutputMountRefs.add(id);
-    mMountDelegate.acquireMountRef(id, position, isMounting);
+    extensionState.getMountDelegate().acquireMountRef(id, position, isMounting);
   }
 
   protected void releaseMountReference(
-      RenderTreeNode renderTreeNode, int position, boolean isMounting) {
-    releaseMountReference(renderTreeNode.getRenderUnit().getId(), position, isMounting);
+      ExtensionState<State> extensionState,
+      RenderTreeNode renderTreeNode,
+      int position,
+      boolean isMounting) {
+    releaseMountReference(
+        extensionState, renderTreeNode.getRenderUnit().getId(), position, isMounting);
   }
 
-  protected void releaseMountReference(long id, int position, boolean isMounting) {
+  protected void releaseMountReference(
+      ExtensionState<State> extensionState, long id, int position, boolean isMounting) {
     if (!ownsReference(id)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
 
     mLayoutOutputMountRefs.remove(id);
-    mMountDelegate.releaseMountRef(id, position, isMounting);
+    extensionState.getMountDelegate().releaseMountRef(id, position, isMounting);
   }
 
-  protected boolean isLockedForMount(RenderTreeNode renderTreeNode) {
-    return isLockedForMount(renderTreeNode.getRenderUnit().getId());
+  protected static boolean isLockedForMount(
+      ExtensionState extensionState, RenderTreeNode renderTreeNode) {
+    return isLockedForMount(extensionState, renderTreeNode.getRenderUnit().getId());
   }
 
-  protected boolean isLockedForMount(long id) {
-    return mMountDelegate.isLockedForMount(id);
+  protected static boolean isLockedForMount(ExtensionState extensionState, long id) {
+    return extensionState.getMountDelegate().isLockedForMount(id);
   }
 
   // TODO: T68620328 This method should be roll back to being protected once the transition
@@ -119,28 +134,32 @@ public class MountExtension<Input> {
     return false;
   }
 
-  public MountDelegateTarget getMountTarget() {
-    return mMountDelegate.getMountDelegateTarget();
+  public static MountDelegateTarget getMountTarget(ExtensionState extensionState) {
+    return extensionState.getMountDelegate().getMountDelegateTarget();
   }
 
   /**
    * Called for setting up input on the extension before mounting.
    *
+   * @param extensionState The inner state of this extension when beforeMount is called.
    * @param input The new input the extension should use.
    */
-  public void beforeMount(Input input, @Nullable Rect localVisibleRect) {}
+  public void beforeMount(
+      ExtensionState<State> extensionState, Input input, @Nullable Rect localVisibleRect) {}
 
-  public void beforeMountItem(RenderTreeNode renderTreeNode, int index) {}
+  public void beforeMountItem(
+      ExtensionState<State> extensionState, RenderTreeNode renderTreeNode, int index) {}
 
   /** Called immediately after mounting. */
-  public void afterMount() {}
+  public void afterMount(ExtensionState<State> extensionState) {}
 
   /** Called when the visible bounds of the Host change. */
-  public void onVisibleBoundsChanged(@Nullable Rect localVisibleRect) {}
+  public void onVisibleBoundsChanged(
+      ExtensionState<State> extensionState, @Nullable Rect localVisibleRect) {}
 
   /** Called after all the Host's children have been unmounted. */
-  public void onUnmount() {}
+  public void onUnmount(ExtensionState<State> extensionState) {}
 
   /** Called after all the Host's children have been unbound. */
-  public void onUnbind() {}
+  public void onUnbind(ExtensionState<State> extensionState) {}
 }

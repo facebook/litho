@@ -30,6 +30,7 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
@@ -106,13 +107,17 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     final VisibilityMountExtension visibilityOutputsExtension =
         mock(VisibilityMountExtension.class);
+
     useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityOutputsExtension);
+
+    final ExtensionState state =
+        mLithoView.getMountDelegateTarget().getExtensionState(visibilityOutputsExtension);
 
     final Rect rect = new Rect(0, 0, RIGHT, 10);
 
     mLithoViewRule.getLithoView().mount(layoutState, new Rect(0, 0, RIGHT, 10), false);
 
-    verify(visibilityOutputsExtension).beforeMount(layoutState, rect);
+    verify(visibilityOutputsExtension).beforeMount(state, layoutState, rect);
   }
 
   private void useVisibilityOutputsExtension(

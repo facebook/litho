@@ -22,6 +22,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
@@ -109,7 +110,7 @@ public class MountState implements MountDelegateTarget {
     mIsMounting = true;
 
     RenderCoreSystrace.beginSection("RenderCoreExtension#beforeMount");
-    RenderCoreExtension.beforeMount(mRootHost, mRenderTree.getExtensionResults());
+    RenderCoreExtension.beforeMount(this, mRootHost, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("PrepareMount");
@@ -143,7 +144,7 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("RenderCoreExtension#afterMount");
-    RenderCoreExtension.afterMount(mRenderTree.getExtensionResults());
+    RenderCoreExtension.afterMount(this, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
   }
 
@@ -259,6 +260,11 @@ public class MountState implements MountDelegateTarget {
   @Override
   public void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension) {
     mUnmountDelegateExtension = unmountDelegateExtension;
+  }
+
+  @Override
+  public ExtensionState getExtensionState(MountExtension mountExtension) {
+    return mMountDelegate.getExtensionState(mountExtension);
   }
 
   /**
@@ -597,13 +603,13 @@ public class MountState implements MountDelegateTarget {
     return mIndexToMountedItemMap.get(mRenderUnitIds[i]);
   }
 
-  private void addExtensions(@Nullable Map<RenderCoreExtension<?>, Object> extensions) {
+  private void addExtensions(@Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
     if (extensions != null) {
       if (mMountDelegate == null) {
         mMountDelegate = new MountDelegate(this);
       }
-      for (Map.Entry<RenderCoreExtension<?>, Object> e : extensions.entrySet()) {
-        final MountExtension<?> extension = e.getKey().getMountExtension();
+      for (Map.Entry<RenderCoreExtension<?, ?>, Object> e : extensions.entrySet()) {
+        final MountExtension<?, ?> extension = e.getKey().getMountExtension();
         if (extension != null) {
           mMountDelegate.addExtension(extension);
         }

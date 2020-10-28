@@ -29,9 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Helper for dispatching events to multiple MountListenerExtensions in Litho. */
-public class LithoHostListenerCoordinator extends MountExtension<Object> {
+public class LithoHostListenerCoordinator {
 
   private final List<MountExtension> mMountExtensions;
+  private final MountDelegateTarget mMountDelegateTarget;
   private IncrementalMountExtension mIncrementalMountExtension;
   private VisibilityMountExtension mVisibilityExtension;
   private TransitionsExtension mTransitionsExtension;
@@ -42,54 +43,57 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
   private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mAttachDetachExtensions;
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
-  public LithoHostListenerCoordinator() {
+  public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountExtensions = new ArrayList<>();
+    mMountDelegateTarget = mountDelegateTarget;
   }
 
   // TODO figure out how to better enforce the input type here.
-  @Override
   public void beforeMount(Object input, Rect localVisibleRect) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       MountExtension hostListenerExtension = mMountExtensions.get(i);
-      hostListenerExtension.beforeMount(input, localVisibleRect);
+      hostListenerExtension.beforeMount(
+          mMountDelegateTarget.getExtensionState(hostListenerExtension), input, localVisibleRect);
     }
   }
 
-  @Override
   public void afterMount() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).afterMount();
+      final MountExtension mountExtension = mMountExtensions.get(i);
+      mountExtension.afterMount(mMountDelegateTarget.getExtensionState(mountExtension));
     }
   }
 
-  @Override
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
     // We first mount and then we process visibility outputs.
     if (mIncrementalMountExtension != null) {
-      mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
+      mIncrementalMountExtension.onVisibleBoundsChanged(
+          mMountDelegateTarget.getExtensionState(mIncrementalMountExtension), localVisibleRect);
       LithoStats.incrementComponentMountCount();
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onVisibleBoundsChanged(localVisibleRect);
+      mTransitionsExtension.onVisibleBoundsChanged(
+          mMountDelegateTarget.getExtensionState(mTransitionsExtension), localVisibleRect);
     }
 
     if (mVisibilityExtension != null) {
-      mVisibilityExtension.onVisibleBoundsChanged(localVisibleRect);
+      mVisibilityExtension.onVisibleBoundsChanged(
+          mMountDelegateTarget.getExtensionState(mVisibilityExtension), localVisibleRect);
     }
   }
 
-  @Override
   public void onUnmount() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onUnmount();
+      final MountExtension mountExtension = mMountExtensions.get(i);
+      mountExtension.onUnmount(mMountDelegateTarget.getExtensionState(mountExtension));
     }
   }
 
-  @Override
   public void onUnbind() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onUnbind();
+      final MountExtension mountExtension = mMountExtensions.get(i);
+      mountExtension.onUnbind(mMountDelegateTarget.getExtensionState(mountExtension));
     }
   }
 
@@ -165,6 +169,7 @@ public class LithoHostListenerCoordinator extends MountExtension<Object> {
   @VisibleForTesting
   void useVisibilityExtension(VisibilityMountExtension extension) {
     mVisibilityExtension = extension;
+    mMountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
     registerListener(mVisibilityExtension);
   }
 

@@ -52,7 +52,7 @@ public class Reducer {
       final int x,
       final int y,
       final ArrayList<RenderTreeNode> flattenedTree,
-      final @Nullable Map<RenderCoreExtension<?>, Object> extensions) {
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
 
     // If width & height are 0 then do not return the tree.
     if (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0) {
@@ -163,9 +163,9 @@ public class Reducer {
       final LayoutResult<?> layoutResult,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable RenderCoreExtension<?>[] extensions) {
+      final @Nullable RenderCoreExtension<?, ?>[] extensions) {
 
-    final Map<RenderCoreExtension<?>, Object> results = populate(extensions);
+    final Map<RenderCoreExtension<?, ?>, Object> results = populate(extensions);
     final ArrayList<RenderTreeNode> nodes = new ArrayList<>();
     final Rect bounds = new Rect(0, 0, layoutResult.getWidth(), layoutResult.getHeight());
 
@@ -182,13 +182,13 @@ public class Reducer {
     return new RenderTree(root, nodesArray, widthSpec, heightSpec, results);
   }
 
-  private static @Nullable Map<RenderCoreExtension<?>, Object> populate(
-      final @Nullable RenderCoreExtension<?>[] extensions) {
+  private static @Nullable Map<RenderCoreExtension<?, ?>, Object> populate(
+      final @Nullable RenderCoreExtension<?, ?>[] extensions) {
     if (extensions == null || extensions.length == 0) {
       return null;
     }
 
-    final Map<RenderCoreExtension<?>, Object> results = new ArrayMap<>(extensions.length);
+    final Map<RenderCoreExtension<?, ?>, Object> results = new ArrayMap<>(extensions.length);
     for (int i = 0; i < extensions.length; i++) {
       final Object input = extensions[i].createInput();
       results.put(extensions[i], input);
@@ -204,11 +204,11 @@ public class Reducer {
       final int absoluteX,
       final int absoluteY,
       final int size,
-      final @Nullable Map<RenderCoreExtension<?>, Object> extensions) {
+      final @Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
 
     if (extensions != null) {
-      for (Map.Entry<RenderCoreExtension<?>, Object> entry : extensions.entrySet()) {
-        final RenderCoreExtension<?> e = entry.getKey();
+      for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : extensions.entrySet()) {
+        final RenderCoreExtension<?, ?> e = entry.getKey();
         final LayoutResultVisitor visitor = e.getLayoutVisitor();
         if (visitor != null) {
           final Object state = entry.getValue();

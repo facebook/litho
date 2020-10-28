@@ -27,7 +27,7 @@ import com.facebook.rendercore.visibility.VisibilityExtension.Results;
 import java.util.LinkedList;
 import java.util.List;
 
-public class VisibilityExtension extends RenderCoreExtension<Results> {
+public class VisibilityExtension extends RenderCoreExtension<Results, Void> {
 
   private final Visitor visitor;
   private final VisibilityMountExtension<Results> mountExtension;
@@ -43,7 +43,7 @@ public class VisibilityExtension extends RenderCoreExtension<Results> {
   }
 
   @Override
-  public MountExtension<Results> getMountExtension() {
+  public MountExtension<Results, Void> getMountExtension() {
     return mountExtension;
   }
 

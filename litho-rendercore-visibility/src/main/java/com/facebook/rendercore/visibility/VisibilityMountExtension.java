@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
-    extends MountExtension<Input> {
+    extends MountExtension<Input, Void> {
 
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -53,6 +54,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
   /** @deprecated Only used for Litho's integration. Marked for removal. */
   @Deprecated private @Nullable Host mRootHost;
+
+  private ExtensionState<Void> mExtensionState;
 
   public VisibilityMountExtension() {
     mVisibilityIdToItemMap = new HashMap<>();
@@ -345,14 +348,21 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @Override
-  public void onUnmount() {
+  public void onUnmount(ExtensionState<Void> extensionState) {
     mPreviousLocalVisibleRect.setEmpty();
   }
 
   @Override
-  public void beforeMount(Input input, @Nullable Rect localVisibleRect) {
+  protected Void createState() {
+    return null;
+  }
+
+  @Override
+  public void beforeMount(
+      ExtensionState<Void> extensionState, Input input, @Nullable Rect localVisibleRect) {
 
     mVisibilityOutputs = input.getVisibilityOutputs();
+    mExtensionState = extensionState;
 
     // Guard against the input being null.
     if (mVisibilityOutputs == null) {
@@ -366,7 +376,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @Override
-  public void afterMount() {
+  public void afterMount(ExtensionState<Void> extensionState) {
     final boolean processVisibilityOutputs = !hasTransientState();
 
     if (processVisibilityOutputs) {
@@ -375,7 +385,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @Override
-  public void onVisibleBoundsChanged(@Nullable Rect localVisibleRect) {
+  public void onVisibleBoundsChanged(
+      ExtensionState<Void> extensionState, @Nullable Rect localVisibleRect) {
     if (mVisibilityOutputs == null) {
       return;
     }
@@ -392,14 +403,13 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @Override
-  public void onUnbind() {
+  public void onUnbind(ExtensionState<Void> extensionState) {
     clearVisibilityItems();
   }
 
-  @Override
   protected @Nullable Host getRootHost() {
     if (mRootHost == null) {
-      return super.getRootHost();
+      return super.getRootHost(mExtensionState);
     } else {
       return mRootHost;
     }

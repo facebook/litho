@@ -26,7 +26,7 @@ public class RenderResultFuture<State, RenderContext> {
       final Context context,
       RenderState.LazyTree<State> lazyTree,
       final @Nullable RenderContext renderContext,
-      final @Nullable RenderCoreExtension<?>[] extensions,
+      final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State> previousResult,
       final int setRootId,
       final int widthSpec,

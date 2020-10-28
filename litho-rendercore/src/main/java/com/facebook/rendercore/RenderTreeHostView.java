@@ -69,7 +69,7 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   public void notifyVisibleBoundsChanged() {
     final RenderTree tree = mMountState.getRenderTree();
     RenderCoreExtension.notifyVisibleBoundsChanged(
-        this, tree != null ? tree.getExtensionResults() : null);
+        mMountState, this, tree != null ? tree.getExtensionResults() : null);
   }
 
   @Override

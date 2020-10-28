@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.Deque;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class EndToEndTestingExtension
-    extends MountExtension<EndToEndTestingExtension.EndToEndTestingExtensionInput> {
+    extends MountExtension<EndToEndTestingExtension.EndToEndTestingExtensionInput, Void> {
 
   // A map from test key to a list of one or more `TestItem`s which is only allocated
   // and populated during test runs.
@@ -55,23 +56,31 @@ public class EndToEndTestingExtension
   }
 
   @Override
-  public void beforeMount(EndToEndTestingExtensionInput input, Rect localVisibleRect) {
+  protected Void createState() {
+    return null;
+  }
+
+  @Override
+  public void beforeMount(
+      ExtensionState<Void> extensionState,
+      EndToEndTestingExtensionInput input,
+      Rect localVisibleRect) {
     mInput = input;
   }
 
   @Override
-  public void afterMount() {
+  public void afterMount(ExtensionState<Void> extensionState) {
     processTestOutputs();
   }
 
   @Override
-  public void onVisibleBoundsChanged(Rect localVisibleRect) {}
+  public void onVisibleBoundsChanged(ExtensionState<Void> extensionState, Rect localVisibleRect) {}
 
   @Override
-  public void onUnmount() {}
+  public void onUnmount(ExtensionState<Void> extensionState) {}
 
   @Override
-  public void onUnbind() {}
+  public void onUnbind(ExtensionState<Void> extensionState) {}
 
   private void processTestOutputs() {
     if (mTestItemMap == null) {

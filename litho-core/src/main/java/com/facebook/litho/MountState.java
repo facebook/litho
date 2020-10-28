@@ -77,6 +77,7 @@ import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
@@ -162,6 +163,8 @@ class MountState
 
   private TransitionManager mTransitionManager;
   private final HashSet<TransitionId> mAnimatingTransitionIds = new HashSet<>();
+  private final VisibilityMountExtension mVisibilityExtension;
+  private final ExtensionState mVisibilityExtensionState;
   private int[] mAnimationLockedIndices;
   private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
       new LinkedHashMap<>();
@@ -173,8 +176,9 @@ class MountState
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
-  private @Nullable VisibilityMountExtension mVisibilityExtension;
+  private @Nullable ExtensionState mIncrementalMountExtensionState;
   private @Nullable TransitionsExtension mTransitionsExtension;
+  private @Nullable ExtensionState mTransitionsExtensionState;
   private @Nullable MountStateLogMessageProvider mMountStateLogMessageProvider;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
@@ -198,9 +202,14 @@ class MountState
       mIncrementalMountExtension = new IncrementalMountExtension(mAcquireReferencesDuringMount);
       mMountStateLogMessageProvider = new MountStateLogMessageProvider();
       registerMountDelegateExtension(mIncrementalMountExtension);
+
+      mIncrementalMountExtensionState = getExtensionState(mIncrementalMountExtension);
     }
 
     mVisibilityExtension = new VisibilityMountExtension();
+    // This is the default MountState usage - this extension doesn't need to get registered to a
+    // MountDelegate.
+    mVisibilityExtensionState = mVisibilityExtension.createExtensionState(null);
     mVisibilityExtension.setRootHost(mLithoView);
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
@@ -221,6 +230,7 @@ class MountState
     // Used for testing incremental mount extension until TransitionsExtension is testable.
     if (mountExtension instanceof TransitionsExtension) {
       mTransitionsExtension = (TransitionsExtension) mountExtension;
+      mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
     }
   }
 
@@ -291,7 +301,7 @@ class MountState
     }
 
     if (mVisibilityExtension != null && mIsDirty) {
-      mVisibilityExtension.beforeMount(layoutState, localVisibleRect);
+      mVisibilityExtension.beforeMount(mVisibilityExtensionState, layoutState, localVisibleRect);
     }
 
     if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
@@ -480,7 +490,7 @@ class MountState
 
   private void afterMountMaybeUpdateAnimations(boolean shouldAnimateTransitions) {
     if (mTransitionsExtension != null && mIsDirty) {
-      mTransitionsExtension.afterMount();
+      mTransitionsExtension.afterMount(mTransitionsExtensionState);
     } else {
       maybeUpdateAnimatingMountContent();
       if (shouldAnimateTransitions && hasTransitionsToAnimate()) {
@@ -501,11 +511,13 @@ class MountState
     }
 
     if (mIsDirty || mNeedsRemount) {
-      mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
+      mIncrementalMountExtension.beforeMount(
+          mIncrementalMountExtensionState, layoutState, localVisibleRect);
       mount(layoutState, processVisibilityOutputs);
-      mIncrementalMountExtension.afterMount();
+      mIncrementalMountExtension.afterMount(mIncrementalMountExtensionState);
     } else {
-      mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
+      mIncrementalMountExtension.onVisibleBoundsChanged(
+          mIncrementalMountExtensionState, localVisibleRect);
     }
 
     afterMountMaybeUpdateAnimations(shouldAnimateTransitions);
@@ -984,9 +996,9 @@ class MountState
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
     if (isDirty) {
-      mVisibilityExtension.afterMount();
+      mVisibilityExtension.afterMount(mVisibilityExtensionState);
     } else {
-      mVisibilityExtension.onVisibleBoundsChanged(localVisibleRect);
+      mVisibilityExtension.onVisibleBoundsChanged(mVisibilityExtensionState, localVisibleRect);
     }
   }
 
@@ -1019,6 +1031,15 @@ class MountState
   @Override
   public void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension) {
     mUnmountDelegateExtension = unmountDelegateExtension;
+  }
+
+  @Override
+  public ExtensionState getExtensionState(MountExtension mountExtension) {
+    if (mountExtension == mVisibilityExtension) {
+      return mVisibilityExtensionState;
+    }
+
+    return mMountDelegate.getExtensionState(mountExtension);
   }
 
   /** Clears and re-populates the test item map if we are in e2e test mode. */
@@ -2642,15 +2663,15 @@ class MountState
     }
 
     if (mIncrementalMountExtension != null) {
-      mIncrementalMountExtension.onUnmount();
+      mIncrementalMountExtension.onUnmount(mIncrementalMountExtensionState);
     }
 
     if (mVisibilityExtension != null) {
-      mVisibilityExtension.onUnmount();
+      mVisibilityExtension.onUnmount(mVisibilityExtensionState);
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onUnmount();
+      mTransitionsExtension.onUnmount(mTransitionsExtensionState);
     }
 
     clearVisibilityItems();
@@ -2963,7 +2984,7 @@ class MountState
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.beforeMount(layoutState, localVisibleRect);
+      mTransitionsExtension.beforeMount(mTransitionsExtensionState, layoutState, localVisibleRect);
       return;
     }
 
@@ -3345,15 +3366,15 @@ class MountState
     clearVisibilityItems();
 
     if (mIncrementalMountExtension != null) {
-      mIncrementalMountExtension.onUnbind();
+      mIncrementalMountExtension.onUnbind(mIncrementalMountExtensionState);
     }
 
     if (mVisibilityExtension != null) {
-      mVisibilityExtension.onUnbind();
+      mVisibilityExtension.onUnbind(mVisibilityExtensionState);
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onUnbind();
+      mTransitionsExtension.onUnbind(mTransitionsExtensionState);
     }
 
     if (isTracing) {

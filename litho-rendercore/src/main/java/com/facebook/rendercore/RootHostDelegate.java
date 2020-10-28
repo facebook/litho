@@ -74,7 +74,7 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
   public void notifyVisibleBoundsChanged() {
     final RenderTree tree = mMountState.getRenderTree();
     RenderCoreExtension.notifyVisibleBoundsChanged(
-        mHost, tree != null ? tree.getExtensionResults() : null);
+        mMountState, mHost, tree != null ? tree.getExtensionResults() : null);
   }
 
   /**

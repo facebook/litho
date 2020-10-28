@@ -40,7 +40,7 @@ public class RenderResult<State> {
       final Context context,
       final LazyTree<State> lazyTree,
       final @Nullable RenderContext renderContext,
-      final @Nullable RenderCoreExtension<?>[] extensions,
+      final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State> previousResult,
       final int layoutVersion,
       final int widthSpec,

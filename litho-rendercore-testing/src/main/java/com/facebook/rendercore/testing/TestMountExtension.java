@@ -18,6 +18,7 @@ package com.facebook.rendercore.testing;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 
 public class TestMountExtension extends MountExtension {
@@ -25,8 +26,13 @@ public class TestMountExtension extends MountExtension {
   private Object input;
 
   @Override
-  public void beforeMount(Object o, @Nullable Rect localVisibleRect) {
-    super.beforeMount(o, localVisibleRect);
+  protected Object createState() {
+    return null;
+  }
+
+  @Override
+  public void beforeMount(ExtensionState state, Object o, @Nullable Rect localVisibleRect) {
+    super.beforeMount(state, o, localVisibleRect);
     this.input = o;
   }
 

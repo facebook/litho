@@ -67,7 +67,7 @@ public class RenderCoreTestRule implements TestRule {
   private @Nullable Node rootNode;
   private int widthSpec = DEFAULT_WIDTH_SPEC;
   private int heightSpec = DEFAULT_HEIGHT_SPEC;
-  private RenderCoreExtension<?>[] extensions;
+  private RenderCoreExtension<?, ?>[] extensions;
 
   @Override
   public Statement apply(final Statement base, Description description) {

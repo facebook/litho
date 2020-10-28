@@ -18,9 +18,12 @@ package com.facebook.rendercore;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Can be passed to a MountState to override default mounting behaviour and control which items get
@@ -31,6 +34,7 @@ public class MountDelegate {
   private final LongSparseArray<Integer> mReferenceCountMap = new LongSparseArray<>();
   private final List<MountExtension> mMountExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
+  private final Map<MountExtension, ExtensionState> mExtensionStates = new HashMap<>();
   private boolean mReferenceCountingEnabled = false;
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
@@ -39,7 +43,14 @@ public class MountDelegate {
 
   public void addExtension(MountExtension mountExtension) {
     mMountExtensions.add(mountExtension);
-    mountExtension.registerToDelegate(this);
+
+    final ExtensionState extensionState = mountExtension.createExtensionState(this);
+    mExtensionStates.put(mountExtension, extensionState);
+
+    if (mountExtension instanceof UnmountDelegateExtension) {
+      mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) mountExtension);
+    }
+
     mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
   }
 
@@ -47,7 +58,7 @@ public class MountDelegate {
     resetExtensionReferenceCount();
 
     for (MountExtension mountExtension : mMountExtensions) {
-      mountExtension.unregisterFromDelegate();
+      mExtensionStates.remove(mountExtension);
     }
 
     mMountExtensions.clear();
@@ -56,14 +67,20 @@ public class MountDelegate {
 
   void unBind() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onUnbind();
+      final MountExtension mountExtension = mMountExtensions.get(i);
+      mountExtension.onUnbind(getExtensionState(mountExtension));
     }
   }
 
   void unMount() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onUnmount();
+      final MountExtension mountExtension = mMountExtensions.get(i);
+      mountExtension.onUnmount(getExtensionState(mountExtension));
     }
+  }
+
+  public ExtensionState getExtensionState(MountExtension mountExtension) {
+    return mExtensionStates.get(mountExtension);
   }
 
   public Object getContentAt(int position) {
@@ -81,7 +98,8 @@ public class MountDelegate {
     }
 
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).beforeMountItem(renderTreeNode, index);
+      final MountExtension mountExtension = mMountExtensions.get(i);
+      mountExtension.beforeMountItem(getExtensionState(mountExtension), renderTreeNode, index);
     }
 
     return hasAcquiredRef(renderTreeNode.getRenderUnit().getId());
@@ -139,7 +157,7 @@ public class MountDelegate {
       return;
     }
 
-    for (MountExtension<?> extension : mMountExtensions) {
+    for (MountExtension<?, ?> extension : mMountExtensions) {
       extension.resetAcquiredReferences();
     }
 
