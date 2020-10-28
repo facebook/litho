@@ -45,6 +45,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.litho.utils.MeasureUtils;
+import javax.annotation.Nullable;
 
 /**
  * A component that is able to display drawable resources. It takes a drawable resource ID as prop.
@@ -84,7 +85,7 @@ class ImageSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.DRAWABLE) Drawable drawable) {
+      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable) {
     if (drawable == null
         || drawable.getIntrinsicWidth() <= 0
         || drawable.getIntrinsicHeight() <= 0) {
@@ -111,7 +112,7 @@ class ImageSpec {
   static void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      @Prop(resType = ResType.DRAWABLE) Drawable drawable,
+      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable,
       @Prop(optional = true) ScaleType scaleType,
       Output<DrawableMatrix> drawableMatrix,
       Output<Integer> drawableWidth,
@@ -150,7 +151,7 @@ class ImageSpec {
   static void onMount(
       ComponentContext c,
       MatrixDrawable matrixDrawable,
-      @Prop(resType = ResType.DRAWABLE) Drawable drawable,
+      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable,
       @FromBoundsDefined DrawableMatrix drawableMatrix) {
     matrixDrawable.mount(drawable, drawableMatrix);
   }
@@ -168,7 +169,7 @@ class ImageSpec {
   static void onUnmount(
       ComponentContext c,
       MatrixDrawable convertDrawable,
-      @Prop(resType = ResType.DRAWABLE) Drawable drawable) {
+      @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable) {
     convertDrawable.unmount();
   }
 
