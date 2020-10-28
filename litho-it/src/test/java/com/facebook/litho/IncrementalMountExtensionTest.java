@@ -29,6 +29,7 @@ import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import java.util.ArrayList;
@@ -75,40 +76,43 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
-    final IncrementalMountExtension extension = new IncrementalMountExtension();
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
-    final ExtensionState state = extension.createExtensionState(mountDelegate);
+    final ExtensionState<IncrementalMountExtensionState> extensionState =
+        extension.createExtensionState(mountDelegate);
+    final IncrementalMountExtensionState state = extensionState.getState();
+
     mountDelegate.addExtension(extension);
-    when(mountDelegate.getExtensionState(extension)).thenReturn(state);
+    when(mountDelegate.getExtensionState(extension)).thenReturn(extensionState);
 
     final TestInput incrementalMountExtensionInput = new TestInput(10);
 
-    extension.beforeMount(state, incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
+    extension.beforeMount(extensionState, incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
     for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
         i < size;
         i++) {
       final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
-      extension.beforeMountItem(state, node, i);
+      extension.beforeMountItem(extensionState, node, i);
     }
-    extension.afterMount(state);
+    extension.afterMount(extensionState);
 
-    assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
-    assertThat(extension.getPreviousTopsIndex()).isEqualTo(5);
+    assertThat(extension.getPreviousBottomsIndex(state)).isEqualTo(0);
+    assertThat(extension.getPreviousTopsIndex(state)).isEqualTo(5);
 
     final IncrementalMountExtensionInput incrementalMountExtensionInput2 = new TestInput(3);
-    extension.beforeMount(state, incrementalMountExtensionInput2, new Rect(0, 0, 0, 0));
+    extension.beforeMount(extensionState, incrementalMountExtensionInput2, new Rect(0, 0, 0, 0));
     for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
         i < size;
         i++) {
       final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
-      extension.beforeMountItem(state, node, i);
+      extension.beforeMountItem(extensionState, node, i);
     }
-    extension.afterMount(state);
+    extension.afterMount(extensionState);
 
-    extension.onVisibleBoundsChanged(state, new Rect(0, 0, 10, 50));
+    extension.onVisibleBoundsChanged(extensionState, new Rect(0, 0, 10, 50));
 
-    assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
-    assertThat(extension.getPreviousTopsIndex()).isEqualTo(3);
+    assertThat(extension.getPreviousBottomsIndex(state)).isEqualTo(0);
+    assertThat(extension.getPreviousTopsIndex(state)).isEqualTo(3);
   }
 
   @Test
@@ -116,41 +120,43 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
-    final IncrementalMountExtension extension = new IncrementalMountExtension();
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
     mountDelegate.addExtension(extension);
 
-    final ExtensionState state = extension.createExtensionState(mountDelegate);
+    final ExtensionState<IncrementalMountExtensionState> extensionState =
+        extension.createExtensionState(mountDelegate);
+    final IncrementalMountExtensionState state = extensionState.getState();
     mountDelegate.addExtension(extension);
-    when(mountDelegate.getExtensionState(extension)).thenReturn(state);
+    when(mountDelegate.getExtensionState(extension)).thenReturn(extensionState);
 
     final TestInput incrementalMountExtensionInput = new TestInput(10);
 
-    extension.beforeMount(state, incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
+    extension.beforeMount(extensionState, incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
     for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
         i < size;
         i++) {
       final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
-      extension.beforeMountItem(state, node, i);
+      extension.beforeMountItem(extensionState, node, i);
     }
-    extension.afterMount(state);
+    extension.afterMount(extensionState);
 
-    assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
-    assertThat(extension.getPreviousTopsIndex()).isEqualTo(5);
+    assertThat(extension.getPreviousBottomsIndex(state)).isEqualTo(0);
+    assertThat(extension.getPreviousTopsIndex(state)).isEqualTo(5);
 
     final IncrementalMountExtensionInput incrementalMountExtensionInput2 = new TestInput(3);
-    extension.beforeMount(state, incrementalMountExtensionInput2, new Rect(0, 0, 10, 0));
+    extension.beforeMount(extensionState, incrementalMountExtensionInput2, new Rect(0, 0, 10, 0));
     for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
         i < size;
         i++) {
       final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
-      extension.beforeMountItem(state, node, i);
+      extension.beforeMountItem(extensionState, node, i);
     }
-    extension.afterMount(state);
+    extension.afterMount(extensionState);
 
-    extension.onVisibleBoundsChanged(state, new Rect(0, 0, 10, 50));
+    extension.onVisibleBoundsChanged(extensionState, new Rect(0, 0, 10, 50));
 
-    assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
-    assertThat(extension.getPreviousTopsIndex()).isEqualTo(3);
+    assertThat(extension.getPreviousBottomsIndex(state)).isEqualTo(0);
+    assertThat(extension.getPreviousTopsIndex(state)).isEqualTo(3);
   }
 
   final class TestInput implements IncrementalMountExtensionInput, MountDelegateInput {

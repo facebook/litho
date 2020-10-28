@@ -37,7 +37,7 @@ public class ExtensionState<State> {
     return mMountDelegate;
   }
 
-  State getState() {
+  public State getState() {
     return mState;
   }
 

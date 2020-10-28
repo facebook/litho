@@ -104,11 +104,13 @@ public class LithoHostListenerCoordinator {
     }
 
     mIncrementalMountExtension =
-        new IncrementalMountExtension(lithoView.shouldAcquireDuringMount());
+        IncrementalMountExtension.getInstance(lithoView.shouldAcquireDuringMount());
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
-    addAttachDetachExtension(mIncrementalMountExtension.getAttachDetachBinder());
+    addAttachDetachExtension(
+        mIncrementalMountExtension.getAttachDetachBinder(
+            mMountDelegateTarget.getExtensionState(mIncrementalMountExtension)));
   }
 
   void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {

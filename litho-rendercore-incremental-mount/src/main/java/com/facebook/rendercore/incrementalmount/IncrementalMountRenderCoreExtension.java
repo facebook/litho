@@ -13,6 +13,7 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class IncrementalMountRenderCoreExtension
-    extends RenderCoreExtension<IncrementalMountExtensionInput, Void> {
+    extends RenderCoreExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
   public static final Comparator<IncrementalMountOutput> sTopsComparator =
       new Comparator<IncrementalMountOutput>() {
@@ -71,7 +72,7 @@ public class IncrementalMountRenderCoreExtension
 
   public IncrementalMountRenderCoreExtension(final InputProvider<?> provider) {
     mLayoutResultVisitor = new Visitor(provider);
-    mMountExtension = new IncrementalMountExtension(true);
+    mMountExtension = IncrementalMountExtension.getInstance(true);
   }
 
   @Override
@@ -80,7 +81,8 @@ public class IncrementalMountRenderCoreExtension
   }
 
   @Override
-  public MountExtension<IncrementalMountExtensionInput, Void> getMountExtension() {
+  public MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState>
+      getMountExtension() {
     return mMountExtension;
   }
 
