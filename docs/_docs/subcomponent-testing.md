@@ -300,7 +300,7 @@ public void testHasBackground() {
 
 For very simple cases, it can sometimes be enough to verify the mere presence
 of a sub-component of a certain class. For these cases, we have the
-[SubComponent.of](/javadoc/com/facebook/litho/testing/SubComponent) API which
+[SubComponent.of](/javadoc/com/facebook/litho/testing/subcomponents/SubComponent) API which
 works without any code generation.
 
 In the following example, we use the `hasSubComponents` method on the AssertJ

@@ -186,7 +186,7 @@ implements <a href="https://d.android.com/reference/java/lang/Cloneable.html?is-
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../com/facebook/litho/Component.Builder.html" title="type parameter in Component.Builder">T</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../com/facebook/litho/Component.Builder.html#accessibilityHeading-boolean-">accessibilityHeading</a></span>(boolean&nbsp;isHeading)</code>
-<div class="block">Ports <a href="https://d.android.com/reference/android/view/ViewCompat.html?is-external=true#setAccessibilityHeading" title="class or interface in android.view"><code>ViewCompat</code></a> into components world.</div>
+<div class="block">Ports <a href="https://developer.android.com/reference/androidx/core/view/ViewCompat#setAccessibilityHeading(android.view.View,%20boolean)" title="class or interface in android.view"><code>ViewCompat</code></a> into components world.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -1091,15 +1091,13 @@ implements <a href="https://d.android.com/reference/java/lang/Cloneable.html?is-
 <li class="blockList">
 <h4>accessibilityHeading</h4>
 <pre>public&nbsp;<a href="../../../com/facebook/litho/Component.Builder.html" title="type parameter in Component.Builder">T</a>&nbsp;accessibilityHeading(boolean&nbsp;isHeading)</pre>
-<div class="block">Ports <a href="https://d.android.com/reference/android/view/ViewCompat.html?is-external=true#setAccessibilityHeading" title="class or interface in android.view"><code>ViewCompat</code></a> into components world. However,
+<div class="block">Ports <a href="https://developer.android.com/reference/androidx/core/view/ViewCompat#setAccessibilityHeading(android.view.View,%20boolean)" title="class or interface in android.view"><code>ViewCompat</code></a> into components world. However,
  since the aforementioned ViewCompat's method is available only on API 19 and above, calling
  this method on lower APIs will have no effect. On the legit versions, on the other hand,
  calling this method will lead to the component being treated as a heading. The
  AccessibilityHeading property allows accessibility services to help users navigate directly
  from one heading to the next. See <a
- href="https://developer.android.com/reference/android/support/v4/view/accessibility/
- AccessibilityNodeInfoCompat#setheading">https://developer.android.com/reference/android/
- support/v4/view/accessibility/AccessibilityNodeInfoCompat#setheading</a> for more
+ href="https://developer.android.com/reference/androidx/core/view/accessibility/AccessibilityNodeInfoCompat#setHeading(boolean)">https://developer.android.com/reference/androidx/core/view/accessibility/AccessibilityNodeInfoCompat#setHeading(boolean)</a> for more
  information.
 
  <p>Default: false</div>
