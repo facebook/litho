@@ -55,8 +55,6 @@ public class MountDelegate {
   }
 
   void unregisterAllExtensions() {
-    resetExtensionReferenceCount();
-
     for (MountExtension mountExtension : mMountExtensions) {
       mExtensionStates.remove(mountExtension);
     }

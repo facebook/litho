@@ -625,6 +625,8 @@ public class MountState implements MountDelegateTarget {
       if (mRenderTree != null && mRenderTree.getExtensionResults() != null) {
         mMountDelegate.unregisterAllExtensions();
       }
+
+      mMountDelegate.resetExtensionReferenceCount();
     }
   }
 
