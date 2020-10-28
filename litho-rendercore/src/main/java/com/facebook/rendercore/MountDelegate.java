@@ -158,7 +158,8 @@ public class MountDelegate {
     }
 
     for (MountExtension<?, ?> extension : mMountExtensions) {
-      extension.resetAcquiredReferences();
+      final ExtensionState state = getExtensionState(extension);
+      state.resetAcquiredReferences();
     }
 
     mReferenceCountMap.clear();

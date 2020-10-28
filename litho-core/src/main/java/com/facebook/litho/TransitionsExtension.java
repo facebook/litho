@@ -126,12 +126,12 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
   @Override
   public void onUnmount(ExtensionState<Void> extensionState) {
-    resetAcquiredReferences();
+    extensionState.resetAcquiredReferences();
   }
 
   @Override
   public void onUnbind(ExtensionState<Void> extensionState) {
-    resetAcquiredReferences();
+    extensionState.resetAcquiredReferences();
   }
 
   /**
@@ -186,7 +186,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       if (mTransitionManager != null) {
         mTransitionManager.finishUndeclaredTransitions();
       }
-      resetAcquiredReferences();
+      mExtensionState.resetAcquiredReferences();
       if (!mAnimatingTransitionIds.isEmpty()) {
         regenerateAnimationLockedIndices(input);
       }
@@ -217,7 +217,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       endUnmountDisappearingItem(group);
     }
 
-    resetAcquiredReferences();
+    mExtensionState.resetAcquiredReferences();
     mDisappearingMountItems.clear();
     mLockedDisappearingMountitems.clear();
     mAnimatingTransitionIds.clear();
@@ -432,18 +432,16 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         for (int j = i; j <= lastDescendantIndex; j++) {
           if (getMountTarget(mExtensionState).getMountItemAt(j) == null) {
             // We need to release any mount reference to this because we need to force mount here.
-            if (ownsReference(mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
-              releaseMountReference(
-                  mExtensionState,
-                  mLastTransitionsExtensionInput.getMountableOutputAt(j),
-                  j,
-                  false);
+            if (mExtensionState.ownsReference(
+                mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
+              mExtensionState.releaseMountReference(
+                  mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
             }
-            acquireMountReference(
-                mExtensionState, mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
+            mExtensionState.acquireMountReference(
+                mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
             // Here we have to release the ref count without mounting.
-            releaseMountReference(
-                mExtensionState, mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+            mExtensionState.releaseMountReference(
+                mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
           }
           mLockedDisappearingMountitems.add(getMountTarget(mExtensionState).getMountItemAt(j));
         }
@@ -689,12 +687,12 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     for (int i = index; i <= lastDescendantIndex; i++) {
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
       if (increment) {
-        if (!ownsReference(renderTreeNode)) {
-          acquireMountReference(mExtensionState, renderTreeNode, i, false);
+        if (!mExtensionState.ownsReference(renderTreeNode)) {
+          mExtensionState.acquireMountReference(renderTreeNode, i, false);
         }
       } else {
-        if (ownsReference(renderTreeNode)) {
-          releaseMountReference(mExtensionState, renderTreeNode, i, false);
+        if (mExtensionState.ownsReference(renderTreeNode)) {
+          mExtensionState.releaseMountReference(renderTreeNode, i, false);
         }
       }
     }
@@ -704,15 +702,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
       if (increment) {
         // We use the position as 0 as we are not mounting it, just acquiring reference.
-        if (!ownsReference(parentRenderTreeNode)) {
-          acquireMountReference(mExtensionState, parentRenderTreeNode, 0, false);
+        if (!mExtensionState.ownsReference(parentRenderTreeNode)) {
+          mExtensionState.acquireMountReference(parentRenderTreeNode, 0, false);
         }
-        if (!ownsReference(parentRenderTreeNode)) {
-          acquireMountReference(mExtensionState, parentRenderTreeNode, 0, false);
+        if (!mExtensionState.ownsReference(parentRenderTreeNode)) {
+          mExtensionState.acquireMountReference(parentRenderTreeNode, 0, false);
         }
       } else {
-        if (ownsReference(parentRenderTreeNode)) {
-          releaseMountReference(mExtensionState, parentRenderTreeNode, 0, false);
+        if (mExtensionState.ownsReference(parentRenderTreeNode)) {
+          mExtensionState.releaseMountReference(parentRenderTreeNode, 0, false);
         }
       }
       parentRenderTreeNode = parentRenderTreeNode.getParent();
@@ -781,7 +779,8 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
       if (renderUnit instanceof LithoRenderUnit) {
         final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-        if (ownsReference(renderUnit.getId()) && output.getComponent().hasChildLithoViews()) {
+        if (mExtensionState.ownsReference(renderUnit.getId())
+            && output.getComponent().hasChildLithoViews()) {
           final View view = (View) content;
           MountUtils.ensureAllLithoViewChildrenAreMounted(view);
         }

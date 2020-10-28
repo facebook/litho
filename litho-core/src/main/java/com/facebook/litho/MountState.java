@@ -3446,7 +3446,10 @@ class MountState
 
   private boolean isAnimationLocked(RenderTreeNode renderTreeNode, int index) {
     if (mTransitionsExtension != null) {
-      return mTransitionsExtension.ownsReference(renderTreeNode);
+      if (mTransitionsExtensionState == null) {
+        throw new IllegalStateException("Need a state when using the TransitionsExtension.");
+      }
+      return mTransitionsExtensionState.ownsReference(renderTreeNode);
     }
     return isAnimationLocked(index);
   }

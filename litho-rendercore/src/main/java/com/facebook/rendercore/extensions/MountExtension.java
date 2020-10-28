@@ -25,8 +25,6 @@ import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Mount extension which can be registered by a MountState as an extension which can override
@@ -37,17 +35,11 @@ import java.util.Set;
 @OkToExtend
 public abstract class MountExtension<Input, State> {
 
-  private Set<Long> mLayoutOutputMountRefs = new HashSet<>();
-
   public final ExtensionState<State> createExtensionState(@Nullable MountDelegate mountDelegate) {
     return new ExtensionState(mountDelegate, createState());
   }
 
   protected abstract State createState();
-
-  public void resetAcquiredReferences() {
-    mLayoutOutputMountRefs = new HashSet<>();
-  }
 
   protected static @Nullable Host getRootHost(@Nullable ExtensionState extensionState) {
     if (extensionState == null) {
@@ -76,40 +68,6 @@ public abstract class MountExtension<Input, State> {
     return extensionState.getMountDelegate().getContentAt(position);
   }
 
-  protected void acquireMountReference(
-      ExtensionState<State> extensionState, RenderTreeNode node, int position, boolean isMounting) {
-    acquireMountReference(extensionState, node.getRenderUnit().getId(), position, isMounting);
-  }
-
-  protected void acquireMountReference(
-      ExtensionState<State> extensionState, long id, int position, boolean isMounting) {
-    if (ownsReference(id)) {
-      throw new IllegalStateException("Cannot acquire the same reference more than once.");
-    }
-
-    mLayoutOutputMountRefs.add(id);
-    extensionState.getMountDelegate().acquireMountRef(id, position, isMounting);
-  }
-
-  protected void releaseMountReference(
-      ExtensionState<State> extensionState,
-      RenderTreeNode renderTreeNode,
-      int position,
-      boolean isMounting) {
-    releaseMountReference(
-        extensionState, renderTreeNode.getRenderUnit().getId(), position, isMounting);
-  }
-
-  protected void releaseMountReference(
-      ExtensionState<State> extensionState, long id, int position, boolean isMounting) {
-    if (!ownsReference(id)) {
-      throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
-    }
-
-    mLayoutOutputMountRefs.remove(id);
-    extensionState.getMountDelegate().releaseMountRef(id, position, isMounting);
-  }
-
   protected static boolean isLockedForMount(
       ExtensionState extensionState, RenderTreeNode renderTreeNode) {
     return isLockedForMount(extensionState, renderTreeNode.getRenderUnit().getId());
@@ -117,16 +75,6 @@ public abstract class MountExtension<Input, State> {
 
   protected static boolean isLockedForMount(ExtensionState extensionState, long id) {
     return extensionState.getMountDelegate().isLockedForMount(id);
-  }
-
-  // TODO: T68620328 This method should be roll back to being protected once the transition
-  // extension test ends.
-  public boolean ownsReference(RenderTreeNode renderTreeNode) {
-    return ownsReference(renderTreeNode.getRenderUnit().getId());
-  }
-
-  public boolean ownsReference(long id) {
-    return mLayoutOutputMountRefs.contains(id);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

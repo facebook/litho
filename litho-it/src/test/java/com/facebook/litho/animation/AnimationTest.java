@@ -1157,7 +1157,7 @@ public class AnimationTest {
     lithoView1.setComponentTree(null);
     LithoView lithoView2 = new LithoView(componentContext);
     lithoView2.setComponentTree(animatingComponentTree);
-    mLithoViewRule.useLithoView(lithoView2);
+    mLithoViewRule.useLithoView(lithoView2).attachToWindow().measure().layout();
     animatingComponentTree.setRoot(getNonAnimatingComponent());
     mStateCaller.update();
     mTransitionTestRule.step(1);
