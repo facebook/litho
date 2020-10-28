@@ -22,11 +22,11 @@ import com.facebook.rendercore.RenderUnit;
 
 public class IncrementalMountBinder implements RenderUnit.Binder<RenderUnit, Object> {
 
-  private final IncrementalMountExtension extension;
+  private IncrementalMountExtensionInput input;
   private boolean isUpdating = false;
 
-  public IncrementalMountBinder(IncrementalMountExtension extension) {
-    this.extension = extension;
+  void updateInput(IncrementalMountExtensionInput input) {
+    this.input = input;
   }
 
   @Override
@@ -43,14 +43,15 @@ public class IncrementalMountBinder implements RenderUnit.Binder<RenderUnit, Obj
   public void bind(
       final Context context,
       final Object content,
-      final RenderUnit lithoRenderUnit,
+      final RenderUnit renderUnit,
       final @Nullable Object layoutData) {
     if (!isUpdating) {
       return;
     }
 
     isUpdating = false;
-    extension.recursivelyNotifyVisibleBoundsChanged(lithoRenderUnit.getId(), content);
+    IncrementalMountExtension.recursivelyNotifyVisibleBoundsChanged(
+        input, renderUnit.getId(), content);
   }
 
   @Override

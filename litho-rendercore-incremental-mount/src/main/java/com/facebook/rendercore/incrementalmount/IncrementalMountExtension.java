@@ -56,7 +56,7 @@ public class IncrementalMountExtension
 
   public IncrementalMountExtension(final boolean acquireReferencesDuringMount) {
     mAcquireReferencesDuringMount = acquireReferencesDuringMount;
-    mAttachDetachBinder = new IncrementalMountBinder(this);
+    mAttachDetachBinder = new IncrementalMountBinder();
   }
 
   @Override
@@ -66,6 +66,7 @@ public class IncrementalMountExtension
       Rect localVisibleRect) {
     releaseAcquiredReferencesForRemovedItems(input);
     mInput = input;
+    mAttachDetachBinder.updateInput(input);
     mExtensionState = extensionState;
     mPreviousLocalVisibleRect.setEmpty();
 
@@ -170,8 +171,9 @@ public class IncrementalMountExtension
     return mAttachDetachBinder;
   }
 
-  void recursivelyNotifyVisibleBoundsChanged(final long id, final Object content) {
-    if (mInput != null && mInput.renderUnitWithIdHostsRenderTrees(id)) {
+  static void recursivelyNotifyVisibleBoundsChanged(
+      IncrementalMountExtensionInput input, final long id, final Object content) {
+    if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
       recursivelyNotifyVisibleBoundsChanged(content);
     }
   }
@@ -226,7 +228,7 @@ public class IncrementalMountExtension
       // If we're in the process of mounting now, we know the item we're updating is already
       // mounted and that MountState.mount will not be called. We have to call the binder
       // ourselves.
-      recursivelyNotifyVisibleBoundsChanged(id, content);
+      recursivelyNotifyVisibleBoundsChanged(mInput, id, content);
     }
   }
 
@@ -309,7 +311,7 @@ public class IncrementalMountExtension
         if (isLockedForMount(mExtensionState, id)) {
           final Object content = getContentWithId(id);
           if (content != null) {
-            recursivelyNotifyVisibleBoundsChanged(id, content);
+            recursivelyNotifyVisibleBoundsChanged(mInput, id, content);
           }
         }
       }
