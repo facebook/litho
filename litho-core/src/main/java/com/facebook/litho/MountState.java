@@ -207,11 +207,11 @@ class MountState
       mIncrementalMountExtensionState = getExtensionState(mIncrementalMountExtension);
     }
 
-    mVisibilityExtension = new VisibilityMountExtension();
+    mVisibilityExtension = VisibilityMountExtension.getInstance();
     // This is the default MountState usage - this extension doesn't need to get registered to a
     // MountDelegate.
     mVisibilityExtensionState = mVisibilityExtension.createExtensionState(null);
-    mVisibilityExtension.setRootHost(mLithoView);
+    VisibilityMountExtension.setRootHost(mVisibilityExtensionState, mLithoView);
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
@@ -1005,7 +1005,7 @@ class MountState
 
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
-    return mVisibilityExtension.getVisibilityIdToItemMap();
+    return VisibilityMountExtension.getVisibilityIdToItemMap(mVisibilityExtensionState);
   }
 
   @VisibleForTesting
@@ -1126,7 +1126,7 @@ class MountState
   }
 
   void clearVisibilityItems() {
-    mVisibilityExtension.clearVisibilityItems();
+    VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
   }
 
   private void registerHost(long id, ComponentHost host) {

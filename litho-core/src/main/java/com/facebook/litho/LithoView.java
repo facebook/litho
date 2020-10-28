@@ -838,7 +838,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       final VisibilityMountExtension visibilityOutputsExtension =
           mLithoHostListenerCoordinator.getVisibilityExtension();
       if (visibilityOutputsExtension != null) {
-        visibilityOutputsExtension.clearVisibilityItems();
+        VisibilityMountExtension.clearVisibilityItems(
+            mMountDelegateTarget.getExtensionState(visibilityOutputsExtension));
       }
     } else {
       mMountState.clearVisibilityItems();

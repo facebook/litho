@@ -20,10 +20,8 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
-import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
-import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 
 /**
@@ -40,25 +38,6 @@ public abstract class MountExtension<Input, State> {
   }
 
   protected abstract State createState();
-
-  protected static @Nullable Host getRootHost(@Nullable ExtensionState extensionState) {
-    if (extensionState == null) {
-      return null;
-    }
-
-    final MountDelegate mountDelegate = extensionState.getMountDelegate();
-
-    if (mountDelegate == null) {
-      return null;
-    }
-
-    MountItem root = mountDelegate.getMountDelegateTarget().getRootItem();
-    if (root != null) {
-      return (Host) root.getContent();
-    } else {
-      return null;
-    }
-  }
 
   protected static boolean isRootItem(ExtensionState extensionState, int position) {
     return extensionState.getMountDelegate().isRootItem(position);

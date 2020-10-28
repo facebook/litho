@@ -119,7 +119,7 @@ public class LithoHostListenerCoordinator {
           "Visibility processing has already been enabled on this coordinator");
     }
 
-    mVisibilityExtension = new VisibilityMountExtension();
+    mVisibilityExtension = VisibilityMountExtension.getInstance();
     mountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
     registerListener(mVisibilityExtension);
   }

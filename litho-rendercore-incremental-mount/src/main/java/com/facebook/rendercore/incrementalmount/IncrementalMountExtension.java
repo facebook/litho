@@ -328,7 +328,7 @@ public class IncrementalMountExtension
       }
     }
 
-    Host root = getRootHost(extensionState);
+    Host root = extensionState.getRootHost();
     final int height = root != null ? root.getHeight() : 0;
     if (localVisibleRect.bottom < height || state.mPreviousLocalVisibleRect.bottom < height) {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything

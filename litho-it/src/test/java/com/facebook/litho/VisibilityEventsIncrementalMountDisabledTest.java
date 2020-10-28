@@ -33,6 +33,8 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
+import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
@@ -1700,11 +1702,14 @@ public class VisibilityEventsIncrementalMountDisabledTest {
         Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
     List<MountExtension> extensions =
         Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
+    MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
     for (int i = 0, size = extensions.size(); i < size; i++) {
       if (extensions.get(i) instanceof VisibilityMountExtension) {
         VisibilityMountExtension visibilityOutputsExtension =
             (VisibilityMountExtension) extensions.get(i);
-        return visibilityOutputsExtension.getVisibilityIdToItemMap();
+        ExtensionState state = mountDelegateTarget.getExtensionState(visibilityOutputsExtension);
+
+        return visibilityOutputsExtension.getVisibilityIdToItemMap(state);
       }
     }
 

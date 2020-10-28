@@ -17,7 +17,9 @@
 package com.facebook.rendercore.extensions;
 
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +32,19 @@ public class ExtensionState<State> {
   ExtensionState(final @Nullable MountDelegate mountDelegate, final State state) {
     mMountDelegate = mountDelegate;
     mState = state;
+  }
+
+  public @Nullable Host getRootHost() {
+    if (mMountDelegate == null) {
+      return null;
+    }
+
+    MountItem root = mMountDelegate.getMountDelegateTarget().getRootItem();
+    if (root != null) {
+      return (Host) root.getContent();
+    } else {
+      return null;
+    }
   }
 
   @Nullable

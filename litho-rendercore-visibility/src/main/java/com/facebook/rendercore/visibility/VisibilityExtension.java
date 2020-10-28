@@ -24,17 +24,19 @@ import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.visibility.VisibilityExtension.Results;
+import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState;
 import java.util.LinkedList;
 import java.util.List;
 
-public class VisibilityExtension extends RenderCoreExtension<Results, Void> {
+public class VisibilityExtension
+    extends RenderCoreExtension<Results, VisibilityMountExtensionState> {
 
   private final Visitor visitor;
-  private final VisibilityMountExtension<Results> mountExtension;
+  private final VisibilityMountExtension<Results> mountExtension =
+      VisibilityMountExtension.getInstance();
 
   public VisibilityExtension(VisibilityOutput.Factory<?> factory) {
     visitor = new Visitor(factory);
-    mountExtension = new VisibilityMountExtension<>();
   }
 
   @Override
@@ -43,7 +45,7 @@ public class VisibilityExtension extends RenderCoreExtension<Results, Void> {
   }
 
   @Override
-  public MountExtension<Results, Void> getMountExtension() {
+  public MountExtension<Results, VisibilityMountExtensionState> getMountExtension() {
     return mountExtension;
   }
 
