@@ -211,6 +211,7 @@ class MaterialTextInputSpec {
         editTextTopPadding,
         editTextEndPadding,
         editTextBottomPadding);
+    textInputLayout.addView(editText);
 
     textInputLayout.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
@@ -304,7 +305,10 @@ class MaterialTextInputSpec {
 
   @OnCreateMountContent
   protected static MountableTextInputLayout onCreateMountContent(Context c) {
-    return new MountableTextInputLayout(c);
+    MountableTextInputLayout mountableTextInputLayout = new MountableTextInputLayout(c);
+    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
+    mountableTextInputLayout.addView(editText);
+    return mountableTextInputLayout;
   }
 
   @OnMount
@@ -346,7 +350,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
-    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c.getAndroidContext());
+    EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
     mountedEditTextRef.set(editText);
 
     TextInputSpec.setParams(
@@ -431,8 +435,6 @@ class MaterialTextInputSpec {
       int bottom = (editTextBottomPadding != UNSET) ? editTextBottomPadding : editText.getBottom();
       editText.setPadding(start, top, end, bottom);
     }
-
-    textInputLayout.addView(editText);
   }
 
   @OnBind
@@ -462,7 +464,6 @@ class MaterialTextInputSpec {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onUnmount(c, editText, mountedEditTextRef);
-    textInputLayout.reset();
   }
 
   @OnUnbind

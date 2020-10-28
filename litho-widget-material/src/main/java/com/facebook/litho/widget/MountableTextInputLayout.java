@@ -19,8 +19,6 @@ package com.google.android.material.textfield;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
-import androidx.annotation.NonNull;
 
 public class MountableTextInputLayout extends TextInputLayout {
 
@@ -28,19 +26,6 @@ public class MountableTextInputLayout extends TextInputLayout {
 
   public MountableTextInputLayout(Context context) {
     super(context, null);
-  }
-
-  @Override
-  public void addView(
-      @NonNull View child, int index, @NonNull final ViewGroup.LayoutParams params) {
-    super.addView(child, index, params);
-    setOnFocusChangeListener(onFocusChangeListener);
-  }
-
-  // Reset the TextInputLayout so that it can be recycled and assigned a new EditText.
-  public void reset() {
-    ((ViewGroup) getChildAt(0)).removeView(editText);
-    editText = null;
   }
 
   // Delegate the focus listener to the EditText
