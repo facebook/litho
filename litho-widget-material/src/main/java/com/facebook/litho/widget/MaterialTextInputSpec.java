@@ -29,6 +29,7 @@ import android.text.method.MovementMethod;
 import android.view.KeyEvent;
 import android.widget.EditText;
 import androidx.core.util.ObjectsCompat;
+import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -78,6 +79,8 @@ import javax.annotation.Nullable;
     })
 class MaterialTextInputSpec {
 
+  private static final int UNSET = Integer.MIN_VALUE;
+
   @PropDefault
   protected static final ColorStateList textColorStateList = TextInputSpec.textColorStateList;
 
@@ -101,6 +104,10 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int maxLines = TextInputSpec.maxLines;
   @PropDefault protected static final MovementMethod movementMethod = TextInputSpec.movementMethod;
   @PropDefault protected static final int boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_NONE;
+  @PropDefault protected static final int editTextStartPadding = UNSET;
+  @PropDefault protected static final int editTextTopPadding = UNSET;
+  @PropDefault protected static final int editTextEndPadding = UNSET;
+  @PropDefault protected static final int editTextBottomPadding = UNSET;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -204,6 +211,7 @@ class MaterialTextInputSpec {
         editTextTopPadding,
         editTextEndPadding,
         editTextBottomPadding);
+    textInputLayout.addView(editText);
 
     textInputLayout.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
@@ -240,6 +248,12 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.STRING) Diff<CharSequence> error,
       @Prop(optional = true) Diff<Boolean> counterEnabled,
       @Prop(optional = true) Diff<Integer> counterMaxLength,
+      @Prop(optional = true) @TextInputLayout.BoxBackgroundMode Diff<Integer> boxBackgroundMode,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> boxStrokeWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextStartPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextTopPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextEndPadding,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextBottomPadding,
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedEditTextRef,
       @State Diff<AtomicReference<CharSequence>> savedText) {
@@ -275,7 +289,14 @@ class MaterialTextInputSpec {
             savedText);
     if (shouldUpdateEditText
         || !ObjectsCompat.equals(counterEnabled.getPrevious(), counterEnabled.getNext())
-        || !ObjectsCompat.equals(counterMaxLength.getPrevious(), counterMaxLength.getNext())) {
+        || !ObjectsCompat.equals(counterMaxLength.getPrevious(), counterMaxLength.getNext())
+        || !ObjectsCompat.equals(boxBackgroundMode.getPrevious(), boxBackgroundMode.getNext())
+        || !ObjectsCompat.equals(boxStrokeWidth.getPrevious(), boxStrokeWidth.getNext())
+        || !ObjectsCompat.equals(editTextStartPadding.getPrevious(), editTextStartPadding.getNext())
+        || !ObjectsCompat.equals(editTextTopPadding.getPrevious(), editTextTopPadding.getNext())
+        || !ObjectsCompat.equals(editTextEndPadding.getPrevious(), editTextEndPadding.getNext())
+        || !ObjectsCompat.equals(
+            editTextBottomPadding.getPrevious(), editTextBottomPadding.getNext())) {
       return true;
     }
 
@@ -284,7 +305,10 @@ class MaterialTextInputSpec {
 
   @OnCreateMountContent
   protected static MountableTextInputLayout onCreateMountContent(Context c) {
-    return new MountableTextInputLayout(c);
+    MountableTextInputLayout mountableTextInputLayout = new MountableTextInputLayout(c);
+    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
+    mountableTextInputLayout.addView(editText);
+    return mountableTextInputLayout;
   }
 
   @OnMount
@@ -326,7 +350,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
-    EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c.getAndroidContext());
+    EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
     mountedEditTextRef.set(editText);
 
     TextInputSpec.setParams(
@@ -397,10 +421,20 @@ class MaterialTextInputSpec {
     // vertical center issue
     textInputLayout.setBoxBackgroundMode(boxBackgroundMode);
     textInputLayout.setBoxStrokeWidth(boxStrokeWidth);
-    editText.setPaddingRelative(
-        editTextStartPadding, editTextTopPadding, editTextEndPadding, editTextBottomPadding);
-
-    textInputLayout.addView(editText);
+    if (editTextStartPadding != UNSET
+        || editTextTopPadding != UNSET
+        || editTextEndPadding != UNSET
+        || editTextBottomPadding != UNSET) {
+      int start =
+          (editTextStartPadding != UNSET)
+              ? editTextStartPadding
+              : ViewCompat.getPaddingStart(editText);
+      int top = (editTextTopPadding != UNSET) ? editTextTopPadding : editText.getPaddingTop();
+      int end =
+          (editTextEndPadding != UNSET) ? editTextEndPadding : ViewCompat.getPaddingEnd(editText);
+      int bottom = (editTextBottomPadding != UNSET) ? editTextBottomPadding : editText.getBottom();
+      editText.setPadding(start, top, end, bottom);
+    }
   }
 
   @OnBind
@@ -430,7 +464,6 @@ class MaterialTextInputSpec {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onUnmount(c, editText, mountedEditTextRef);
-    textInputLayout.reset();
   }
 
   @OnUnbind
