@@ -246,7 +246,7 @@ public class ResolveRedSymbolsAction extends AnAction {
                   project,
                   symbolsScope,
                   LithoPluginUtils.getLithoComponentSpecNameFromComponent(redSymbol)))
-          .filter(LithoPluginUtils::isLayoutSpec)
+          .filter(cls -> LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls))
           .forEach(
               specCls -> {
                 final String guessedComponentQN =

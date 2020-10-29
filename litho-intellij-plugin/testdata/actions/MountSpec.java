@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-class ResolveRedSymbolsActionTest {
-  void testRedSymbol() {
-    final Inner inner = new Inner();
-    Layout.create();
-    Mount.create();
-  }
-
-  static class Inner {}
-}
+@com.facebook.litho.annotations.MountSpec
+class MountSpec {}

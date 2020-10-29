@@ -48,31 +48,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
+  private Project project;
+  private PsiJavaFile pf;
+  private VirtualFile vf;
+  private Editor editor;
 
   public ResolveRedSymbolsActionTest() {
     super("testdata/actions");
   }
 
-  @Ignore("T73932936")
-  @Test
-  public void resolveRedSymbols() throws IOException {
-    final Project project = testHelper.getFixture().getProject();
-    final PsiJavaFile pf = (PsiJavaFile) testHelper.configure("ResolveRedSymbolsActionTest.java");
-    final VirtualFile vf = pf.getViewProvider().getVirtualFile();
-    final Editor editor = testHelper.getFixture().getEditor();
+  @Before
+  @Override
+  public void setUp() throws Exception {
+    PsiSearchUtils.clearMocks();
+    super.setUp();
 
-    final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
+    project = testHelper.getFixture().getProject();
+    pf = (PsiJavaFile) testHelper.configure("ResolveRedSymbolsActionTest.java");
+    vf = pf.getViewProvider().getVirtualFile();
+    editor = testHelper.getFixture().getEditor();
+  }
+
+  @After
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    PsiSearchUtils.clearMocks();
+  }
+
+  @Test
+  public void resolveRedSymbols_forLayoutSpec_resolves() throws Exception {
+    resolveRedSymbols_forSpec_resolves("Layout");
+  }
+
+  @Test
+  public void resolveRedSymbols_forMountSpec_resolves() throws Exception {
+    resolveRedSymbols_forSpec_resolves("Mount");
+  }
+
+  public void resolveRedSymbols_forSpec_resolves(String SpecType) throws IOException {
+    final PsiFile specPsiFile = testHelper.configure(SpecType + "Spec.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
               // Search and highlights in test env are not populated, do it manually
-              PsiSearchUtils.addMock(
-                  "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
+              PsiClass mockClass = PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class);
+              PsiSearchUtils.addMock(SpecType + "Spec", mockClass);
               parseDocument(editor.getDocument(), pf, project);
 
               final HashMap<String, String> eventMetadata = new HashMap<>();
@@ -85,12 +112,12 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
                   ignore -> {
                     assertThat(eventMetadata).isNotEmpty();
                   });
-              assertThat(eventMetadata.get("resolved_red_symbols")).isEqualTo("[Layout]");
+              assertThat(eventMetadata.get("resolved_red_symbols")).isEqualTo("[" + SpecType + "]");
 
               final PsiClass cached =
-                  ComponentsCacheService.getInstance(project).getComponent("Layout");
+                  ComponentsCacheService.getInstance(project).getComponent(SpecType);
               assertThat(cached).isNotNull();
-              assertThat(cached.getName()).isEqualTo("Layout");
+              assertThat(cached.getName()).isEqualTo(SpecType);
             });
   }
 
