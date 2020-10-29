@@ -179,7 +179,6 @@ class MountState
   private @Nullable ExtensionState mIncrementalMountExtensionState;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable ExtensionState mTransitionsExtensionState;
-  private @Nullable MountStateLogMessageProvider mMountStateLogMessageProvider;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -201,7 +200,6 @@ class MountState
         && ComponentsConfiguration.useIncrementalMountExtension) {
       mIncrementalMountExtension =
           IncrementalMountExtension.getInstance(mAcquireReferencesDuringMount);
-      mMountStateLogMessageProvider = new MountStateLogMessageProvider();
       registerMountDelegateExtension(mIncrementalMountExtension);
 
       mIncrementalMountExtensionState = getExtensionState(mIncrementalMountExtension);
@@ -545,85 +543,6 @@ class MountState
     mount(layoutState, true);
   }
 
-  private class MountStateLogMessageProvider implements ComponentHost.ExceptionLogMessageProvider {
-
-    private @Nullable LayoutState mLayoutState;
-    private StringBuilder sbExtra = new StringBuilder();
-    private boolean shouldLogExtra = false;
-
-    void appendExtraMessage(String extra) {
-      sbExtra.append(extra);
-    }
-
-    void resetExtra() {
-      shouldLogExtra = false;
-      sbExtra = new StringBuilder();
-    }
-
-    @Override
-    public StringBuilder getLogMessage() {
-      final StringBuilder sb = new StringBuilder();
-      if (mLayoutState == null) {
-        sb.append("No layout state");
-
-        return sb;
-      }
-
-      sb.append("{\n")
-          .append("extra: { " + sbExtra.toString() + "}\n")
-          .append(" mountableOutputs: {\n");
-      for (int i = 0, size = mLayoutState.getMountableOutputCount(); i < size; i++) {
-        final RenderTreeNode renderTreeNode = mLayoutState.getMountableOutputAt(i);
-        if (renderTreeNode == null) {
-          sb.append("  ").append(i).append(": null,\n");
-        } else {
-          final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
-          sb.append("  ")
-              .append(i)
-              .append(": {\n")
-              .append("    id: ")
-              .append(layoutOutput.getId())
-              .append(",\n")
-              .append("    bounds: ")
-              .append(layoutOutput.getBounds())
-              .append(",\n")
-              .append("    component: ")
-              .append(layoutOutput.getComponent().getSimpleName())
-              .append(",\n")
-              .append("    isMountable: ")
-              .append(isMountable(renderTreeNode, i))
-              .append("\n  },\n");
-        }
-      }
-      sb.append(" }\n");
-
-      sb.append(" mountedItems: {\n");
-      for (int i = 0, size = getItemCount(); i < size; i++) {
-        final MountItem mountItem = getItemAt(i);
-        if (mountItem == null) {
-          sb.append("  ").append(i).append(": null,\n");
-        } else {
-          final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-          sb.append("  ")
-              .append(i)
-              .append(": {\n")
-              .append("    id: ")
-              .append(layoutOutput.getId())
-              .append(",\n")
-              .append("    contentName: ")
-              .append(mountItem.getContent().getClass().getSimpleName())
-              .append(",\n")
-              .append("    host: ")
-              .append(layoutOutput.getHostMarker())
-              .append("\n  },\n");
-        }
-      }
-      sb.append(" }\n").append("}");
-
-      return sb;
-    }
-  }
-
   /**
    * Mount only. Similar shape to RenderCore's mount. For extras such as incremental mount,
    * visibility outputs etc register an extension. To do: extract transitions logic from here.
@@ -633,20 +552,6 @@ class MountState
 
     if (layoutState == null) {
       throw new IllegalStateException("Trying to mount a null layoutState");
-    }
-
-    if (mMountStateLogMessageProvider != null) {
-      mMountStateLogMessageProvider.mLayoutState = layoutState;
-      mMountStateLogMessageProvider.resetExtra();
-
-      for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
-        final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
-        final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
-        if (layoutOutput.getComponent().getSimpleName().contains("CornersClipUnderlay")
-            || layoutOutput.getComponent().getSimpleName().contains("CornersRestoreOverlay")) {
-          mMountStateLogMessageProvider.shouldLogExtra = true;
-        }
-      }
     }
 
     if (mIsMounting) {
@@ -710,25 +615,6 @@ class MountState
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
       final boolean isMountable = isMountable(renderTreeNode, i);
-
-      if (mMountStateLogMessageProvider != null && mMountStateLogMessageProvider.shouldLogExtra) {
-        mMountStateLogMessageProvider.appendExtraMessage(
-            "    Mount index "
-                + i
-                + ": "
-                + component.getSimpleName()
-                + " id "
-                + layoutOutput.getId()
-                + " hostId "
-                + layoutOutput.getHostMarker()
-                + ". IsMounted: "
-                + isMounted
-                + ". IsMountable: "
-                + isMountable
-                + ". Bounds "
-                + layoutOutput.getBounds()
-                + "\n");
-      }
 
       if (!isMountable) {
         ComponentsSystrace.endSection();
@@ -1639,10 +1525,6 @@ class MountState
     final Object content =
         ComponentsPools.acquireMountContent(
             mContext.getAndroidContext(), component, mRecyclingMode);
-
-    if (mMountStateLogMessageProvider != null) {
-      host.mExceptionLogMessageProvider = mMountStateLogMessageProvider;
-    }
 
     final ComponentContext context = getContextForComponent(component, layoutOutput);
     component.mount(context, content);
@@ -3139,9 +3021,6 @@ class MountState
     for (int i = index; i <= lastDescendantIndex; i++) {
       if (increment) {
         mAnimationLockedIndices[i]++;
-        if (mMountStateLogMessageProvider != null && mMountStateLogMessageProvider.shouldLogExtra) {
-          mMountStateLogMessageProvider.appendExtraMessage("Lock animation for position " + i);
-        }
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
           ComponentsReporter.emitMessage(
@@ -3149,10 +3028,6 @@ class MountState
               INVALID_ANIM_LOCK_INDICES,
               "Decremented animation lock count below 0!");
           mAnimationLockedIndices[i] = 0;
-          if (mMountStateLogMessageProvider != null
-              && mMountStateLogMessageProvider.shouldLogExtra) {
-            mMountStateLogMessageProvider.appendExtraMessage("Unlock animation for position " + i);
-          }
         }
       }
     }
@@ -3163,10 +3038,6 @@ class MountState
       final int hostIndex = layoutState.getPositionForId(hostId);
       if (increment) {
         mAnimationLockedIndices[hostIndex]++;
-        if (mMountStateLogMessageProvider != null && mMountStateLogMessageProvider.shouldLogExtra) {
-          mMountStateLogMessageProvider.appendExtraMessage(
-              "Lock animation for position " + hostIndex);
-        }
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
           ComponentsReporter.emitMessage(
@@ -3174,11 +3045,6 @@ class MountState
               INVALID_ANIM_LOCK_INDICES,
               "Decremented animation lock count below 0!");
           mAnimationLockedIndices[hostIndex] = 0;
-          if (mMountStateLogMessageProvider != null
-              && mMountStateLogMessageProvider.shouldLogExtra) {
-            mMountStateLogMessageProvider.appendExtraMessage(
-                "Unlock animation for position " + hostIndex);
-          }
         }
       }
       hostId = getLayoutOutput(layoutState.getMountableOutputAt(hostIndex)).getHostMarker();

@@ -1335,20 +1335,7 @@ public class ComponentHost extends Host {
         if (isTracing) {
           ComponentsSystrace.beginSection("draw: " + getMountItemName(mountItem));
         }
-        try {
-          ((Drawable) content).draw(mCanvas);
-        } catch (IllegalStateException e) {
-          if (mExceptionLogMessageProvider != null) {
-
-            final StringBuilder sb = mExceptionLogMessageProvider.getLogMessage();
-
-            sb.append("\n").append(getMountItemsLogInfo());
-
-            throw new IllegalStateException(e + "\n" + sb.toString());
-          }
-
-          throw e;
-        }
+        ((Drawable) content).draw(mCanvas);
         if (isTracing) {
           ComponentsSystrace.endSection();
         }
@@ -1359,39 +1346,6 @@ public class ComponentHost extends Host {
 
     private void end() {
       mCanvas = null;
-    }
-
-    private StringBuilder getMountItemsLogInfo() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("ComponentHost mountItems: \n");
-
-      if (mMountItems == null) {
-        sb.append("{null mount items}");
-      } else {
-        sb.append("{\n")
-            .append("  size: ")
-            .append(mMountItems.size())
-            .append(",\n")
-            .append("  items: {\n");
-        for (int i = 0, size = mMountItems.size(); i < size; i++) {
-          final MountItem mountItem = mMountItems.valueAt(i);
-          final String mountContentName = mountItem.getContent().getClass().getSimpleName();
-
-          sb.append("    " + i + ": {\n")
-              .append("      mountContent: ")
-              .append(mountContentName)
-              .append(", \n")
-              .append("      bounds: ")
-              .append(getLayoutOutput(mountItem).getBounds())
-              .append(", \n")
-              .append("      isBound: ")
-              .append(mountItem.isBound())
-              .append("\n    },\n");
-        }
-        sb.append("  }\n}");
-      }
-
-      return sb;
     }
   }
 
