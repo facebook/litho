@@ -42,6 +42,7 @@ import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -196,20 +197,25 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     final DebugComponentTimeMachine.TreeRevisions timeline =
         DebugComponentTimeMachine.getTimeline(node);
     if (timeline != null) {
-      data.add(
-          new Named<>(
-              "Time Traveling",
-              new FlipperObject.Builder()
-                  .put(
-                      "Component Root",
-                      InspectorValue.immutable(InspectorValue.Type.Text, timeline.rootName))
-                  .put(
-                      "Revision",
-                      InspectorValue.mutable(
-                          InspectorValue.Type.Timeline,
-                          new InspectorValue.Timeline(
-                              makeTimeline(timeline), timeline.getSelected().getKey())))
-                  .build()));
+      final FlipperObject.Builder timeTravelDescriptionBuilder = new FlipperObject.Builder();
+      final String timelineDocsLink = ComponentsConfiguration.timelineDocsLink;
+      if (timelineDocsLink != null) {
+        timeTravelDescriptionBuilder.put(
+            "<DOCS>", InspectorValue.immutable(InspectorValue.Type.Text, timelineDocsLink));
+      }
+      final FlipperObject timeTravelDescription =
+          timeTravelDescriptionBuilder
+              .put(
+                  "Component Root",
+                  InspectorValue.immutable(InspectorValue.Type.Text, timeline.rootName))
+              .put(
+                  "Revision",
+                  InspectorValue.mutable(
+                      InspectorValue.Type.Timeline,
+                      new InspectorValue.Timeline(
+                          makeTimeline(timeline), timeline.getSelected().getKey())))
+              .build();
+      data.add(new Named<>("Time Traveling", timeTravelDescription));
     }
 
     return data;

@@ -279,4 +279,6 @@ public class ComponentsConfiguration {
 
   /** When {@code true} ComponentTree records state change snapshots */
   public static boolean isTimelineEnabled = isDebugModeEnabled;
+
+  public static @Nullable String timelineDocsLink = null;
 }
