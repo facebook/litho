@@ -40,7 +40,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -50,6 +49,7 @@ import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.FileContentUtilCore;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -280,7 +280,7 @@ public class ResolveRedSymbolsAction extends AnAction {
         new AddImportAction(project, (PsiReference) expression, editor, targetClass).execute();
       }
     }
-    VfsUtil.markDirtyAndRefresh(true, true, true, virtualFile);
+    FileContentUtilCore.reparseFiles(virtualFile);
     return true;
   }
 
