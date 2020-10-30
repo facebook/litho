@@ -19,12 +19,17 @@ package com.facebook.litho.intellij.actions;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiJavaFile;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -42,8 +47,16 @@ public class GenerateComponentAction extends AnAction {
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    getValidSpec(e)
-        .ifPresent(cls -> ComponentGenerateService.getInstance().updateComponentAsync(cls));
+    Optional<PsiClass> spec = getValidSpec(e);
+    spec.ifPresent(cls -> ComponentGenerateService.getInstance().updateComponentAsync(cls));
+    Map<String, String> eventMetadata = new HashMap<>();
+    PsiJavaFile file = (PsiJavaFile) e.getData(CommonDataKeys.PSI_FILE);
+    // Since GenerateComponentAction only appears on valid specs the file should not be null
+    if (file != null) {
+      eventMetadata.put(EventLogger.KEY_FILE, file.getPackageName() + "." + file.getName());
+    }
+    eventMetadata.put(EventLogger.KEY_RESULT, spec.isPresent() ? "success" : "fail");
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_GENERATE_COMPONENT, eventMetadata);
   }
 
   /**
