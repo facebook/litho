@@ -233,10 +233,12 @@ public class ComponentBodyGenerator {
           AnnotationSpec.builder(Prop.class)
               .addMember("resType", "$T.$L", ResType.class, prop.getResType())
               .addMember("optional", "$L", prop.isOptional());
+      TypeName propFieldTypeName = fieldTypeName;
       if (prop.hasVarArgs()) {
         propAnnotationBuilder.addMember("varArg", "$S", prop.getVarArgsSingleName());
+        propFieldTypeName =
+            KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(specModel, fieldTypeName);
       }
-      TypeName propFieldTypeName = KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName);
       final FieldSpec.Builder fieldBuilder =
           FieldSpec.builder(propFieldTypeName, prop.getName())
               .addAnnotations(prop.getExternalAnnotations())

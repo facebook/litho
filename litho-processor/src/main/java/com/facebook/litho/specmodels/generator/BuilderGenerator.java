@@ -31,7 +31,6 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
-import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
@@ -538,11 +537,7 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(
-                parameter(
-                    prop,
-                    KotlinSpecUtils.getFieldTypeName(specModel, dynamicValueType),
-                    prop.getName())),
+            Arrays.asList(parameter(prop, dynamicValueType, prop.getName())),
             prop.getName())
         .build();
   }
@@ -554,11 +549,7 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(
-                parameter(
-                    prop,
-                    KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()),
-                    prop.getName())),
+            Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
             "new $T($L)",
             dynamicValueType,
             prop.getName())
@@ -575,7 +566,10 @@ public class BuilderGenerator {
             Arrays.asList(
                 parameter(
                     prop,
-                    KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()),
+                    prop.hasVarArgs()
+                        ? KotlinSpecHelper.maybeRemoveWildcardFromVarArgsIfKotlinSpec(
+                            specModel, prop.getTypeName())
+                        : prop.getTypeName(),
                     prop.getName(),
                     extraAnnotations)),
             prop.getName())
@@ -584,11 +578,12 @@ public class BuilderGenerator {
 
   private static MethodSpec varArgBuilder(
       SpecModel specModel, PropModel prop, int requiredIndex, AnnotationSpec... extraAnnotations) {
+    ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getTypeName();
+    TypeName singleParameterType = parameterizedTypeName.typeArguments.get(0);
+    if (KotlinSpecHelper.isKotlinSpec(specModel)) {
+      singleParameterType = KotlinSpecHelper.getBaseTypeIfWildcard(singleParameterType);
+    }
     String varArgName = prop.getVarArgsSingleName();
-
-    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
-    final TypeName varArgTypeArgumentTypeName = varArgType.typeArguments.get(0);
-    final TypeName varArgTypeName = getParameterTypeName(specModel, varArgTypeArgumentTypeName);
 
     CodeBlock.Builder codeBlockBuilder =
         CodeBlock.builder()
@@ -596,7 +591,7 @@ public class BuilderGenerator {
             .addStatement("return this")
             .endControlFlow();
 
-    createListIfDefault(codeBlockBuilder, specModel, prop, varArgTypeName);
+    createListIfDefault(codeBlockBuilder, specModel, prop, singleParameterType);
 
     CodeBlock codeBlock =
         codeBlockBuilder
@@ -612,7 +607,7 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             varArgName,
-            Arrays.asList(parameter(prop, varArgTypeName, varArgName, extraAnnotations)),
+            Arrays.asList(parameter(prop, singleParameterType, varArgName, extraAnnotations)),
             codeBlock)
         .build();
   }
@@ -656,43 +651,6 @@ public class BuilderGenerator {
         .addStatement(
             "this.$L.$L = new $T()", componentMemberInstanceName, varArgPropName, listType)
         .endControlFlow();
-  }
-
-  private static TypeName getParameterTypeName(
-      SpecModel specModel, TypeName varArgTypeArgumentTypeName) {
-
-    final String rawVarArgType = varArgTypeArgumentTypeName.toString();
-    final boolean isKotlinSpec = specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON;
-
-    TypeName varArgTypeName;
-
-    if (isKotlinSpec) {
-      final boolean isNotJvmSuppressWildcardsAnnotated =
-          KotlinSpecUtils.isNotJvmSuppressWildcardsAnnotated(rawVarArgType);
-
-      /*
-       * If it is a JvmSuppressWildcards annotated type on a Kotlin Spec,
-       * we should fallback to previous type detection way.
-       * */
-      if (!isNotJvmSuppressWildcardsAnnotated) {
-        varArgTypeName = varArgTypeArgumentTypeName;
-      } else {
-        final String[] typeParts = rawVarArgType.split(" ");
-
-        // Just in case something has gone pretty wrong
-        if (typeParts.length < 3) {
-          varArgTypeName = varArgTypeArgumentTypeName;
-        } else {
-          // Calculate appropriate ClassName
-          final String pureTypeName = typeParts[2];
-          varArgTypeName = KotlinSpecUtils.buildClassName(pureTypeName);
-        }
-      }
-    } else {
-      // Fallback when it is a Java spec
-      varArgTypeName = varArgTypeArgumentTypeName;
-    }
-    return varArgTypeName;
   }
 
   private static MethodSpec varArgBuilderBuilder(

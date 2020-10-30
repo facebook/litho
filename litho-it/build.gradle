@@ -17,6 +17,7 @@
 import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -71,6 +72,7 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
+    implementation deps.kotlinStandardLib
 
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-sections-processor')
