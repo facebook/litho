@@ -68,11 +68,11 @@ public class IncrementalMountRenderCoreExtension
       };
 
   private final Visitor mLayoutResultVisitor;
-  private final IncrementalMountExtension mMountExtension;
+  private static final IncrementalMountExtension mMountExtension =
+      IncrementalMountExtension.getInstance(true);
 
   public IncrementalMountRenderCoreExtension(final InputProvider<?> provider) {
     mLayoutResultVisitor = new Visitor(provider);
-    mMountExtension = IncrementalMountExtension.getInstance(true);
   }
 
   @Override
