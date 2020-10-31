@@ -1,0 +1,24 @@
+name: TagIt
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Every Monday
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get tag for the current date
+        id: tag_info
+        run: echo "::set-output name=TAG_NAME::$(date +'v%Y.%m.%d')"
+
+      - name: Tag the latest commit
+        uses: weareyipyip/walking-tag-action@v2
+        with:
+          tag-name: ${{ steps.tag_info.outputs.TAG_NAME }}
+          tag-message: ""
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
