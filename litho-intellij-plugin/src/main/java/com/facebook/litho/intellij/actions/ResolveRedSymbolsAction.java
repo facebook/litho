@@ -185,7 +185,7 @@ public class ResolveRedSymbolsAction extends AnAction {
         moduleWithDependenciesAndLibrariesScope(virtualFile, project);
 
     final Map<String, PsiClass> redSymbolToCls =
-        addToCache(redSymbolToExpressions.keySet(), project, symbolsScope);
+        addToCache(redSymbolToExpressions.keySet(), project, symbolsScope, eventMetadata);
 
     final long updatedTime = System.currentTimeMillis();
     final long updatedDelta = updatedTime - collectedTime;
@@ -237,7 +237,10 @@ public class ResolveRedSymbolsAction extends AnAction {
   }
 
   private static Map<String, PsiClass> addToCache(
-      Collection<String> allRedSymbols, Project project, GlobalSearchScope symbolsScope) {
+      Collection<String> allRedSymbols,
+      Project project,
+      GlobalSearchScope symbolsScope,
+      Map<String, String> eventMetadata) {
     final Map<String, PsiClass> redSymbolToClass = new HashMap<>();
     final ComponentsCacheService componentsCache = ComponentsCacheService.getInstance(project);
     for (String redSymbol : allRedSymbols) {
@@ -246,7 +249,18 @@ public class ResolveRedSymbolsAction extends AnAction {
                   project,
                   symbolsScope,
                   LithoPluginUtils.getLithoComponentSpecNameFromComponent(redSymbol)))
-          .filter(cls -> LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls))
+          .filter(
+              cls -> {
+                if (LithoPluginUtils.isLayoutSpec(cls)) {
+                  eventMetadata.put(EventLogger.KEY_TYPE, "layout_spec");
+                  return true;
+                } else if (LithoPluginUtils.isMountSpec(cls)) {
+                  eventMetadata.put(EventLogger.KEY_TYPE, "mount_spec");
+                  return true;
+                } else {
+                  return false;
+                }
+              })
           .forEach(
               specCls -> {
                 final String guessedComponentQN =
