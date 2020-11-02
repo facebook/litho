@@ -406,13 +406,6 @@ class MountState
                 updateMountItemIfNeeded(
                     node, currentMountItem, useUpdateValueFromLayoutOutput, componentTreeId, i);
 
-            if (itemUpdated) {
-              // This mount content might be animating and we may be remounting it as a different
-              // component in the same tree, or as a component in a totally different tree so we
-              // will reset animating content for its key
-              maybeRemoveAnimatingMountContent(transitionId);
-            }
-
             if (mMountStats.isLoggingEnabled) {
               if (itemUpdated) {
                 mMountStats.updatedNames.add(component.getSimpleName());
@@ -638,13 +631,6 @@ class MountState
                 useUpdateValueFromLayoutOutput,
                 componentTreeId,
                 i);
-
-        if (itemUpdated) {
-          // This mount content might be animating and we may be remounting it as a different
-          // component in the same tree, or as a component in a totally different tree so we
-          // will reset animating content for its key
-          maybeRemoveAnimatingMountContent(transitionId);
-        }
 
         if (mMountStats.isLoggingEnabled) {
           if (itemUpdated) {
@@ -1059,9 +1045,13 @@ class MountState
         }
       }
 
-      maybeUnsetViewAttributes(currentMountItem);
+      // This mount content might be animating and we may be remounting it as a different
+      // component in the same tree, or as a component in a totally different tree so we
+      // will reset animating content for its key
+      maybeRemoveAnimatingMountContent(currentLayoutOutput.getTransitionId());
+    }
 
-    } else if (shouldUpdateViewInfo) {
+    if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
     }
 
@@ -1076,8 +1066,9 @@ class MountState
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
       updateMountedContent(currentMountItem, nextLayoutOutput, currentLayoutOutput);
-      setViewAttributes(currentMountItem);
-    } else if (shouldUpdateViewInfo) {
+    }
+
+    if (shouldUpdateViewInfo) {
       setViewAttributes(currentMountItem);
     }
 
