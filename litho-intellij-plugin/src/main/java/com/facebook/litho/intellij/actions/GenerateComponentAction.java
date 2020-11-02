@@ -48,14 +48,13 @@ public class GenerateComponentAction extends AnAction {
   @Override
   public void actionPerformed(AnActionEvent e) {
     Optional<PsiClass> spec = getValidSpec(e);
-    spec.ifPresent(cls -> ComponentGenerateService.getInstance().updateComponentAsync(cls));
     Map<String, String> eventMetadata = new HashMap<>();
-    PsiJavaFile file = (PsiJavaFile) e.getData(CommonDataKeys.PSI_FILE);
-    // Since GenerateComponentAction only appears on valid specs the file should not be null
-    if (file != null) {
-      eventMetadata.put(EventLogger.KEY_FILE, file.getPackageName() + "." + file.getName());
-    }
-    eventMetadata.put(EventLogger.KEY_RESULT, spec.isPresent() ? "success" : "fail");
+    spec.ifPresent(
+        cls -> {
+          ComponentGenerateService.getInstance().updateComponentAsync(cls);
+          PsiJavaFile file = (PsiJavaFile) cls.getContainingFile();
+          eventMetadata.put(EventLogger.KEY_FILE, file.getPackageName() + "." + file.getName());
+        });
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_GENERATE_COMPONENT, eventMetadata);
   }
 
