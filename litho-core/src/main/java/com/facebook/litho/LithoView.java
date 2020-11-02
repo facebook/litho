@@ -622,6 +622,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         unmountAllItems();
       } else {
         clearVisibilityItems();
+        clearLastMountedTree();
       }
 
       if (mInvalidStateLogParams != null) {
@@ -843,6 +844,19 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
     } else {
       mMountState.clearVisibilityItems();
+    }
+  }
+
+  /** This should be called when setting a null component tree to the litho view. */
+  private void clearLastMountedTree() {
+    if (mUseExtensions && mLithoHostListenerCoordinator != null) {
+      final TransitionsExtension transitionsExtension =
+          mLithoHostListenerCoordinator.getTransitionsExtension();
+      if (transitionsExtension != null) {
+        transitionsExtension.clearLastMountedTreeId();
+      }
+    } else {
+      mMountState.clearLastMountedTree();
     }
   }
 

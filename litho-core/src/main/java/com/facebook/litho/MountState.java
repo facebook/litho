@@ -2548,6 +2548,7 @@ class MountState
       mTransitionsExtension.onUnmount(mTransitionsExtensionState);
     }
 
+    clearLastMountedTree();
     clearVisibilityItems();
   }
 
@@ -3113,6 +3114,13 @@ class MountState
         }
       }
     }
+  }
+
+  public void clearLastMountedTree() {
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.clearLastMountedTreeId();
+    }
+    mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   }
 
   private static class PrepareMountStats {

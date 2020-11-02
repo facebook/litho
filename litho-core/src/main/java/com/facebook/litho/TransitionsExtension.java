@@ -127,11 +127,16 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   @Override
   public void onUnmount(ExtensionState<Void> extensionState) {
     extensionState.resetAcquiredReferences();
+    clearLastMountedTreeId();
   }
 
   @Override
   public void onUnbind(ExtensionState<Void> extensionState) {
     extensionState.resetAcquiredReferences();
+  }
+
+  public void clearLastMountedTreeId() {
+    mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   }
 
   /**

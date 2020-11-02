@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.FrameLayout;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -1423,5 +1424,67 @@ public class AnimationTest {
     assertThat(innerLithoView)
         .describedAs("We mantain the same LithoView")
         .isEqualTo(innerView.getParent());
+  }
+
+  @Test
+  public void animation_animatingComponentAndChangingHost_elementShouldAnimateOnlyOnce() {
+    LithoView secondLithoView = new LithoView(mActivityController.get());
+    secondLithoView.setComponentTree(null);
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return getAnimatingXPropertyComponent();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+
+    FrameLayout fl = new FrameLayout(mActivityController.get());
+    ComponentTree componentTree = mLithoViewRule.getComponentTree();
+
+    fl.addView(mLithoViewRule.getLithoView());
+    fl.addView(secondLithoView);
+    mActivityController.get().setContentView(fl);
+    mActivityController.resume().visible();
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    // 160 is equal to height and width of 200 - 40 for the size of the row.
+    assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
+    assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
+
+    mLithoViewRule.useComponentTree(null);
+
+    secondLithoView.setComponentTree(componentTree);
+
+    view = secondLithoView.findViewWithTag(TRANSITION_KEY);
+
+    mStateCaller.update();
+
+    // X after state update should be at 160 because is going to be animated.
+    assertThat(view.getX()).describedAs("view X axis after toggle").isEqualTo(160);
+    // Y moves without animating
+    assertThat(view.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
+
+    mTransitionTestRule.step(10);
+
+    assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
+    assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
+
+    secondLithoView.setComponentTree(null);
+    mLithoViewRule.useComponentTree(componentTree);
+
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
+    assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
   }
 }

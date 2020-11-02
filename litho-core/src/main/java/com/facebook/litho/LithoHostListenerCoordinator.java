@@ -140,6 +140,11 @@ public class LithoHostListenerCoordinator {
   }
 
   @Nullable
+  TransitionsExtension getTransitionsExtension() {
+    return mTransitionsExtension;
+  }
+
+  @Nullable
   EndToEndTestingExtension getEndToEndTestingExtension() {
     return mEndToEndTestingExtension;
   }
