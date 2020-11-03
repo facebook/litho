@@ -48,12 +48,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
+  private static final String RESOLVED_RED_SYMBOLS_KEY = "resolved_red_symbols";
   private Project project;
   private PsiJavaFile pf;
   private VirtualFile vf;
@@ -83,26 +86,60 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
   }
 
   @Test
+  public void resolveRedSymbols_forInCommentSpec_skips() throws IOException {
+    String specType = "InComment";
+    resolveRedSymbolsForSpec(
+        specType,
+        eventMetadata -> {
+          assertThat(eventMetadata.get(RESOLVED_RED_SYMBOLS_KEY)).isEqualTo("[]");
+
+          final PsiClass cached =
+              ComponentsCacheService.getInstance(project).getComponent(specType);
+          assertThat(cached).isNull();
+        });
+  }
+
+  @Test
   public void resolveRedSymbols_forLayoutSpec_resolves() throws Exception {
-    resolveRedSymbols_forSpec_resolves("Layout");
+    String specType = "Layout";
+    resolveRedSymbolsForSpec(
+        specType,
+        eventMetadata -> {
+          assertResolved(specType, eventMetadata, project);
+        });
   }
 
   @Test
   public void resolveRedSymbols_forMountSpec_resolves() throws Exception {
-    resolveRedSymbols_forSpec_resolves("Mount");
+    String specType = "Mount";
+    resolveRedSymbolsForSpec(
+        specType,
+        eventMetadata -> {
+          assertResolved(specType, eventMetadata, project);
+        });
   }
 
-  public void resolveRedSymbols_forSpec_resolves(String SpecType) throws IOException {
-    final PsiFile specPsiFile = testHelper.configure(SpecType + "Spec.java");
+  private static void assertResolved(
+      String specType, Map<String, String> eventMetadata, Project project) {
+    assertThat(eventMetadata.get(RESOLVED_RED_SYMBOLS_KEY)).isEqualTo("[" + specType + "]");
+
+    final PsiClass cached = ComponentsCacheService.getInstance(project).getComponent(specType);
+    assertThat(cached).isNotNull();
+    assertThat(cached.getName()).isEqualTo(specType);
+  }
+
+  private void resolveRedSymbolsForSpec(
+      String specType, Consumer<Map<String, String>> onFinishAction) throws IOException {
+    final PsiFile specPsiFile = testHelper.configure(specType + "Spec.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
               // Search and highlights in test env are not populated, do it manually
               PsiClass mockClass = PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class);
-              PsiSearchUtils.addMock(SpecType + "Spec", mockClass);
+              PsiSearchUtils.addMock(specType + "Spec", mockClass);
               parseDocument(editor.getDocument(), pf, project);
 
-              final HashMap<String, String> eventMetadata = new HashMap<>();
+              final Map<String, String> eventMetadata = new HashMap<>();
               ResolveRedSymbolsAction.resolveRedSymbols(
                   pf,
                   vf,
@@ -112,12 +149,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
                   ignore -> {
                     assertThat(eventMetadata).isNotEmpty();
                   });
-              assertThat(eventMetadata.get("resolved_red_symbols")).isEqualTo("[" + SpecType + "]");
-
-              final PsiClass cached =
-                  ComponentsCacheService.getInstance(project).getComponent(SpecType);
-              assertThat(cached).isNotNull();
-              assertThat(cached.getName()).isEqualTo(SpecType);
+              onFinishAction.accept(eventMetadata);
             });
   }
 

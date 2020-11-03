@@ -14,15 +14,5 @@
  * limitations under the License.
  */
 
-class ResolveRedSymbolsActionTest {
-  /**
-  * {@link InComment}
-  **/
-  void testRedSymbol() {
-    final Inner inner = new Inner();
-    Layout.create();
-    Mount.create();
-  }
-
-  static class Inner {}
-}
+@com.facebook.litho.annotations.LayoutSpec
+class InCommentSpec {}

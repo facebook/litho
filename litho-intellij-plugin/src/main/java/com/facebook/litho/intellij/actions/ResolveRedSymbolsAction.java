@@ -42,6 +42,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
@@ -221,13 +222,19 @@ public class ResolveRedSymbolsAction extends AnAction {
         info -> {
           final String redSymbol =
               document.getText(new TextRange(info.startOffset, info.endOffset));
-          if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol))
+          if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol)) {
             return true;
+          }
 
           final PsiJavaCodeReferenceElement ref =
               PsiTreeUtil.findElementOfClassAtOffset(
                   psiFile, info.startOffset, PsiJavaCodeReferenceElement.class, false);
           if (ref == null) return true;
+
+          // Resolving links in comments is not critical for development
+          if (PsiTreeUtil.findFirstParent(ref, element -> element instanceof PsiComment) != null) {
+            return true;
+          }
 
           redSymbolToElements.putIfAbsent(redSymbol, new ArrayList<>());
           redSymbolToElements.get(redSymbol).add(ref);
