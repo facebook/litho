@@ -105,10 +105,22 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
 
     msg.append("  thread_name: ").append(Thread.currentThread().getName()).append("\n");
 
-    for (Map.Entry<String, String> entry : mCustomMetadata.entrySet()) {
-      msg.append("  ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+    if (mComponentContext != null) {
+      final DebugMetadata metadataFromTreeProps =
+          mComponentContext.getTreeProp(DebugMetadata.class);
+      if (metadataFromTreeProps != null) {
+        appendMap(msg, metadataFromTreeProps.getMetadataMap());
+      }
     }
 
+    appendMap(msg, mCustomMetadata);
+
     return msg.toString().trim();
+  }
+
+  private static void appendMap(StringBuilder msg, Map<String, String> map) {
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      msg.append("  ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+    }
   }
 }

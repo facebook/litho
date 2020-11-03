@@ -27,6 +27,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
 import com.facebook.litho.testing.error.TestHasDelegateThatCrashesOnCreateLayout;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.DebugMetadataTestComponent;
 import com.facebook.litho.widget.OnClickCallbackComponent;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
@@ -222,5 +223,81 @@ public class LithoMetadataExceptionWrapperTest {
         .layout();
 
     TriggerCallbackComponent.doTrigger(mLithoViewRule.getComponentTree().getContext(), handle);
+  }
+
+  @Test
+  public void onCreateLayoutCrashOfChild_withDebugMetadata_showsDebugMetadata() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("custom_key: custom_value");
+
+    final ComponentContext c = mComponentsRule.getContext();
+    mLithoViewRule
+        .setRoot(
+            Column.create(c)
+                .child(
+                    DebugMetadataTestComponent.create(c)
+                        .metadataKey("custom_key")
+                        .metadataValue("custom_value")
+                        .child(TestHasDelegateThatCrashesOnCreateLayout.create(c)))
+                .build())
+        .measure()
+        .layout()
+        .attachToWindow();
+  }
+
+  @Test
+  public void
+      onCreateLayoutCrashOfChild_withDebugMetadataInMultipleComponents_showsDebugMetadata() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("custom_key: custom_value");
+    mExpectedException.expectMessage("custom_key2: custom_value2");
+
+    final ComponentContext c = mComponentsRule.getContext();
+    mLithoViewRule
+        .setRoot(
+            Column.create(c)
+                .child(
+                    DebugMetadataTestComponent.create(c)
+                        .metadataKey("custom_key")
+                        .metadataValue("custom_value")
+                        .child(
+                            DebugMetadataTestComponent.create(c)
+                                .metadataKey("custom_key2")
+                                .metadataValue("custom_value2")
+                                .child(TestHasDelegateThatCrashesOnCreateLayout.create(c))))
+                .build())
+        .measure()
+        .layout()
+        .attachToWindow();
+  }
+
+  @Test
+  public void onClickEvent_withDebugMetadata_showsDebugMetadata() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("custom_key: custom_value");
+
+    final ComponentContext c = mComponentsRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(
+                DebugMetadataTestComponent.create(c)
+                    .metadataKey("custom_key")
+                    .metadataValue("custom_value")
+                    .child(
+                        OnClickCallbackComponent.create(c)
+                            .widthPx(10)
+                            .heightPx(10)
+                            .callback(
+                                new View.OnClickListener() {
+                                  @Override
+                                  public void onClick(View v) {
+                                    throw new RuntimeException("Expected test exception");
+                                  }
+                                })))
+            .build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
   }
 }
