@@ -97,14 +97,14 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
         .invokeAndWait(
             () -> {
               final PsiClass spec = LithoPluginUtils.getFirstClass(file, psiClass -> true).get();
-              ComponentGenerateService.getInstance().updateComponentAsync(spec);
+              ComponentGenerateService.getInstance().updateComponentSync(spec);
               final PsiClass component =
                   ComponentsCacheService.getInstance(project).getComponent(componentName);
               assertThat(component).isNotNull();
 
               final PsiClass updatedSpec =
                   LithoPluginUtils.getFirstClass(fileChanged, psiClass -> true).get();
-              ComponentGenerateService.getInstance().updateComponentAsync(updatedSpec);
+              ComponentGenerateService.getInstance().updateComponentSync(updatedSpec);
               final PsiClass updatedComponent =
                   ComponentsCacheService.getInstance(project).getComponent(componentName);
               assertion.accept(component, updatedComponent);

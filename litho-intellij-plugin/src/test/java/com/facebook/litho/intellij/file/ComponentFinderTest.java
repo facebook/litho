@@ -48,7 +48,7 @@ public class ComponentFinderTest extends LithoPluginIntellijTest {
               final ComponentFinder finder = new ComponentFinder(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
-              ComponentGenerateService.getInstance().updateComponentAsync(cls);
+              ComponentGenerateService.getInstance().updateComponentSync(cls);
 
               // No result with project scope
               final PsiClass result1 =
