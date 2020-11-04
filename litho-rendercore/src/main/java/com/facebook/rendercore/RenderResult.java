@@ -169,10 +169,7 @@ public class RenderResult<State> {
 
   @VisibleForTesting
   public static LayoutCache buildCache(@Nullable LayoutCache previousCache) {
-
-    return previousCache != null
-        ? new LayoutCache(previousCache.getWriteCache())
-        : new LayoutCache(null);
+    return previousCache != null ? new LayoutCache(previousCache) : new LayoutCache(null);
   }
 
   public static LazyTree<Void> wrapInLazyTree(final Node node) {

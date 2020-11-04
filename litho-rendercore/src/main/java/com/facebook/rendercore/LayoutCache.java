@@ -18,49 +18,53 @@ package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.LongSparseArray;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A Cache that can be used to re use LayoutResults or parts of them across layout calculations.
- * It's responsibility of the implementer of the Layout function to put values in the cache for a
- * given node. Values put in the LayoutCache will only be available in the next layout pass.
+ * A Cache that can be used to reuse LayoutResults or parts of them across layout calculations. It's
+ * responsibility of the implementer of the Layout function to put values in the cache for a given
+ * node. Values put in the LayoutCache will only be available in the next layout pass.
  */
 public class LayoutCache {
-  private final Map mWriteCache;
-  private final Map mReadCache;
+  private final Map<Node<?>, Node.LayoutResult<?>> mWriteCacheByNode = new HashMap<>();
+  private final LongSparseArray<Object> mWriteCacheById = new LongSparseArray<>();
+
+  private final Map<Node<?>, Node.LayoutResult<?>> mReadCacheByNode;
+  private final LongSparseArray<Object> mReadCacheById;
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public LayoutCache() {
-    this(new HashMap<Node, Node.LayoutResult>());
+    this(null);
   }
 
-  LayoutCache(@Nullable Map cacheResult) {
-    mWriteCache = new HashMap<>();
-    if (cacheResult == null) {
-      mReadCache = new HashMap<>();
+  LayoutCache(@Nullable LayoutCache oldCache) {
+    if (oldCache == null) {
+      mReadCacheByNode = new HashMap<>();
+      mReadCacheById = new LongSparseArray<>();
     } else {
-      mReadCache = cacheResult;
+      mReadCacheByNode = oldCache.mWriteCacheByNode;
+      mReadCacheById = oldCache.mWriteCacheById;
     }
   }
 
-  public void put(Node node, Node.LayoutResult layout) {
-    mWriteCache.put(node, layout);
+  @Nullable
+  public Node.LayoutResult<?> get(Node<?> node) {
+    return mReadCacheByNode.get(node);
   }
 
-  public Node.LayoutResult get(Node node) {
-    return (Node.LayoutResult) mReadCache.get(node);
+  public void put(Node<?> node, Node.LayoutResult<?> layout) {
+    mWriteCacheByNode.put(node, layout);
   }
 
-  public <T> void put(long uniqueId, T value) {
-    mWriteCache.put(uniqueId, value);
-  }
-
+  @Nullable
   public <T> T get(long uniqueId) {
-    return (T) mReadCache.get(uniqueId);
+    //noinspection unchecked
+    return (T) mReadCacheById.get(uniqueId);
   }
 
-  Map getWriteCache() {
-    return mWriteCache;
+  public void put(long uniqueId, Object value) {
+    mWriteCacheById.put(uniqueId, value);
   }
 }
