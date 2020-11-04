@@ -21,7 +21,6 @@ import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
-import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.actions.AddImportAction;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -249,7 +248,6 @@ public class ResolveRedSymbolsAction extends AnAction {
       GlobalSearchScope symbolsScope,
       Map<String, String> eventMetadata) {
     final Map<String, PsiClass> redSymbolToClass = new HashMap<>();
-    final ComponentsCacheService componentsCache = ComponentsCacheService.getInstance(project);
     for (String redSymbol : allRedSymbols) {
       Arrays.stream(
               PsiSearchUtils.findClassesByShortName(

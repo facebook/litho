@@ -133,6 +133,11 @@ public class ComponentGenerateService {
   }
 
   @Nullable
+  public SpecModel getSpecModel(PsiClass specClass) {
+    return specFqnToModelMap.get(specClass.getQualifiedName());
+  }
+
+  @Nullable
   private PsiClass updateComponent(PsiClass specCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
@@ -150,11 +155,6 @@ public class ComponentGenerateService {
     copy.forEach(listener -> listener.onSpecModelUpdated(specCls));
 
     return updateComponent(componentQN, model, specCls.getProject());
-  }
-
-  @Nullable
-  public SpecModel getSpecModel(PsiClass specClass) {
-    return specFqnToModelMap.get(specClass.getQualifiedName());
   }
 
   /** Updates generated Component file from the given Spec model. */
