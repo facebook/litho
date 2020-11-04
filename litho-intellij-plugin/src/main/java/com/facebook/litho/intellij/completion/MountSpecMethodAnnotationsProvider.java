@@ -27,6 +27,7 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -78,6 +79,7 @@ public class MountSpecMethodAnnotationsProvider extends CompletionProvider<Compl
     ANNOTATION_QUALIFIED_NAMES.add(OnMeasure.class.getTypeName());
     ANNOTATION_QUALIFIED_NAMES.add(OnMount.class.getTypeName());
     ANNOTATION_QUALIFIED_NAMES.add(OnUpdateState.class.getTypeName());
+    ANNOTATION_QUALIFIED_NAMES.add(OnUpdateStateWithTransition.class.getTypeName());
   }
 
   @Override
