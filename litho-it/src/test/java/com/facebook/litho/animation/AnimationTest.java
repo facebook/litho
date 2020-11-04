@@ -37,6 +37,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.TestAnimationMount;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
@@ -105,7 +106,7 @@ public class AnimationTest {
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false}, {false, false, true}, {true, false, false}, {true, true, false},
+          {false, false, false},
         });
   }
 
@@ -1486,5 +1487,83 @@ public class AnimationTest {
     view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
     assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
+  }
+
+  @Test
+  public void animation_disappearAnimationNewComponentTree_disappearingElementsContentsRemoved() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.ALPHA)
+                    .appearFrom(0)
+                    .disappearTo(0))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Column.create(componentContext)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.YELLOW))
+                        .child(
+                            !state
+                                ? Row.create(componentContext)
+                                    .heightDip(50)
+                                    .widthDip(50)
+                                    .backgroundColor(Color.RED)
+                                    .viewTag(TRANSITION_KEY)
+                                    .transitionKey(TRANSITION_KEY)
+                                    .key(TRANSITION_KEY)
+                                : null)
+                        .build();
+                  }
+                })
+            .build();
+    final Component nonAnimatingComponent = getNonAnimatingComponent();
+    ComponentTree newComponentTree = ComponentTree.create(mLithoViewRule.getContext()).build();
+    newComponentTree.setRoot(nonAnimatingComponent);
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    // We move 10 frames to account for the appear animation.
+    mTransitionTestRule.step(10);
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    // The view is not null
+    assertThat(view).describedAs("view before disappearing").isNotNull();
+    assertThat(view.getAlpha()).describedAs("view before disappearing").isEqualTo(1);
+    mStateCaller.update();
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    // After state update, even if the row was removed from the component, it still not null as we
+    // are going to animate it. Alpha stays at 1 before advancing frames.
+    assertThat(view).describedAs("view after toggle").isNotNull();
+    assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(1);
+
+    mTransitionTestRule.step(5);
+    // Check java doc for how we calculate this value.
+    assertThat(view.getAlpha()).describedAs("view after 5 frames").isEqualTo(0.5868241f);
+
+    assertThat(
+            (Boolean) Whitebox.invokeMethod(mLithoViewRule.getLithoView(), "hasDisappearingItems"))
+        .describedAs("root host has disappearing items before updating the tree")
+        .isTrue();
+
+    // Change component tree mid animation.
+    mLithoViewRule.useComponentTree(newComponentTree);
+
+    assertThat(
+            (Boolean) Whitebox.invokeMethod(mLithoViewRule.getLithoView(), "hasDisappearingItems"))
+        .describedAs("root host does not have disappearing items after setting tree")
+        .isFalse();
+
+    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    assertThat(view).describedAs("view after setting new tree").isNull();
   }
 }

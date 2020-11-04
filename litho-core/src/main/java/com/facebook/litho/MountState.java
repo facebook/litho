@@ -1035,21 +1035,6 @@ class MountState
 
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
-    if (shouldUpdate) {
-      // If we're remounting this ComponentHost for a new ComponentTree, remove all disappearing
-      // mount content that was animating since those disappearing animations belong to the old
-      // ComponentTree
-      if (mLastMountedComponentTreeId != componentTreeId) {
-        if (isHostSpec(itemComponent)) {
-          removeDisappearingMountContentFromComponentHost((ComponentHost) currentContent);
-        }
-      }
-
-      // This mount content might be animating and we may be remounting it as a different
-      // component in the same tree, or as a component in a totally different tree so we
-      // will reset animating content for its key
-      maybeRemoveAnimatingMountContent(currentLayoutOutput.getTransitionId());
-    }
 
     if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
@@ -2685,10 +2670,6 @@ class MountState
         mTransitionsExtension.onUnmountItem(mContext.getAndroidContext(), mountItem);
       } else {
         final Component component = output.getComponent();
-        if (isHostSpec(component)) {
-          final ComponentHost componentHost = (ComponentHost) mountItem.getContent();
-          removeDisappearingMountContentFromComponentHost(componentHost);
-        }
         if (getLayoutOutput(mountItem).getTransitionId() != null) {
           final @OutputUnitType int type =
               LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
@@ -3438,19 +3419,6 @@ class MountState
   private void prepareTransitionManager() {
     if (mTransitionManager == null) {
       mTransitionManager = new TransitionManager(this);
-    }
-  }
-
-  private void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
-    if (mTransitionsExtension != null) {
-      mTransitionsExtension.removeDisappearingMountContentFromComponentHost(componentHost);
-    } else {
-      if (mTransitionManager != null && componentHost.hasDisappearingItems()) {
-        List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
-        for (int i = 0, size = ids.size(); i < size; i++) {
-          mTransitionManager.setMountContent(ids.get(i), null);
-        }
-      }
     }
   }
 
