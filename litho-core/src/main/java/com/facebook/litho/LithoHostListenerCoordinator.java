@@ -118,6 +118,8 @@ public class LithoHostListenerCoordinator {
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
     mountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
+    VisibilityMountExtension.setRootHost(
+        mMountDelegateTarget.getExtensionState(mVisibilityExtension), lithoView);
     registerListener(mVisibilityExtension);
   }
 
@@ -141,6 +143,13 @@ public class LithoHostListenerCoordinator {
     return mTransitionsExtension;
   }
 
+  void clearLastMountedTreeId() {
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.clearLastMountedTreeId(
+          mMountDelegateTarget.getExtensionState(mTransitionsExtension));
+    }
+  }
+
   @Nullable
   EndToEndTestingExtension getEndToEndTestingExtension() {
     return mEndToEndTestingExtension;
@@ -151,8 +160,11 @@ public class LithoHostListenerCoordinator {
       throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
     }
 
-    mTransitionsExtension = new TransitionsExtension(lithoView);
+    mTransitionsExtension = TransitionsExtension.getInstance();
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
+    TransitionsExtension.setRootHost(
+        mountDelegateTarget.getExtensionState(mTransitionsExtension), lithoView);
+
     registerListener(mTransitionsExtension);
   }
 
@@ -161,7 +173,8 @@ public class LithoHostListenerCoordinator {
       return;
     }
 
-    mTransitionsExtension.collectAllTransitions(layoutState, componentTree);
+    mTransitionsExtension.collectAllTransitions(
+        mMountDelegateTarget.getExtensionState(mTransitionsExtension), layoutState, componentTree);
   }
 
   private void registerListener(MountExtension mountListenerExtension) {
@@ -169,7 +182,7 @@ public class LithoHostListenerCoordinator {
   }
 
   @VisibleForTesting
-  void useVisibilityExtension(VisibilityMountExtension extension) {
+  void useVisibilityExtension(VisibilityMountExtension extension, LithoView lithoView) {
     mVisibilityExtension = extension;
     mMountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
     registerListener(mVisibilityExtension);

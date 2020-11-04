@@ -858,11 +858,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   /** This should be called when setting a null component tree to the litho view. */
   private void clearLastMountedTree() {
     if (mUseExtensions && mLithoHostListenerCoordinator != null) {
-      final TransitionsExtension transitionsExtension =
-          mLithoHostListenerCoordinator.getTransitionsExtension();
-      if (transitionsExtension != null) {
-        transitionsExtension.clearLastMountedTreeId();
-      }
+      mLithoHostListenerCoordinator.clearLastMountedTreeId();
     } else {
       mMountState.clearLastMountedTree();
     }

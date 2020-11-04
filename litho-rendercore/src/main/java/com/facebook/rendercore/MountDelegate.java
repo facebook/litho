@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
-import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +36,7 @@ public class MountDelegate {
   private final List<MountExtension> mMountExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
   private final Map<MountExtension, ExtensionState> mExtensionStates = new HashMap<>();
+  private @Nullable ExtensionState mUnmountDelegateExtensionState;
   private boolean mReferenceCountingEnabled = false;
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
@@ -51,6 +51,7 @@ public class MountDelegate {
 
     if (mountExtension instanceof UnmountDelegateExtension) {
       mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) mountExtension);
+      mUnmountDelegateExtensionState = extensionState;
     }
 
     mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
@@ -110,6 +111,11 @@ public class MountDelegate {
 
   public ExtensionState getExtensionState(MountExtension mountExtension) {
     return mExtensionStates.get(mountExtension);
+  }
+
+  @Nullable
+  public ExtensionState getUnmountDelegateExtensionState() {
+    return mUnmountDelegateExtensionState;
   }
 
   public Object getContentAt(int position) {

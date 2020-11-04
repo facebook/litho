@@ -43,34 +43,120 @@ import java.util.Map;
 import java.util.Set;
 
 /** Extension for performing transitions. */
-public class TransitionsExtension extends MountExtension<TransitionsExtensionInput, Void>
-    implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>>,
-        UnmountDelegateExtension {
+public class TransitionsExtension
+    extends MountExtension<
+        TransitionsExtensionInput, TransitionsExtension.TransitionsExtensionState>
+    implements UnmountDelegateExtension<TransitionsExtension.TransitionsExtensionState> {
 
-  private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
-      new LinkedHashMap<>();
-  private final Set<MountItem> mLockedDisappearingMountitems = new HashSet<>();
-  private final Host mLithoView;
-  private TransitionsExtensionInput mInput;
-  private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
-  private TransitionManager mTransitionManager;
-  private final HashSet<TransitionId> mAnimatingTransitionIds = new HashSet<>();
+  private static TransitionsExtension sInstance = new TransitionsExtension();
 
-  private boolean mTransitionsHasBeenCollected = false;
-  private @Nullable Transition mRootTransition;
-  private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
-  private ExtensionState<Void> mExtensionState;
+  private TransitionsExtension() {}
 
-  @Override
-  public boolean shouldDelegateUnmount(MountItem mountItem) {
-    return mLockedDisappearingMountitems.contains(mountItem);
+  public static TransitionsExtension getInstance() {
+    return sInstance;
+  }
+
+  static class TransitionsExtensionState {
+    private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
+        new LinkedHashMap<>();
+    private final Set<MountItem> mLockedDisappearingMountitems = new HashSet<>();
+    @Deprecated private @Nullable Host mLithoView;
+    private TransitionsExtensionInput mInput;
+    private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
+    private TransitionManager mTransitionManager;
+    private final HashSet<TransitionId> mAnimatingTransitionIds = new HashSet<>();
+
+    private boolean mTransitionsHasBeenCollected = false;
+    private @Nullable Transition mRootTransition;
+    private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
+  }
+
+  private static class AnimationCompleteListener
+      implements TransitionManager.OnAnimationCompleteListener<Function<TransitionEndEvent>> {
+
+    private final ExtensionState<TransitionsExtensionState> mExtensionState;
+    private final TransitionsExtensionState mState;
+
+    private AnimationCompleteListener(ExtensionState<TransitionsExtensionState> extensionState) {
+      mExtensionState = extensionState;
+      mState = mExtensionState.getState();
+    }
+
+    @Override
+    public void onAnimationComplete(TransitionId transitionId) {
+      final OutputUnitsAffinityGroup<MountItem> disappearingGroup =
+          mState.mDisappearingMountItems.remove(transitionId);
+      if (disappearingGroup != null) {
+        endUnmountDisappearingItem(mExtensionState, disappearingGroup);
+      } else {
+        if (!mState.mAnimatingTransitionIds.remove(transitionId)) {
+          if (AnimationsDebug.ENABLED) {
+            Log.e(
+                AnimationsDebug.TAG,
+                "Ending animation for id "
+                    + transitionId
+                    + " but it wasn't recorded as animating!");
+          }
+        }
+
+        final OutputUnitsAffinityGroup<AnimatableItem> animatableItemGroup =
+            mState.mLastTransitionsExtensionInput != null
+                ? mState.mLastTransitionsExtensionInput.getAnimatableItemForTransitionId(
+                    transitionId)
+                : null;
+        if (animatableItemGroup == null) {
+          // This can happen if the component was unmounted without animation or the transitionId
+          // was removed from the component.
+          return;
+        }
+
+        for (int i = 0, size = animatableItemGroup.size(); i < size; i++) {
+          final int position =
+              mState.mLastTransitionsExtensionInput.getPositionForId(
+                  animatableItemGroup.getAt(i).getId());
+          updateAnimationLockCount(
+              mExtensionState, mState.mLastTransitionsExtensionInput, position, false);
+        }
+      }
+    }
+
+    @Override
+    public void onAnimationUnitComplete(
+        PropertyHandle propertyHandle, Function transitionEndHandler) {
+      if (transitionEndHandler != null) {
+        transitionEndHandler.call(
+            new TransitionEndEvent(
+                propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
+      }
+    }
+  }
+
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
+  public static void setRootHost(
+      ExtensionState<TransitionsExtensionState> extensionState, Host root) {
+    final TransitionsExtensionState state = extensionState.getState();
+    state.mLithoView = root;
   }
 
   @Override
-  public void unmount(int index, MountItem mountItem, Host host) {
+  public boolean shouldDelegateUnmount(
+      ExtensionState<TransitionsExtensionState> extensionState, MountItem mountItem) {
+    final TransitionsExtensionState state = extensionState.getState();
+    return state.mLockedDisappearingMountitems.contains(mountItem);
+  }
+
+  @Override
+  public void unmount(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      int index,
+      MountItem mountItem,
+      Host host) {
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final TransitionId transitionId = layoutOutput.getTransitionId();
-    final OutputUnitsAffinityGroup<MountItem> group = mDisappearingMountItems.get(transitionId);
+    final TransitionsExtensionState state = extensionState.getState();
+    final OutputUnitsAffinityGroup<MountItem> group =
+        state.mDisappearingMountItems.get(transitionId);
     if (group != null) {
       final boolean isRoot =
           group.get(LayoutStateOutputIdCalculator.getTypeFromId(layoutOutput.getId())) != null;
@@ -82,114 +168,114 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
   }
 
-  public TransitionsExtension(Host lithoView) {
-    mLithoView = lithoView;
-  }
-
   @Override
-  protected Void createState() {
-    return null;
+  protected TransitionsExtensionState createState() {
+    return new TransitionsExtensionState();
   }
 
   @Override
   public void beforeMount(
-      ExtensionState<Void> extensionState, TransitionsExtensionInput input, Rect localVisibleRect) {
-    mInput = input;
-    mExtensionState = extensionState;
+      ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput input,
+      Rect localVisibleRect) {
+    final TransitionsExtensionState state = extensionState.getState();
+    state.mInput = input;
 
-    if (input.getComponentTreeId() != mLastMountedComponentTreeId) {
-      mLastTransitionsExtensionInput = null;
+    if (input.getComponentTreeId() != state.mLastMountedComponentTreeId) {
+      state.mLastTransitionsExtensionInput = null;
     }
 
-    updateTransitions(input, ((LithoView) mLithoView).getComponentTree());
-    extractDisappearingItems(input);
+    updateTransitions(extensionState, input, ((LithoView) state.mLithoView).getComponentTree());
+    extractDisappearingItems(extensionState, input);
   }
 
   @Override
-  public void afterMount(ExtensionState<Void> extensionState) {
-    maybeUpdateAnimatingMountContent();
+  public void afterMount(ExtensionState<TransitionsExtensionState> extensionState) {
+    final TransitionsExtensionState state = extensionState.getState();
+    maybeUpdateAnimatingMountContent(extensionState);
 
-    if (shouldAnimateTransitions(mInput) && hasTransitionsToAnimate()) {
-      mTransitionManager.runTransitions();
+    if (shouldAnimateTransitions(state, state.mInput) && hasTransitionsToAnimate(state)) {
+      state.mTransitionManager.runTransitions();
     }
 
-    mInput.setNeedsToRerunTransitions(false);
-    mLastTransitionsExtensionInput = mInput;
-    mTransitionsHasBeenCollected = false;
-    mLastMountedComponentTreeId = mInput.getComponentTreeId();
-  }
-
-  public void onVisibleBoundsChanged(ExtensionState<Void> extensionState, Rect localVisibleRect) {}
-
-  @Override
-  public void onUnmount(ExtensionState<Void> extensionState) {
-    extensionState.resetAcquiredReferences();
-    clearLastMountedTreeId();
+    state.mInput.setNeedsToRerunTransitions(false);
+    state.mLastTransitionsExtensionInput = state.mInput;
+    state.mTransitionsHasBeenCollected = false;
+    state.mLastMountedComponentTreeId = state.mInput.getComponentTreeId();
   }
 
   @Override
-  public void onUnbind(ExtensionState<Void> extensionState) {
+  public void onUnmount(ExtensionState<TransitionsExtensionState> extensionState) {
+    extensionState.resetAcquiredReferences();
+    clearLastMountedTreeId(extensionState);
+  }
+
+  @Override
+  public void onUnbind(ExtensionState<TransitionsExtensionState> extensionState) {
     extensionState.resetAcquiredReferences();
   }
 
-  public void clearLastMountedTreeId() {
-    mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
+  public void clearLastMountedTreeId(ExtensionState<TransitionsExtensionState> extensionState) {
+    final TransitionsExtensionState state = extensionState.getState();
+    state.mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   }
 
   @Override
   public void onBindItem(
-      ExtensionState<Void> extensionState,
+      ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
+    final TransitionsExtensionState state = extensionState.getState();
     if (renderUnit instanceof LithoRenderUnit) {
       final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
 
       // If we're using a MountDelegate, applyBindBinders will be invoked.
-      if (mLastMountedComponentTreeId != mInput.getComponentTreeId()) {
+      if (state.mLastMountedComponentTreeId != state.mInput.getComponentTreeId()) {
         if (content instanceof ComponentHost) {
-          removeDisappearingMountContentFromComponentHost((ComponentHost) content);
+          removeDisappearingMountContentFromComponentHost(extensionState, (ComponentHost) content);
         }
       }
 
       // This mount content might be animating and we may be remounting it as a different
       // component in the same tree, or as a component in a totally different tree so we
       // will reset animating content for its key
-      maybeRemoveAnimatingMountContent(output.getTransitionId());
+      maybeRemoveAnimatingMountContent(state, output.getTransitionId());
     }
   }
 
   @Override
   public void onUnbindItem(
-      ExtensionState<Void> extensionState,
+      ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+      final TransitionsExtensionState state = extensionState.getState();
 
       // If this item is a host and contains disappearing items, we need to remove them.
       if (content instanceof ComponentHost) {
-        removeDisappearingMountContentFromComponentHost((ComponentHost) content);
+        removeDisappearingMountContentFromComponentHost(extensionState, (ComponentHost) content);
       }
       if (output.getTransitionId() != null) {
         final @OutputUnitType int type =
             LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
-        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+        maybeRemoveAnimatingMountContent(state, output.getTransitionId(), type);
       }
     }
   }
 
   @Override
   public void onMountItem(
-      ExtensionState<Void> extensionState,
+      ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
       final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
 
-      if (mExtensionState.ownsReference(output.getId())
+      if (extensionState.ownsReference(output.getId())
           && output.getComponent().hasChildLithoViews()) {
         final View view = (View) content;
         MountUtils.ensureAllLithoViewChildrenAreMounted(view);
@@ -210,7 +296,11 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
    * want to make sure are not unmounted due to incremental mount and being outside of visibility
    * bounds.
    */
-  private void updateTransitions(TransitionsExtensionInput input, ComponentTree componentTree) {
+  private static void updateTransitions(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput input,
+      ComponentTree componentTree) {
+    final TransitionsExtensionState state = extensionState.getState();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       String logTag = componentTree.getContext().getLogTag();
@@ -227,31 +317,31 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       // do any transition animations for changed mount content as it's just being remounted on a
       // new LithoView.
       final int componentTreeId = componentTree.mId;
-      if (mLastMountedComponentTreeId != componentTreeId) {
-        resetAnimationState();
-        if (!mInput.needsToRerunTransitions()) {
+      if (state.mLastMountedComponentTreeId != componentTreeId) {
+        resetAnimationState(extensionState);
+        if (!state.mInput.needsToRerunTransitions()) {
           // Don't re-trigger appear animations were scrolled back onto the screen
           return;
         }
       }
 
-      if (!mDisappearingMountItems.isEmpty()) {
-        updateDisappearingMountItems(input);
+      if (!state.mDisappearingMountItems.isEmpty()) {
+        updateDisappearingMountItems(extensionState, input);
       }
 
-      if (shouldAnimateTransitions(input)) {
-        collectAllTransitions(input, componentTree);
-        if (hasTransitionsToAnimate()) {
-          createNewTransitions(input, mRootTransition);
+      if (shouldAnimateTransitions(state, input)) {
+        collectAllTransitions(extensionState, input, componentTree);
+        if (hasTransitionsToAnimate(state)) {
+          createNewTransitions(extensionState, input, state.mRootTransition);
         }
       }
 
-      if (mTransitionManager != null) {
-        mTransitionManager.finishUndeclaredTransitions();
+      if (state.mTransitionManager != null) {
+        state.mTransitionManager.finishUndeclaredTransitions();
       }
-      mExtensionState.resetAcquiredReferences();
-      if (!mAnimatingTransitionIds.isEmpty()) {
-        regenerateAnimationLockedIndices(input);
+      extensionState.resetAcquiredReferences();
+      if (!state.mAnimatingTransitionIds.isEmpty()) {
+        regenerateAnimationLockedIndices(extensionState, input);
       }
     } finally {
       if (isTracing) {
@@ -260,61 +350,71 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
   }
 
-  private void updateDisappearingMountItems(TransitionsExtensionInput input) {
+  private static void updateDisappearingMountItems(
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput input) {
+    final TransitionsExtensionState state = extensionState.getState();
+
     final Map<TransitionId, ?> nextMountedTransitionIds = input.getTransitionIdMapping();
     for (TransitionId transitionId : nextMountedTransitionIds.keySet()) {
       final OutputUnitsAffinityGroup<MountItem> disappearingItem =
-          mDisappearingMountItems.remove(transitionId);
+          state.mDisappearingMountItems.remove(transitionId);
       if (disappearingItem != null) {
-        endUnmountDisappearingItem(disappearingItem);
+        endUnmountDisappearingItem(extensionState, disappearingItem);
       }
     }
   }
 
-  private void resetAnimationState() {
-    if (mTransitionManager == null) {
+  private static void resetAnimationState(
+      final ExtensionState<TransitionsExtensionState> extensionState) {
+    final TransitionsExtensionState state = extensionState.getState();
+    if (state.mTransitionManager == null) {
       return;
     }
 
-    for (OutputUnitsAffinityGroup<MountItem> group : mDisappearingMountItems.values()) {
-      endUnmountDisappearingItem(group);
+    for (OutputUnitsAffinityGroup<MountItem> group : state.mDisappearingMountItems.values()) {
+      endUnmountDisappearingItem(extensionState, group);
     }
 
-    mExtensionState.resetAcquiredReferences();
-    mDisappearingMountItems.clear();
-    mLockedDisappearingMountitems.clear();
-    mAnimatingTransitionIds.clear();
-    mTransitionManager.reset();
+    extensionState.resetAcquiredReferences();
+    state.mDisappearingMountItems.clear();
+    state.mLockedDisappearingMountitems.clear();
+    state.mAnimatingTransitionIds.clear();
+    state.mTransitionManager.reset();
   }
 
-  private void regenerateAnimationLockedIndices(TransitionsExtensionInput input) {
+  private static void regenerateAnimationLockedIndices(
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput input) {
+    final TransitionsExtensionState state = extensionState.getState();
     final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionMapping =
         input.getTransitionIdMapping();
     if (transitionMapping != null) {
       for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transition :
           transitionMapping.entrySet()) {
-        if (!mAnimatingTransitionIds.contains(transition.getKey())) {
+        if (!state.mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
         }
 
         final OutputUnitsAffinityGroup<AnimatableItem> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final int position = input.getPositionForId(group.getAt(j).getId());
-          updateAnimationLockCount(input, position, true);
+          updateAnimationLockCount(extensionState, input, position, true);
         }
       }
     }
   }
 
   /** @return whether we should animate transitions. */
-  private boolean shouldAnimateTransitions(TransitionsExtensionInput input) {
-    return (mLastMountedComponentTreeId == input.getComponentTreeId()
-        || mInput.needsToRerunTransitions());
+  private static boolean shouldAnimateTransitions(
+      final TransitionsExtensionState state, TransitionsExtensionInput input) {
+    return (state.mLastMountedComponentTreeId == input.getComponentTreeId()
+        || state.mInput.needsToRerunTransitions());
   }
 
   /** @return whether we have any transitions to animate for the current mount */
-  private boolean hasTransitionsToAnimate() {
-    return mRootTransition != null;
+  private static boolean hasTransitionsToAnimate(final TransitionsExtensionState state) {
+    return state.mRootTransition != null;
   }
 
   /**
@@ -322,9 +422,13 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
    *
    * @param input provides transitions information for the current mount.
    */
-  void collectAllTransitions(TransitionsExtensionInput input, ComponentTree componentTree) {
+  static void collectAllTransitions(
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput input,
+      ComponentTree componentTree) {
+    final TransitionsExtensionState state = extensionState.getState();
     assertMainThread();
-    if (mTransitionsHasBeenCollected) {
+    if (state.mTransitionsHasBeenCollected) {
       return;
     }
 
@@ -366,8 +470,8 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     componentTree.setRootWidthAnimation(rootWidthTransition);
     componentTree.setRootHeightAnimation(rootHeightTransition);
 
-    mRootTransition = TransitionManager.getRootTransition(allTransitions);
-    mTransitionsHasBeenCollected = true;
+    state.mRootTransition = TransitionManager.getRootTransition(allTransitions);
+    state.mTransitionsHasBeenCollected = true;
   }
 
   private static @Nullable void collectMountTimeTransitions(
@@ -390,83 +494,62 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
   }
 
-  private void prepareTransitionManager() {
-    if (mTransitionManager == null) {
-      mTransitionManager = new TransitionManager(this);
+  private static void prepareTransitionManager(
+      final ExtensionState<TransitionsExtensionState> extensionState) {
+    final TransitionsExtensionState state = extensionState.getState();
+    if (state.mTransitionManager == null) {
+      state.mTransitionManager =
+          new TransitionManager(new AnimationCompleteListener(extensionState));
     }
   }
 
-  private void createNewTransitions(TransitionsExtensionInput input, Transition rootTransition) {
-    prepareTransitionManager();
+  private static void createNewTransitions(
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput input,
+      Transition rootTransition) {
+    final TransitionsExtensionState state = extensionState.getState();
+    prepareTransitionManager(extensionState);
 
     Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> lastTransitions =
-        mLastTransitionsExtensionInput == null
+        state.mLastTransitionsExtensionInput == null
             ? null
-            : mLastTransitionsExtensionInput.getTransitionIdMapping();
-    mTransitionManager.setupTransitions(
+            : state.mLastTransitionsExtensionInput.getTransitionIdMapping();
+    state.mTransitionManager.setupTransitions(
         lastTransitions, input.getTransitionIdMapping(), rootTransition);
 
     final Map<TransitionId, ?> nextTransitionIds = input.getTransitionIdMapping();
     for (TransitionId transitionId : nextTransitionIds.keySet()) {
-      if (mTransitionManager.isAnimating(transitionId)) {
-        mAnimatingTransitionIds.add(transitionId);
-      }
-    }
-  }
-
-  @Override
-  public void onAnimationComplete(TransitionId transitionId) {
-    final OutputUnitsAffinityGroup<MountItem> disappearingGroup =
-        mDisappearingMountItems.remove(transitionId);
-    if (disappearingGroup != null) {
-      endUnmountDisappearingItem(disappearingGroup);
-    } else {
-      if (!mAnimatingTransitionIds.remove(transitionId)) {
-        if (AnimationsDebug.ENABLED) {
-          Log.e(
-              AnimationsDebug.TAG,
-              "Ending animation for id " + transitionId + " but it wasn't recorded as animating!");
-        }
-      }
-
-      final OutputUnitsAffinityGroup<AnimatableItem> animatableItemGroup =
-          mLastTransitionsExtensionInput != null
-              ? mLastTransitionsExtensionInput.getAnimatableItemForTransitionId(transitionId)
-              : null;
-      if (animatableItemGroup == null) {
-        // This can happen if the component was unmounted without animation or the transitionId
-        // was removed from the component.
-        return;
-      }
-
-      for (int i = 0, size = animatableItemGroup.size(); i < size; i++) {
-        final int position =
-            mLastTransitionsExtensionInput.getPositionForId(animatableItemGroup.getAt(i).getId());
-        updateAnimationLockCount(mLastTransitionsExtensionInput, position, false);
+      if (state.mTransitionManager.isAnimating(transitionId)) {
+        state.mAnimatingTransitionIds.add(transitionId);
       }
     }
   }
 
   /** Determine whether to apply disappear animation to the given {@link MountItem} */
-  private boolean isItemDisappearing(TransitionsExtensionInput input, int index) {
-    if (!shouldAnimateTransitions(input) || !hasTransitionsToAnimate()) {
+  private static boolean isItemDisappearing(
+      final TransitionsExtensionState state, TransitionsExtensionInput input, int index) {
+    if (!shouldAnimateTransitions(state, input) || !hasTransitionsToAnimate(state)) {
       return false;
     }
 
-    if (mTransitionManager == null || mLastTransitionsExtensionInput == null) {
+    if (state.mTransitionManager == null || state.mLastTransitionsExtensionInput == null) {
       return false;
     }
 
     final AnimatableItem animatableItem =
-        mLastTransitionsExtensionInput.getAnimatableItem(
-            mLastTransitionsExtensionInput.getMountableOutputAt(index).getRenderUnit().getId());
+        state.mLastTransitionsExtensionInput.getAnimatableItem(
+            state
+                .mLastTransitionsExtensionInput
+                .getMountableOutputAt(index)
+                .getRenderUnit()
+                .getId());
 
     final TransitionId transitionId = animatableItem.getTransitionId();
     if (transitionId == null) {
       return false;
     }
 
-    return mTransitionManager.isDisappearing(transitionId);
+    return state.mTransitionManager.isDisappearing(transitionId);
   }
 
   /**
@@ -481,36 +564,40 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
    *
    * <p>- Finally map the disappearing mount item to the transition id
    */
-  private void extractDisappearingItems(TransitionsExtensionInput newTransitionsExtensionInput) {
-    int mountItemCount = getMountTarget(mExtensionState).getMountItemCount();
-    if (mLastTransitionsExtensionInput == null || mountItemCount == 0) {
+  private static void extractDisappearingItems(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      TransitionsExtensionInput newTransitionsExtensionInput) {
+    int mountItemCount = getMountTarget(extensionState).getMountItemCount();
+    final TransitionsExtensionState state = extensionState.getState();
+    if (state.mLastTransitionsExtensionInput == null || mountItemCount == 0) {
       return;
     }
 
     for (int i = 1; i < mountItemCount; i++) {
-      if (isItemDisappearing(newTransitionsExtensionInput, i)) {
-        final int lastDescendantIndex = findLastDescendantIndex(mLastTransitionsExtensionInput, i);
+      if (isItemDisappearing(state, newTransitionsExtensionInput, i)) {
+        final int lastDescendantIndex =
+            findLastDescendantIndex(state.mLastTransitionsExtensionInput, i);
         // Go though disappearing subtree. Mount anything that's not mounted (without acquiring
         // reference).
         for (int j = i; j <= lastDescendantIndex; j++) {
-          if (getMountTarget(mExtensionState).getMountItemAt(j) == null) {
+          if (getMountTarget(extensionState).getMountItemAt(j) == null) {
             // We need to release any mount reference to this because we need to force mount here.
-            if (mExtensionState.ownsReference(
-                mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
-              mExtensionState.releaseMountReference(
-                  mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+            if (extensionState.ownsReference(
+                state.mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
+              extensionState.releaseMountReference(
+                  state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
             }
-            mExtensionState.acquireMountReference(
-                mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
+            extensionState.acquireMountReference(
+                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
             // Here we have to release the ref count without mounting.
-            mExtensionState.releaseMountReference(
-                mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+            extensionState.releaseMountReference(
+                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
           }
-          mLockedDisappearingMountitems.add(getMountTarget(mExtensionState).getMountItemAt(j));
+          state.mLockedDisappearingMountitems.add(getMountTarget(extensionState).getMountItemAt(j));
         }
 
         // Reference to the root of the disappearing subtree
-        final MountItem disappearingItem = getMountTarget(mExtensionState).getMountItemAt(i);
+        final MountItem disappearingItem = getMountTarget(extensionState).getMountItemAt(i);
 
         if (disappearingItem == null) {
           throw new IllegalStateException(
@@ -520,25 +607,29 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         }
 
         // Moving item to the root if needed.
-        remountHostToRootIfNeeded(i, disappearingItem);
+        remountHostToRootIfNeeded(extensionState, i, disappearingItem);
 
-        mapDisappearingItemWithTransitionId(disappearingItem);
+        mapDisappearingItemWithTransitionId(state, disappearingItem);
 
-        getMountTarget(mExtensionState).notifyUnmount(i);
+        getMountTarget(extensionState).notifyUnmount(i);
 
         i = lastDescendantIndex;
       }
     }
   }
 
-  private void unmountDisappearingItem(MountItem mountItem, boolean isRoot) {
-    mLockedDisappearingMountitems.remove(mountItem);
+  private static void unmountDisappearingItem(
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final MountItem mountItem,
+      final boolean isRoot) {
+    final TransitionsExtensionState state = extensionState.getState();
+    state.mLockedDisappearingMountitems.remove(mountItem);
     final Object content = mountItem.getContent();
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
       final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
-        unmountDisappearingItem(contentHost.getMountItemAt(j), false);
+        unmountDisappearingItem(extensionState, contentHost.getMountItemAt(j), false);
       }
 
       if (contentHost.getMountItemCount() > 0) {
@@ -558,35 +649,40 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
       host.unmount(mountItem);
     }
 
-    getMountTarget(mExtensionState).unbindMountItem(mountItem);
+    getMountTarget(extensionState).unbindMountItem(mountItem);
   }
 
-  private void endUnmountDisappearingItem(OutputUnitsAffinityGroup<MountItem> group) {
+  private static void endUnmountDisappearingItem(
+      ExtensionState<TransitionsExtensionState> extensionState,
+      OutputUnitsAffinityGroup<MountItem> group) {
     maybeRemoveAnimatingMountContent(
+        extensionState.getState(),
         getLayoutOutput(group.getMostSignificantUnit()).getTransitionId());
 
     for (int i = 0, size = group.size(); i < size; i++) {
-      unmountDisappearingItem(group.getAt(i), true);
+      unmountDisappearingItem(extensionState, group.getAt(i), true);
     }
   }
 
-  private void mapDisappearingItemWithTransitionId(MountItem item) {
+  private static void mapDisappearingItemWithTransitionId(
+      TransitionsExtensionState state, MountItem item) {
     final AnimatableItem animatableItem =
-        mLastTransitionsExtensionInput.getAnimatableItem(
+        state.mLastTransitionsExtensionInput.getAnimatableItem(
             item.getRenderTreeNode().getRenderUnit().getId());
     final TransitionId transitionId = animatableItem.getTransitionId();
     OutputUnitsAffinityGroup<MountItem> disappearingGroup =
-        mDisappearingMountItems.get(transitionId);
+        state.mDisappearingMountItems.get(transitionId);
     if (disappearingGroup == null) {
       disappearingGroup = new OutputUnitsAffinityGroup<>();
-      mDisappearingMountItems.put(transitionId, disappearingGroup);
+      state.mDisappearingMountItems.put(transitionId, disappearingGroup);
     }
     final @OutputUnitType int type = animatableItem.getOutputType();
     disappearingGroup.add(type, item);
   }
 
-  private void remountHostToRootIfNeeded(int index, MountItem mountItem) {
-    final Host rootHost = getMountTarget(mExtensionState).getRootItem().getHost();
+  private static void remountHostToRootIfNeeded(
+      ExtensionState<TransitionsExtensionState> extensionState, int index, MountItem mountItem) {
+    final Host rootHost = getMountTarget(extensionState).getRootItem().getHost();
     final Host originalHost = mountItem.getHost();
     if (originalHost == null) {
       throw new IllegalStateException(
@@ -644,18 +740,10 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     mountItem.setHost(rootHost);
   }
 
-  @Override
-  public void onAnimationUnitComplete(
-      PropertyHandle propertyHandle, Function transitionEndHandler) {
-    if (transitionEndHandler != null) {
-      transitionEndHandler.call(
-          new TransitionEndEvent(
-              propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
-    }
-  }
-
-  private void maybeUpdateAnimatingMountContent() {
-    if (mTransitionManager == null) {
+  private static void maybeUpdateAnimatingMountContent(
+      ExtensionState<TransitionsExtensionState> extensionState) {
+    final TransitionsExtensionState state = extensionState.getState();
+    if (state.mTransitionManager == null) {
       return;
     }
 
@@ -667,15 +755,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     // Group mount content (represents current LayoutStates only) into groups and pass it to the
     // TransitionManager
     final Map<TransitionId, OutputUnitsAffinityGroup<Object>> animatingContent =
-        new LinkedHashMap<>(mAnimatingTransitionIds.size());
+        new LinkedHashMap<>(state.mAnimatingTransitionIds.size());
 
-    for (int i = 0, size = getMountTarget(mExtensionState).getMountItemCount(); i < size; i++) {
-      final MountItem mountItem = getMountTarget(mExtensionState).getMountItemAt(i);
+    for (int i = 0, size = getMountTarget(extensionState).getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = getMountTarget(extensionState).getMountItemAt(i);
       if (mountItem == null) {
         continue;
       }
       final AnimatableItem animatableItem =
-          mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit().getId());
+          state.mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit().getId());
 
       if (animatableItem.getTransitionId() == null) {
         continue;
@@ -691,12 +779,12 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
     for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<Object>> content :
         animatingContent.entrySet()) {
-      mTransitionManager.setMountContent(content.getKey(), content.getValue());
+      state.mTransitionManager.setMountContent(content.getKey(), content.getValue());
     }
 
     // Retrieve mount content from disappearing mount items and pass it to the TransitionManager
     for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<MountItem>> entry :
-        mDisappearingMountItems.entrySet()) {
+        state.mDisappearingMountItems.entrySet()) {
       final OutputUnitsAffinityGroup<MountItem> mountItemsGroup = entry.getValue();
       final OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
       for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
@@ -704,7 +792,7 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
         final MountItem mountItem = mountItemsGroup.getAt(j);
         mountContentGroup.add(type, mountItem.getContent());
       }
-      mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
+      state.mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
     }
 
     if (isTracing) {
@@ -713,49 +801,55 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   }
 
   // TODO: T68620328 Make private after test is done
-  public void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
+  public static void removeDisappearingMountContentFromComponentHost(
+      final ExtensionState<TransitionsExtensionState> extensionState, ComponentHost componentHost) {
+    final TransitionsExtensionState state = extensionState.getState();
     List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
     if (ids != null) {
       for (int i = 0, size = ids.size(); i < size; i++) {
-        mTransitionManager.setMountContent(ids.get(i), null);
+        state.mTransitionManager.setMountContent(ids.get(i), null);
       }
     }
   }
 
-  private void maybeRemoveAnimatingMountContent(@Nullable TransitionId transitionId) {
-    if (mTransitionManager == null || transitionId == null) {
+  private static void maybeRemoveAnimatingMountContent(
+      final TransitionsExtensionState state, @Nullable TransitionId transitionId) {
+    if (state.mTransitionManager == null || transitionId == null) {
       return;
     }
 
-    mTransitionManager.setMountContent(transitionId, null);
+    state.mTransitionManager.setMountContent(transitionId, null);
   }
 
-  private void maybeRemoveAnimatingMountContent(
-      TransitionId transitionId, @OutputUnitType int type) {
-    if (mTransitionManager == null || transitionId == null) {
+  private static void maybeRemoveAnimatingMountContent(
+      final TransitionsExtensionState state, TransitionId transitionId, @OutputUnitType int type) {
+    if (state.mTransitionManager == null || transitionId == null) {
       return;
     }
 
-    mTransitionManager.removeMountContent(transitionId, type);
+    state.mTransitionManager.removeMountContent(transitionId, type);
   }
 
   /**
    * Update the animation locked count for all children and each parent of the animating item. Mount
    * items that have a lock count > 0 will not be unmounted during incremental mount.
    */
-  private void updateAnimationLockCount(
-      TransitionsExtensionInput input, int index, boolean increment) {
+  private static void updateAnimationLockCount(
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final TransitionsExtensionInput input,
+      final int index,
+      final boolean increment) {
     // Update children
     final int lastDescendantIndex = findLastDescendantIndex(input, index);
     for (int i = index; i <= lastDescendantIndex; i++) {
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
       if (increment) {
-        if (!mExtensionState.ownsReference(renderTreeNode)) {
-          mExtensionState.acquireMountReference(renderTreeNode, i, false);
+        if (!extensionState.ownsReference(renderTreeNode)) {
+          extensionState.acquireMountReference(renderTreeNode, i, false);
         }
       } else {
-        if (mExtensionState.ownsReference(renderTreeNode)) {
-          mExtensionState.releaseMountReference(renderTreeNode, i, false);
+        if (extensionState.ownsReference(renderTreeNode)) {
+          extensionState.releaseMountReference(renderTreeNode, i, false);
         }
       }
     }
@@ -765,15 +859,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
       if (increment) {
         // We use the position as 0 as we are not mounting it, just acquiring reference.
-        if (!mExtensionState.ownsReference(parentRenderTreeNode)) {
-          mExtensionState.acquireMountReference(parentRenderTreeNode, 0, false);
+        if (!extensionState.ownsReference(parentRenderTreeNode)) {
+          extensionState.acquireMountReference(parentRenderTreeNode, 0, false);
         }
-        if (!mExtensionState.ownsReference(parentRenderTreeNode)) {
-          mExtensionState.acquireMountReference(parentRenderTreeNode, 0, false);
+        if (!extensionState.ownsReference(parentRenderTreeNode)) {
+          extensionState.acquireMountReference(parentRenderTreeNode, 0, false);
         }
       } else {
-        if (mExtensionState.ownsReference(parentRenderTreeNode)) {
-          mExtensionState.releaseMountReference(parentRenderTreeNode, 0, false);
+        if (extensionState.ownsReference(parentRenderTreeNode)) {
+          extensionState.releaseMountReference(parentRenderTreeNode, 0, false);
         }
       }
       parentRenderTreeNode = parentRenderTreeNode.getParent();

@@ -16,16 +16,19 @@
 
 package com.facebook.rendercore;
 
+import com.facebook.rendercore.extensions.ExtensionState;
+
 /** This delegate allows overriding a {@link MountItem}'s unmount responsibility. */
-public interface UnmountDelegateExtension {
+public interface UnmountDelegateExtension<State> {
 
   /**
    * This method is called to check if this item's unmount needs to be delegated.
    *
+   * @param extensionState
    * @param mountItem
    * @return
    */
-  boolean shouldDelegateUnmount(MountItem mountItem);
+  boolean shouldDelegateUnmount(ExtensionState<State> extensionState, MountItem mountItem);
 
   /**
    * This method is responsible for unmounting the item from the {@link Host} and unbinding the item
@@ -35,5 +38,5 @@ public interface UnmountDelegateExtension {
    * @param mountItem
    * @param host
    */
-  void unmount(int index, MountItem mountItem, Host host);
+  void unmount(ExtensionState<State> extensionState, int index, MountItem mountItem, Host host);
 }

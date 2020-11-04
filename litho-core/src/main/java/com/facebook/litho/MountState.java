@@ -215,7 +215,7 @@ class MountState
     if (!mLithoView.usingExtensionsWithMountDelegate()
         && !ComponentsConfiguration.useIncrementalMountExtension
         && ComponentsConfiguration.useTransitionsExtension) {
-      registerMountDelegateExtension(new TransitionsExtension(mLithoView));
+      registerMountDelegateExtension(TransitionsExtension.getInstance());
     }
   }
 
@@ -230,6 +230,7 @@ class MountState
     if (mountExtension instanceof TransitionsExtension) {
       mTransitionsExtension = (TransitionsExtension) mountExtension;
       mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
+      TransitionsExtension.setRootHost(mTransitionsExtensionState, mLithoView);
     }
   }
 
@@ -1446,7 +1447,8 @@ class MountState
       final MountItem oldItem = getItemAt(i);
       final boolean hasUnmountDelegate =
           mUnmountDelegateExtension != null && oldItem != null
-              ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
+              ? mUnmountDelegateExtension.shouldDelegateUnmount(
+                  mMountDelegate.getUnmountDelegateExtensionState(), oldItem)
               : false;
 
       if (hasUnmountDelegate) {
@@ -2597,7 +2599,9 @@ class MountState
     final Object content = item.getContent();
 
     final boolean hasUnmountDelegate =
-        mUnmountDelegateExtension != null && mUnmountDelegateExtension.shouldDelegateUnmount(item);
+        mUnmountDelegateExtension != null
+            && mUnmountDelegateExtension.shouldDelegateUnmount(
+                mMountDelegate.getUnmountDelegateExtensionState(), item);
 
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
@@ -2663,7 +2667,8 @@ class MountState
     }
 
     if (hasUnmountDelegate) {
-      mUnmountDelegateExtension.unmount(index, item, host);
+      mUnmountDelegateExtension.unmount(
+          mMountDelegate.getUnmountDelegateExtensionState(), index, item, host);
     } else {
       /*
        * The mounted content might contain other LithoViews which are not reachable from
@@ -3131,7 +3136,7 @@ class MountState
 
   public void clearLastMountedTree() {
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.clearLastMountedTreeId();
+      mTransitionsExtension.clearLastMountedTreeId(mTransitionsExtensionState);
     }
     mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   }
@@ -3463,7 +3468,8 @@ class MountState
     assertMainThread();
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.collectAllTransitions(layoutState, componentTree);
+      mTransitionsExtension.collectAllTransitions(
+          mTransitionsExtensionState, layoutState, componentTree);
       return;
     }
 

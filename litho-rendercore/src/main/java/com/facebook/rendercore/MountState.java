@@ -428,7 +428,8 @@ public class MountState implements MountDelegateTarget {
 
       final boolean hasUnmountDelegate =
           mUnmountDelegateExtension != null && oldItem != null
-              ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
+              ? mUnmountDelegateExtension.shouldDelegateUnmount(
+                  mMountDelegate.getUnmountDelegateExtensionState(), oldItem)
               : false;
 
       if (hasUnmountDelegate) {
@@ -553,7 +554,9 @@ public class MountState implements MountDelegateTarget {
     mIndexToMountedItemMap.remove(unit.getId());
 
     final boolean hasUnmountDelegate =
-        mUnmountDelegateExtension != null && mUnmountDelegateExtension.shouldDelegateUnmount(item);
+        mUnmountDelegateExtension != null
+            && mUnmountDelegateExtension.shouldDelegateUnmount(
+                mMountDelegate.getUnmountDelegateExtensionState(), item);
 
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
@@ -578,7 +581,11 @@ public class MountState implements MountDelegateTarget {
     final Host host = item.getHost();
 
     if (hasUnmountDelegate) {
-      mUnmountDelegateExtension.unmount(node.getPositionInParent(), item, host);
+      mUnmountDelegateExtension.unmount(
+          mMountDelegate.getUnmountDelegateExtensionState(),
+          node.getPositionInParent(),
+          item,
+          host);
     } else {
       if (item.isBound()) {
         unbindRenderUnitFromContent(mMountDelegate, mContext, item);
