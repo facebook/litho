@@ -16,8 +16,6 @@
 
 package com.facebook.litho.intellij.services;
 
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
@@ -34,7 +32,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.text.StringUtil;
@@ -83,28 +80,6 @@ public class ComponentGenerateService {
   public void subscribe(SpecUpdateNotifier listener, Disposable parent) {
     listeners.add(listener);
     Disposer.register(parent, () -> listeners.remove(listener));
-  }
-
-  /**
-   * Updates generated Component file from the given Spec class and shows success notification. Or
-   * do nothing if provided class doesn't contain {@link LayoutSpec} or {@link MountSpec}.
-   *
-   * @param specCls class containing {@link LayoutSpec} or {@link MountSpec} class.
-   */
-  public void updateComponentAsync(PsiClass specCls) {
-    final Project project = specCls.getProject();
-    final Runnable job =
-        () -> {
-          final PsiClass component = updateComponentSync(specCls);
-          if (component != null) {
-            showSuccess(component.getName(), project);
-          }
-        };
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
-      job.run();
-    } else {
-      DumbService.getInstance(project).smartInvokeLater(job);
-    }
   }
 
   /** @return false iff class is under analysis. Otherwise starts analysis. */
@@ -221,10 +196,6 @@ public class ComponentGenerateService {
 
     cacheService.update(componentQualifiedName, inMemory);
     return inMemory;
-  }
-
-  private static void showSuccess(String componentName, Project project) {
-    LithoPluginUtils.showInfo(componentName + " was regenerated", project);
   }
 
   /**

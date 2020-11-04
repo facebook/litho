@@ -26,6 +26,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.project.DumbService;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiJavaFile;
 import java.util.HashMap;
@@ -47,14 +49,23 @@ public class GenerateComponentAction extends AnAction {
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    Optional<PsiClass> spec = getValidSpec(e);
-    Map<String, String> eventMetadata = new HashMap<>();
-    spec.ifPresent(
-        cls -> {
-          ComponentGenerateService.getInstance().updateComponentAsync(cls);
-          PsiJavaFile file = (PsiJavaFile) cls.getContainingFile();
-          eventMetadata.put(EventLogger.KEY_FILE, file.getPackageName() + "." + file.getName());
-        });
+    final Map<String, String> eventMetadata = new HashMap<>();
+    getValidSpec(e)
+        .ifPresent(
+            cls -> {
+              final Project project = cls.getProject();
+              final Runnable job =
+                  () -> {
+                    final PsiClass component =
+                        ComponentGenerateService.getInstance().updateComponentSync(cls);
+                    if (component != null) {
+                      LithoPluginUtils.showInfo(component.getName() + " was regenerated", project);
+                    }
+                  };
+              DumbService.getInstance(project).smartInvokeLater(job);
+              PsiJavaFile file = (PsiJavaFile) cls.getContainingFile();
+              eventMetadata.put(EventLogger.KEY_FILE, file.getPackageName() + "." + file.getName());
+            });
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_GENERATE_COMPONENT, eventMetadata);
   }
 
