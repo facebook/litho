@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## Version 1.6.0
+
+_2020-11-4_
+
+* New: "Resolve Litho Red Symbols" for `MountSpec`.
+* New: Annotation for `MountSpec`.
+* New: "Litho Spec" view for `MountSpec`.
+* New: "Regenerate Component" for `MountSpec`.
+
 ## Version 1.5.11
 
 _2020-10-20_
