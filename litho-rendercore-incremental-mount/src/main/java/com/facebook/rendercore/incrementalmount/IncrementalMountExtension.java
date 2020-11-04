@@ -47,9 +47,9 @@ public class IncrementalMountExtension
   @VisibleForTesting
   public class IncrementalMountExtensionState {
     private final boolean mAcquireReferencesDuringMount;
-    private final IncrementalMountBinder mAttachDetachBinder;
     private final Rect mPreviousLocalVisibleRect = new Rect();
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
+    private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
 
     private final LongSparseArray<IncrementalMountOutput> mPendingImmediateRemoval =
         new LongSparseArray<>();
@@ -59,7 +59,6 @@ public class IncrementalMountExtension
     private int mPreviousBottomsIndex;
 
     private IncrementalMountExtensionState(boolean acquireReferencesDuringMount) {
-      mAttachDetachBinder = new IncrementalMountBinder();
       mAcquireReferencesDuringMount = acquireReferencesDuringMount;
     }
   }
@@ -85,7 +84,6 @@ public class IncrementalMountExtension
 
     releaseAcquiredReferencesForRemovedItems(extensionState, input);
     state.mInput = input;
-    state.mAttachDetachBinder.updateInput(input);
     state.mPreviousLocalVisibleRect.setEmpty();
 
     if (!mAcquireReferencesDuringMount) {
@@ -177,6 +175,43 @@ public class IncrementalMountExtension
     return new IncrementalMountExtensionState(mAcquireReferencesDuringMount);
   }
 
+  @Override
+  public void onBindItem(
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    final long id = renderUnit.getId();
+
+    if (state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id)) {
+      return;
+    }
+
+    recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+  }
+
+  @Override
+  public void onMountItem(
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(renderUnit.getId());
+  }
+
+  @Override
+  public void onUnbindItem(
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    final long id = renderUnit.getId();
+    state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.remove(id);
+  }
+
   private static void acquireMountReferenceEnsureHostIsMounted(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       IncrementalMountOutput incrementalMountOutput,
@@ -202,27 +237,11 @@ public class IncrementalMountExtension
     return true;
   }
 
-  public static RenderUnit.Binder getAttachDetachBinder(
-      final ExtensionState<IncrementalMountExtensionState> extensionState) {
-    final IncrementalMountExtensionState state = extensionState.getState();
-    return state.mAttachDetachBinder;
-  }
-
   static void recursivelyNotifyVisibleBoundsChanged(
       IncrementalMountExtensionInput input, final long id, final Object content) {
     if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
       recursivelyNotifyVisibleBoundsChanged(content);
     }
-  }
-
-  public static void onBindMountItem(
-      IncrementalMountExtensionInput input, final long id, final Object content) {
-    recursivelyNotifyVisibleBoundsChanged(input, id, content);
-  }
-
-  public static void onBindMountItem(
-      IncrementalMountExtensionState state, final long id, final Object content) {
-    recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
   }
 
   private static void releaseAcquiredReferencesForRemovedItems(

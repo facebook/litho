@@ -108,9 +108,6 @@ public class LithoHostListenerCoordinator {
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
-    addAttachDetachExtension(
-        mIncrementalMountExtension.getAttachDetachBinder(
-            mMountDelegateTarget.getExtensionState(mIncrementalMountExtension)));
   }
 
   void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {

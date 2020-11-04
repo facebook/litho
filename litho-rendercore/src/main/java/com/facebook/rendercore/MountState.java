@@ -167,11 +167,15 @@ public class MountState implements MountDelegateTarget {
     MountItem item = mIndexToMountedItemMap.get(ROOT_HOST_ID);
     if (item != null) {
       if (item.isBound()) {
-        unbindRenderUnitFromContent(mContext, item);
+        unbindRenderUnitFromContent(mMountDelegate, mContext, item);
       }
       mIndexToMountedItemMap.remove(ROOT_HOST_ID);
       unmountRenderUnitFromContent(
-          mContext, rootRenderTreeNode, rootRenderTreeNode.getRenderUnit(), item.getContent());
+          mContext,
+          rootRenderTreeNode,
+          rootRenderTreeNode.getRenderUnit(),
+          item.getContent(),
+          mMountDelegate);
     }
 
     mRenderUnitIds = null;
@@ -285,7 +289,7 @@ public class MountState implements MountDelegateTarget {
       }
 
       final Object content = mountItem.getContent();
-      bindRenderUnitToContent(mContext, mountItem);
+      bindRenderUnitToContent(mMountDelegate, mContext, mountItem);
 
       if (content instanceof View
           && !(content instanceof Host)
@@ -311,7 +315,7 @@ public class MountState implements MountDelegateTarget {
         continue;
       }
 
-      unbindRenderUnitFromContent(mContext, mountItem);
+      unbindRenderUnitFromContent(mMountDelegate, mContext, mountItem);
     }
   }
 
@@ -373,7 +377,7 @@ public class MountState implements MountDelegateTarget {
     if (rootItem == null) {
 
       // Run mount callbacks.
-      mountRenderUnitToContent(mContext, rootNode, rootRenderUnit, mRootHost);
+      mountRenderUnitToContent(mMountDelegate, mContext, rootNode, rootRenderUnit, mRootHost);
 
       // Create root mount item.
       final MountItem item = new MountItem(rootNode, mRootHost, mRootHost);
@@ -382,7 +386,7 @@ public class MountState implements MountDelegateTarget {
       mIndexToMountedItemMap.put(ROOT_HOST_ID, item);
 
       // Run binder callbacks
-      bindRenderUnitToContent(mContext, item);
+      bindRenderUnitToContent(mMountDelegate, mContext, item);
 
     } else {
 
@@ -517,13 +521,13 @@ public class MountState implements MountDelegateTarget {
     // 2. call the RenderUnit's Mount bindings.
     final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
 
-    mountRenderUnitToContent(mContext, renderTreeNode, renderUnit, content);
+    mountRenderUnitToContent(mMountDelegate, mContext, renderTreeNode, renderUnit, content);
 
     // 3. Mount the content into the selected host.
     final MountItem item = mountContentInHost(index, content, host, renderTreeNode);
 
     // 4. Call attach binding functions
-    bindRenderUnitToContent(mContext, item);
+    bindRenderUnitToContent(mMountDelegate, mContext, item);
 
     // 5. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
@@ -577,7 +581,7 @@ public class MountState implements MountDelegateTarget {
       mUnmountDelegateExtension.unmount(node.getPositionInParent(), item, host);
     } else {
       if (item.isBound()) {
-        unbindRenderUnitFromContent(mContext, item);
+        unbindRenderUnitFromContent(mMountDelegate, mContext, item);
       }
       host.unmount(node.getPositionInParent(), item);
 
@@ -585,7 +589,7 @@ public class MountState implements MountDelegateTarget {
         ((View) content).setPadding(0, 0, 0, 0);
       }
 
-      unmountRenderUnitFromContent(mContext, node, unit, content);
+      unmountRenderUnitFromContent(mContext, node, unit, content, mMountDelegate);
 
       item.releaseMountContent(mContext);
     }
@@ -594,7 +598,7 @@ public class MountState implements MountDelegateTarget {
   @Override
   public void unbindMountItem(MountItem mountItem) {
     if (mountItem.isBound()) {
-      unbindRenderUnitFromContent(mContext, mountItem);
+      unbindRenderUnitFromContent(mMountDelegate, mContext, mountItem);
     }
     final Object content = mountItem.getContent();
     if (content instanceof View) {
@@ -605,7 +609,8 @@ public class MountState implements MountDelegateTarget {
         mContext,
         mountItem.getRenderTreeNode(),
         mountItem.getRenderTreeNode().getRenderUnit(),
-        content);
+        content,
+        mMountDelegate);
 
     mountItem.releaseMountContent(mContext);
   }
@@ -650,32 +655,50 @@ public class MountState implements MountDelegateTarget {
   }
 
   private static void mountRenderUnitToContent(
+      final @Nullable MountDelegate mountDelegate,
       final Context context,
       final RenderTreeNode node,
       final RenderUnit unit,
       final Object content) {
     unit.mountExtensions(context, content, node.getLayoutData());
+    if (mountDelegate != null) {
+      mountDelegate.onMountItem(unit, content, node.getLayoutData());
+    }
   }
 
   private static void unmountRenderUnitFromContent(
       final Context context,
       final RenderTreeNode node,
       final RenderUnit unit,
-      final Object content) {
+      final Object content,
+      final @Nullable MountDelegate mountDelegate) {
     unit.unmountExtensions(context, content, node.getLayoutData());
+    if (mountDelegate != null) {
+      mountDelegate.onUnmountItem(unit, content, node.getLayoutData());
+    }
   }
 
-  private static void bindRenderUnitToContent(Context context, MountItem item) {
+  private static void bindRenderUnitToContent(
+      final @Nullable MountDelegate mountDelegate, Context context, MountItem item) {
     final RenderUnit renderUnit = item.getRenderUnit();
-    renderUnit.attachExtensions(
-        context, item.getContent(), item.getRenderTreeNode().getLayoutData());
+    final Object content = item.getContent();
+    final Object layoutData = item.getRenderTreeNode().getLayoutData();
+    renderUnit.attachExtensions(context, content, layoutData);
+    if (mountDelegate != null) {
+      mountDelegate.onBindItem(renderUnit, content, layoutData);
+    }
     item.setIsBound(true);
   }
 
-  private static void unbindRenderUnitFromContent(Context context, MountItem item) {
+  private static void unbindRenderUnitFromContent(
+      final @Nullable MountDelegate mountDelegate, Context context, MountItem item) {
     final RenderUnit renderUnit = item.getRenderUnit();
-    renderUnit.detachExtensions(
-        context, item.getContent(), item.getRenderTreeNode().getLayoutData());
+    final Object content = item.getContent();
+    final Object layoutData = item.getRenderTreeNode().getLayoutData();
+    renderUnit.detachExtensions(context, content, layoutData);
+    if (mountDelegate != null) {
+      mountDelegate.onUnbindItem(renderUnit, content, layoutData);
+    }
     item.setIsBound(false);
   }
 

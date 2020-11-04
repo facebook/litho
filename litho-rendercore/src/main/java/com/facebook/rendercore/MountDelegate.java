@@ -16,10 +16,12 @@
 
 package com.facebook.rendercore;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +76,35 @@ public class MountDelegate {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       mountExtension.onUnmount(getExtensionState(mountExtension));
+    }
+  }
+
+  void onBindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      final MountExtension extension = mMountExtensions.get(i);
+      extension.onBindItem(getExtensionState(extension), renderUnit, content, layoutData);
+    }
+  }
+
+  void onUnbindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      final MountExtension extension = mMountExtensions.get(i);
+      extension.onUnbindItem(getExtensionState(extension), renderUnit, content, layoutData);
+    }
+  }
+
+  void onMountItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      final MountExtension extension = mMountExtensions.get(i);
+      extension.onMountItem(getExtensionState(extension), renderUnit, content, layoutData);
+    }
+  }
+
+  public void onUnmountItem(
+      final RenderUnit renderUnit, final Object content, final @Nullable Object layoutData) {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      final MountExtension extension = mMountExtensions.get(i);
+      extension.onUnmountItem(getExtensionState(extension), renderUnit, content, layoutData);
     }
   }
 

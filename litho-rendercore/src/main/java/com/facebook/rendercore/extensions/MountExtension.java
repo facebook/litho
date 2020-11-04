@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.extensions;
 
+import android.content.Context;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -23,6 +24,7 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 
 /**
  * Mount extension which can be registered by a MountState as an extension which can override
@@ -89,4 +91,32 @@ public abstract class MountExtension<Input, State> {
 
   /** Called after all the Host's children have been unbound. */
   public void onUnbind(ExtensionState<State> extensionState) {}
+
+  /** Called after an item is bound, after it gets mounted or updated. */
+  public void onBindItem(
+      ExtensionState<State> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {}
+
+  /** Called after an item is unbound. */
+  public void onUnbindItem(
+      ExtensionState<State> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {}
+
+  /** Called after an item is unmounted. */
+  public void onUnmountItem(
+      ExtensionState<State> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {}
+
+  /** Called after an item is mounted. */
+  public void onMountItem(
+      ExtensionState<State> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {}
 }

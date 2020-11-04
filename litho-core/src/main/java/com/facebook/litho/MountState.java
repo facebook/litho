@@ -709,9 +709,11 @@ class MountState
     if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
       // We don't care if using TransitionsExtension without IncrementalMountExtension since that
       // goes through the regular mount path and will do this.
-      final IncrementalMountExtensionState state = mIncrementalMountExtensionState.getState();
-      IncrementalMountExtension.onBindMountItem(
-          state, layoutOutput.getId(), mountItem.getContent());
+      mIncrementalMountExtension.onBindItem(
+          mIncrementalMountExtensionState,
+          mountItem.getRenderTreeNode().getRenderUnit(),
+          mountItem.getContent(),
+          mountItem.getRenderTreeNode().getLayoutData());
     }
   }
 
