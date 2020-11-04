@@ -37,7 +37,7 @@ public class LithoHostListenerCoordinator {
   private VisibilityMountExtension mVisibilityExtension;
   private TransitionsExtension mTransitionsExtension;
   private EndToEndTestingExtension mEndToEndTestingExtension;
-  private DynamicPropsBinder mDynamicPropsBinder;
+  private DynamicPropsExtension mDynamicPropsExtension;
 
   private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mMountUnmountExtensions;
   private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mAttachDetachExtensions;
@@ -189,12 +189,13 @@ public class LithoHostListenerCoordinator {
   }
 
   public void enableDynamicProps() {
-    if (mDynamicPropsBinder != null) {
+    if (mDynamicPropsExtension != null) {
       return;
     }
 
-    mDynamicPropsBinder = new DynamicPropsBinder();
-    addAttachDetachExtension(mDynamicPropsBinder);
+    mDynamicPropsExtension = DynamicPropsExtension.getInstance();
+    mMountDelegateTarget.registerMountDelegateExtension(mDynamicPropsExtension);
+    registerListener(mDynamicPropsExtension);
   }
 
   private void addAttachDetachExtension(RenderUnit.Binder attachDetachExtension) {
