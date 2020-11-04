@@ -154,17 +154,18 @@ public class ComponentGenerateService {
     }
     copy.forEach(listener -> listener.onSpecModelUpdated(specCls));
 
-    return updateComponent(componentQN, model, specCls.getProject());
+    final String newContent = createFileContentFromModel(componentQN, model);
+    return updateComponent(componentQN, newContent, specCls.getProject());
   }
 
-  /** Updates generated Component file from the given Spec model. */
+  /** Updates generated Component file with new content. */
   @Nullable
   private static PsiClass updateComponent(
-      String componentQualifiedName, SpecModel model, Project project) {
+      String componentQualifiedName, String newContent, Project project) {
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
-    final String newContent = createFileContentFromModel(componentQualifiedName, model);
+
     if (generatedClass.isPresent()) {
       return updateExistingComponent(newContent, generatedClass.get(), project);
     } else {
