@@ -38,21 +38,11 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   private int mDefaultViewAttributeFlags = -1;
 
   public LithoRenderUnit(LayoutOutput output) {
-    this(output, true);
-  }
-
-  /**
-   * When using Litho MountState as MountDelegateTarget, the extension functionality is already
-   * covered in the MountState itself.
-   */
-  public LithoRenderUnit(LayoutOutput output, boolean needsExtensions) {
     super(getRenderType(output));
-    if (needsExtensions) {
-      addMountUnmountExtensions(
-          extension(this, LithoMountBinder.INSTANCE),
-          extension(this, LithoViewAttributeBinder.INSTANCE));
-      addAttachDetachExtension(extension(this, LithoBindBinder.INSTANCE));
-    }
+    addMountUnmountExtensions(
+        extension(this, LithoMountBinder.INSTANCE),
+        extension(this, LithoViewAttributeBinder.INSTANCE));
+    addAttachDetachExtension(extension(this, LithoBindBinder.INSTANCE));
     this.output = output;
   }
 

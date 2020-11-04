@@ -740,24 +740,19 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     return input.getMountableOutputCount() - 1;
   }
 
-  // TODO: T68620328 Remove after test is done.
-  public void bind(
-      Context context,
-      Host host,
-      Object content,
-      LithoRenderUnit lithoRenderUnit,
-      @Nullable Object layoutData) {
-    mAttachDetachBinder.bind(context, content, lithoRenderUnit, layoutData);
+  void onMountMountItem(LayoutOutput output, Object content) {
+    if (mExtensionState.ownsReference(output.getId())
+        && output.getComponent().hasChildLithoViews()) {
+      final View view = (View) content;
+      MountUtils.ensureAllLithoViewChildrenAreMounted(view);
+    }
   }
 
-  // TODO: T68620328 Remove after test is done.
-  public void onUnmountItem(Context context, MountItem mountItem) {
-    final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
-    mMountUnmountBinder.unbind(
-        context,
-        mountItem.getContent(),
-        (LithoRenderUnit) renderUnit,
-        mountItem.getRenderTreeNode());
+  void onUnbindMountItem(LayoutOutput output, Object content) {
+    if (output.getTransitionId() != null) {
+      final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
+      maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+    }
   }
 
   public RenderUnit.Binder getAttachDetachBinder() {
@@ -781,24 +776,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
     @Override
     public void bind(
-        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
-      if (renderUnit instanceof LithoRenderUnit) {
-        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-        if (mExtensionState.ownsReference(renderUnit.getId())
-            && output.getComponent().hasChildLithoViews()) {
-          final View view = (View) content;
-          MountUtils.ensureAllLithoViewChildrenAreMounted(view);
-        }
-      }
-    }
+        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {}
 
     @Override
     public void unbind(
-        Context context, Object content, RenderUnit lithoRenderUnit, @Nullable Object layoutData) {
-      if (mLastMountedComponentTreeId != mInput.getComponentTreeId()) {
-        if (content instanceof ComponentHost) {
-          removeDisappearingMountContentFromComponentHost((ComponentHost) content);
-        }
+        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
+      if (renderUnit instanceof LithoRenderUnit) {
+        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+
+        onUnbindMountItem(output, content);
       }
     }
   }
@@ -816,23 +802,15 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
     @Override
     public void bind(
-        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {}
+        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
+      if (renderUnit instanceof LithoRenderUnit) {
+        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+        onMountMountItem(output, content);
+      }
+    }
 
     @Override
     public void unbind(
-        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
-      // If this item is a host and contains disappearing items, we need to remove them.
-      if (content instanceof ComponentHost) {
-        removeDisappearingMountContentFromComponentHost((ComponentHost) content);
-      }
-      if (renderUnit instanceof LithoRenderUnit) {
-        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-        if (output.getTransitionId() != null) {
-          final @OutputUnitType int type =
-              LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
-          maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
-        }
-      }
-    }
+        Context context, Object content, RenderUnit lithoRenderUnit, @Nullable Object layoutData) {}
   }
 }

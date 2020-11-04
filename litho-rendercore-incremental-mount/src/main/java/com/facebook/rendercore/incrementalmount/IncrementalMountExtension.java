@@ -215,6 +215,16 @@ public class IncrementalMountExtension
     }
   }
 
+  public static void onBindMountItem(
+      IncrementalMountExtensionInput input, final long id, final Object content) {
+    recursivelyNotifyVisibleBoundsChanged(input, id, content);
+  }
+
+  public static void onBindMountItem(
+      IncrementalMountExtensionState state, final long id, final Object content) {
+    recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+  }
+
   private static void releaseAcquiredReferencesForRemovedItems(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       IncrementalMountExtensionInput input) {

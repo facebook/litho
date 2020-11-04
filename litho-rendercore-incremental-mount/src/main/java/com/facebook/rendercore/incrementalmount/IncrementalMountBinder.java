@@ -50,8 +50,7 @@ public class IncrementalMountBinder implements RenderUnit.Binder<RenderUnit, Obj
     }
 
     isUpdating = false;
-    IncrementalMountExtension.recursivelyNotifyVisibleBoundsChanged(
-        input, renderUnit.getId(), content);
+    IncrementalMountExtension.onBindMountItem(input, renderUnit.getId(), content);
   }
 
   @Override

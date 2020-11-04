@@ -65,6 +65,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private boolean mHasVisibilityHint;
   private boolean mVisibilityHintIsVisible;
+  private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
 
   public interface OnDirtyMountListener {
     /**
@@ -701,12 +702,19 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
       mLithoHostListenerCoordinator.enableDynamicProps();
       mLithoRenderUnitFactory =
-          mLithoHostListenerCoordinator.getLithoRenderUnitFactory(mDelegateToRenderCore);
+          mCustomLithoRenderUnitFactory == null
+              ? mLithoHostListenerCoordinator.getLithoRenderUnitFactory()
+              : mCustomLithoRenderUnitFactory;
     }
   }
 
   LithoRenderUnitFactory getLithoRenderUnitFactory() {
     return mLithoRenderUnitFactory;
+  }
+
+  @VisibleForTesting
+  void setLithoRenderUnitFactory(LithoRenderUnitFactory renderUnitFactory) {
+    mCustomLithoRenderUnitFactory = renderUnitFactory;
   }
 
   /** Change the root component synchronously. */

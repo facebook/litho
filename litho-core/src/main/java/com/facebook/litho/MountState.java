@@ -75,11 +75,11 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
@@ -176,7 +176,7 @@ class MountState
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
-  private @Nullable ExtensionState mIncrementalMountExtensionState;
+  private @Nullable ExtensionState<IncrementalMountExtensionState> mIncrementalMountExtensionState;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable ExtensionState mTransitionsExtensionState;
 
@@ -390,7 +390,18 @@ class MountState
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
           if (isIncrementalMountEnabled) {
-            mountComponentToContentApplyMountBinders(i, component, getItemAt(i).getContent());
+            if (mMountDelegate == null) {
+              if (isAnimationLocked(i) && component.hasChildLithoViews()) {
+                // If the component is locked for animation then we need to make sure that all the
+                // children are also mounted.
+                final View view = (View) getItemAt(i).getContent();
+                // We're mounting everything, don't process visibility outputs as they will not be
+                // accurate.
+                mountViewIncrementally(view, false);
+              }
+            } else {
+              applyMountBinders(layoutOutput, getItemAt(i), i);
+            }
           }
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
@@ -401,11 +412,9 @@ class MountState
                     && mLastMountedLayoutState.getId() == layoutState.getPreviousLayoutStateId();
 
             final long startTime = System.nanoTime();
-            final TransitionId transitionId = getLayoutOutput(currentMountItem).getTransitionId();
             final boolean itemUpdated =
                 updateMountItemIfNeeded(
                     node, currentMountItem, useUpdateValueFromLayoutOutput, componentTreeId, i);
-
             if (mMountStats.isLoggingEnabled) {
               if (itemUpdated) {
                 mMountStats.updatedNames.add(component.getSimpleName());
@@ -616,14 +625,13 @@ class MountState
 
       if (!isMounted) {
         mountLayoutOutput(i, renderTreeNode, layoutOutput, layoutState);
-        mountComponentToContentApplyMountBinders(i, component, getItemAt(i).getContent());
+        applyMountBinders(layoutOutput, getItemAt(i), i);
       } else {
         final boolean useUpdateValueFromLayoutOutput =
             mLastMountedLayoutState != null
                 && mLastMountedLayoutState.getId() == layoutState.getPreviousLayoutStateId();
 
         final long startTime = System.nanoTime();
-        final TransitionId transitionId = getLayoutOutput(currentMountItem).getTransitionId();
         final boolean itemUpdated =
             updateMountItemIfNeeded(
                 renderTreeNode,
@@ -642,11 +650,7 @@ class MountState
           }
         }
 
-        applyBindBinders(
-            currentMountItem,
-            componentTree.isIncrementalMountEnabled(),
-            processVisibilityOutputs,
-            component);
+        applyBindBinders(currentMountItem);
       }
 
       if (isTracing) {
@@ -675,32 +679,56 @@ class MountState
     mIsMounting = false;
   }
 
-  private void mountComponentToContentApplyMountBinders(
-      int position, Component component, Object content) {
-    if (mTransitionsExtension == null) {
-      if (isAnimationLocked(position) && component.hasChildLithoViews()) {
+  private void applyMountBinders(LayoutOutput layoutOutput, MountItem mountItem, int position) {
+    if (mMountDelegate == null) {
+      return;
+    }
+
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.onMountMountItem(layoutOutput, mountItem.getContent());
+    } else {
+      // This is the case where we test IncrementalMountExtension without TransitionsExtension.
+      if (isAnimationLocked(position) && layoutOutput.getComponent().hasChildLithoViews()) {
         // If the component is locked for animation then we need to make sure that all the
         // children are also mounted.
-        final View view = (View) content;
+        final View view = (View) getItemAt(position).getContent();
         // We're mounting everything, don't process visibility outputs as they will not be
         // accurate.
         mountViewIncrementally(view, false);
       }
-    } else {
-      final MountItem mountItem = getItemAt(position);
-      final LithoRenderUnit renderUnit =
-          (LithoRenderUnit) mountItem.getRenderTreeNode().getRenderUnit();
-      mTransitionsExtension.bind(mContext.getAndroidContext(), null, content, renderUnit, content);
     }
   }
 
-  private void applyBindBinders(
-      MountItem mountItem,
-      boolean isIncrementalMountEnabled,
-      boolean processVisibilityOutput,
-      Component component) {
-    if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
-      mountItemIncrementally(mountItem, processVisibilityOutput);
+  private void applyBindBinders(MountItem mountItem) {
+    if (mMountDelegate == null) {
+      return;
+    }
+
+    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+
+    if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
+      // We don't care if using TransitionsExtension without IncrementalMountExtension since that
+      // goes through the regular mount path and will do this.
+      final IncrementalMountExtensionState state = mIncrementalMountExtensionState.getState();
+      IncrementalMountExtension.onBindMountItem(
+          state, layoutOutput.getId(), mountItem.getContent());
+    }
+  }
+
+  private void applyUnbindBinders(LayoutOutput output, MountItem mountItem) {
+    if (mMountDelegate == null) {
+      return;
+    }
+
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.onUnbindMountItem(output, mountItem.getContent());
+    } else {
+      // This is the case where we test IncrementalMountExtension without other extensions.
+      if (getLayoutOutput(mountItem).getTransitionId() != null) {
+        final @OutputUnitType int type =
+            LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
+        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+      }
     }
   }
 
@@ -2661,21 +2689,15 @@ class MountState
 
     unbindAndUnmountLifecycle(mountItem);
 
-    if (mLithoView.usingExtensionsWithMountDelegate()) {
-      final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
-      renderUnit.unmountExtensions(
-          mContext.getAndroidContext(), mountItem.getContent(), mountItem.getRenderTreeNode());
-    } else {
-      if (mTransitionsExtension != null) {
-        mTransitionsExtension.onUnmountItem(mContext.getAndroidContext(), mountItem);
-      } else {
-        final Component component = output.getComponent();
-        if (getLayoutOutput(mountItem).getTransitionId() != null) {
-          final @OutputUnitType int type =
-              LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-          maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
-        }
+    if (mMountDelegate == null) {
+      final Component component = output.getComponent();
+      if (getLayoutOutput(mountItem).getTransitionId() != null) {
+        final @OutputUnitType int type =
+            LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
+        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
       }
+    } else {
+      applyUnbindBinders(output, mountItem);
     }
 
     try {
