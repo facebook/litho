@@ -154,8 +154,6 @@ public class LithoHostListenerCoordinator {
     mTransitionsExtension = new TransitionsExtension(lithoView);
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
     registerListener(mTransitionsExtension);
-    addAttachDetachExtension(mTransitionsExtension.getAttachDetachBinder());
-    addMountUnmountExtension(mTransitionsExtension.getMountUnmountBinder());
   }
 
   void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {

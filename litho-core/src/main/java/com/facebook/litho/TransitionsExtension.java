@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -60,8 +59,6 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
   private boolean mTransitionsHasBeenCollected = false;
   private @Nullable Transition mRootTransition;
   private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
-  private final AttachDetachBinder mAttachDetachBinder = new AttachDetachBinder();
-  private final MountUnmountBinder mMountUnmountBinder = new MountUnmountBinder();
   private ExtensionState<Void> mExtensionState;
 
   @Override
@@ -137,6 +134,67 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
 
   public void clearLastMountedTreeId() {
     mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
+  }
+
+  @Override
+  public void onBindItem(
+      ExtensionState<Void> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    if (renderUnit instanceof LithoRenderUnit) {
+      final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+
+      // If we're using a MountDelegate, applyBindBinders will be invoked.
+      if (mLastMountedComponentTreeId != mInput.getComponentTreeId()) {
+        if (content instanceof ComponentHost) {
+          removeDisappearingMountContentFromComponentHost((ComponentHost) content);
+        }
+      }
+
+      // This mount content might be animating and we may be remounting it as a different
+      // component in the same tree, or as a component in a totally different tree so we
+      // will reset animating content for its key
+      maybeRemoveAnimatingMountContent(output.getTransitionId());
+    }
+  }
+
+  @Override
+  public void onUnbindItem(
+      ExtensionState<Void> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    if (renderUnit instanceof LithoRenderUnit) {
+      final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+
+      // If this item is a host and contains disappearing items, we need to remove them.
+      if (content instanceof ComponentHost) {
+        removeDisappearingMountContentFromComponentHost((ComponentHost) content);
+      }
+      if (output.getTransitionId() != null) {
+        final @OutputUnitType int type =
+            LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
+        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+      }
+    }
+  }
+
+  @Override
+  public void onMountItem(
+      ExtensionState<Void> extensionState,
+      final RenderUnit renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    if (renderUnit instanceof LithoRenderUnit) {
+      final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
+
+      if (mExtensionState.ownsReference(output.getId())
+          && output.getComponent().hasChildLithoViews()) {
+        final View view = (View) content;
+        MountUtils.ensureAllLithoViewChildrenAreMounted(view);
+      }
+    }
   }
 
   /**
@@ -738,79 +796,5 @@ public class TransitionsExtension extends MountExtension<TransitionsExtensionInp
     }
 
     return input.getMountableOutputCount() - 1;
-  }
-
-  void onMountMountItem(LayoutOutput output, Object content) {
-    if (mExtensionState.ownsReference(output.getId())
-        && output.getComponent().hasChildLithoViews()) {
-      final View view = (View) content;
-      MountUtils.ensureAllLithoViewChildrenAreMounted(view);
-    }
-  }
-
-  void onUnbindMountItem(LayoutOutput output, Object content) {
-    if (output.getTransitionId() != null) {
-      final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
-      maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
-    }
-  }
-
-  public RenderUnit.Binder getAttachDetachBinder() {
-    return mAttachDetachBinder;
-  }
-
-  public RenderUnit.Binder getMountUnmountBinder() {
-    return mMountUnmountBinder;
-  }
-
-  final class AttachDetachBinder implements RenderUnit.Binder<RenderUnit, Object> {
-
-    @Override
-    public boolean shouldUpdate(
-        RenderUnit currentValue,
-        RenderUnit newValue,
-        @Nullable Object currentLayoutData,
-        @Nullable Object nextLayoutData) {
-      return true;
-    }
-
-    @Override
-    public void bind(
-        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {}
-
-    @Override
-    public void unbind(
-        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
-      if (renderUnit instanceof LithoRenderUnit) {
-        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-
-        onUnbindMountItem(output, content);
-      }
-    }
-  }
-
-  final class MountUnmountBinder implements RenderUnit.Binder<RenderUnit, Object> {
-
-    @Override
-    public boolean shouldUpdate(
-        RenderUnit currentValue,
-        RenderUnit newValue,
-        @Nullable Object currentLayoutData,
-        @Nullable Object nextLayoutData) {
-      return false;
-    }
-
-    @Override
-    public void bind(
-        Context context, Object content, RenderUnit renderUnit, @Nullable Object layoutData) {
-      if (renderUnit instanceof LithoRenderUnit) {
-        final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-        onMountMountItem(output, content);
-      }
-    }
-
-    @Override
-    public void unbind(
-        Context context, Object content, RenderUnit lithoRenderUnit, @Nullable Object layoutData) {}
   }
 }

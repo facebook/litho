@@ -685,7 +685,11 @@ class MountState
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onMountMountItem(layoutOutput, mountItem.getContent());
+      mTransitionsExtension.onMountItem(
+          mTransitionsExtensionState,
+          mountItem.getRenderTreeNode().getRenderUnit(),
+          mountItem.getContent(),
+          mountItem.getRenderTreeNode().getLayoutData());
     } else {
       // This is the case where we test IncrementalMountExtension without TransitionsExtension.
       if (isAnimationLocked(position) && layoutOutput.getComponent().hasChildLithoViews()) {
@@ -723,7 +727,11 @@ class MountState
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onUnbindMountItem(output, mountItem.getContent());
+      mTransitionsExtension.onUnbindItem(
+          mTransitionsExtensionState,
+          mountItem.getRenderTreeNode().getRenderUnit(),
+          output,
+          mountItem.getContent());
     } else {
       // This is the case where we test IncrementalMountExtension without other extensions.
       if (getLayoutOutput(mountItem).getTransitionId() != null) {
