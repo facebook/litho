@@ -32,6 +32,7 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
   private final DependencyInjectionHelper mDependencyInjectionHelper =
       mock(DependencyInjectionHelper.class);
 
+  private PsiFile mPsiFile;
   private MountSpecModel mMountSpecModel;
 
   public PsiMountSpecModelFactoryTest() {
@@ -42,15 +43,15 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    final PsiFile psiFile = testHelper.configure("PsiMountSpecModelFactoryTest.java");
+    mPsiFile = testHelper.configure("PsiMountSpecModelFactoryTest.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
               mMountSpecModel =
                   mFactory.createWithPsi(
-                      psiFile.getProject(),
+                      mPsiFile.getProject(),
                       LithoPluginUtils.getFirstClass(
-                              psiFile, cls -> "TestMountSpec".equals(cls.getName()))
+                              mPsiFile, cls -> "TestMountSpec".equals(cls.getName()))
                           .get(),
                       mDependencyInjectionHelper);
             });
@@ -70,5 +71,42 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
   @Test
   public void mountSpec_initModel_populateOnDetachInfo() {
     MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnDetachInfo(mMountSpecModel);
+  }
+
+  @Test
+  public void mountSpecWithImplicitMountType_initModel_populateMountType() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final MountSpecModel mountSpecModelWithImplicitMountType =
+                  mFactory.createWithPsi(
+                      mPsiFile.getProject(),
+                      LithoPluginUtils.getFirstClass(
+                              mPsiFile,
+                              cls -> "TestMountSpecWithImplicitMountType".equals(cls.getName()))
+                          .get(),
+                      mDependencyInjectionHelper);
+              MountSpecModelFactoryTestHelper
+                  .mountSpecWithImplicitMountType_initModel_populateMountType(
+                      mountSpecModelWithImplicitMountType);
+            });
+  }
+
+  @Test
+  public void mountSpecWithoutMountType_initModel_hasMountTypeNone() {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final MountSpecModel mountSpecModelWithoutMountType =
+                  mFactory.createWithPsi(
+                      mPsiFile.getProject(),
+                      LithoPluginUtils.getFirstClass(
+                              mPsiFile,
+                              cls -> "TestMountSpecWithoutMountType".equals(cls.getName()))
+                          .get(),
+                      mDependencyInjectionHelper);
+              MountSpecModelFactoryTestHelper.mountSpecWithoutMountType_initModel_hasMountTypeNone(
+                  mountSpecModelWithoutMountType);
+            });
   }
 }

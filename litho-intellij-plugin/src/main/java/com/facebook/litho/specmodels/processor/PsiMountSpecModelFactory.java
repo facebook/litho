@@ -34,6 +34,7 @@ import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiType;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -127,6 +128,27 @@ public class PsiMountSpecModelFactory {
       if (psiAnnotationMemberValue != null
           && psiAnnotationMemberValue.textMatches("MountingType.DRAWABLE")) {
         return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+      }
+
+      final PsiType initialReturnType = psiMethod.getReturnType();
+      PsiType returnType = initialReturnType;
+      while (returnType != null && !returnType.getPresentableText().equals("void")) {
+        if (returnType.getCanonicalText().equals(ClassNames.VIEW_NAME)) {
+          if (initialReturnType.getPresentableText().contains("Drawable")) {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
+          }
+          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+        } else if (returnType.getCanonicalText().equals(ClassNames.DRAWABLE_NAME)) {
+          if (!initialReturnType.toString().contains("Drawable")) {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
+          }
+          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+        }
+        try {
+          returnType = returnType.getSuperTypes()[0];
+        } catch (ArrayIndexOutOfBoundsException e) {
+          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
+        }
       }
     }
 

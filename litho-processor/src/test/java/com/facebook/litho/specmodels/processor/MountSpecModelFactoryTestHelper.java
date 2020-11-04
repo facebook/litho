@@ -30,17 +30,17 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 
 public class MountSpecModelFactoryTestHelper {
   public static void mountSpec_initModel_populateGenericSpecInfo(
-      MountSpecModel mMountSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
-    assertThat(mMountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
-    assertThat(mMountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
-    assertThat(mMountSpecModel.getMountType())
+      MountSpecModel mountSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
+    assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
+    assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
+    assertThat(mountSpecModel.getMountType())
         .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE);
-    assertThat(mMountSpecModel.getEventDeclarations()).hasSize(1);
-    assertThat(mMountSpecModel.getEventDeclarations().get(0).name.simpleName())
+    assertThat(mountSpecModel.getEventDeclarations()).hasSize(1);
+    assertThat(mountSpecModel.getEventDeclarations().get(0).name.simpleName())
         .isEqualTo("TestTriggerEvent");
 
     final ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> bindDynamicValueMethods =
-        mMountSpecModel.getBindDynamicValueMethods();
+        mountSpecModel.getBindDynamicValueMethods();
     assertThat(bindDynamicValueMethods).hasSize(1);
     assertThat(bindDynamicValueMethods.get(0).name.toString()).isEqualTo("onBindDynamicValue");
     assertThat(bindDynamicValueMethods.get(0).methodParams).hasSize(2);
@@ -48,48 +48,59 @@ public class MountSpecModelFactoryTestHelper {
         .isEqualTo("colorDrawable");
     assertThat(bindDynamicValueMethods.get(0).methodParams.get(1).getName()).isEqualTo("prop10");
 
-    assertThat(mMountSpecModel.getDelegateMethods()).hasSize(9);
+    assertThat(mountSpecModel.getDelegateMethods()).hasSize(9);
 
     final SpecMethodModel<DelegateMethod, Void> shouldRemeasureMethod =
-        mMountSpecModel.getDelegateMethods().get(6);
+        mountSpecModel.getDelegateMethods().get(6);
     assertThat(shouldRemeasureMethod.name).isEqualToIgnoringCase("shouldAlwaysRemeasure");
     assertThat(shouldRemeasureMethod.methodParams).hasSize(1);
 
-    assertThat(mMountSpecModel.getProps()).hasSize(10);
-    assertThat(mMountSpecModel.getStateValues()).hasSize(4);
-    assertThat(mMountSpecModel.getInterStageInputs()).hasSize(1);
-    assertThat(mMountSpecModel.getTreeProps()).hasSize(1);
+    assertThat(mountSpecModel.getProps()).hasSize(10);
+    assertThat(mountSpecModel.getStateValues()).hasSize(4);
+    assertThat(mountSpecModel.getInterStageInputs()).hasSize(1);
+    assertThat(mountSpecModel.getTreeProps()).hasSize(1);
 
-    assertThat(mMountSpecModel.isPublic()).isFalse();
-    assertThat(mMountSpecModel.isPureRender()).isTrue();
+    assertThat(mountSpecModel.isPublic()).isFalse();
+    assertThat(mountSpecModel.isPureRender()).isTrue();
 
-    assertThat(mMountSpecModel.hasInjectedDependencies()).isTrue();
-    assertThat(mMountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
+    assertThat(mountSpecModel.hasInjectedDependencies()).isTrue();
+    assertThat(mountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
 
-    assertThat(mMountSpecModel.getTriggerMethods()).hasSize(1);
+    assertThat(mountSpecModel.getTriggerMethods()).hasSize(1);
     SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel =
-        mMountSpecModel.getTriggerMethods().get(0);
+        mountSpecModel.getTriggerMethods().get(0);
     assertThat(triggerMethodModel.name).isEqualToIgnoringCase("testTrigger");
     assertThat(triggerMethodModel.methodParams).hasSize(2);
 
-    assertThat(mMountSpecModel.getUpdateStateWithTransitionMethods()).hasSize(1);
-    assertThat(mMountSpecModel.getUpdateStateWithTransitionMethods().get(0).name.toString())
+    assertThat(mountSpecModel.getUpdateStateWithTransitionMethods()).hasSize(1);
+    assertThat(mountSpecModel.getUpdateStateWithTransitionMethods().get(0).name.toString())
         .isEqualTo("onUpdateStateWithTransition");
-    assertThat(mMountSpecModel.getUpdateStateWithTransitionMethods().get(0).methodParams)
-        .hasSize(1);
+    assertThat(mountSpecModel.getUpdateStateWithTransitionMethods().get(0).methodParams).hasSize(1);
   }
 
-  public static void mountSpec_initModel_populateOnAttachInfo(MountSpecModel mMountSpecModel) {
+  public static void mountSpec_initModel_populateOnAttachInfo(MountSpecModel mountSpecModel) {
     final SpecMethodModel<DelegateMethod, Void> onAttached =
-        mMountSpecModel.getDelegateMethods().get(7);
+        mountSpecModel.getDelegateMethods().get(7);
     assertThat(onAttached.name).isEqualToIgnoringCase("onAttached");
     assertThat(onAttached.methodParams).hasSize(3);
   }
 
-  public static void mountSpec_initModel_populateOnDetachInfo(MountSpecModel mMountSpecModel) {
+  public static void mountSpec_initModel_populateOnDetachInfo(MountSpecModel mountSpecModel) {
     final SpecMethodModel<DelegateMethod, Void> onDetached =
-        mMountSpecModel.getDelegateMethods().get(8);
+        mountSpecModel.getDelegateMethods().get(8);
     assertThat(onDetached.name).isEqualToIgnoringCase("onDetached");
     assertThat(onDetached.methodParams).hasSize(3);
+  }
+
+  public static void mountSpecWithImplicitMountType_initModel_populateMountType(
+      MountSpecModel mountSpecModelImplicitMountType) {
+    assertThat(mountSpecModelImplicitMountType.getMountType())
+        .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE);
+  }
+
+  public static void mountSpecWithoutMountType_initModel_hasMountTypeNone(
+      MountSpecModel mountSpecModelImplicitMountType) {
+    assertThat(mountSpecModelImplicitMountType.getMountType())
+        .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE);
   }
 }

@@ -67,14 +67,14 @@ static class TestMountSpec {
 
   @com.facebook.litho.annotations.OnBoundsDefined
   static void onBoundsDefined(
-      @com.facebook.litho.annotations.Prop java.lang.Object prop3, @com.facebook.litho.annotations.Prop char[] prop4, @com.facebook.litho.annotations.FromMeasure java.lang.Long measureOutput) {}
+          @com.facebook.litho.annotations.Prop java.lang.Object prop3, @com.facebook.litho.annotations.Prop char[] prop4, @com.facebook.litho.annotations.FromMeasure java.lang.Long measureOutput) {}
 
   @com.facebook.litho.annotations.OnMount
   static <S extends java.lang.Object> void onMount(
-      @com.facebook.litho.annotations.Prop(optional = true) boolean prop5,
-      @com.facebook.litho.annotations.State(canUpdateLazily = true) long state1,
-      @com.facebook.litho.annotations.State S state2,
-      @com.facebook.litho.annotations.TreeProp TestTreeProp treeProp) {}
+          @com.facebook.litho.annotations.Prop(optional = true) boolean prop5,
+          @com.facebook.litho.annotations.State(canUpdateLazily = true) long state1,
+          @com.facebook.litho.annotations.State S state2,
+          @com.facebook.litho.annotations.TreeProp TestTreeProp treeProp) {}
 
   @com.facebook.litho.annotations.OnUnmount
   static void onUnmount() {}
@@ -102,4 +102,20 @@ static class TestMountSpec {
   static com.facebook.litho.Transition onUpdateStateWithTransition(com.facebook.litho.StateValue<java.lang.Object> stateValue) {
     return null;
   }
+}
+
+@com.facebook.litho.annotations.MountSpec
+static class TestMountSpecWithImplicitMountType {
+
+  @com.facebook.litho.annotations.OnCreateMountContent
+  static android.graphics.drawable.Drawable onCreateMountContent(android.content.Context context) {
+    return android.graphics.drawable.ColorDrawable.createFromPath("test");
+  }
+}
+
+@com.facebook.litho.annotations.MountSpec
+static class TestMountSpecWithoutMountType {
+
+  @com.facebook.litho.annotations.OnCreateMountContent
+  static void onCreateMountContent(android.content.Context context) {}
 }
