@@ -62,7 +62,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private final boolean mUseExtensions;
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
-  private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private boolean mHasVisibilityHint;
   private boolean mVisibilityHintIsVisible;
   private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
@@ -701,15 +700,12 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
 
       mLithoHostListenerCoordinator.enableDynamicProps();
-      mLithoRenderUnitFactory =
-          mCustomLithoRenderUnitFactory == null
-              ? mLithoHostListenerCoordinator.getLithoRenderUnitFactory()
-              : mCustomLithoRenderUnitFactory;
     }
   }
 
+  @Nullable
   LithoRenderUnitFactory getLithoRenderUnitFactory() {
-    return mLithoRenderUnitFactory;
+    return mCustomLithoRenderUnitFactory;
   }
 
   @VisibleForTesting

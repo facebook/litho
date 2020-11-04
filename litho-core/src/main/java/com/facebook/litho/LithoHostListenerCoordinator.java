@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegateTarget;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
@@ -38,10 +37,6 @@ public class LithoHostListenerCoordinator {
   private TransitionsExtension mTransitionsExtension;
   private EndToEndTestingExtension mEndToEndTestingExtension;
   private DynamicPropsExtension mDynamicPropsExtension;
-
-  private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mMountUnmountExtensions;
-  private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mAttachDetachExtensions;
-  private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountExtensions = new ArrayList<>();
@@ -196,30 +191,5 @@ public class LithoHostListenerCoordinator {
     mDynamicPropsExtension = DynamicPropsExtension.getInstance();
     mMountDelegateTarget.registerMountDelegateExtension(mDynamicPropsExtension);
     registerListener(mDynamicPropsExtension);
-  }
-
-  private void addAttachDetachExtension(RenderUnit.Binder attachDetachExtension) {
-    if (mAttachDetachExtensions == null) {
-      mAttachDetachExtensions = new ArrayList<>(2);
-    }
-
-    mAttachDetachExtensions.add(attachDetachExtension);
-  }
-
-  private void addMountUnmountExtension(RenderUnit.Binder mountUnmountExtension) {
-    if (mMountUnmountExtensions == null) {
-      mMountUnmountExtensions = new ArrayList<>(2);
-    }
-
-    mMountUnmountExtensions.add(mountUnmountExtension);
-  }
-
-  public @Nullable LithoRenderUnitFactory getLithoRenderUnitFactory() {
-    if (mLithoRenderUnitFactory == null) {
-      mLithoRenderUnitFactory =
-          new LithoRenderUnitFactory(mMountUnmountExtensions, mAttachDetachExtensions);
-    }
-
-    return mLithoRenderUnitFactory;
   }
 }
