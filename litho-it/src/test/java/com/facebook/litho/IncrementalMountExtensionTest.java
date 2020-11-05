@@ -185,7 +185,7 @@ public class IncrementalMountExtensionTest {
 
         mountableOutputs.add(renderTreeNode);
         final IncrementalMountOutput incrementalMountOutput =
-            new IncrementalMountOutput(id, i, bounds, 0);
+            new IncrementalMountOutput(id, i, bounds, id == 0 ? 0 : -1);
         mIncrementalMountOutputs.add(incrementalMountOutput);
         tops.add(incrementalMountOutput);
         bottoms.add(incrementalMountOutput);

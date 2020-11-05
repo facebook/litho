@@ -222,8 +222,11 @@ public class IncrementalMountExtension
     if (hostId >= 0) {
       if (!extensionState.ownsReference(hostId)) {
         final int hostIndex = extensionState.getState().mInput.getPositionForId(hostId);
-        extensionState.acquireMountReference(
-            hostId,
+        final IncrementalMountOutput hostOutput =
+            extensionState.getState().mInput.getIncrementalMountOutputAt(hostIndex);
+        acquireMountReferenceEnsureHostIsMounted(
+            extensionState,
+            hostOutput,
             hostIndex,
             isMounting || extensionState.getState().mAcquireReferencesDuringMount);
       }

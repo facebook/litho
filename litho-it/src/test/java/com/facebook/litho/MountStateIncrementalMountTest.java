@@ -550,6 +550,65 @@ public class MountStateIncrementalMountTest {
   }
 
   @Test
+  public void testIncrementalMountVerticalDrawableStackNegativeMargin_multipleUnmountedHosts() {
+    final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 1000);
+
+    mLithoViewRule
+        .setRoot(Row.create(mContext).build())
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+    parent.addView(lithoView);
+
+    lithoView.setTranslationY(105);
+
+    final EventHandler eventHandler = mock(EventHandler.class);
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTesterDrawable.create(mContext)
+            .lifecycleTracker(lifecycleTracker1)
+            .build();
+    final Component childHost1 =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .clickHandler(eventHandler)
+                    .marginDip(YogaEdge.TOP, -10))
+            .build();
+
+    final Component rootHost =
+        Row.create(mContext)
+            .child(
+                Row.create(mContext)
+                    .viewTag("extra_host")
+                    .child(
+                        Wrapper.create(mContext)
+                            .delegate(childHost1)
+                            .clickHandler(eventHandler)
+                            .build())
+                    .child(
+                        Wrapper.create(mContext)
+                            .delegate(childHost1)
+                            .clickHandler(eventHandler)
+                            .build()))
+            .build();
+
+    lithoView.getComponentTree().setRoot(rootHost);
+
+    assertThat(lifecycleTracker1.getSteps()).contains(LifecycleStep.ON_MOUNT);
+  }
+
+  @Test
   public void itemWithNegativeMargin_removeAndAdd_hostIsMounted() {
     final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
     parent.measure(
