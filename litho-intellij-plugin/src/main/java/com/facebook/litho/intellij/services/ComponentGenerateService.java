@@ -34,6 +34,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
@@ -81,7 +82,10 @@ public class ComponentGenerateService {
 
   @Nullable
   public PsiClass updateComponentSync(PsiClass specCls) {
-    return updateComponent(specCls);
+    final Pair<String, String> newComponent = createFileContent(specCls);
+    if (newComponent == null) return null;
+
+    return updateComponent(newComponent.first, newComponent.second, specCls.getProject());
   }
 
   @Nullable
@@ -89,8 +93,15 @@ public class ComponentGenerateService {
     return specFqnToModelMap.get(specClass.getQualifiedName());
   }
 
+  /**
+   * Creates new Component file text content.
+   *
+   * @param specCls corresponding to generated Component.
+   * @return a Pair of Component FQN (first) and file text content (second). Null if specCls is not
+   *     valid.
+   */
   @Nullable
-  private PsiClass updateComponent(PsiClass specCls) {
+  private Pair<String, String> createFileContent(PsiClass specCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
     if (componentQN == null) return null;
@@ -107,7 +118,7 @@ public class ComponentGenerateService {
     copy.forEach(listener -> listener.onSpecModelUpdated(specCls));
 
     final String newContent = createFileContentFromModel(componentQN, model);
-    return updateComponent(componentQN, newContent, specCls.getProject());
+    return Pair.create(componentQN, newContent);
   }
 
   /** Updates generated Component file with new content. */
