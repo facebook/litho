@@ -657,7 +657,7 @@ public class MountState implements MountDelegateTarget {
         mMountDelegate.unregisterAllExtensions();
       }
 
-      mMountDelegate.resetExtensionReferenceCount();
+      mMountDelegate.releaseAllAcquiredReferences();
     }
   }
 

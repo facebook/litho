@@ -187,14 +187,14 @@ public class MountDelegate {
     }
   }
 
-  public void resetExtensionReferenceCount() {
+  public void releaseAllAcquiredReferences() {
     if (!mReferenceCountingEnabled) {
       return;
     }
 
     for (MountExtension<?, ?> extension : mMountExtensions) {
       final ExtensionState state = getExtensionState(extension);
-      state.resetAcquiredReferences();
+      state.releaseAllAcquiredReferences();
     }
 
     mReferenceCountMap.clear();
@@ -231,5 +231,10 @@ public class MountDelegate {
 
   public MountDelegateTarget getMountDelegateTarget() {
     return mMountDelegateTarget;
+  }
+
+  @VisibleForTesting
+  public int getRefCount(long id) {
+    return mReferenceCountMap.get(id);
   }
 }

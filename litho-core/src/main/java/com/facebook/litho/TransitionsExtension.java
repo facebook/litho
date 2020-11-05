@@ -206,13 +206,13 @@ public class TransitionsExtension
 
   @Override
   public void onUnmount(ExtensionState<TransitionsExtensionState> extensionState) {
-    extensionState.resetAcquiredReferences();
+    extensionState.releaseAllAcquiredReferences();
     clearLastMountedTreeId(extensionState);
   }
 
   @Override
   public void onUnbind(ExtensionState<TransitionsExtensionState> extensionState) {
-    extensionState.resetAcquiredReferences();
+    extensionState.releaseAllAcquiredReferences();
   }
 
   public void clearLastMountedTreeId(ExtensionState<TransitionsExtensionState> extensionState) {
@@ -339,7 +339,7 @@ public class TransitionsExtension
       if (state.mTransitionManager != null) {
         state.mTransitionManager.finishUndeclaredTransitions();
       }
-      extensionState.resetAcquiredReferences();
+      extensionState.releaseAllAcquiredReferences();
       if (!state.mAnimatingTransitionIds.isEmpty()) {
         regenerateAnimationLockedIndices(extensionState, input);
       }
@@ -376,7 +376,7 @@ public class TransitionsExtension
       endUnmountDisappearingItem(extensionState, group);
     }
 
-    extensionState.resetAcquiredReferences();
+    extensionState.releaseAllAcquiredReferences();
     state.mDisappearingMountItems.clear();
     state.mLockedDisappearingMountitems.clear();
     state.mAnimatingTransitionIds.clear();

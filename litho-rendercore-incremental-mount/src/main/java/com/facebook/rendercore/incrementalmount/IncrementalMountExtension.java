@@ -133,7 +133,7 @@ public class IncrementalMountExtension
 
   @Override
   public void onUnmount(ExtensionState<IncrementalMountExtensionState> extensionState) {
-    extensionState.resetAcquiredReferences();
+    extensionState.releaseAllAcquiredReferences();
 
     final IncrementalMountExtensionState state = extensionState.getState();
     state.mPreviousLocalVisibleRect.setEmpty();

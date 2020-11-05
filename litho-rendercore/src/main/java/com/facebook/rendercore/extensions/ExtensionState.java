@@ -56,7 +56,10 @@ public class ExtensionState<State> {
     return mState;
   }
 
-  public void resetAcquiredReferences() {
+  public void releaseAllAcquiredReferences() {
+    for (Long id : mLayoutOutputMountRefs) {
+      mMountDelegate.releaseMountRef(id, 0, false);
+    }
     mLayoutOutputMountRefs.clear();
   }
 

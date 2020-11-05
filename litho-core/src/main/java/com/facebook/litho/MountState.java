@@ -2558,7 +2558,7 @@ class MountState
     mNeedsRemount = true;
 
     if (mMountDelegate != null) {
-      mMountDelegate.resetExtensionReferenceCount();
+      mMountDelegate.releaseAllAcquiredReferences();
     }
 
     if (mIncrementalMountExtension != null) {
