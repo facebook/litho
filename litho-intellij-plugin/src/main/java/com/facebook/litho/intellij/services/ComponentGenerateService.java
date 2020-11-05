@@ -44,8 +44,6 @@ import com.squareup.javapoet.TypeSpec;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -62,7 +60,6 @@ public class ComponentGenerateService {
   private static final PsiMountSpecModelFactory MOUNT_SPEC_MODEL_FACTORY =
       new PsiMountSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
-  private final List<String> underAnalysis = Collections.synchronizedList(new LinkedList<>());
   private final Map<String, SpecModel> specFqnToModelMap =
       Collections.synchronizedMap(createLRUMap(50));
 
@@ -84,27 +81,13 @@ public class ComponentGenerateService {
 
   /** @return false iff class is under analysis. Otherwise starts analysis. */
   public boolean tryUpdateComponent(PsiClass specCls) {
-    LOG.debug("Under update " + underAnalysis);
-    if (underAnalysis.contains(specCls.getQualifiedName())) {
-      return false;
-    }
-
     updateComponentSync(specCls);
     return true;
   }
 
   @Nullable
   public PsiClass updateComponentSync(PsiClass specCls) {
-    final String qName = specCls.getQualifiedName();
-    underAnalysis.add(qName);
-    PsiClass psiClass;
-    try {
-      psiClass = updateComponent(specCls);
-    } finally {
-      underAnalysis.remove(qName);
-    }
-    LOG.debug("Update finished " + qName + (psiClass != null));
-    return psiClass;
+    return updateComponent(specCls);
   }
 
   @Nullable
