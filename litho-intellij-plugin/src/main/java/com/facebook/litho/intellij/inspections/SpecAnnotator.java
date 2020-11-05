@@ -70,9 +70,9 @@ public class SpecAnnotator implements Annotator {
     }
 
     try {
-      if (!ComponentGenerateService.getInstance().tryUpdateComponent(spec)) {
-        return;
-      }
+      // Assuming that this Annotator is called sequentially and not in parallel, we don't do extra
+      // work by calling update directly.
+      ComponentGenerateService.getInstance().updateComponentSync(spec);
     } catch (Exception e) {
       // Model might contain errors. Proceed to surfacing them.
       DEBUG_LOGGER.debug(e);

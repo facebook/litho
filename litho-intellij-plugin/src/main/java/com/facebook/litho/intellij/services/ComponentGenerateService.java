@@ -79,12 +79,6 @@ public class ComponentGenerateService {
     Disposer.register(parent, () -> listeners.remove(listener));
   }
 
-  /** @return false iff class is under analysis. Otherwise starts analysis. */
-  public boolean tryUpdateComponent(PsiClass specCls) {
-    updateComponentSync(specCls);
-    return true;
-  }
-
   @Nullable
   public PsiClass updateComponentSync(PsiClass specCls) {
     return updateComponent(specCls);
