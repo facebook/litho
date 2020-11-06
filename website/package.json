@@ -7,8 +7,8 @@
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
-    "prettier": "prettier --config .prettierrc --write \"**/*.{js,md}\"",
-    "prettier:diff": "prettier --config .prettierrc --list-different \"**/*.{js,md}\""
+    "prettier": "prettier --config .prettierrc --write \"**/*.{js,md,mdx}\"",
+    "prettier:diff": "prettier --config .prettierrc --list-different \"**/*.{js,md,mdx}\""
   },
   "dependencies": {
     "@docusaurus/core": "^2.0.0-alpha.63",
