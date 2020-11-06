@@ -17,11 +17,7 @@
 const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 module.exports = {
   mainSidebar: {
-    'Introducing Litho': [
-      'intro',
-      'motivation',
-      'uses',
-    ],
+    'Introducing Litho': ['intro', 'motivation', 'uses'],
     'Quick Start': [
       'getting-started',
       'tutorial',
@@ -70,17 +66,8 @@ module.exports = {
       'sections-architecture',
       'sections-working-ranges',
     ],
-    'Common use cases': [
-      'updating-ui',
-       'borders',
-       'tooltips',
-       'saving-state',
-    ],
-    'Compatibility': [
-      'styles',
-      'accessibility',
-      'rtl',
-    ],
+    'Common use cases': ['updating-ui', 'borders', 'tooltips', 'saving-state'],
+    'Compatibility': ['styles', 'accessibility', 'rtl'],
     'Testing': [
       'testing-overview',
       'unit-testing',
@@ -92,21 +79,21 @@ module.exports = {
       'espresso-testing',
       'tests-in-android-studio',
       {
-        'Internal' : [
+        Internal: [
           'fb/testing',
           'fb/testing-end-to-end-testing',
           'fb/testing-unit-testing',
           'fb/testing-litho-benchmark-tests',
           {
-            'MobileLab Benchmark Tests' : [
+            'MobileLab Benchmark Tests': [
               'fb/testing-mobilelab-benchmark-tests',
               'fb/testing-mobilelab-benchmark-tests-getting-started',
               'fb/testing-mobilelab-benchmark-tests-memory-benchmarks',
               'fb/testing-mobilelab-benchmark-tests-integrate-into-mobilelab',
               'fb/testing-mobilelab-benchmark-tests-profiling-benchmarks',
-            ]
+            ],
           },
-        ]
+        ],
       },
     ],
     'Advanced Guides': [
@@ -126,60 +113,47 @@ module.exports = {
       'view-flattening',
       'recycling',
     ],
-    'Experimental': [
-      'mount-extensions',
-    ],
-    'Additional Resources': [
-      'best-practices',
-      'faq',
-      'glossary',
-    ],
-    'Tools': [
-      'flipper-plugins',
-      'debugging',
-      'dev-options',
-    ],
-    'Contributing': [
-      'contributing',
-      'community-showcase',
-      'repo-structure',
-    ],
+    'Experimental': ['mount-extensions'],
+    'Additional Resources': ['best-practices', 'faq', 'glossary'],
+    'Tools': ['flipper-plugins', 'debugging', 'dev-options'],
+    'Contributing': ['contributing', 'community-showcase', 'repo-structure'],
     ...fbInternalOnly({
-      'Internal': [
+      Internal: [
         'fb/internal-litho',
         'fb/video-lessons',
         {
-          'Architecture' : [
+          Architecture: [
             'fb/architecture-sections-in-a-fragment-or-activity',
             'fb/architecture-thread-safety',
             'fb/architecture-litho-tricks',
-          ]
+          ],
         },
         'fb/yoga',
         'fb/design-components',
         'fb/dependency-injection',
         {
-          'Analysing Performance' : [
+          'Analysing Performance': [
             'fb/analysing-performance-qpl',
             'fb/analysing-performance-spotting-performance-issues',
             'fb/analysing-performance-ttrc',
-          ]
+          ],
         },
         {
-          'Error Handling' : [
+          'Error Handling': [
             'fb/error-handling',
             'fb/error-handling-setting-a-default-error-event-handler',
-          ]
+          ],
         },
         'fb/experimentation',
         {
-          'Open Source' : [
+          'Open Source': [
             'fb/open-source',
             'fb/open-source-using-the-open-source-repo',
             'fb/open-source-releasing-litho',
-          ]
+          ],
         },
         'fb/sample-app',
-      ]}),
+      ],
+    }),
   },
 };

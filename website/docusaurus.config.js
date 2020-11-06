@@ -140,7 +140,10 @@ module.exports = {
       additionalLanguages: ['groovy', 'kotlin'],
     },
   },
-  plugins: ['docusaurus-plugin-sass', require.resolve('docusaurus-plugin-internaldocs-fb')],
+  plugins: [
+    'docusaurus-plugin-sass',
+    require.resolve('docusaurus-plugin-internaldocs-fb'),
+  ],
   presets: [
     [
       '@docusaurus/preset-classic',

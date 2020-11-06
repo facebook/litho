@@ -9,6 +9,7 @@ Most content is written in markdown or [MDX](https://mdxjs.com/). You name the f
 id: contributing
 title: How to Contribute
 ---
+
 ```
 
 Customize these values for each document, blog post, etc.
@@ -48,6 +49,7 @@ export default Hello;
 ```
 
 ## Docs
+
 For a full walkthrough of features, visit the [Docusaurus docs documentation](https://v2.docusaurus.io/docs/next/docs-introduction)
 
 To modify docs, edit the appropriate markdown file in `./docs/`.
@@ -84,12 +86,12 @@ import TabItem from '@theme/TabItem';
   <TabItem value="java">
 
 ## Java
- 
+
 Java example
   </TabItem>
   <TabItem value="kotlin">
 ## Kotlin
- 
+
 Kotlin example
   </TabItem>
 </Tabs>

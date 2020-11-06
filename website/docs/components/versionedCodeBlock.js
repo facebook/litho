@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from "react";
-import Highlight, { defaultProps } from "prism-react-renderer";
+import React from 'react';
+import Highlight, {defaultProps} from 'prism-react-renderer';
 import github from 'prism-react-renderer/themes/github';
 import dracula from 'prism-react-renderer/themes/dracula';
 import {site} from '../../versionConfig.js';
@@ -26,28 +26,33 @@ import useThemeContext from '@theme/hooks/useThemeContext';
 // When updating versions in documentation, it suffices to update the versions in ../versionConfig.js
 export const VersionedCodeBlock = ({language, code}) => {
   // replace all placeholders with actual versions
-  const modifiedCode = code.replace(/{{site.lithoVersion}}/g, site.lithoVersion)
+  const modifiedCode = code
+    .replace(/{{site.lithoVersion}}/g, site.lithoVersion)
     .replace(/{{site.soloaderVersion}}/g, site.soloaderVersion)
     .replace(/{{site.lithoSnapshotVersion}}/g, site.lithoSnapshotVersion)
     .replace(/{{site.flipperVersion}}/g, site.flipperVersion);
   const theme = getCodeBlockTheme();
-    // render as a codeblock
-  return(
-  <Highlight {...defaultProps} code={modifiedCode} language={language} theme={theme}>
-    {({ className, style, tokens, getLineProps, getTokenProps }) => (
-      <pre className={className} style={style}>
-        {tokens.map((line, i) => (
-          <div {...getLineProps({ line, key: i })}>
-            {line.map((token, key) => (
-              <span {...getTokenProps({ token, key })}/>
-            ))}
-          </div>
-        ))}
-      </pre>
-    )}
-  </Highlight>
+  // render as a codeblock
+  return (
+    <Highlight
+      {...defaultProps}
+      code={modifiedCode}
+      language={language}
+      theme={theme}>
+      {({className, style, tokens, getLineProps, getTokenProps}) => (
+        <pre className={className} style={style}>
+          {tokens.map((line, i) => (
+            <div {...getLineProps({line, key: i})}>
+              {line.map((token, key) => (
+                <span {...getTokenProps({token, key})} />
+              ))}
+            </div>
+          ))}
+        </pre>
+      )}
+    </Highlight>
   );
-}
+};
 
 // returns theme for codeblock depending on whether dark mode is activated
 function getCodeBlockTheme() {

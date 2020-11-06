@@ -81,7 +81,11 @@ const features = [
 function Feature({imageUrl, title, description, dark}) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
-    <section className={clsx(dark && styles.darkFeature, !dark && styles.lightFeature)}>
+    <section
+      className={clsx(
+        dark && styles.darkFeature,
+        !dark && styles.lightFeature,
+      )}>
       <div className={styles.featureContent}>
         <img className={styles.featureImage} src={imgUrl} alt={title} />
         <div className={styles.featureText}>
