@@ -9,15 +9,15 @@ import TabItem from '@theme/TabItem';
 import {VersionedCodeBlock} from './components/versionedCodeBlock';
 
 <Tabs
-  defaultValue="gradel-java"
+  defaultValue="gradle-java"
   values={[
-    {label: 'Gradel/Java', value: 'gradel-java'},
-    {label: 'Gradel/Kotlin', value: 'gradel-kotlin'},
+    {label: 'Gradle/Java', value: 'gradle-java'},
+    {label: 'Gradle/Kotlin', value: 'gradle-kotlin'},
     {label: 'Buck/Java', value: 'buck-java'},
     {label: 'Testing/Java', value: 'testing-java'},
     {label: 'Testing/Kotlin', value: 'testing-kotlin'},
   ]}>
-  <TabItem value="gradel-java">
+  <TabItem value="gradle-java">
 
 ## Adding Litho to your Project
 
@@ -35,7 +35,7 @@ export const dependenciesCode = `dependencies {
   // ...
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'  
+  implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
   annotationProcessor 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'\n
   // SoLoader
   implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
@@ -95,7 +95,7 @@ export const snapshotDependenciesCode = `dependencies {
 <VersionedCodeBlock language="groovy" code={snapshotDependenciesCode}/>
 
   </TabItem>
-  <TabItem value="gradel-kotlin">
+  <TabItem value="gradle-kotlin">
 
 ## Adding Litho to your Kotlin Project
 
@@ -167,7 +167,7 @@ repositories {
 
 Then you can access the snapshot versions of all Litho artifacts that we
 publish:
-  
+
 export const kaptSnapshotsDependenciesCode = `dependencies {
   // ...
   // Litho
@@ -429,11 +429,3 @@ Now, when you run the app you should see "Hello World!" displayed on the screen.
 
   </TabItem>
 </Tabs>
-
-
-
-
-
-
-
-
