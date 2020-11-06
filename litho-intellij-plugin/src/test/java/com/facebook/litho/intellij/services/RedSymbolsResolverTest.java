@@ -100,7 +100,7 @@ public class RedSymbolsResolverTest extends LithoPluginIntellijTest {
 
   @Test
   public void resolveRedSymbols_forLayoutSpec_resolves() throws Exception {
-    String specType = "Layout";
+    final String specType = "Layout";
     resolveRedSymbolsForSpec(
         specType,
         eventMetadata -> {

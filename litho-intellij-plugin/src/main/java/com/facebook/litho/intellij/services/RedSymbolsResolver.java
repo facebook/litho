@@ -31,7 +31,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -47,7 +46,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.FileContentUtilCore;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -195,38 +193,18 @@ public class RedSymbolsResolver {
       Map<String, String> eventMetadata) {
     final Map<String, PsiClass> redSymbolToClass = new HashMap<>();
     for (String redSymbol : allRedSymbols) {
-      Arrays.stream(
-              PsiSearchUtils.findClassesByShortName(
-                  project,
-                  symbolsScope,
-                  LithoPluginUtils.getLithoComponentSpecNameFromComponent(redSymbol)))
-          .filter(
-              cls -> {
-                if (LithoPluginUtils.isLayoutSpec(cls)) {
-                  eventMetadata.put(EventLogger.KEY_TYPE, "layout_spec");
-                  return true;
-                } else if (LithoPluginUtils.isMountSpec(cls)) {
-                  eventMetadata.put(EventLogger.KEY_TYPE, "mount_spec");
-                  return true;
-                } else {
-                  return false;
-                }
-              })
+      final LithoGeneratedFileProvider provider = new LithoGeneratedFileProvider(redSymbol);
+      provider.guessQualifiedNames(project, symbolsScope, eventMetadata).stream()
           .map(
-              specCls -> {
-                final String guessedComponentQN =
-                    LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
+              fqn -> {
                 // Red symbol might exist for present but not-bind class
-                PsiClass existingComponent =
-                    PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
+                final PsiClass existingComponent = PsiSearchUtils.findOriginalClass(project, fqn);
                 if (existingComponent != null) return existingComponent;
 
-                final Pair<String, String> newComponent =
-                    ComponentGenerateService.getInstance().createFileContent(specCls);
-                if (newComponent == null) return null;
+                final String newContent = provider.createFileContent(fqn);
+                if (newContent == null) return null;
 
-                return ComponentGenerateService.updateComponent(
-                    newComponent.first, newComponent.second, specCls.getProject());
+                return ComponentGenerateService.updateComponent(fqn, newContent, project);
               })
           .filter(Objects::nonNull)
           .forEach(component -> redSymbolToClass.put(redSymbol, component));
@@ -255,7 +233,7 @@ public class RedSymbolsResolver {
   }
 
   private static <T, V1, V2> Map<V1, V2> combine(Map<T, V1> map1, Map<T, V2> map2) {
-    Map<V1, V2> result = new HashMap<>();
+    final Map<V1, V2> result = new HashMap<>();
     map1.entrySet()
         .forEach(
             entry -> {
