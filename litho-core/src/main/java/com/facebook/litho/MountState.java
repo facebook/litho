@@ -206,9 +206,7 @@ class MountState
     }
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
-    // This is the default MountState usage - this extension doesn't need to get registered to a
-    // MountDelegate.
-    mVisibilityExtensionState = mVisibilityExtension.createExtensionState(null);
+    mVisibilityExtensionState = mVisibilityExtension.createExtensionState(new MountDelegate(this));
     VisibilityMountExtension.setRootHost(mVisibilityExtensionState, mLithoView);
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.

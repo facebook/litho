@@ -17,10 +17,13 @@
 package com.facebook.rendercore.extensions;
 
 import android.graphics.Rect;
+import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderCoreExtensionHost;
 import java.util.Map;
 import java.util.Set;
 
@@ -148,5 +151,18 @@ public class RenderCoreExtension<Input, State> {
     }
 
     return !current.equals(next);
+  }
+
+  public static void recursivelyNotifyVisibleBoundsChanged(final @Nullable Object content) {
+    if (content instanceof RenderCoreExtensionHost) {
+      final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
+      host.notifyVisibleBoundsChanged();
+    } else if (content instanceof ViewGroup) {
+      final ViewGroup parent = (ViewGroup) content;
+      for (int i = 0; i < parent.getChildCount(); i++) {
+        final View child = parent.getChildAt(i);
+        recursivelyNotifyVisibleBoundsChanged(child);
+      }
+    }
   }
 }

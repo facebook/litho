@@ -18,8 +18,10 @@ package com.facebook.rendercore.visibility;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import androidx.collection.ArraySet;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
@@ -27,6 +29,7 @@ import com.facebook.rendercore.visibility.VisibilityExtension.Results;
 import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class VisibilityExtension
     extends RenderCoreExtension<Results, VisibilityMountExtensionState> {
@@ -57,6 +60,7 @@ public class VisibilityExtension
   public static class Results implements VisibilityExtensionInput {
 
     private final List<VisibilityOutput> outputs = new LinkedList<>();
+    private final Set<Long> renderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
 
     @Override
     public List<VisibilityOutput> getVisibilityOutputs() {
@@ -73,10 +77,19 @@ public class VisibilityExtension
       return null;
     }
 
+    @Override
+    public Set<Long> getRenderUnitIdsWhichHostRenderTrees() {
+      return renderUnitIdsWhichHostRenderTrees;
+    }
+
     void addOutput(@Nullable VisibilityOutput output) {
       if (output != null) {
         outputs.add(output);
       }
+    }
+
+    void addRenderUnitIdWhichHostsRenderTree(long id) {
+      renderUnitIdsWhichHostRenderTrees.add(id);
     }
   }
 
@@ -97,9 +110,20 @@ public class VisibilityExtension
         final int y,
         final int position,
         final @Nullable Results results) {
+      if (position == 0) {
+        return;
+      }
       if (results != null) {
         Rect absoluteBounds = new Rect(x, y, x + bounds.width(), y + bounds.height());
         results.addOutput(factory.createVisibilityOutput(layoutResult, absoluteBounds));
+        if (factory.hasRenderTreeHosts(layoutResult)) {
+          final RenderUnit<?> unit = layoutResult.getRenderUnit();
+          if (unit == null) {
+            throw new IllegalArgumentException(
+                "Layout results which host RenderTrees must have a RenderUnit");
+          }
+          results.addRenderUnitIdWhichHostsRenderTree(unit.getId());
+        }
       }
     }
   }

@@ -122,6 +122,10 @@ public class MountDelegate {
     return mMountDelegateTarget.getContentAt(position);
   }
 
+  public @Nullable Object getContentById(long id) {
+    return mMountDelegateTarget.getContentById(id);
+  }
+
   public boolean isRootItem(int position) {
     return mMountDelegateTarget.isRootItem(position);
   }

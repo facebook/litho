@@ -53,6 +53,7 @@ import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
@@ -164,6 +165,7 @@ public class LayoutState
   private final List<IncrementalMountOutput> mIncrementalMountOutputs = new ArrayList<>(8);
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
+  private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
   private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
@@ -2292,9 +2294,12 @@ public class LayoutState
 
   @Override
   public boolean renderUnitWithIdHostsRenderTrees(long id) {
-    RenderTreeNode node = getMountableOutputAt(getPositionForId(id));
-    final LayoutOutput output = LayoutOutput.getLayoutOutput(node);
-    return output.getComponent().hasChildLithoViews();
+    return mRenderUnitIdsWhichHostRenderTrees.contains(id);
+  }
+
+  @Override
+  public Set<Long> getRenderUnitIdsWhichHostRenderTrees() {
+    return mRenderUnitIdsWhichHostRenderTrees;
   }
 
   /** @return a {@link LayoutOutput} for a given {@param layoutOutputId} */
@@ -2357,6 +2362,9 @@ public class LayoutState
     layoutState.mIncrementalMountOutputs.add(incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
+    if (layoutOutput.getComponent().hasChildLithoViews()) {
+      layoutState.mRenderUnitIdsWhichHostRenderTrees.add(layoutOutput.getId());
+    }
   }
 
   /**

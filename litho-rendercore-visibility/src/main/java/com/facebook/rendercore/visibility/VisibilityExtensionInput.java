@@ -17,7 +17,10 @@
 package com.facebook.rendercore.visibility;
 
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.RenderTreeHost;
+import com.facebook.rendercore.RenderUnit;
 import java.util.List;
+import java.util.Set;
 
 /** This APIs declares that inputs required by the Visibility Extensions. */
 public interface VisibilityExtensionInput {
@@ -35,4 +38,7 @@ public interface VisibilityExtensionInput {
   /** returns the meta data required to process visibility events. */
   @Nullable
   VisibilityModuleInput getVisibilityModuleInput();
+
+  /** Returns the set of ids of {@link RenderUnit}s which host {@link RenderTreeHost} */
+  Set<Long> getRenderUnitIdsWhichHostRenderTrees();
 }

@@ -29,6 +29,12 @@ public class ThreadUtils {
 
   private ThreadUtils() {}
 
+  public static void assertMainThread() {
+    if (!isMainThread()) {
+      throw new IllegalStateException("This must run on the main thread.");
+    }
+  }
+
   public static boolean isMainThread() {
     return Looper.getMainLooper().getThread() == Thread.currentThread();
   }

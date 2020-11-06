@@ -42,4 +42,10 @@ public class LithoVisibilityOutputFactory implements VisibilityOutput.Factory<In
       return null;
     }
   }
+
+  @Override
+  public boolean hasRenderTreeHosts(final InternalNode node) {
+    final Component component = node.getTailComponent();
+    return component != null && component.hasChildLithoViews();
+  }
 }

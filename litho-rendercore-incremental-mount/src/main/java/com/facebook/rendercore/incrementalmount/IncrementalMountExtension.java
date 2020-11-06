@@ -16,20 +16,18 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import static com.facebook.rendercore.utils.ThreadUtils.isMainThread;
+import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
 import android.util.LongSparseArray;
-import android.view.View;
-import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -149,8 +147,9 @@ public class IncrementalMountExtension
    */
   @Override
   public void onVisibleBoundsChanged(
-      ExtensionState<IncrementalMountExtensionState> extensionState, Rect localVisibleRect) {
-    isMainThread();
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final Rect localVisibleRect) {
+    assertMainThread();
 
     final IncrementalMountExtensionState state = extensionState.getState();
 
@@ -241,9 +240,10 @@ public class IncrementalMountExtension
   }
 
   static void recursivelyNotifyVisibleBoundsChanged(
-      IncrementalMountExtensionInput input, final long id, final Object content) {
+      final IncrementalMountExtensionInput input, final long id, final Object content) {
+    assertMainThread();
     if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
-      recursivelyNotifyVisibleBoundsChanged(content);
+      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(content);
     }
   }
 
@@ -454,19 +454,5 @@ public class IncrementalMountExtension
 
   private static boolean isMountedHostWithChildContent(@Nullable Object content) {
     return content instanceof Host && ((Host) content).getMountItemCount() > 0;
-  }
-
-  private static void recursivelyNotifyVisibleBoundsChanged(final Object content) {
-    isMainThread();
-    if (content instanceof RenderCoreExtensionHost) {
-      final RenderCoreExtensionHost host = (RenderCoreExtensionHost) content;
-      host.notifyVisibleBoundsChanged();
-    } else if (content instanceof ViewGroup) {
-      final ViewGroup parent = (ViewGroup) content;
-      for (int i = 0; i < parent.getChildCount(); i++) {
-        final View child = parent.getChildAt(i);
-        recursivelyNotifyVisibleBoundsChanged(child);
-      }
-    }
   }
 }

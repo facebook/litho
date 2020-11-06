@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore.visibility;
 
+import static com.facebook.rendercore.extensions.RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged;
+
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     extends MountExtension<Input, VisibilityMountExtension.VisibilityMountExtensionState> {
@@ -53,6 +56,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     // visible. When the component exits the viewport, the item associated with it is removed from
     // the map.
     private final Map<String, VisibilityItem> mVisibilityIdToItemMap;
+    private Set<Long> mRenderUnitIdsWhichHostRenderTrees;
     private @Nullable VisibilityModule mVisibilityModule;
     private final Rect mPreviousLocalVisibleRect = new Rect();
 
@@ -111,7 +115,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       final ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect,
       boolean isDirty) {
-    if (localVisibleRect == null) {
+    final Rect previousVisibleRect = extensionState.getState().mPreviousLocalVisibleRect;
+    if (localVisibleRect == null || (!isDirty && previousVisibleRect.equals(localVisibleRect))) {
       return;
     }
 
@@ -249,6 +254,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       }
 
       RenderCoreSystrace.endSection();
+    }
+
+    for (long id : state.mRenderUnitIdsWhichHostRenderTrees) {
+      recursivelyNotifyVisibleBoundsChanged(extensionState.getMountDelegate().getContentById(id));
     }
 
     if (isDirty) {
@@ -394,6 +403,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       state.mVisibilityOutputs = new ArrayList<>();
     }
 
+    state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
     state.mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
     state.mVisibilityModuleInput = input.getVisibilityModuleInput();
     state.mPreviousLocalVisibleRect.setEmpty();

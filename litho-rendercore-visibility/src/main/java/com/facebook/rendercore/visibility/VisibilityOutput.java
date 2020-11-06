@@ -20,6 +20,7 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Node.LayoutResult;
+import com.facebook.rendercore.RenderTreeHost;
 
 /**
  * Stores information about a node which has registered visibility handlers for. The information is
@@ -196,5 +197,8 @@ public class VisibilityOutput {
      */
     @Nullable
     VisibilityOutput createVisibilityOutput(R result, Rect absoluteBounds);
+
+    /** Specifies if the {@link LayoutResult} {@param result} will host {@link RenderTreeHost} */
+    boolean hasRenderTreeHosts(R result);
   }
 }
