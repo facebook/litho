@@ -101,7 +101,7 @@ public class ComponentGenerateService {
    *     valid.
    */
   @Nullable
-  private Pair<String, String> createFileContent(PsiClass specCls) {
+  Pair<String, String> createFileContent(PsiClass specCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
     if (componentQN == null) return null;
@@ -123,7 +123,7 @@ public class ComponentGenerateService {
 
   /** Updates generated Component file with new content. */
   @Nullable
-  private static PsiClass updateComponent(
+  static PsiClass updateComponent(
       String componentQualifiedName, String newContent, Project project) {
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))

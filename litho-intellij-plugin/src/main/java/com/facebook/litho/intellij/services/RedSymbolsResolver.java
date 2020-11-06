@@ -31,6 +31,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -51,6 +52,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class RedSymbolsResolver {
@@ -210,19 +212,24 @@ public class RedSymbolsResolver {
                   return false;
                 }
               })
-          .forEach(
+          .map(
               specCls -> {
                 final String guessedComponentQN =
                     LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
                 // Red symbol might exist for present but not-bind class
-                PsiClass component = PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
-                if (component == null) {
-                  component = ComponentGenerateService.getInstance().updateComponentSync(specCls);
-                }
-                if (component != null) {
-                  redSymbolToClass.put(redSymbol, component);
-                }
-              });
+                PsiClass existingComponent =
+                    PsiSearchUtils.findOriginalClass(project, guessedComponentQN);
+                if (existingComponent != null) return existingComponent;
+
+                final Pair<String, String> newComponent =
+                    ComponentGenerateService.getInstance().createFileContent(specCls);
+                if (newComponent == null) return null;
+
+                return ComponentGenerateService.updateComponent(
+                    newComponent.first, newComponent.second, specCls.getProject());
+              })
+          .filter(Objects::nonNull)
+          .forEach(component -> redSymbolToClass.put(redSymbol, component));
     }
     return redSymbolToClass;
   }
