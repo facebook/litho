@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.extensions;
 
-import android.content.Context;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
