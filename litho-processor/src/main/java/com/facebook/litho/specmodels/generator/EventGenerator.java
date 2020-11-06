@@ -136,7 +136,10 @@ public class EventGenerator {
       }
 
       eventDispatcherMethod
-          .addParameter(typeName, fieldModel.field.name)
+          .addParameter(
+              ParameterSpec.builder(typeName, fieldModel.field.name)
+                  .addAnnotations(fieldModel.field.annotations)
+                  .build())
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
     }
 

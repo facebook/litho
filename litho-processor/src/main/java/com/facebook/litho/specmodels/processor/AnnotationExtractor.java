@@ -23,11 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.Element;
 
-/** Helper for extracting annotations from a given {@link TypeElement}. */
+/** Helper for extracting annotations from a given {@link Element}. */
 public class AnnotationExtractor {
-  public static ImmutableList<AnnotationSpec> extractValidAnnotations(TypeElement element) {
+  public static ImmutableList<AnnotationSpec> extractValidAnnotations(Element element) {
     final List<AnnotationSpec> annotations = new ArrayList<>();
     for (AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
       if (isValidAnnotation(annotationMirror)) {
@@ -45,6 +45,9 @@ public class AnnotationExtractor {
    * <p>We also do not consider the kotlin.Metadata annotation to be valid as it represents the
    * metadata of the Spec class and not of the class that we are generating.
    *
+   * <p>The generated component is Java code, and annotations with package name "kotlin.jvm" are
+   * kotlin only, which should be ignored as well.
+   *
    * @return Whether or not to extract the given annotation.
    */
   private static boolean isValidAnnotation(AnnotationMirror annotation) {
@@ -57,6 +60,8 @@ public class AnnotationExtractor {
 
     String annotationName = annotation.getAnnotationType().toString();
 
-    return !annotationName.startsWith("com.facebook.") && !annotationName.equals("kotlin.Metadata");
+    return !annotationName.startsWith("com.facebook.")
+        && !annotationName.equals("kotlin.Metadata")
+        && !annotationName.startsWith("kotlin.jvm");
   }
 }

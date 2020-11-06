@@ -42,6 +42,7 @@ public class FieldsExtractor {
                         TypeName.get(enclosedElement.asType()),
                         enclosedElement.getSimpleName().toString(),
                         modifiers.toArray(new Modifier[modifiers.size()]))
+                    .addAnnotations(AnnotationExtractor.extractValidAnnotations(enclosedElement))
                     .build(),
                 enclosedElement));
       }

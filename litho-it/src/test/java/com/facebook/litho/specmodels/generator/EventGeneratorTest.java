@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnEvent;
@@ -38,6 +39,7 @@ import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.List;
@@ -77,7 +79,17 @@ public class EventGeneratorTest {
         @Prop boolean arg0, @State int arg1, @State(canUpdateLazily = true) long arg5) {}
   }
 
+  @LayoutSpec(events = {CustomEvent.class})
+  static class CustomEventTestSpec {}
+
+  @Event
+  static class CustomEvent {
+    public Object nonnullObject;
+    public @Nullable Object nullableObject;
+  }
+
   private SpecModel mSpecModel;
+  private SpecModel mCustomEventSpecModel;
   private final SpecModel mMockSpecModel = mock(SpecModel.class);
 
   @Before
@@ -88,6 +100,15 @@ public class EventGeneratorTest {
     mSpecModel =
         mLayoutSpecModelFactory.create(
             elements, types, typeElement, mock(Messager.class), RunMode.normal(), null, null);
+    mCustomEventSpecModel =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            elements.getTypeElement(CustomEventTestSpec.class.getCanonicalName()),
+            mock(Messager.class),
+            RunMode.normal(),
+            null,
+            null);
 
     EventDeclarationModel eventDeclarationModel =
         new EventDeclarationModel(
@@ -259,6 +280,31 @@ public class EventGeneratorTest {
                 + "  _eventState.field1 = field1;\n"
                 + "  com.facebook.litho.EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();\n"
                 + "  return (java.lang.Object) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "}\n");
+  }
+
+  @Test
+  public void
+      whenEventDispatcherIsGeneratedFromCustomEventTest_EventFieldAnnotationsArePassedToParams() {
+    final TypeSpecDataHolder holder =
+        EventGenerator.generateEventDispatchers(mCustomEventSpecModel);
+    final MethodSpec[] methodSpecs =
+        holder.getMethodSpecs().stream()
+            .filter(method -> method.name.equals("dispatchCustomEvent"))
+            .toArray(MethodSpec[]::new);
+
+    assertThat(methodSpecs.length)
+        .describedAs("we should have exact one dispatch method for CustomEvent")
+        .isEqualTo(1);
+    assertThat(methodSpecs[0].toString())
+        .isEqualTo(
+            "static void dispatchCustomEvent(com.facebook.litho.EventHandler _eventHandler,\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nullableObject) {\n"
+                + "  final com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent _eventState = new com.facebook.litho.specmodels.generator.EventGeneratorTest.CustomEvent();\n"
+                + "  _eventState.nonnullObject = nonnullObject;\n"
+                + "  _eventState.nullableObject = nullableObject;\n"
+                + "  com.facebook.litho.EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();\n"
+                + "  _lifecycle.dispatchOnEvent(_eventHandler, _eventState);\n"
                 + "}\n");
   }
 }
