@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.actions;
+package com.facebook.litho.intellij.services;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
 import com.intellij.codeInsight.daemon.impl.DaemonProgressIndicator;
@@ -55,14 +54,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
+public class RedSymbolsResolverTest extends LithoPluginIntellijTest {
   private static final String RESOLVED_RED_SYMBOLS_KEY = "resolved_red_symbols";
   private Project project;
   private PsiJavaFile pf;
   private VirtualFile vf;
   private Editor editor;
 
-  public ResolveRedSymbolsActionTest() {
+  public RedSymbolsResolverTest() {
     super("testdata/actions");
   }
 
@@ -140,7 +139,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
               parseDocument(editor.getDocument(), pf, project);
 
               final Map<String, String> eventMetadata = new HashMap<>();
-              ResolveRedSymbolsAction.resolveRedSymbols(
+              RedSymbolsResolver.resolveRedSymbols(
                   pf,
                   vf,
                   editor,

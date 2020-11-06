@@ -16,7 +16,6 @@
 
 package com.facebook.litho.intellij.services;
 
-import com.facebook.litho.intellij.actions.ResolveRedSymbolsAction;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.settings.AppSettingsState;
@@ -91,7 +90,7 @@ public class OnCodeAnalysisFinishedListener
 
     pendingFiles.add(path);
     final Map<String, String> eventMetadata = new HashMap<>();
-    ResolveRedSymbolsAction.resolveRedSymbols(
+    RedSymbolsResolver.resolveRedSymbols(
         (PsiJavaFile) pf,
         vf,
         editor,
