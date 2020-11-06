@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 
 public class MeasureResult<T> implements Node.LayoutResult<T> {
 
-  private final RenderUnit mRenderUnit;
+  private final @Nullable RenderUnit mRenderUnit;
   private final int mMeasuredWidth;
   private final int mMeasuredHeight;
   private final int mWidthSpec;
@@ -14,12 +14,16 @@ public class MeasureResult<T> implements Node.LayoutResult<T> {
   private final T mLayoutData;
 
   public MeasureResult(
-      RenderUnit renderUnit, int widthSpec, int heightSpec, int measuredWidth, int measuredHeight) {
+      @Nullable RenderUnit renderUnit,
+      int widthSpec,
+      int heightSpec,
+      int measuredWidth,
+      int measuredHeight) {
     this(renderUnit, widthSpec, heightSpec, measuredWidth, measuredHeight, null);
   }
 
   public MeasureResult(
-      RenderUnit renderUnit,
+      @Nullable RenderUnit renderUnit,
       int widthSpec,
       int heightSpec,
       int measuredWidth,
