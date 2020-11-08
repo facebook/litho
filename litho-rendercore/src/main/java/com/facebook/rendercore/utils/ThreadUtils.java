@@ -18,14 +18,22 @@ package com.facebook.rendercore.utils;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 
 /** Thread assertion utilities. */
 public class ThreadUtils {
+
+  private static @Nullable Handler sUiThreadHandler;
+  private static @Nullable Handler sDefaultBackgroundThreadHandler;
+  private static final String THREAD_NAME = "ThreadUtilsBackgroundHandler";
+  private static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
 
   private ThreadUtils() {}
 
@@ -112,5 +120,42 @@ public class ThreadUtils {
       }
     }
     return originalThreadPriority;
+  }
+
+  private static Handler ensureUiThreadHandler() {
+    if (sUiThreadHandler == null) {
+      synchronized (ThreadUtils.class) {
+        if (sUiThreadHandler == null) {
+          sUiThreadHandler = new Handler(Looper.getMainLooper());
+        }
+      }
+    }
+    return sUiThreadHandler;
+  }
+
+  private static synchronized Handler ensureDefaultBackgroundThreadHandler() {
+    if (sDefaultBackgroundThreadHandler == null) {
+      synchronized (ThreadUtils.class) {
+        if (sDefaultBackgroundThreadHandler == null) {
+          final HandlerThread handlerThread =
+              new HandlerThread(THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);
+          handlerThread.start();
+          sDefaultBackgroundThreadHandler = new Handler(handlerThread.getLooper());
+        }
+      }
+    }
+    return sDefaultBackgroundThreadHandler;
+  }
+
+  public static void runOnUiThread(Runnable runnable) {
+    if (isMainThread()) {
+      runnable.run();
+    } else {
+      ensureUiThreadHandler().post(runnable);
+    }
+  }
+
+  public static void runOnBackgroundThread(Runnable runnable) {
+    ensureDefaultBackgroundThreadHandler().post(runnable);
   }
 }
