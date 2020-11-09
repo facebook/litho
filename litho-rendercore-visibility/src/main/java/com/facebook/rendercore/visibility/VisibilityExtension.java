@@ -27,7 +27,7 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.visibility.VisibilityExtension.Results;
 import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -59,7 +59,7 @@ public class VisibilityExtension
 
   public static class Results implements VisibilityExtensionInput {
 
-    private final List<VisibilityOutput> outputs = new LinkedList<>();
+    private final List<VisibilityOutput> outputs = new ArrayList<>(8);
     private final Set<Long> renderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
 
     @Override

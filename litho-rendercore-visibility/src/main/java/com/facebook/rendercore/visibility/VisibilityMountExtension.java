@@ -334,13 +334,13 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
     List<String> toClear = new ArrayList<>();
 
-    for (String key : state.mVisibilityIdToItemMap.keySet()) {
-      final VisibilityItem visibilityItem = state.mVisibilityIdToItemMap.get(key);
+    for (Map.Entry<String, VisibilityItem> entry : state.mVisibilityIdToItemMap.entrySet()) {
+      final VisibilityItem visibilityItem = entry.getValue();
       if (visibilityItem.doNotClearInThisPass()) {
         // This visibility item has already been accounted for in this pass, so ignore it.
         visibilityItem.setDoNotClearInThisPass(false);
       } else {
-        toClear.add(key);
+        toClear.add(entry.getKey());
       }
     }
 
@@ -397,12 +397,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     final VisibilityMountExtensionState state = extensionState.getState();
 
     state.mVisibilityOutputs = input.getVisibilityOutputs();
-
-    // Guard against the input being null.
-    if (state.mVisibilityOutputs == null) {
-      state.mVisibilityOutputs = new ArrayList<>();
-    }
-
     state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
     state.mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
     state.mVisibilityModuleInput = input.getVisibilityModuleInput();
@@ -425,13 +419,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   public void onVisibleBoundsChanged(
       ExtensionState<VisibilityMountExtensionState> extensionState,
       @Nullable Rect localVisibleRect) {
-    final VisibilityMountExtensionState state = extensionState.getState();
+    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
 
-    if (state.mVisibilityOutputs == null) {
-      return;
-    }
-
-    boolean processVisibilityOutputs = !hasTransientState(extensionState);
     if (processVisibilityOutputs) {
       processVisibilityOutputs(extensionState, localVisibleRect, false);
     }
