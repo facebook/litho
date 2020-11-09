@@ -244,7 +244,10 @@ public class StateGenerator {
         final String paramName = methodParam.getName();
 
         builder
-            .addParameter(methodParam.getTypeName(), paramName)
+            .addParameter(
+                ParameterSpec.builder(methodParam.getTypeName(), paramName)
+                    .addAnnotations(methodParam.getExternalAnnotations())
+                    .build())
             .addTypeVariables(MethodParamModelUtils.getTypeVariables(methodParam));
 
         codeBlockBuilder.add(", ").add(paramName);

@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.generator.StateGenerator.STATE_UPDAT
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -70,7 +71,7 @@ public class StateGeneratorTest {
     public void testEventMethod2(@Prop boolean arg0, @State int arg1) {}
 
     @OnUpdateState
-    void updateCurrentState() {}
+    void updateCurrentState(@Param Object nonnullObject, @Param @Nullable Object nulalbleObject) {}
   }
 
   @LayoutSpec
@@ -369,12 +370,13 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c) {\n"
+            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c,\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nulalbleObject) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject, nulalbleObject);\n"
                 + "  c.updateStateAsync(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithState.updateCurrentState\");\n"
@@ -382,12 +384,13 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "protected static void updateCurrentStateAsync(com.facebook.litho.ComponentContext c) {\n"
+            "protected static void updateCurrentStateAsync(com.facebook.litho.ComponentContext c,\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nulalbleObject) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject, nulalbleObject);\n"
                 + "  c.updateStateAsync(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithState.updateCurrentState\");\n"
@@ -395,12 +398,13 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
-            "protected static void updateCurrentStateSync(com.facebook.litho.ComponentContext c) {\n"
+            "protected static void updateCurrentStateSync(com.facebook.litho.ComponentContext c,\n"
+                + "    java.lang.Object nonnullObject, @androidx.annotation.Nullable java.lang.Object nulalbleObject) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0, nonnullObject, nulalbleObject);\n"
                 + "  c.updateStateSync(_stateUpdate, \""
                 + STATE_UPDATE_PREFIX
                 + "TestWithState.updateCurrentState\");\n"
