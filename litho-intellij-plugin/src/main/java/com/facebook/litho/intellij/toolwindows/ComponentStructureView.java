@@ -135,7 +135,7 @@ class ComponentStructureView implements Disposable {
     } else if (LithoPluginUtils.isMountSpec(selectedClass)) {
       loggingType = "mount_spec";
     } else {
-      return;
+      loggingType = "not_spec";
     }
     if (updatedClass != null && updatedClass != selectedClass) return;
 
