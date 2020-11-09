@@ -55,22 +55,20 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     // stored in LayoutState. An item is inserted in this map if its corresponding component is
     // visible. When the component exits the viewport, the item associated with it is removed from
     // the map.
-    private final Map<String, VisibilityItem> mVisibilityIdToItemMap;
-    private Set<Long> mRenderUnitIdsWhichHostRenderTrees;
-    private @Nullable VisibilityModule mVisibilityModule;
+    private final Map<String, VisibilityItem> mVisibilityIdToItemMap = new HashMap<>();
     private final Rect mPreviousLocalVisibleRect = new Rect();
 
     private boolean mIncrementalVisibilityEnabled;
     private List<VisibilityOutput> mVisibilityOutputs;
+    private Set<Long> mRenderUnitIdsWhichHostRenderTrees;
+    private @Nullable VisibilityModule mVisibilityModule;
     private @Nullable VisibilityModuleInput mVisibilityModuleInput;
     private @Nullable Rect mCurrentLocalVisibleRect;
 
     /** @deprecated Only used for Litho's integration. Marked for removal. */
     @Deprecated private @Nullable Host mRootHost;
 
-    private VisibilityMountExtensionState() {
-      mVisibilityIdToItemMap = new HashMap<>();
-    }
+    private VisibilityMountExtensionState() {}
   }
 
   @UiThread
@@ -332,7 +330,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       final VisibilityMountExtensionState state) {
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
-    List<String> toClear = new ArrayList<>();
+    final List<String> toClear = new ArrayList<>();
 
     for (Map.Entry<String, VisibilityItem> entry : state.mVisibilityIdToItemMap.entrySet()) {
       final VisibilityItem visibilityItem = entry.getValue();
@@ -406,11 +404,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
   @Override
   public void afterMount(ExtensionState<VisibilityMountExtensionState> extensionState) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-
     final boolean processVisibilityOutputs = !hasTransientState(extensionState);
 
     if (processVisibilityOutputs) {
+      final VisibilityMountExtensionState state = extensionState.getState();
       processVisibilityOutputs(extensionState, state.mCurrentLocalVisibleRect, true);
     }
   }

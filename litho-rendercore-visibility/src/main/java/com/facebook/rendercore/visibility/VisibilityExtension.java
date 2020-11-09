@@ -23,7 +23,6 @@ import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.LayoutResultVisitor;
-import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.visibility.VisibilityExtension.Results;
 import com.facebook.rendercore.visibility.VisibilityMountExtension.VisibilityMountExtensionState;
@@ -43,12 +42,12 @@ public class VisibilityExtension
   }
 
   @Override
-  public LayoutResultVisitor<Results> getLayoutVisitor() {
+  public Visitor getLayoutVisitor() {
     return visitor;
   }
 
   @Override
-  public MountExtension<Results, VisibilityMountExtensionState> getMountExtension() {
+  public VisibilityMountExtension<Results> getMountExtension() {
     return mountExtension;
   }
 
