@@ -370,8 +370,11 @@ public abstract class Component extends ComponentLifecycle
     // Do nothing by default
   }
 
-  InternalNode consumeLayoutCreatedInWillRender() {
+  InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
+    if (layout != null && ComponentsConfiguration.useStatelessComponent) {
+      assertSameBaseContext(context, layout.getContext());
+    }
     mLayoutCreatedInWillRender = null;
     return layout;
   }
@@ -715,10 +718,12 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    final ComponentContext scopedContext =
-        component.getScopedContext(c.getLayoutStateContext(), component.getGlobalKey());
-    if (scopedContext != null) {
-      assertSameBaseContext(scopedContext, c);
+    if (!ComponentsConfiguration.useStatelessComponent) {
+      final ComponentContext scopedContext =
+          component.getScopedContext(c.getLayoutStateContext(), component.getGlobalKey());
+      if (scopedContext != null) {
+        assertSameBaseContext(scopedContext, c);
+      }
     }
 
     if (component.mLayoutCreatedInWillRender != null) {

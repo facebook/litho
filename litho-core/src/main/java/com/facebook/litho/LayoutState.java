@@ -1500,7 +1500,7 @@ public class LayoutState
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
 
-      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
 
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 

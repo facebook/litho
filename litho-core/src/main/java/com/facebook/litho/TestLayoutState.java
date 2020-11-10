@@ -78,7 +78,7 @@ public class TestLayoutState {
   static InternalNode createImmediateLayout(final ComponentContext c, final Component component) {
 
     final InternalNode node;
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
 
     if (layoutCreatedInWillRender != null) {
       return layoutCreatedInWillRender;
