@@ -239,8 +239,24 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
-    for (int i = 0, count = host.getChildCount(); i < count; i++) {
-      final View child = host.getChildAt(i);
+    final int childCount = host.getChildCount();
+    if (childCount == 0) {
+      return;
+    }
+
+    // Snapshot the children before traversal as measure/layout could trigger events which cause
+    // children to be mounted/unmounted.
+    View[] children = new View[childCount];
+    for (int i = 0; i < childCount; i++) {
+      children[i] = host.getChildAt(i);
+    }
+
+    for (int i = 0; i < childCount; i++) {
+      final View child = children[i];
+      if (child.getParent() != host) {
+        // child has been removed
+        continue;
+      }
 
       if (child.isLayoutRequested()) {
         // The hosting view doesn't allow children to change sizes dynamically as
