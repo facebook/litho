@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore.testing;
 
+import static com.facebook.rendercore.RenderUnit.Extension.extension;
+
 import android.content.Context;
 import android.view.View;
 import com.facebook.rendercore.RenderUnit;
@@ -44,5 +46,21 @@ public class SimpleViewUnit extends RenderUnit<View> {
   @Override
   public Object getRenderContentType() {
     return view.getClass();
+  }
+
+  public SimpleViewUnit addBindBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
+    for (Binder<SimpleViewUnit, View> binder : binders) {
+      super.addAttachDetachExtension(extension(this, binder));
+    }
+
+    return this;
+  }
+
+  public SimpleViewUnit addMounBinders(RenderUnit.Binder<SimpleViewUnit, View>... binders) {
+    for (Binder<SimpleViewUnit, View> binder : binders) {
+      super.addMountUnmountExtension(extension(this, binder));
+    }
+
+    return this;
   }
 }
