@@ -61,7 +61,11 @@ public interface MountDelegateTarget {
   @Nullable
   MountItem getMountItemAt(int position);
 
+  /** Returns the total number mount items currently mounted. */
   int getMountItemCount();
+
+  /** Returns the total number render units in the MountState; mounted and unmounted. */
+  int getRenderUnitCount();
 
   void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension);
 

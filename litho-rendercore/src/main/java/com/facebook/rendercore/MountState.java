@@ -224,7 +224,7 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public int getContentCount() {
-    return mRenderUnitIds == null ? 0 : mRenderUnitIds.length;
+    return mIndexToMountedItemMap.size();
   }
 
   /** @deprecated Only used for Litho's integration. Marked for removal. */
@@ -258,7 +258,12 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public int getMountItemCount() {
-    return mRenderUnitIds != null ? mRenderUnitIds.length : 0;
+    return mIndexToMountedItemMap.size();
+  }
+
+  @Override
+  public int getRenderUnitCount() {
+    return mRenderUnitIds == null ? 0 : mRenderUnitIds.length;
   }
 
   @Override

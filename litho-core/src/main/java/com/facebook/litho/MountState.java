@@ -934,6 +934,12 @@ class MountState
   }
 
   @Override
+  public int getRenderUnitCount() {
+    assertMainThread();
+    return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
+  }
+
+  @Override
   public @Nullable MountItem getMountItemAt(int position) {
     return getItemAt(position);
   }
