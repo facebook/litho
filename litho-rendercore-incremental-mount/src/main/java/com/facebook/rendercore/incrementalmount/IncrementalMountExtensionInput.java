@@ -22,7 +22,10 @@ import javax.annotation.Nullable;
 
 public interface IncrementalMountExtensionInput {
 
-  /** Returns the position of {@link RenderUnit} given its id. */
+  /**
+   * Returns the position of a {@link RenderUnit} given its {@param id}; returns -1 if {@param id}
+   * is not found.
+   */
   int getPositionForId(long id);
 
   @Nullable

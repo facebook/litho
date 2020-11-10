@@ -137,7 +137,7 @@ public class IncrementalMountRenderCoreExtension
     public int getPositionForId(long id) {
       Integer position = positionForIdMap.get(id);
       if (position == null) {
-        throw new IllegalArgumentException("No position found for item with id: " + id);
+        return -1;
       }
       return position;
     }
