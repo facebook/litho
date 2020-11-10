@@ -222,11 +222,6 @@ public class MountState implements MountDelegateTarget {
     return mountItem.getContent();
   }
 
-  @Override
-  public int getContentCount() {
-    return mIndexToMountedItemMap.size();
-  }
-
   /** @deprecated Only used for Litho's integration. Marked for removal. */
   @Deprecated
   @Override

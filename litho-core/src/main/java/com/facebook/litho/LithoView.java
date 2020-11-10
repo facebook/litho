@@ -1159,7 +1159,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       MountDelegateTarget mountDelegateTarget) {
     final ArrayList<LithoView> childLithoViews = new ArrayList<>();
 
-    for (int i = 0, size = mountDelegateTarget.getContentCount(); i < size; i++) {
+    for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final Object content = mountDelegateTarget.getContentAt(i);
       if (content instanceof HasLithoViewChildren) {
         ((HasLithoViewChildren) content).obtainLithoViewChildren(childLithoViews);

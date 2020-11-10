@@ -930,7 +930,7 @@ class MountState
 
   @Override
   public int getMountItemCount() {
-    return getItemCount();
+    return mIndexToItemMap.size();
   }
 
   @Override
@@ -2807,11 +2807,6 @@ class MountState
     return mIndexToItemMap != null ? mIndexToItemMap.get(ROOT_HOST_ID) : null;
   }
 
-  int getItemCount() {
-    assertMainThread();
-    return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
-  }
-
   MountItem getItemAt(int i) {
     assertMainThread();
 
@@ -2854,11 +2849,6 @@ class MountState
 
   public androidx.collection.LongSparseArray<MountItem> getIndexToItemMap() {
     return mIndexToItemMap;
-  }
-
-  @Override
-  public int getContentCount() {
-    return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
   }
 
   /**

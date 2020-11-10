@@ -50,8 +50,6 @@ public interface MountDelegateTarget {
 
   Object getContentById(long id);
 
-  int getContentCount();
-
   /** @deprecated Only used for Litho's integration. Marked for removal. */
   @Deprecated
   void registerMountDelegateExtension(MountExtension mountExtension);

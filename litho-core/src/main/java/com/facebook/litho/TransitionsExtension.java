@@ -567,7 +567,7 @@ public class TransitionsExtension
   private static void extractDisappearingItems(
       ExtensionState<TransitionsExtensionState> extensionState,
       TransitionsExtensionInput newTransitionsExtensionInput) {
-    int mountItemCount = getMountTarget(extensionState).getMountItemCount();
+    int mountItemCount = getMountTarget(extensionState).getRenderUnitCount();
     final TransitionsExtensionState state = extensionState.getState();
     if (state.mLastTransitionsExtensionInput == null || mountItemCount == 0) {
       return;
@@ -757,7 +757,7 @@ public class TransitionsExtension
     final Map<TransitionId, OutputUnitsAffinityGroup<Object>> animatingContent =
         new LinkedHashMap<>(state.mAnimatingTransitionIds.size());
 
-    for (int i = 0, size = getMountTarget(extensionState).getMountItemCount(); i < size; i++) {
+    for (int i = 0, size = getMountTarget(extensionState).getRenderUnitCount(); i < size; i++) {
       final MountItem mountItem = getMountTarget(extensionState).getMountItemAt(i);
       if (mountItem == null) {
         continue;
