@@ -410,7 +410,7 @@ class Layout {
 
     // 2. Update the internal state of the component wrt the parent.
     // 3. Get the scoped context from the updated component.
-    final ComponentContext c = component.updateInternalChildState(parent);
+    final ComponentContext c = component.updateInternalChildState(parent, globalKeyToReuse);
 
     // 4. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);

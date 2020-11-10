@@ -87,6 +87,8 @@ public abstract class Component extends ComponentLifecycle
   /** Holds an identifying name of the component, set at construction time. */
   private final String mSimpleName;
 
+  private final boolean mUseStatelessComponent;
+
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
    * LayoutState#mWorkingRangeContainer} when calculate method is finished.
@@ -136,10 +138,12 @@ public abstract class Component extends ComponentLifecycle
 
   protected Component() {
     mSimpleName = getClass().getSimpleName();
+    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
   }
 
   protected Component(String simpleName) {
     mSimpleName = simpleName;
+    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
   }
 
   /**
@@ -150,6 +154,7 @@ public abstract class Component extends ComponentLifecycle
   protected Component(String simpleName, int identityHashCode) {
     super(identityHashCode);
     mSimpleName = simpleName;
+    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
   }
 
   /**
@@ -182,7 +187,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   protected ComponentContext getScopedContext(
       @Nullable LayoutStateContext layoutStateContext, String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (mUseStatelessComponent) {
       if (layoutStateContext == null) {
         throw new IllegalStateException(
             "Should not attempt to get a scoped context outside of a LayoutStateContext");
@@ -195,7 +200,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   public void setScopedContext(ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (mUseStatelessComponent) {
       return;
     }
 
@@ -501,18 +506,21 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Returns an updated shallow copy of this component with the same global key. */
-  Component makeUpdatedShallowCopy(final ComponentContext parentContext) {
+  Component makeUpdatedShallowCopy(
+      final ComponentContext parentContext, final String globalKeyToReuse) {
     final Component clone = makeShallowCopy();
     final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+    final String existingGlobalKey = mUseStatelessComponent ? globalKeyToReuse : getGlobalKey();
 
     // set the global key so that it is not generated again and overridden.
-    clone.setGlobalKey(getGlobalKey());
+    clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
     clone.copyInterStageImpl(this);
 
     // update the cloned component with the new context.
-    final ComponentContext scopedContext = clone.updateInternalChildState(parentContext);
+    final ComponentContext scopedContext =
+        clone.updateInternalChildState(parentContext, existingGlobalKey);
 
     // create updated tree props for children.
     final TreeProps treeProps =
@@ -572,8 +580,10 @@ public abstract class Component extends ComponentLifecycle
 
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected ComponentContext updateInternalChildState(ComponentContext parentContext) {
-    String globalKey = getGlobalKey();
+  protected ComponentContext updateInternalChildState(
+      ComponentContext parentContext, @Nullable String existingGlobalKey) {
+
+    String globalKey = mUseStatelessComponent ? existingGlobalKey : getGlobalKey();
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (globalKey == null) {

@@ -1952,8 +1952,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     if (ranges != null && !ranges.isEmpty()) {
       mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
       for (WorkingRangeContainer.Registration old : ranges) {
-        final Component component = old.mComponent.makeUpdatedShallowCopy(c);
         final String key = old.mKey;
+        final Component component = old.mComponent.makeUpdatedShallowCopy(c, key);
         mWorkingRangeRegistrations.add(
             new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
       }
@@ -1985,15 +1985,17 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
-      Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext);
-      updated.add(component);
       final String key;
+      final Component component;
       if (mComponentGlobalKeys != null) {
         key = mComponentGlobalKeys.get(i);
+        component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
         updatedKeys.add(key);
       } else {
+        component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, null);
         key = component.getGlobalKey();
       }
+      updated.add(component);
 
       parentContext =
           component.getScopedContext(layoutStateContext, key); // set parent context for descendant
@@ -2232,7 +2234,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       final String key = componentKeys == null ? null : componentKeys.get(index);
 
       // 4.2 Update the head component of the child layout.
-      final Component updated = component.makeUpdatedShallowCopy(parentContext);
+      final Component updated = component.makeUpdatedShallowCopy(parentContext, key);
 
       // 4.3 Reconcile child layout.
       final InternalNode copy;
