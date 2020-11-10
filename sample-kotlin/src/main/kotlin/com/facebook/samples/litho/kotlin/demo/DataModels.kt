@@ -28,48 +28,27 @@ import com.facebook.samples.litho.kotlin.playground.PlaygroundActivity
 
 object DataModels {
 
-  val DATA_MODELS = listOf(
-      DemoListDataModel(
-          name = "Lithography",
-          klass = LithographyActivity::class.java
-      ),
-      DemoListDataModel(
-          name = "Playground",
-          klass = PlaygroundActivity::class.java
-      ),
-      DemoListDataModel(
-          name = "Border effects",
-          klass = BorderEffectsActivity::class.java
-      ),
-      DemoListDataModel(
-          name = "Error boundaries",
-          klass = ErrorHandlingActivity::class.java
-      ),
-      DemoListDataModel(
-          name = "Animations",
-          datamodels = listOf(
-              DemoListDataModel(
-                  name = "Animations Composition",
-                  klass = ComposedAnimationsActivity::class.java
-              ),
-              DemoListDataModel(
-                  name = "Expandable Element",
-                  klass = ExpandableElementActivity::class.java
-              ),
-              DemoListDataModel(
-                  name = "Animated Badge",
-                  klass = AnimatedBadgeActivity::class.java
-              ),
-              DemoListDataModel(
-                  name = "Bounds Animation",
-                  klass = BoundsAnimationActivity::class.java)
-          )
-      ),
-      DemoListDataModel(
-              name = "Logging",
-              klass = LoggingActivity::class.java
-      )
-  )
+  val DATA_MODELS =
+      listOf(
+          DemoListDataModel(name = "Lithography", klass = LithographyActivity::class.java),
+          DemoListDataModel(name = "Playground", klass = PlaygroundActivity::class.java),
+          DemoListDataModel(name = "Border effects", klass = BorderEffectsActivity::class.java),
+          DemoListDataModel(name = "Error boundaries", klass = ErrorHandlingActivity::class.java),
+          DemoListDataModel(
+              name = "Animations",
+              datamodels =
+                  listOf(
+                      DemoListDataModel(
+                          name = "Animations Composition",
+                          klass = ComposedAnimationsActivity::class.java),
+                      DemoListDataModel(
+                          name = "Expandable Element",
+                          klass = ExpandableElementActivity::class.java),
+                      DemoListDataModel(
+                          name = "Animated Badge", klass = AnimatedBadgeActivity::class.java),
+                      DemoListDataModel(
+                          name = "Bounds Animation", klass = BoundsAnimationActivity::class.java))),
+          DemoListDataModel(name = "Logging", klass = LoggingActivity::class.java))
 
   fun getDataModels(indices: IntArray?): List<DemoListDataModel> {
     if (indices == null) {
@@ -78,9 +57,7 @@ object DataModels {
 
     var dataModels: List<DemoListDataModel> = DATA_MODELS
 
-    indices.forEach {
-      dataModels = dataModels[it].datamodels ?: dataModels
-    }
+    indices.forEach { dataModels = dataModels[it].datamodels ?: dataModels }
 
     return dataModels
   }

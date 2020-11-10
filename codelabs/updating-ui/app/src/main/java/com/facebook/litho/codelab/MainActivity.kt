@@ -25,31 +25,29 @@ import com.facebook.litho.LithoView
 @Suppress("MagicNumber")
 class MainActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val componentContext = ComponentContext(this)
-        val lithoView = LithoView.create(
-                this,
-                RootComponent.create(componentContext).labelText("Starting countdown").build()
-        )
-        setContentView(
-                lithoView
-        )
+    val componentContext = ComponentContext(this)
+    val lithoView =
+        LithoView.create(
+            this, RootComponent.create(componentContext).labelText("Starting countdown").build())
+    setContentView(lithoView)
 
-        val timer = object : CountDownTimer(30000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                lithoView.setComponentAsync(RootComponent.create(componentContext)
-                        .labelText("Ms until finished: " + millisUntilFinished.toString())
-                        .build())
-            }
+    val timer =
+        object : CountDownTimer(30000, 1000) {
+          override fun onTick(millisUntilFinished: Long) {
+            lithoView.setComponentAsync(
+                RootComponent.create(componentContext)
+                    .labelText("Ms until finished: " + millisUntilFinished.toString())
+                    .build())
+          }
 
-            override fun onFinish() {
-                lithoView.setComponentAsync(RootComponent.create(componentContext)
-                        .labelText("Done!")
-                        .build())
-            }
+          override fun onFinish() {
+            lithoView.setComponentAsync(
+                RootComponent.create(componentContext).labelText("Done!").build())
+          }
         }
-        timer.start()
-    }
+    timer.start()
+  }
 }

@@ -23,9 +23,7 @@ import com.facebook.litho.Dp
 import com.facebook.litho.DslScope
 import com.facebook.litho.dp
 
-/**
- * Builder function for creating [CardSpec] components.
- */
+/** Builder function for creating [CardSpec] components. */
 @Suppress("FunctionName")
 inline fun DslScope.Card(
     @ColorInt cardBackgroundColor: Int = Color.WHITE,

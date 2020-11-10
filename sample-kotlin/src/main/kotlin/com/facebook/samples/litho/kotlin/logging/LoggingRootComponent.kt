@@ -19,8 +19,9 @@ package com.facebook.samples.litho.kotlin.logging
 import com.facebook.litho.KComponent
 import com.facebook.litho.createTreeProp
 
-class LoggingRootComponent : KComponent({
-  createTreeProp { LogContext("root") }
+class LoggingRootComponent :
+    KComponent({
+      createTreeProp { LogContext("root") }
 
-  LoggingChildComponent()
-})
+      LoggingChildComponent()
+    })

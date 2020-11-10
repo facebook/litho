@@ -48,13 +48,14 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      val expensiveString by useCached("hello") {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("hello")
-      }
-      Text(text = expensiveString)
-    }
+    val root =
+        KComponent {
+          val expensiveString by useCached("hello") {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc("hello")
+          }
+          Text(text = expensiveString)
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(1)
@@ -73,13 +74,14 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      val expensiveString by useCached("hello", 100) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("hello", 100)
-      }
-      Text(text = expensiveString)
-    }
+    val root =
+        KComponent {
+          val expensiveString by useCached("hello", 100) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc("hello", 100)
+          }
+          Text(text = expensiveString)
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(1)
@@ -98,13 +100,14 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      val expensiveString by useCached("hello", 100, "litho") {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("hello", 100, "litho")
-      }
-      Text(text = expensiveString)
-    }
+    val root =
+        KComponent {
+          val expensiveString by useCached("hello", 100, "litho") {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc("hello", 100, "litho")
+          }
+          Text(text = expensiveString)
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(1)
@@ -124,13 +127,14 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val repeatNum = AtomicInteger(100)
-    val root = KComponent {
-      val expensiveString by useCached("count" + repeatNum.get()) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("count" + repeatNum.get())
-      }
-      Text(text = expensiveString)
-    }
+    val root =
+        KComponent {
+          val expensiveString by useCached("count" + repeatNum.get()) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc("count" + repeatNum.get())
+          }
+          Text(text = expensiveString)
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(1)
@@ -152,13 +156,14 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val repeatNum = AtomicInteger(100)
-    val root = KComponent {
-      val expensiveString by useCached("world", repeatNum.get()) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("world", repeatNum.get())
-      }
-      Text(text = expensiveString)
-    }
+    val root =
+        KComponent {
+          val expensiveString by useCached("world", repeatNum.get()) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc("world", repeatNum.get())
+          }
+          Text(text = expensiveString)
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(1)
@@ -180,13 +185,14 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val repeatNum = AtomicInteger(100)
-    val root = KComponent {
-      val expensiveString by useCached("world", repeatNum.get(), "litho") {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("world", repeatNum.get(), "litho")
-      }
-      Text(text = expensiveString)
-    }
+    val root =
+        KComponent {
+          val expensiveString by useCached("world", repeatNum.get(), "litho") {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc("world", repeatNum.get(), "litho")
+          }
+          Text(text = expensiveString)
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
     assertThat(initCounter.get()).isEqualTo(1)
@@ -207,14 +213,13 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      Row {
-        +Leaf1("hello", 100, initCounter)
-        Column {
-          +Leaf1("hello", 100, initCounter)
+    val root =
+        KComponent {
+          Row {
+            +Leaf1("hello", 100, initCounter)
+            Column { +Leaf1("hello", 100, initCounter) }
+          }
         }
-      }
-    }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
 
@@ -228,17 +233,19 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      Row {
-        +Leaf1("hello", 100, initCounter)
-        +Leaf1("hello", 100, initCounter)
-        +Leaf2("hello", 100, initCounter)
-      }
-    }
+    val root =
+        KComponent {
+          Row {
+            +Leaf1("hello", 100, initCounter)
+            +Leaf1("hello", 100, initCounter)
+            +Leaf2("hello", 100, initCounter)
+          }
+        }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
 
-    // CacheValue is shared between two `Leaf1` components, but not shared with `Leaf2`, thus initCounter is 2.
+    // CacheValue is shared between two `Leaf1` components, but not shared with `Leaf2`, thus
+    // initCounter is 2.
     assertThat(initCounter.get()).isEqualTo(2)
   }
 
@@ -260,51 +267,54 @@ class KCachedTest {
     assertThat(initCounter.get()).isEqualTo(2)
   }
 
-  private class Leaf1(str: String, repeatNum: Int, initCounter: AtomicInteger) : KComponent({
-    val expensiveString by useCached(str, repeatNum) {
-      initCounter.incrementAndGet()
-      expensiveRepeatFunc(str, repeatNum)
-    }
-    Text(text = expensiveString)
-  })
+  private class Leaf1(str: String, repeatNum: Int, initCounter: AtomicInteger) :
+      KComponent({
+        val expensiveString by useCached(str, repeatNum) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc(str, repeatNum)
+        }
+        Text(text = expensiveString)
+      })
 
-  private class Leaf2(str: String, repeatNum: Int, initCounter: AtomicInteger) : KComponent({
-    val expensiveString by useCached(str, repeatNum) {
-      initCounter.incrementAndGet()
-      expensiveRepeatFunc(str, repeatNum)
-    }
-    Text(text = expensiveString)
-  })
+  private class Leaf2(str: String, repeatNum: Int, initCounter: AtomicInteger) :
+      KComponent({
+        val expensiveString by useCached(str, repeatNum) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc(str, repeatNum)
+        }
+        Text(text = expensiveString)
+      })
 
   private class ComponentWithTwoCachedValuesWithSameInputs(
-      str: String,
-      repeatNum: Int,
-      initCounter: AtomicInteger
-  ) : KComponent({
-    val expensiveString1 by useCached(str, repeatNum) {
-      initCounter.incrementAndGet()
-      expensiveRepeatFunc(str, repeatNum)
-    }
+      str: String, repeatNum: Int, initCounter: AtomicInteger
+  ) :
+      KComponent({
+        val expensiveString1 by useCached(str, repeatNum) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc(str, repeatNum)
+        }
 
-    val expensiveString2 by useCached(str, repeatNum) {
-      initCounter.incrementAndGet()
-      expensiveRepeatFunc(str, repeatNum)
-    }
+        val expensiveString2 by useCached(str, repeatNum) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc(str, repeatNum)
+        }
 
-    Row {
-      +Text(text = expensiveString1)
-      +Text(text = expensiveString2)
-    }
-  })
+        Row {
+          +Text(text = expensiveString1)
+          +Text(text = expensiveString2)
+        }
+      })
 
   companion object {
     private fun expensiveRepeatFunc(prefix: String, num: Int = 20, suffix: String? = null): String {
-      return StringBuilder().apply {
-        repeat(num) {
-          append(prefix)
-          suffix?.let { append(it) }
-        }
-      }.toString()
+      return StringBuilder()
+          .apply {
+            repeat(num) {
+              append(prefix)
+              suffix?.let { append(it) }
+            }
+          }
+          .toString()
     }
   }
 }

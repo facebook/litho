@@ -28,10 +28,6 @@ class MainActivity : AppCompatActivity() {
 
     val componentContext = ComponentContext(this)
     setContentView(
-      LithoView.create(
-        this,
-        RootComponent.create(componentContext).startCount(5).build()
-      )
-    )
+        LithoView.create(this, RootComponent.create(componentContext).startCount(5).build()))
   }
 }

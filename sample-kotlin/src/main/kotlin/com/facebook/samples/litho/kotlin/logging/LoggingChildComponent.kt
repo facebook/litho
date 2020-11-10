@@ -21,9 +21,10 @@ import com.facebook.litho.createTreeProp
 import com.facebook.litho.useTreeProp
 import com.facebook.litho.widget.Text
 
-class LoggingChildComponent : KComponent({
-  val parent = useTreeProp<LogContext>()
-  createTreeProp { parent.append("child") }
+class LoggingChildComponent :
+    KComponent({
+      val parent = useTreeProp<LogContext>()
+      createTreeProp { parent.append("child") }
 
-  Text(text = "Hello, Logger.")
-})
+      Text(text = "Hello, Logger.")
+    })

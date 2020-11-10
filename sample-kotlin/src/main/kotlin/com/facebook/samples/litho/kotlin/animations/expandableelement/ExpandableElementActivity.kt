@@ -27,11 +27,12 @@ class ExpandableElementActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val lithoView = LithoView.create(
-        this,
-        ExpandableElementRootComponent.create(ComponentContext(this))
-            .initialMessages(MESSAGES)
-            .build())
+    val lithoView =
+        LithoView.create(
+            this,
+            ExpandableElementRootComponent.create(ComponentContext(this))
+                .initialMessages(MESSAGES)
+                .build())
     setContentView(lithoView)
   }
 }

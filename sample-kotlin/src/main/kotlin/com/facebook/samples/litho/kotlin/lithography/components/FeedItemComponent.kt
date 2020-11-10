@@ -37,28 +37,30 @@ import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 
-class FeedItemComponent(artist: Artist) : KComponent({
-  Column {
-    +Column {
-      +imageBlock(artist)
-      +Text(
-            text = artist.name,
-            style = Style
-                .position(start = 4.dp, bottom = 4.dp)
-                .padding(horizontal = 6.dp)
-                .background(drawableColor(0xddffffff)),
-            textSize = 24.sp,
-            textStyle = BOLD)
-      +ActionsComponent(style = position(top = 4.dp, end = 4.dp))
-    }
-    +FooterComponent(text = artist.biography)
-  }
-})
+class FeedItemComponent(artist: Artist) :
+    KComponent({
+      Column {
+        +Column {
+          +imageBlock(artist)
+          +Text(
+              text = artist.name,
+              style =
+                  Style.position(start = 4.dp, bottom = 4.dp)
+                      .padding(horizontal = 6.dp)
+                      .background(drawableColor(0xddffffff)),
+              textSize = 24.sp,
+              textStyle = BOLD)
+          +ActionsComponent(style = position(top = 4.dp, end = 4.dp))
+        }
+        +FooterComponent(text = artist.biography)
+      }
+    })
 
-private val recyclerConfiguration = ListRecyclerConfiguration.create()
-    .orientation(LinearLayout.HORIZONTAL)
-    .snapMode(SnapUtil.SNAP_TO_CENTER)
-    .build()
+private val recyclerConfiguration =
+    ListRecyclerConfiguration.create()
+        .orientation(LinearLayout.HORIZONTAL)
+        .snapMode(SnapUtil.SNAP_TO_CENTER)
+        .build()
 
 private fun DslScope.imageBlock(artist: Artist): Component =
     when (artist.images.size) {
@@ -69,9 +71,6 @@ private fun DslScope.imageBlock(artist: Artist): Component =
 private fun DslScope.imageRecycler(artist: Artist): Component =
     RecyclerCollectionComponent.create(context)
         .recyclerConfiguration(recyclerConfiguration)
-        .section(
-            ImagesSection.create(SectionContext(context))
-                .images(artist.images)
-                .build())
+        .section(ImagesSection.create(SectionContext(context)).images(artist.images).build())
         .aspectRatio(2f)
         .build()

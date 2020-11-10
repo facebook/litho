@@ -40,20 +40,15 @@ object DebugErrorComponentSpec {
 
   private const val TAG = "DebugErrorComponentSpec"
 
-  @ColorInt
-  private val DARK_RED_FRAME = 0xffcd4928.toInt()
+  @ColorInt private val DARK_RED_FRAME = 0xffcd4928.toInt()
 
-  @ColorInt
-  private val LIGHT_RED_BACKGROUND = 0xfffcece9.toInt()
+  @ColorInt private val LIGHT_RED_BACKGROUND = 0xfffcece9.toInt()
 
-  @ColorInt
-  private val LIGHT_GRAY_TEXT = 0xff606770.toInt()
+  @ColorInt private val LIGHT_GRAY_TEXT = 0xff606770.toInt()
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext,
-      @Prop message: String,
-      @Prop throwable: Throwable
+      c: ComponentContext, @Prop message: String, @Prop throwable: Throwable
   ): Component {
     Log.e(TAG, message, throwable)
 

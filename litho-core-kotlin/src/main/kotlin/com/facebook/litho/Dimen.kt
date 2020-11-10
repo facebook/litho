@@ -33,14 +33,29 @@ inline class Dp(val value: Float) {
 
 inline class Sp(val value: Float)
 
-inline val Int.dp: Dp get() = Dp(this.toFloat())
-inline val Float.dp: Dp get() = Dp(this)
-inline val Double.dp: Dp get() = Dp(this.toFloat())
+inline val Int.dp: Dp
+  get() = Dp(this.toFloat())
 
-inline val Int.sp: Sp get() = Sp(this.toFloat())
-inline val Float.sp: Sp get() = Sp(this)
-inline val Double.sp: Sp get() = Sp(this.toFloat())
+inline val Float.dp: Dp
+  get() = Dp(this)
 
-inline val Int.px: Px get() = Px(this)
-inline val Float.px: Px get() = Px(this.toInt())
-inline val Double.px: Px get() = Px(this.toInt())
+inline val Double.dp: Dp
+  get() = Dp(this.toFloat())
+
+inline val Int.sp: Sp
+  get() = Sp(this.toFloat())
+
+inline val Float.sp: Sp
+  get() = Sp(this)
+
+inline val Double.sp: Sp
+  get() = Sp(this.toFloat())
+
+inline val Int.px: Px
+  get() = Px(this)
+
+inline val Float.px: Px
+  get() = Px(this.toInt())
+
+inline val Double.px: Px
+  get() = Px(this.toInt())

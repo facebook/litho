@@ -23,8 +23,8 @@ import android.graphics.drawable.Drawable
 /**
  * Builder for setting an [onClick] event handler for component.
  *
- * TODO Currently lambda captures possibly old props. Find a better option.
- *  This will work for core Litho, but may break Sections.
+ * TODO Currently lambda captures possibly old props. Find a better option. This will work for core
+ * Litho, but may break Sections.
  */
 inline fun DslScope.Clickable(
     noinline onClick: ((ClickEvent) -> Unit)? = null,
@@ -58,8 +58,8 @@ inline fun DslScope.Clickable(
  * Builder for setting [onVisible], [onFocused], and [onFullImpression] event handlers for
  * component.
  *
- * TODO Currently lambda captures possibly old props. Find a better option.
- *  This will work for core Litho, but may break Sections.
+ * TODO Currently lambda captures possibly old props. Find a better option. This will work for core
+ * Litho, but may break Sections.
  */
 inline fun DslScope.VisibilityHandler(
     noinline onVisible: ((VisibleEvent) -> Unit)? = null,
@@ -75,14 +75,10 @@ inline fun DslScope.VisibilityHandler(
       }
     }
 
-/**
- * Builder for decorating a child component with [background] or [foreground].
- */
+/** Builder for decorating a child component with [background] or [foreground]. */
 @Deprecated(message = "Use Style.background and Style.foreground instead")
 inline fun DslScope.Decoration(
-    foreground: Drawable? = null,
-    background: Drawable? = null,
-    content: DslScope.() -> Component
+    foreground: Drawable? = null, background: Drawable? = null, content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {

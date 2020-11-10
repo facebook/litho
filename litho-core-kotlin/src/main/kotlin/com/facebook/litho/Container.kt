@@ -43,9 +43,7 @@ inline fun DslScope.Column(
           DslContainerScope(this).content()
         }
         .build()
-        .apply {
-          applyStyle(style)
-        }
+        .apply { applyStyle(style) }
 
 inline fun DslScope.Row(
     alignContent: YogaAlign? = null,
@@ -68,9 +66,7 @@ inline fun DslScope.Row(
           DslContainerScope(this).content()
         }
         .build()
-        .apply {
-          applyStyle(style)
-        }
+        .apply { applyStyle(style) }
 
 /**
  * A scope that exposes only [unaryPlus] operator in the context of [Component.ContainerBuilder]

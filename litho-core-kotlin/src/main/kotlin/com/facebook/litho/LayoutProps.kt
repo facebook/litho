@@ -22,26 +22,15 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
-/**
- * Builder for setting the same [all] padding to each edge of the child component.
- */
+/** Builder for setting the same [all] padding to each edge of the child component. */
 @Deprecated(message = "Use Style.padding instead")
-inline fun DslScope.Padding(
-    all: Dp,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.paddingPx(YogaEdge.ALL, all.toPx().value)
-    }
+inline fun DslScope.Padding(all: Dp, content: DslScope.() -> Component): Component =
+    content().apply { getOrCreateCommonProps.paddingPx(YogaEdge.ALL, all.toPx().value) }
 
-/**
- * Builder for setting [horizontal] and [vertical] paddings to the child component.
- */
+/** Builder for setting [horizontal] and [vertical] paddings to the child component. */
 @Deprecated(message = "Use Style.padding instead")
 inline fun DslScope.Padding(
-    horizontal: Dp = 0.dp,
-    vertical: Dp = 0.dp,
-    content: DslScope.() -> Component
+    horizontal: Dp = 0.dp, vertical: Dp = 0.dp, content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -70,26 +59,15 @@ inline fun DslScope.Padding(
       }
     }
 
-/**
- * Builder for setting the same [all] margin for each edge of the child component.
- */
+/** Builder for setting the same [all] margin for each edge of the child component. */
 @Deprecated(message = "Use Style.margin instead")
-inline fun DslScope.Margin(
-    all: Dp,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.marginPx(YogaEdge.ALL, all.toPx().value)
-    }
+inline fun DslScope.Margin(all: Dp, content: DslScope.() -> Component): Component =
+    content().apply { getOrCreateCommonProps.marginPx(YogaEdge.ALL, all.toPx().value) }
 
-/**
- * Builder for setting [horizontal] and [vertical] margins for the child component.
- */
+/** Builder for setting [horizontal] and [vertical] margins for the child component. */
 @Deprecated(message = "Use Style.margin instead")
 inline fun DslScope.Margin(
-    horizontal: Dp = 0.dp,
-    vertical: Dp = 0.dp,
-    content: DslScope.() -> Component
+    horizontal: Dp = 0.dp, vertical: Dp = 0.dp, content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -141,14 +119,10 @@ inline fun DslScope.Position(
       }
     }
 
-/**
- * Builder for setting a specific [width] and [height] for a child component.
- */
+/** Builder for setting a specific [width] and [height] for a child component. */
 @Deprecated(message = "Use Style.size instead")
 inline fun DslScope.FixedSize(
-    width: Dp? = null,
-    height: Dp? = null,
-    content: DslScope.() -> Component
+    width: Dp? = null, height: Dp? = null, content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -159,10 +133,7 @@ inline fun DslScope.FixedSize(
 
 @Deprecated(message = "Use Style.flex instead")
 inline fun DslScope.Flex(
-    grow: Float = 0f,
-    shrink: Float = 1f,
-    basis: Dp? = null,
-    content: DslScope.() -> Component
+    grow: Float = 0f, shrink: Float = 1f, basis: Dp? = null, content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -173,10 +144,5 @@ inline fun DslScope.Flex(
     }
 
 @Deprecated(message = "Use Style.alighSelf instead")
-inline fun DslScope.Alignment(
-    align: YogaAlign,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.alignSelf(align)
-    }
+inline fun DslScope.Alignment(align: YogaAlign, content: DslScope.() -> Component): Component =
+    content().apply { getOrCreateCommonProps.alignSelf(align) }

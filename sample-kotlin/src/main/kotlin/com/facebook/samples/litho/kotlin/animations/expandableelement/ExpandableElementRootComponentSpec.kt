@@ -60,51 +60,46 @@ object ExpandableElementRootComponentSpec {
 
   @OnCreateLayout
   internal fun onCreateLayout(
-      c: ComponentContext,
-      @State messages: List<Message>,
-      @State counter: Int
-  ): Component = Column.create(c)
-      .child(
-          Row.create(c)
-              .backgroundColor(Color.LTGRAY)
-              .child(
-                  Text.create(c)
-                      .paddingDip(YogaEdge.ALL, 10f)
-                      .text("INSERT")
-                      .textSizeSp(20f)
-                      .flexGrow(1f)
-                      .alignSelf(YogaAlign.CENTER)
-                      .testKey("INSERT")
-                      .alignment(TextAlignment.CENTER)
-                      .clickHandler(ExpandableElementRootComponent.onClick(c, true)))
-              .child(
-                  Text.create(c)
-                      .paddingDip(YogaEdge.ALL, 10f)
-                      .text("DELETE")
-                      .textSizeSp(20f)
-                      .flexGrow(1f)
-                      .alignSelf(YogaAlign.CENTER)
-                      .alignment(TextAlignment.CENTER)
-                      .clickHandler(ExpandableElementRootComponent.onClick(c, false))))
-      .child(
-          RecyclerCollectionComponent.create(c)
-              .flexGrow(1f)
-              .disablePTR(true)
-              .itemAnimator(NotAnimatedItemAnimator())
-              .section(
-                  DataDiffSection.create<Message>(SectionContext(c))
-                      .data(messages)
-                      .renderEventHandler(ExpandableElementRootComponent.onRender(c))
-                      .build())
-              .paddingDip(YogaEdge.TOP, 8f))
-      .build()
+      c: ComponentContext, @State messages: List<Message>, @State counter: Int
+  ): Component =
+      Column.create(c)
+          .child(
+              Row.create(c)
+                  .backgroundColor(Color.LTGRAY)
+                  .child(
+                      Text.create(c)
+                          .paddingDip(YogaEdge.ALL, 10f)
+                          .text("INSERT")
+                          .textSizeSp(20f)
+                          .flexGrow(1f)
+                          .alignSelf(YogaAlign.CENTER)
+                          .testKey("INSERT")
+                          .alignment(TextAlignment.CENTER)
+                          .clickHandler(ExpandableElementRootComponent.onClick(c, true)))
+                  .child(
+                      Text.create(c)
+                          .paddingDip(YogaEdge.ALL, 10f)
+                          .text("DELETE")
+                          .textSizeSp(20f)
+                          .flexGrow(1f)
+                          .alignSelf(YogaAlign.CENTER)
+                          .alignment(TextAlignment.CENTER)
+                          .clickHandler(ExpandableElementRootComponent.onClick(c, false))))
+          .child(
+              RecyclerCollectionComponent.create(c)
+                  .flexGrow(1f)
+                  .disablePTR(true)
+                  .itemAnimator(NotAnimatedItemAnimator())
+                  .section(
+                      DataDiffSection.create<Message>(SectionContext(c))
+                          .data(messages)
+                          .renderEventHandler(ExpandableElementRootComponent.onRender(c))
+                          .build())
+                  .paddingDip(YogaEdge.TOP, 8f))
+          .build()
 
   @OnEvent(ClickEvent::class)
-  fun onClick(
-      c: ComponentContext,
-      @Prop initialMessages: List<Message>,
-      @Param adding: Boolean
-  ) {
+  fun onClick(c: ComponentContext, @Prop initialMessages: List<Message>, @Param adding: Boolean) {
     ExpandableElementRootComponent.onUpdateList(c, adding, initialMessages.size)
   }
 
@@ -119,10 +114,7 @@ object ExpandableElementRootComponentSpec {
 
     val counterValue = counter.get()
     if (adding) {
-      updatedMessageList.add(
-          1,
-          Message(true, "Just Added #$counterValue",
-              true, "Recently", true))
+      updatedMessageList.add(1, Message(true, "Just Added #$counterValue", true, "Recently", true))
       counter.set(counterValue!! + 1)
     } else if (initialMessagesSize < updatedMessageList.size) {
       updatedMessageList.removeAt(1)

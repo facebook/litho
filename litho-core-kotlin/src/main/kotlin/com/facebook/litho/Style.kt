@@ -35,16 +35,12 @@ open class Style(
     val minHeightPercent: Float? = null,
     val maxWidthPercent: Float? = null,
     val maxHeightPercent: Float? = null,
-
     val alignSelf: YogaAlign? = null,
-
     val flex: Float? = null,
     val flexGrow: Float? = null,
     val flexShrink: Float? = null,
     val flexBasis: Dp? = null,
-
     val aspectRatio: Float? = null,
-
     val paddingStart: Dp? = null,
     val paddingTop: Dp? = null,
     val paddingEnd: Dp? = null,
@@ -52,7 +48,6 @@ open class Style(
     val paddingHorizontal: Dp? = null,
     val paddingVertical: Dp? = null,
     val paddingAll: Dp? = null,
-
     val marginStart: Dp? = null,
     val marginTop: Dp? = null,
     val marginEnd: Dp? = null,
@@ -60,13 +55,11 @@ open class Style(
     val marginHorizontal: Dp? = null,
     val marginVertical: Dp? = null,
     val marginAll: Dp? = null,
-
     val positionStart: Dp? = null,
     val positionTop: Dp? = null,
     val positionEnd: Dp? = null,
     val positionBottom: Dp? = null,
     val positionType: YogaPositionType? = null,
-
     val background: Drawable? = null,
     val foreground: Drawable? = null
 ) {
@@ -85,16 +78,12 @@ open class Style(
         minHeightPercent = other.minHeightPercent ?: minHeightPercent,
         maxWidthPercent = other.maxWidthPercent ?: maxWidthPercent,
         maxHeightPercent = other.maxHeightPercent ?: maxHeightPercent,
-
         alignSelf = other.alignSelf ?: alignSelf,
-
         flex = other.flex ?: flex,
         flexGrow = other.flexGrow ?: flexGrow,
         flexShrink = other.flexShrink ?: flexShrink,
         flexBasis = other.flexBasis ?: flexBasis,
-
         aspectRatio = other.aspectRatio ?: aspectRatio,
-
         paddingStart = paddingStart plusSafe other.paddingStart,
         paddingTop = paddingTop plusSafe other.paddingTop,
         paddingEnd = paddingEnd plusSafe other.paddingEnd,
@@ -102,7 +91,6 @@ open class Style(
         paddingHorizontal = paddingHorizontal plusSafe other.paddingHorizontal,
         paddingVertical = paddingVertical plusSafe other.paddingVertical,
         paddingAll = paddingAll plusSafe other.paddingAll,
-
         marginStart = marginStart plusSafe other.marginStart,
         marginTop = marginTop plusSafe other.marginTop,
         marginEnd = marginEnd plusSafe other.marginEnd,
@@ -110,16 +98,13 @@ open class Style(
         marginHorizontal = marginHorizontal plusSafe other.marginHorizontal,
         marginVertical = marginVertical plusSafe other.marginVertical,
         marginAll = marginAll plusSafe other.marginAll,
-
         positionStart = other.positionStart ?: positionStart,
         positionTop = other.positionTop ?: positionTop,
         positionEnd = other.positionEnd ?: positionEnd,
         positionBottom = other.positionBottom ?: positionBottom,
         positionType = other.positionType ?: positionType,
-
         background = other.background ?: background,
-        foreground = other.foreground ?: foreground
-    )
+        foreground = other.foreground ?: foreground)
   }
 
   companion object : Style()
@@ -180,9 +165,11 @@ internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
 }
 
 fun size(size: Dp) = Style(width = size, height = size)
+
 fun Style.size(size: Dp) = this + com.facebook.litho.size(size)
 
 fun size(width: Dp? = null, height: Dp? = null) = Style(width, height)
+
 fun Style.size(width: Dp? = null, height: Dp? = null) =
     this + com.facebook.litho.size(width, height)
 
@@ -205,9 +192,11 @@ fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
     this + com.facebook.litho.flex(grow, shrink, basis)
 
 fun aspectRatio(aspectRatio: Float) = Style(aspectRatio = aspectRatio)
+
 fun Style.aspectRatio(aspectRatio: Float) = this + com.facebook.litho.aspectRatio(aspectRatio)
 
 fun padding(all: Dp) = Style(paddingAll = all)
+
 fun Style.padding(all: Dp) = this + com.facebook.litho.padding(all)
 
 fun padding(horizontal: Dp? = null, vertical: Dp? = null) =
@@ -227,6 +216,7 @@ fun Style.padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: D
     this + com.facebook.litho.padding(start, top, end, bottom)
 
 fun margin(all: Dp) = Style(marginAll = all)
+
 fun Style.margin(all: Dp) = this + com.facebook.litho.margin(all)
 
 fun margin(horizontal: Dp? = null, vertical: Dp? = null) =
@@ -264,11 +254,14 @@ fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom
         positionBottom = bottom,
         positionType = YogaPositionType.RELATIVE)
 
-fun Style.positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.positionRelative(start, top, end, bottom)
+fun Style.positionRelative(
+    start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null
+) = this + com.facebook.litho.positionRelative(start, top, end, bottom)
 
 fun background(background: Drawable) = Style(background = background)
+
 fun Style.background(background: Drawable) = this + com.facebook.litho.background(background)
 
 fun foreground(foreground: Drawable) = Style(foreground = foreground)
+
 fun Style.foreground(foreground: Drawable) = this + com.facebook.litho.foreground(foreground)

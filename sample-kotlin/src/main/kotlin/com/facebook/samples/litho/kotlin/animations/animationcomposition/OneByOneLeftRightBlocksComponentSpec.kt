@@ -39,11 +39,8 @@ object OneByOneLeftRightBlocksComponentSpec {
   private const val TRANSITION_KEY_RED = "red"
   private const val TRANSITION_KEY_BLUE = "blue"
   private const val TRANSITION_KEY_GREEN = "green"
-  private val ALL_TRANSITION_KEYS = arrayOf(
-      TRANSITION_KEY_RED,
-      TRANSITION_KEY_BLUE,
-      TRANSITION_KEY_GREEN
-  )
+  private val ALL_TRANSITION_KEYS =
+      arrayOf(TRANSITION_KEY_RED, TRANSITION_KEY_BLUE, TRANSITION_KEY_GREEN)
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @State state: Int): Component {

@@ -91,7 +91,8 @@ object DemoListComponentSpec {
 
   /**
    * Called during DataDiffSection's diffing to determine if two objects contain the same data. This
-   * is used to detect of contents of an item have changed. See [ ][androidx.recyclerview.widget.DiffUtil.Callback.areContentsTheSame] for more info.
+   * is used to detect of contents of an item have changed. See [ ]
+   * [androidx.recyclerview.widget.DiffUtil.Callback.areContentsTheSame] for more info.
    *
    * @return true if the two objects contain the same data.
    */
@@ -101,7 +102,7 @@ object DemoListComponentSpec {
       @FromEvent previousItem: DemoListDataModel?,
       @FromEvent nextItem: DemoListDataModel?
   ): Boolean =
-  // We're only displaying the name so checking if that's equal here is enough for our use case.
+      // We're only displaying the name so checking if that's equal here is enough for our use case.
       if (previousItem == null) {
         nextItem == null
       } else {

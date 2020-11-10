@@ -32,16 +32,17 @@ class MainActivity : AppCompatActivity() {
     val lifecycleEvents = mutableListOf<LifecycleEvent>()
 
     val timelineView = findViewById<LithoView>(R.id.timeline)
-    val lifecycleListener = object : LifecycleListener {
-      override fun onLifecycleMethodCalled(type: LifecycleEventType, endTime: Long) {
-        lifecycleEvents.add(LifecycleEvent(type, endTime))
+    val lifecycleListener =
+        object : LifecycleListener {
+          override fun onLifecycleMethodCalled(type: LifecycleEventType, endTime: Long) {
+            lifecycleEvents.add(LifecycleEvent(type, endTime))
 
-        timelineView.setComponentAsync(
-            TimelineRootComponent.create(componentContext)
-                .lifecycleEvents(lifecycleEvents.toList())
-                .build())
-      }
-    }
+            timelineView.setComponentAsync(
+                TimelineRootComponent.create(componentContext)
+                    .lifecycleEvents(lifecycleEvents.toList())
+                    .build())
+          }
+        }
 
     val sectionView = findViewById<LithoView>(R.id.section)
     sectionView.setComponent(

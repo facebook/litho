@@ -30,12 +30,12 @@ import com.facebook.litho.updateState
 import com.facebook.litho.useState
 import com.facebook.litho.value
 
-class FavouriteButton : KComponent({
+class FavouriteButton :
+    KComponent({
+      val isFavourite by useState { false }
+      val star = drawableRes(if (isFavourite.value) star_on else star_off)
 
-  val isFavourite by useState { false }
-  val star = drawableRes(if (isFavourite.value) star_on else star_off)
-
-  Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
-    Row(style = Style.size(32.dp).background(star))
-  }
-})
+      Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
+        Row(style = Style.size(32.dp).background(star))
+      }
+    })

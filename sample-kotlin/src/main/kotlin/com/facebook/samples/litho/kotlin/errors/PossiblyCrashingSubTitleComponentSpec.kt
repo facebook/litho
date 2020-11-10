@@ -28,7 +28,11 @@ import com.facebook.litho.widget.Text
 object PossiblyCrashingSubTitleComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop(resType = STRING) subtitle: String): Component {
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop(resType = STRING)
+      subtitle: String
+  ): Component {
     if (Math.random() >= 0.7) {
       throw RuntimeException("Oh no, a random error!")
     }

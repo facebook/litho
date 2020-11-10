@@ -27,16 +27,18 @@ class ErrorHandlingActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
     setContentView(
         LithoView.create(
-            this,
-            ErrorRootComponent.create(ComponentContext(this))
-                .dataModels(DATA)
-                .build()))
+            this, ErrorRootComponent.create(ComponentContext(this)).dataModels(DATA).build()))
   }
 
   companion object {
-    private val DATA = listOf(ListRow("First Title", "First Subtitle"),
-        ListRow("Second Title", "Second Subtitle"), ListRow("Third Title", "Third Subtitle"),
-        ListRow("Fourth Title", "Fourth Subtitle"), ListRow("Fifth Title", "Fifth Subtitle"),
-        ListRow("Sixth Title", "Sixth Subtitle"), ListRow("Seventh Title", "Seventh Subtitle"))
+    private val DATA =
+        listOf(
+            ListRow("First Title", "First Subtitle"),
+            ListRow("Second Title", "Second Subtitle"),
+            ListRow("Third Title", "Third Subtitle"),
+            ListRow("Fourth Title", "Fourth Subtitle"),
+            ListRow("Fifth Title", "Fifth Subtitle"),
+            ListRow("Sixth Title", "Sixth Subtitle"),
+            ListRow("Seventh Title", "Seventh Subtitle"))
   }
 }

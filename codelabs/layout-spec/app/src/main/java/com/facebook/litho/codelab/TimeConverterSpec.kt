@@ -50,44 +50,24 @@ object TimeConverterSpec {
         .child(
             Column.create(c)
                 .child(
-                    Clock.create(c)
-                        .timeMillis(londonTime)
-                        .radius(210)
-                        .marginDip(YogaEdge.ALL, 24f)
-                )
+                    Clock.create(c).timeMillis(londonTime).radius(210).marginDip(YogaEdge.ALL, 24f))
                 .child(
                     Clock.create(c)
                         .timeMillis(newYorkTime)
                         .radius(210)
-                        .marginDip(YogaEdge.ALL, 24f)
-                )
+                        .marginDip(YogaEdge.ALL, 24f))
                 .child(
                     Clock.create(c)
                         .timeMillis(sanFranciscoTime)
                         .radius(210)
-                        .marginDip(YogaEdge.ALL, 24f)
-                )
-                .justifyContent(YogaJustify.SPACE_AROUND)
-        )
+                        .marginDip(YogaEdge.ALL, 24f))
+                .justifyContent(YogaJustify.SPACE_AROUND))
         .child(
             Column.create(c)
-                .child(
-                    Text.create(c)
-                        .text("London")
-                        .textSizeDip(24f)
-                )
-                .child(
-                    Text.create(c)
-                        .text("New York")
-                        .textSizeDip(24f)
-                )
-                .child(
-                    Text.create(c)
-                        .text("San Francisco")
-                        .textSizeDip(24f)
-                )
-                .justifyContent(YogaJustify.SPACE_AROUND)
-        )
+                .child(Text.create(c).text("London").textSizeDip(24f))
+                .child(Text.create(c).text("New York").textSizeDip(24f))
+                .child(Text.create(c).text("San Francisco").textSizeDip(24f))
+                .justifyContent(YogaJustify.SPACE_AROUND))
         .build()
   }
 

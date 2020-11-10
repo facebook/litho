@@ -27,11 +27,6 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     val componentContext = ComponentContext(this)
-    setContentView(
-      LithoView.create(
-        this,
-        RootComponent.create(componentContext).build()
-      )
-    )
+    setContentView(LithoView.create(this, RootComponent.create(componentContext).build()))
   }
 }

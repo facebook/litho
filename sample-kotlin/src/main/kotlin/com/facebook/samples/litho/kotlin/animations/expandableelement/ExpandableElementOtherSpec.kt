@@ -47,7 +47,8 @@ object ExpandableElementOtherSpec {
       c: ComponentContext,
       @Prop messageText: String,
       @Prop timestamp: String,
-      @Prop(optional = true) seen: Boolean,
+      @Prop(optional = true)
+      seen: Boolean,
       @State expanded: Boolean?
   ): Component {
     val isExpanded = expanded ?: false
@@ -83,11 +84,13 @@ object ExpandableElementOtherSpec {
 
     return Transition.parallel<BaseTransitionUnitsBuilder>(
         Transition.allLayout(),
-        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_TOP_DETAIL)
+        Transition.create(
+                Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_TOP_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0f)
             .disappearTo(0f),
-        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
+        Transition.create(
+                Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0f)
             .disappearTo(0f))
@@ -102,10 +105,8 @@ object ExpandableElementOtherSpec {
           .flexShrink(0f)
           .background(getCircle(c))
 
-  private fun getCircle(c: ComponentContext): ShapeDrawable = ShapeDrawable(OvalShape())
-      .also {
-        it.paint.color = Color.LTGRAY
-      }
+  private fun getCircle(c: ComponentContext): ShapeDrawable =
+      ShapeDrawable(OvalShape()).also { it.paint.color = Color.LTGRAY }
 
   private fun createMessageContent(c: ComponentContext, messageText: String): Component.Builder<*> =
       Row.create(c)

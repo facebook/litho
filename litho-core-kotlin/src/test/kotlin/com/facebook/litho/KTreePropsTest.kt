@@ -45,16 +45,17 @@ class KTreePropsTest {
     val treeProp2Ref = TreePropHolder()
     val rect = Rect()
 
-    val parent = KComponent {
-      createTreeProp { 32 }
-      createTreeProp { rect }
+    val parent =
+        KComponent {
+          createTreeProp { 32 }
+          createTreeProp { rect }
 
-      KComponent { // child
-        treeProp1Ref.prop = useTreeProp<Int>()
-        treeProp2Ref.prop = useTreeProp<Rect>()
-        null
-      }
-    }
+          KComponent { // child
+            treeProp1Ref.prop = useTreeProp<Int>()
+            treeProp2Ref.prop = useTreeProp<Rect>()
+            null
+          }
+        }
     ComponentTestHelper.mountComponent(context, parent)
 
     assertThat(treeProp1Ref.prop).isEqualTo(32)
@@ -65,18 +66,19 @@ class KTreePropsTest {
   fun treePropValueIsOverriddenByIntermediate() {
     val treePropRef = TreePropHolder()
 
-    val parent = KComponent {
-      createTreeProp { 18 }
+    val parent =
+        KComponent {
+          createTreeProp { 18 }
 
-      KComponent { // intermediate
-        createTreeProp { 24 } // override TreeProp!
+          KComponent { // intermediate
+            createTreeProp { 24 } // override TreeProp!
 
-        KComponent { // child
-          treePropRef.prop = useTreeProp<Int>()
-          null
+            KComponent { // child
+              treePropRef.prop = useTreeProp<Int>()
+              null
+            }
+          }
         }
-      }
-    }
     ComponentTestHelper.mountComponent(context, parent)
 
     assertThat(treePropRef.prop).isEqualTo(24)
@@ -88,24 +90,25 @@ class KTreePropsTest {
     val child1IntPropRef = TreePropHolder()
     val child2IntPropRef = TreePropHolder()
 
-    val parent = KComponent {
-      createTreeProp { "kavabanga" }
+    val parent =
+        KComponent {
+          createTreeProp { "kavabanga" }
 
-      Row {
-        +KComponent { // child 1
-          createTreeProp { 42 }
+          Row {
+            +KComponent { // child 1
+              createTreeProp { 42 }
 
-          child1StringPropRef.prop = useTreeProp<String>()
-          child1IntPropRef.prop = useTreeProp<Int>()
-          null
+              child1StringPropRef.prop = useTreeProp<String>()
+              child1IntPropRef.prop = useTreeProp<Int>()
+              null
+            }
+
+            +KComponent { // child 2
+              child2IntPropRef.prop = useTreeProp<Int>()
+              null
+            }
+          }
         }
-
-        +KComponent { // child 2
-          child2IntPropRef.prop = useTreeProp<Int>()
-          null
-        }
-      }
-    }
     ComponentTestHelper.mountComponent(context, parent)
 
     assertThat(child1StringPropRef.prop).isEqualTo("kavabanga")

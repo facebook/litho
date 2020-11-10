@@ -21,19 +21,13 @@ import androidx.annotation.ColorInt
 import com.facebook.litho.DslScope
 import com.facebook.litho.Style
 
-/**
- * Builder function for creating [ProgressSpec] components.
- */
+/** Builder function for creating [ProgressSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Progress(
-    @ColorInt color: Int,
-    style: Style? = null,
-    indeterminateDrawable: Drawable? = null
+    @ColorInt color: Int, style: Style? = null, indeterminateDrawable: Drawable? = null
 ): Progress =
     Progress.create(context)
         .color(color)
         .indeterminateDrawable(indeterminateDrawable)
         .build()
-        .apply {
-          applyStyle(style)
-        }
+        .apply { applyStyle(style) }

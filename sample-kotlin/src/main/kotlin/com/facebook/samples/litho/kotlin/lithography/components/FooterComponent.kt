@@ -24,8 +24,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.padding
 import com.facebook.litho.widget.Text
 
-class FooterComponent(text: String) : KComponent({
-  Column(style = padding(8.dp)) {
-    +Text(text = text, textColor = GRAY, textStyle = ITALIC)
-  }
-})
+class FooterComponent(text: String) :
+    KComponent({
+      Column(style = padding(8.dp)) { +Text(text = text, textColor = GRAY, textStyle = ITALIC) }
+    })

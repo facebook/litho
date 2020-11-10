@@ -37,14 +37,13 @@ class MainActivity : AppCompatActivity() {
     val componentContext = ComponentContext(this)
 
     /**
-     * When creating the ComponentTree, pass it the StateHandler that you saved before
-     * the app configuration changed. This will restore the state value.
+     * When creating the ComponentTree, pass it the StateHandler that you saved before the app
+     * configuration changed. This will restore the state value.
      */
-    mComponentTree = ComponentTree.create(
-        componentContext,
-        RootComponent.create(componentContext).build())
-          .stateHandler(mStateHandlerViewModel.getStateHandler())
-          .build()
+    mComponentTree =
+        ComponentTree.create(componentContext, RootComponent.create(componentContext).build())
+            .stateHandler(mStateHandlerViewModel.getStateHandler())
+            .build()
 
     val lithoView = LithoView(componentContext)
     lithoView.setComponentTree(mComponentTree)
@@ -58,8 +57,8 @@ class MainActivity : AppCompatActivity() {
     val mStateHandlerViewModel = ViewModelProviders.of(this).get(StateHandlerViewModel::class.java)
 
     /**
-     * Before destroying the activity, save the StateHandler so we can restore the state value
-     * after the configuration change.
+     * Before destroying the activity, save the StateHandler so we can restore the state value after
+     * the configuration change.
      */
     mStateHandlerViewModel.updateStateHandler(mComponentTree)
   }

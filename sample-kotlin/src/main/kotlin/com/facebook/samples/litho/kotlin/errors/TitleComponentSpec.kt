@@ -30,7 +30,11 @@ import com.facebook.yoga.YogaEdge
 object TitleComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop(resType = STRING) title: String): Component =
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop(resType = STRING)
+      title: String
+  ): Component =
       Text.create(c)
           .text(title)
           .textStyle(BOLD)

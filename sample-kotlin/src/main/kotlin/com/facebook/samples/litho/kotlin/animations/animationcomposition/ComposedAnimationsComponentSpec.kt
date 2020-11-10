@@ -49,22 +49,21 @@ object ComposedAnimationsComponentSpec {
   fun onRender(c: ComponentContext, @FromEvent index: Int): RenderInfo {
     val numDemos = 5
     // Keep alternating between demos
-    val component: Component = when (index % numDemos) {
-      0 -> StoryFooterComponent.create(c).key("footer").build()
-      1 -> UpDownBlocksComponent.create(c).build()
-      2 -> LeftRightBlocksComponent.create(c).build()
-      3 -> OneByOneLeftRightBlocksComponent.create(c).build()
-      4 -> LeftRightBlocksSequenceComponent.create(c).build()
-      else -> throw RuntimeException("Bad index: $index")
-    }
+    val component: Component =
+        when (index % numDemos) {
+          0 -> StoryFooterComponent.create(c).key("footer").build()
+          1 -> UpDownBlocksComponent.create(c).build()
+          2 -> LeftRightBlocksComponent.create(c).build()
+          3 -> OneByOneLeftRightBlocksComponent.create(c).build()
+          4 -> LeftRightBlocksSequenceComponent.create(c).build()
+          else -> throw RuntimeException("Bad index: $index")
+        }
     return ComponentRenderInfo.create().component(component).build()
   }
 
   @OnEvent(OnCheckIsSameItemEvent::class)
   fun isSameItem(
-      c: ComponentContext,
-      @FromEvent previousItem: Data,
-      @FromEvent nextItem: Data
+      c: ComponentContext, @FromEvent previousItem: Data, @FromEvent nextItem: Data
   ): Boolean = previousItem.number == nextItem.number
 
   private fun generateData(number: Int): List<Data> {

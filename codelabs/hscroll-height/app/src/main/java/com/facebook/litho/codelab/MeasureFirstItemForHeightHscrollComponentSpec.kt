@@ -34,9 +34,8 @@ import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SolidColor
 
 /**
- * Renders a horizontal list who gets its height by measuring the first item in the list.
- * This option is enabled by enabling the `canMeasureRecycler` prop on the
- * RecyclerCollectionComponent.
+ * Renders a horizontal list who gets its height by measuring the first item in the list. This
+ * option is enabled by enabling the `canMeasureRecycler` prop on the RecyclerCollectionComponent.
  */
 @LayoutSpec
 object MeasureFirstItemForHeightHscrollComponentSpec {
@@ -46,9 +45,7 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
 
     return RecyclerCollectionComponent.create(c)
         .recyclerConfiguration(
-            ListRecyclerConfiguration.create()
-                .orientation(OrientationHelper.HORIZONTAL)
-                .build())
+            ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build())
         .section(
             DataDiffSection.create<Int>(SectionContext(c))
                 .data(colors)

@@ -33,46 +33,42 @@ object ExpandableElementUtil {
   const val TRANSITION_BOTTOM_DETAIL = "transition_bottom_detail"
 
   fun getMessageBackground(c: ComponentContext, color: Int): ShapeDrawable {
-    val roundedRectShape = RoundRectShape(
-        floatArrayOf(40f, 40f, 40f, 40f, 40f, 40f, 40f, 40f),
-        null,
-        floatArrayOf(40f, 40f, 40f, 40f, 40f, 40f, 40f, 40f))
-    return ShapeDrawable(roundedRectShape)
-        .also {
-          it.paint.color = color
-        }
+    val roundedRectShape =
+        RoundRectShape(
+            floatArrayOf(40f, 40f, 40f, 40f, 40f, 40f, 40f, 40f),
+            null,
+            floatArrayOf(40f, 40f, 40f, 40f, 40f, 40f, 40f, 40f))
+    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
   }
 
   fun maybeCreateBottomDetailComponent(
-      c: ComponentContext,
-      expanded: Boolean,
-      seen: Boolean
-  ): Component.Builder<*>? = if (!expanded) {
-    null
-  } else {
-    Text.create(c)
-        .textSizeDip(14f)
-        .textColor(Color.GRAY)
-        .alignSelf(YogaAlign.FLEX_END)
-        .paddingDip(YogaEdge.RIGHT, 10f)
-        .transitionKey(TRANSITION_BOTTOM_DETAIL)
-        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-        .text(if (seen) "Seen" else "Sent")
-  }
+      c: ComponentContext, expanded: Boolean, seen: Boolean
+  ): Component.Builder<*>? =
+      if (!expanded) {
+        null
+      } else {
+        Text.create(c)
+            .textSizeDip(14f)
+            .textColor(Color.GRAY)
+            .alignSelf(YogaAlign.FLEX_END)
+            .paddingDip(YogaEdge.RIGHT, 10f)
+            .transitionKey(TRANSITION_BOTTOM_DETAIL)
+            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
+            .text(if (seen) "Seen" else "Sent")
+      }
 
   fun maybeCreateTopDetailComponent(
-      c: ComponentContext,
-      expanded: Boolean,
-      timestamp: String
-  ): Component.Builder<*>? = if (!expanded) {
-    null
-  } else {
-    Text.create(c)
-        .textSizeDip(14f)
-        .textColor(Color.GRAY)
-        .alignSelf(YogaAlign.CENTER)
-        .transitionKey(TRANSITION_TOP_DETAIL)
-        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-        .text(timestamp)
-  }
+      c: ComponentContext, expanded: Boolean, timestamp: String
+  ): Component.Builder<*>? =
+      if (!expanded) {
+        null
+      } else {
+        Text.create(c)
+            .textSizeDip(14f)
+            .textColor(Color.GRAY)
+            .alignSelf(YogaAlign.CENTER)
+            .transitionKey(TRANSITION_TOP_DETAIL)
+            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
+            .text(timestamp)
+      }
 }

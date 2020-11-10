@@ -24,9 +24,7 @@ import com.facebook.litho.Sp
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sp
 
-/**
- * Builder function for creating [SpinnerSpec] components.
- */
+/** Builder function for creating [SpinnerSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Spinner(
     options: List<String>,

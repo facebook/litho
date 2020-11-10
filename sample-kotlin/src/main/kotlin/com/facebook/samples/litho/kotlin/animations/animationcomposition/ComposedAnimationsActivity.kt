@@ -27,7 +27,6 @@ class ComposedAnimationsActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     setContentView(
-        LithoView.create(
-            this, ComposedAnimationsComponent.create(ComponentContext(this)).build()))
+        LithoView.create(this, ComposedAnimationsComponent.create(ComponentContext(this)).build()))
   }
 }

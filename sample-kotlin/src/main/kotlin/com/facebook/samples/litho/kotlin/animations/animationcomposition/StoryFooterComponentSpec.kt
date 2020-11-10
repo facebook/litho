@@ -61,7 +61,7 @@ object StoryFooterComponentSpec {
                             .widthDip(24f)
                             .backgroundColor(Color.RED)
                             .transitionKey("icon_like"))
-                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
+                    .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                     .child(
                         Text.create(c)
                             .textSizeSp(16f)
@@ -78,8 +78,10 @@ object StoryFooterComponentSpec {
                     .justifyContent(YogaJustify.CENTER)
                     .child(Column.create(c).heightDip(24f).widthDip(24f).backgroundColor(Color.RED))
                     .child(
-                        Text.create(c).textSizeSp(16f).text("Comment").marginDip(YogaEdge.LEFT,
-                            8f)))
+                        Text.create(c)
+                            .textSizeSp(16f)
+                            .text("Comment")
+                            .marginDip(YogaEdge.LEFT, 8f)))
             .child(
                 Row.create(c)
                     .widthPercent(33.3f)
@@ -169,7 +171,8 @@ object StoryFooterComponentSpec {
                 .animate(AnimatedProperties.ALPHA)
                 .appearFrom(0f)
                 .disappearTo(0f),
-            Transition.create(Transition.TransitionKeyType.GLOBAL, "icon_like", "icon_share").animate(AnimatedProperties.X),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "icon_like", "icon_share")
+                .animate(AnimatedProperties.X),
             Transition.create(Transition.TransitionKeyType.GLOBAL, "text_like", "text_share")
                 .animate(AnimatedProperties.ALPHA)
                 .appearFrom(0f)

@@ -17,7 +17,6 @@
 package com.facebook.litho.codelab
 
 import androidx.recyclerview.widget.OrientationHelper
-
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.FromEvent
@@ -35,8 +34,8 @@ import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SolidColor
 
 /**
- * This component renders a horizontal list. The height of the list is fixed, and it's set
- * by passing a height prop to the RecyclerCollectionComponent.
+ * This component renders a horizontal list. The height of the list is fixed, and it's set by
+ * passing a height prop to the RecyclerCollectionComponent.
  */
 @Suppress("MagicNumber")
 @LayoutSpec
@@ -46,9 +45,7 @@ object FixedHeightHscrollComponentSpec {
   fun onCreateLayout(c: ComponentContext, @Prop colors: List<Int>): Component {
     return RecyclerCollectionComponent.create(c)
         .recyclerConfiguration(
-            ListRecyclerConfiguration.create()
-                .orientation(OrientationHelper.HORIZONTAL)
-                .build())
+            ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build())
         .section(
             DataDiffSection.create<Int>(SectionContext(c))
                 .data(colors)

@@ -19,10 +19,9 @@ package com.facebook.samples.litho.kotlin.logging
 import com.facebook.litho.PerfEvent
 
 /**
- * The Litho logging system is designed to be stateless and have batches of data
- * sent to the server for processing, to avoid overhead on the device. This
- * sample implementation is to illustrate the data you can work with, not on
- * how to actually implement logging on the client.
+ * The Litho logging system is designed to be stateless and have batches of data sent to the server
+ * for processing, to avoid overhead on the device. This sample implementation is to illustrate the
+ * data you can work with, not on how to actually implement logging on the client.
  */
 object PerfEventStore {
   private val events: MutableMap<PerfEvent, EventData> = hashMapOf()

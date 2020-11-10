@@ -24,14 +24,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.ColorInt
 import com.facebook.litho.DslScope
-import com.facebook.litho.Style
 import com.facebook.litho.Sp
+import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sp
 
-/**
- * Builder function for creating [TextInputSpec] components.
- */
+/** Builder function for creating [TextInputSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.TextInput(
     initialText: CharSequence,
@@ -72,6 +70,4 @@ inline fun DslScope.TextInput(
           onSelectionChanged?.let { selectionChangedEventHandler(eventHandler(it)) }
         }
         .build()
-        .apply {
-          applyStyle(style)
-        }
+        .apply { applyStyle(style) }

@@ -36,16 +36,13 @@ object RootComponentSpec {
         .child(Text.create(c).text("H-Scroll with fixed height").textSizeDip(15f))
         .child(FixedHeightHscrollComponent.create(c).backgroundColor(Color.GRAY).colors(colors))
         .child(
-            Text.create(c)
-                .text("H-Scroll height based on height of first item")
-                .textSizeDip(15f))
+            Text.create(c).text("H-Scroll height based on height of first item").textSizeDip(15f))
         .child(
-            MeasureFirstItemForHeightHscrollComponent.create(c).backgroundColor(Color.GRAY).colors(
-                colors))
+            MeasureFirstItemForHeightHscrollComponent.create(c)
+                .backgroundColor(Color.GRAY)
+                .colors(colors))
         .child(
-            Text.create(c)
-                .text("H-Scroll takes the height of the tallest item")
-                .textSizeDip(15f))
+            Text.create(c).text("H-Scroll takes the height of the tallest item").textSizeDip(15f))
         .child(DynamicHeightHscrollComponent.create(c).backgroundColor(Color.GRAY).colors(colors))
         .build()
   }

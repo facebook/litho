@@ -24,17 +24,13 @@ import com.facebook.litho.LithoView
 
 class MainActivity : AppCompatActivity() {
 
-  val colors =
-      listOf(
-          Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED, Color.MAGENTA)
+  val colors = listOf(Color.BLACK, Color.BLUE, Color.GREEN, Color.YELLOW, Color.RED, Color.MAGENTA)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     val componentContext = ComponentContext(this)
     setContentView(
-        LithoView.create(
-            this,
-            RootComponent.create(componentContext).colors(colors).build()))
+        LithoView.create(this, RootComponent.create(componentContext).colors(colors).build()))
   }
 }

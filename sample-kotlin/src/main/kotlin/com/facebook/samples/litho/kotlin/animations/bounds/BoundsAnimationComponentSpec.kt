@@ -65,27 +65,37 @@ object BoundsAnimationComponentSpec {
       @State flag2: Boolean,
       @State flag3: Boolean,
       @State flag4: Boolean
-  ): Component = Column.create(c)
-      .backgroundColor(Color.WHITE)
-      .alignItems(YogaAlign.CENTER)
-      .paddingDip(YogaEdge.VERTICAL, 8f)
-      .child(
-          Text.create(c)
-              .text("ABT " + if (autoBoundsTransitionEnabled) "enabled" else "disabled")
-              .textSizeSp(20f)
-              .textStyle(Typeface.BOLD)
-              .clickHandler(BoundsAnimationComponent.onABTClick(c)))
-      .child(
-          Text.create(c).marginDip(YogaEdge.VERTICAL, 8f).text("Affected Children").textSizeSp(20f))
-      .child(affectedChildren(c, flag1))
-      .child(
-          Text.create(c).marginDip(YogaEdge.VERTICAL, 8f).text("Affected Siblings").textSizeSp(20f))
-      .child(affectedSiblings(c, flag2))
-      .child(
-          Text.create(c).marginDip(YogaEdge.VERTICAL, 8f).text("Affected Parent").textSizeSp(20f))
-      .child(affectedParent(c, flag3))
-      .child(altogether(c, flag4))
-      .build()
+  ): Component =
+      Column.create(c)
+          .backgroundColor(Color.WHITE)
+          .alignItems(YogaAlign.CENTER)
+          .paddingDip(YogaEdge.VERTICAL, 8f)
+          .child(
+              Text.create(c)
+                  .text("ABT " + if (autoBoundsTransitionEnabled) "enabled" else "disabled")
+                  .textSizeSp(20f)
+                  .textStyle(Typeface.BOLD)
+                  .clickHandler(BoundsAnimationComponent.onABTClick(c)))
+          .child(
+              Text.create(c)
+                  .marginDip(YogaEdge.VERTICAL, 8f)
+                  .text("Affected Children")
+                  .textSizeSp(20f))
+          .child(affectedChildren(c, flag1))
+          .child(
+              Text.create(c)
+                  .marginDip(YogaEdge.VERTICAL, 8f)
+                  .text("Affected Siblings")
+                  .textSizeSp(20f))
+          .child(affectedSiblings(c, flag2))
+          .child(
+              Text.create(c)
+                  .marginDip(YogaEdge.VERTICAL, 8f)
+                  .text("Affected Parent")
+                  .textSizeSp(20f))
+          .child(affectedParent(c, flag3))
+          .child(altogether(c, flag4))
+          .build()
 
   @OnEvent(ClickEvent::class)
   fun onABTClick(c: ComponentContext) {
@@ -264,31 +274,32 @@ object BoundsAnimationComponentSpec {
 
   @OnCreateTransition
   fun animate(c: ComponentContext, @State autoBoundsTransitionEnabled: Boolean): Transition {
-    val transitionKeys = if (autoBoundsTransitionEnabled) {
-      arrayOf(
-          TRANSITION_KEY_CONTAINER_1,
-          TRANSITION_KEY_CHILD_1_1,
-          TRANSITION_KEY_CHILD_1_2,
-          TRANSITION_KEY_CHILD_1_3,
-          TRANSITION_KEY_CONTAINER_2,
-          TRANSITION_KEY_CHILD_2_1,
-          TRANSITION_KEY_CHILD_2_2,
-          TRANSITION_KEY_CONTAINER_3,
-          TRANSITION_KEY_CHILD_3_1,
-          TRANSITION_KEY_CONTAINER_4,
-          TRANSITION_KEY_CONTAINER_4_1,
-          TRANSITION_KEY_CONTAINER_4_2,
-          TRANSITION_KEY_CHILD_4_1_1,
-          TRANSITION_KEY_CHILD_4_1_2,
-          TRANSITION_KEY_CHILD_4_2_1,
-          TRANSITION_KEY_CHILD_4_2_2)
-    } else {
-      arrayOf(
-          TRANSITION_KEY_CONTAINER_1,
-          TRANSITION_KEY_CHILD_2_2,
-          TRANSITION_KEY_CHILD_3_1,
-          TRANSITION_KEY_CHILD_4_2_2)
-    }
+    val transitionKeys =
+        if (autoBoundsTransitionEnabled) {
+          arrayOf(
+              TRANSITION_KEY_CONTAINER_1,
+              TRANSITION_KEY_CHILD_1_1,
+              TRANSITION_KEY_CHILD_1_2,
+              TRANSITION_KEY_CHILD_1_3,
+              TRANSITION_KEY_CONTAINER_2,
+              TRANSITION_KEY_CHILD_2_1,
+              TRANSITION_KEY_CHILD_2_2,
+              TRANSITION_KEY_CONTAINER_3,
+              TRANSITION_KEY_CHILD_3_1,
+              TRANSITION_KEY_CONTAINER_4,
+              TRANSITION_KEY_CONTAINER_4_1,
+              TRANSITION_KEY_CONTAINER_4_2,
+              TRANSITION_KEY_CHILD_4_1_1,
+              TRANSITION_KEY_CHILD_4_1_2,
+              TRANSITION_KEY_CHILD_4_2_1,
+              TRANSITION_KEY_CHILD_4_2_2)
+        } else {
+          arrayOf(
+              TRANSITION_KEY_CONTAINER_1,
+              TRANSITION_KEY_CHILD_2_2,
+              TRANSITION_KEY_CHILD_3_1,
+              TRANSITION_KEY_CHILD_4_2_2)
+        }
 
     return Transition.create(Transition.TransitionKeyType.GLOBAL, *transitionKeys)
         .animate(AnimatedProperties.WIDTH, AnimatedProperties.X)

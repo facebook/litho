@@ -22,7 +22,9 @@ import com.facebook.litho.ComponentsReporter
 class SampleComponentsReporter : ComponentsReporter.Reporter {
   private val tag = "LITHOSAMPLE"
 
-  override fun emitMessage(level: ComponentsReporter.LogLevel, categoryKey: String, message: String) {
+  override fun emitMessage(
+      level: ComponentsReporter.LogLevel, categoryKey: String, message: String
+  ) {
     emitMessage(level, categoryKey, message, 0)
   }
 

@@ -20,10 +20,7 @@ import com.facebook.litho.annotations.Event
 
 @Event
 class BoxItemChangedEvent {
-  @JvmField
-  var newColor = 0
-  @JvmField
-  var newStatus = ""
-  @JvmField
-  var highlightedItemIndex = -1
+  @JvmField var newColor = 0
+  @JvmField var newStatus = ""
+  @JvmField var highlightedItemIndex = -1
 }

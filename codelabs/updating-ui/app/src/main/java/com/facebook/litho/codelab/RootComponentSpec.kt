@@ -16,19 +16,19 @@
 
 package com.facebook.litho.codelab
 
-import com.facebook.litho.annotations.Prop
-import com.facebook.litho.annotations.State
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Row
+import com.facebook.litho.StateValue
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.OnUpdateState
-import com.facebook.litho.StateValue
+import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 
@@ -42,7 +42,9 @@ object RootComponentSpec {
   }
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop labelText: String, @State toggleState: Boolean): Component {
+  fun onCreateLayout(
+      c: ComponentContext, @Prop labelText: String, @State toggleState: Boolean
+  ): Component {
     return Column.create(c)
         .child(Text.create(c).textSizeSp(20f).text(labelText))
         .child(

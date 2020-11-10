@@ -36,8 +36,7 @@ object TimelineRootComponentSpec {
 
   @OnCreateInitialState
   fun onCreateInitialState(
-      c: ComponentContext,
-      eventsController: StateValue<RecyclerCollectionEventsController>
+      c: ComponentContext, eventsController: StateValue<RecyclerCollectionEventsController>
   ) {
     eventsController.set(RecyclerCollectionEventsController())
   }

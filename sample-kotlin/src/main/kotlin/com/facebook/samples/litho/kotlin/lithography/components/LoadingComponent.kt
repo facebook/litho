@@ -24,8 +24,7 @@ import com.facebook.litho.size
 import com.facebook.litho.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 
-class LoadingComponent : KComponent({
-  Row(justifyContent = CENTER) {
-    +Progress(color = Color.DKGRAY, style = size(50.dp))
-  }
-})
+class LoadingComponent :
+    KComponent({
+      Row(justifyContent = CENTER) { +Progress(color = Color.DKGRAY, style = size(50.dp)) }
+    })

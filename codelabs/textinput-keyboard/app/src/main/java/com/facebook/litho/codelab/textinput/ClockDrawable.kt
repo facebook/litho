@@ -49,12 +49,7 @@ class ClockDrawable : Drawable() {
   }
 
   private fun drawHand(
-      canvas: Canvas,
-      degrees: Float,
-      length: Int,
-      paint: Paint,
-      centerX: Float,
-      centerY: Float
+      canvas: Canvas, degrees: Float, length: Int, paint: Paint, centerX: Float, centerY: Float
   ) {
     // Save and then rotate canvas
     canvas.run {
@@ -85,8 +80,20 @@ class ClockDrawable : Drawable() {
       translate(bounds.left.toFloat(), bounds.top.toFloat())
 
       drawCircle(radius.toFloat(), radius.toFloat(), radius.toFloat(), paintWide)
-      drawHand(this, longHandAngle.toFloat(), radius * 2 / 3, paintThin, radius.toFloat(), radius.toFloat())
-      drawHand(this, shortHandAngle.toFloat(), radius / 3, paintMedium, radius.toFloat(), radius.toFloat())
+      drawHand(
+          this,
+          longHandAngle.toFloat(),
+          radius * 2 / 3,
+          paintThin,
+          radius.toFloat(),
+          radius.toFloat())
+      drawHand(
+          this,
+          shortHandAngle.toFloat(),
+          radius / 3,
+          paintMedium,
+          radius.toFloat(),
+          radius.toFloat())
 
       restoreToCount(saveCount)
     }

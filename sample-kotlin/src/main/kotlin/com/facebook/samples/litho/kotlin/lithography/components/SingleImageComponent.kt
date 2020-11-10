@@ -20,12 +20,9 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.litho.KComponent
 import com.facebook.litho.fresco.FrescoImage
 
-class SingleImageComponent(
-    imageUri: String,
-    imageAspectRatio: Float = 1f
-) : KComponent({
-  FrescoImage(
-      controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
-      imageAspectRatio = imageAspectRatio
-  )
-})
+class SingleImageComponent(imageUri: String, imageAspectRatio: Float = 1f) :
+    KComponent({
+      FrescoImage(
+          controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
+          imageAspectRatio = imageAspectRatio)
+    })

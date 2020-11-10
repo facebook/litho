@@ -86,7 +86,9 @@ object LeftRightBlocksComponentSpec {
           Transition.create(Transition.TransitionKeyType.GLOBAL, "red")
               .animate(AnimatedProperties.X)
               .animator(Transition.timing(1000, AccelerateDecelerateInterpolator())),
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue").animate(AnimatedProperties.X).animator(Transition.timing(1000)),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue")
+              .animate(AnimatedProperties.X)
+              .animator(Transition.timing(1000)),
           Transition.create(Transition.TransitionKeyType.GLOBAL, "green")
               .animate(AnimatedProperties.X)
               .animator(Transition.timing(1000, BounceInterpolator())))

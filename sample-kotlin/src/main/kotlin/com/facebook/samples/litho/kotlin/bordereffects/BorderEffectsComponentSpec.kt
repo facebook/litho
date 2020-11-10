@@ -34,17 +34,18 @@ import java.lang.reflect.InvocationTargetException
 @LayoutSpec
 object BorderEffectsComponentSpec {
 
-  private val componentsToBuild = listOf(
-      AlternateColorBorder::class.java,
-      AlternateWidthBorder::class.java,
-      AlternateColorWidthBorder::class.java,
-      RtlColorWidthBorder::class.java,
-      DashPathEffectBorder::class.java,
-      VerticalDashPathEffectBorder::class.java,
-      AlternateColorPathEffectBorder::class.java,
-      AlternateColorCornerPathEffectBorder::class.java,
-      CompositePathEffectBorder::class.java,
-      VaryingRadiiBorder::class.java)
+  private val componentsToBuild =
+      listOf(
+          AlternateColorBorder::class.java,
+          AlternateWidthBorder::class.java,
+          AlternateColorWidthBorder::class.java,
+          RtlColorWidthBorder::class.java,
+          DashPathEffectBorder::class.java,
+          VerticalDashPathEffectBorder::class.java,
+          AlternateColorPathEffectBorder::class.java,
+          AlternateColorCornerPathEffectBorder::class.java,
+          CompositePathEffectBorder::class.java,
+          VaryingRadiiBorder::class.java)
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component =
@@ -59,24 +60,23 @@ object BorderEffectsComponentSpec {
 
   @OnEvent(RenderEvent::class)
   fun onRender(c: ComponentContext, @FromEvent model: Class<out Component>): RenderInfo {
-    val component = try {
-      val createMethod = model.getMethod("create", ComponentContext::class.java)
-      val componentBuilder = createMethod.invoke(null, c) as Component.Builder<*>
-      componentBuilder.build()
-    } catch (ex: Exception) {
-      val textComponent = Text.create(c).textSizeDip(32f).text(ex.localizedMessage).build()
+    val component =
+        try {
+          val createMethod = model.getMethod("create", ComponentContext::class.java)
+          val componentBuilder = createMethod.invoke(null, c) as Component.Builder<*>
+          componentBuilder.build()
+        } catch (ex: Exception) {
+          val textComponent = Text.create(c).textSizeDip(32f).text(ex.localizedMessage).build()
 
-      when (ex) {
-        is NoSuchMethodException,
-        is IllegalAccessException,
-        is IllegalArgumentException,
-        is InvocationTargetException -> textComponent
-        else -> textComponent
-      }
-    }
+          when (ex) {
+            is NoSuchMethodException,
+            is IllegalAccessException,
+            is IllegalArgumentException,
+            is InvocationTargetException -> textComponent
+            else -> textComponent
+          }
+        }
 
-    return ComponentRenderInfo.create()
-        .component(component)
-        .build()
+    return ComponentRenderInfo.create().component(component).build()
   }
 }

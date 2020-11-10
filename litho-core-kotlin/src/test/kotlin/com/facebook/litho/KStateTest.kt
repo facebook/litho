@@ -47,19 +47,16 @@ class KStateTest {
     lateinit var stateRef: AtomicReference<State<String>>
     lateinit var row: Row
 
-    val root = KComponent {
-      val state by useState { "hello" }
-      stateRef = AtomicReference(state)
+    val root =
+        KComponent {
+          val state by useState { "hello" }
+          stateRef = AtomicReference(state)
 
-      Clickable(onClick = {
-        updateState {
-          state.value = "world"
+          Clickable(onClick = { updateState { state.value = "world" } }) {
+            row = Row()
+            row
+          }
         }
-      }) {
-        row = Row()
-        row
-      }
-    }
     lithoViewRule.setRoot(root)
     lithoViewRule.attachToWindow().measure().layout()
 
@@ -69,9 +66,7 @@ class KStateTest {
     EventDispatcherUtils.dispatchOnClick(row.commonProps!!.clickHandler, lithoViewRule.lithoView)
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
-    assertThat(stateRef.get().value)
-        .describedAs("String state is updated")
-        .isEqualTo("world")
+    assertThat(stateRef.get().value).describedAs("String state is updated").isEqualTo("world")
   }
 
   @Test
@@ -91,23 +86,25 @@ class KStateTest {
     lateinit var state2Ref: AtomicReference<State<Int>>
     lateinit var row: Row
 
-    val root = KComponent {
-      val state1 = useCustomState("hello")
-      val state2 = useCustomState(20)
+    val root =
+        KComponent {
+          val state1 = useCustomState("hello")
+          val state2 = useCustomState(20)
 
-      state1Ref = AtomicReference(state1)
-      state2Ref = AtomicReference(state2)
+          state1Ref = AtomicReference(state1)
+          state2Ref = AtomicReference(state2)
 
-      Clickable(onClick = {
-        updateState {
-          state1.value = "world"
-          state2.value++
+          Clickable(
+              onClick = {
+                updateState {
+                  state1.value = "world"
+                  state2.value++
+                }
+              }) {
+            row = Row()
+            row
+          }
         }
-      }) {
-        row = Row()
-        row
-      }
-    }
     lithoViewRule.setRoot(root)
     lithoViewRule.attachToWindow().measure().layout()
 
@@ -118,12 +115,8 @@ class KStateTest {
     EventDispatcherUtils.dispatchOnClick(row.commonProps!!.clickHandler, lithoViewRule.lithoView)
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
-    assertThat(state1Ref.get().value)
-        .describedAs("String state is updated")
-        .isEqualTo("world")
-    assertThat(state2Ref.get().value)
-        .describedAs("Int state is updated")
-        .isEqualTo(21)
+    assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
+    assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
 
     ComponentsConfiguration.isHooksImplEnabled = false
   }
@@ -135,35 +128,29 @@ class KStateTest {
     val firstCountDownLatch = CountDownLatch(1)
     val secondCountDownLatch = CountDownLatch(1)
 
-    val thread1 = Thread {
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(
-              firstCountDownLatch,
-              secondCountDownLatch,
-              initCounter),
-          SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
-      countDownLatch.countDown()
-    }
-    val thread2 = Thread {
-      firstCountDownLatch.await()
+    val thread1 =
+        Thread {
+          lithoViewRule.setRootAndSizeSpec(
+              CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
+              SizeSpec.makeSizeSpec(100, EXACTLY),
+              SizeSpec.makeSizeSpec(100, EXACTLY))
+          countDownLatch.countDown()
+        }
+    val thread2 =
+        Thread {
+          firstCountDownLatch.await()
 
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(
-              secondCountDownLatch,
-              null,
-              initCounter),
-          SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
-      countDownLatch.countDown()
-    }
+          lithoViewRule.setRootAndSizeSpec(
+              CountDownLatchComponent(secondCountDownLatch, null, initCounter),
+              SizeSpec.makeSizeSpec(200, EXACTLY),
+              SizeSpec.makeSizeSpec(200, EXACTLY))
+          countDownLatch.countDown()
+        }
     thread1.start()
     thread2.start()
     countDownLatch.await()
 
-    assertThat(initCounter.get())
-        .describedAs("initCounter is initialized only once")
-        .isEqualTo(1)
+    assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = lithoViewRule.componentTree
     assertThat(componentTree.initialStateContainer.mInitialHookStates)
         .describedAs("Initial hook state container is empty")
@@ -182,35 +169,29 @@ class KStateTest {
     val firstCountDownLatch = CountDownLatch(1)
     val secondCountDownLatch = CountDownLatch(1)
 
-    val thread1 = Thread {
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(
-              firstCountDownLatch,
-              secondCountDownLatch,
-              initCounter),
-          SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
-      countDownLatch.countDown()
-    }
-    val thread2 = Thread {
-      firstCountDownLatch.await()
+    val thread1 =
+        Thread {
+          lithoViewRule.setRootAndSizeSpec(
+              CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
+              SizeSpec.makeSizeSpec(100, EXACTLY),
+              SizeSpec.makeSizeSpec(100, EXACTLY))
+          countDownLatch.countDown()
+        }
+    val thread2 =
+        Thread {
+          firstCountDownLatch.await()
 
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(
-              secondCountDownLatch,
-              null,
-              initCounter),
-          SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
-      countDownLatch.countDown()
-    }
+          lithoViewRule.setRootAndSizeSpec(
+              CountDownLatchComponent(secondCountDownLatch, null, initCounter),
+              SizeSpec.makeSizeSpec(200, EXACTLY),
+              SizeSpec.makeSizeSpec(200, EXACTLY))
+          countDownLatch.countDown()
+        }
     thread1.start()
     thread2.start()
     countDownLatch.await()
 
-    assertThat(initCounter.get())
-        .describedAs("initCounter is initialized only once")
-        .isEqualTo(1)
+    assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = lithoViewRule.componentTree
     assertThat(componentTree.initialStateContainer.mInitialHookStates)
         .describedAs("Initial hook state container is empty")
@@ -223,16 +204,13 @@ class KStateTest {
   }
 
   private class CountDownLatchComponent(
-      countDownLatch: CountDownLatch,
-      awaitable: CountDownLatch?,
-      initCounter: AtomicInteger
-  ) : KComponent({
-    countDownLatch.countDown()
-    awaitable?.await()
+      countDownLatch: CountDownLatch, awaitable: CountDownLatch?, initCounter: AtomicInteger
+  ) :
+      KComponent({
+        countDownLatch.countDown()
+        awaitable?.await()
 
-    val state by useState {
-      initCounter.incrementAndGet()
-    }
-    Text("stateValue is ${state.value}")
-  })
+        val state by useState { initCounter.incrementAndGet() }
+        Text("stateValue is ${state.value}")
+      })
 }

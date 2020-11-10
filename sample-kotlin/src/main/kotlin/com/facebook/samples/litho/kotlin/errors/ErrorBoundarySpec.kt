@@ -36,21 +36,20 @@ object ErrorBoundarySpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext,
-      @Prop child: Component,
-      @State error: Optional<Exception>
-  ): Component = if (error.isPresent) {
-    Column.create(c)
-        .marginDip(YogaEdge.ALL, 16f)
-        .child(
-            DebugErrorComponent.create(c)
-                .message("Error Boundary")
-                .throwable(error.get())
-                .build())
-        .build()
-  } else {
-    child
-  }
+      c: ComponentContext, @Prop child: Component, @State error: Optional<Exception>
+  ): Component =
+      if (error.isPresent) {
+        Column.create(c)
+            .marginDip(YogaEdge.ALL, 16f)
+            .child(
+                DebugErrorComponent.create(c)
+                    .message("Error Boundary")
+                    .throwable(error.get())
+                    .build())
+            .build()
+      } else {
+        child
+      }
 
   @OnCreateInitialState
   fun createInitialState(c: ComponentContext, error: StateValue<Optional<Exception>>) {

@@ -48,14 +48,11 @@ class LithographyActivity : NavigatableDemoActivity() {
   }
 
   private fun setList(model: Model?) {
-    model?.let {
-      lithoView.setComponentAsync(createRecyclerComponent(it))
-    }
+    model?.let { lithoView.setComponentAsync(createRecyclerComponent(it)) }
   }
 
   private fun createRecyclerComponent(model: Model): Component =
-      RecyclerCollectionComponent
-          .create(c)
+      RecyclerCollectionComponent.create(c)
           .section(
               LithoFeedSection.create(SectionContext(c))
                   .decades(model.decades)

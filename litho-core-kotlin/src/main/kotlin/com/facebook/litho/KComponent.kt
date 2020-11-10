@@ -20,30 +20,28 @@ import com.facebook.litho.config.ComponentsConfiguration
 import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
-open class KComponent private constructor(
-    private val content: (DslScope.() -> Component?)? = null,
-    private val style: Style? = null
-) : Component() {
+open class KComponent
+    private constructor(
+        private val content: (DslScope.() -> Component?)? = null, private val style: Style? = null
+    ) : Component() {
   constructor(style: Style? = null) : this(null, style)
   constructor(content: DslScope.() -> Component?) : this(content, null)
 
   override fun onCreateLayout(c: ComponentContext): Component? {
-    return DslScope(c).run {
-      render()?.apply {
-        applyStyle(style)
-      }
-    }
+    return DslScope(c).run { render()?.apply { applyStyle(style) } }
   }
 
   open fun DslScope.render(): Component? {
-    val render = requireNotNull(content) {
-      "You should override `render()` method or provide `content` lambda via constructor."
-    }
+    val render =
+        requireNotNull(content) {
+          "You should override `render()` method or provide `content` lambda via constructor."
+        }
     return render()
   }
 
   /**
-   * Compare this component to a different one to check if they are equivalent. This is used to be able to skip rendering a component again.
+   * Compare this component to a different one to check if they are equivalent. This is used to be
+   * able to skip rendering a component again.
    */
   override fun isEquivalentTo(other: Component?): Boolean = isEquivalentTo(other, true)
 
@@ -74,9 +72,7 @@ open class KComponent private constructor(
     return true
   }
 
-  /**
-   * Compare all private final fields in the components.
-   */
+  /** Compare all private final fields in the components. */
   private fun hasEquivalentFields(other: KComponent): Boolean {
     for (field in javaClass.declaredFields) {
       if (Modifier.isPrivate(field.modifiers) && Modifier.isFinal(field.modifiers)) {

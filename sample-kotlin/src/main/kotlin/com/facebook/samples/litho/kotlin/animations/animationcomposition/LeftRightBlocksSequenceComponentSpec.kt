@@ -81,7 +81,10 @@ object LeftRightBlocksSequenceComponentSpec {
   @OnCreateTransition
   fun onCreateTransition(c: ComponentContext): Transition =
       Transition.sequence<TransitionUnitsBuilder>(
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "red").animate(AnimatedProperties.X),
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue").animate(AnimatedProperties.X),
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "green").animate(AnimatedProperties.X))
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "red")
+              .animate(AnimatedProperties.X),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue")
+              .animate(AnimatedProperties.X),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "green")
+              .animate(AnimatedProperties.X))
 }

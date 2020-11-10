@@ -28,12 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     val componentContext = ComponentContext(this)
     setContentView(
-      LithoView.create(
-        this,
-        RootComponent.create(componentContext)
-            .name("Jane") // Using the prop to set the name.
-            .build()
-      )
-    )
+        LithoView.create(
+            this,
+            RootComponent.create(componentContext)
+                .name("Jane") // Using the prop to set the name.
+                .build()))
   }
 }

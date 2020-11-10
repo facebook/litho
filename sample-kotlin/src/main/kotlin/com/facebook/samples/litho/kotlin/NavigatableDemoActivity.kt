@@ -34,32 +34,28 @@ open class NavigatableDemoActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    intent
-        .getIntArrayExtra(INDICES)
-        .takeIf { it != null }
-        ?.let {
-          supportActionBar?.setDisplayHomeAsUpEnabled(true)
-          setTitleFromIndex(it)
-        }
+    intent.getIntArrayExtra(INDICES).takeIf { it != null }?.let {
+      supportActionBar?.setDisplayHomeAsUpEnabled(true)
+      setTitleFromIndex(it)
+    }
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean =
-    if (item.itemId == android.R.id.home) {
-      NavUtils.navigateUpFromSameTask(this)
-      true
-    } else {
-      super.onOptionsItemSelected(item)
-    }
+      if (item.itemId == android.R.id.home) {
+        NavUtils.navigateUpFromSameTask(this)
+        true
+      } else {
+        super.onOptionsItemSelected(item)
+      }
 
   override fun getParentActivityIntent(): Intent? {
     val indices = intent.getIntArrayExtra(DemoListActivity.INDICES) ?: return null
 
-    return Intent(this, DemoListActivity::class.java)
-        .also {
-          if (indices.size > 1) {
-            it.putExtra(DemoListActivity.INDICES, Arrays.copyOf(indices, indices.size - 1))
-          }
-        }
+    return Intent(this, DemoListActivity::class.java).also {
+      if (indices.size > 1) {
+        it.putExtra(DemoListActivity.INDICES, Arrays.copyOf(indices, indices.size - 1))
+      }
+    }
   }
 
   private fun setTitleFromIndex(indices: IntArray) {

@@ -32,7 +32,8 @@ fun <T> DslScope.useState(initializer: () -> T): StateDelegate<T> =
 /** Delegate to access and initialize a state variable. */
 class StateDelegate<T>(private val c: ComponentContext, private val initializer: () -> T) {
 
-  // TODO: remove lateinit after Hooks experiment(with ComponentsConfiguration.isHooksImplEnabled config) is complete.
+  // TODO: remove lateinit after Hooks experiment(with ComponentsConfiguration.isHooksImplEnabled
+  // config) is complete.
   private lateinit var hooks: Hooks
   private lateinit var hookStateKey: String
   private var hookIndex: Int = 0
@@ -59,7 +60,9 @@ class StateDelegate<T>(private val c: ComponentContext, private val initializer:
   }
 
   private fun getInitialState(): T =
-      c.componentTree.initialStateContainer.createOrGetInitialHookState(hookStateKey) { initializer() }
+      c.componentTree.initialStateContainer.createOrGetInitialHookState(hookStateKey) {
+        initializer()
+      }
 }
 
 /** Interface with which a component gets the value from a state or updates it. */

@@ -92,14 +92,14 @@ object AnimatedBadgeSpec {
                                     // still need transition keys for appear/disappear animations
                                     .transitionKey(TRANSITION_KEY_TEXT)
                                     .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-                                    // need this to prevent the global key of "+1" Text from changing
+                                    // need this to prevent the global key of "+1" Text from
+                                    // changing
                                     .key("text")
                                     .marginDip(YogaEdge.LEFT, 8f)
                                     .clipToBounds(true)
                                     .textSizeDip(12f)
                                     .text("Top Follower")
-                              }
-                          )
+                              })
                           .child(
                               Text.create(c)
                                   .marginDip(YogaEdge.LEFT, 8f)
@@ -179,19 +179,14 @@ object AnimatedBadgeSpec {
               .animator(ANIMATOR))
 
   private fun buildRoundedRect(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {
-    val cornerRadiusPx = TypedValue
-        .applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            cornerRadiusDp.toFloat(),
-            c.resources.displayMetrics
-        )
+    val cornerRadiusPx =
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp.toFloat(), c.resources.displayMetrics)
 
     val radii = FloatArray(8)
     Arrays.fill(radii, cornerRadiusPx)
     val roundedRectShape = RoundRectShape(radii, null, radii)
 
-    return ShapeDrawable(roundedRectShape).also {
-      it.paint.color = color
-    }
+    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
   }
 }

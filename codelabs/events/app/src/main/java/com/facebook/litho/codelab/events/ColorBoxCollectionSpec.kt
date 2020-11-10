@@ -35,7 +35,9 @@ import com.facebook.yoga.YogaWrap
 object ColorBoxCollectionSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop items: IntArray, @Prop highlightedIndex: Int): Component {
+  fun onCreateLayout(
+      c: ComponentContext, @Prop items: IntArray, @Prop highlightedIndex: Int
+  ): Component {
     val rowBuilder = Row.create(c).wrap(YogaWrap.WRAP)
     items.forEachIndexed { index, color ->
       val isHighlighted = index == highlightedIndex
@@ -58,8 +60,7 @@ object ColorBoxCollectionSpec {
         ColorBoxCollection.getBoxItemChangedEventHandler(c),
         color,
         "Item at index $index is now visible",
-        -1
-    )
+        -1)
   }
 
   @OnEvent(InvisibleEvent::class)
@@ -68,8 +69,7 @@ object ColorBoxCollectionSpec {
         ColorBoxCollection.getBoxItemChangedEventHandler(c),
         color,
         "Item at index $index is no longer visible",
-        -1
-    )
+        -1)
   }
 
   @OnEvent(LongClickEvent::class)

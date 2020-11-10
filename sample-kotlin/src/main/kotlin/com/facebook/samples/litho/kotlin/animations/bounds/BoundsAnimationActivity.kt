@@ -27,7 +27,6 @@ class BoundsAnimationActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     setContentView(
-        LithoView.create(
-            this, BoundsAnimationComponent.create(ComponentContext(this)).build()))
+        LithoView.create(this, BoundsAnimationComponent.create(ComponentContext(this)).build()))
   }
 }

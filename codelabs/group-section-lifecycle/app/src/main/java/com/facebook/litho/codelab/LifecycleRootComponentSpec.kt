@@ -30,20 +30,20 @@ object LifecycleRootComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop lifecycleListener: LifecycleListener): Component {
-    val zodiacs = listOf(
-        Zodiac("Rat", 1),
-        Zodiac("Ox", 2),
-        Zodiac("Tiger", 3),
-        Zodiac("Hare", 4),
-        Zodiac("Dragon", 5),
-        Zodiac("Snake", 6),
-        Zodiac("Horse", 7),
-        Zodiac("Sheep", 8),
-        Zodiac("Monkey", 9),
-        Zodiac("Rooster", 10),
-        Zodiac("Dog", 11),
-        Zodiac("Pig", 12)
-    )
+    val zodiacs =
+        listOf(
+            Zodiac("Rat", 1),
+            Zodiac("Ox", 2),
+            Zodiac("Tiger", 3),
+            Zodiac("Hare", 4),
+            Zodiac("Dragon", 5),
+            Zodiac("Snake", 6),
+            Zodiac("Horse", 7),
+            Zodiac("Sheep", 8),
+            Zodiac("Monkey", 9),
+            Zodiac("Rooster", 10),
+            Zodiac("Dog", 11),
+            Zodiac("Pig", 12))
     return RecyclerCollectionComponent.create(c)
         .section(
             LifecycleGroupSection.create(SectionContext(c))

@@ -18,15 +18,14 @@ package com.facebook.litho
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun <reified E : Any> eventHandler(noinline onEvent: (E) -> Unit): EventHandler<E> =
-     KEventHandler<E>(onEvent)
+    KEventHandler<E>(onEvent)
 
 /**
  * [EventHandler] for codegen-free Components which squashes [EventHandler], [HasEventDispatcher]
  * and [EventDispatcher] together in one object allocation.
  */
-class KEventHandler<E : Any>(
-    private val onEvent: (event: E) -> Unit
-) : EventHandler<E>(null, -1), HasEventDispatcher, EventDispatcher {
+class KEventHandler<E : Any>(private val onEvent: (event: E) -> Unit) :
+    EventHandler<E>(null, -1), HasEventDispatcher, EventDispatcher {
 
   init {
     mHasEventDispatcher = this

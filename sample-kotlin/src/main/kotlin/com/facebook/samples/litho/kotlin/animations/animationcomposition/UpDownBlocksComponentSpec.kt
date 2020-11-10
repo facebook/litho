@@ -82,7 +82,10 @@ object UpDownBlocksComponentSpec {
   fun onCreateTransition(c: ComponentContext): Transition =
       Transition.stagger<TransitionUnitsBuilder>(
           200,
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "red").animate(AnimatedProperties.Y),
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue").animate(AnimatedProperties.Y),
-          Transition.create(Transition.TransitionKeyType.GLOBAL, "green").animate(AnimatedProperties.Y))
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "red")
+              .animate(AnimatedProperties.Y),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue")
+              .animate(AnimatedProperties.Y),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "green")
+              .animate(AnimatedProperties.Y))
 }

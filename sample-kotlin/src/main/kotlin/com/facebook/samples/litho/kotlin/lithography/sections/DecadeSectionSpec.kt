@@ -53,14 +53,10 @@ object DecadeSectionSpec {
 
   @OnEvent(RenderEvent::class)
   fun render(c: SectionContext, @FromEvent model: Artist): RenderInfo =
-      ComponentRenderInfo.create()
-          .component(FeedItemCard(artist = model))
-          .build()
+      ComponentRenderInfo.create().component(FeedItemCard(artist = model)).build()
 
   @OnEvent(OnCheckIsSameItemEvent::class)
   fun isSameItem(
-      c: SectionContext,
-      @FromEvent previousItem: Artist,
-      @FromEvent nextItem: Artist
+      c: SectionContext, @FromEvent previousItem: Artist, @FromEvent nextItem: Artist
   ): Boolean = previousItem.name == nextItem.name
 }

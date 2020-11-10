@@ -69,9 +69,7 @@ object RootComponentSpec {
             Row.create(c)
                 .justifyContent(YogaJustify.CENTER)
                 .child(
-                    Button.create(c)
-                        .text("ADD")
-                        .clickHandler(RootComponent.onClickEvent(c, true)))
+                    Button.create(c).text("ADD").clickHandler(RootComponent.onClickEvent(c, true)))
                 .child(
                     Button.create(c)
                         .marginDip(YogaEdge.LEFT, 20f)

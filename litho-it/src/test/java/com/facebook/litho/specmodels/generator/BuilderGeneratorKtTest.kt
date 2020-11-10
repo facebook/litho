@@ -26,6 +26,11 @@ import com.facebook.litho.annotations.Prop
 import com.facebook.litho.specmodels.internal.RunMode
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory
 import com.google.testing.compile.CompilationRule
+import javax.annotation.processing.Messager
+import javax.lang.model.element.TypeElement
+import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,61 +38,59 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
-import javax.annotation.processing.Messager
-import javax.lang.model.element.TypeElement
-import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
-import org.assertj.core.api.Assertions.assertThat
 
 @LayoutSpec
 object VarArgsWildcardPropTestSpec {
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop(varArg = "color") colors: List<Color>): Component {
-        return Column.create(c).build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop(varArg = "color")
+      colors: List<Color>
+  ): Component {
+    return Column.create(c).build()
+  }
 }
 
 @LayoutSpec
 object WildcardOutPropTestSpec {
-    @OnCreateLayout
-    fun onCreateLayout(
-            c: ComponentContext,
-            @Prop numWildCard: List<out @JvmWildcard Number>
-    ): Component? {
-        return Column.create(c).build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext, @Prop numWildCard: List<out @JvmWildcard Number>
+  ): Component? {
+    return Column.create(c).build()
+  }
 }
 
 @RunWith(JUnit4::class)
 class BuilderGeneratorKtTest {
 
-    @Rule
-    @JvmField
-    val compilationRule = CompilationRule()
+  @Rule @JvmField val compilationRule = CompilationRule()
 
-    private val layoutSpecModelFactory = LayoutSpecModelFactory()
-    private val elements: Elements get() = compilationRule.elements
-    private val types: Types get() = compilationRule.types
+  private val layoutSpecModelFactory = LayoutSpecModelFactory()
+  private val elements: Elements
+    get() = compilationRule.elements
+  private val types: Types
+    get() = compilationRule.types
 
-    private val messager = mock(Messager::class.java)
+  private val messager = mock(Messager::class.java)
 
-    @Before
-    fun setup() {
-        MockitoAnnotations.initMocks(this)
-    }
+  @Before
+  fun setup() {
+    MockitoAnnotations.initMocks(this)
+  }
 
-    @Test
-    fun specWithWildcardOutProp_generate() {
-        val typeElement = elements.getTypeElement(WildcardOutPropTestSpec::class.java.canonicalName)
+  @Test
+  fun specWithWildcardOutProp_generate() {
+    val typeElement = elements.getTypeElement(WildcardOutPropTestSpec::class.java.canonicalName)
 
-        val specModel = layoutSpecModelFactory.create(
-                elements, types, typeElement, messager, RunMode.normal(), null, null)
-        val dataHolder = BuilderGenerator.generate(specModel)
-        assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
-        assertThat(dataHolder.typeSpecs.get(0).toString()).isEqualTo(
-                """
+    val specModel =
+        layoutSpecModelFactory.create(
+            elements, types, typeElement, messager, RunMode.normal(), null, null)
+    val dataHolder = BuilderGenerator.generate(specModel)
+    assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
+    assertThat(dataHolder.typeSpecs.get(0).toString())
+        .isEqualTo(
+            """
                     public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
                       WildcardOutPropTest mWildcardOutPropTest;
 
@@ -135,20 +138,22 @@ class BuilderGeneratorKtTest {
                       }
                     }
                     
-                    """.trimIndent()
-        )
-    }
+                    """.trimIndent())
+  }
 
-    @Test
-    fun specWithVarArgWildcardProp_generate() {
-        val typeElement: TypeElement = elements.getTypeElement(VarArgsWildcardPropTestSpec::class.java.canonicalName)
+  @Test
+  fun specWithVarArgWildcardProp_generate() {
+    val typeElement: TypeElement =
+        elements.getTypeElement(VarArgsWildcardPropTestSpec::class.java.canonicalName)
 
-        val specModel = layoutSpecModelFactory.create(
-                elements, types, typeElement, messager, RunMode.normal(), null, null)
-        val dataHolder = BuilderGenerator.generate(specModel)
-        assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
-        assertThat(dataHolder.typeSpecs.get(0).toString()).isEqualTo(
-                """
+    val specModel =
+        layoutSpecModelFactory.create(
+            elements, types, typeElement, messager, RunMode.normal(), null, null)
+    val dataHolder = BuilderGenerator.generate(specModel)
+    assertThat(dataHolder.typeSpecs.size).isEqualTo(1)
+    assertThat(dataHolder.typeSpecs.get(0).toString())
+        .isEqualTo(
+            """
                     public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
                       VarArgsWildcardPropTest mVarArgsWildcardPropTest;
 
@@ -208,7 +213,6 @@ class BuilderGeneratorKtTest {
                       }
                     }
                     
-                """.trimIndent()
-        )
-    }
+                """.trimIndent())
+  }
 }

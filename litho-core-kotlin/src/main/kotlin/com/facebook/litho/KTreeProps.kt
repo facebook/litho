@@ -17,8 +17,9 @@
 package com.facebook.litho
 
 /**
- * Create a TreeProp variable within a Component. The TreeProp variable is shared with its descendant components.
- * However, descendant components can override the value of the TreeProp for all its children.
+ * Create a TreeProp variable within a Component. The TreeProp variable is shared with its
+ * descendant components. However, descendant components can override the value of the TreeProp for
+ * all its children.
  */
 inline fun <reified T> DslScope.createTreeProp(initializer: () -> T) {
   createTreeProp(T::class.java, initializer())

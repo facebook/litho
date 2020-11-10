@@ -28,34 +28,35 @@ import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 
 class SampleActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val context = ComponentContext(this)
+    val context = ComponentContext(this)
 
-        val recyclerBinder = RecyclerBinder.Builder()
-                .layoutInfo(LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
-                .build(context)
+    val recyclerBinder =
+        RecyclerBinder.Builder()
+            .layoutInfo(LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
+            .build(context)
 
-        val component = Recycler.create(context).binder(recyclerBinder).build()
+    val component = Recycler.create(context).binder(recyclerBinder).build()
 
-        addContent(recyclerBinder, context)
+    addContent(recyclerBinder, context)
 
-        setContentView(LithoView.create(context, component))
+    setContentView(LithoView.create(context, component))
+  }
+
+  private fun addContent(recyclerBinder: RecyclerBinder, context: ComponentContext) {
+    for (i in 0 until 31) {
+      recyclerBinder.insertItemAt(
+          i,
+          ComponentRenderInfo.create()
+              .component(
+                  ListItem.create(context)
+                      .color(if (i % 2 == 0) Color.WHITE else Color.LTGRAY)
+                      .title("Hello, world!")
+                      .subtitle("Litho tutorial")
+                      .build())
+              .build())
     }
-
-    private fun addContent(recyclerBinder: RecyclerBinder, context: ComponentContext) {
-        for (i in 0 until 31) {
-            recyclerBinder.insertItemAt(
-                    i,
-                    ComponentRenderInfo.create()
-                            .component(
-                                    ListItem.create(context)
-                                            .color(if (i % 2 == 0) Color.WHITE else Color.LTGRAY)
-                                            .title("Hello, world!")
-                                            .subtitle("Litho tutorial")
-                                            .build())
-                            .build())
-        }
-    }
+  }
 }

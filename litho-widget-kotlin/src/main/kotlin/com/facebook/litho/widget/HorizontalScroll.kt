@@ -21,9 +21,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.DslScope
 import com.facebook.litho.Px
 
-/**
- * Builder function for creating [HorizontalScrollSpec] components.
- */
+/** Builder function for creating [HorizontalScrollSpec] components. */
 @Suppress("FunctionName")
 inline fun DslScope.HorizontalScroll(
     initialScrollPosition: Px? = null,

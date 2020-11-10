@@ -43,13 +43,12 @@ class SampleComponentsLogger : ComponentsLogger {
   override fun isTracing(logEvent: PerfEvent): Boolean = true
 
   override fun getExtraAnnotations(treeProps: TreeProps?): Map<String, String> =
-      treeProps?.get(LogContext::class.java)?.let {
-        mapOf("log_context" to "$it")
-      } ?: emptyMap()
+      treeProps?.get(LogContext::class.java)?.let { mapOf("log_context" to "$it") } ?: emptyMap()
 
   private fun printEventData(event: PerfEvent, data: EventData) {
     val totalTimeMs = (data.endTimeNs!! - data.startTimeNs) / (1000 * 1000f)
-    var msg = """
+    var msg =
+        """
         |--- <PERFEVENT> ---
         |type: ${getEventNameById(event.markerId)}
         |total time: ${totalTimeMs.withDigits(2)}ms
@@ -83,15 +82,18 @@ class SampleComponentsLogger : ComponentsLogger {
         FrameworkLogEvents.EVENT_MOUNT -> "MOUNT"
         FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT -> "PRE_ALLOCATE_MOUNT_CONTENT"
         FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE -> "SECTIONS_CREATE_NEW_TREE"
-        FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF -> "SECTIONS_DATA_DIFF_CALCULATE_DIFF"
+        FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF ->
+            "SECTIONS_DATA_DIFF_CALCULATE_DIFF"
         FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET -> "SECTIONS_GENERATE_CHANGESET"
         FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN -> "SECTIONS_ON_CREATE_CHILDREN"
         FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT -> "SECTIONS_SET_ROOT"
         FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE -> "CALCULATE_LAYOUT_STATE"
         FrameworkLogEvents.EVENT_BENCHMARK_RUN -> "EVENT_BENCHMARK_RUN"
-        FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE -> "EVENT_RESUME_CALCULATE_LAYOUT_STATE"
+        FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE ->
+            "EVENT_RESUME_CALCULATE_LAYOUT_STATE"
         FrameworkLogEvents.EVENT_INIT_RANGE -> "EVENT_INIT_RANGE"
-        FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT -> "EVENT_LAYOUT_STATE_FUTURE_GET_WAIT"
+        FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT ->
+            "EVENT_LAYOUT_STATE_FUTURE_GET_WAIT"
         else -> "UNKNOWN"
       }
 

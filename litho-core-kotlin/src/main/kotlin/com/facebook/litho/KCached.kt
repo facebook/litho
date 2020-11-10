@@ -19,8 +19,9 @@ package com.facebook.litho
 import kotlin.reflect.KProperty
 
 /**
- * Create a CachedValue variable within a Component. The [calculator] will provide the calculated value if it hasn't
- * already been calculated or if the inputs have changed since the previous calculation.
+ * Create a CachedValue variable within a Component. The [calculator] will provide the calculated
+ * value if it hasn't already been calculated or if the inputs have changed since the previous
+ * calculation.
  */
 fun <T> DslScope.useCached(calculator: () -> T): CachedDelegate<T> =
     CachedDelegate(context, calculator = calculator)
@@ -34,18 +35,19 @@ fun <T> DslScope.useCached(input1: Any, input2: Any, calculator: () -> T): Cache
 fun <T> DslScope.useCached(vararg inputs: Any, calculator: () -> T): CachedDelegate<T> =
     CachedDelegate(context, inputs = inputs, calculator = calculator)
 
-class CachedDelegate<T> internal constructor(
-    private val c: ComponentContext,
-    private val input1: Any? = null,
-    private val input2: Any? = null,
-    private val inputs: Array<out Any>? = null,
-    private val calculator: () -> T
-) {
+class CachedDelegate<T>
+    internal constructor(
+        private val c: ComponentContext,
+        private val input1: Any? = null,
+        private val input2: Any? = null,
+        private val inputs: Array<out Any>? = null,
+        private val calculator: () -> T
+    ) {
   operator fun getValue(nothing: Nothing?, property: KProperty<*>): T {
-    val cacheInputs = CachedInputs(c.componentScope.javaClass, property.name, input1, input2, inputs)
+    val cacheInputs =
+        CachedInputs(c.componentScope.javaClass, property.name, input1, input2, inputs)
     val result =
-        c.getCachedValue(cacheInputs)
-            ?: calculator().also { c.putCachedValue(cacheInputs, it) }
+        c.getCachedValue(cacheInputs) ?: calculator().also { c.putCachedValue(cacheInputs, it) }
 
     @Suppress("UNCHECKED_CAST")
     return result as T

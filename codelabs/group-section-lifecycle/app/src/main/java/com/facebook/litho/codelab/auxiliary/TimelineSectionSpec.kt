@@ -37,16 +37,12 @@ import com.facebook.litho.widget.RenderInfo
 object TimelineSectionSpec {
 
   @OnCreateChildren
-  fun onCreateChildren(
-      c: SectionContext,
-      @Prop events: List<LifecycleEvent>
-  ): Children {
+  fun onCreateChildren(c: SectionContext, @Prop events: List<LifecycleEvent>): Children {
     return Children.create()
         .child(
             DataDiffSection.create<LifecycleEvent>(c)
                 .data(events)
-                .renderEventHandler(TimelineSection.onRender(c))
-        )
+                .renderEventHandler(TimelineSection.onRender(c)))
         .build()
   }
 
@@ -74,33 +70,21 @@ object TimelineSectionSpec {
   private fun genLifecycleEventPair(model: LifecycleEvent) =
       when (model.eventType) {
         LifecycleEventType.ON_CREATE_INITIAL_STATE ->
-          R.string.onCreateInitialState to R.color.colorOnCreateInitialState
-
+            R.string.onCreateInitialState to R.color.colorOnCreateInitialState
         LifecycleEventType.ON_CREATE_TREE_PROP ->
-          R.string.onCreateTreeProp to R.color.colorOnCreateTreeProp
-
+            R.string.onCreateTreeProp to R.color.colorOnCreateTreeProp
         LifecycleEventType.ON_CREATE_SERVICE ->
-          R.string.onCreateService to R.color.colorOnCreateService
-
-        LifecycleEventType.ON_BIND_SERVICE ->
-          R.string.onBindService to R.color.colorOnBindService
-
+            R.string.onCreateService to R.color.colorOnCreateService
+        LifecycleEventType.ON_BIND_SERVICE -> R.string.onBindService to R.color.colorOnBindService
         LifecycleEventType.ON_UNBIND_SERVICE ->
-          R.string.onUnbindService to R.color.colorOnUnbindService
-
+            R.string.onUnbindService to R.color.colorOnUnbindService
         LifecycleEventType.ON_CREATE_CHILDREN ->
-          R.string.onCreateChildren to R.color.colorOnCreateChildren
-
-        LifecycleEventType.ON_DATA_BOUND ->
-          R.string.onDataBound to R.color.colorOnDataBound
-
+            R.string.onCreateChildren to R.color.colorOnCreateChildren
+        LifecycleEventType.ON_DATA_BOUND -> R.string.onDataBound to R.color.colorOnDataBound
         LifecycleEventType.ON_DATA_RENDERED ->
-          R.string.onDataRendered to R.color.colorOnDataRendered
-
+            R.string.onDataRendered to R.color.colorOnDataRendered
         LifecycleEventType.ON_VIEWPORT_CHANGED ->
-          R.string.onViewportChanged to R.color.colorOnViewportChanged
-
-        LifecycleEventType.ON_REFRESH ->
-          R.string.onRefresh to R.color.colorOnRefresh
+            R.string.onViewportChanged to R.color.colorOnViewportChanged
+        LifecycleEventType.ON_REFRESH -> R.string.onRefresh to R.color.colorOnRefresh
       }
 }

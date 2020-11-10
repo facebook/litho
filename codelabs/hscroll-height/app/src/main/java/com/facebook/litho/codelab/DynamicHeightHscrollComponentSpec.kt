@@ -34,10 +34,10 @@ import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
 
 /**
- * This component renders a horizontal list with items of various heights, which can adapt height
- * to always accommodate the height of the tallest item. If the height of the h-scroll is already
- * taller than the highest item it will not shrink to fit.
- * Measuring the height this way is extremely inefficient.
+ * This component renders a horizontal list with items of various heights, which can adapt height to
+ * always accommodate the height of the tallest item. If the height of the h-scroll is already
+ * taller than the highest item it will not shrink to fit. Measuring the height this way is
+ * extremely inefficient.
  */
 @Suppress("MagicNumber")
 @LayoutSpec
@@ -53,7 +53,8 @@ object DynamicHeightHscrollComponentSpec {
                     RecyclerBinderConfiguration.create()
                         .hasDynamicItemHeight(true) // This enables dynamic height measurement.
                         .build())
-                .orientation(OrientationHelper.HORIZONTAL).build())
+                .orientation(OrientationHelper.HORIZONTAL)
+                .build())
         .section(
             DataDiffSection.create<Int>(SectionContext(c))
                 .data(colors)

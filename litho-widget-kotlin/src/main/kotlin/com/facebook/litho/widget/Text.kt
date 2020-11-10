@@ -23,8 +23,8 @@ import android.graphics.Typeface.NORMAL
 import android.text.TextUtils
 import androidx.annotation.ColorInt
 import com.facebook.litho.DslScope
-import com.facebook.litho.Style
 import com.facebook.litho.Sp
+import com.facebook.litho.Style
 import com.facebook.litho.sp
 
 /**
@@ -55,10 +55,6 @@ inline fun DslScope.Text(
         .isSingleLine(isSingleLine)
         .minLines(minLines)
         .maxLines(maxLines)
-        .apply {
-          ellipsize?.let { ellipsize(it) }
-        }
+        .apply { ellipsize?.let { ellipsize(it) } }
         .build()
-        .apply {
-          applyStyle(style)
-        }
+        .apply { applyStyle(style) }

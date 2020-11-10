@@ -29,15 +29,14 @@ class DataFetcher(val model: MutableLiveData<Model>) : Fetcher {
 
     fetching = lastFetchedDecade + 1
 
-    model.value = model.value?.let {
-      Model(it.decades, true)
-    }
+    model.value = model.value?.let { Model(it.decades, true) }
 
     FetchTask(model, lastFetchedDecade).execute()
   }
 }
 
-class FetchTask(val model: MutableLiveData<Model>, private val lastFetchedDecade: Int) : AsyncTask<Void, Void, List<Decade>>() {
+class FetchTask(val model: MutableLiveData<Model>, private val lastFetchedDecade: Int) :
+    AsyncTask<Void, Void, List<Decade>>() {
   override fun doInBackground(vararg params: Void?): List<Decade> {
     // Let's simulate a network call here.
     Thread.sleep(2000)

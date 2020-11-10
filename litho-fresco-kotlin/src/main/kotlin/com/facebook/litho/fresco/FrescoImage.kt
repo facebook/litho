@@ -19,15 +19,9 @@ package com.facebook.litho.fresco
 import com.facebook.drawee.interfaces.DraweeController
 import com.facebook.litho.DslScope
 
-/**
- * Builder function for creating [FrescoImageSpec] components.
- */
+/** Builder function for creating [FrescoImageSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.FrescoImage(
-    controller: DraweeController,
-    imageAspectRatio: Float
+    controller: DraweeController, imageAspectRatio: Float
 ): FrescoImage =
-    FrescoImage.create(context)
-        .controller(controller)
-        .imageAspectRatio(imageAspectRatio)
-        .build()
+    FrescoImage.create(context).controller(controller).imageAspectRatio(imageAspectRatio).build()

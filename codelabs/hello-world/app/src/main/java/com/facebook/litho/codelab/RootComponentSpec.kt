@@ -25,8 +25,8 @@ import com.facebook.litho.widget.Text
 @LayoutSpec
 object RootComponentSpec {
 
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component {
-        return Text.create(c).textSizeSp(20f).text("Hello World").build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext): Component {
+    return Text.create(c).textSizeSp(20f).text("Hello World").build()
+  }
 }

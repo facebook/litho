@@ -25,9 +25,7 @@ import com.facebook.litho.Px
 import com.facebook.litho.dp
 import com.facebook.litho.px
 
-/**
- * Builder function for creating [VerticalScrollSpec] components.
- */
+/** Builder function for creating [VerticalScrollSpec] components. */
 @Suppress("FunctionName")
 inline fun DslScope.VerticalScroll(
     initialScrollPosition: Px = 0.px,
