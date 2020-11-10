@@ -114,12 +114,17 @@ public class ComponentLifecycleTest {
         };
 
     when(Layout.onCreateLayout((ComponentContext) any(), (Component) any())).thenCallRealMethod();
-    when(Layout.create((ComponentContext) any(), (Component) any(), anyBoolean(), anyBoolean()))
+    when(Layout.create(
+            (ComponentContext) any(),
+            (Component) any(),
+            anyBoolean(),
+            anyBoolean(),
+            (String) any()))
         .thenCallRealMethod();
     when(Layout.create((ComponentContext) any(), (Component) any(), anyBoolean()))
         .thenCallRealMethod();
     when(Layout.create((ComponentContext) any(), (Component) any())).thenCallRealMethod();
-    when(Layout.update((ComponentContext) any(), (Component) any(), anyBoolean()))
+    when(Layout.update((ComponentContext) any(), (Component) any(), anyBoolean(), (String) any()))
         .thenCallRealMethod();
 
     mDiffNode = mock(DiffNode.class);
@@ -338,7 +343,7 @@ public class ComponentLifecycleTest {
     when(holder.getTailComponent()).thenReturn(component);
     when(Layout.create(mContext, holder, 100, 100)).thenCallRealMethod();
     PowerMockito.doReturn(resolved).when(Layout.class);
-    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true));
+    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
 
     // Resolve nested tree for the 1st time.
     InternalNode result = Layout.create(mContext, holder, 100, 100);
@@ -346,7 +351,7 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic(Layout.class);
 
     // Layout should be created and measured.
-    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true));
+    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
     Layout.measure((ComponentContext) any(), eq(result), eq(100), eq(100), eq((DiffNode) null));
 
     /* --- */
@@ -362,7 +367,7 @@ public class ComponentLifecycleTest {
 
     // There should be no new invocation of Layout.create().
     PowerMockito.verifyStatic(Layout.class, times(1));
-    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true));
+    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
 
     // Should only remeasure.
     PowerMockito.verifyStatic(Layout.class, times(1));
@@ -391,7 +396,7 @@ public class ComponentLifecycleTest {
     when(holder.getTailComponent()).thenReturn(component);
     when(Layout.create(mContext, holder, 100, 100)).thenCallRealMethod();
     PowerMockito.doReturn(resolved).when(Layout.class);
-    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true));
+    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
 
     // Call resolve nested tree 1st time.
     InternalNode result = Layout.create(mContext, holder, 100, 100);
@@ -399,7 +404,7 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic(Layout.class);
 
     // Layout should be created and measured.
-    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true));
+    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
     Layout.measure((ComponentContext) any(), eq(result), eq(100), eq(100), eq((DiffNode) null));
 
     /* --- */
@@ -415,7 +420,7 @@ public class ComponentLifecycleTest {
 
     // There should be 1 new invocation of Layout.create().
     PowerMockito.verifyStatic(Layout.class, times(2));
-    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true));
+    Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
   }

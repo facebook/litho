@@ -53,13 +53,14 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        layoutStateContext, c, component, widthSpec, heightSpec, null, null, null);
+        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null);
   }
 
   static InternalNode createAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
+      final String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
       final @Nullable InternalNode current,
@@ -91,9 +92,14 @@ class Layout {
       }
 
     } else {
-      ComponentContext updatedScopedContext = update(c, component, true);
+      ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
       Component updated = updatedScopedContext.getComponentScope();
-      layout = current.reconcile(layoutStateContext, c, updated, updated.getGlobalKey());
+      layout =
+          current.reconcile(
+              layoutStateContext,
+              c,
+              updated,
+              globalKeyToReuse == null ? updated.getGlobalKey() : globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {
@@ -115,19 +121,20 @@ class Layout {
   }
 
   public static InternalNode create(final ComponentContext parent, final Component component) {
-    return create(parent, component, false, false);
+    return create(parent, component, false, false, null);
   }
 
   static InternalNode create(
       final ComponentContext parent, final Component component, final boolean resolveNestedTree) {
-    return create(parent, component, resolveNestedTree, false);
+    return create(parent, component, resolveNestedTree, false, null);
   }
 
   static InternalNode create(
       final ComponentContext parent,
       Component component,
       final boolean resolveNestedTree,
-      final boolean reuseGlobalKey) {
+      final boolean reuseGlobalKey,
+      final @Nullable String globalKeyToReuse) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -150,7 +157,7 @@ class Layout {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = update(parent, component, reuseGlobalKey);
+      c = update(parent, component, reuseGlobalKey, globalKeyToReuse);
       globalKey = c.getGlobalKey();
       component = c.getComponentScope();
 
@@ -282,6 +289,7 @@ class Layout {
       final int heightSpec) {
 
     final Component component = holder.getTailComponent();
+    final String componentGlobalKey = holder.getTailComponentKey();
     final InternalNode currentLayout = holder.getNestedTree();
 
     // Find the immediate parent context
@@ -351,7 +359,7 @@ class Layout {
           context.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          layout = create(context, component, true, true);
+          layout = create(context, component, true, true, componentGlobalKey);
 
           holder.copyInto(layout);
 
@@ -384,12 +392,15 @@ class Layout {
 
   /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
   static ComponentContext update(
-      final ComponentContext parent, final Component original, final boolean reuseGlobalKey) {
+      final ComponentContext parent,
+      final Component original,
+      final boolean reuseGlobalKey,
+      final String globalKeyToReuse) {
 
     final Component component = original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
-      component.setGlobalKey(original.getGlobalKey());
+      component.setGlobalKey(globalKeyToReuse == null ? original.getGlobalKey() : globalKeyToReuse);
     }
 
     final TreeProps ancestor = parent.getTreeProps();

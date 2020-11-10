@@ -1515,6 +1515,7 @@ public class LayoutState
                   layoutStateContext,
                   c,
                   component,
+                  isReconcilable ? component.getKey() : null,
                   widthSpec,
                   heightSpec,
                   isReconcilable ? currentLayoutState.mLayoutRoot : null,

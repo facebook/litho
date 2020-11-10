@@ -2160,7 +2160,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
                 layoutStateContext, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        layout = Layout.create(parentContext, next, false, true);
+        layout = Layout.create(parentContext, next, false, true, nextKey);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
