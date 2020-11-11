@@ -67,6 +67,8 @@ module.exports = {
       'services',
       'sections-architecture',
       'sections-working-ranges',
+      // TODO(festevezga, T79180347) - remove all of the above and use the ones in Under construction
+      // once new docs are ready
     ],
     'Common use cases': ['updating-ui', 'borders', 'tooltips', 'saving-state'],
     'Compatibility': ['styles', 'accessibility', 'rtl'],
@@ -155,6 +157,22 @@ module.exports = {
           ],
         },
         'fb/sample-app',
+        {
+          'Sections - Under Construction': [
+            'sections/start',
+            'sections/recycler-collection-component',
+            'sections/best-practices',
+            'sections/testing',
+            'sections/hscrolls',
+            'sections/api-overview',
+            'sections/api-lifecycles',
+            'sections/working-ranges',
+            'sections/services',
+            'sections/view-support',
+            'sections/diff-sections',
+            'sections/architecture',
+          ],
+        },
       ],
     }),
   },
