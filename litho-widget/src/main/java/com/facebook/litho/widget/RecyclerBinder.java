@@ -145,6 +145,7 @@ public class RecyclerBinder
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mIncrementalVisibility;
+  private final boolean mRecyclerViewItemPrefetch;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -455,6 +456,7 @@ public class RecyclerBinder
     private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
+    private boolean recyclerViewItemPrefetch = false;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -542,6 +544,19 @@ public class RecyclerBinder
 
     public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
       this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
+      return this;
+    }
+
+    /**
+     * Set whether item prefetch should be enabled on the underlying RecyclerView.LayoutManager.
+     * Defaults to false.
+     *
+     * <p> ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
+     * optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
+     * LithoView while it is still on screen making it render blank or zero height.
+     */
+    public Builder recyclerViewItemPrefetch(boolean recyclerViewItemPrefetch) {
+      this.recyclerViewItemPrefetch = recyclerViewItemPrefetch;
       return this;
     }
 
@@ -882,6 +897,7 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mIncrementalVisibility = builder.mIncrementalVisibility;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
+    mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
 
     if (mLayoutHandlerFactory == null) {
 
@@ -2793,7 +2809,7 @@ public class RecyclerBinder
     // ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
     // optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
     // LithoView while it is still on screen making it render blank or zero height.
-    layoutManager.setItemPrefetchEnabled(false);
+    layoutManager.setItemPrefetchEnabled(mRecyclerViewItemPrefetch);
 
     // This will force padding to be resolved on the main thread before the LayoutManager finds out
     // about this view. This will keep padding from trying to be resolved later on from a bg thread.
