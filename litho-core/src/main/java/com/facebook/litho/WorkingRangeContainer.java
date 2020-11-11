@@ -74,7 +74,7 @@ class WorkingRangeContainer {
       for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
         Component component = rangeTuple.mComponents.get(i);
         String globalKey = rangeTuple.mComponentKeys.get(i);
-        if (!statusHandler.isInRange(rangeTuple.mName, component)
+        if (!statusHandler.isInRange(rangeTuple.mName, component, globalKey)
             && isEnteringRange(
                 rangeTuple.mWorkingRange,
                 position,
@@ -84,9 +84,9 @@ class WorkingRangeContainer {
                 lastFullyVisibleIndex)) {
           component.dispatchOnEnteredRange(
               component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
-          statusHandler.setEnteredRangeStatus(rangeTuple.mName, component);
+          statusHandler.setEnteredRangeStatus(rangeTuple.mName, component, globalKey);
 
-        } else if (statusHandler.isInRange(rangeTuple.mName, component)
+        } else if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)
             && isExitingRange(
                 rangeTuple.mWorkingRange,
                 position,
@@ -96,7 +96,7 @@ class WorkingRangeContainer {
                 lastFullyVisibleIndex)) {
           component.dispatchOnExitedRange(
               component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
-          statusHandler.setExitedRangeStatus(rangeTuple.mName, component);
+          statusHandler.setExitedRangeStatus(rangeTuple.mName, component, globalKey);
         }
       }
     }
@@ -118,7 +118,7 @@ class WorkingRangeContainer {
       for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
         Component component = rangeTuple.mComponents.get(i);
         String globalKey = rangeTuple.mComponentKeys.get(i);
-        if (statusHandler.isInRange(rangeTuple.mName, component)) {
+        if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)) {
           component.dispatchOnExitedRange(
               component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
         }

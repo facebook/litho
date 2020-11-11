@@ -43,42 +43,42 @@ public class WorkingRangeStatusHandlerTest {
   @Test
   public void testIsNotInRange() {
     mWorkingRangeStateHandler.setStatus(
-        NAME, mComponent, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
+        NAME, mComponent, GLOBAL_KEY, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
 
-    boolean notInRange = !mWorkingRangeStateHandler.isInRange(NAME, mComponent);
+    boolean notInRange = !mWorkingRangeStateHandler.isInRange(NAME, mComponent, GLOBAL_KEY);
     assertThat(notInRange).isEqualTo(true);
   }
 
   @Test
   public void testIsInRange() {
     mWorkingRangeStateHandler.setStatus(
-        NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
+        NAME, mComponent, GLOBAL_KEY, WorkingRangeStatusHandler.STATUS_IN_RANGE);
 
-    boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent);
+    boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent, GLOBAL_KEY);
     assertThat(inRange).isEqualTo(true);
   }
 
   @Test
   public void testSetEnteredRangeState() {
     mWorkingRangeStateHandler.setStatus(
-        NAME, mComponent, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
-    boolean notInRange = !mWorkingRangeStateHandler.isInRange(NAME, mComponent);
+        NAME, mComponent, GLOBAL_KEY, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
+    boolean notInRange = !mWorkingRangeStateHandler.isInRange(NAME, mComponent, GLOBAL_KEY);
     assertThat(notInRange).isEqualTo(true);
 
-    mWorkingRangeStateHandler.setEnteredRangeStatus(NAME, mComponent);
-    boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent);
+    mWorkingRangeStateHandler.setEnteredRangeStatus(NAME, mComponent, GLOBAL_KEY);
+    boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent, GLOBAL_KEY);
     assertThat(inRange).isEqualTo(true);
   }
 
   @Test
   public void testSetExitedRangeState() {
     mWorkingRangeStateHandler.setStatus(
-        NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
-    boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent);
+        NAME, mComponent, GLOBAL_KEY, WorkingRangeStatusHandler.STATUS_IN_RANGE);
+    boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent, GLOBAL_KEY);
     assertThat(inRange).isEqualTo(true);
 
-    mWorkingRangeStateHandler.setExitedRangeStatus(NAME, mComponent);
-    boolean notInRange = !mWorkingRangeStateHandler.isInRange(NAME, mComponent);
+    mWorkingRangeStateHandler.setExitedRangeStatus(NAME, mComponent, GLOBAL_KEY);
+    boolean notInRange = !mWorkingRangeStateHandler.isInRange(NAME, mComponent, GLOBAL_KEY);
     assertThat(notInRange).isEqualTo(true);
   }
 }

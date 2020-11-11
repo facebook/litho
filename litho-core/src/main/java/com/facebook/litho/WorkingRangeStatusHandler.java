@@ -43,14 +43,16 @@ public class WorkingRangeStatusHandler {
    */
   private final Map<String, Integer> mStatus = new HashMap<>();
 
-  boolean isInRange(String name, Component component) {
-    return getStatus(name, component) == STATUS_IN_RANGE;
+  boolean isInRange(String name, Component component, String globalKey) {
+    return getStatus(name, component, globalKey) == STATUS_IN_RANGE;
   }
 
   /** Components in the collection share same status, we can only check the first component. */
   @WorkingRangeStatus
-  private int getStatus(String name, Component component) {
-    final String key = generateKey(name, component.getGlobalKey());
+  private int getStatus(String name, Component component, String componentGlobalKey) {
+    final String globalKey =
+        component.useStatelessComponent() ? componentGlobalKey : component.getGlobalKey();
+    final String key = generateKey(name, globalKey);
     if (mStatus.containsKey(key)) {
       return mStatus.get(key);
     }
@@ -58,12 +60,12 @@ public class WorkingRangeStatusHandler {
     return STATUS_UNINITIALIZED;
   }
 
-  void setEnteredRangeStatus(String name, Component component) {
-    setStatus(name, component, STATUS_IN_RANGE);
+  void setEnteredRangeStatus(String name, Component component, String globalKey) {
+    setStatus(name, component, globalKey, STATUS_IN_RANGE);
   }
 
-  void setExitedRangeStatus(String name, Component component) {
-    setStatus(name, component, STATUS_OUT_OF_RANGE);
+  void setExitedRangeStatus(String name, Component component, String globalKey) {
+    setStatus(name, component, globalKey, STATUS_OUT_OF_RANGE);
   }
 
   void clear() {
@@ -76,8 +78,10 @@ public class WorkingRangeStatusHandler {
   }
 
   @VisibleForTesting
-  void setStatus(String name, Component component, @WorkingRangeStatus int status) {
-    final String globalKey = component.getGlobalKey();
+  void setStatus(
+      String name, Component component, String componentGlobalKey, @WorkingRangeStatus int status) {
+    final String globalKey =
+        component.useStatelessComponent() ? componentGlobalKey : component.getGlobalKey();
     mStatus.put(generateKey(name, globalKey), status);
   }
 

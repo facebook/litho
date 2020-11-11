@@ -104,12 +104,14 @@ public class WorkingRangeContainerTest {
     mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mComponent2, "component2");
 
     final WorkingRangeStatusHandler statusHandler = new WorkingRangeStatusHandler();
-    statusHandler.setStatus(NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
+    statusHandler.setStatus(
+        NAME, mComponent, "component", WorkingRangeStatusHandler.STATUS_IN_RANGE);
     doNothing()
         .when(mComponent)
         .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
 
-    statusHandler.setStatus(NAME, mComponent2, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
+    statusHandler.setStatus(
+        NAME, mComponent2, "component2", WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
     doNothing()
         .when(mComponent2)
         .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));

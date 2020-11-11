@@ -411,6 +411,10 @@ public abstract class Component extends ComponentLifecycle
     return mGlobalKey;
   }
 
+  boolean useStatelessComponent() {
+    return mUseStatelessComponent;
+  }
+
   /**
    * Set a key for this component that is unique within its tree.
    *
