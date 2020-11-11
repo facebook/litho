@@ -16,10 +16,12 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Prop;
@@ -33,6 +35,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
@@ -60,6 +63,18 @@ public class DelegateMethodExtractorTest {
     public void alsoIgnored() {}
   }
 
+  static class TestClassWithSizeSpec {
+    @OnCreateLayoutWithSizeSpec
+    public void testMethod(
+        int h,
+        int w,
+        @Prop boolean testProp,
+        @State int testState,
+        @Event Object testPermittedAnnotation) {
+      // Don't do anything.
+    }
+  }
+
   @Test
   public void testMethodExtraction() {
     Elements elements = mCompilationRule.getElements();
@@ -77,5 +92,32 @@ public class DelegateMethodExtractorTest {
             mock(Messager.class));
 
     DelegateMethodExtractorTestHelper.assertDelegateMethodExtraction(delegateMethods);
+  }
+
+  @Test
+  public void testMethodExtraction_WithOnCreateLayoutWithSizeSpec_shouldFindMethod() {
+    Elements elements = mCompilationRule.getElements();
+    TypeElement typeElement =
+        elements.getTypeElement(TestClassWithSizeSpec.class.getCanonicalName());
+
+    List<Class<? extends Annotation>> permittedParamAnnotations = new ArrayList<>();
+    permittedParamAnnotations.add(Event.class);
+
+    ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods =
+        DelegateMethodExtractor.getDelegateMethods(
+            typeElement,
+            new ArrayList<>(DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet()),
+            permittedParamAnnotations,
+            ImmutableList.<Class<? extends Annotation>>of(),
+            mock(Messager.class));
+
+    assertThat(delegateMethods.size()).isEqualTo(1);
+
+    SpecMethodModel<DelegateMethod, Void> delegateMethod = delegateMethods.iterator().next();
+    assertThat(delegateMethod.annotations.size()).isEqualTo(1);
+    assertThat(delegateMethod.modifiers.size()).isEqualTo(1);
+
+    assertThat(delegateMethod.modifiers).contains(Modifier.PUBLIC);
+    assertThat(delegateMethod.name.toString()).isEqualTo("testMethod");
   }
 }

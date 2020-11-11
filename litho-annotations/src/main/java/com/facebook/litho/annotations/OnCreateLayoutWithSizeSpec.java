@@ -88,5 +88,5 @@ import java.lang.annotation.RetentionPolicy;
  * @see OnCreateLayout
  * @see OnShouldCreateLayoutWithNewSizeSpec
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface OnCreateLayoutWithSizeSpec {}
