@@ -179,13 +179,12 @@ public class IncrementalMountExtensionTest {
         when(layoutOutput.getBounds()).thenReturn(bounds);
 
         RenderUnit renderUnit = new LithoRenderUnit(layoutOutput);
-        final long id = (i + 1) * 1L;
-        when(renderUnit.getId()).thenReturn(id);
+        when(renderUnit.getId()).thenReturn((long) i);
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);
 
         mountableOutputs.add(renderTreeNode);
         final IncrementalMountOutput incrementalMountOutput =
-            new IncrementalMountOutput(id, i, bounds, id == 0 ? 0 : -1);
+            new IncrementalMountOutput(i, i, bounds, (long) i == 0 ? -1 : 0);
         mIncrementalMountOutputs.add(incrementalMountOutput);
         tops.add(incrementalMountOutput);
         bottoms.add(incrementalMountOutput);

@@ -23,6 +23,7 @@ import android.util.LongSparseArray;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -213,25 +214,29 @@ public class IncrementalMountExtension
 
   private static void acquireMountReferenceEnsureHostIsMounted(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
-      IncrementalMountOutput incrementalMountOutput,
+      final IncrementalMountOutput output,
       final int position,
       final boolean isMounting) {
-    // Make sure the host is mounted before the child.
-    final long hostId = incrementalMountOutput.getHostId();
-    if (hostId >= 0) {
+
+    // If id is ROOT_HOST_ID then already at root host.
+    if (output.getId() != MountState.ROOT_HOST_ID) {
+
+      // Make sure the host is mounted before the child.
+      final long hostId = output.getHostId();
+      IncrementalMountExtensionInput input = extensionState.getState().mInput;
+
+      // If not root host or if no reference was acquired, acquire it.
       if (!extensionState.ownsReference(hostId)) {
-        final int hostIndex = extensionState.getState().mInput.getPositionForId(hostId);
-        final IncrementalMountOutput hostOutput =
-            extensionState.getState().mInput.getIncrementalMountOutputAt(hostIndex);
+        final int hostIndex = input.getPositionForId(hostId);
         acquireMountReferenceEnsureHostIsMounted(
             extensionState,
-            hostOutput,
+            input.getIncrementalMountOutputAt(hostIndex),
             hostIndex,
             isMounting || extensionState.getState().mAcquireReferencesDuringMount);
       }
     }
 
-    extensionState.acquireMountReference(incrementalMountOutput.getId(), position, isMounting);
+    extensionState.acquireMountReference(output.getId(), position, isMounting);
   }
 
   @Override
