@@ -34,9 +34,6 @@ import java.util.Set;
  */
 public class RenderCoreExtension<Input, State> {
 
-  /** {@link Rect} to get the current visible bounds during the mount phase. */
-  private static final Rect sVisibleRect = new Rect();
-
   /**
    * The extension can optionally return a {@link LayoutResultVisitor} for every layout pass which
    * will visit every {@link LayoutResult}. The visitor should be functional and immutable.
@@ -79,13 +76,13 @@ public class RenderCoreExtension<Input, State> {
       final Host host,
       final @Nullable Map<RenderCoreExtension<?, ?>, Object> results) {
     if (results != null) {
-      host.getLocalVisibleRect(sVisibleRect);
+      final Rect rect = new Rect();
+      host.getLocalVisibleRect(rect);
       for (Map.Entry<RenderCoreExtension<?, ?>, Object> entry : results.entrySet()) {
         final Object state = entry.getValue();
         final MountExtension extension = entry.getKey().getMountExtension();
         if (extension != null) {
-          extension.beforeMount(
-              mountDelegateTarget.getExtensionState(extension), state, sVisibleRect);
+          extension.beforeMount(mountDelegateTarget.getExtensionState(extension), state, rect);
         }
       }
     }
@@ -122,12 +119,12 @@ public class RenderCoreExtension<Input, State> {
       final Host host,
       final Map<RenderCoreExtension<?, ?>, Object> results) {
     if (results != null) {
-      host.getLocalVisibleRect(sVisibleRect);
+      final Rect rect = new Rect();
+      host.getLocalVisibleRect(rect);
       for (Map.Entry<RenderCoreExtension<?, ?>, Object> e : results.entrySet()) {
         final MountExtension<?, ?> extension = e.getKey().getMountExtension();
         if (extension != null) {
-          extension.onVisibleBoundsChanged(
-              mountDelegateTarget.getExtensionState(extension), sVisibleRect);
+          extension.onVisibleBoundsChanged(mountDelegateTarget.getExtensionState(extension), rect);
         }
       }
     }
