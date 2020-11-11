@@ -28,12 +28,13 @@ import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 
 /** Thread assertion utilities. */
-public class ThreadUtils {
+public final class ThreadUtils {
 
-  private static @Nullable Handler sUiThreadHandler;
-  private static @Nullable Handler sDefaultBackgroundThreadHandler;
   private static final String THREAD_NAME = "ThreadUtilsBackgroundHandler";
   private static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
+
+  private static volatile @Nullable Handler sUiThreadHandler;
+  private static volatile @Nullable Handler sDefaultBackgroundThreadHandler;
 
   private ThreadUtils() {}
 
@@ -133,7 +134,7 @@ public class ThreadUtils {
     return sUiThreadHandler;
   }
 
-  private static synchronized Handler ensureDefaultBackgroundThreadHandler() {
+  private static Handler ensureDefaultBackgroundThreadHandler() {
     if (sDefaultBackgroundThreadHandler == null) {
       synchronized (ThreadUtils.class) {
         if (sDefaultBackgroundThreadHandler == null) {
