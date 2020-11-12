@@ -551,7 +551,7 @@ public class RecyclerBinder
      * Set whether item prefetch should be enabled on the underlying RecyclerView.LayoutManager.
      * Defaults to false.
      *
-     * <p> ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
+     * <p>ItemPrefetching feature of RecyclerView clashes with RecyclerBinder's compute range
      * optimization and in certain scenarios (like sticky header) it might reset ComponentTree of
      * LithoView while it is still on screen making it render blank or zero height.
      */
