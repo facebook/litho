@@ -495,28 +495,44 @@ public class MountState implements MountDelegateTarget {
     final RenderUnit parentRenderUnit = hostTreeNode.getRenderUnit();
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
 
-    final Object parentContent = mIndexToMountedItemMap.get(parentRenderUnit.getId()).getContent();
-    if (!(parentContent instanceof Host)) {
+    final MountItem mountItem = mIndexToMountedItemMap.get(parentRenderUnit.getId());
+    if (mountItem == null) {
       throw new RuntimeException(
-          "Trying to mount a RenderTreeNode, "
-              + (parentContent == null
-                  ? "but its host is not mounted."
-                  : ("its parent should be a Host, but was '"
-                      + parentContent.getClass().getSimpleName()
-                      + "'."))
-              + "\n"
+          "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
               + "Parent RenderUnit: "
               + "id="
               + parentRenderUnit.getId()
-              + "; contentType="
+              + "; contentType='"
               + parentRenderUnit.getRenderContentType()
-              + "\n"
+              + "'.\n"
               + "Child RenderUnit: "
-              + "id= "
+              + "id="
               + renderUnit.getId()
-              + "; contentType="
-              + renderUnit.getRenderContentType());
+              + "; contentType='"
+              + renderUnit.getRenderContentType()
+              + "'.");
     }
+
+    final Object parentContent = mountItem.getContent();
+    if (!(parentContent instanceof Host)) {
+      throw new RuntimeException(
+          "Trying to mount a RenderTreeNode, its parent should be a Host, but was '"
+              + parentContent.getClass().getSimpleName()
+              + "'.\n"
+              + "Parent RenderUnit: "
+              + "id="
+              + parentRenderUnit.getId()
+              + "; contentType='"
+              + parentRenderUnit.getRenderContentType()
+              + "'.\n"
+              + "Child RenderUnit: "
+              + "id="
+              + renderUnit.getId()
+              + "; contentType='"
+              + renderUnit.getRenderContentType()
+              + "'.");
+    }
+
     final Host host = (Host) parentContent;
 
     // 2. call the RenderUnit's Mount bindings.
