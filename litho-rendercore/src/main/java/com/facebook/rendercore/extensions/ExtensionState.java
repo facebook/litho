@@ -25,20 +25,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ExtensionState<State> {
-  private final @Nullable MountDelegate mMountDelegate;
+
+  private final MountDelegate mMountDelegate;
   private final State mState;
   private final Set<Long> mLayoutOutputMountRefs = new HashSet<>();
 
-  ExtensionState(final @Nullable MountDelegate mountDelegate, final State state) {
+  ExtensionState(final MountDelegate mountDelegate, final State state) {
     mMountDelegate = mountDelegate;
     mState = state;
   }
 
   public @Nullable Host getRootHost() {
-    if (mMountDelegate == null) {
-      return null;
-    }
-
     MountItem root = mMountDelegate.getMountDelegateTarget().getRootItem();
     if (root != null) {
       return (Host) root.getContent();
@@ -47,7 +44,6 @@ public class ExtensionState<State> {
     }
   }
 
-  @Nullable
   public MountDelegate getMountDelegate() {
     return mMountDelegate;
   }
@@ -63,32 +59,29 @@ public class ExtensionState<State> {
     mLayoutOutputMountRefs.clear();
   }
 
-  public void acquireMountReference(RenderTreeNode node, int position, boolean isMounting) {
+  public void acquireMountReference(
+      final RenderTreeNode node, final int position, final boolean isMounting) {
     acquireMountReference(node.getRenderUnit().getId(), position, isMounting);
   }
 
-  public void acquireMountReference(long id, int position, boolean isMounting) {
+  public void acquireMountReference(final long id, final int position, final boolean isMounting) {
     if (ownsReference(id)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
-
-    assertMountDelegate();
 
     mLayoutOutputMountRefs.add(id);
     mMountDelegate.acquireMountRef(id, position, isMounting);
   }
 
   public void releaseMountReference(
-      RenderTreeNode renderTreeNode, int position, boolean isMounting) {
+      final RenderTreeNode renderTreeNode, final int position, final boolean isMounting) {
     releaseMountReference(renderTreeNode.getRenderUnit().getId(), position, isMounting);
   }
 
-  public void releaseMountReference(long id, int position, boolean isMounting) {
+  public void releaseMountReference(final long id, final int position, final boolean isMounting) {
     if (!ownsReference(id)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
-
-    assertMountDelegate();
 
     mLayoutOutputMountRefs.remove(id);
     mMountDelegate.releaseMountRef(id, position, isMounting);
@@ -96,18 +89,11 @@ public class ExtensionState<State> {
 
   // TODO: T68620328 This method should be roll back to being protected once the transition
   // extension test ends.
-  public boolean ownsReference(RenderTreeNode renderTreeNode) {
+  public boolean ownsReference(final RenderTreeNode renderTreeNode) {
     return ownsReference(renderTreeNode.getRenderUnit().getId());
   }
 
-  public boolean ownsReference(long id) {
+  public boolean ownsReference(final long id) {
     return mLayoutOutputMountRefs.contains(id);
-  }
-
-  private void assertMountDelegate() {
-    if (mMountDelegate == null) {
-      throw new IllegalStateException(
-          "Cannot acquire or release mount references without a MountDelegate.");
-    }
   }
 }

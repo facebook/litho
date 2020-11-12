@@ -34,36 +34,15 @@ import com.facebook.rendercore.RenderUnit;
 @OkToExtend
 public abstract class MountExtension<Input, State> {
 
-  public final ExtensionState<State> createExtensionState(@Nullable MountDelegate mountDelegate) {
-    return new ExtensionState(mountDelegate, createState());
+  public final ExtensionState<State> createExtensionState(final MountDelegate mountDelegate) {
+    return new ExtensionState<>(mountDelegate, createState());
   }
 
   protected abstract State createState();
 
-  protected static boolean isRootItem(ExtensionState extensionState, int position) {
-    return extensionState.getMountDelegate().isRootItem(position);
-  }
-
-  protected static Object getContentAt(ExtensionState extensionState, int position) {
-    return extensionState.getMountDelegate().getContentAt(position);
-  }
-
-  protected static boolean isLockedForMount(
-      ExtensionState extensionState, RenderTreeNode renderTreeNode) {
-    return isLockedForMount(extensionState, renderTreeNode.getRenderUnit().getId());
-  }
-
-  protected static boolean isLockedForMount(ExtensionState extensionState, long id) {
-    return extensionState.getMountDelegate().isLockedForMount(id);
-  }
-
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public boolean canPreventMount() {
     return false;
-  }
-
-  public static MountDelegateTarget getMountTarget(ExtensionState extensionState) {
-    return extensionState.getMountDelegate().getMountDelegateTarget();
   }
 
   /**
@@ -73,17 +52,21 @@ public abstract class MountExtension<Input, State> {
    * @param input The new input the extension should use.
    */
   public void beforeMount(
-      ExtensionState<State> extensionState, Input input, @Nullable Rect localVisibleRect) {}
+      final ExtensionState<State> extensionState,
+      final Input input,
+      final @Nullable Rect localVisibleRect) {}
 
   public void beforeMountItem(
-      ExtensionState<State> extensionState, RenderTreeNode renderTreeNode, int index) {}
+      final ExtensionState<State> extensionState,
+      final RenderTreeNode renderTreeNode,
+      final int index) {}
 
   /** Called immediately after mounting. */
-  public void afterMount(ExtensionState<State> extensionState) {}
+  public void afterMount(final ExtensionState<State> extensionState) {}
 
   /** Called when the visible bounds of the Host change. */
   public void onVisibleBoundsChanged(
-      ExtensionState<State> extensionState, @Nullable Rect localVisibleRect) {}
+      final ExtensionState<State> extensionState, final @Nullable Rect localVisibleRect) {}
 
   /** Called after all the Host's children have been unmounted. */
   public void onUnmount(ExtensionState<State> extensionState) {}
@@ -93,29 +76,54 @@ public abstract class MountExtension<Input, State> {
 
   /** Called after an item is bound, after it gets mounted or updated. */
   public void onBindItem(
-      ExtensionState<State> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<State> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
 
   /** Called after an item is unbound. */
   public void onUnbindItem(
-      ExtensionState<State> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<State> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
 
   /** Called after an item is unmounted. */
   public void onUnmountItem(
-      ExtensionState<State> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<State> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
 
   /** Called after an item is mounted. */
   public void onMountItem(
-      ExtensionState<State> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<State> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {}
+
+  public static MountDelegateTarget getMountTarget(final ExtensionState<?> extensionState) {
+    return extensionState.getMountDelegate().getMountDelegateTarget();
+  }
+
+  protected static boolean isRootItem(final ExtensionState<?> extensionState, final int position) {
+    return extensionState.getMountDelegate().isRootItem(position);
+  }
+
+  protected static Object getContentAt(final ExtensionState<?> extensionState, final int position) {
+    return extensionState.getMountDelegate().getContentAt(position);
+  }
+
+  protected static Object getContentById(final ExtensionState<?> extensionState, final long id) {
+    return extensionState.getMountDelegate().getContentById(id);
+  }
+
+  protected static boolean isLockedForMount(
+      final ExtensionState<?> extensionState, final RenderTreeNode renderTreeNode) {
+    return isLockedForMount(extensionState, renderTreeNode.getRenderUnit().getId());
+  }
+
+  protected static boolean isLockedForMount(ExtensionState extensionState, long id) {
+    return extensionState.getMountDelegate().isLockedForMount(id);
+  }
 }

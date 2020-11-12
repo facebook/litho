@@ -40,7 +40,7 @@ public class DynamicPropsExtension
   @Override
   public void onBindItem(
       final ExtensionState<DynamicPropsExtensionState> extensionState,
-      final RenderUnit renderUnit,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
@@ -55,7 +55,7 @@ public class DynamicPropsExtension
   @Override
   public void onUnbindItem(
       final ExtensionState<DynamicPropsExtensionState> extensionState,
-      final RenderUnit renderUnit,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {

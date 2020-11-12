@@ -222,8 +222,8 @@ public class TransitionsExtension
 
   @Override
   public void onBindItem(
-      ExtensionState<TransitionsExtensionState> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     final TransitionsExtensionState state = extensionState.getState();
@@ -246,8 +246,8 @@ public class TransitionsExtension
 
   @Override
   public void onUnbindItem(
-      ExtensionState<TransitionsExtensionState> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {
@@ -268,8 +268,8 @@ public class TransitionsExtension
 
   @Override
   public void onMountItem(
-      ExtensionState<TransitionsExtensionState> extensionState,
-      final RenderUnit renderUnit,
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
     if (renderUnit instanceof LithoRenderUnit) {

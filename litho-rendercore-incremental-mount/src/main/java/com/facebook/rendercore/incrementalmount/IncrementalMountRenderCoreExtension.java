@@ -98,7 +98,7 @@ public class IncrementalMountRenderCoreExtension
         new TreeSet<>(sTopsComparator);
     private final SortedSet<IncrementalMountOutput> outputsOrderedByBottomBounds =
         new TreeSet<>(sBottomsComparator);
-    private final Set<Long> renderUnitWithIdHostsRenderTrees = new HashSet<>(4);
+    private final Set<Long> renderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
     private final HashMap<Long, Integer> positionForIdMap = new HashMap<>(8);
 
     private @Nullable List<IncrementalMountOutput> outputsOrderedByTopBoundsList;
@@ -130,7 +130,7 @@ public class IncrementalMountRenderCoreExtension
 
     @Override
     public boolean renderUnitWithIdHostsRenderTrees(long id) {
-      return renderUnitWithIdHostsRenderTrees.contains(id);
+      return renderUnitIdsWhichHostRenderTrees.contains(id);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class IncrementalMountRenderCoreExtension
     }
 
     void addRenderTreeHostId(long id) {
-      renderUnitWithIdHostsRenderTrees.add(id);
+      renderUnitIdsWhichHostRenderTrees.add(id);
     }
 
     void addPositionForId(final long id, final int position) {
