@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromTrigger;
@@ -59,8 +60,9 @@ public class TriggerGeneratorTest {
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
-        @Param T arg3,
-        @FromTrigger long arg4) {
+        @Param @Nullable T arg3,
+        @FromTrigger long arg4,
+        @FromTrigger @Nullable T arg5) {
 
       return null;
     }
@@ -102,7 +104,8 @@ public class TriggerGeneratorTest {
                 + "            eventTrigger.mTriggerTarget,\n"
                 + "            (java.lang.Object) params[0],\n"
                 + "            (T) params[1],\n"
-                + "            _event.arg4);\n"
+                + "            _event.arg4,\n"
+                + "            _event.arg5);\n"
                 + "    }\n"
                 + "    case 969727739: {\n"
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
@@ -129,7 +132,8 @@ public class TriggerGeneratorTest {
         .isEqualTo(
             "private java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.EventTriggerTarget _abstract,"
-                + " java.lang.Object arg2, T arg3, long arg4) {\n"
+                + " java.lang.Object arg2,\n"
+                + "    @androidx.annotation.Nullable T arg3, long arg4, @androidx.annotation.Nullable T arg5) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  java.lang.Object _result = (java.lang.Object) TestSpec.testTriggerMethod1(\n"
                 + "    c,\n"
@@ -137,7 +141,8 @@ public class TriggerGeneratorTest {
                 + "    (int) _ref.mStateContainer.arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
-                + "    arg4);\n"
+                + "    arg4,\n"
+                + "    arg5);\n"
                 + "  return _result;\n"
                 + "}\n");
 
@@ -168,7 +173,8 @@ public class TriggerGeneratorTest {
                 + " * For more information about using triggers, see https://fblitho.com/docs/trigger-events\n"
                 + " */\n"
                 + "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Handle handle, java.lang.Object arg2, T arg3, long arg4) {\n"
+                + "    com.facebook.litho.Handle handle, java.lang.Object arg2, @androidx.annotation.Nullable T arg3,\n"
+                + "    long arg4, @androidx.annotation.Nullable T arg5) {\n"
                 + "  int methodId = -773082596;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, handle);\n"
                 + "  if (trigger == null) {\n"
@@ -176,6 +182,7 @@ public class TriggerGeneratorTest {
                 + "  }\n"
                 + "  com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent _eventState = new com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent();\n"
                 + "  _eventState.arg4 = arg4;\n"
+                + "  _eventState.arg5 = arg5;\n"
                 + "  return (java.lang.Object) trigger.dispatchOnTrigger(_eventState, new Object[] {\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
@@ -189,7 +196,8 @@ public class TriggerGeneratorTest {
                 + " */\n"
                 + "@java.lang.Deprecated\n"
                 + "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.String key, java.lang.Object arg2, T arg3, long arg4) {\n"
+                + "    java.lang.String key, java.lang.Object arg2, @androidx.annotation.Nullable T arg3, long arg4,\n"
+                + "    @androidx.annotation.Nullable T arg5) {\n"
                 + "  int methodId = -773082596;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, key);\n"
                 + "  if (trigger == null) {\n"
@@ -197,6 +205,7 @@ public class TriggerGeneratorTest {
                 + "  }\n"
                 + "  com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent _eventState = new com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent();\n"
                 + "  _eventState.arg4 = arg4;\n"
+                + "  _eventState.arg5 = arg5;\n"
                 + "  return (java.lang.Object) trigger.dispatchOnTrigger(_eventState, new Object[] {\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
@@ -210,9 +219,11 @@ public class TriggerGeneratorTest {
                 + " */\n"
                 + "@java.lang.Deprecated\n"
                 + "public static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.EventTrigger trigger,\n"
-                + "    java.lang.Object arg2, T arg3, long arg4) {\n"
+                + "    java.lang.Object arg2, @androidx.annotation.Nullable T arg3, long arg4,\n"
+                + "    @androidx.annotation.Nullable T arg5) {\n"
                 + "  com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent _eventState = new com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent();\n"
                 + "  _eventState.arg4 = arg4;\n"
+                + "  _eventState.arg5 = arg5;\n"
                 + "  return (java.lang.Object) trigger.dispatchOnTrigger(_eventState, new Object[] {\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
@@ -226,14 +237,16 @@ public class TriggerGeneratorTest {
                 + " */\n"
                 + "@java.lang.Deprecated\n"
                 + "static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object arg2, T arg3, long arg4) {\n"
+                + "    java.lang.Object arg2, @androidx.annotation.Nullable T arg3, long arg4,\n"
+                + "    @androidx.annotation.Nullable T arg5) {\n"
                 + "  Test component = (Test) c.getComponentScope();\n"
                 + "  return component.testTriggerMethod1(\n"
                 + "      c,\n"
                 + "      (com.facebook.litho.EventTriggerTarget) component,\n"
                 + "      arg2,\n"
                 + "      arg3,\n"
-                + "      arg4);\n"
+                + "      arg4,\n"
+                + "      arg5);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(4).toString())

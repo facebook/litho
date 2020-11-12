@@ -201,7 +201,10 @@ public class TriggerGenerator {
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)
           || MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+        methodSpec.addParameter(
+            ParameterSpec.builder(methodParamModel.getTypeName(), methodParamModel.getName())
+                .addAnnotations(methodParamModel.getExternalAnnotations())
+                .build());
         delegation.add(methodParamModel.getName());
       } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
         delegation.add("c", methodParamModel.getTypeName());
@@ -489,11 +492,17 @@ public class TriggerGenerator {
       }
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {
-        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+        eventTriggerMethod.addParameter(
+            ParameterSpec.builder(methodParamModel.getTypeName(), methodParamModel.getName())
+                .addAnnotations(methodParamModel.getExternalAnnotations())
+                .build());
       }
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+        eventTriggerMethod.addParameter(
+            ParameterSpec.builder(methodParamModel.getTypeName(), methodParamModel.getName())
+                .addAnnotations(methodParamModel.getExternalAnnotations())
+                .build());
 
         maybeAddGenericTypeToStaticFunction(methodParamModel, eventTriggerMethod);
       }
