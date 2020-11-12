@@ -42,11 +42,7 @@ import org.mockito.MockitoAnnotations
 @LayoutSpec
 object VarArgsWildcardPropTestSpec {
   @OnCreateLayout
-  fun onCreateLayout(
-      c: ComponentContext,
-      @Prop(varArg = "color")
-      colors: List<Color>
-  ): Component {
+  fun onCreateLayout(c: ComponentContext, @Prop(varArg = "color") colors: List<Color>): Component {
     return Column.create(c).build()
   }
 }

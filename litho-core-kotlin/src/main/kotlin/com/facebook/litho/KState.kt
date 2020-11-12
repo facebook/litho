@@ -84,8 +84,7 @@ interface Updater {
 class StateUpdater(private val stateHandler: StateHandler) : Updater {
 
   override var <T> State<T>.value: T
-    @Suppress("UNCHECKED_CAST")
-    get() = stateHandler.hookState[key] as T
+    @Suppress("UNCHECKED_CAST") get() = stateHandler.hookState[key] as T
     set(value) {
       stateHandler.hookState[key] = value
     }

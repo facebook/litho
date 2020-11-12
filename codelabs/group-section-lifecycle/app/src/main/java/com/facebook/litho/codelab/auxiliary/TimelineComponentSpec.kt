@@ -38,10 +38,8 @@ object TimelineComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(resType = ResType.STRING)
-      type: String,
-      @Prop(resType = ResType.COLOR)
-      color: Int,
+      @Prop(resType = ResType.STRING) type: String,
+      @Prop(resType = ResType.COLOR) color: Int,
       @Prop timestamp: Long
   ): Component {
     return Column.create(c)

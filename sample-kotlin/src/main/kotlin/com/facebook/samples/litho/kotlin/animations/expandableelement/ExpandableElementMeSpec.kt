@@ -47,8 +47,7 @@ object ExpandableElementMeSpec {
       c: ComponentContext,
       @Prop messageText: String,
       @Prop timestamp: String,
-      @Prop(optional = true)
-      seen: Boolean,
+      @Prop(optional = true) seen: Boolean,
       @State expanded: Boolean?
   ): Component {
     val isExpanded = expanded ?: false
@@ -88,8 +87,7 @@ object ExpandableElementMeSpec {
   fun onCreateTransition(
       c: ComponentContext,
       @State expanded: Boolean?,
-      @Prop(optional = true)
-      forceAnimateOnAppear: Boolean
+      @Prop(optional = true) forceAnimateOnAppear: Boolean
   ): Transition? =
       if (!forceAnimateOnAppear && expanded == null) {
         null
