@@ -85,8 +85,6 @@
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.EventHandlerCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.ParamCompletionContributor" order="first"/>
 
-    <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
-
     <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
 
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
