@@ -21,10 +21,13 @@ import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.ide.structureView.StructureView;
 import com.intellij.ide.structureView.StructureViewFactory;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -58,7 +61,7 @@ class ComponentStructureView implements Disposable {
   private final Project project;
   private ContentManager contentManager;
   private Content contentContainer;
-  @Nullable private StructureView structureView;
+  @VisibleForTesting @Nullable StructureView structureView;
 
   static ComponentStructureView getInstance(Project project) {
     return ServiceManager.getService(project, ComponentStructureView.class);
@@ -113,7 +116,11 @@ class ComponentStructureView implements Disposable {
   private void updateViewLater(@Nullable PsiClass updatedClass) {
     if (!isVisible.get()) return;
 
-    DumbService.getInstance(project).smartInvokeLater(() -> updateView(updatedClass));
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      ReadAction.run(() -> updateView(updatedClass));
+    } else {
+      DumbService.getInstance(project).smartInvokeLater(() -> updateView(updatedClass));
+    }
   }
 
   /** Updates view either if updatedClass is null, or if updatedClass is focused. */
@@ -128,6 +135,8 @@ class ComponentStructureView implements Disposable {
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, cls -> true))
             .orElse(null);
 
+    if (updatedClass != null && updatedClass != selectedClass) return;
+
     // assumes Litho Spec is always the first top level class in the file
     String loggingType;
     if (LithoPluginUtils.isLayoutSpec(selectedClass)) {
@@ -137,7 +146,6 @@ class ComponentStructureView implements Disposable {
     } else {
       loggingType = "not_spec";
     }
-    if (updatedClass != null && updatedClass != selectedClass) return;
 
     final StructureView oldStructure = structureView;
     final Map<String, String> data = new HashMap<>();
