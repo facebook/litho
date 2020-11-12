@@ -76,7 +76,8 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
+    final IncrementalMountExtension extension =
+        IncrementalMountExtension.getInstance(mExtensionAcquireDuringMount);
 
     final ExtensionState<IncrementalMountExtensionState> extensionState =
         extension.createExtensionState(mountDelegate);
@@ -99,12 +100,12 @@ public class IncrementalMountExtensionTest {
     assertThat(extension.getPreviousBottomsIndex(state)).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex(state)).isEqualTo(5);
 
-    final IncrementalMountExtensionInput incrementalMountExtensionInput2 = new TestInput(3);
+    final TestInput incrementalMountExtensionInput2 = new TestInput(3);
     extension.beforeMount(extensionState, incrementalMountExtensionInput2, new Rect(0, 0, 0, 0));
-    for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
+    for (int i = 0, size = incrementalMountExtensionInput2.getMountableOutputCount();
         i < size;
         i++) {
-      final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
+      final RenderTreeNode node = incrementalMountExtensionInput2.getMountableOutputAt(i);
       extension.beforeMountItem(extensionState, node, i);
     }
     extension.afterMount(extensionState);
