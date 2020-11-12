@@ -2116,9 +2116,12 @@ public class ComponentTree {
             extraAttribution);
 
     if (localLayoutState == null) {
-      if (!isReleased() && output != null) {
+      if (!isReleased() && isFromSyncLayout(source)) {
         throw new IllegalStateException(
-            "LayoutState is null, but only async operations can return a null LayoutState");
+            "LayoutState is null, but only async operations can return a null LayoutState. Source: "
+                + layoutSourceToString(source)
+                + ", current thread: "
+                + Thread.currentThread().getName());
       }
 
       return;
@@ -2763,19 +2766,6 @@ public class ComponentTree {
           extraAttribution);
     }
 
-    private boolean isFromSyncLayout(@CalculateLayoutSource int source) {
-      switch (source) {
-        case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
-        case CalculateLayoutSource.SET_ROOT_SYNC:
-        case CalculateLayoutSource.UPDATE_STATE_SYNC:
-        case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
-        case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
-          return true;
-        default:
-          return false;
-      }
-    }
-
     @VisibleForTesting
     synchronized void release() {
       if (released) {
@@ -3008,6 +2998,19 @@ public class ComponentTree {
       result = 31 * result + widthSpec;
       result = 31 * result + heightSpec;
       return result;
+    }
+  }
+
+  private static boolean isFromSyncLayout(@CalculateLayoutSource int source) {
+    switch (source) {
+      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+      case CalculateLayoutSource.SET_ROOT_SYNC:
+      case CalculateLayoutSource.UPDATE_STATE_SYNC:
+      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+      case CalculateLayoutSource.RELOAD_PREVIOUS_STATE:
+        return true;
+      default:
+        return false;
     }
   }
 
