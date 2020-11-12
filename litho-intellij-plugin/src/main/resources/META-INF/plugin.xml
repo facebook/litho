@@ -91,9 +91,9 @@
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentsMethodDeclarationHandler"/>
 
-    <java.elementFinder implementation="com.facebook.litho.intellij.file.ComponentFinder" id="java" order="last"/>
+    <java.elementFinder implementation="com.facebook.litho.intellij.redsymbols.ComponentFinder" id="java" order="last"/>
 
-    <java.shortNamesCache implementation="com.facebook.litho.intellij.file.ComponentShortNamesCache"/>
+    <java.shortNamesCache implementation="com.facebook.litho.intellij.redsymbols.ComponentShortNamesCache"/>
 
     <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
 
@@ -104,16 +104,16 @@
       enabledByDefault="true"
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
-    <postStartupActivity implementation="com.facebook.litho.intellij.services.LithoStartupActivity"/>
+    <postStartupActivity implementation="com.facebook.litho.intellij.redsymbols.LithoStartupActivity"/>
 
     <projectConfigurable parentId="tools" instance="com.facebook.litho.intellij.settings.AppSettingsController"
       id="com.facebook.litho.intellij.settings.AppSettingsController" nonDefaultProject="false" />
     <projectService serviceImplementation="com.facebook.litho.intellij.settings.AppSettingsState"/>
-    <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
+    <projectService serviceImplementation="com.facebook.litho.intellij.redsymbols.ComponentsCacheService"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.toolwindows.ComponentStructureView"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
 
-    <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
+    <resolveScopeEnlarger implementation="com.facebook.litho.intellij.redsymbols.ComponentResolveScopeEnlarger"/>
 
     <toolWindow id="Litho Spec" anchor="left" icon="LithoPluginIcons.TOOLWINDOW"
       factoryClass="com.facebook.litho.intellij.toolwindows.LithoToolWindowFactory"

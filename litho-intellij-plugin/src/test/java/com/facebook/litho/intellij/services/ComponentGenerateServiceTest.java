@@ -49,7 +49,6 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
     retrieveInitialAndUpdatedComponents(
         "InitialLayoutSpec.java",
         "UpdatedLayoutSpecWithSameInterface.java",
-        "Layout",
         (initialComponent, updatedComponent) ->
             assertThat(updatedComponent).isSameAs(initialComponent));
   }
@@ -59,7 +58,6 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
     retrieveInitialAndUpdatedComponents(
         "InitialMountSpec.java",
         "UpdatedMountSpecWithSameInterface.java",
-        "Mount",
         (initialComponent, updatedComponent) ->
             assertThat(updatedComponent).isSameAs(initialComponent));
   }
@@ -69,7 +67,6 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
     retrieveInitialAndUpdatedComponents(
         "InitialLayoutSpec.java",
         "UpdatedLayoutSpecWithDifferentInterface.java",
-        "Layout",
         (initialComponent, updatedComponent) ->
             assertThat(updatedComponent).isNotSameAs(initialComponent));
   }
@@ -79,16 +76,12 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
     retrieveInitialAndUpdatedComponents(
         "InitialMountSpec.java",
         "UpdatedMountSpecWithDifferentInterface.java",
-        "Mount",
         (initialComponent, updatedComponent) ->
             assertThat(updatedComponent).isNotSameAs(initialComponent));
   }
 
   private void retrieveInitialAndUpdatedComponents(
-      String fileName,
-      String fileChangedName,
-      String componentName,
-      BiConsumer<PsiClass, PsiClass> assertion)
+      String fileName, String fileChangedName, BiConsumer<PsiClass, PsiClass> assertion)
       throws IOException {
     final PsiFile file = testHelper.configure(fileName);
     final PsiFile fileChanged = testHelper.configure(fileChangedName);
@@ -97,16 +90,15 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
         .invokeAndWait(
             () -> {
               final PsiClass spec = LithoPluginUtils.getFirstClass(file, psiClass -> true).get();
-              ComponentGenerateService.getInstance().updateComponentSync(spec);
               final PsiClass component =
-                  ComponentsCacheService.getInstance(project).getComponent(componentName);
+                  ComponentGenerateService.getInstance().updateComponentSync(spec);
+
               assertThat(component).isNotNull();
 
               final PsiClass updatedSpec =
                   LithoPluginUtils.getFirstClass(fileChanged, psiClass -> true).get();
-              ComponentGenerateService.getInstance().updateComponentSync(updatedSpec);
               final PsiClass updatedComponent =
-                  ComponentsCacheService.getInstance(project).getComponent(componentName);
+                  ComponentGenerateService.getInstance().updateComponentSync(updatedSpec);
               assertion.accept(component, updatedComponent);
             });
   }

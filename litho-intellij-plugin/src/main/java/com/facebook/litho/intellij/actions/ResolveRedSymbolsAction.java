@@ -18,7 +18,7 @@ package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.services.RedSymbolsResolver;
+import com.facebook.litho.intellij.redsymbols.RedSymbolsResolver;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;

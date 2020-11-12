@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.services;
+package com.facebook.litho.intellij.redsymbols;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.services.LithoGeneratedFileProvider;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.actions.AddImportAction;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -204,7 +205,7 @@ public class RedSymbolsResolver {
                 final String newContent = provider.createFileContent(fqn);
                 if (newContent == null) return null;
 
-                return ComponentGenerateService.updateComponent(fqn, newContent, project);
+                return FileGenerateUtils.updateClass(fqn, newContent, project);
               })
           .filter(Objects::nonNull)
           .forEach(component -> redSymbolToClass.put(redSymbol, component));

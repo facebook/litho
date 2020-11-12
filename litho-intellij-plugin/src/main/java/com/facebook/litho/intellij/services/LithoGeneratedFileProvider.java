@@ -82,7 +82,7 @@ public class LithoGeneratedFileProvider {
   @Nullable
   public String createFileContent(String fqn) {
     final Pair<String, String> content =
-        ComponentGenerateService.getInstance().createFileContent(componentFQNToSpec.get(fqn));
+        ComponentGenerateService.getInstance().createLithoFileContent(componentFQNToSpec.get(fqn));
     if (content == null) return null;
 
     return content.second;

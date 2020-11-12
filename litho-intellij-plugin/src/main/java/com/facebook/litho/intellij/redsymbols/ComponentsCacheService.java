@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.services;
+package com.facebook.litho.intellij.redsymbols;
 
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.file.ComponentScope;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.ServiceManager;
@@ -47,7 +46,7 @@ public class ComponentsCacheService implements Disposable {
     this.project = project;
   }
 
-  public static ComponentsCacheService getInstance(Project project) {
+  static ComponentsCacheService getInstance(Project project) {
     return ServiceManager.getService(project, ComponentsCacheService.class);
   }
 
@@ -57,17 +56,15 @@ public class ComponentsCacheService implements Disposable {
   }
 
   /**
-   * Use {@link ComponentGenerateService#getSpecModel(PsiClass)} instead for most purposes.
-   *
    * @return component already present in the cache by its full-qualified name or null if it's
    *     absent.
    */
   @Nullable
-  public PsiClass getComponent(String componentQualifiedName) {
+  PsiClass getComponent(String componentQualifiedName) {
     return componentNameToClass.get(componentQualifiedName);
   }
 
-  public PsiClass[] getAllComponents() {
+  PsiClass[] getAllComponents() {
     return componentNameToClass.values().toArray(PsiClass.EMPTY_ARRAY);
   }
 
@@ -106,10 +103,7 @@ public class ComponentsCacheService implements Disposable {
             });
   }
 
-  /**
-   * Updates cache. Use {@link ComponentGenerateService#updateLayoutComponentAsync(PsiClass)}
-   * instead for most purposes.
-   */
+  /** Updates cache. */
   void update(String componentQualifiedName, PsiClass inMemory) {
     componentNameToClass.put(componentQualifiedName, inMemory);
   }

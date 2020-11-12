@@ -17,36 +17,24 @@
 package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.file.ComponentScope;
+import com.facebook.litho.intellij.redsymbols.FileGenerateUtils;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.PsiMountSpecModelFactory;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileTypes.StdFileTypes;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +43,6 @@ import org.jetbrains.annotations.Nullable;
  * Component files with the new model.
  */
 public class ComponentGenerateService {
-  private static final Logger LOG = Logger.getInstance(ComponentGenerateService.class);
   private static final PsiLayoutSpecModelFactory LAYOUT_SPEC_MODEL_FACTORY =
       new PsiLayoutSpecModelFactory();
   private static final PsiMountSpecModelFactory MOUNT_SPEC_MODEL_FACTORY =
@@ -82,10 +69,11 @@ public class ComponentGenerateService {
 
   @Nullable
   public PsiClass updateComponentSync(PsiClass specCls) {
-    final Pair<String, String> newComponent = createFileContent(specCls);
+    final Pair<String, String> newComponent = createLithoFileContent(specCls);
     if (newComponent == null) return null;
 
-    return updateComponent(newComponent.first, newComponent.second, specCls.getProject());
+    return FileGenerateUtils.updateClass(
+        newComponent.first, newComponent.second, specCls.getProject());
   }
 
   @Nullable
@@ -101,7 +89,7 @@ public class ComponentGenerateService {
    *     valid.
    */
   @Nullable
-  Pair<String, String> createFileContent(PsiClass specCls) {
+  Pair<String, String> createLithoFileContent(PsiClass specCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
     if (componentQN == null) return null;
@@ -119,71 +107,6 @@ public class ComponentGenerateService {
 
     final String newContent = createFileContentFromModel(componentQN, model);
     return Pair.create(componentQN, newContent);
-  }
-
-  /** Updates generated Component file with new content. */
-  @Nullable
-  static PsiClass updateComponent(
-      String componentQualifiedName, String newContent, Project project) {
-    final Optional<PsiClass> generatedClass =
-        Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
-            .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
-
-    if (generatedClass.isPresent()) {
-      return updateExistingComponent(newContent, generatedClass.get(), project);
-    } else {
-      return updateInMemoryComponent(newContent, componentQualifiedName, project);
-    }
-  }
-
-  @Nullable
-  private static PsiClass updateExistingComponent(
-      String newContent, PsiClass generatedClass, Project project) {
-    // Null is not expected scenario
-    final Document document =
-        PsiDocumentManager.getInstance(project).getDocument(generatedClass.getContainingFile());
-    if (newContent.equals(document.getText())) {
-      return generatedClass;
-    }
-
-    // Write access is allowed inside write-action only and on EDT
-    if (ApplicationManager.getApplication().isDispatchThread()) {
-      updateDocument(newContent, document);
-    } else {
-      ApplicationManager.getApplication().invokeLater(() -> updateDocument(newContent, document));
-    }
-    // Currently, we don't need reference to the pre-existing component's PsiClass.
-    return null;
-  }
-
-  private static void updateDocument(String newContent, Document document) {
-    WriteAction.run(() -> document.setText(newContent));
-    FileDocumentManager.getInstance().saveDocument(document);
-  }
-
-  @Nullable
-  private static PsiClass updateInMemoryComponent(
-      String newContent, String componentQualifiedName, Project project) {
-    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
-    if (componentShortName.isEmpty()) return null;
-
-    final ComponentsCacheService cacheService = ComponentsCacheService.getInstance(project);
-    final PsiClass oldComponent = cacheService.getComponent(componentQualifiedName);
-    if (oldComponent != null && newContent.equals(oldComponent.getContainingFile().getText())) {
-      return oldComponent;
-    }
-
-    final PsiFile file =
-        PsiFileFactory.getInstance(project)
-            .createFileFromText(componentShortName + ".java", StdFileTypes.JAVA, newContent);
-    ComponentScope.include(file);
-    final PsiClass inMemory =
-        LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
-            .orElse(null);
-    if (inMemory == null) return null;
-
-    cacheService.update(componentQualifiedName, inMemory);
-    return inMemory;
   }
 
   /**

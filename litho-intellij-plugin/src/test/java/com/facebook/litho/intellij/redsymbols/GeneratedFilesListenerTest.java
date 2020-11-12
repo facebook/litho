@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.services;
+package com.facebook.litho.intellij.redsymbols;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;

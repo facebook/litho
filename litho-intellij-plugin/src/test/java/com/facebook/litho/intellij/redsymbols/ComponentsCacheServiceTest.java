@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.services;
+package com.facebook.litho.intellij.redsymbols;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertSame;

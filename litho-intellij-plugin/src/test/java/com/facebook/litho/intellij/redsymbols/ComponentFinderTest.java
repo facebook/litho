@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.file;
+package com.facebook.litho.intellij.redsymbols;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 

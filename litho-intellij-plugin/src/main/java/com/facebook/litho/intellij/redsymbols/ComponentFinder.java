@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.file;
+package com.facebook.litho.intellij.redsymbols;
 
-import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;

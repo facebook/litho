@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.file;
+package com.facebook.litho.intellij.redsymbols;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.StdFileTypes;
