@@ -112,17 +112,6 @@ public class ComponentContext {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, null, null, treeProps);
-  }
-
-  public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger,
-      @Nullable StateHandler stateHandler,
-      @Nullable HooksHandler hooksHandler,
-      @Nullable TreeProps treeProps) {
-
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
@@ -133,8 +122,7 @@ public class ComponentContext {
     mTreeProps = treeProps;
     mLogger = logger;
     mLogTag = logTag;
-    mStateHandler = stateHandler;
-    mHooksHandler = hooksHandler;
+    mStateHandler = null;
   }
 
   public ComponentContext(ComponentContext context) {
