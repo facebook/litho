@@ -222,7 +222,7 @@ public class IncrementalMountExtension
       }
     }
 
-    extensionState.acquireMountReference(output.getId(), position, isMounting);
+    extensionState.acquireMountReference(output.getId(), isMounting);
   }
 
   static void recursivelyNotifyVisibleBoundsChanged(

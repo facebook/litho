@@ -59,12 +59,11 @@ public class ExtensionState<State> {
     mLayoutOutputMountRefs.clear();
   }
 
-  public void acquireMountReference(
-      final RenderTreeNode node, final int position, final boolean isMounting) {
-    acquireMountReference(node.getRenderUnit().getId(), position, isMounting);
+  public void acquireMountReference(final RenderTreeNode node, final boolean isMounting) {
+    acquireMountReference(node.getRenderUnit().getId(), isMounting);
   }
 
-  public void acquireMountReference(final long id, final int position, final boolean isMounting) {
+  public void acquireMountReference(final long id, final boolean isMounting) {
     if (ownsReference(id)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }

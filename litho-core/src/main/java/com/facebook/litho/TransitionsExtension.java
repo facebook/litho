@@ -564,7 +564,7 @@ public class TransitionsExtension
                   state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
             }
             extensionState.acquireMountReference(
-                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, true);
+                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), true);
             // Here we have to release the ref count without mounting.
             extensionState.releaseMountReference(
                 state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
@@ -821,7 +821,7 @@ public class TransitionsExtension
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
       if (increment) {
         if (!extensionState.ownsReference(renderTreeNode)) {
-          extensionState.acquireMountReference(renderTreeNode, i, false);
+          extensionState.acquireMountReference(renderTreeNode, false);
         }
       } else {
         if (extensionState.ownsReference(renderTreeNode)) {
@@ -836,10 +836,10 @@ public class TransitionsExtension
       if (increment) {
         // We use the position as 0 as we are not mounting it, just acquiring reference.
         if (!extensionState.ownsReference(parentRenderTreeNode)) {
-          extensionState.acquireMountReference(parentRenderTreeNode, 0, false);
+          extensionState.acquireMountReference(parentRenderTreeNode, false);
         }
         if (!extensionState.ownsReference(parentRenderTreeNode)) {
-          extensionState.acquireMountReference(parentRenderTreeNode, 0, false);
+          extensionState.acquireMountReference(parentRenderTreeNode, false);
         }
       } else {
         if (extensionState.ownsReference(parentRenderTreeNode)) {
