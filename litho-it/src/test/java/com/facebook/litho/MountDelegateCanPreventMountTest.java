@@ -70,7 +70,7 @@ public class MountDelegateCanPreventMountTest {
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isFalse();
 
     // Releasing the lock is reflected by isLockedForMount
-    mountDelegate.releaseMountRef(layoutOutput1, 0, false);
+    mountDelegate.releaseMountRef(layoutOutput1, false);
     assertThat(mountDelegate.isLockedForMount(layoutOutput1)).isFalse();
     assertThat(mountDelegate.isLockedForMount(layoutOutput2)).isFalse();
   }
@@ -89,7 +89,7 @@ public class MountDelegateCanPreventMountTest {
     mountDelegate.addExtension(mountDelegateExtensionPreventMount);
 
     mountDelegate.acquireMountRef(layoutOutput1, false);
-    mountDelegate.releaseMountRef(layoutOutput1, 0, false);
-    mountDelegate.releaseMountRef(layoutOutput1, 0, false);
+    mountDelegate.releaseMountRef(layoutOutput1, false);
+    mountDelegate.releaseMountRef(layoutOutput1, false);
   }
 }

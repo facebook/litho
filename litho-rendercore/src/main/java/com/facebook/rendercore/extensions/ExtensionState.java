@@ -54,7 +54,7 @@ public class ExtensionState<State> {
 
   public void releaseAllAcquiredReferences() {
     for (Long id : mLayoutOutputMountRefs) {
-      mMountDelegate.releaseMountRef(id, 0, false);
+      mMountDelegate.releaseMountRef(id, false);
     }
     mLayoutOutputMountRefs.clear();
   }
@@ -83,7 +83,7 @@ public class ExtensionState<State> {
     }
 
     mLayoutOutputMountRefs.remove(id);
-    mMountDelegate.releaseMountRef(id, position, isMounting);
+    mMountDelegate.releaseMountRef(id, isMounting);
   }
 
   // TODO: T68620328 This method should be roll back to being protected once the transition

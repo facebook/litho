@@ -178,11 +178,11 @@ public class MountDelegate {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void releaseMountRef(RenderTreeNode renderTreeNode, int i, boolean isMounting) {
-    releaseMountRef(renderTreeNode.getRenderUnit().getId(), i, isMounting);
+  public void releaseMountRef(final RenderTreeNode renderTreeNode, final boolean isMounting) {
+    releaseMountRef(renderTreeNode.getRenderUnit().getId(), isMounting);
   }
 
-  public void releaseMountRef(long id, int i, boolean isMounting) {
+  public void releaseMountRef(final long id, final boolean isMounting) {
     final boolean wasLockedForMount = isLockedForMount(id);
     decrementExtensionRefCount(id);
 
