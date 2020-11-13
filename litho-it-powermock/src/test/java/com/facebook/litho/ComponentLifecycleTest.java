@@ -137,9 +137,9 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
 
-    StateHandler stateHandler = mock(StateHandler.class);
-
-    final ComponentContext c = new ComponentContext(getApplicationContext(), stateHandler);
+    ComponentTree componentTree =
+        ComponentTree.create(new ComponentContext(getApplicationContext())).build();
+    final ComponentContext c = componentTree.getContext();
     c.setLayoutStateContextForTesting();
     mContext = spy(c);
     mLayoutStateContext = c.getLayoutStateContext();

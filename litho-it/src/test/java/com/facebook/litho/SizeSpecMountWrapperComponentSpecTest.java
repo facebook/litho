@@ -42,7 +42,7 @@ public class SizeSpecMountWrapperComponentSpecTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(getApplicationContext(), new StateHandler());
+    mContext = new ComponentContext(getApplicationContext());
     ErrorBoundariesConfiguration.rootWrapperComponentFactory = null;
   }
 

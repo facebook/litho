@@ -18,7 +18,6 @@ package com.facebook.litho.testing;
 
 import android.app.Activity;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.StateHandler;
 import com.facebook.litho.testing.assertj.LithoRepresentation;
 import org.assertj.core.api.Assertions;
 import org.junit.rules.TestRule;
@@ -36,7 +35,7 @@ public class ComponentsRule implements TestRule {
       @Override
       public void evaluate() throws Throwable {
         final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        mContext = new ComponentContext(activity, new StateHandler());
+        mContext = new ComponentContext(activity);
 
         Assertions.useRepresentation(new LithoRepresentation(mContext));
 

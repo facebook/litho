@@ -95,10 +95,6 @@ public class ComponentContext {
     this(context, null, null, null);
   }
 
-  public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, null, null, stateHandler, null);
-  }
-
   /**
    * Constructor that can be used to receive log data from components. Check {@link
    * ComponentsLogger} for the type of events you can listen for.
