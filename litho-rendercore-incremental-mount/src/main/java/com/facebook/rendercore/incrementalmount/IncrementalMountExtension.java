@@ -129,6 +129,11 @@ public class IncrementalMountExtension
     assertMainThread();
 
     final IncrementalMountExtensionState state = extensionState.getState();
+    if (state.mInput == null) {
+      // Something notified the host that the visible bounds changed, but nothing was mounted yet.
+      // Nothing to do.
+      return;
+    }
 
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (state.mPreviousLocalVisibleRect.isEmpty()

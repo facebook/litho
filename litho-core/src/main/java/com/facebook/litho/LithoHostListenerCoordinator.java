@@ -59,6 +59,13 @@ public class LithoHostListenerCoordinator {
     }
   }
 
+  public void processVisibilityOutputs(Rect localVisibleRect) {
+    if (mVisibilityExtension != null) {
+      mVisibilityExtension.onVisibleBoundsChanged(
+          mMountDelegateTarget.getExtensionState(mVisibilityExtension), localVisibleRect);
+    }
+  }
+
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
     // We first mount and then we process visibility outputs.
     if (mIncrementalMountExtension != null) {
