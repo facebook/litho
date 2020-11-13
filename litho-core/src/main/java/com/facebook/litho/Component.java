@@ -347,13 +347,15 @@ public abstract class Component extends ComponentLifecycle
   @Deprecated
   public void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    if (c.hasLayoutState()) {
-      measure(c, widthSpec, heightSpec, outputSize);
+    final ComponentContext contextForLayout =
+        c.getStateHandler() == null
+            ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
+            : c;
+    if (contextForLayout.hasLayoutState()) {
+      measure(contextForLayout, widthSpec, heightSpec, outputSize);
       return;
     }
 
-    final ComponentContext contextForLayout =
-        c.getStateHandler() == null ? new ComponentContext(c, new StateHandler(), null, null) : c;
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
@@ -734,7 +736,12 @@ public abstract class Component extends ComponentLifecycle
       return willRender(component.mLayoutCreatedInWillRender);
     }
 
-    component.mLayoutCreatedInWillRender = Layout.create(c, component);
+    // Missing StateHandler is only expected in tests
+    final ComponentContext contextForLayout =
+        c.getStateHandler() == null
+            ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
+            : c;
+    component.mLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
     return willRender(component.mLayoutCreatedInWillRender);
   }
 

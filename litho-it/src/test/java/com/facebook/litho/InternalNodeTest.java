@@ -47,6 +47,7 @@ import android.util.Pair;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentWithState;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
@@ -399,7 +400,7 @@ public class InternalNodeTest {
   }
 
   @Test
-  public void testComponentCreateAndRetrieveCachedLayoutLS() {
+  public void testComponentCreateAndRetrieveCachedLayoutLS_measure() {
     final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
@@ -420,6 +421,67 @@ public class InternalNodeTest {
 
     layoutState.clearCachedLayout(textComponent);
     assertThat(layoutState.getCachedLayout(textComponent)).isNull();
+  }
+
+  @Test
+  public void testComponentCreateAndRetrieveCachedLayoutLS_measureMightNotCacheInternalNode() {
+    final ComponentContext baseContext = new ComponentContext(getApplicationContext());
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+
+    final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
+    final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
+    final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
+    final Size textSize = new Size();
+    textComponent.measureMightNotCacheInternalNode(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
+
+    assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
+    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
+    assertThat(cachedLayout).isNotNull();
+    assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
+    assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
+
+    layoutState.clearCachedLayout(textComponent);
+    assertThat(layoutState.getCachedLayout(textComponent)).isNull();
+  }
+
+  @Test
+  public void testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+
+    final Component component =
+        Column.create(c)
+            .child(Text.create(c).textSizePx(16).text("test"))
+            .child(ComponentWithState.create(c))
+            .build();
+    final Size textSize = new Size();
+    component.measureMightNotCacheInternalNode(
+        c, makeSizeSpec(50, EXACTLY), makeSizeSpec(0, UNSPECIFIED), textSize);
+
+    assertThat(textSize.width).isEqualTo(50);
+    assertThat(textSize.height).isGreaterThan(0);
+  }
+
+  @Test
+  public void
+      testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+
+    final Component component =
+        Column.create(c)
+            .child(Text.create(c).textSizePx(16).text("test"))
+            .child(ComponentWithState.create(c))
+            .build();
+    final Size textSize = new Size();
+    component.measureMightNotCacheInternalNode(
+        c, makeSizeSpec(50, EXACTLY), makeSizeSpec(0, UNSPECIFIED), textSize);
+
+    assertThat(textSize.width).isEqualTo(50);
+    assertThat(textSize.height).isGreaterThan(0);
   }
 
   @Test

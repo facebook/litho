@@ -18,10 +18,12 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.View;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentWithState;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -90,5 +92,11 @@ public class WillRenderTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     Component.willRender(c, Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
+  }
+
+  @Test
+  public void testWillRender_withComponentContextWithoutStateHandler_doesntCrash() {
+    ComponentContext c = new ComponentContext(getApplicationContext());
+    assertThat(Component.willRender(c, ComponentWithState.create(c).build())).isTrue();
   }
 }
