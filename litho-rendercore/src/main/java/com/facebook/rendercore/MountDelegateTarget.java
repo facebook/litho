@@ -27,7 +27,7 @@ public interface MountDelegateTarget {
 
   void notifyMount(final long id);
 
-  void notifyUnmount(int position);
+  void notifyUnmount(final long id);
 
   boolean needsRemount();
 

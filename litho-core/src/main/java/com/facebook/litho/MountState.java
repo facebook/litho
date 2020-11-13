@@ -780,7 +780,12 @@ class MountState
   }
 
   @Override
-  public void notifyUnmount(int position) {
+  public void notifyUnmount(long id) {
+    final MountItem item = mIndexToItemMap.get(id);
+    if (item == null) {
+      return;
+    }
+    final int position = getLayoutOutput(item).getIndex();
     unmountItem(position, mHostsByMarker);
   }
 
@@ -2672,7 +2677,7 @@ class MountState
 
     if (hasUnmountDelegate) {
       mUnmountDelegateExtension.unmount(
-          mMountDelegate.getUnmountDelegateExtensionState(), index, item, host);
+          mMountDelegate.getUnmountDelegateExtensionState(), item, host);
     } else {
       /*
        * The mounted content might contain other LithoViews which are not reachable from

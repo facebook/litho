@@ -34,9 +34,8 @@ public interface UnmountDelegateExtension<State> {
    * This method is responsible for unmounting the item from the {@link Host} and unbinding the item
    * from the {@link MountDelegateTarget}.
    *
-   * @param index
    * @param mountItem
    * @param host
    */
-  void unmount(ExtensionState<State> extensionState, int index, MountItem mountItem, Host host);
+  void unmount(ExtensionState<State> extensionState, MountItem mountItem, Host host);
 }

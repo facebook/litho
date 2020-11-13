@@ -148,10 +148,9 @@ public class TransitionsExtension
 
   @Override
   public void unmount(
-      ExtensionState<TransitionsExtensionState> extensionState,
-      int index,
-      MountItem mountItem,
-      Host host) {
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final MountItem mountItem,
+      final Host host) {
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final TransitionId transitionId = layoutOutput.getTransitionId();
     final TransitionsExtensionState state = extensionState.getState();
@@ -587,7 +586,8 @@ public class TransitionsExtension
 
         mapDisappearingItemWithTransitionId(state, disappearingItem);
 
-        getMountTarget(extensionState).notifyUnmount(i);
+        final long id = disappearingItem.getRenderTreeNode().getRenderUnit().getId();
+        getMountTarget(extensionState).notifyUnmount(id);
 
         i = lastDescendantIndex;
       }

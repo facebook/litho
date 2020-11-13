@@ -79,8 +79,12 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public void notifyUnmount(int position) {
-    final MountItem mountItem = getItemAt(position);
+  public void notifyUnmount(long id) {
+    if (mIndexToMountedItemMap == null) {
+      return;
+    }
+
+    final MountItem mountItem = mIndexToMountedItemMap.get(id);
     if (mountItem != null) {
       unmountItemRecursively(mountItem.getRenderTreeNode());
     }
@@ -598,10 +602,7 @@ public class MountState implements MountDelegateTarget {
 
     if (hasUnmountDelegate) {
       mUnmountDelegateExtension.unmount(
-          mMountDelegate.getUnmountDelegateExtensionState(),
-          node.getPositionInParent(),
-          item,
-          host);
+          mMountDelegate.getUnmountDelegateExtensionState(), item, host);
     } else {
       if (item.isBound()) {
         unbindRenderUnitFromContent(mMountDelegate, mContext, item);

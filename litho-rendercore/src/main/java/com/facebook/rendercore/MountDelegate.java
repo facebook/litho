@@ -187,7 +187,7 @@ public class MountDelegate {
     decrementExtensionRefCount(id);
 
     if (wasLockedForMount && !isLockedForMount(id) && isMounting) {
-      mMountDelegateTarget.notifyUnmount(i);
+      mMountDelegateTarget.notifyUnmount(id);
     }
   }
 
