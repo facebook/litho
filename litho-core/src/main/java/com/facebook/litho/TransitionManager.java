@@ -291,7 +291,29 @@ public class TransitionManager {
       }
     }
 
+    // First, create animation bindings for the previous LayoutState in case there are any
+    // transitions for disappearing items that are no longer in the new LayoutState.
+    List<AnimationBinding> currentAnimationBindings = new ArrayList<>();
+    if (currentLayoutState != null) {
+      List<Transition> currentTransitions = currentLayoutState.getTransitions();
+      for (Transition transition : currentTransitions) {
+        AnimationBinding binding = createAnimationsForTransition(transition);
+        if (binding != null) {
+          currentAnimationBindings.add(binding);
+        }
+      }
+    }
+
+    // Create animation bindings for the new LayoutState.
     createTransitionAnimations(rootTransition);
+
+    // Merge the animation bindings from the previous LayoutState with the new one.
+    if (!currentAnimationBindings.isEmpty()) {
+      if (mRootAnimationToRun != null) {
+        currentAnimationBindings.add(mRootAnimationToRun);
+      }
+      mRootAnimationToRun = new ParallelBinding(0, currentAnimationBindings);
+    }
 
     // If we recorded any mount content diffs that didn't result in an animation being created for
     // that transition id, clean them up now.
