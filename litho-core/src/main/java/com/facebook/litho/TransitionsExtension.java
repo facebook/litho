@@ -221,30 +221,6 @@ public class TransitionsExtension
   }
 
   @Override
-  public void onBindItem(
-      final ExtensionState<TransitionsExtensionState> extensionState,
-      final RenderUnit<?> renderUnit,
-      final Object content,
-      final @Nullable Object layoutData) {
-    final TransitionsExtensionState state = extensionState.getState();
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-
-      // If we're using a MountDelegate, applyBindBinders will be invoked.
-      if (state.mLastMountedComponentTreeId != state.mInput.getComponentTreeId()) {
-        if (content instanceof ComponentHost) {
-          removeDisappearingMountContentFromComponentHost(extensionState, (ComponentHost) content);
-        }
-      }
-
-      // This mount content might be animating and we may be remounting it as a different
-      // component in the same tree, or as a component in a totally different tree so we
-      // will reset animating content for its key
-      maybeRemoveAnimatingMountContent(state, output.getTransitionId());
-    }
-  }
-
-  @Override
   public void onUnbindItem(
       final ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
