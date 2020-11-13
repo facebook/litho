@@ -141,36 +141,6 @@ public class DataDiffSectionSpecTest {
   }
 
   @Test
-  public void testMoveData() {
-    final List<String> oldData = generateData(3);
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(oldData).build());
-    List<Operation> executedOperations = mTestTarget.getOperations();
-
-    assertThat(executedOperations.size()).isEqualTo(1);
-    final Operation operation = executedOperations.get(0);
-    assertRangeOperation(operation, TestTarget.INSERT_RANGE, 0, 3);
-    assertOperation(operation, INSERT_RANGE, 0, -1, 3, null, oldData);
-
-    mTestTarget.clear();
-
-    List<String> newData = new ArrayList<>();
-    for (int i = 2; i >= 0; i--) {
-      newData.add(Integer.toString(i));
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(newData).build());
-    executedOperations = mTestTarget.getOperations();
-
-    assertThat(executedOperations.size()).isEqualTo(2);
-
-    final Operation newOperation1 = executedOperations.get(0);
-    assertOperation(newOperation1, MOVE, 1, 0, 1, "1", "1");
-
-    final Operation newOperation2 = executedOperations.get(1);
-    assertOperation(newOperation2, MOVE, 2, 0, 1, "2", "2");
-  }
-
-  @Test
   public void testRemoveRangeData() {
     final List<String> oldData = generateData(100);
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(oldData).build());
