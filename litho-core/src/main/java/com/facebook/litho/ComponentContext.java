@@ -112,16 +112,7 @@ public class ComponentContext {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, null, treeProps);
-  }
-
-  public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      @Nullable ComponentsLogger logger,
-      @Nullable StateHandler stateHandler,
-      @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, stateHandler, null, treeProps);
+    this(context, logTag, logger, null, null, treeProps);
   }
 
   public ComponentContext(
