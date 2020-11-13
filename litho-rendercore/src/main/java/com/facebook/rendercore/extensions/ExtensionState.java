@@ -72,12 +72,11 @@ public class ExtensionState<State> {
     mMountDelegate.acquireMountRef(id, isMounting);
   }
 
-  public void releaseMountReference(
-      final RenderTreeNode renderTreeNode, final int position, final boolean isMounting) {
-    releaseMountReference(renderTreeNode.getRenderUnit().getId(), position, isMounting);
+  public void releaseMountReference(final RenderTreeNode renderTreeNode, final boolean isMounting) {
+    releaseMountReference(renderTreeNode.getRenderUnit().getId(), isMounting);
   }
 
-  public void releaseMountReference(final long id, final int position, final boolean isMounting) {
+  public void releaseMountReference(final long id, final boolean isMounting) {
     if (!ownsReference(id)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }

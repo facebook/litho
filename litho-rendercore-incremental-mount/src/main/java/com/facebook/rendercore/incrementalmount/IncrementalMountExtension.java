@@ -95,7 +95,7 @@ public class IncrementalMountExtension
           state.mPendingImmediateRemoval.get(position);
       final long id = incrementalMountOutput.getId();
       if (extensionState.ownsReference(id)) {
-        extensionState.releaseMountReference(id, (int) position, true);
+        extensionState.releaseMountReference(id, true);
       }
     }
     state.mPendingImmediateRemoval.clear();
@@ -245,7 +245,7 @@ public class IncrementalMountExtension
       final IncrementalMountOutput node = state.mInput.getIncrementalMountOutputAt(i);
       final long id = node.getId();
       if (input.getPositionForId(id) < 0 && extensionState.ownsReference(id)) {
-        extensionState.releaseMountReference(id, i, false);
+        extensionState.releaseMountReference(id, false);
       }
     }
   }
@@ -287,7 +287,7 @@ public class IncrementalMountExtension
       if (!isMounting) {
         state.mPendingImmediateRemoval.put(position, incrementalMountOutput);
       } else if (extensionState.ownsReference(id)) {
-        extensionState.releaseMountReference(id, position, true);
+        extensionState.releaseMountReference(id, true);
       }
     } else if (isMountable && hasAcquiredMountRef && isMounting) {
       // If we're in the process of mounting now, we know the item we're updating is already
@@ -328,7 +328,7 @@ public class IncrementalMountExtension
         final long id = node.getId();
         final int layoutOutputIndex = state.mInput.getPositionForId(id);
         if (extensionState.ownsReference(id)) {
-          extensionState.releaseMountReference(id, layoutOutputIndex, true);
+          extensionState.releaseMountReference(id, true);
         }
         state.mPreviousBottomsIndex++;
       }
@@ -372,7 +372,7 @@ public class IncrementalMountExtension
         final long id = node.getId();
         final int layoutOutputIndex = state.mInput.getPositionForId(id);
         if (extensionState.ownsReference(id)) {
-          extensionState.releaseMountReference(id, layoutOutputIndex, true);
+          extensionState.releaseMountReference(id, true);
         }
       }
     }

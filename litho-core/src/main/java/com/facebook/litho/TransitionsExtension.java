@@ -560,13 +560,13 @@ public class TransitionsExtension
             if (extensionState.ownsReference(
                 state.mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
               extensionState.releaseMountReference(
-                  state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+                  state.mLastTransitionsExtensionInput.getMountableOutputAt(j), false);
             }
             extensionState.acquireMountReference(
                 state.mLastTransitionsExtensionInput.getMountableOutputAt(j), true);
             // Here we have to release the ref count without mounting.
             extensionState.releaseMountReference(
-                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), j, false);
+                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), false);
           }
           state.mLockedDisappearingMountitems.add(getMountTarget(extensionState).getMountItemAt(j));
         }
@@ -825,7 +825,7 @@ public class TransitionsExtension
         }
       } else {
         if (extensionState.ownsReference(renderTreeNode)) {
-          extensionState.releaseMountReference(renderTreeNode, i, false);
+          extensionState.releaseMountReference(renderTreeNode, false);
         }
       }
     }
@@ -843,7 +843,7 @@ public class TransitionsExtension
         }
       } else {
         if (extensionState.ownsReference(parentRenderTreeNode)) {
-          extensionState.releaseMountReference(parentRenderTreeNode, 0, false);
+          extensionState.releaseMountReference(parentRenderTreeNode, false);
         }
       }
       parentRenderTreeNode = parentRenderTreeNode.getParent();
