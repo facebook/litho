@@ -70,7 +70,7 @@ public class ExtensionState<State> {
     }
 
     mLayoutOutputMountRefs.add(id);
-    mMountDelegate.acquireMountRef(id, position, isMounting);
+    mMountDelegate.acquireMountRef(id, isMounting);
   }
 
   public void releaseMountReference(

@@ -163,11 +163,11 @@ public class MountDelegate {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void acquireMountRef(RenderTreeNode node, int i, boolean isMounting) {
-    acquireMountRef(node.getRenderUnit().getId(), i, isMounting);
+  public void acquireMountRef(final RenderTreeNode node, final boolean isMounting) {
+    acquireMountRef(node.getRenderUnit().getId(), isMounting);
   }
 
-  public void acquireMountRef(long id, int i, boolean isMounting) {
+  public void acquireMountRef(final long id, final boolean isMounting) {
     incrementExtensionRefCount(id);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
