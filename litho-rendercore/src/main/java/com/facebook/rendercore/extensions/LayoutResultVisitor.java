@@ -35,7 +35,7 @@ public interface LayoutResultVisitor<State> {
   /**
    * This API is called for every LayoutResult during a layout pass.
    *
-   * @param parent
+   * @param parent The parent {@link RenderTreeNode}.
    * @param result The {@link LayoutResult} being visited.
    * @param bounds The bounds of this {@link LayoutResult} relative to its parent.
    * @param x The absolute x position.

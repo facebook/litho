@@ -2365,7 +2365,9 @@ public class LayoutState
             layoutOutput.getId(),
             layoutOutput.getIndex(),
             layoutOutput.getBounds(),
-            parent == null ? -1 : parent.getRenderUnit().getId());
+            parent != null
+                ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
+                : null);
     layoutState.mIncrementalMountOutputs.put(layoutOutput.getId(), incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);

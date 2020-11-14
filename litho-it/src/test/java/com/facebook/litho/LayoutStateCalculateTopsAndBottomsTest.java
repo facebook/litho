@@ -435,8 +435,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   private static IncrementalMountOutput createIncrementMountOutput(
       int top, int bottom, int index, long hostId) {
-    return new IncrementalMountOutput(
-        (index + 1) * 1L, index, new Rect(0, top, 10, bottom), hostId);
+    return new IncrementalMountOutput((index + 1) * 1L, index, new Rect(0, top, 10, bottom), null);
   }
 
   private static IncrementalMountOutput createIncrementMountOutput(int top, int bottom, int index) {

@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -111,6 +110,9 @@ public class IncrementalMountExtension
     final long id = renderTreeNode.getRenderUnit().getId();
     final IncrementalMountExtensionState state = extensionState.getState();
     final IncrementalMountOutput output = state.mInput.getIncrementalMountOutputForId(id);
+    if (output == null) {
+      throw new IllegalArgumentException("Output with id=" + id + " not found.");
+    }
 
     maybeAcquireReference(extensionState, state.mPreviousLocalVisibleRect, output, false);
   }
@@ -207,19 +209,18 @@ public class IncrementalMountExtension
       final IncrementalMountOutput output,
       final boolean isMounting) {
 
+    final IncrementalMountOutput host = output.getHostOutput();
+
     // If id is ROOT_HOST_ID then already at root host.
-    if (output.getId() != MountState.ROOT_HOST_ID) {
+    if (host != null) {
 
       // Make sure the host is mounted before the child.
-      final long hostId = output.getHostId();
-      IncrementalMountExtensionInput input = extensionState.getState().mInput;
+      final IncrementalMountExtensionState state = extensionState.getState();
 
       // If not root host or if no reference was acquired, acquire it.
-      if (!extensionState.ownsReference(hostId)) {
+      if (!extensionState.ownsReference(host.getId())) {
         acquireMountReferenceEnsureHostIsMounted(
-            extensionState,
-            input.getIncrementalMountOutputForId(hostId),
-            isMounting || extensionState.getState().mAcquireReferencesDuringMount);
+            extensionState, host, isMounting || state.mAcquireReferencesDuringMount);
       }
     }
 

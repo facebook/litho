@@ -17,20 +17,24 @@
 package com.facebook.rendercore.incrementalmount;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 
 /** The output object for incremental mount extension */
 public class IncrementalMountOutput {
-  public final int index;
-  public final Rect bounds;
+  private final int index;
+  private final Rect bounds;
   private final long id;
-  private final long hostId;
+  private final @Nullable IncrementalMountOutput host;
 
   public IncrementalMountOutput(
-      final long id, final int index, final Rect bounds, final long hostId) {
+      final long id,
+      final int index,
+      final Rect bounds,
+      final @Nullable IncrementalMountOutput host) {
     this.id = id;
     this.index = index;
     this.bounds = bounds;
-    this.hostId = hostId;
+    this.host = host;
   }
 
   public int getIndex() {
@@ -45,7 +49,7 @@ public class IncrementalMountOutput {
     return id;
   }
 
-  public long getHostId() {
-    return hostId;
+  public @Nullable IncrementalMountOutput getHostOutput() {
+    return host;
   }
 }

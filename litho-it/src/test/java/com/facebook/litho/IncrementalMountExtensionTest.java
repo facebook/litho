@@ -36,7 +36,6 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -199,7 +198,8 @@ public class IncrementalMountExtensionTest {
 
         mountableOutputs.add(renderTreeNode);
         final IncrementalMountOutput incrementalMountOutput =
-            new IncrementalMountOutput(i, i, bounds, (long) i == 0 ? -1 : 0);
+            new IncrementalMountOutput(
+                i, i, bounds, i != 0 ? mIncrementalMountOutputs.get((long) (i - 1)) : null);
         mIncrementalMountOutputs.put(incrementalMountOutput.getId(), incrementalMountOutput);
         tops.add(incrementalMountOutput);
         bottoms.add(incrementalMountOutput);

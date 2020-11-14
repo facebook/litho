@@ -4,7 +4,6 @@ package com.facebook.rendercore.incrementalmount;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderTreeHost;
@@ -180,29 +179,26 @@ public class IncrementalMountRenderCoreExtension
         final int position,
         final Results results) {
 
-      final long id;
       if (position == 0) {
-        id = MountState.ROOT_HOST_ID;
-      } else {
-        final RenderUnit<?> unit = result.getRenderUnit();
-        if (unit == null) {
-          return;
-        }
-        id = unit.getId();
+        return;
       }
 
-      final long hostId;
-      if (parent != null) {
-        if (parent.getRenderUnit() == null) {
-          throw new IllegalArgumentException("Parent Node must have a RenderUnit.");
-        }
-        hostId = parent.getRenderUnit().getId();
-      } else {
-        hostId = -1;
+      final RenderUnit<?> unit = result.getRenderUnit();
+      if (unit == null) {
+        return;
       }
+
+      final long id = unit.getId();
+
+      final IncrementalMountOutput host;
+      if (parent == null) {
+        throw new IllegalArgumentException("Parent was null for position=" + position);
+      }
+
+      host = results.getIncrementalMountOutputForId(parent.getRenderUnit().getId());
 
       final Rect rect = new Rect(x, y, x + bounds.width(), y + bounds.height());
-      results.addOutput(new IncrementalMountOutput(id, position, rect, hostId));
+      results.addOutput(new IncrementalMountOutput(id, position, rect, host));
       if (provider.hasRenderTreeHosts(result)) {
         results.addRenderTreeHostId(id);
       }
