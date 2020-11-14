@@ -534,7 +534,7 @@ public class HostView extends Host {
     private void start(Canvas canvas) {
       mCanvas = canvas;
       mDrawIndex = 0;
-      mItemsToDraw = mMountItems == null ? 0 : getMountItemCount();
+      mItemsToDraw = mMountItems == null ? 0 : mMountItems.length;
     }
 
     private boolean isRunning() {
@@ -546,7 +546,7 @@ public class HostView extends Host {
         return;
       }
 
-      for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : getMountItemCount();
+      for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : mMountItems.length;
           i < size;
           i++) {
         final MountItem mountItem = mMountItems[i];
