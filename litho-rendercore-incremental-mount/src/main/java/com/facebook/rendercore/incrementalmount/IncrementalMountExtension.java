@@ -136,6 +136,10 @@ public class IncrementalMountExtension
       return;
     }
 
+    if (localVisibleRect.isEmpty() && state.mPreviousLocalVisibleRect.isEmpty()) {
+      return;
+    }
+
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (state.mPreviousLocalVisibleRect.isEmpty()
         || localVisibleRect.isEmpty()
