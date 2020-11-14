@@ -136,7 +136,20 @@ public class IncrementalMountRenderCoreExtension
     }
 
     void addOutput(IncrementalMountOutput output) {
-      outputs.put(output.getId(), output);
+      final IncrementalMountOutput existing = outputs.put(output.getId(), output);
+      if (existing != null) {
+        throw new IllegalArgumentException(
+            "output with id="
+                + output.getId()
+                + " already exists."
+                + "\nindex="
+                + existing.getIndex()
+                + (existing.getHostOutput() != null
+                    ? "\nhostId=" + existing.getHostOutput().getId()
+                    : "")
+                + "\nbounds="
+                + existing.getBounds());
+      }
       outputsOrderedByTopBounds.add(output);
       outputsOrderedByBottomBounds.add(output);
     }
