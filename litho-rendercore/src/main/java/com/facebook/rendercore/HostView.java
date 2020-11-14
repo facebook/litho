@@ -509,6 +509,7 @@ public class HostView extends Host {
     final Drawable drawable = (Drawable) mountItem.getContent();
 
     MountUtils.mountDrawable(this, drawable);
+    invalidate(mountItem.getRenderTreeNode().getBounds());
   }
 
   private void unmountDrawable(MountItem mountItem) {
