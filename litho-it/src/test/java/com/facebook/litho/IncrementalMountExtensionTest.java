@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateInput;
@@ -35,7 +36,10 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +73,16 @@ public class IncrementalMountExtensionTest {
   @After
   public void cleanup() {
     ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
+  }
+
+  @Test
+  public void onIteratingOnIncrementMountOutputs_shouldIterateByInsertionOrder() {
+    final TestInput input = new TestInput(10);
+    int i = 0;
+    for (IncrementalMountOutput output : input.getIncrementalMountOutputs()) {
+      assertThat(output.getId()).isEqualTo(input.getMountableOutputAt(i).getRenderUnit().getId());
+      i++;
+    }
   }
 
   @Test
@@ -162,7 +176,7 @@ public class IncrementalMountExtensionTest {
 
   final class TestInput implements IncrementalMountExtensionInput, MountDelegateInput {
     final List<RenderTreeNode> mountableOutputs = new ArrayList<>();
-    final List<IncrementalMountOutput> mIncrementalMountOutputs = new ArrayList<>();
+    final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs = new LinkedHashMap<>();
     final List<IncrementalMountOutput> tops = new ArrayList<>();
     final List<IncrementalMountOutput> bottoms = new ArrayList<>();
     private final int mCount;
@@ -186,7 +200,7 @@ public class IncrementalMountExtensionTest {
         mountableOutputs.add(renderTreeNode);
         final IncrementalMountOutput incrementalMountOutput =
             new IncrementalMountOutput(i, i, bounds, (long) i == 0 ? -1 : 0);
-        mIncrementalMountOutputs.add(incrementalMountOutput);
+        mIncrementalMountOutputs.put(incrementalMountOutput.getId(), incrementalMountOutput);
         tops.add(incrementalMountOutput);
         bottoms.add(incrementalMountOutput);
       }
@@ -208,8 +222,13 @@ public class IncrementalMountExtensionTest {
     }
 
     @Override
-    public IncrementalMountOutput getIncrementalMountOutputAt(int position) {
-      return mIncrementalMountOutputs.get(position);
+    public @Nullable IncrementalMountOutput getIncrementalMountOutputForId(long id) {
+      return mIncrementalMountOutputs.get(id);
+    }
+
+    @Override
+    public Collection<IncrementalMountOutput> getIncrementalMountOutputs() {
+      return mIncrementalMountOutputs.values();
     }
 
     @Override

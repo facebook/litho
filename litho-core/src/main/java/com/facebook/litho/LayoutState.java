@@ -73,6 +73,7 @@ import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -162,7 +163,7 @@ public class LayoutState
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
-  private final List<IncrementalMountOutput> mIncrementalMountOutputs = new ArrayList<>(8);
+  private final Map<Long, IncrementalMountOutput> mIncrementalMountOutputs = new LinkedHashMap<>(8);
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
@@ -2093,8 +2094,13 @@ public class LayoutState
   }
 
   @Override
-  public IncrementalMountOutput getIncrementalMountOutputAt(int index) {
-    return mIncrementalMountOutputs.get(index);
+  public @Nullable IncrementalMountOutput getIncrementalMountOutputForId(long id) {
+    return mIncrementalMountOutputs.get(id);
+  }
+
+  @Override
+  public Collection<IncrementalMountOutput> getIncrementalMountOutputs() {
+    return mIncrementalMountOutputs.values();
   }
 
   @Override
@@ -2360,7 +2366,7 @@ public class LayoutState
             layoutOutput.getIndex(),
             layoutOutput.getBounds(),
             parent == null ? -1 : parent.getRenderUnit().getId());
-    layoutState.mIncrementalMountOutputs.add(incrementalMountOutput);
+    layoutState.mIncrementalMountOutputs.put(layoutOutput.getId(), incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
     if (layoutOutput.getComponent().hasChildLithoViews()) {

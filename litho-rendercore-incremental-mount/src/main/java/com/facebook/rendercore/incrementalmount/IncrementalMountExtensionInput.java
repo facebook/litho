@@ -16,25 +16,21 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import com.facebook.rendercore.RenderUnit;
+import androidx.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public interface IncrementalMountExtensionInput {
 
-  /**
-   * Returns the position of a {@link RenderUnit} given its {@param id}; returns -1 if {@param id}
-   * is not found.
-   */
-  int getPositionForId(long id);
-
-  @Nullable
   List<IncrementalMountOutput> getOutputsOrderedByTopBounds();
 
-  @Nullable
   List<IncrementalMountOutput> getOutputsOrderedByBottomBounds();
 
-  IncrementalMountOutput getIncrementalMountOutputAt(int position);
+  @Nullable
+  IncrementalMountOutput getIncrementalMountOutputForId(long id);
+
+  /** Returns a collection of Incremental Mount Outputs iterable by insertion order. */
+  Collection<IncrementalMountOutput> getIncrementalMountOutputs();
 
   int getIncrementalMountOutputCount();
 

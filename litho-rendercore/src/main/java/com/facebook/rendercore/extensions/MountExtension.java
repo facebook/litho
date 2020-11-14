@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 
@@ -106,8 +107,8 @@ public abstract class MountExtension<Input, State> {
     return extensionState.getMountDelegate().getMountDelegateTarget();
   }
 
-  protected static boolean isRootItem(final ExtensionState<?> extensionState, final int position) {
-    return extensionState.getMountDelegate().isRootItem(position);
+  protected static boolean isRootItem(final long id) {
+    return id == MountState.ROOT_HOST_ID;
   }
 
   protected static Object getContentAt(final ExtensionState<?> extensionState, final int position) {

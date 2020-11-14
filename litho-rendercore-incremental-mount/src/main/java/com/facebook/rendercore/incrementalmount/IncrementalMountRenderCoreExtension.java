@@ -15,10 +15,11 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -93,34 +94,36 @@ public class IncrementalMountRenderCoreExtension
 
   public static class Results implements IncrementalMountExtensionInput {
 
-    private final List<IncrementalMountOutput> outputs = new ArrayList<>(8);
+    private final LinkedHashMap<Long, IncrementalMountOutput> outputs = new LinkedHashMap<>(8);
     private final SortedSet<IncrementalMountOutput> outputsOrderedByTopBounds =
         new TreeSet<>(sTopsComparator);
     private final SortedSet<IncrementalMountOutput> outputsOrderedByBottomBounds =
         new TreeSet<>(sBottomsComparator);
     private final Set<Long> renderUnitIdsWhichHostRenderTrees = new HashSet<>(4);
-    private final HashMap<Long, Integer> positionForIdMap = new HashMap<>(8);
 
     private @Nullable List<IncrementalMountOutput> outputsOrderedByTopBoundsList;
     private @Nullable List<IncrementalMountOutput> outputsOrderedByBottomBoundsList;
 
     @Override
-    @Nullable
     public List<IncrementalMountOutput> getOutputsOrderedByTopBounds() {
       maybeInitializeList();
       return outputsOrderedByTopBoundsList;
     }
 
     @Override
-    @Nullable
     public List<IncrementalMountOutput> getOutputsOrderedByBottomBounds() {
       maybeInitializeList();
       return outputsOrderedByBottomBoundsList;
     }
 
     @Override
-    public IncrementalMountOutput getIncrementalMountOutputAt(int position) {
-      return outputs.get(position);
+    public @Nullable IncrementalMountOutput getIncrementalMountOutputForId(long id) {
+      return outputs.get(id);
+    }
+
+    @Override
+    public Collection<IncrementalMountOutput> getIncrementalMountOutputs() {
+      return outputs.values();
     }
 
     @Override
@@ -133,27 +136,14 @@ public class IncrementalMountRenderCoreExtension
       return renderUnitIdsWhichHostRenderTrees.contains(id);
     }
 
-    @Override
-    public int getPositionForId(long id) {
-      Integer position = positionForIdMap.get(id);
-      if (position == null) {
-        return -1;
-      }
-      return position;
-    }
-
     void addOutput(IncrementalMountOutput output) {
-      outputs.add(output);
+      outputs.put(output.getId(), output);
       outputsOrderedByTopBounds.add(output);
       outputsOrderedByBottomBounds.add(output);
     }
 
     void addRenderTreeHostId(long id) {
       renderUnitIdsWhichHostRenderTrees.add(id);
-    }
-
-    void addPositionForId(final long id, final int position) {
-      positionForIdMap.put(id, position);
     }
 
     private void maybeInitializeList() {
@@ -213,7 +203,6 @@ public class IncrementalMountRenderCoreExtension
 
       final Rect rect = new Rect(x, y, x + bounds.width(), y + bounds.height());
       results.addOutput(new IncrementalMountOutput(id, position, rect, hostId));
-      results.addPositionForId(id, position);
       if (provider.hasRenderTreeHosts(result)) {
         results.addRenderTreeHostId(id);
       }

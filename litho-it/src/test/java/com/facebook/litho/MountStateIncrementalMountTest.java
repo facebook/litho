@@ -67,6 +67,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -609,6 +610,8 @@ public class MountStateIncrementalMountTest {
     assertThat(lifecycleTracker1.getSteps()).contains(LifecycleStep.ON_MOUNT);
   }
 
+  /** TODO: Fix this test */
+  @Ignore(value = "This test has incorrect assertions")
   @Test
   public void itemWithNegativeMargin_removeAndAdd_hostIsMounted() {
     final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
