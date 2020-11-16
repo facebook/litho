@@ -37,6 +37,7 @@ litho_robolectric4_powermock_test(
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
+    use_binary_resources = False,
     deps = [
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
