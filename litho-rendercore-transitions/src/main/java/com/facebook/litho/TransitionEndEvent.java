@@ -17,27 +17,11 @@
 package com.facebook.litho;
 
 import com.facebook.litho.animation.AnimatedProperty;
-import com.facebook.litho.annotations.Event;
 
 /**
- * Components should implement an event of this type in order to receive a callback when a {@link Transition} ends.
- * An example of the correct usage is:
- *
- * <pre>
- * {@code
- *
- * @OnEvent(TransitionEndEvent.class)
- * static void onTransitionEnd(
- *     ComponentContext c,
- *     @FromEvent String transitionKey,
- *     @FromEvent AnimatedProperty animatedProperty,
- *     @Param Param someParam,
- *     @Prop Prop someProp) {
- *   // Handle the event here.
- * }
- * </pre>
+ * Components should implement an event of this type in order to receive a callback when a {@link
+ * Transition} ends.
  */
-@Event
 public class TransitionEndEvent {
   public String transitionKey;
   public AnimatedProperty property;

@@ -33,6 +33,7 @@ import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TimingTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 import com.facebook.litho.dataflow.springs.SpringConfig;
+import com.facebook.rendercore.Function;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 
@@ -273,7 +274,7 @@ public abstract class Transition {
     private final RuntimeValue mDisappearTo;
     @Nullable private final String mTraceName;
     @Nullable private String mOwnerKey;
-    @Nullable private EventHandler<TransitionEndEvent> mTransitionEndHandler;
+    @Nullable private Function<Void> mTransitionEndHandler;
 
     TransitionUnit(
         AnimationTarget animationTarget,
@@ -281,7 +282,7 @@ public abstract class Transition {
         RuntimeValue appearFrom,
         RuntimeValue disappearTo,
         @Nullable String traceName,
-        @Nullable EventHandler<TransitionEndEvent> transitionEndHandler) {
+        @Nullable Function<Void> transitionEndHandler) {
       mAnimationTarget = animationTarget;
       mTransitionAnimator = transitionAnimator;
       mAppearFrom = appearFrom;
@@ -311,7 +312,7 @@ public abstract class Transition {
     }
 
     @Nullable
-    EventHandler<TransitionEndEvent> getTransitionEndHandler() {
+    Function<Void> getTransitionEndHandler() {
       return mTransitionEndHandler;
     }
 
@@ -453,8 +454,7 @@ public abstract class Transition {
      * @param transitionEndHandler
      * @return
      */
-    public TransitionUnitsBuilder transitionEndHandler(
-        EventHandler<TransitionEndEvent> transitionEndHandler) {
+    public TransitionUnitsBuilder transitionEndHandler(Function<Void> transitionEndHandler) {
       mTransitionEndHandler = transitionEndHandler;
       return this;
     }
@@ -536,8 +536,7 @@ public abstract class Transition {
      * @param transitionEndHandler
      * @return
      */
-    public AutoBoundsTransitionBuilder transitionEndHandler(
-        EventHandler<TransitionEndEvent> transitionEndHandler) {
+    public AutoBoundsTransitionBuilder transitionEndHandler(Function<Void> transitionEndHandler) {
       mTransitionEndHandler = transitionEndHandler;
       return this;
     }
@@ -552,7 +551,7 @@ public abstract class Transition {
     RuntimeValue mAppearFrom;
     RuntimeValue mDisappearTo;
     String mTraceName;
-    @Nullable EventHandler<TransitionEndEvent> mTransitionEndHandler;
+    @Nullable Function<Void> mTransitionEndHandler;
 
     void maybeCommitCurrentBuilder() {
       if (mPropertyTarget == null) {
