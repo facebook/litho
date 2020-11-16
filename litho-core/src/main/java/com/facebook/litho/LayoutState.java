@@ -1110,7 +1110,7 @@ public class LayoutState
     if (ComponentsConfiguration.enableLithoViewDebugOverlay) {
       if (layoutState.isLayoutRoot(node)) {
         ArrayList<Boolean> mainThreadCalculations;
-        int layoutId = layoutState.getComponentTreeId();
+        int layoutId = layoutState.getTreeId();
 
         synchronized (debugLock) {
           if (layoutCalculationsOnMainThread == null) {
@@ -2176,8 +2176,12 @@ public class LayoutState
     return mHeightSpec;
   }
 
-  /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
   @Override
+  public int getTreeId() {
+    return getComponentTreeId();
+  }
+
+  /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
   public int getComponentTreeId() {
     return mComponentTreeId;
   }

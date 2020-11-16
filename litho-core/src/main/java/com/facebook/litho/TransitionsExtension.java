@@ -182,7 +182,7 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
     state.mInput = input;
 
-    if (input.getComponentTreeId() != state.mLastMountedComponentTreeId) {
+    if (input.getTreeId() != state.mLastMountedComponentTreeId) {
       state.mLastTransitionsExtensionInput = null;
     }
 
@@ -202,7 +202,7 @@ public class TransitionsExtension
     state.mInput.setNeedsToRerunTransitions(false);
     state.mLastTransitionsExtensionInput = state.mInput;
     state.mTransitionsHasBeenCollected = false;
-    state.mLastMountedComponentTreeId = state.mInput.getComponentTreeId();
+    state.mLastMountedComponentTreeId = state.mInput.getTreeId();
   }
 
   @Override
@@ -385,7 +385,7 @@ public class TransitionsExtension
   /** @return whether we should animate transitions. */
   private static boolean shouldAnimateTransitions(
       final TransitionsExtensionState state, TransitionsExtensionInput input) {
-    return (state.mLastMountedComponentTreeId == input.getComponentTreeId()
+    return (state.mLastMountedComponentTreeId == input.getTreeId()
         || state.mInput.needsToRerunTransitions());
   }
 

@@ -37,7 +37,7 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
 
   void setNeedsToRerunTransitions(boolean needsToRerunTransitions);
 
-  int getComponentTreeId();
+  int getTreeId();
 
   Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> getTransitionIdMapping();
 
