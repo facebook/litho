@@ -64,6 +64,7 @@ import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
@@ -2113,8 +2114,8 @@ public class LayoutState
   }
 
   @Override
-  public AnimatableItem getAnimatableItem(long id) {
-    return LayoutOutput.getLayoutOutput(getMountableOutputAt(getPositionForId(id)));
+  public AnimatableItem getAnimatableItem(RenderUnit renderUnit) {
+    return ((LithoRenderUnit) renderUnit).output;
   }
 
   public ArrayList<IncrementalMountOutput> getOutputsOrderedByTopBounds() {

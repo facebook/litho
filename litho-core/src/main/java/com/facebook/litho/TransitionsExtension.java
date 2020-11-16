@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
@@ -228,19 +227,23 @@ public class TransitionsExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-      final TransitionsExtensionState state = extensionState.getState();
+    final TransitionsExtensionState state = extensionState.getState();
 
-      // If this item is a host and contains disappearing items, we need to remove them.
-      if (content instanceof ComponentHost) {
-        removeDisappearingMountContentFromComponentHost(extensionState, (ComponentHost) content);
-      }
-      if (output.getTransitionId() != null) {
-        final @OutputUnitType int type =
-            LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
-        maybeRemoveAnimatingMountContent(state, output.getTransitionId(), type);
-      }
+    // If this item is a host and contains disappearing items, we need to remove them.
+    if (content instanceof ComponentHost) {
+      removeDisappearingMountContentFromComponentHost(extensionState, (ComponentHost) content);
+    }
+
+    final AnimatableItem animatableItem;
+
+    if (state.mInput != null) {
+      animatableItem = state.mInput.getAnimatableItem(renderUnit);
+    } else {
+      animatableItem = null;
+    }
+    if (animatableItem != null && animatableItem.getTransitionId() != null) {
+      maybeRemoveAnimatingMountContent(
+          state, animatableItem.getTransitionId(), animatableItem.getOutputType());
     }
   }
 
@@ -250,14 +253,10 @@ public class TransitionsExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
-    if (renderUnit instanceof LithoRenderUnit) {
-      final LayoutOutput output = ((LithoRenderUnit) renderUnit).output;
-
-      if (extensionState.ownsReference(output.getId())
-          && output.getComponent().hasChildLithoViews()) {
-        final View view = (View) content;
-        recursivelyNotifyVisibleBoundsChanged(view);
-      }
+    if (extensionState.ownsReference(renderUnit.getId())
+        && extensionState.getState().mInput.renderUnitWithIdHostsRenderTrees(renderUnit.getId())) {
+      final View view = (View) content;
+      recursivelyNotifyVisibleBoundsChanged(view);
     }
   }
 
@@ -497,7 +496,8 @@ public class TransitionsExtension
     state.mTransitionManager.setupTransitions(
         lastTransitions, input.getTransitionIdMapping(), rootTransition);
 
-    final Map<TransitionId, ?> nextTransitionIds = input.getTransitionIdMapping();
+    final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> nextTransitionIds =
+        input.getTransitionIdMapping();
     for (TransitionId transitionId : nextTransitionIds.keySet()) {
       if (state.mTransitionManager.isAnimating(transitionId)) {
         state.mAnimatingTransitionIds.add(transitionId);
@@ -518,11 +518,7 @@ public class TransitionsExtension
 
     final AnimatableItem animatableItem =
         state.mLastTransitionsExtensionInput.getAnimatableItem(
-            state
-                .mLastTransitionsExtensionInput
-                .getMountableOutputAt(index)
-                .getRenderUnit()
-                .getId());
+            state.mLastTransitionsExtensionInput.getMountableOutputAt(index).getRenderUnit());
 
     final TransitionId transitionId = animatableItem.getTransitionId();
     if (transitionId == null) {
@@ -576,8 +572,7 @@ public class TransitionsExtension
           final RenderUnit renderUnit =
               getMountTarget(extensionState).getMountItemAt(j).getRenderTreeNode().getRenderUnit();
           state.mLockedDisappearingMountitems.put(
-              renderUnit,
-              state.mLastTransitionsExtensionInput.getAnimatableItem(renderUnit.getId()));
+              renderUnit, state.mLastTransitionsExtensionInput.getAnimatableItem(renderUnit));
         }
 
         // Reference to the root of the disappearing subtree
@@ -642,7 +637,11 @@ public class TransitionsExtension
       OutputUnitsAffinityGroup<MountItem> group) {
     maybeRemoveAnimatingMountContent(
         extensionState.getState(),
-        getLayoutOutput(group.getMostSignificantUnit()).getTransitionId());
+        extensionState
+            .getState()
+            .mLockedDisappearingMountitems
+            .get(group.getMostSignificantUnit().getRenderTreeNode().getRenderUnit())
+            .getTransitionId());
 
     for (int i = 0, size = group.size(); i < size; i++) {
       unmountDisappearingItem(extensionState, group.getAt(i), true);
@@ -653,7 +652,7 @@ public class TransitionsExtension
       TransitionsExtensionState state, MountItem item) {
     final AnimatableItem animatableItem =
         state.mLastTransitionsExtensionInput.getAnimatableItem(
-            item.getRenderTreeNode().getRenderUnit().getId());
+            item.getRenderTreeNode().getRenderUnit());
     final TransitionId transitionId = animatableItem.getTransitionId();
     OutputUnitsAffinityGroup<MountItem> disappearingGroup =
         state.mDisappearingMountItems.get(transitionId);
@@ -748,7 +747,7 @@ public class TransitionsExtension
         continue;
       }
       final AnimatableItem animatableItem =
-          state.mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit().getId());
+          state.mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit());
 
       if (animatableItem.getTransitionId() == null) {
         continue;

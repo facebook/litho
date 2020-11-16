@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -61,5 +62,7 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
 
   AnimatableItem getAnimatableRootItem();
 
-  AnimatableItem getAnimatableItem(long id);
+  AnimatableItem getAnimatableItem(RenderUnit renderUnit);
+
+  boolean renderUnitWithIdHostsRenderTrees(long id);
 }
