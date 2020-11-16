@@ -38,11 +38,11 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension
@@ -61,7 +61,7 @@ public class TransitionsExtension
   static class TransitionsExtensionState {
     private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
         new LinkedHashMap<>();
-    private final Set<MountItem> mLockedDisappearingMountitems = new HashSet<>();
+    private final Map<RenderUnit, AnimatableItem> mLockedDisappearingMountitems = new HashMap<>();
     @Deprecated private @Nullable Host mLithoView;
     private TransitionsExtensionInput mInput;
     private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
@@ -145,7 +145,8 @@ public class TransitionsExtension
   public boolean shouldDelegateUnmount(
       ExtensionState<TransitionsExtensionState> extensionState, MountItem mountItem) {
     final TransitionsExtensionState state = extensionState.getState();
-    return state.mLockedDisappearingMountitems.contains(mountItem);
+    return state.mLockedDisappearingMountitems.containsKey(
+        mountItem.getRenderTreeNode().getRenderUnit());
   }
 
   @Override
@@ -153,14 +154,14 @@ public class TransitionsExtension
       final ExtensionState<TransitionsExtensionState> extensionState,
       final MountItem mountItem,
       final Host host) {
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    final TransitionId transitionId = layoutOutput.getTransitionId();
     final TransitionsExtensionState state = extensionState.getState();
+    final AnimatableItem animatableItem =
+        state.mLockedDisappearingMountitems.get(mountItem.getRenderTreeNode().getRenderUnit());
+    final TransitionId transitionId = animatableItem.getTransitionId();
     final OutputUnitsAffinityGroup<MountItem> group =
         state.mDisappearingMountItems.get(transitionId);
     if (group != null) {
-      final boolean isRoot =
-          group.get(LayoutStateOutputIdCalculator.getTypeFromId(layoutOutput.getId())) != null;
+      final boolean isRoot = group.get(animatableItem.getOutputType()) != null;
       // We only start unmount disappearing item on the root of the disappearing animation. The rest
       // will be unmounted after the animation finishes.
       if (isRoot) {
@@ -572,7 +573,11 @@ public class TransitionsExtension
             extensionState.releaseMountReference(
                 state.mLastTransitionsExtensionInput.getMountableOutputAt(j), false);
           }
-          state.mLockedDisappearingMountitems.add(getMountTarget(extensionState).getMountItemAt(j));
+          final RenderUnit renderUnit =
+              getMountTarget(extensionState).getMountItemAt(j).getRenderTreeNode().getRenderUnit();
+          state.mLockedDisappearingMountitems.put(
+              renderUnit,
+              state.mLastTransitionsExtensionInput.getAnimatableItem(renderUnit.getId()));
         }
 
         // Reference to the root of the disappearing subtree
@@ -603,7 +608,6 @@ public class TransitionsExtension
       final MountItem mountItem,
       final boolean isRoot) {
     final TransitionsExtensionState state = extensionState.getState();
-    state.mLockedDisappearingMountitems.remove(mountItem);
     final Object content = mountItem.getContent();
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
       final Host contentHost = (Host) content;
@@ -630,6 +634,7 @@ public class TransitionsExtension
     }
 
     getMountTarget(extensionState).unbindMountItem(mountItem);
+    state.mLockedDisappearingMountitems.remove(mountItem.getRenderTreeNode().getRenderUnit());
   }
 
   private static void endUnmountDisappearingItem(
