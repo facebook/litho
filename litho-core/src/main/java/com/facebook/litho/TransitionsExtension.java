@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
@@ -31,6 +32,7 @@ import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -253,7 +255,7 @@ public class TransitionsExtension
       if (extensionState.ownsReference(output.getId())
           && output.getComponent().hasChildLithoViews()) {
         final View view = (View) content;
-        MountUtils.ensureAllLithoViewChildrenAreMounted(view);
+        recursivelyNotifyVisibleBoundsChanged(view);
       }
     }
   }
@@ -868,5 +870,18 @@ public class TransitionsExtension
     }
 
     return input.getMountableOutputCount() - 1;
+  }
+
+  private static void recursivelyNotifyVisibleBoundsChanged(View view) {
+    assertMainThread();
+    if (view instanceof RootHost) {
+      view.setHasTransientState(true);
+    } else if (view instanceof ViewGroup) {
+      final ViewGroup parent = (ViewGroup) view;
+      for (int i = 0; i < parent.getChildCount(); i++) {
+        final View child = parent.getChildAt(i);
+        recursivelyNotifyVisibleBoundsChanged(child);
+      }
+    }
   }
 }
