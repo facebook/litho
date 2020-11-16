@@ -41,14 +41,15 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
     Component component = mock(Component.class);
+    final String componentGlobalKey = "component1";
     ComponentTree componentTree = ComponentTree.create(scopedContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = scopedContext.newEventHandler(1);
-    when(component.getGlobalKey()).thenReturn("component1");
+    when(component.getGlobalKey()).thenReturn(componentGlobalKey);
 
     componentTree.recordEventHandler(component, eventHandler1);
-    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey);
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
@@ -61,7 +62,7 @@ public class ComponentTreeEventHandlerTest {
     EventHandler eventHandler2 = scopedContext.newEventHandler(1);
 
     componentTree.recordEventHandler(component, eventHandler2);
-    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey);
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
@@ -75,22 +76,25 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
     Component component = mock(Component.class);
+    final String componentGlobalKey1 = "component1";
+    final String componentGlobalKey2 = "component2";
+
     ComponentTree componentTree = ComponentTree.create(scopedContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = scopedContext.newEventHandler(1);
-    when(component.getGlobalKey()).thenReturn("component1");
+    when(component.getGlobalKey()).thenReturn(componentGlobalKey1);
 
     componentTree.recordEventHandler(component, eventHandler1);
-    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey1);
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
 
-    when(component.getGlobalKey()).thenReturn("component2");
+    when(component.getGlobalKey()).thenReturn(componentGlobalKey2);
     componentTree.setRoot(component);
     componentTree.recordEventHandler(component, eventHandler1);
-    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, componentGlobalKey2);
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);

@@ -31,6 +31,7 @@ import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SolidColor;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.junit.After;
@@ -268,9 +269,15 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   private static void assertCloneCalledFor(DefaultInternalNode layout, Set<String> keys) {
     boolean isInSet = false;
-    for (Component c : layout.getComponents()) {
-      if (keys.contains(c.getGlobalKey())) {
-        keys.remove(c.getGlobalKey());
+    final List<Component> components = layout.getComponents();
+    final List<String> componentKeys = layout.getComponentKeys();
+
+    for (int i = 0, size = components.size(); i < size; i++) {
+      final Component c = components.get(i);
+      final String globalKey =
+          ComponentUtils.getGlobalKey(c, componentKeys == null ? null : componentKeys.get(i));
+      if (keys.contains(globalKey)) {
+        keys.remove(globalKey);
         isInSet = true;
         break;
       }

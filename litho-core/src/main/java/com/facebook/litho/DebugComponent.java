@@ -66,9 +66,9 @@ public final class DebugComponent {
 
     final Component component = node.getComponents().get(componentIndex);
     final String componentKey =
-        component.useStatelessComponent()
-            ? node.getComponentKeys().get(componentIndex)
-            : component.getGlobalKey();
+        ComponentUtils.getGlobalKey(
+            component,
+            node.getComponentKeys() == null ? null : node.getComponentKeys().get(componentIndex));
 
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mNode = node;
@@ -133,9 +133,8 @@ public final class DebugComponent {
 
     final Component component = node.getComponents().get(0);
     final String componentkey =
-        component.useStatelessComponent()
-            ? node.getComponentKeys().get(0)
-            : component.getGlobalKey();
+        ComponentUtils.getGlobalKey(
+            component, node.getComponentKeys() == null ? null : node.getComponentKeys().get(0));
 
     final String key = generateGlobalKey(context, componentkey);
     final Overrider overrider = sOverriders.get(key);

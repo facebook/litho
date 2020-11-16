@@ -3522,6 +3522,8 @@ class MountState
       LayoutState layoutState, List<Transition> outList) {
     final List<Component> componentsNeedingPreviousRenderData =
         layoutState.getComponentsNeedingPreviousRenderData();
+    final List<String> componentKeysNeedingPreviousRenderData =
+        layoutState.getComponentKeysNeedingPreviousRenderData();
 
     if (componentsNeedingPreviousRenderData == null) {
       return;
@@ -3529,10 +3531,15 @@ class MountState
 
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
+      final String globalKey =
+          ComponentUtils.getGlobalKey(
+              component,
+              componentKeysNeedingPreviousRenderData == null
+                  ? null
+                  : componentKeysNeedingPreviousRenderData.get(i));
       final Transition transition =
           component.createTransition(
-              component.getScopedContext(
-                  layoutState.getLayoutStateContext(), component.getGlobalKey()));
+              component.getScopedContext(layoutState.getLayoutStateContext(), globalKey));
       if (transition != null) {
         TransitionUtils.addTransitions(transition, outList, layoutState.mRootComponentName);
       }

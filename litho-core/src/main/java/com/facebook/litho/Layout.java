@@ -99,7 +99,7 @@ class Layout {
               layoutStateContext,
               c,
               updated,
-              globalKeyToReuse == null ? updated.getGlobalKey() : globalKeyToReuse);
+              ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
     }
 
     if (layoutStatePerfEvent != null) {
@@ -247,7 +247,7 @@ class Layout {
     }
 
     // 10. Add the component to the InternalNode.
-    node.appendComponent(component, component.getGlobalKey());
+    node.appendComponent(component, ComponentUtils.getGlobalKey(component, globalKey));
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {
@@ -299,7 +299,8 @@ class Layout {
       int index = components.size() - 2;
       final Component parent = components.get(index);
       final String parentGlobalKey =
-          componentKeys == null ? parent.getGlobalKey() : componentKeys.get(index);
+          ComponentUtils.getGlobalKey(
+              parent, componentKeys == null ? null : componentKeys.get(index));
 
       parentContext =
           parent.getScopedContext(parentContext.getLayoutStateContext(), parentGlobalKey);
@@ -400,7 +401,7 @@ class Layout {
     final Component component = original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
-      component.setGlobalKey(globalKeyToReuse == null ? original.getGlobalKey() : globalKeyToReuse);
+      component.setGlobalKey(ComponentUtils.getGlobalKey(original, globalKeyToReuse));
     }
 
     final TreeProps ancestor = parent.getTreeProps();

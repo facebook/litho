@@ -27,7 +27,9 @@ public class LithoVisibilityOutputFactory implements VisibilityOutput.Factory<In
     if (node.hasVisibilityHandlers()) {
       final Component component = node.getTailComponent();
       return new VisibilityOutput(
-          component != null ? component.getGlobalKey() : "null",
+          component != null
+              ? ComponentUtils.getGlobalKey(component, node.getTailComponentKey())
+              : "null",
           component != null ? component.getSimpleName() : "Unknown",
           absoluteBounds,
           node.getVisibleHeightRatio(),

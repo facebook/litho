@@ -535,12 +535,30 @@ public class InternalNodeTest {
 
     assertThat(cloned.getChildCount()).isEqualTo(layout.getChildCount());
 
-    assertThat(cloned.getChildAt(0).getTailComponent().getGlobalKey())
-        .isEqualTo(layout.getChildAt(0).getTailComponent().getGlobalKey());
-    assertThat(cloned.getChildAt(1).getTailComponent().getGlobalKey())
-        .isEqualTo(layout.getChildAt(1).getTailComponent().getGlobalKey());
-    assertThat(cloned.getChildAt(2).getTailComponent().getGlobalKey())
-        .isEqualTo(layout.getChildAt(2).getTailComponent().getGlobalKey());
+    assertThat(
+            ComponentUtils.getGlobalKey(
+                cloned.getChildAt(0).getTailComponent(),
+                cloned.getChildAt(0).getTailComponentKey()))
+        .isEqualTo(
+            ComponentUtils.getGlobalKey(
+                layout.getChildAt(0).getTailComponent(),
+                layout.getChildAt(0).getTailComponentKey()));
+    assertThat(
+            ComponentUtils.getGlobalKey(
+                cloned.getChildAt(1).getTailComponent(),
+                cloned.getChildAt(1).getTailComponentKey()))
+        .isEqualTo(
+            ComponentUtils.getGlobalKey(
+                layout.getChildAt(1).getTailComponent(),
+                layout.getChildAt(1).getTailComponentKey()));
+    assertThat(
+            ComponentUtils.getGlobalKey(
+                cloned.getChildAt(2).getTailComponent(),
+                cloned.getChildAt(2).getTailComponentKey()))
+        .isEqualTo(
+            ComponentUtils.getGlobalKey(
+                layout.getChildAt(2).getTailComponent(),
+                layout.getChildAt(2).getTailComponentKey()));
 
     assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
     assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());

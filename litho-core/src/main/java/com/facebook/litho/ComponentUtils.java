@@ -32,6 +32,16 @@ import javax.annotation.Nullable;
 
 public class ComponentUtils {
 
+  /** @return availableGlobalKey for stateless components or component.getGlobalKey() otherwise. */
+  static @Nullable String getGlobalKey(
+      @Nullable Component component, @Nullable String availableGlobalKey) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      return availableGlobalKey;
+    }
+
+    return component == null ? null : component.getGlobalKey();
+  }
+
   public static boolean isSameComponentType(Component a, Component b) {
     if (a == b) {
       return true;

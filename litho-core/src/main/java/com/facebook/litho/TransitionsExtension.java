@@ -412,7 +412,9 @@ public class TransitionsExtension
     if (input.getTransitions() != null) {
       allTransitions.addAll(input.getTransitions());
     }
-    componentTree.applyPreviousRenderData(input.getComponentsNeedingPreviousRenderData());
+    componentTree.applyPreviousRenderData(
+        input.getComponentsNeedingPreviousRenderData(),
+        input.getComponentKeysNeedingPreviousRenderData());
     collectMountTimeTransitions(input, allTransitions);
     componentTree.consumeStateUpdateTransitions(allTransitions, input.getRootComponentName());
 

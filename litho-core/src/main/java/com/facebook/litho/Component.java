@@ -519,7 +519,7 @@ public abstract class Component extends ComponentLifecycle
       final ComponentContext parentContext, final String globalKeyToReuse) {
     final Component clone = makeShallowCopy();
     final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
-    final String existingGlobalKey = mUseStatelessComponent ? globalKeyToReuse : getGlobalKey();
+    final String existingGlobalKey = ComponentUtils.getGlobalKey(this, globalKeyToReuse);
 
     // set the global key so that it is not generated again and overridden.
     clone.setGlobalKey(existingGlobalKey);
@@ -592,7 +592,7 @@ public abstract class Component extends ComponentLifecycle
   protected ComponentContext updateInternalChildState(
       ComponentContext parentContext, @Nullable String existingGlobalKey) {
 
-    String globalKey = mUseStatelessComponent ? existingGlobalKey : getGlobalKey();
+    String globalKey = ComponentUtils.getGlobalKey(this, existingGlobalKey);
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (globalKey == null) {

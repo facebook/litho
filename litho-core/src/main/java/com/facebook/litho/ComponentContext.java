@@ -341,7 +341,7 @@ public class ComponentContext {
     }
 
     mComponentTree.updateStateSync(
-        mComponentScope.getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
+        getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
   }
 
   /**
@@ -357,7 +357,7 @@ public class ComponentContext {
     }
 
     mComponentTree.updateStateAsync(
-        mComponentScope.getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
+        getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
   }
 
   public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
@@ -369,7 +369,7 @@ public class ComponentContext {
       return;
     }
 
-    mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
+    mComponentTree.updateStateLazy(getGlobalKey(), stateUpdate);
   }
 
   /**
@@ -393,7 +393,7 @@ public class ComponentContext {
       return;
     }
 
-    mComponentTree.applyLazyStateUpdatesForContainer(mComponentScope.getGlobalKey(), container);
+    mComponentTree.applyLazyStateUpdatesForContainer(getGlobalKey(), container);
   }
 
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
@@ -532,7 +532,7 @@ public class ComponentContext {
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */
   <E> EventTrigger<E> newEventTrigger(String childKey, int id, Handle handle) {
-    String parentKey = mComponentScope == null ? "" : mComponentScope.getGlobalKey();
+    String parentKey = mComponentScope == null ? "" : getGlobalKey();
     return new EventTrigger<>(parentKey, id, childKey, handle);
   }
 

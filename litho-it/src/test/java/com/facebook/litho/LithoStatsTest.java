@@ -40,6 +40,7 @@ public class LithoStatsTest {
   private ComponentTree mComponentTree;
   private ComponentsLogger mComponentsLogger;
   private LithoView mLithoView;
+  private String mTestComponentKey;
 
   @Before
   public void setup() {
@@ -48,6 +49,7 @@ public class LithoStatsTest {
 
     mLayoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper();
     mTestComponent = new StateUpdateTestComponent();
+    mTestComponentKey = mTestComponent.getKey();
 
     mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
 
@@ -64,10 +66,7 @@ public class LithoStatsTest {
     final long beforeTotal = LithoStats.getComponentAppliedStateUpdateCount();
 
     mComponentTree.updateStateAsync(
-        mTestComponent.getGlobalKey(),
-        StateUpdateTestComponent.createIncrementStateUpdate(),
-        "test",
-        false);
+        mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
@@ -86,10 +85,7 @@ public class LithoStatsTest {
     final long beforeTotal = LithoStats.getComponentAppliedStateUpdateCount();
 
     mComponentTree.updateStateSync(
-        mTestComponent.getGlobalKey(),
-        StateUpdateTestComponent.createIncrementStateUpdate(),
-        "test",
-        false);
+        mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();

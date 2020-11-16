@@ -882,10 +882,12 @@ public class ComponentTree {
 
   void applyPreviousRenderData(LayoutState layoutState) {
     final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
-    applyPreviousRenderData(components);
+    final List<String> keys = layoutState.getComponentKeysNeedingPreviousRenderData();
+    applyPreviousRenderData(components, keys);
   }
 
-  void applyPreviousRenderData(@Nullable List<Component> components) {
+  void applyPreviousRenderData(
+      @Nullable List<Component> components, @Nullable List<String> componentKeys) {
     if (components == null || components.isEmpty()) {
       return;
     }
@@ -894,11 +896,12 @@ public class ComponentTree {
       return;
     }
 
-    mPreviousRenderState.applyPreviousRenderData(components);
+    mPreviousRenderState.applyPreviousRenderData(components, componentKeys);
   }
 
   private void recordRenderData(LayoutState layoutState) {
     final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
+    final List<String> keys = layoutState.getComponentKeysNeedingPreviousRenderData();
     if (components == null || components.isEmpty()) {
       return;
     }
@@ -907,7 +910,7 @@ public class ComponentTree {
       mPreviousRenderState = new RenderState();
     }
 
-    mPreviousRenderState.recordRenderData(components);
+    mPreviousRenderState.recordRenderData(components, keys);
   }
 
   void detach() {
@@ -1211,6 +1214,7 @@ public class ComponentTree {
   @GuardedBy("this")
   void appendTimeline(
       Component root,
+      String rootGlobalKey,
       StateHandler stateHandler,
       TreeProps props,
       @LayoutState.CalculateLayoutSource int source,
@@ -1219,7 +1223,7 @@ public class ComponentTree {
     if (mTimeline == null) {
       mTimeline =
           new DebugComponentTimeMachine.TreeRevisions(
-              root, stateHandler, props, source, attribution);
+              root, rootGlobalKey, stateHandler, props, source, attribution);
     } else {
       mTimeline.setLatest(root, stateHandler, props, source, attribution);
     }
@@ -2162,12 +2166,22 @@ public class ComponentTree {
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
       final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
+
+        components = localLayoutState.consumeComponents();
+        componentKeys = localLayoutState.consumeComponentKeys();
+
         if (layoutStateStateHandler != null) {
           final StateHandler stateHandler = mStateHandler;
           if (stateHandler != null) { // we could have been released
             if (ComponentsConfiguration.isTimelineEnabled) {
+              final int indexOfRoot = components.indexOf(root);
+              final String availableGlobalKey =
+                  (indexOfRoot >= 0 && componentKeys != null)
+                      ? componentKeys.get(indexOfRoot)
+                      : null;
+              final String globalKey = ComponentUtils.getGlobalKey(root, availableGlobalKey);
               DebugComponentTimeMachine.saveTimelineSnapshot(
-                  this, root, stateHandler, treeProps, source, extraAttribution);
+                  this, root, globalKey, stateHandler, treeProps, source, extraAttribution);
             }
             stateHandler.commit(layoutStateStateHandler);
           }
@@ -2183,8 +2197,6 @@ public class ComponentTree {
           rootHeight = localLayoutState.getHeight();
         }
 
-        components = localLayoutState.consumeComponents();
-        componentKeys = localLayoutState.consumeComponentKeys();
         attachables = localLayoutState.consumeAttachables();
         layoutStateContext = localLayoutState.getLayoutStateContext();
       }
@@ -2257,7 +2269,8 @@ public class ComponentTree {
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
       final String globalKey =
-          mUseStatelessComponent ? componentKeys.get(i) : component.getGlobalKey();
+          ComponentUtils.getGlobalKey(
+              component, componentKeys == null ? null : componentKeys.get(i));
       final ComponentContext scopedContext =
           component.getScopedContext(layoutStateContext, globalKey);
       mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);

@@ -163,8 +163,7 @@ public class StateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     InternalNode layout = current.getLayoutRoot();
 
-    mComponentTree.updateStateSync(
-        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test", false);
+    mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
     verify(layout, times(1)).reconcile(any(), any(), any(), any());
   }
@@ -174,8 +173,7 @@ public class StateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     InternalNode layout = current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync(
-        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test", false);
+    mComponentTree.updateStateAsync(getRootGlobalKey(current), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(layout, times(1)).reconcile(any(), any(), any(), any());
@@ -186,8 +184,7 @@ public class StateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     InternalNode layout = current.getLayoutRoot();
 
-    mComponentTree.updateStateSync(
-        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test", false);
+    mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
     verify(layout, times(1)).reconcile(any(), any(), any(), any());
   }
@@ -432,5 +429,9 @@ public class StateUpdatesWithReconciliationTest {
 
   private StateContainer.StateUpdate createStateUpdate() {
     return new StateContainer.StateUpdate(0);
+  }
+
+  private static String getRootGlobalKey(LayoutState layoutState) {
+    return layoutState.getRootComponent().getKey();
   }
 }

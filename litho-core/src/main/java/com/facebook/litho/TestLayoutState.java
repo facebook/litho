@@ -37,8 +37,7 @@ public class TestLayoutState {
   public static InternalNode createAndMeasureTreeForComponent(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
 
-    component.updateInternalChildState(c, null);
-    c = component.getScopedContext(c.getLayoutStateContext(), null);
+    c = component.updateInternalChildState(c, null);
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
@@ -68,14 +67,15 @@ public class TestLayoutState {
     }
 
     final InternalNode node = InternalNodeUtils.create(c);
-    component.updateInternalChildState(c, null);
+    final ComponentContext scopedContext = component.updateInternalChildState(c, null);
 
-    node.appendComponent(new TestComponent(component), component.getGlobalKey());
+    node.appendComponent(new TestComponent(component), scopedContext.getGlobalKey());
 
     return node;
   }
 
-  static InternalNode createImmediateLayout(final ComponentContext c, final Component component) {
+  private static InternalNode createImmediateLayout(
+      final ComponentContext c, final Component component) {
 
     final InternalNode node;
     final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
@@ -106,7 +106,7 @@ public class TestLayoutState {
       } else {
         node = resolveImmediateSubTree(c, root);
         if (Component.isLayoutSpec(root) && root.canResolve()) {
-          node.appendComponent(root, root.getGlobalKey());
+          node.appendComponent(root, root.getKey());
         }
       }
     }
@@ -128,7 +128,7 @@ public class TestLayoutState {
       }
     }
 
-    node.appendComponent(component, component.getGlobalKey());
+    node.appendComponent(component, component.getKey());
     component.onPrepare(c);
 
     return node;
@@ -147,7 +147,7 @@ public class TestLayoutState {
     }
 
     InternalNode node = InternalNodeUtils.create(c);
-    node.appendComponent(new TestComponent(component), component.getGlobalKey());
+    node.appendComponent(new TestComponent(component), component.getKey());
 
     return node;
   }

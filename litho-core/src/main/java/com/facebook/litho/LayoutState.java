@@ -564,9 +564,11 @@ public class LayoutState
     final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
         node.getVisibilityChangedHandler();
     final Component component = node.getTailComponent();
+    final String componentGlobalKey =
+        ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
 
     return new VisibilityOutput(
-        component != null ? component.getGlobalKey() : "null",
+        component != null ? componentGlobalKey : "null",
         component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
         node.getVisibleHeightRatio(),
@@ -722,7 +724,8 @@ public class LayoutState
       node.markLayoutSeen();
     }
     final Component component = node.getTailComponent();
-    final String componentGlobalKey = node.getTailComponentKey();
+    final String componentGlobalKey =
+        ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy;
@@ -896,7 +899,7 @@ public class LayoutState
         ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
       }
       component.onBoundsDefined(
-          component.getScopedContext(layoutState.getLayoutStateContext(), component.getGlobalKey()),
+          component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey),
           node);
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -1064,7 +1067,8 @@ public class LayoutState
       for (int i = 0, size = node.getComponents().size(); i < size; i++) {
         final Component delegate = node.getComponents().get(i);
         final String delegateKey =
-            componentKeys == null ? delegate.getGlobalKey() : componentKeys.get(i);
+            ComponentUtils.getGlobalKey(
+                delegate, componentKeys == null ? null : componentKeys.get(i));
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
         // previous ComponentTree with the new component dispatched, otherwise Section children
@@ -1085,13 +1089,13 @@ public class LayoutState
             if (layoutState.mAttachableContainer == null) {
               layoutState.mAttachableContainer = new LinkedHashMap<>();
             }
-            layoutState.mAttachableContainer.put(delegate.getGlobalKey(), delegate);
+            layoutState.mAttachableContainer.put(delegateKey, delegate);
           }
         }
-        if (delegate.getGlobalKey() != null || delegate.hasHandle()) {
+        if (delegateKey != null || delegate.hasHandle()) {
           Rect copyRect = new Rect(rect);
-          if (delegate.getGlobalKey() != null) {
-            layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
+          if (delegateKey != null) {
+            layoutState.mComponentKeyToBounds.put(delegateKey, copyRect);
           }
           if (delegate.hasHandle()) {
             layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);

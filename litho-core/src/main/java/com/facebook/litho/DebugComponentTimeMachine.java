@@ -59,6 +59,7 @@ public final class DebugComponentTimeMachine {
   public static boolean saveTimelineSnapshot(
       ComponentTree componentTree,
       Component root,
+      String rootGlobalKey,
       StateHandler stateHandler,
       TreeProps props,
       @LayoutState.CalculateLayoutSource int source,
@@ -69,7 +70,8 @@ public final class DebugComponentTimeMachine {
     }
 
     final StateHandler frozenStateHandler = new StateHandler(stateHandler);
-    componentTree.appendTimeline(root, frozenStateHandler, props, source, attribution);
+    componentTree.appendTimeline(
+        root, rootGlobalKey, frozenStateHandler, props, source, attribution);
 
     return true;
   }
@@ -176,11 +178,12 @@ public final class DebugComponentTimeMachine {
 
     TreeRevisions(
         final Component root,
+        final String rootGlobalKey,
         final StateHandler handler,
         final TreeProps props,
         final @LayoutState.CalculateLayoutSource int source,
         final @Nullable String attribution) {
-      rootName = root.getSimpleName() + " key=" + root.getGlobalKey();
+      rootName = root.getSimpleName() + " key=" + rootGlobalKey;
       internalAdd(
           new TreeRevision(
               root, handler, props, System.currentTimeMillis(), 0, source, attribution));
