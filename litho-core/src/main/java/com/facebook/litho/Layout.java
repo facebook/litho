@@ -417,7 +417,7 @@ class Layout {
     c.setTreeProps(descendants);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(c, component);
+      DebugComponent.applyOverrides(c, component, c.getGlobalKey());
     }
 
     return c;

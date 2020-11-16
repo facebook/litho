@@ -65,8 +65,12 @@ public final class DebugComponent {
     }
 
     final Component component = node.getComponents().get(componentIndex);
+    final String componentKey =
+        component.useStatelessComponent()
+            ? node.getComponentKeys().get(componentIndex)
+            : component.getGlobalKey();
 
-    debugComponent.mGlobalKey = generateGlobalKey(context, component);
+    debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mNode = node;
     debugComponent.mComponentIndex = componentIndex;
     node.registerDebugComponent(debugComponent);
@@ -108,14 +112,13 @@ public final class DebugComponent {
     return DebugComponent.getInstance(rootInternalNode, outerWrapperComponentIndex);
   }
 
-  private static String generateGlobalKey(ComponentContext context, Component component) {
+  private static String generateGlobalKey(ComponentContext context, String componentKey) {
     final ComponentTree tree = context.getComponentTree();
-    final String componentKey = component.getGlobalKey();
     return System.identityHashCode(tree) + componentKey;
   }
 
-  static void applyOverrides(ComponentContext context, Component component) {
-    final String key = generateGlobalKey(context, component);
+  static void applyOverrides(ComponentContext context, Component component, String componentKey) {
+    final String key = generateGlobalKey(context, componentKey);
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
       overrider.applyComponentOverrides(key, component);
@@ -128,7 +131,13 @@ public final class DebugComponent {
       return;
     }
 
-    final String key = generateGlobalKey(context, node.getComponents().get(0));
+    final Component component = node.getComponents().get(0);
+    final String componentkey =
+        component.useStatelessComponent()
+            ? node.getComponentKeys().get(0)
+            : component.getGlobalKey();
+
+    final String key = generateGlobalKey(context, componentkey);
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
       overrider.applyLayoutOverrides(key, new DebugLayoutNode(node));
