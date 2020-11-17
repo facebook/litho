@@ -53,10 +53,10 @@ public class LithoGeneratedFileProvider {
         .filter(
             cls -> {
               if (LithoPluginUtils.isLayoutSpec(cls)) {
-                eventMetadata.put(EventLogger.KEY_TYPE, "layout_spec");
+                eventMetadata.put(EventLogger.KEY_CLASS, "layout_spec");
                 return true;
               } else if (LithoPluginUtils.isMountSpec(cls)) {
-                eventMetadata.put(EventLogger.KEY_TYPE, "mount_spec");
+                eventMetadata.put(EventLogger.KEY_CLASS, "mount_spec");
                 return true;
               } else {
                 return false;
