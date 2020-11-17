@@ -20,7 +20,6 @@ import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
 import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
 import static com.facebook.litho.MountState.shouldUpdateMountItem;
-import static com.facebook.litho.MountState.shouldUpdateViewInfo;
 import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
@@ -39,9 +38,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
 
   public LithoRenderUnit(LayoutOutput output) {
     super(getRenderType(output));
-    addMountUnmountExtensions(
-        extension(this, LithoMountBinder.INSTANCE),
-        extension(this, LithoViewAttributeBinder.INSTANCE));
+    addMountUnmountExtensions(extension(this, LithoMountBinder.INSTANCE));
     addAttachDetachExtension(extension(this, LithoBindBinder.INSTANCE));
     this.output = output;
   }
@@ -160,44 +157,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final Object data) {
       final LayoutOutput output = unit.output;
       output.getComponent().unbind(output.getScopedContext(), content);
-    }
-  }
-
-  public static class LithoViewAttributeBinder implements Binder<LithoRenderUnit, Object> {
-
-    public static final LithoViewAttributeBinder INSTANCE = new LithoViewAttributeBinder();
-
-    @Override
-    public boolean shouldUpdate(
-        final LithoRenderUnit current,
-        final LithoRenderUnit next,
-        final Object currentData,
-        final Object nextData) {
-      return shouldUpdateViewInfo(next.output, current.output);
-    }
-
-    @Override
-    public void bind(
-        final Context context,
-        final Object content,
-        final LithoRenderUnit unit,
-        final Object data) {
-      final LayoutOutput output = unit.output;
-      if (!unit.hasDefaultViewAttributeFlags()) {
-        unit.setDefaultViewAttributeFlags(LithoMountData.getViewAttributeFlags(content));
-      }
-      MountState.setViewAttributes(content, output);
-    }
-
-    @Override
-    public void unbind(
-        final Context context,
-        final Object content,
-        final LithoRenderUnit unit,
-        final Object data) {
-      final LayoutOutput output = unit.output;
-      final int flags = unit.getDefaultViewAttributeFLags();
-      MountState.unsetViewAttributes(content, output, flags);
     }
   }
 }

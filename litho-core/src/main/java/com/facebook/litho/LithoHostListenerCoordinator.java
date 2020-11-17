@@ -37,6 +37,7 @@ public class LithoHostListenerCoordinator {
   private TransitionsExtension mTransitionsExtension;
   private EndToEndTestingExtension mEndToEndTestingExtension;
   private DynamicPropsExtension mDynamicPropsExtension;
+  private LithoViewAttributesExtension mViewAttributesExtension;
 
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountExtensions = new ArrayList<>();
@@ -133,6 +134,17 @@ public class LithoHostListenerCoordinator {
 
     mEndToEndTestingExtension = new EndToEndTestingExtension(mountDelegateTarget);
     registerListener(mEndToEndTestingExtension);
+  }
+
+  void enableViewAttributes() {
+    if (mViewAttributesExtension != null) {
+      throw new IllegalStateException(
+          "View attributes extension has already been enabled on this coordinator");
+    }
+
+    mViewAttributesExtension = LithoViewAttributesExtension.getInstance();
+    mMountDelegateTarget.registerMountDelegateExtension(mViewAttributesExtension);
+    registerListener(mViewAttributesExtension);
   }
 
   @Nullable
