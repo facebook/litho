@@ -19,6 +19,7 @@ package com.facebook.litho.intellij.completion;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.List;
@@ -34,12 +35,17 @@ public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
   public void eventInLithoClass_completes() throws IOException {
     String clsName = "OnClickEventCompletionSpec.java";
 
-    testHelper.configure(clsName);
+    PsiFile layoutSpec = testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    fixture.completeBasic();
-    List<String> completion = fixture.getLookupElementStrings();
-    assertThat(completion.contains("onClickEvent")).isTrue();
+    assertThat(
+            layoutSpec
+                .getText()
+                .contains(
+                    "    @com.facebook.litho.annotations.OnEvent(ClickEvent.class)\n"
+                        + "    static void onClickEvent(com.facebook.litho.ComponentContext c) {\n"
+                        + "    }"))
+        .isTrue();
   }
 
   @Test
@@ -55,11 +61,16 @@ public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
 
   @Test
   public void eventAboveMethod_completes() throws IOException {
-    testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
+    PsiFile mountSpec = testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    fixture.completeBasic();
-    List<String> completion = fixture.getLookupElementStrings();
-    assertThat(completion.contains("onClickEvent")).isTrue();
+    assertThat(
+            mountSpec
+                .getText()
+                .contains(
+                    "    @com.facebook.litho.annotations.OnEvent(ClickEvent.class)\n"
+                        + "    static void onClickEvent(com.facebook.litho.ComponentContext c) {\n"
+                        + "    }"))
+        .isTrue();
   }
 }

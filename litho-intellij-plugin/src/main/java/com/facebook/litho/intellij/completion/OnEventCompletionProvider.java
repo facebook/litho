@@ -57,6 +57,7 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
         PrioritizedLookupElement.withPriority(
             createMethodLookup(
                 onEventMethod,
+                lithoSpecCls,
                 clickEventCls,
                 OnEventGenerateUtils.createOnEventLookupString(clickEventCls),
                 () -> {

@@ -48,6 +48,7 @@ import com.intellij.util.ProcessingContext;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -86,7 +87,9 @@ public class MountSpecMethodAnnotationsProvider extends CompletionProvider<Compl
   protected void addCompletions(
       CompletionParameters parameters, ProcessingContext context, CompletionResultSet result) {
     PsiElement position = parameters.getPosition();
-    if (!CompletionUtils.findFirstParent(position, LithoPluginUtils::isMountSpec).isPresent()) {
+    Optional<PsiClass> maybeCls =
+        CompletionUtils.findFirstParent(position, LithoPluginUtils::isMountSpec);
+    if (!maybeCls.isPresent()) {
       return;
     }
 
@@ -94,19 +97,21 @@ public class MountSpecMethodAnnotationsProvider extends CompletionProvider<Compl
     for (String annotationFQN : ANNOTATION_QUALIFIED_NAMES) {
       LookupElement lookup =
           PrioritizedLookupElement.withPriority(
-              createLookup(annotationFQN, project), Integer.MAX_VALUE);
+              createLookup(annotationFQN, project, maybeCls.get()), Integer.MAX_VALUE);
       result.addElement(lookup);
     }
   }
 
-  private static LookupElement createLookup(String annotationFQN, Project project) {
+  private static LookupElement createLookup(
+      String annotationFQN, Project project, PsiClass specClass) {
     final String annotation = StringUtil.getShortName(annotationFQN);
     final PsiMethod psiMethod =
         ServiceManager.getService(project, TemplateService.class)
             .getMethodTemplate(annotation, project);
     if (psiMethod != null) {
       PsiClass annotationCls = MethodCompletionContributor.getOrCreateClass(annotationFQN, project);
-      return createMethodLookup(psiMethod, annotationCls, "@" + annotation, () -> log(annotation));
+      return createMethodLookup(
+          psiMethod, specClass, annotationCls, "@" + annotation, () -> log(annotation));
     }
     return SpecLookupElement.create(annotationFQN, project, (context, t) -> log(annotation));
   }

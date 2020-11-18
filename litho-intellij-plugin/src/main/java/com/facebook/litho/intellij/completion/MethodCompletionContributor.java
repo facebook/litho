@@ -48,14 +48,18 @@ public class MethodCompletionContributor extends CompletionContributor {
   }
 
   static LookupElementBuilder createMethodLookup(
-      PsiMethod method, PsiClass documentationCls, String lookupString, Runnable postProcessor) {
+      PsiMethod method,
+      PsiClass specClass,
+      PsiClass documentationCls,
+      String lookupString,
+      Runnable postProcessor) {
     return LookupElementBuilder.createWithIcon(method)
         .withPresentableText(lookupString)
         .withLookupString(lookupString)
         .withCaseSensitivity(false)
         .withInsertHandler(
             (context, item) -> {
-              handleInsert(method, context);
+              handleInsert(method, context, specClass);
               postProcessor.run();
             })
         .appendTailText(" {...}", true)
@@ -63,15 +67,16 @@ public class MethodCompletionContributor extends CompletionContributor {
         .withPsiElement(documentationCls);
   }
 
-  private static void handleInsert(PsiMethod method, InsertionContext insertionContext) {
+  private static void handleInsert(
+      PsiMethod method, InsertionContext insertionContext, PsiClass specClass) {
     // Remove lookup string. As in the JavaGenerateMemberCompletionContributor
     insertionContext
         .getDocument()
         .deleteString(insertionContext.getStartOffset() - 1, insertionContext.getTailOffset());
     insertionContext.commitDocument();
 
-    // Insert generation infos
-    new MethodGenerateHandler(method)
+    new MethodGenerateHandler(
+            method, specClass, insertionContext.getDocument(), insertionContext.getProject())
         .invoke(
             insertionContext.getProject(),
             insertionContext.getEditor(),
