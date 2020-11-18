@@ -154,6 +154,7 @@ class MountState
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
+  private @Nullable LayoutState mLayoutState;
   private @Nullable LayoutState mLastMountedLayoutState;
   private boolean mIsFirstMountOfComponentTree = false;
   private int mLastDisappearRangeStart = -1;
@@ -302,10 +303,16 @@ class MountState
       mVisibilityExtension.beforeMount(mVisibilityExtensionState, layoutState, localVisibleRect);
     }
 
+    if (mTransitionsExtension != null && mIsDirty) {
+      mTransitionsExtension.beforeMount(mTransitionsExtensionState, layoutState, localVisibleRect);
+    }
+
     if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
       mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
       return;
     }
+
+    mLayoutState = layoutState;
 
     if (mIsMounting) {
       ComponentsReporter.emitMessage(
@@ -555,6 +562,8 @@ class MountState
       throw new IllegalStateException("Trying to mount a null layoutState");
     }
 
+    mLayoutState = layoutState;
+
     if (mIsMounting) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
@@ -765,18 +774,18 @@ class MountState
 
   @Override
   public void notifyMount(long id) {
-    if (mLastMountedLayoutState == null) {
+    if (mLayoutState == null) {
       return;
     }
 
-    final int position = mLastMountedLayoutState.getPositionForId(id);
+    final int position = mLayoutState.getPositionForId(id);
 
     if (position < 0 || getItemAt(position) != null) {
       return;
     }
 
-    final RenderTreeNode node = mLastMountedLayoutState.getMountableOutputAt(position);
-    mountLayoutOutput(position, node, getLayoutOutput(node), mLastMountedLayoutState);
+    final RenderTreeNode node = mLayoutState.getMountableOutputAt(position);
+    mountLayoutOutput(position, node, getLayoutOutput(node), mLayoutState);
   }
 
   @Override
@@ -2876,7 +2885,6 @@ class MountState
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.beforeMount(mTransitionsExtensionState, layoutState, localVisibleRect);
       return;
     }
 
