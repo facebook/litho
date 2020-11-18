@@ -77,23 +77,23 @@ public class LayoutSpecModelFactoryTest {
   }
 
   @Test
-  public void layoutSpec_initModel_populateGenericSpecInfo() {
+  public void create_forLayoutSpec_populateGenericSpecInfo() {
     // can't move to helper, because PsiLayoutSpecModelFactoryTest doesn't support qualified names
     assertThat(mLayoutSpecModel.getSpecTypeName().toString()).isEqualTo(TEST_QUALIFIED_SPEC_NAME);
     assertThat(mLayoutSpecModel.getComponentTypeName().toString())
         .isEqualTo(TEST_QUALIFIED_COMPONENT_NAME);
-    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateGenericSpecInfo(
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateGenericSpecInfo(
         mLayoutSpecModel, mDependencyInjectionHelper);
   }
 
   @Test
-  public void layoutSpec_initModel_populateOnAttachInfo() {
-    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateOnAttachInfo(mLayoutSpecModel);
+  public void create_forLayoutSpec_populateOnAttachInfo() {
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateOnAttachInfo(mLayoutSpecModel);
   }
 
   @Test
-  public void layoutSpec_initModel_populateOnDetachInfo() {
-    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateOnDetachInfo(mLayoutSpecModel);
+  public void create_forLayoutSpec_populateOnDetachInfo() {
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateOnDetachInfo(mLayoutSpecModel);
   }
 
   @LayoutSpec(value = "TestLayoutComponentName")

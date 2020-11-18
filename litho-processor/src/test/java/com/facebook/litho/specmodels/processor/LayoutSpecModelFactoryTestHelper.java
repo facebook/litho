@@ -24,7 +24,7 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 
 public class LayoutSpecModelFactoryTestHelper {
-  public static void layoutSpec_initModel_populateGenericSpecInfo(
+  public static void create_forLayoutSpec_populateGenericSpecInfo(
       LayoutSpecModel mLayoutSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
     assertThat(mLayoutSpecModel.getSpecName()).isEqualTo("TestLayoutSpec");
     assertThat(mLayoutSpecModel.getComponentName()).isEqualTo("TestLayoutComponentName");
@@ -36,14 +36,14 @@ public class LayoutSpecModelFactoryTestHelper {
         .isSameAs(mDependencyInjectionHelper);
   }
 
-  public static void layoutSpec_initModel_populateOnAttachInfo(LayoutSpecModel mLayoutSpecModel) {
+  public static void create_forLayoutSpec_populateOnAttachInfo(LayoutSpecModel mLayoutSpecModel) {
     final SpecMethodModel<DelegateMethod, Void> onAttached =
         mLayoutSpecModel.getDelegateMethods().get(2);
     assertThat(onAttached.name.toString()).isEqualTo("onAttached");
     assertThat(onAttached.methodParams).hasSize(3);
   }
 
-  public static void layoutSpec_initModel_populateOnDetachInfo(LayoutSpecModel mLayoutSpecModel) {
+  public static void create_forLayoutSpec_populateOnDetachInfo(LayoutSpecModel mLayoutSpecModel) {
     final SpecMethodModel<DelegateMethod, Void> onDetached =
         mLayoutSpecModel.getDelegateMethods().get(3);
     assertThat(onDetached.name.toString()).isEqualTo("onDetached");

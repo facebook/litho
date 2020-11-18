@@ -55,18 +55,18 @@ public class PsiLayoutSpecModelFactoryTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void layoutSpec_initModel_populateGenericSpecInfo() {
-    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateGenericSpecInfo(
+  public void createWithPsi_forLayoutSpec_populateGenericSpecInfo() {
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateGenericSpecInfo(
         mLayoutSpecModel, mDependencyInjectionHelper);
   }
 
   @Test
-  public void layoutSpec_initModel_populateOnAttachInfo() {
-    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateOnAttachInfo(mLayoutSpecModel);
+  public void createWithPsi_forLayoutSpec_populateOnAttachInfo() {
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateOnAttachInfo(mLayoutSpecModel);
   }
 
   @Test
-  public void layoutSpec_initModel_populateOnDetachInfo() {
-    LayoutSpecModelFactoryTestHelper.layoutSpec_initModel_populateOnDetachInfo(mLayoutSpecModel);
+  public void createWithPsi_forLayoutSpec_populateOnDetachInfo() {
+    LayoutSpecModelFactoryTestHelper.create_forLayoutSpec_populateOnDetachInfo(mLayoutSpecModel);
   }
 }
