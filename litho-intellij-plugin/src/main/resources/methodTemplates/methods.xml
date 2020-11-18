@@ -34,4 +34,5 @@
   <OnMount method="@androidx.annotation.UiThread @com.facebook.litho.annotations.OnMount static void onMount(com.facebook.litho.ComponentContext c, android.graphics.drawable.ColorDrawable colorDrawable) {&#xA;/* TODO: https://fblitho.com/docs/mount-specs#mounting */}"/>
   <ShouldUpdate method="@com.facebook.litho.annotations.ShouldUpdate static boolean shouldUpdate() {&#xA;/* https://fblitho.com/docs/mount-specs#shouldupdate */return false;}"/>
   <OnCalculateCachedValue method="@com.facebook.litho.annotations.OnCalculateCachedValue(name = &quot;expensiveValue&quot;) static int onCalculateCachedValue() {&#xA;/* TODO: https://fblitho.com/docs/cached-values */return 0;}"/>
+  <OnCreateMountContentPool method="@com.facebook.litho.annotations.OnCreateMountContentPool static com.facebook.litho.MountContentPool onCreateMountContentPool() {&#xA;/* TODO: https://fblitho.com/javadoc/com/facebook/litho/annotations/OnCreateMountContentPool.html */return new com.facebook.litho.DefaultMountContentPool(&quot;MyCustomPool&quot;, 3, true);}"/>
 </templateSet>
