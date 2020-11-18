@@ -16,14 +16,17 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
+import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +36,6 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
       mock(DependencyInjectionHelper.class);
 
   private PsiFile mPsiFile;
-  private MountSpecModel mMountSpecModel;
 
   public PsiMountSpecModelFactoryTest() {
     super("testdata/processor");
@@ -44,69 +46,66 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
   public void setUp() throws Exception {
     super.setUp();
     mPsiFile = testHelper.configure("PsiMountSpecModelFactoryTest.java");
+  }
+
+  @Test
+  public void createWithPsi_forMountSpecWithExplicitMountType_populateGenericSpecInfo() {
+    verifyCreateWithPsiForSpec(
+        "TestMountSpecWithExplicitMountType",
+        mountSpecModel ->
+            MountSpecModelFactoryTestHelper
+                .create_forMountSpecWithExplicitMountType_populateGenericSpecInfo(
+                    mountSpecModel, mDependencyInjectionHelper));
+  }
+
+  @Test
+  public void createWithPsi_forMountSpecWithExplicitMountType_populateOnAttachInfo() {
+    verifyCreateWithPsiForSpec(
+        "TestMountSpecWithExplicitMountType",
+        mountSpecModel ->
+            MountSpecModelFactoryTestHelper
+                .create_forMountSpecWithExplicitMountType_populateOnAttachInfo(mountSpecModel));
+  }
+
+  @Test
+  public void createWithPsi_forMountSpecWithExplicitMountType_populateOnDetachInfo() {
+    verifyCreateWithPsiForSpec(
+        "TestMountSpecWithExplicitMountType",
+        mountSpecModel ->
+            MountSpecModelFactoryTestHelper
+                .create_forMountSpecWithExplicitMountType_populateOnDetachInfo(mountSpecModel));
+  }
+
+  @Test
+  public void createWithPsi_forMountSpecWithImplicitMountType_populateMountType() {
+    verifyCreateWithPsiForSpec(
+        "TestMountSpecWithImplicitMountType",
+        mountSpecModel ->
+            assertThat(mountSpecModel.getMountType())
+                .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE));
+  }
+
+  @Test
+  public void createWithPsi_forMountSpecWithoutMountType_hasMountTypeNone() {
+    verifyCreateWithPsiForSpec(
+        "TestMountSpecWithoutMountType",
+        mountSpecModel ->
+            assertThat(mountSpecModel.getMountType())
+                .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE));
+  }
+
+  private void verifyCreateWithPsiForSpec(String specName, Consumer<MountSpecModel> assertion) {
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              mMountSpecModel =
+              final MountSpecModel mountSpecModel =
                   mFactory.createWithPsi(
                       mPsiFile.getProject(),
                       LithoPluginUtils.getFirstClass(
-                              mPsiFile, cls -> "TestMountSpec".equals(cls.getName()))
+                              mPsiFile, cls -> specName.equals(cls.getName()))
                           .get(),
                       mDependencyInjectionHelper);
-            });
-  }
-
-  @Test
-  public void mountSpec_initModel_populateGenericSpecInfo() {
-    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateGenericSpecInfo(
-        mMountSpecModel, mDependencyInjectionHelper);
-  }
-
-  @Test
-  public void mountSpec_initModel_populateOnAttachInfo() {
-    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnAttachInfo(mMountSpecModel);
-  }
-
-  @Test
-  public void mountSpec_initModel_populateOnDetachInfo() {
-    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnDetachInfo(mMountSpecModel);
-  }
-
-  @Test
-  public void mountSpecWithImplicitMountType_initModel_populateMountType() {
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              final MountSpecModel mountSpecModelWithImplicitMountType =
-                  mFactory.createWithPsi(
-                      mPsiFile.getProject(),
-                      LithoPluginUtils.getFirstClass(
-                              mPsiFile,
-                              cls -> "TestMountSpecWithImplicitMountType".equals(cls.getName()))
-                          .get(),
-                      mDependencyInjectionHelper);
-              MountSpecModelFactoryTestHelper
-                  .mountSpecWithImplicitMountType_initModel_populateMountType(
-                      mountSpecModelWithImplicitMountType);
-            });
-  }
-
-  @Test
-  public void mountSpecWithoutMountType_initModel_hasMountTypeNone() {
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              final MountSpecModel mountSpecModelWithoutMountType =
-                  mFactory.createWithPsi(
-                      mPsiFile.getProject(),
-                      LithoPluginUtils.getFirstClass(
-                              mPsiFile,
-                              cls -> "TestMountSpecWithoutMountType".equals(cls.getName()))
-                          .get(),
-                      mDependencyInjectionHelper);
-              MountSpecModelFactoryTestHelper.mountSpecWithoutMountType_initModel_hasMountTypeNone(
-                  mountSpecModelWithoutMountType);
+              assertion.accept(mountSpecModel);
             });
   }
 }

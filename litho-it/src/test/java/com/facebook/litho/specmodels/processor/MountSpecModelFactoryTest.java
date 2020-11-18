@@ -112,7 +112,7 @@ public class MountSpecModelFactoryTest {
       isPublic = false,
       isPureRender = true,
       events = {TestTriggerEvent.class})
-  static class TestMountSpec {
+  static class TestMountSpecWithExplicitMountType {
 
     @OnCreateMountContent(mountingType = MountingType.DRAWABLE)
     static ColorDrawable onCreateMountContent(Context context) {
@@ -171,7 +171,8 @@ public class MountSpecModelFactoryTest {
     Elements elements = mCompilationRule.getElements();
     Types types = mCompilationRule.getTypes();
     TypeElement typeElement =
-        elements.getTypeElement(MountSpecModelFactoryTest.TestMountSpec.class.getCanonicalName());
+        elements.getTypeElement(
+            MountSpecModelFactoryTest.TestMountSpecWithExplicitMountType.class.getCanonicalName());
 
     mMountSpecModel =
         mFactory.create(
@@ -185,27 +186,30 @@ public class MountSpecModelFactoryTest {
   }
 
   @Test
-  public void mountSpec_initModel_populateGenericSpecInfo() {
+  public void create_forMountSpecWithExplicitMountType_populateGenericSpecInfo() {
     // can't move to helper, because PsiMountSpecModelFactoryTest doesn't support qualified names
     assertThat(mMountSpecModel.getSpecTypeName().toString())
         .isEqualTo(
-            "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMountSpec");
+            "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMountSpecWithExplicitMountType");
     assertThat(mMountSpecModel.getComponentTypeName().toString())
         .isEqualTo(
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest."
                 + "TestMountComponentName");
 
-    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateGenericSpecInfo(
-        mMountSpecModel, mDependencyInjectionHelper);
+    MountSpecModelFactoryTestHelper
+        .create_forMountSpecWithExplicitMountType_populateGenericSpecInfo(
+            mMountSpecModel, mDependencyInjectionHelper);
   }
 
   @Test
-  public void mountSpec_initModel_populateOnAttachInfo() {
-    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnAttachInfo(mMountSpecModel);
+  public void create_forMountSpecWithExplicitMountType_populateOnAttachInfo() {
+    MountSpecModelFactoryTestHelper.create_forMountSpecWithExplicitMountType_populateOnAttachInfo(
+        mMountSpecModel);
   }
 
   @Test
-  public void mountSpec_initModel_populateOnDetachInfo() {
-    MountSpecModelFactoryTestHelper.mountSpec_initModel_populateOnDetachInfo(mMountSpecModel);
+  public void create_forMountSpecWithExplicitMountType_populateOnDetachInfo() {
+    MountSpecModelFactoryTestHelper.create_forMountSpecWithExplicitMountType_populateOnDetachInfo(
+        mMountSpecModel);
   }
 }

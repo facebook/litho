@@ -50,7 +50,7 @@ static class TestTriggerEvent {
 }
 
 @com.facebook.litho.annotations.MountSpec(value = "TestMountComponentName", isPublic = false, isPureRender = true, events = { TestTriggerEvent.class })
-static class TestMountSpec {
+static class TestMountSpecWithExplicitMountType {
 
   @com.facebook.litho.annotations.OnCreateMountContent(mountingType = MountingType.DRAWABLE)
   static android.graphics.drawable.ColorDrawable onCreateMountContent(android.content.Context context) {

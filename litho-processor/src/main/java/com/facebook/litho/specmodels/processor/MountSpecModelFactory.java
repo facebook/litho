@@ -194,17 +194,18 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
                   "Mount type cannot be correctly inferred from the name of "
                       + element
                       + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.VIEW)`.");
+            } else {
+              return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
             }
-
-            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
           } else if (returnElement.equals(drawableType)) {
-            if (!initialReturnType.toString().contains("Drawable")) {
+            if (initialReturnType.toString().contains("Drawable")) {
+              return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+            } else {
               throw new ComponentsProcessingException(
                   "Mount type cannot be correctly inferred from the name of "
                       + element
                       + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.DRAWABLE)`.");
             }
-            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
           }
 
           try {

@@ -136,13 +136,15 @@ public class PsiMountSpecModelFactory {
         if (returnType.getCanonicalText().equals(ClassNames.VIEW_NAME)) {
           if (initialReturnType.getPresentableText().contains("Drawable")) {
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
+          } else {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
           }
-          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
         } else if (returnType.getCanonicalText().equals(ClassNames.DRAWABLE_NAME)) {
-          if (!initialReturnType.toString().contains("Drawable")) {
+          if (initialReturnType.getPresentableText().contains("Drawable")) {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+          } else {
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
           }
-          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
         }
         try {
           returnType = returnType.getSuperTypes()[0];

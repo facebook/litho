@@ -29,9 +29,9 @@ import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 
 public class MountSpecModelFactoryTestHelper {
-  public static void mountSpec_initModel_populateGenericSpecInfo(
+  public static void create_forMountSpecWithExplicitMountType_populateGenericSpecInfo(
       MountSpecModel mountSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
-    assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
+    assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpecWithExplicitMountType");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
     assertThat(mountSpecModel.getMountType())
         .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE);
@@ -78,29 +78,19 @@ public class MountSpecModelFactoryTestHelper {
     assertThat(mountSpecModel.getUpdateStateWithTransitionMethods().get(0).methodParams).hasSize(1);
   }
 
-  public static void mountSpec_initModel_populateOnAttachInfo(MountSpecModel mountSpecModel) {
+  public static void create_forMountSpecWithExplicitMountType_populateOnAttachInfo(
+      MountSpecModel mountSpecModel) {
     final SpecMethodModel<DelegateMethod, Void> onAttached =
         mountSpecModel.getDelegateMethods().get(7);
     assertThat(onAttached.name).isEqualToIgnoringCase("onAttached");
     assertThat(onAttached.methodParams).hasSize(3);
   }
 
-  public static void mountSpec_initModel_populateOnDetachInfo(MountSpecModel mountSpecModel) {
+  public static void create_forMountSpecWithExplicitMountType_populateOnDetachInfo(
+      MountSpecModel mountSpecModel) {
     final SpecMethodModel<DelegateMethod, Void> onDetached =
         mountSpecModel.getDelegateMethods().get(8);
     assertThat(onDetached.name).isEqualToIgnoringCase("onDetached");
     assertThat(onDetached.methodParams).hasSize(3);
-  }
-
-  public static void mountSpecWithImplicitMountType_initModel_populateMountType(
-      MountSpecModel mountSpecModelImplicitMountType) {
-    assertThat(mountSpecModelImplicitMountType.getMountType())
-        .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE);
-  }
-
-  public static void mountSpecWithoutMountType_initModel_hasMountTypeNone(
-      MountSpecModel mountSpecModelImplicitMountType) {
-    assertThat(mountSpecModelImplicitMountType.getMountType())
-        .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE);
   }
 }
