@@ -36,4 +36,5 @@
   <OnCalculateCachedValue method="@com.facebook.litho.annotations.OnCalculateCachedValue(name = &quot;expensiveValue&quot;) static int onCalculateCachedValue() {&#xA;/* TODO: https://fblitho.com/docs/cached-values */return 0;}"/>
   <OnCreateMountContentPool method="@com.facebook.litho.annotations.OnCreateMountContentPool static com.facebook.litho.MountContentPool onCreateMountContentPool() {&#xA;/* TODO: https://fblitho.com/javadoc/com/facebook/litho/annotations/OnCreateMountContentPool.html */return new com.facebook.litho.DefaultMountContentPool(&quot;MyCustomPool&quot;, 3, true);}"/>
   <OnExitedRange method="@com.facebook.litho.annotations.OnExitedRange(name = &quot;prefetch&quot;) static void onExitedWorkingRange(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/sections-working-ranges */}"/>
+  <OnEnteredRange method="@com.facebook.litho.annotations.OnEnteredRange(name = &quot;prefetch&quot;) static void onEnteredWorkingRange(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/sections-working-ranges */}"/>
 </templateSet>
