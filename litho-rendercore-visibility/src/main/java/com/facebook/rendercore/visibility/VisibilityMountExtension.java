@@ -30,6 +30,7 @@ import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private final Rect mPreviousLocalVisibleRect = new Rect();
 
     private boolean mIncrementalVisibilityEnabled;
-    private List<VisibilityOutput> mVisibilityOutputs;
-    private Set<Long> mRenderUnitIdsWhichHostRenderTrees;
+    private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
+    private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
     private @Nullable VisibilityModule mVisibilityModule;
     private @Nullable VisibilityModuleInput mVisibilityModuleInput;
     private @Nullable Rect mCurrentLocalVisibleRect;
