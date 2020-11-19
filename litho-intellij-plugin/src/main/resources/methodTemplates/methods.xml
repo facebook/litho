@@ -42,4 +42,5 @@
   <OnLoadStyle method="@com.facebook.litho.annotations.OnLoadStyle static void onLoadStyle(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/styles */}"/>
   <OnPopulateAccessibilityNode method="@com.facebook.litho.annotations.OnPopulateAccessibilityNode static void onPopulateAccessibilityNode(android.view.View host, androidx.core.view.accessibility.AccessibilityNodeInfoCompat accessibilityNode) {&#xA;/* TODO: https://fblitho.com/docs/accessibility#custom-accessibility */}"/>
   <OnPopulateExtraAccessibilityNode method="@com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode static void onPopulateExtraAccessibilityNode(androidx.core.view.accessibility.AccessibilityNodeInfoCompat node, int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop) {&#xA;/* TODO: https://fblitho.com/docs/accessibility#extra-accessibility-nodes */}"/>
+  <GetExtraAccessibilityNodesCount method="@com.facebook.litho.annotations.GetExtraAccessibilityNodesCount static int getExtraAccessibilityNodesCount() {&#xA;/* TODO: https://fblitho.com/docs/accessibility#extra-accessibility-nodes */return 0;}"/>
 </templateSet>
