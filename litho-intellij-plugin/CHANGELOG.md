@@ -1,11 +1,18 @@
 # CHANGELOG
 
+## Version 1.6.1
+
+_2020-11-19_
+
+* New: Dynamic OnUpdateState method template.
+* New: Additional method completions for `Spec`.
+
 ## Version 1.6.0
 
 _2020-11-4_
 
 * New: "Resolve Litho Red Symbols" for `MountSpec`.
-* New: Annotation for `MountSpec`.
+* New: Warning Annotations for `MountSpec`.
 * New: "Litho Spec" view for `MountSpec`.
 * New: "Regenerate Component" for `MountSpec`.
 
