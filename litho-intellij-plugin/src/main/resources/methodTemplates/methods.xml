@@ -38,4 +38,5 @@
   <OnExitedRange method="@com.facebook.litho.annotations.OnExitedRange(name = &quot;prefetch&quot;) static void onExitedWorkingRange(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/sections-working-ranges */}"/>
   <OnEnteredRange method="@com.facebook.litho.annotations.OnEnteredRange(name = &quot;prefetch&quot;) static void onEnteredWorkingRange(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/sections-working-ranges */}"/>
   <OnRegisterRanges method="@com.facebook.litho.annotations.OnRegisterRanges static void registerWorkingRanges(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/sections-working-ranges */}"/>
+  <OnError method="@com.facebook.litho.annotations.OnError static void onError(com.facebook.litho.ComponentContext c, java.lang.Exception error) {&#xA;/* TODO: https://fblitho.com/docs/error-boundaries */}"/>
 </templateSet>
