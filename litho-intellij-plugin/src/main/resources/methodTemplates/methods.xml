@@ -40,4 +40,5 @@
   <OnRegisterRanges method="@com.facebook.litho.annotations.OnRegisterRanges static void registerWorkingRanges(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/sections-working-ranges */}"/>
   <OnError method="@com.facebook.litho.annotations.OnError static void onError(com.facebook.litho.ComponentContext c, java.lang.Exception error) {&#xA;/* TODO: https://fblitho.com/docs/error-boundaries */}"/>
   <OnLoadStyle method="@com.facebook.litho.annotations.OnLoadStyle static void onLoadStyle(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/styles */}"/>
+  <OnPopulateAccessibilityNode method="@com.facebook.litho.annotations.OnPopulateAccessibilityNode static void onPopulateAccessibilityNode(android.view.View host, androidx.core.view.accessibility.AccessibilityNodeInfoCompat accessibilityNode) {&#xA;/* TODO: https://fblitho.com/docs/accessibility#custom-accessibility */}"/>
 </templateSet>
