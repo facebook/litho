@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
