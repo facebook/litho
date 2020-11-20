@@ -86,16 +86,6 @@ public class IncrementalMountExtension
     if (mAcquireReferencesDuringMount) {
       setupPreviousMountableOutputData(state, state.mPreviousLocalVisibleRect);
     }
-
-    // remove everything that was marked as needing to be removed.
-    // At this point we know that all items have been moved to the appropriate hosts.
-    for (IncrementalMountOutput output : state.mPendingImmediateRemoval) {
-      final long id = output.getId();
-      if (extensionState.ownsReference(id)) {
-        extensionState.releaseMountReference(id, true);
-      }
-    }
-    state.mPendingImmediateRemoval.clear();
   }
 
   @Override
@@ -199,7 +189,6 @@ public class IncrementalMountExtension
 
     final IncrementalMountExtensionState state = extensionState.getState();
     state.mPreviousLocalVisibleRect.setEmpty();
-    state.mPendingImmediateRemoval.clear();
     state.mComponentIdsMountedInThisFrame.clear();
   }
 
@@ -288,11 +277,7 @@ public class IncrementalMountExtension
     if (isMountable && !hasAcquiredMountRef) {
       acquireMountReferenceEnsureHostIsMounted(extensionState, incrementalMountOutput, isMounting);
     } else if (!isMountable && hasAcquiredMountRef) {
-      if (!isMounting) {
-        state.mPendingImmediateRemoval.add(incrementalMountOutput);
-      } else if (extensionState.ownsReference(id)) {
-        extensionState.releaseMountReference(id, true);
-      }
+      extensionState.releaseMountReference(id, isMounting);
     } else if (isMountable && hasAcquiredMountRef && isMounting) {
       // If we're in the process of mounting now, we know the item we're updating is already
       // mounted and that MountState.mount will not be called. We have to call the binder
@@ -448,8 +433,6 @@ public class IncrementalMountExtension
     private final Rect mPreviousLocalVisibleRect = new Rect();
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
-
-    private final Set<IncrementalMountOutput> mPendingImmediateRemoval = new ArraySet<>();
 
     private IncrementalMountExtensionInput mInput;
     private int mPreviousTopsIndex;

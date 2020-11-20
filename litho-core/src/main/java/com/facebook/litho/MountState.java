@@ -627,11 +627,10 @@ class MountState
       final boolean isMountable = isMountable(renderTreeNode, i);
 
       if (!isMountable) {
-        ComponentsSystrace.endSection();
-        continue;
-      }
-
-      if (!isMounted) {
+        if (isMounted) {
+          unmountItem(i, mHostsByMarker);
+        }
+      } else if (!isMounted) {
         mountLayoutOutput(i, renderTreeNode, layoutOutput, layoutState);
         applyMountBinders(layoutOutput, getItemAt(i), i);
       } else {

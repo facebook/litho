@@ -54,7 +54,7 @@ public class ExtensionState<State> {
 
   public void releaseAllAcquiredReferences() {
     for (Long id : mLayoutOutputMountRefs) {
-      mMountDelegate.releaseMountRef(id, false);
+      mMountDelegate.releaseMountRef(id);
     }
     mLayoutOutputMountRefs.clear();
   }
@@ -69,7 +69,11 @@ public class ExtensionState<State> {
     }
 
     mLayoutOutputMountRefs.add(id);
-    mMountDelegate.acquireMountRef(id, isMounting);
+    if (isMounting) {
+      mMountDelegate.acquireAndMountRef(id);
+    } else {
+      mMountDelegate.acquireMountRef(id);
+    }
   }
 
   public void releaseMountReference(final RenderTreeNode renderTreeNode, final boolean isMounting) {
@@ -82,7 +86,11 @@ public class ExtensionState<State> {
     }
 
     mLayoutOutputMountRefs.remove(id);
-    mMountDelegate.releaseMountRef(id, isMounting);
+    if (isMounting) {
+      mMountDelegate.releaseAndUnmountRef(id);
+    } else {
+      mMountDelegate.releaseMountRef(id);
+    }
   }
 
   // TODO: T68620328 This method should be roll back to being protected once the transition

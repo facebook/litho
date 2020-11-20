@@ -163,30 +163,44 @@ public class MountDelegate {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void acquireMountRef(final RenderTreeNode node, final boolean isMounting) {
-    acquireMountRef(node.getRenderUnit().getId(), isMounting);
+  public void acquireMountRef(final RenderTreeNode node) {
+    acquireMountRef(node.getRenderUnit().getId());
   }
 
-  public void acquireMountRef(final long id, final boolean isMounting) {
+  public void acquireMountRef(final long id) {
     incrementExtensionRefCount(id);
+  }
+
+  public void acquireAndMountRef(final RenderTreeNode node) {
+    acquireAndMountRef(node.getRenderUnit().getId());
+  }
+
+  public void acquireAndMountRef(final long id) {
+    acquireMountRef(id);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
-    if (isMounting) {
-      mMountDelegateTarget.notifyMount(id);
-    }
+    mMountDelegateTarget.notifyMount(id);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void releaseMountRef(final RenderTreeNode renderTreeNode, final boolean isMounting) {
-    releaseMountRef(renderTreeNode.getRenderUnit().getId(), isMounting);
+  public void releaseMountRef(final RenderTreeNode renderTreeNode) {
+    releaseMountRef(renderTreeNode.getRenderUnit().getId());
   }
 
-  public void releaseMountRef(final long id, final boolean isMounting) {
-    final boolean wasLockedForMount = isLockedForMount(id);
+  public void releaseMountRef(final long id) {
     decrementExtensionRefCount(id);
+  }
 
-    if (wasLockedForMount && !isLockedForMount(id) && isMounting) {
+  public void releaseAndUnmountRef(final RenderTreeNode renderTreeNode) {
+    releaseAndUnmountRef(renderTreeNode.getRenderUnit().getId());
+  }
+
+  public void releaseAndUnmountRef(final long id) {
+    final boolean wasLockedForMount = isLockedForMount(id);
+    releaseMountRef(id);
+
+    if (wasLockedForMount && !isLockedForMount(id)) {
       mMountDelegateTarget.notifyUnmount(id);
     }
   }

@@ -126,14 +126,14 @@ public class MountState implements MountDelegateTarget {
       final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
 
       final boolean isMountable = isMountable(renderTreeNode, i);
-      if (!isMountable) {
-        continue;
-      }
-
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
 
-      if (!isMounted) {
+      if (!isMountable) {
+        if (isMounted) {
+          unmountItemRecursively(renderTreeNode);
+        }
+      } else if (!isMounted) {
         RenderCoreSystrace.beginSection(
             "MountItem: ", renderTreeNode.getRenderUnit().getDescription());
         mountRenderUnit(i, renderTreeNode);
