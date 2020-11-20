@@ -26,6 +26,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Layout;
@@ -49,7 +51,9 @@ import java.util.List;
 @DoNotStrip
 public class RCTextView extends View {
 
+  private static final String ACCESSIBILITY_BUTTON_CLASS = "android.widget.Button";
   private CharSequence mText;
+  private ClickableSpan[] mClickableSpans;
   private Layout mLayout;
   private float mLayoutTranslationY;
   private boolean mClipToBounds;
@@ -109,6 +113,7 @@ public class RCTextView extends View {
       int linkColor,
       int highlightColor,
       ImageSpan[] imageSpans,
+      ClickableSpan[] clickableSpans,
       int highlightStartOffset,
       int highlightEndOffset) {
     mText = text;
@@ -143,7 +148,7 @@ public class RCTextView extends View {
       }
     }
     mImageSpans = imageSpans;
-
+    mClickableSpans = clickableSpans;
     invalidate();
   }
 
@@ -350,7 +355,13 @@ public class RCTextView extends View {
     }
   }
 
-  public class RCTextAccessibilityDelegate extends ExploreByTouchHelper {
+  @Override
+  public boolean dispatchHoverEvent(MotionEvent event) {
+    return mRCTextAccessibilityDelegate.dispatchHoverEvent(event)
+        || super.dispatchHoverEvent(event);
+  }
+
+  private class RCTextAccessibilityDelegate extends ExploreByTouchHelper {
 
     @Nullable private AccessibilityDelegateCompat mWrappedAccessibilityDelegate;
 
@@ -367,15 +378,68 @@ public class RCTextView extends View {
 
     @Override
     protected int getVirtualViewAt(float x, float y) {
-      return 0;
+      if (!(mText instanceof Spanned)) {
+        return INVALID_ID;
+      }
+      final Spanned spanned = (Spanned) mText;
+
+      for (int i = 0; i < mClickableSpans.length; i++) {
+        final ClickableSpan span = mClickableSpans[i];
+        final int start = spanned.getSpanStart(span);
+        final int end = spanned.getSpanEnd(span);
+        int textOffset = RCTextView.this.getTextOffsetAt((int) x, (int) y);
+        if (textOffset >= start && textOffset <= end) {
+          return i;
+        }
+      }
+
+      return INVALID_ID;
     }
 
     @Override
-    protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {}
+    protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {
+      for (int i = 0; i < mClickableSpans.length; i++) {
+        virtualViewIds.add(i);
+      }
+    }
 
     @Override
     protected void onPopulateNodeForVirtualView(
-        int virtualViewId, AccessibilityNodeInfoCompat node) {}
+        int virtualViewId, AccessibilityNodeInfoCompat node) {
+      final Spanned spanned = (Spanned) mText;
+      final ClickableSpan span = mClickableSpans[virtualViewId];
+      final int start = spanned.getSpanStart(span);
+      final int end = spanned.getSpanEnd(span);
+      final int startLine = mLayout.getLineForOffset(start);
+      final int endLine = mLayout.getLineForOffset(end);
+      final Path sTempPath = new Path();
+      final Rect sTempRect = new Rect();
+      final RectF sTempRectF = new RectF();
+
+      // The bounds for multi-line strings should *only* include the first line.  This is because
+      // TalkBack triggers its click at the center point of these bounds, and if that center point
+      // is outside the spannable, it will click on something else.  There is no harm in not
+      // outlining
+      // the wrapped part of the string, as the text for the whole string will be read regardless of
+      // the bounding box.
+      final int selectionPathEnd =
+          startLine == endLine ? end : mLayout.getLineVisibleEnd(startLine);
+
+      mLayout.getSelectionPath(start, selectionPathEnd, sTempPath);
+      sTempPath.computeBounds(sTempRectF, /* unused */ true);
+
+      sTempRectF.round(sTempRect);
+
+      node.setBoundsInParent(sTempRect);
+
+      node.setClickable(true);
+      node.setFocusable(true);
+      node.setEnabled(true);
+      node.setVisibleToUser(true);
+      node.setText(spanned.subSequence(start, end));
+      // This is needed to get the swipe action
+      node.setClassName(ACCESSIBILITY_BUTTON_CLASS);
+    }
 
     @Override
     protected boolean onPerformActionForVirtualView(

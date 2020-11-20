@@ -73,6 +73,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> {
               textLayoutContext.textStyle.textColor,
               textLayoutContext.textStyle.highlightColor,
               textLayoutContext.imageSpans,
+              textLayoutContext.clickableSpans,
               textLayoutContext.textStyle.highlightStartOffset,
               textLayoutContext.textStyle.highlightEndOffset);
 
