@@ -17,6 +17,6 @@
 @com.facebook.litho.annotations.LayoutSpec
 class ParamCompletionSpec {
   @com.facebook.litho.annotations.OnEvent(TestEvent.class)
-  static void onTestEvent(@<caret>) {}
+  static void onTestEvent(@Pa<caret>) {}
 }
 

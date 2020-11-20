@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.atIndex;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import org.junit.Test;
@@ -42,10 +43,10 @@ public class ParamCompletionContributorTest extends LithoPluginIntellijTest {
   @Test
   public void whenTriggeringCompletionForOnEvent_showsParamAnnotationPrioritised()
       throws IOException {
-    testHelper.configure("ParamCompletionOnEventTest.java");
+    PsiFile layoutSpec = testHelper.configure("ParamCompletionOnEventTest.java");
     final CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    assertThat(fixture.getLookupElementStrings()).contains("Param", atIndex(0));
+    assertThat(layoutSpec.getText().contains("@Param")).isTrue();
   }
 
   @Test
