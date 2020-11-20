@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -37,7 +38,12 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.annotation.Nullable;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.proguard.annotations.DoNotStrip;
+import java.util.List;
 
 /** A pared-down TextView that only displays text. */
 @DoNotStrip
@@ -57,12 +63,16 @@ public class RCTextView extends View {
   private Path mSelectionPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
+  @Nullable private final RCTextAccessibilityDelegate mRCTextAccessibilityDelegate;
 
   public RCTextView(Context context) {
     super(context);
 
     if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-      setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+      mRCTextAccessibilityDelegate = new RCTextAccessibilityDelegate();
+      ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+    } else {
+      mRCTextAccessibilityDelegate = null;
     }
   }
 
@@ -215,34 +225,6 @@ public class RCTextView extends View {
     setSelection(0, 0);
   }
 
-  @Override
-  public void onPopulateAccessibilityEvent(AccessibilityEvent event) {
-    super.onPopulateAccessibilityEvent(event);
-    if (!TextUtils.isEmpty(mText)) {
-      event.getText().add(getTextForAccessibility());
-    }
-  }
-
-  @Override
-  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
-    super.onInitializeAccessibilityNodeInfo(info);
-
-    final CharSequence textForAccessibility = getTextForAccessibility();
-    if (!TextUtils.isEmpty(textForAccessibility)) {
-      info.setText(textForAccessibility);
-
-      info.addAction(AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
-      info.addAction(AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
-      info.setMovementGranularities(
-          AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
-              | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
-              | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
-              | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
-              | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE);
-      info.addAction(AccessibilityNodeInfo.ACTION_SET_SELECTION);
-    }
-  }
-
   // See TextView#getTextForAccessibility()
   private static final int SAFE_PARCELABLE_SIZE = 1000000;
 
@@ -351,6 +333,85 @@ public class RCTextView extends View {
       // See
       // https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
       return -1;
+    }
+  }
+
+  @Override
+  public void setAccessibilityDelegate(@Nullable View.AccessibilityDelegate delegate) {
+    super.setAccessibilityDelegate(delegate);
+    // We need to do this like this to get the AccessibilityDelegateCompat with the ViewCompat
+    // helper since the compatibility class/methods are protected.
+    final AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    if (mRCTextAccessibilityDelegate != null
+        && accessibilityDelegateCompat != mRCTextAccessibilityDelegate) {
+      mRCTextAccessibilityDelegate.setWrappedAccessibilityDelegate(accessibilityDelegateCompat);
+      ViewCompat.setAccessibilityDelegate(this, mRCTextAccessibilityDelegate);
+    }
+  }
+
+  public class RCTextAccessibilityDelegate extends ExploreByTouchHelper {
+
+    @Nullable private AccessibilityDelegateCompat mWrappedAccessibilityDelegate;
+
+    public RCTextAccessibilityDelegate() {
+      super(RCTextView.this);
+
+      setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
+
+    public void setWrappedAccessibilityDelegate(
+        @Nullable AccessibilityDelegateCompat wrappedAccessibilityDelegate) {
+      mWrappedAccessibilityDelegate = wrappedAccessibilityDelegate;
+    }
+
+    @Override
+    protected int getVirtualViewAt(float x, float y) {
+      return 0;
+    }
+
+    @Override
+    protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {}
+
+    @Override
+    protected void onPopulateNodeForVirtualView(
+        int virtualViewId, AccessibilityNodeInfoCompat node) {}
+
+    @Override
+    protected boolean onPerformActionForVirtualView(
+        int virtualViewId, int action, @Nullable Bundle arguments) {
+      return false;
+    }
+
+    @Override
+    public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
+      super.onPopulateAccessibilityEvent(host, event);
+      if (!TextUtils.isEmpty(mText)) {
+        event.getText().add(getTextForAccessibility());
+      }
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+      super.onInitializeAccessibilityNodeInfo(host, info);
+      final CharSequence textForAccessibility = ((RCTextView) host).getTextForAccessibility();
+      if (!TextUtils.isEmpty(textForAccessibility)) {
+        info.setText(textForAccessibility);
+
+        info.addAction(AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
+        info.addAction(AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
+        info.setMovementGranularities(
+            AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
+                | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD
+                | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_LINE
+                | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH
+                | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PAGE);
+        info.addAction(AccessibilityNodeInfo.ACTION_SET_SELECTION);
+      }
+      // We call the wrapped delegate to override any configuration done here.
+      if (mWrappedAccessibilityDelegate != null) {
+        mWrappedAccessibilityDelegate.onInitializeAccessibilityNodeInfo(host, info);
+      }
     }
   }
 }
