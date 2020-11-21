@@ -398,7 +398,8 @@ public class RCTextView extends View {
 
     @Override
     protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {
-      for (int i = 0; i < mClickableSpans.length; i++) {
+      final int virtualViewsCount = mClickableSpans != null ? mClickableSpans.length : 0;
+      for (int i = 0; i < virtualViewsCount; i++) {
         virtualViewIds.add(i);
       }
     }
