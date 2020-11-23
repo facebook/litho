@@ -21,7 +21,6 @@ import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.collection.ArraySet;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
