@@ -55,10 +55,13 @@ public class ThreadUtils {
   }
 
   public static void assertMainThread() {
-    if (!ComponentsConfiguration.IS_INTERNAL_BUILD || ComponentsConfiguration.isEndToEndTestRun) {
+    if (ComponentsConfiguration.isEndToEndTestRun) {
       return;
-    } else if (!isMainThread()) {
-      throw new IllegalStateException("This should run on the main thread.");
+    }
+    if (!isMainThread()) {
+      throw new IllegalStateException(
+          "This must run on the main thread; but is running on "
+              + Thread.currentThread().getName());
     }
   }
 
