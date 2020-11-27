@@ -212,7 +212,7 @@ public class MountStateIncrementalMountTest {
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 10), true);
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 9), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
 
@@ -1326,7 +1326,7 @@ public class MountStateIncrementalMountTest {
     mLithoViewRule
         .setRoot(rcc)
         .attachToWindow()
-        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, EXACTLY))
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(19, EXACTLY))
         .measure()
         .layout();
 

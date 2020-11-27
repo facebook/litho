@@ -306,7 +306,7 @@ public class IncrementalMountExtension
         state.mInput.getOutputsOrderedByBottomBounds();
     final int count = state.mInput.getIncrementalMountOutputCount();
 
-    if (localVisibleRect.top > 0 || state.mPreviousLocalVisibleRect.top > 0) {
+    if (localVisibleRect.top >= 0 || state.mPreviousLocalVisibleRect.top >= 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
       // that has moved on/off the top of the screen.
       while (state.mPreviousBottomsIndex < count
@@ -341,7 +341,7 @@ public class IncrementalMountExtension
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (state.mPreviousTopsIndex < count
-          && localVisibleRect.bottom > byTopBounds.get(state.mPreviousTopsIndex).getBounds().top) {
+          && localVisibleRect.bottom >= byTopBounds.get(state.mPreviousTopsIndex).getBounds().top) {
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex);
         final long id = node.getId();
         if (!extensionState.ownsReference(id)) {
@@ -353,7 +353,7 @@ public class IncrementalMountExtension
 
       while (state.mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              <= byTopBounds.get(state.mPreviousTopsIndex - 1).getBounds().top) {
+              < byTopBounds.get(state.mPreviousTopsIndex - 1).getBounds().top) {
         state.mPreviousTopsIndex--;
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex);
         final long id = node.getId();
