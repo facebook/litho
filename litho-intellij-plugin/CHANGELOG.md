@@ -4,7 +4,8 @@
 
 -2020-xx-xx_
 
-* Fix: Change logging for method/param goto navigation to include class.
+* Fix: Logging for method/param goto navigation to include class.
+* Fix: Dynamic template (add dynamic method name).
 
 ## Version 1.6.1
 

@@ -120,6 +120,10 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
                 && psiElement.getText().equals("placeholder_name")) {
               templateBuilder.replaceElement(
                   psiElement, new TextExpression(getFirstStateTypeAndName(specClass).second));
+            } else if (psiElement instanceof PsiIdentifier
+                && psiElement.getParent() instanceof PsiMethod) {
+              // Method name
+              templateBuilder.replaceElement(psiElement, new TextExpression(psiElement.getText()));
             } else if (psiElement instanceof PsiComment) {
               templateBuilder.replaceElement(psiElement, new TextExpression(psiElement.getText()));
               templateBuilder.setEndVariableAfter(psiElement);
