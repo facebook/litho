@@ -34,8 +34,10 @@ import com.intellij.psi.PsiImportStatement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
 /** Navigates from Component method to Spec elements. */
@@ -63,30 +65,56 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
     return BaseLithoComponentsDeclarationHandler.resolve(sourceElement)
         .filter(PsiMethod.class::isInstance)
         .map(PsiMethod.class::cast)
-        .map(method -> findSpecElements(method, project))
-        .filter(result -> result.length > 0)
-        .findFirst()
-        .map(
-            result -> {
-              final Map<String, String> data = new HashMap<>();
-              data.put(
-                  EventLogger.KEY_TARGET,
-                  result[0] instanceof PsiMethod
-                      ? EventLogger.VALUE_NAVIGATION_TARGET_METHOD
-                      : EventLogger.VALUE_NAVIGATION_TARGET_PARAMETER);
-              data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_GOTO);
-              LOGGER.log(EventLogger.EVENT_NAVIGATION, data);
-              return result;
+        .flatMap(
+            componentMethod -> {
+              final PsiClass specCls = getSpecParent(componentMethod, project);
+              if (specCls == null) return null;
+
+              PsiElement[] result;
+              final PropSetter propSetter =
+                  PsiAnnotationProxyUtils.findAnnotationInHierarchy(
+                      componentMethod, PropSetter.class);
+              if (propSetter != null) {
+                result = findSpecProps(propSetter, specCls);
+              } else {
+                result = findSpecMethods(componentMethod, specCls);
+              }
+              if (result.length == 0) return null;
+
+              log(specCls, result);
+              return Arrays.stream(result);
             })
-        .orElse(PsiElement.EMPTY_ARRAY);
+        .filter(Objects::nonNull)
+        .toArray(PsiElement[]::new);
   }
 
-  private static PsiElement[] findSpecElements(PsiMethod componentMethod, Project project) {
+  private static void log(PsiClass specCls, PsiElement[] result) {
+    final Map<String, String> data = new HashMap<>();
+    data.put(
+        EventLogger.KEY_TARGET,
+        result[0] instanceof PsiMethod
+            ? EventLogger.VALUE_NAVIGATION_TARGET_METHOD
+            : EventLogger.VALUE_NAVIGATION_TARGET_PARAMETER);
+    data.put(EventLogger.KEY_TYPE, EventLogger.VALUE_NAVIGATION_TYPE_GOTO);
+    String cls;
+    if (LithoPluginUtils.isComponentClass(specCls)) {
+      cls = EventLogger.VALUE_NAVIGATION_CLASS_COMPONENT;
+    } else if (LithoPluginUtils.isSectionClass(specCls)) {
+      cls = EventLogger.VALUE_NAVIGATION_CLASS_SECTION;
+    } else {
+      cls = "other";
+    }
+    data.put(EventLogger.KEY_CLASS, cls);
+    LOGGER.log(EventLogger.EVENT_NAVIGATION, data);
+  }
+
+  @Nullable
+  private static PsiClass getSpecParent(PsiMethod componentMethod, Project project) {
     final PsiClass containingCls =
         LithoPluginUtils.getFirstClass(
                 componentMethod.getContainingFile(), LithoPluginUtils::isGeneratedClass)
             .orElse(null);
-    if (containingCls == null) return PsiMethod.EMPTY_ARRAY;
+    if (containingCls == null) return null;
 
     // For Unit testing we don't care about package
     final String containingClsName =
@@ -96,14 +124,7 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
     final PsiClass specCls =
         PsiSearchUtils.findOriginalClass(
             project, LithoPluginUtils.getLithoComponentSpecNameFromComponent(containingClsName));
-    if (specCls == null) return PsiMethod.EMPTY_ARRAY;
-
-    final PropSetter propSetter =
-        PsiAnnotationProxyUtils.findAnnotationInHierarchy(componentMethod, PropSetter.class);
-    if (propSetter != null) {
-      return findSpecProps(propSetter, specCls);
-    }
-    return findSpecMethods(componentMethod, specCls);
+    return specCls;
   }
 
   private static PsiElement[] findSpecMethods(PsiMethod componentMethod, PsiClass specCls) {

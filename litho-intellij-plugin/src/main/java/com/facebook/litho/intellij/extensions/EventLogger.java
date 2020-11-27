@@ -40,11 +40,13 @@ public interface EventLogger {
   String KEY_TIME_RESOLVE_RED_SYMBOLS = "time_resolve";
   String KEY_TYPE = "type";
 
-  // Metadata values. Naming VALUE_EVENTNAME_KEYNAME_X
+  // Metadata values. Naming VALUE_EVENTTYPE_KEYNAME_X
   String VALUE_COMPLETION_TARGET_CALL = "call";
   String VALUE_COMPLETION_TARGET_METHOD = "method";
   String VALUE_COMPLETION_TARGET_PARAMETER = "parameter";
   String VALUE_COMPLETION_TARGET_ARGUMENT = "argument";
+  String VALUE_NAVIGATION_CLASS_COMPONENT = "component";
+  String VALUE_NAVIGATION_CLASS_SECTION = "section";
   String VALUE_NAVIGATION_TARGET_CLASS = "class";
   String VALUE_NAVIGATION_TARGET_METHOD = "method";
   String VALUE_NAVIGATION_TARGET_PARAMETER = "parameter";

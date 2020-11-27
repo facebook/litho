@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.6.2
+
+-2020-xx-xx_
+
+* Fix: Change logging for method/param goto navigation to include class.
+
 ## Version 1.6.1
 
 _2020-11-19_
