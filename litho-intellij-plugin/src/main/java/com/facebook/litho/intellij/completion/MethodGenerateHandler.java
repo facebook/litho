@@ -39,23 +39,24 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Generates method. Doesn't prompt the user for additional data, uses pre-defined method instead.
  */
 class MethodGenerateHandler extends GenerateMembersHandlerBase {
-  private final PsiMethod generatedMethod;
+  private final List<PsiMethod> generatedMethods;
   private final PsiClass specClass;
   private final Document document;
   private final Project project;
 
-  MethodGenerateHandler(PsiMethod method, PsiClass specClass, Document document, Project project) {
+  MethodGenerateHandler(
+      List<PsiMethod> methods, PsiClass specClass, Document document, Project project) {
     super("");
-    generatedMethod = method;
+    generatedMethods = methods;
     this.specClass = specClass;
     this.document = document;
     this.project = project;
@@ -65,8 +66,11 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
   @Override
   protected List<? extends GenerationInfo> generateMemberPrototypes(
       PsiClass aClass, ClassMember[] members) throws IncorrectOperationException {
-    return Collections.singletonList(
-        new MethodTemplateGenerationInfo(generatedMethod, specClass, document, project));
+    return generatedMethods.stream()
+        .map(
+            generatedMethod ->
+                new MethodTemplateGenerationInfo(generatedMethod, specClass, document, project))
+        .collect(Collectors.toList());
   }
 
   @Override
