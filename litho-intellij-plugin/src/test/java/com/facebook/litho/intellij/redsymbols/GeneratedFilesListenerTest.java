@@ -32,6 +32,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
 import java.util.Collections;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -39,6 +40,13 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
 
   public GeneratedFilesListenerTest() {
     super("testdata/services");
+  }
+
+  @After
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    PsiSearchUtils.clearMocks();
   }
 
   @Test

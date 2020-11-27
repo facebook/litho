@@ -30,12 +30,20 @@ import com.intellij.psi.PsiParameter;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Collection;
 import org.jetbrains.annotations.Nullable;
+import org.junit.After;
 import org.junit.Test;
 
 public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijTest {
 
   public ComponentsMethodDeclarationHandlerTest() {
     super("testdata/navigation");
+  }
+
+  @After
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    PsiSearchUtils.clearMocks();
   }
 
   @Test

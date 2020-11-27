@@ -28,6 +28,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import java.io.IOException;
 import java.util.function.BiConsumer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +43,13 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
   public void setUp() throws Exception {
     super.setUp();
     PsiSearchUtils.addMock("Layout", null);
+  }
+
+  @After
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    PsiSearchUtils.clearMocks();
   }
 
   @Test

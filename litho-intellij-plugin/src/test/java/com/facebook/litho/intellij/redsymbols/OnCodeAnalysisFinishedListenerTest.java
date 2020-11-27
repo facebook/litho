@@ -28,6 +28,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
 import java.util.Arrays;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,6 +36,13 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
 
   public OnCodeAnalysisFinishedListenerTest() {
     super("testdata/actions");
+  }
+
+  @After
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    PsiSearchUtils.clearMocks();
   }
 
   @Ignore("T73932936")
