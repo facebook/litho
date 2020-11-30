@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.transitions;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.AnimatableItem;
+import com.facebook.litho.OutputUnitsAffinityGroup;
+import com.facebook.litho.Transition;
+import com.facebook.litho.TransitionId;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;

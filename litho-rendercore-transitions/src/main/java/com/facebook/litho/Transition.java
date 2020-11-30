@@ -35,6 +35,7 @@ import com.facebook.litho.animation.TimingTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 import com.facebook.litho.dataflow.springs.SpringConfig;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import java.util.ArrayList;
 
 /**
@@ -73,7 +74,7 @@ public abstract class Transition {
    * The default TransitionKeyType, assigned to component and transitions when user does not specify
    * what TransitionKeyType to use
    */
-  static final Transition.TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE = TransitionKeyType.LOCAL;
+  static final TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE = TransitionKeyType.LOCAL;
 
   public enum TransitionKeyType {
     GLOBAL,
@@ -164,7 +165,6 @@ public abstract class Transition {
 
   private static final TransitionAnimator DEFAULT_ANIMATOR = SPRING_WITH_OVERSHOOT;
   private static final Interpolator DEFAULT_INTERPOLATOR = new AccelerateDecelerateInterpolator();
-  private static final int DEFAULT_DURATION = 300;
 
   /**
    * Class that knows how to create a {@link TransitionAnimationBinding} given a {@link
@@ -621,7 +621,7 @@ public abstract class Transition {
   }
 
   /** Creates timing-driven animations with the given duration. */
-  public static class TimingTransitionAnimator implements Transition.TransitionAnimator {
+  public static class TimingTransitionAnimator implements TransitionAnimator {
 
     final int mDurationMs;
     final Interpolator mInterpolator;
@@ -698,7 +698,7 @@ public abstract class Transition {
    * defines appear animation as well. The latter is useful to extract from which value we should
    * animate from so that in root Host on measure we can set initial value.
    */
-  static class RootBoundsTransition {
+  public static class RootBoundsTransition {
     boolean hasTransition;
     TransitionUnit appearTransition;
   }

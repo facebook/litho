@@ -36,6 +36,7 @@ import com.facebook.litho.animation.ParallelBinding;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
+import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
