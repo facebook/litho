@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
@@ -35,7 +36,6 @@ import com.facebook.litho.animation.TransitionAnimationBinding;
 import com.facebook.litho.dataflow.springs.SpringConfig;
 import com.facebook.rendercore.Function;
 import java.util.ArrayList;
-import javax.annotation.Nullable;
 
 /**
  * Defines how a property on a component should animate as it changes, allowing you to optionally
@@ -343,7 +343,7 @@ public abstract class Transition {
           return true;
 
         case LOCAL_KEY:
-          if (!CommonUtils.equals(mOwnerKey, transitionId.mExtraData)) {
+          if (!equals(mOwnerKey, transitionId.mExtraData)) {
             return false;
           }
         case GLOBAL_KEY:
@@ -351,7 +351,7 @@ public abstract class Transition {
               mAnimationTarget.componentTarget.componentTargetExtraData);
 
         case LOCAL_KEY_SET:
-          if (!CommonUtils.equals(mOwnerKey, transitionId.mExtraData)) {
+          if (!equals(mOwnerKey, transitionId.mExtraData)) {
             return false;
           }
         case GLOBAL_KEY_SET:
@@ -678,6 +678,19 @@ public abstract class Transition {
     return transition
         .getAppearFrom()
         .resolve(resolver, new PropertyHandle(rootTransitionId, property));
+  }
+
+  /** @return {@code true} iff a and b are equal. */
+  static boolean equals(@Nullable Object a, @Nullable Object b) {
+    if (a == b) {
+      return true;
+    }
+
+    if (a == null || b == null) {
+      return false;
+    }
+
+    return a.equals(b);
   }
 
   /**
