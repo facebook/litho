@@ -26,6 +26,10 @@ public final class RenderCoreSystrace {
     void beginSection(String name, Class value);
 
     void endSection();
+
+    void beginAsyncSection(String name, Class value, int cookie);
+
+    void endAsyncSection(String name, Class value, int cookie);
   }
 
   private static volatile IRenderCoreSystrace sInstance = new DefaultTrace();
@@ -44,6 +48,22 @@ public final class RenderCoreSystrace {
     sInstance.endSection();
   }
 
+  public static void beginAsyncSection(String name, int cookie) {
+    sInstance.beginAsyncSection(name, null, cookie);
+  }
+
+  public static void beginAsyncSection(String name, @Nullable Class value, int cookie) {
+    sInstance.beginAsyncSection(name, value, cookie);
+  }
+
+  public static void endAsyncSection(String name, int cookie) {
+    sInstance.endAsyncSection(name, null, cookie);
+  }
+
+  public static void endAsyncSection(String name, @Nullable Class value, int cookie) {
+    sInstance.endAsyncSection(name, value, cookie);
+  }
+
   public static void use(IRenderCoreSystrace systraceImpl) {
     if (sHasStarted) {
       // We will not switch the implementation if the trace has already been used in the
@@ -59,7 +79,7 @@ public final class RenderCoreSystrace {
     @Override
     public void beginSection(String name, Class value) {
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-        Trace.beginSection(value != null ? name + value.getSimpleName() : name);
+        Trace.beginSection(getName(name, value));
       }
     }
 
@@ -68,6 +88,24 @@ public final class RenderCoreSystrace {
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
         Trace.endSection();
       }
+    }
+
+    @Override
+    public void beginAsyncSection(String name, Class value, int cookie) {
+      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Trace.beginAsyncSection(getName(name, value), cookie);
+      }
+    }
+
+    @Override
+    public void endAsyncSection(String name, Class value, int cookie) {
+      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        Trace.endAsyncSection(getName(name, value), cookie);
+      }
+    }
+
+    private static String getName(String name, Class value) {
+      return value != null ? name + value.getSimpleName() : name;
     }
   }
 }
