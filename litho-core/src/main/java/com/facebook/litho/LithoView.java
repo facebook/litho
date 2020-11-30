@@ -497,7 +497,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     if (mUseExtensions) {
       if (mIsMountStateDirty) {
         // TODO: can this be a generic callback?
-        mLithoHostListenerCoordinator.collectAllTransitions(layoutState, componentTree);
+        mLithoHostListenerCoordinator.collectAllTransitions(layoutState);
       }
     } else {
       if (mMountState.isDirty()) {

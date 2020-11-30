@@ -3392,8 +3392,7 @@ class MountState
     assertMainThread();
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.collectAllTransitions(
-          mTransitionsExtensionState, layoutState, componentTree);
+      TransitionsExtension.collectAllTransitions(mTransitionsExtensionState, layoutState);
       return;
     }
 

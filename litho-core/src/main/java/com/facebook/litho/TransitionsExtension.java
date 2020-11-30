@@ -29,6 +29,7 @@ import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.RootHost;
@@ -60,10 +61,11 @@ public class TransitionsExtension
   static class TransitionsExtensionState {
     private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
         new LinkedHashMap<>();
+    private static final int UNSET = -1;
     private final Map<RenderUnit, AnimatableItem> mLockedDisappearingMountitems = new HashMap<>();
     @Deprecated private @Nullable Host mLithoView;
     private TransitionsExtensionInput mInput;
-    private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
+    private int mLastMountedTreeId = UNSET;
     private TransitionManager mTransitionManager;
     private final HashSet<TransitionId> mAnimatingTransitionIds = new HashSet<>();
 
@@ -182,11 +184,11 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
     state.mInput = input;
 
-    if (input.getTreeId() != state.mLastMountedComponentTreeId) {
+    if (input.getTreeId() != state.mLastMountedTreeId) {
       state.mLastTransitionsExtensionInput = null;
     }
 
-    updateTransitions(extensionState, input, ((LithoView) state.mLithoView).getComponentTree());
+    updateTransitions(extensionState, input);
     extractDisappearingItems(extensionState, input);
   }
 
@@ -202,7 +204,7 @@ public class TransitionsExtension
     state.mInput.setNeedsToRerunTransitions(false);
     state.mLastTransitionsExtensionInput = state.mInput;
     state.mTransitionsHasBeenCollected = false;
-    state.mLastMountedComponentTreeId = state.mInput.getTreeId();
+    state.mLastMountedTreeId = state.mInput.getTreeId();
   }
 
   @Override
@@ -218,7 +220,7 @@ public class TransitionsExtension
 
   public void clearLastMountedTreeId(ExtensionState<TransitionsExtensionState> extensionState) {
     final TransitionsExtensionState state = extensionState.getState();
-    state.mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
+    state.mLastMountedTreeId = TransitionsExtensionState.UNSET;
   }
 
   @Override
@@ -275,26 +277,17 @@ public class TransitionsExtension
    */
   private static void updateTransitions(
       ExtensionState<TransitionsExtensionState> extensionState,
-      TransitionsExtensionInput input,
-      ComponentTree componentTree) {
+      final TransitionsExtensionInput input) {
     final TransitionsExtensionState state = extensionState.getState();
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      String logTag = componentTree.getContext().getLogTag();
-      if (logTag == null) {
-        ComponentsSystrace.beginSection("MountState.updateTransitions");
-      } else {
-        ComponentsSystrace.beginSection("MountState.updateTransitions:" + logTag);
-      }
-    }
+    RenderCoreSystrace.beginSection("MountState.updateTransitions");
 
     try {
       // If this is a new component tree but isn't the first time it's been mounted, then we
       // shouldn't
       // do any transition animations for changed mount content as it's just being remounted on a
       // new LithoView.
-      final int componentTreeId = componentTree.mId;
-      if (state.mLastMountedComponentTreeId != componentTreeId) {
+      final int treeId = input.getTreeId();
+      if (state.mLastMountedTreeId != treeId) {
         resetAnimationState(extensionState);
         if (!state.mInput.needsToRerunTransitions()) {
           // Don't re-trigger appear animations were scrolled back onto the screen
@@ -307,7 +300,7 @@ public class TransitionsExtension
       }
 
       if (shouldAnimateTransitions(state, input)) {
-        collectAllTransitions(extensionState, input, componentTree);
+        collectAllTransitions(extensionState, input);
         if (hasTransitionsToAnimate(state)) {
           createNewTransitions(extensionState, input, state.mRootTransition);
         }
@@ -321,9 +314,7 @@ public class TransitionsExtension
         regenerateAnimationLockedIndices(extensionState, input);
       }
     } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -385,7 +376,7 @@ public class TransitionsExtension
   /** @return whether we should animate transitions. */
   private static boolean shouldAnimateTransitions(
       final TransitionsExtensionState state, TransitionsExtensionInput input) {
-    return (state.mLastMountedComponentTreeId == input.getTreeId()
+    return (state.mLastMountedTreeId == input.getTreeId()
         || state.mInput.needsToRerunTransitions());
   }
 
@@ -401,8 +392,7 @@ public class TransitionsExtension
    */
   static void collectAllTransitions(
       final ExtensionState<TransitionsExtensionState> extensionState,
-      TransitionsExtensionInput input,
-      ComponentTree componentTree) {
+      TransitionsExtensionInput input) {
     final TransitionsExtensionState state = extensionState.getState();
     assertMainThread();
     if (state.mTransitionsHasBeenCollected) {
@@ -414,11 +404,8 @@ public class TransitionsExtension
     if (input.getTransitions() != null) {
       allTransitions.addAll(input.getTransitions());
     }
-    componentTree.applyPreviousRenderData(
-        input.getComponentsNeedingPreviousRenderData(),
-        input.getComponentKeysNeedingPreviousRenderData());
-    collectMountTimeTransitions(input, allTransitions);
-    componentTree.consumeStateUpdateTransitions(allTransitions, input.getRootComponentName());
+
+    TransitionsExtension.collectMountTimeTransitions(input, allTransitions);
 
     Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
@@ -431,7 +418,7 @@ public class TransitionsExtension
         if (transition == null) {
           throw new IllegalStateException(
               "NULL_TRANSITION when collecting root bounds anim. Root: "
-                  + input.getRootComponentName()
+                  + input.getRootName()
                   + ", root TransitionId: "
                   + rootTransitionId);
         }
@@ -446,29 +433,18 @@ public class TransitionsExtension
     rootWidthTransition = rootWidthTransition.hasTransition ? rootWidthTransition : null;
     rootHeightTransition = rootHeightTransition.hasTransition ? rootHeightTransition : null;
 
-    componentTree.setRootWidthAnimation(rootWidthTransition);
-    componentTree.setRootHeightAnimation(rootHeightTransition);
+    input.setInitialRootBoundsForAnimation(rootWidthTransition, rootHeightTransition);
 
     state.mRootTransition = TransitionManager.getRootTransition(allTransitions);
     state.mTransitionsHasBeenCollected = true;
   }
 
-  private static @Nullable void collectMountTimeTransitions(
+  private static void collectMountTimeTransitions(
       TransitionsExtensionInput input, List<Transition> outList) {
-    final List<Component> componentsNeedingPreviousRenderData =
-        input.getComponentsNeedingPreviousRenderData();
-
-    if (componentsNeedingPreviousRenderData == null) {
-      return;
-    }
-
-    for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
-      final Component component = componentsNeedingPreviousRenderData.get(i);
-      // TOOD: will wait until we move the TransitionsExtension out of Litho.
-      final Transition transition =
-          component.createTransition(component.getScopedContext(null, null));
-      if (transition != null) {
-        TransitionUtils.addTransitions(transition, outList, input.getRootComponentName());
+    List<Transition> transitions = input.getMountTimeTransitions();
+    if (transitions != null) {
+      for (Transition transition : transitions) {
+        TransitionUtils.addTransitions(transition, outList, input.getRootName());
       }
     }
   }
@@ -731,10 +707,7 @@ public class TransitionsExtension
       return;
     }
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("updateAnimatingMountContent");
-    }
+    RenderCoreSystrace.beginSection("updateAnimatingMountContent");
 
     // Group mount content (represents current LayoutStates only) into groups and pass it to the
     // TransitionManager
@@ -779,9 +752,7 @@ public class TransitionsExtension
       state.mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
+    RenderCoreSystrace.endSection();
   }
 
   // TODO: T68620328 Make private after test is done

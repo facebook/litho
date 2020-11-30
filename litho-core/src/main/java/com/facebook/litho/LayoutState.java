@@ -2390,16 +2390,57 @@ public class LayoutState
    * @return the list of Components in this LayoutState that care about the previously mounted
    *     versions of their @Prop/@State params.
    */
-  @Override
   @Nullable
   public List<Component> getComponentsNeedingPreviousRenderData() {
     return mComponentsNeedingPreviousRenderData;
   }
 
-  @Override
   @Nullable
   public List<String> getComponentKeysNeedingPreviousRenderData() {
     return mComponentKeysNeedingPreviousRenderData;
+  }
+
+  @Override
+  public void setInitialRootBoundsForAnimation(
+      @Nullable Transition.RootBoundsTransition rootWidth,
+      @Nullable Transition.RootBoundsTransition rootHeight) {
+    final ComponentTree componentTree = mContext.getComponentTree();
+    if (componentTree != null) {
+      componentTree.setRootWidthAnimation(rootWidth);
+      componentTree.setRootHeightAnimation(rootHeight);
+    }
+  }
+
+  @Nullable
+  @Override
+  public List<Transition> getMountTimeTransitions() {
+    final ComponentTree componentTree = mContext.getComponentTree();
+    if (componentTree == null) {
+      return null;
+    }
+    componentTree.applyPreviousRenderData(this);
+
+    if (mComponentsNeedingPreviousRenderData == null) {
+      return null;
+    }
+
+    List<Transition> mountTimeTransitions = new ArrayList<>();
+    for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
+      final Component component = mComponentsNeedingPreviousRenderData.get(i);
+      final Transition transition =
+          component.createTransition(
+              component.getScopedContext(getLayoutStateContext(), component.getGlobalKey()));
+      if (transition != null) {
+        mountTimeTransitions.add(transition);
+      }
+    }
+
+    final List<Transition> updateStateTransitions = componentTree.getStateUpdateTransitions();
+    if (updateStateTransitions != null) {
+      mountTimeTransitions.addAll(updateStateTransitions);
+    }
+
+    return mountTimeTransitions;
   }
 
   @Override
@@ -2523,7 +2564,7 @@ public class LayoutState
   }
 
   @Override
-  public @Nullable String getRootComponentName() {
+  public @Nullable String getRootName() {
     return mRootComponentName;
   }
 

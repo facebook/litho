@@ -1746,11 +1746,26 @@ public class ComponentTree {
     return mHooksHandler != null ? new HooksHandler(mHooksHandler) : null;
   }
 
-  synchronized @Nullable void consumeStateUpdateTransitions(
+  synchronized void consumeStateUpdateTransitions(
       List<Transition> outList, @Nullable String logContext) {
     if (mStateHandler != null) {
       mStateHandler.consumePendingStateUpdateTransitions(outList, logContext);
     }
+  }
+
+  synchronized @Nullable List<Transition> getStateUpdateTransitions() {
+    final List<Transition> updateStateTransitions;
+    if (mStateHandler != null && mStateHandler.getPendingStateUpdateTransitions() != null) {
+      final Map<String, List<Transition>> pendingStateUpdateTransitions =
+          mStateHandler.getPendingStateUpdateTransitions();
+      updateStateTransitions = new ArrayList<>();
+      for (List<Transition> pendingTransitions : pendingStateUpdateTransitions.values()) {
+        updateStateTransitions.addAll(pendingTransitions);
+      }
+    } else {
+      updateStateTransitions = null;
+    }
+    return updateStateTransitions;
   }
 
   /**

@@ -182,13 +182,13 @@ public class LithoHostListenerCoordinator {
     registerListener(mTransitionsExtension);
   }
 
-  void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  void collectAllTransitions(LayoutState layoutState) {
     if (mTransitionsExtension == null) {
       return;
     }
 
     mTransitionsExtension.collectAllTransitions(
-        mMountDelegateTarget.getExtensionState(mTransitionsExtension), layoutState, componentTree);
+        mMountDelegateTarget.getExtensionState(mTransitionsExtension), layoutState);
   }
 
   private void registerListener(MountExtension mountListenerExtension) {

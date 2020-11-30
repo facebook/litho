@@ -46,13 +46,7 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
       TransitionId transitionId);
 
   @Nullable
-  List<Component> getComponentsNeedingPreviousRenderData();
-
-  @Nullable
-  List<String> getComponentKeysNeedingPreviousRenderData();
-
-  @Nullable
-  String getRootComponentName();
+  String getRootName();
 
   @Nullable
   List<Transition> getTransitions();
@@ -65,4 +59,11 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
   AnimatableItem getAnimatableItem(RenderUnit renderUnit);
 
   boolean renderUnitWithIdHostsRenderTrees(long id);
+
+  void setInitialRootBoundsForAnimation(
+      @Nullable Transition.RootBoundsTransition rootWidth,
+      @Nullable Transition.RootBoundsTransition rootHeight);
+
+  @Nullable
+  List<Transition> getMountTimeTransitions();
 }
