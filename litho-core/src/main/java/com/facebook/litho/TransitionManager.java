@@ -35,6 +35,7 @@ import com.facebook.litho.animation.ParallelBinding;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -227,10 +228,7 @@ public class TransitionManager {
       @Nullable Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> currentTransitionIds,
       @Nullable Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> nextTransitionIds,
       Transition rootTransition) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("TransitionManager.setupTransition");
-    }
+    RenderCoreSystrace.beginSection("TransitionManager.setupTransition");
 
     for (AnimationState animationState : mAnimationStates.values()) {
       animationState.seenInLastTransition = false;
@@ -300,9 +298,7 @@ public class TransitionManager {
     // that transition id, clean them up now.
     cleanupNonAnimatingAnimationStates();
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
+    RenderCoreSystrace.endSection();
   }
 
   /**
@@ -335,10 +331,7 @@ public class TransitionManager {
    * the corresponding animations.
    */
   void runTransitions() {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("runTransitions");
-    }
+    RenderCoreSystrace.beginSection("runTransitions");
 
     restoreInitialStates();
 
@@ -352,9 +345,7 @@ public class TransitionManager {
       mRootAnimationToRun = null;
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
+    RenderCoreSystrace.endSection();
   }
 
   void removeMountContent(TransitionId transitionId, @OutputUnitType int type) {
@@ -931,9 +922,7 @@ public class TransitionManager {
       updateAnimationStates(binding);
 
       final String traceName = mTraceNames.get(binding.hashCode());
-      if (!TextUtils.isEmpty(traceName)) {
-        ComponentsSystrace.beginSectionAsync(traceName, binding.hashCode());
-      }
+      RenderCoreSystrace.beginAsyncSection(traceName, binding.hashCode());
     }
 
     @Override
@@ -1114,7 +1103,7 @@ public class TransitionManager {
 
       final String traceName = mTraceNames.get(binding.hashCode());
       if (!TextUtils.isEmpty(traceName)) {
-        ComponentsSystrace.endSectionAsync(traceName, binding.hashCode());
+        RenderCoreSystrace.endAsyncSection(traceName, binding.hashCode());
         mTraceNames.delete(binding.hashCode());
       }
     }
