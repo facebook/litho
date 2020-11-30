@@ -21,7 +21,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import com.facebook.litho.animation.AnimatedProperties;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.TestSingleComponentListSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +51,6 @@ public class MountStateIncrementalMountWithTransitionsTest {
   private final boolean mDelegateToRenderCore;
   private ComponentContext mContext;
   final boolean mUseMountDelegateTarget;
-  final boolean mUseIncrementalMountExtensionInMountState;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public final @Rule TransitionTestRule mTransitionTestRule = new TransitionTestRule();
@@ -61,39 +58,25 @@ public class MountStateIncrementalMountWithTransitionsTest {
   public static final String RED_TRANSITION_KEY = "red";
   public static final String GREEN_TRANSITION_KEY = "green";
   public static final String BLUE_TRANSITION_KEY = "blue";
-  private boolean configUseIncrementalMountExtension;
 
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, useIncrementalMountExtensionInMountState={1}")
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useMountDelegateTarget={0}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false},
-          {true, false},
-          {false, true}
+          {false}, {true},
         });
   }
 
-  public MountStateIncrementalMountWithTransitionsTest(
-      boolean useMountDelegateTarget, boolean useIncrementalMountExtensionInMountState) {
+  public MountStateIncrementalMountWithTransitionsTest(boolean useMountDelegateTarget) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCore = false;
-    mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
   @Before
   public void setup() {
-    configUseIncrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
-    ComponentsConfiguration.useIncrementalMountExtension =
-        mUseIncrementalMountExtensionInMountState;
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore));
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useIncrementalMountExtension = configUseIncrementalMountExtension;
   }
 
   @Test

@@ -26,7 +26,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -43,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,37 +60,26 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   private boolean configIncMountExtension;
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCore;
-  final boolean mUseIncrementalMountExtensionInMountState;
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useMountDelegateTarget={0}, delegateToRenderCore={1}, useIncrementalMountExtensionInMountState={2}")
+      name = "useMountDelegateTarget={0}, delegateToRenderCore={1}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {false, false, false},
-          {true, false, false},
-          {false, false, true},
-          {true, true, false}
+          {false, false},
+          {true, false},
+          {true, true}
         });
   }
 
   public VisibilityEventsIncrementalMountDisabledTest(
-      boolean useMountDelegateTarget,
-      boolean delegateToRenderCore,
-      boolean useIncrementalMountExtensionInMountState) {
+      boolean useMountDelegateTarget, boolean delegateToRenderCore) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCore = delegateToRenderCore;
-    mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
   @Before
   public void setup() {
-    configIncMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
-    ComponentsConfiguration.useIncrementalMountExtension =
-        mUseIncrementalMountExtensionInMountState;
 
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
@@ -103,11 +90,6 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     mParent.setRight(10);
     mParent.setBottom(10);
     mParent.addView(mLithoView);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useIncrementalMountExtension = configIncMountExtension;
   }
 
   @Test
@@ -1120,7 +1102,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     Map<String, VisibilityItem> visibilityItemLongSparseArray = getVisibilityIdToItemMap(lithoView);
     for (String key : visibilityItemLongSparseArray.keySet()) {
       VisibilityItem item = visibilityItemLongSparseArray.get(key);
-      assertThat(item.wasFullyVisible());
+      assertThat(item.wasFullyVisible()).isTrue();
     }
 
     assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
@@ -1462,7 +1444,8 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     final LithoView child = mountComponent(mContext, mountedTestComponentInner, false, true);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
-    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
+        .isTrue();
     testComponentInner.getDispatchedEventHandlers().clear();
 
     final ViewGroupWithLithoViewChildren viewGroup =
@@ -1478,14 +1461,15 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     parentView.setVisibilityHint(false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
-    assertThat(
-        testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner));
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner))
+        .isTrue();
     testComponentInner.getDispatchedEventHandlers().clear();
 
     parentView.setVisibilityHint(true);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
-    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
+        .isTrue();
   }
 
   @Test

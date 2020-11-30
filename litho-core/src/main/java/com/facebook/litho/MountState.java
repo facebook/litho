@@ -78,8 +78,6 @@ import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
-import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
-import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
@@ -176,8 +174,6 @@ class MountState
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
-  private @Nullable IncrementalMountExtension mIncrementalMountExtension;
-  private @Nullable ExtensionState<IncrementalMountExtensionState> mIncrementalMountExtensionState;
   private @Nullable TransitionsExtension mTransitionsExtension;
   private @Nullable ExtensionState mTransitionsExtensionState;
 
@@ -197,14 +193,6 @@ class MountState
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
     mAcquireReferencesDuringMount = view.shouldAcquireDuringMount();
-    if (!mLithoView.usingExtensionsWithMountDelegate()
-        && ComponentsConfiguration.useIncrementalMountExtension) {
-      mIncrementalMountExtension =
-          IncrementalMountExtension.getInstance(mAcquireReferencesDuringMount);
-      registerMountDelegateExtension(mIncrementalMountExtension);
-
-      mIncrementalMountExtensionState = getExtensionState(mIncrementalMountExtension);
-    }
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
     mVisibilityExtensionState = mVisibilityExtension.createExtensionState(new MountDelegate(this));
@@ -212,7 +200,6 @@ class MountState
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
-        && !ComponentsConfiguration.useIncrementalMountExtension
         && ComponentsConfiguration.useTransitionsExtension) {
       registerMountDelegateExtension(TransitionsExtension.getInstance());
     }
@@ -305,11 +292,6 @@ class MountState
 
     if (mTransitionsExtension != null && mIsDirty) {
       mTransitionsExtension.beforeMount(mTransitionsExtensionState, layoutState, localVisibleRect);
-    }
-
-    if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
-      mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
-      return;
     }
 
     mLayoutState = layoutState;
@@ -506,45 +488,6 @@ class MountState
     }
   }
 
-  private void mountWithIncrementalMountExtension(
-      LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
-    final Rect previousLocalVisibleRect = mPreviousLocalVisibleRect;
-    final boolean wasDirty = mIsDirty;
-    final boolean shouldAnimateTransitions = shouldAnimateTransitions(layoutState);
-    final ComponentTree componentTree = mLithoView.getComponentTree();
-
-    if (mIsDirty) {
-      updateTransitions(layoutState, componentTree, localVisibleRect);
-    }
-
-    if (mIsDirty || mNeedsRemount) {
-      mIncrementalMountExtension.beforeMount(
-          mIncrementalMountExtensionState, layoutState, localVisibleRect);
-      mount(layoutState, processVisibilityOutputs);
-      mIncrementalMountExtension.afterMount(mIncrementalMountExtensionState);
-    } else {
-      mIncrementalMountExtension.onVisibleBoundsChanged(
-          mIncrementalMountExtensionState, localVisibleRect);
-    }
-
-    afterMountMaybeUpdateAnimations(shouldAnimateTransitions);
-
-    cleanupTransitionsAfterMount();
-
-    boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
-    if (isVisibilityProcessingEnabled) {
-      processVisibilityOutputs(
-          layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
-    }
-
-    processTestOutputs(layoutState);
-  }
-
-  private void cleanupTransitionsAfterMount() {
-    mRootTransition = null;
-    mTransitionsHasBeenCollected = false;
-  }
-
   @Override
   public void mount(RenderTree renderTree) {
     final LayoutState layoutState = (LayoutState) renderTree.getRenderTreeData();
@@ -714,18 +657,6 @@ class MountState
     if (mMountDelegate == null) {
       return;
     }
-
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-
-    if (mIncrementalMountExtension != null && mIncrementalMountExtensionState != null) {
-      // We don't care if using TransitionsExtension without IncrementalMountExtension since that
-      // goes through the regular mount path and will do this.
-      mIncrementalMountExtension.onBindItem(
-          mIncrementalMountExtensionState,
-          mountItem.getRenderTreeNode().getRenderUnit(),
-          mountItem.getContent(),
-          mountItem.getRenderTreeNode().getLayoutData());
-    }
   }
 
   private void applyUnbindBinders(LayoutOutput output, MountItem mountItem) {
@@ -760,11 +691,6 @@ class MountState
             : mMountDelegate.isLockedForMount(renderTreeNode);
 
     if (mTransitionsExtension == null) {
-      if (mIncrementalMountExtension == null) {
-        throw new IllegalStateException(
-            "Only for testing incremental mount extension inside MountState until TransitionsExtension is ready.");
-      }
-
       return isLockedForMount || isAnimationLocked(position);
     }
 
@@ -2578,10 +2504,6 @@ class MountState
       mMountDelegate.releaseAllAcquiredReferences();
     }
 
-    if (mIncrementalMountExtension != null) {
-      mIncrementalMountExtension.onUnmount(mIncrementalMountExtensionState);
-    }
-
     if (mVisibilityExtension != null) {
       mVisibilityExtension.onUnmount(mVisibilityExtensionState);
     }
@@ -3254,10 +3176,6 @@ class MountState
     }
 
     clearVisibilityItems();
-
-    if (mIncrementalMountExtension != null) {
-      mIncrementalMountExtension.onUnbind(mIncrementalMountExtensionState);
-    }
 
     if (mVisibilityExtension != null) {
       mVisibilityExtension.onUnbind(mVisibilityExtensionState);

@@ -28,7 +28,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -46,7 +45,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,41 +62,27 @@ public class VisibilityEventsTest {
   private boolean configIncMountExtension;
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCore;
-  final boolean mUseIncrementalMountExtensionInMountState;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useMountDelegateTarget={0}, delegateToRenderCore={1}, useIncrementalMountExtensionInMountState={2}")
+      name = "useMountDelegateTarget={0}, delegateToRenderCore={1}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {false, false, false},
-          {true, false, false},
-          {false, false, true},
-          {true, true, false}
+          {false, false},
+          {true, false},
+          {true, true}
         });
   }
 
-  public VisibilityEventsTest(
-      boolean useMountDelegateTarget,
-      boolean delegateToRenderCore,
-      boolean useIncrementalMountExtensionInMountState) {
+  public VisibilityEventsTest(boolean useMountDelegateTarget, boolean delegateToRenderCore) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCore = delegateToRenderCore;
-    mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
   @Before
   public void setup() {
-    configIncMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
-
-    ComponentsConfiguration.useIncrementalMountExtension =
-        mUseIncrementalMountExtensionInMountState;
-
     mContext = mLithoViewRule.getContext();
     mLithoView = new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore);
     mLithoViewRule.useLithoView(mLithoView);
@@ -109,11 +93,6 @@ public class VisibilityEventsTest {
     mParent.setRight(10);
     mParent.setBottom(10);
     mParent.addView(mLithoView);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useIncrementalMountExtension = configIncMountExtension;
   }
 
   @Test
@@ -1103,7 +1082,7 @@ public class VisibilityEventsTest {
     Map<String, VisibilityItem> visibilityItemLongSparseArray = getVisibilityIdToItemMap();
     for (String key : visibilityItemLongSparseArray.keySet()) {
       VisibilityItem item = visibilityItemLongSparseArray.get(key);
-      assertThat(item.wasFullyVisible());
+      assertThat(item.wasFullyVisible()).isTrue();
     }
 
     assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);

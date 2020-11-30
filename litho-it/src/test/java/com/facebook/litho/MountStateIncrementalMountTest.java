@@ -80,14 +80,10 @@ import org.robolectric.shadows.ShadowLooper;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateIncrementalMountTest {
 
-  private final boolean mUseIncrementalMountExtensionInMountState;
   private final boolean mExtensionAcquireDuringMount;
   private ComponentContext mContext;
-  boolean useMountWithExtensions;
-  boolean useIncMountOnlyExtension;
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
-  private boolean configUseIncrementalMountExtension;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
@@ -95,35 +91,31 @@ public class MountStateIncrementalMountTest {
 
   @ParameterizedRobolectricTestRunner.Parameters(
       name =
-          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useIncrementalMountExtensionInMountState={2}, extensionAcquireDuringMount={3}")
+          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, extensionAcquireDuringMount={3}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false, false},
-          {true, false, false, false},
-          {true, true, false, false},
-          {false, false, true, false},
-          {true, false, false, true},
-          {true, true, false, true},
-          {false, false, true, true},
+          {false, false, false},
+          {true, false, false},
+          {true, true, false},
+          {false, false, false},
+          {true, false, true},
+          {true, true, true},
+          {false, false, true},
         });
   }
 
   public MountStateIncrementalMountTest(
       boolean useMountDelegateTarget,
       boolean delegateToRenderCoreMount,
-      boolean useIncrementalMountExtensionInMountState,
       boolean extensionAcquireDuringMount) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-    mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
     mExtensionAcquireDuringMount = extensionAcquireDuringMount;
   }
 
   @Before
   public void setup() {
-    ComponentsConfiguration.useIncrementalMountExtension =
-        mUseIncrementalMountExtensionInMountState;
     mExtensionAcquireDuringMountDefault = ComponentsConfiguration.extensionAcquireDuringMount;
     ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMount;
     mContext = mLithoViewRule.getContext();
@@ -136,7 +128,6 @@ public class MountStateIncrementalMountTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useIncrementalMountExtension = configUseIncrementalMountExtension;
     ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
   }
 
@@ -785,32 +776,11 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    verify(
-            childView1,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(childView1, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
-    verify(
-            childView2,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(childView2, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
-    verify(
-            childView3,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(childView3, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
   }
 
@@ -899,32 +869,11 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    verify(
-            childView1,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(childView1, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
-    verify(
-            childView2,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(childView2, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
-    verify(
-            childView3,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(childView3, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
   }
 
@@ -1095,14 +1044,7 @@ public class MountStateIncrementalMountTest {
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
-    verify(
-            lithoView,
-            times(
-                mUseMountDelegateTarget
-                        || mDelegateToRenderCoreMount
-                        || mUseIncrementalMountExtensionInMountState
-                    ? 2
-                    : 1))
+    verify(lithoView, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);

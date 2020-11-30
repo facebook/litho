@@ -102,11 +102,9 @@ public class MountStateTest {
   public void onSetRootWithNoOutputsWithRenderCore_shouldSuccessfullyCompleteMount() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
     final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
-    final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
     ComponentsConfiguration.useExtensionsWithMountDelegate = true;
-    ComponentsConfiguration.useIncrementalMountExtension = true;
 
     final Component root =
         Wrapper.create(mContext)
@@ -126,18 +124,15 @@ public class MountStateTest {
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
-    ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
   }
 
   @Test
   public void onSetRootWithSimilarComponent_MountContentShouldUsePools() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
     final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
-    final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
     ComponentsConfiguration.useExtensionsWithMountDelegate = true;
-    ComponentsConfiguration.useIncrementalMountExtension = true;
 
     final Component root =
         Column.create(mContext)
@@ -168,18 +163,15 @@ public class MountStateTest {
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
-    ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
   }
 
   @Test
   public void onSetRootWithDifferentComponent_MountContentPoolsShouldNoCollide() {
     final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
     final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
-    final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
 
     ComponentsConfiguration.delegateToRenderCoreMount = true;
     ComponentsConfiguration.useExtensionsWithMountDelegate = true;
-    ComponentsConfiguration.useIncrementalMountExtension = true;
 
     final Component root =
         Column.create(mContext)
@@ -204,6 +196,5 @@ public class MountStateTest {
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
-    ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
   }
 }
