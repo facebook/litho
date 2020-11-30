@@ -64,7 +64,6 @@ public class TransitionsExtension
         new LinkedHashMap<>();
     private static final int UNSET = -1;
     private final Map<RenderUnit, AnimatableItem> mLockedDisappearingMountitems = new HashMap<>();
-    @Deprecated private @Nullable Host mLithoView;
     private TransitionsExtensionInput mInput;
     private int mLastMountedTreeId = UNSET;
     private TransitionManager mTransitionManager;
@@ -133,14 +132,6 @@ public class TransitionsExtension
                 propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
       }
     }
-  }
-
-  /** @deprecated Only used for Litho's integration. Marked for removal. */
-  @Deprecated
-  public static void setRootHost(
-      ExtensionState<TransitionsExtensionState> extensionState, Host root) {
-    final TransitionsExtensionState state = extensionState.getState();
-    state.mLithoView = root;
   }
 
   @Override
@@ -286,7 +277,7 @@ public class TransitionsExtension
       // If this is a new component tree but isn't the first time it's been mounted, then we
       // shouldn't
       // do any transition animations for changed mount content as it's just being remounted on a
-      // new LithoView.
+      // new RootHost.
       final int treeId = input.getTreeId();
       if (state.mLastMountedTreeId != treeId) {
         resetAnimationState(extensionState);
@@ -581,7 +572,7 @@ public class TransitionsExtension
       final boolean isRoot) {
     final TransitionsExtensionState state = extensionState.getState();
     final Object content = mountItem.getContent();
-    if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
+    if ((content instanceof ComponentHost) && !(content instanceof RootHost)) {
       final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {

@@ -176,8 +176,6 @@ public class LithoHostListenerCoordinator {
 
     mTransitionsExtension = TransitionsExtension.getInstance();
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
-    TransitionsExtension.setRootHost(
-        mountDelegateTarget.getExtensionState(mTransitionsExtension), lithoView);
 
     registerListener(mTransitionsExtension);
   }

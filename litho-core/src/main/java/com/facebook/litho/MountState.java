@@ -216,7 +216,6 @@ class MountState
     if (mountExtension instanceof TransitionsExtension) {
       mTransitionsExtension = (TransitionsExtension) mountExtension;
       mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
-      TransitionsExtension.setRootHost(mTransitionsExtensionState, mLithoView);
     }
   }
 
