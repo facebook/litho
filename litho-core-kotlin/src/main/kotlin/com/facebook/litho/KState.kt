@@ -40,9 +40,9 @@ class StateDelegate<T>(private val c: ComponentContext, private val initializer:
 
   init {
     c.hooksHandler?.let {
-      hooks = it.getOrCreate(c.componentScope.globalKey)
+      hooks = it.getOrCreate(c.getGlobalKey())
       hookIndex = hooks.getAndIncrementHookIndex()
-      hookStateKey = "${c.componentScope.globalKey}:$hookIndex"
+      hookStateKey = "${c.getGlobalKey()}:$hookIndex"
     }
   }
 
@@ -50,10 +50,10 @@ class StateDelegate<T>(private val c: ComponentContext, private val initializer:
     val hooksHandler = c.hooksHandler
     @Suppress("UNCHECKED_CAST")
     return if (hooksHandler != null) {
-      val value = hooksHandler.getOrPut(c.componentScope.globalKey, hookIndex) { getInitialState() }
-      State(c.componentScope.globalKey, value, hookIndex)
+      val value = hooksHandler.getOrPut(c.getGlobalKey(), hookIndex) { getInitialState() }
+      State(c.getGlobalKey(), value, hookIndex)
     } else {
-      hookStateKey = "${c.componentScope.globalKey}:${property.name}"
+      hookStateKey = "${c.getGlobalKey()}:${property.name}"
       val value = c.stateHandler!!.hookState.getOrPut(hookStateKey) { getInitialState() } as T
       State(hookStateKey, value)
     }

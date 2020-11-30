@@ -1965,7 +1965,7 @@ public class LayoutState
     if (parentScope == null) {
       globalKey = component.getKey();
     } else {
-      if (parentScope.getGlobalKey() == null) {
+      if (Component.getGlobalKey(parentContext, parentScope) == null) {
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR,
             NULL_PARENT_KEY,
@@ -1978,7 +1978,8 @@ public class LayoutState
                 + " check the value of ComponentsConfiguration.useGlobalKeys.");
       }
       globalKey =
-          generateUniqueGlobalKeyForChild(layoutState, parentScope.getGlobalKey(), component);
+          generateUniqueGlobalKeyForChild(
+              layoutState, Component.getGlobalKey(parentContext, parentScope), component);
     }
 
     return globalKey;

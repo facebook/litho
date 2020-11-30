@@ -404,17 +404,34 @@ public abstract class Component extends ComponentLifecycle
     return mErrorEventHandler;
   }
 
+  boolean isStateless() {
+    return mUseStatelessComponent;
+  }
+
   /**
    * Get a key that is unique to this component within its tree.
    *
    * @return
    */
-  String getGlobalKey() {
-    return mGlobalKey;
+  static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
+    if (component.mUseStatelessComponent) {
+      if (scopedContext == null) {
+        throw new IllegalStateException(
+            "Trying to access layout scoped information with a scoped context.");
+      }
+      return scopedContext.getGlobalKey();
+    }
+
+    return component.getGlobalKey();
   }
 
-  boolean useStatelessComponent() {
-    return mUseStatelessComponent;
+  @VisibleForTesting
+  String getGlobalKey() {
+    if (mUseStatelessComponent) {
+      throw new IllegalStateException("Should not call this method for stateless components");
+    }
+
+    return mGlobalKey;
   }
 
   /**
@@ -425,6 +442,9 @@ public abstract class Component extends ComponentLifecycle
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
   void setGlobalKey(String key) {
+    if (mUseStatelessComponent) {
+      return;
+    }
     mGlobalKey = key;
   }
 
@@ -599,7 +619,9 @@ public abstract class Component extends ComponentLifecycle
         if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
           globalKey = LayoutState.generateGlobalKey(parentContext, this);
         } else {
-          globalKey = ComponentKeyUtils.generateGlobalKey(parentContext.getComponentScope(), this);
+          globalKey =
+              ComponentKeyUtils.generateGlobalKey(
+                  parentContext, parentContext.getComponentScope(), this);
         }
         setGlobalKey(globalKey);
       }
@@ -724,9 +746,10 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    if (!ComponentsConfiguration.useStatelessComponent) {
+    if (!component.mUseStatelessComponent) {
       final ComponentContext scopedContext =
-          component.getScopedContext(c.getLayoutStateContext(), component.getGlobalKey());
+          component.getScopedContext(
+              c.getLayoutStateContext(), Component.getGlobalKey(null, component));
       if (scopedContext != null) {
         assertSameBaseContext(scopedContext, c);
       }
@@ -2059,7 +2082,7 @@ public abstract class Component extends ComponentLifecycle
 
       final Component owner = getOwner();
       if (owner != null) {
-        mComponent.mOwnerGlobalKey = owner.getGlobalKey();
+        mComponent.mOwnerGlobalKey = Component.getGlobalKey(mContext, owner);
       }
 
       if (defStyleAttr != 0 || defStyleRes != 0) {

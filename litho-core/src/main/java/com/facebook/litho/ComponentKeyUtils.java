@@ -71,20 +71,24 @@ public class ComponentKeyUtils {
    * @param childComponent child component with the parent context
    * @return a unique global key for this component relative to its siblings.
    */
-  static String generateGlobalKey(@Nullable Component parentComponent, Component childComponent) {
+  static String generateGlobalKey(
+      final @Nullable ComponentContext parentContext,
+      final @Nullable Component parentComponent,
+      final Component childComponent) {
     final String key = childComponent.getKey();
     final String globalKey;
 
     if (parentComponent == null) {
       globalKey = key;
     } else {
-      if (parentComponent.getGlobalKey() == null) {
+      if (Component.getGlobalKey(parentContext, parentComponent) == null) {
         logParentHasNullGlobalKey(parentComponent, childComponent);
 
         globalKey = "null" + key;
 
       } else {
-        final String childKey = getKeyWithSeparator(parentComponent.getGlobalKey(), key);
+        final String childKey =
+            getKeyWithSeparator(Component.getGlobalKey(parentContext, parentComponent), key);
         final int index;
 
         if (childComponent.hasManualKey()) {

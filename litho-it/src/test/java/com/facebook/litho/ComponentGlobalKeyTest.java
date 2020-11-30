@@ -68,14 +68,14 @@ public class ComponentGlobalKeyTest {
   public void testComponentKey() {
     Component component = SimpleMountSpecTester.create(mContext).build();
     Assert.assertEquals(component.getKey(), component.getTypeId() + "");
-    Assert.assertNull(component.getGlobalKey());
+    Assert.assertNull(Component.getGlobalKey(null, component));
   }
 
   @Test
   public void testComponentManualKey() {
     Component component = SimpleMountSpecTester.create(mContext).key("someKey").build();
     Assert.assertEquals(component.getKey(), "someKey");
-    Assert.assertNull(component.getGlobalKey());
+    Assert.assertNull(Component.getGlobalKey(null, component));
   }
 
   @Test
@@ -85,7 +85,7 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
-        getLayoutOutput(lithoView.getMountItemAt(0)).getComponent().getGlobalKey(),
+        Component.getGlobalKey(null, getLayoutOutput(lithoView.getMountItemAt(0)).getComponent()),
         component.getKey());
   }
 
@@ -96,7 +96,8 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
-        getLayoutOutput(lithoView.getMountItemAt(0)).getComponent().getGlobalKey(), "someKey");
+        Component.getGlobalKey(null, getLayoutOutput(lithoView.getMountItemAt(0)).getComponent()),
+        "someKey");
   }
 
   @Test
@@ -114,14 +115,14 @@ public class ComponentGlobalKeyTest {
     // Text
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[Text2]"),
-        getComponentAt(lithoView, 0).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
     // TestViewComponent in child layout
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[TestViewComponent1]"),
-        getComponentAt(lithoView, 1).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
     // background in child
-    Assert.assertNull(getComponentAt(lithoView, 2).getGlobalKey());
+    Assert.assertNull(Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
     // CardClip in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
@@ -131,23 +132,23 @@ public class ComponentGlobalKeyTest {
             columnSpecId,
             columnSpecId,
             "[CardClip1]"),
-        getComponentAt(lithoView, 3).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
     // Text in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[Text1]"),
-        getComponentAt(lithoView, 4).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 4)));
     // background
-    Assert.assertNull(getComponentAt(lithoView, 5).getGlobalKey());
+    Assert.assertNull(Component.getGlobalKey(null, getComponentAt(lithoView, 5)));
     // CardClip
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, columnSpecId, "[CardClip2]"),
-        getComponentAt(lithoView, 6).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 6)));
     // TestViewComponent
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[TestViewComponent2]"),
-        getComponentAt(lithoView, 7).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 7)));
   }
 
   @Test
@@ -200,15 +201,15 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey"),
-        getComponentAt(lithoView, 0).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!1"),
-        getComponentAt(lithoView, 2).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
-        getComponentAt(lithoView, 3).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
   }
 
   @Test
@@ -236,15 +237,15 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey"),
-        getComponentAt(lithoView, 0).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!1"),
-        getComponentAt(lithoView, 2).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
-        getComponentAt(lithoView, 3).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
   }
 
   @Test
@@ -297,10 +298,10 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
-        getComponentAt(lithoView, 0).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
-        getComponentAt(lithoView, 1).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
   }
 
   @Test
@@ -321,9 +322,9 @@ public class ComponentGlobalKeyTest {
 
     final LithoView lithoView = getLithoView(component);
 
-    final String firstKey = getComponentAt(lithoView, 0).getGlobalKey();
-    final String secondKey = getComponentAt(lithoView, 1).getGlobalKey();
-    final String fourthKey = getComponentAt(lithoView, 3).getGlobalKey();
+    final String firstKey = Component.getGlobalKey(null, getComponentAt(lithoView, 0));
+    final String secondKey = Component.getGlobalKey(null, getComponentAt(lithoView, 1));
+    final String fourthKey = Component.getGlobalKey(null, getComponentAt(lithoView, 3));
 
     assertThat(firstKey).isNotBlank();
     assertThat(secondKey).isEqualTo(firstKey + "!1");
@@ -359,11 +360,11 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, columnTypeId, textSpecId),
-        getComponentAt(lithoView, 0).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnTypeId, columnTypeId + "!1", textSpecId),
-        getComponentAt(lithoView, 1).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
   }
 
   @Test
@@ -405,17 +406,17 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId),
-        getComponentAt(lithoView, 0).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId + "!1"),
-        getComponentAt(lithoView, 1).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
-        getComponentAt(lithoView, 2).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
-        getComponentAt(lithoView, 3).getGlobalKey());
+        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
   }
 
   @Test

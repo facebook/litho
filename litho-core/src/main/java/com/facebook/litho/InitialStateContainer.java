@@ -91,18 +91,20 @@ public class InitialStateContainer {
   void createOrGetInitialStateForComponent(Component component, ComponentContext scopedContext) {
     Object stateLock;
     synchronized (this) {
-      stateLock = mCreateInitialStateLocks.get(component.getGlobalKey());
+      stateLock = mCreateInitialStateLocks.get(Component.getGlobalKey(scopedContext, component));
       if (stateLock == null) {
         stateLock = new Object();
-        mCreateInitialStateLocks.put(component.getGlobalKey(), stateLock);
+        mCreateInitialStateLocks.put(Component.getGlobalKey(scopedContext, component), stateLock);
       }
     }
 
     synchronized (stateLock) {
-      final StateContainer stateContainer = mInitialStates.get(component.getGlobalKey());
+      final StateContainer stateContainer =
+          mInitialStates.get(Component.getGlobalKey(scopedContext, component));
       if (stateContainer == null) {
         component.createInitialState(scopedContext);
-        mInitialStates.put(component.getGlobalKey(), component.getStateContainer());
+        mInitialStates.put(
+            Component.getGlobalKey(scopedContext, component), component.getStateContainer());
       } else {
         component.transferState(stateContainer, component.getStateContainer());
       }

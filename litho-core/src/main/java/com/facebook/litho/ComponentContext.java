@@ -309,7 +309,7 @@ public class ComponentContext {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
-    return mComponentScope.getGlobalKey();
+    return Component.getGlobalKey(this, mComponentScope);
   }
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {

@@ -99,7 +99,6 @@ class StateUpdateTestComponent extends Component {
   Component makeShallowCopyWithNewId() {
     shallowCopy = (StateUpdateTestComponent) super.makeShallowCopy();
     shallowCopy.mId = sIdGenerator.getAndIncrement();
-    shallowCopy.setGlobalKey(getGlobalKey());
     return shallowCopy;
   }
 

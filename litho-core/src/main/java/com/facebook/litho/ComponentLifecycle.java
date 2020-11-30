@@ -214,7 +214,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
-      TransitionUtils.setOwnerKey(transition, ((Component) this).getGlobalKey());
+      TransitionUtils.setOwnerKey(transition, Component.getGlobalKey(c, ((Component) this)));
     }
     return transition;
   }
@@ -638,7 +638,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return null;
     }
 
-    return c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + id + key);
+    return c.getComponentTree().getEventTrigger(c.getGlobalKey() + id + key);
   }
 
   @Nullable
@@ -687,7 +687,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
     final EventHandler<E> eventHandler = c.newEventHandler(id, params);
     if (c.getComponentTree() != null) {
-      c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
+      c.getComponentTree().recordEventHandler(c, eventHandler);
     }
 
     return eventHandler;

@@ -1465,8 +1465,9 @@ public class ComponentTree {
     return mStateHandler;
   }
 
-  void recordEventHandler(Component component, EventHandler eventHandler) {
-    mEventHandlersController.recordEventHandler(component.getGlobalKey(), eventHandler);
+  void recordEventHandler(ComponentContext scopedContext, EventHandler eventHandler) {
+    mEventHandlersController.recordEventHandler(
+        Component.getGlobalKey(scopedContext, scopedContext.getComponentScope()), eventHandler);
   }
 
   private void bindTriggerHandler(ComponentContext scopedContext, Component component) {

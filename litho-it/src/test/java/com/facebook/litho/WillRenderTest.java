@@ -97,6 +97,7 @@ public class WillRenderTest {
   @Test
   public void testWillRender_withComponentContextWithoutStateHandler_doesntCrash() {
     ComponentContext c = new ComponentContext(getApplicationContext());
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(Component.willRender(c, ComponentWithState.create(c).build())).isTrue();
   }
 }

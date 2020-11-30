@@ -35,11 +35,15 @@ public class ComponentUtils {
   /** @return availableGlobalKey for stateless components or component.getGlobalKey() otherwise. */
   static @Nullable String getGlobalKey(
       @Nullable Component component, @Nullable String availableGlobalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (component == null) {
+      return null;
+    }
+
+    if (component.isStateless()) {
       return availableGlobalKey;
     }
 
-    return component == null ? null : component.getGlobalKey();
+    return Component.getGlobalKey(null, component);
   }
 
   public static boolean isSameComponentType(Component a, Component b) {

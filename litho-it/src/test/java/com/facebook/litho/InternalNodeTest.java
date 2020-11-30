@@ -470,6 +470,7 @@ public class InternalNodeTest {
   public void
       testMeasureMightNotCacheInternalNode_ContextWithoutLayoutStateContextOrStateHandler_returnsMeasurement() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
 
     final Component component =
         Column.create(c)
