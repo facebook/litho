@@ -86,15 +86,6 @@ public class RenderState<State, RenderContext> {
   private int mWidthSpec = UNSET;
   private int mHeightSpec = UNSET;
 
-  public RenderState(Context context, Delegate<State> delegate) {
-    this(context, null, delegate);
-  }
-
-  public RenderState(
-      Context context, @Nullable RenderContext renderContext, Delegate<State> delegate) {
-    this(context, delegate, renderContext, null);
-  }
-
   public RenderState(
       final Context context,
       final Delegate<State> delegate,

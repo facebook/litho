@@ -144,7 +144,9 @@ public class RendercoreTestDriver {
 
                 @Override
                 public void commitToUI(RenderTree tree, Object o) {}
-              });
+              },
+              null,
+              null);
 
       mRootHost.setRenderState(renderState);
 
