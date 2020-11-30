@@ -51,12 +51,27 @@ public class TransitionsExtension
         TransitionsExtensionInput, TransitionsExtension.TransitionsExtensionState>
     implements UnmountDelegateExtension<TransitionsExtension.TransitionsExtensionState> {
 
-  private static TransitionsExtension sInstance = new TransitionsExtension();
+  private static TransitionsExtension sInstance = new TransitionsExtension(null);
+  private static TransitionsExtension sDebugInstance;
+  private final @Nullable String mDebugTag;
 
-  private TransitionsExtension() {}
+  private TransitionsExtension(final @Nullable String debugTag) {
+    mDebugTag = debugTag;
+  }
 
   public static TransitionsExtension getInstance() {
     return sInstance;
+  }
+
+  public static TransitionsExtension getInstance(final @Nullable String debugTag) {
+    TransitionsExtension instance;
+    if (debugTag != null) {
+      instance = sDebugInstance != null ? sDebugInstance : new TransitionsExtension(debugTag);
+      sDebugInstance = instance;
+    } else {
+      instance = sInstance;
+    }
+    return instance;
   }
 
   static class TransitionsExtensionState {
@@ -180,7 +195,7 @@ public class TransitionsExtension
       state.mLastTransitionsExtensionInput = null;
     }
 
-    updateTransitions(extensionState, input);
+    updateTransitions(extensionState, input, mDebugTag);
     extractDisappearingItems(extensionState, input);
   }
 
@@ -269,7 +284,8 @@ public class TransitionsExtension
    */
   private static void updateTransitions(
       ExtensionState<TransitionsExtensionState> extensionState,
-      final TransitionsExtensionInput input) {
+      final TransitionsExtensionInput input,
+      final @Nullable String debugTag) {
     final TransitionsExtensionState state = extensionState.getState();
     RenderCoreSystrace.beginSection("MountState.updateTransitions");
 
@@ -294,7 +310,7 @@ public class TransitionsExtension
       if (shouldAnimateTransitions(state, input)) {
         collectAllTransitions(extensionState, input);
         if (hasTransitionsToAnimate(state)) {
-          createNewTransitions(extensionState, input, state.mRootTransition);
+          createNewTransitions(extensionState, input, state.mRootTransition, debugTag);
         }
       }
 
@@ -442,20 +458,22 @@ public class TransitionsExtension
   }
 
   private static void prepareTransitionManager(
-      final ExtensionState<TransitionsExtensionState> extensionState) {
+      final ExtensionState<TransitionsExtensionState> extensionState,
+      final @Nullable String debugTag) {
     final TransitionsExtensionState state = extensionState.getState();
     if (state.mTransitionManager == null) {
       state.mTransitionManager =
-          new TransitionManager(new AnimationCompleteListener(extensionState));
+          new TransitionManager(new AnimationCompleteListener(extensionState), debugTag);
     }
   }
 
   private static void createNewTransitions(
       final ExtensionState<TransitionsExtensionState> extensionState,
       TransitionsExtensionInput input,
-      Transition rootTransition) {
+      Transition rootTransition,
+      final @Nullable String debugTag) {
     final TransitionsExtensionState state = extensionState.getState();
-    prepareTransitionManager(extensionState);
+    prepareTransitionManager(extensionState, debugTag);
 
     Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> lastTransitions =
         state.mLastTransitionsExtensionInput == null

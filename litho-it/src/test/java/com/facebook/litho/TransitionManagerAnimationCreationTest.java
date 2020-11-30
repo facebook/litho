@@ -58,7 +58,8 @@ public class TransitionManagerAnimationCreationTest {
 
               @Override
               public void onAnimationUnitComplete(PropertyHandle propertyHandle, Object data) {}
-            });
+            },
+            (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
     mTestVerificationAnimator =
         new Transition.TransitionAnimator() {
           @Override
