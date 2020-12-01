@@ -240,8 +240,8 @@ public class TransitionsExtension
     final TransitionsExtensionState state = extensionState.getState();
 
     // If this item is a host and contains disappearing items, we need to remove them.
-    if (content instanceof ComponentHost) {
-      removeDisappearingMountContentFromComponentHost(extensionState, (ComponentHost) content);
+    if (content instanceof Host) {
+      removeDisappearingMountContentFromHost(extensionState, (Host) content);
     }
 
     final AnimatableItem animatableItem;
@@ -766,14 +766,15 @@ public class TransitionsExtension
     RenderCoreSystrace.endSection();
   }
 
-  // TODO: T68620328 Make private after test is done
-  public static void removeDisappearingMountContentFromComponentHost(
-      final ExtensionState<TransitionsExtensionState> extensionState, ComponentHost componentHost) {
+  private static void removeDisappearingMountContentFromHost(
+      final ExtensionState<TransitionsExtensionState> extensionState, Host host) {
     final TransitionsExtensionState state = extensionState.getState();
-    List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
-    if (ids != null) {
-      for (int i = 0, size = ids.size(); i < size; i++) {
-        state.mTransitionManager.setMountContent(ids.get(i), null);
+    for (int i = 0, size = host.getMountItemCount(); i < size; i++) {
+      MountItem mountItem = host.getMountItemAt(i);
+      final AnimatableItem animatableItem =
+          state.mLockedDisappearingMountitems.get(mountItem.getRenderTreeNode().getRenderUnit());
+      if (animatableItem != null) {
+        state.mTransitionManager.setMountContent(animatableItem.getTransitionId(), null);
       }
     }
   }
