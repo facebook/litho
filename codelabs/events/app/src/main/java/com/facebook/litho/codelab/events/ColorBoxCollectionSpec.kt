@@ -36,7 +36,9 @@ object ColorBoxCollectionSpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @Prop items: IntArray, @Prop highlightedIndex: Int
+      c: ComponentContext,
+      @Prop items: IntArray,
+      @Prop highlightedIndex: Int
   ): Component {
     val rowBuilder = Row.create(c).wrap(YogaWrap.WRAP)
     items.forEachIndexed { index, color ->

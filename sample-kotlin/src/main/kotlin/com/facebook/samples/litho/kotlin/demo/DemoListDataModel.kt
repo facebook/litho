@@ -17,4 +17,7 @@
 package com.facebook.samples.litho.kotlin.demo
 
 data class DemoListDataModel(
-    val name: String, val klass: Class<*>? = null, val datamodels: List<DemoListDataModel>? = null)
+    val name: String,
+    val klass: Class<*>? = null,
+    val datamodels: List<DemoListDataModel>? = null
+)

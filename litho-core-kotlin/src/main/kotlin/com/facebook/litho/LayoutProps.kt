@@ -30,7 +30,9 @@ inline fun DslScope.Padding(all: Dp, content: DslScope.() -> Component): Compone
 /** Builder for setting [horizontal] and [vertical] paddings to the child component. */
 @Deprecated(message = "Use Style.padding instead")
 inline fun DslScope.Padding(
-    horizontal: Dp = 0.dp, vertical: Dp = 0.dp, content: DslScope.() -> Component
+    horizontal: Dp = 0.dp,
+    vertical: Dp = 0.dp,
+    content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -67,7 +69,9 @@ inline fun DslScope.Margin(all: Dp, content: DslScope.() -> Component): Componen
 /** Builder for setting [horizontal] and [vertical] margins for the child component. */
 @Deprecated(message = "Use Style.margin instead")
 inline fun DslScope.Margin(
-    horizontal: Dp = 0.dp, vertical: Dp = 0.dp, content: DslScope.() -> Component
+    horizontal: Dp = 0.dp,
+    vertical: Dp = 0.dp,
+    content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -122,7 +126,9 @@ inline fun DslScope.Position(
 /** Builder for setting a specific [width] and [height] for a child component. */
 @Deprecated(message = "Use Style.size instead")
 inline fun DslScope.FixedSize(
-    width: Dp? = null, height: Dp? = null, content: DslScope.() -> Component
+    width: Dp? = null,
+    height: Dp? = null,
+    content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
@@ -133,7 +139,10 @@ inline fun DslScope.FixedSize(
 
 @Deprecated(message = "Use Style.flex instead")
 inline fun DslScope.Flex(
-    grow: Float = 0f, shrink: Float = 1f, basis: Dp? = null, content: DslScope.() -> Component
+    grow: Float = 0f,
+    shrink: Float = 1f,
+    basis: Dp? = null,
+    content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {

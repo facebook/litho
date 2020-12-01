@@ -30,7 +30,10 @@ object ListItemSpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @Prop color: Int, @Prop title: String, @Prop subtitle: String
+      c: ComponentContext,
+      @Prop color: Int,
+      @Prop title: String,
+      @Prop subtitle: String
   ): Component =
       Column.create(c)
           .paddingDip(ALL, 16f)

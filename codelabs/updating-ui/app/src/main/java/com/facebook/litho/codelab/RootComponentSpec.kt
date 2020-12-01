@@ -43,7 +43,9 @@ object RootComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @Prop labelText: String, @State toggleState: Boolean
+      c: ComponentContext,
+      @Prop labelText: String,
+      @State toggleState: Boolean
   ): Component {
     return Column.create(c)
         .child(Text.create(c).textSizeSp(20f).text(labelText))

@@ -78,7 +78,9 @@ inline fun DslScope.VisibilityHandler(
 /** Builder for decorating a child component with [background] or [foreground]. */
 @Deprecated(message = "Use Style.background and Style.foreground instead")
 inline fun DslScope.Decoration(
-    foreground: Drawable? = null, background: Drawable? = null, content: DslScope.() -> Component
+    foreground: Drawable? = null,
+    background: Drawable? = null,
+    content: DslScope.() -> Component
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {

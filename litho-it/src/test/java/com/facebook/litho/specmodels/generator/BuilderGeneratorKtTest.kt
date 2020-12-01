@@ -51,7 +51,8 @@ object VarArgsWildcardPropTestSpec {
 object WildcardOutPropTestSpec {
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @Prop numWildCard: List<out @JvmWildcard Number>
+      c: ComponentContext,
+      @Prop numWildCard: List<out @JvmWildcard Number>
   ): Component? {
     return Column.create(c).build()
   }

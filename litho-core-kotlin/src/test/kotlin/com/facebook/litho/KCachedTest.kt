@@ -286,7 +286,9 @@ class KCachedTest {
       })
 
   private class ComponentWithTwoCachedValuesWithSameInputs(
-      str: String, repeatNum: Int, initCounter: AtomicInteger
+      str: String,
+      repeatNum: Int,
+      initCounter: AtomicInteger
   ) :
       KComponent({
         val expensiveString1 by useCached(str, repeatNum) {

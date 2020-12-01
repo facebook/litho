@@ -42,7 +42,9 @@ object ExpandableElementUtil {
   }
 
   fun maybeCreateBottomDetailComponent(
-      c: ComponentContext, expanded: Boolean, seen: Boolean
+      c: ComponentContext,
+      expanded: Boolean,
+      seen: Boolean
   ): Component.Builder<*>? =
       if (!expanded) {
         null
@@ -58,7 +60,9 @@ object ExpandableElementUtil {
       }
 
   fun maybeCreateTopDetailComponent(
-      c: ComponentContext, expanded: Boolean, timestamp: String
+      c: ComponentContext,
+      expanded: Boolean,
+      timestamp: String
   ): Component.Builder<*>? =
       if (!expanded) {
         null

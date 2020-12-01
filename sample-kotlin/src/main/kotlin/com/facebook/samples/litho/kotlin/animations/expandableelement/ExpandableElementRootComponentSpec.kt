@@ -60,7 +60,9 @@ object ExpandableElementRootComponentSpec {
 
   @OnCreateLayout
   internal fun onCreateLayout(
-      c: ComponentContext, @State messages: List<Message>, @State counter: Int
+      c: ComponentContext,
+      @State messages: List<Message>,
+      @State counter: Int
   ): Component =
       Column.create(c)
           .child(

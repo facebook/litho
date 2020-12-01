@@ -24,7 +24,9 @@ import com.facebook.litho.Style
 /** Builder function for creating [ImageSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Image(
-    drawable: Drawable, style: Style? = null, scaleType: ScaleType = ScaleType.FIT_CENTER
+    drawable: Drawable,
+    style: Style? = null,
+    scaleType: ScaleType = ScaleType.FIT_CENTER
 ): Image =
     Image.create(context).drawable(drawable).scaleType(scaleType).build().apply {
       applyStyle(style)

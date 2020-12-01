@@ -66,7 +66,9 @@ object RootComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @State count: Int, @State(canUpdateLazily = true) step: Int
+      c: ComponentContext,
+      @State count: Int,
+      @State(canUpdateLazily = true) step: Int
   ): Component {
 
     Log.d("RootComponent", "OnCreateLayout() called")

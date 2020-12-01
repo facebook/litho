@@ -63,7 +63,9 @@ object ComposedAnimationsComponentSpec {
 
   @OnEvent(OnCheckIsSameItemEvent::class)
   fun isSameItem(
-      c: ComponentContext, @FromEvent previousItem: Data, @FromEvent nextItem: Data
+      c: ComponentContext,
+      @FromEvent previousItem: Data,
+      @FromEvent nextItem: Data
   ): Boolean = previousItem.number == nextItem.number
 
   private fun generateData(number: Int): List<Data> {

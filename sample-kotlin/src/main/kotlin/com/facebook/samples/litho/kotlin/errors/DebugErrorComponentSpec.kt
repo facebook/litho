@@ -48,7 +48,9 @@ object DebugErrorComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @Prop message: String, @Prop throwable: Throwable
+      c: ComponentContext,
+      @Prop message: String,
+      @Prop throwable: Throwable
   ): Component {
     Log.e(TAG, message, throwable)
 

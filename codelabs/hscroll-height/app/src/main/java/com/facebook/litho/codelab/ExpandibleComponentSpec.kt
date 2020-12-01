@@ -40,14 +40,18 @@ object ExpandibleComponentSpec {
 
   @OnCreateInitialState
   fun onCreateInitialState(
-      c: ComponentContext, @Prop initialHeight: Float, currentHeight: StateValue<Float>
+      c: ComponentContext,
+      @Prop initialHeight: Float,
+      currentHeight: StateValue<Float>
   ) {
     currentHeight.set(initialHeight)
   }
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext, @Prop color: Int, @State currentHeight: Float
+      c: ComponentContext,
+      @Prop color: Int,
+      @State currentHeight: Float
   ): Component {
     return SolidColor.create(c)
         .color(color)
@@ -59,7 +63,9 @@ object ExpandibleComponentSpec {
 
   @OnUpdateState
   fun onUpdateState(
-      currentHeight: StateValue<Float>, @Param collapse: Float, @Param expand: Float
+      currentHeight: StateValue<Float>,
+      @Param collapse: Float,
+      @Param expand: Float
   ) {
     val currentState = currentHeight.get()
     if (currentState != null) {

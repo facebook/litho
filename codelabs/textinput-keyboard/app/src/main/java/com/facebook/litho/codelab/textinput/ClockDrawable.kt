@@ -49,7 +49,12 @@ class ClockDrawable : Drawable() {
   }
 
   private fun drawHand(
-      canvas: Canvas, degrees: Float, length: Int, paint: Paint, centerX: Float, centerY: Float
+      canvas: Canvas,
+      degrees: Float,
+      length: Int,
+      paint: Paint,
+      centerX: Float,
+      centerY: Float
   ) {
     // Save and then rotate canvas
     canvas.run {

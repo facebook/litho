@@ -53,7 +53,9 @@ object LifecycleGroupSectionSpec {
 
   @OnCreateInitialState
   fun onCreateInitialState(
-      c: SectionContext, startTime: StateValue<Long>, @Prop lifecycleListener: LifecycleListener
+      c: SectionContext,
+      startTime: StateValue<Long>,
+      @Prop lifecycleListener: LifecycleListener
   ) {
     val timestamp = SystemClock.uptimeMillis()
     startTime.set(timestamp)
@@ -62,7 +64,9 @@ object LifecycleGroupSectionSpec {
 
   @OnCreateTreeProp
   fun onCreateTreeProp(
-      c: SectionContext, @Prop lifecycleListener: LifecycleListener, @State startTime: Long
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
   ): DummyTreeProp {
     dispatchLifecycleEvent(LifecycleEventType.ON_CREATE_TREE_PROP, lifecycleListener, startTime)
     return DummyTreeProp
@@ -99,7 +103,9 @@ object LifecycleGroupSectionSpec {
 
   @OnDataBound
   fun onDataBound(
-      c: SectionContext, @Prop lifecycleListener: LifecycleListener, @State startTime: Long
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
   ) {
     dispatchLifecycleEvent(LifecycleEventType.ON_DATA_BOUND, lifecycleListener, startTime)
   }
@@ -135,7 +141,9 @@ object LifecycleGroupSectionSpec {
 
   @OnRefresh
   fun onRefresh(
-      c: SectionContext, @Prop lifecycleListener: LifecycleListener, @State startTime: Long
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
   ) {
     dispatchLifecycleEvent(LifecycleEventType.ON_REFRESH, lifecycleListener, startTime)
     LifecycleGroupSection.updateScramble(c)
@@ -149,7 +157,9 @@ object LifecycleGroupSectionSpec {
 
   @OnCreateService
   fun onCreateService(
-      c: SectionContext, @Prop lifecycleListener: LifecycleListener, @State startTime: Long
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
   ): Any {
     dispatchLifecycleEvent(LifecycleEventType.ON_CREATE_SERVICE, lifecycleListener, startTime)
     return Any()
@@ -176,7 +186,9 @@ object LifecycleGroupSectionSpec {
   }
 
   private fun dispatchLifecycleEvent(
-      type: LifecycleEventType, listener: LifecycleListener, startTime: Long
+      type: LifecycleEventType,
+      listener: LifecycleListener,
+      startTime: Long
   ) {
     val endTime = SystemClock.uptimeMillis() - startTime
     listener.onLifecycleMethodCalled(type, endTime)

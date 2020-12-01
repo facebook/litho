@@ -255,7 +255,10 @@ fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom
         positionType = YogaPositionType.RELATIVE)
 
 fun Style.positionRelative(
-    start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null
+    start: Dp? = null,
+    top: Dp? = null,
+    end: Dp? = null,
+    bottom: Dp? = null
 ) = this + com.facebook.litho.positionRelative(start, top, end, bottom)
 
 fun background(background: Drawable) = Style(background = background)

@@ -204,7 +204,9 @@ class KStateTest {
   }
 
   private class CountDownLatchComponent(
-      countDownLatch: CountDownLatch, awaitable: CountDownLatch?, initCounter: AtomicInteger
+      countDownLatch: CountDownLatch,
+      awaitable: CountDownLatch?,
+      initCounter: AtomicInteger
   ) :
       KComponent({
         countDownLatch.countDown()

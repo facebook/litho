@@ -24,7 +24,9 @@ import com.facebook.litho.Style
 /** Builder function for creating [ProgressSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Progress(
-    @ColorInt color: Int, style: Style? = null, indeterminateDrawable: Drawable? = null
+    @ColorInt color: Int,
+    style: Style? = null,
+    indeterminateDrawable: Drawable? = null
 ): Progress =
     Progress.create(context)
         .color(color)

@@ -57,6 +57,8 @@ object DecadeSectionSpec {
 
   @OnEvent(OnCheckIsSameItemEvent::class)
   fun isSameItem(
-      c: SectionContext, @FromEvent previousItem: Artist, @FromEvent nextItem: Artist
+      c: SectionContext,
+      @FromEvent previousItem: Artist,
+      @FromEvent nextItem: Artist
   ): Boolean = previousItem.name == nextItem.name
 }

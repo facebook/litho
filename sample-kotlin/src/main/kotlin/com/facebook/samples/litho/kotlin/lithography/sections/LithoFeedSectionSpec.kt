@@ -32,7 +32,9 @@ object LithoFeedSectionSpec {
 
   @OnCreateChildren
   fun onCreateChildren(
-      c: SectionContext, @Prop decades: List<Decade>, @Prop loading: Boolean
+      c: SectionContext,
+      @Prop decades: List<Decade>,
+      @Prop loading: Boolean
   ): Children {
     val children = Children.create()
     val decadeSections =
