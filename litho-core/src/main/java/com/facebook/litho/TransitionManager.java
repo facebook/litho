@@ -1004,10 +1004,7 @@ public class TransitionManager {
         final TransitionId transitionId = propertyAnimation.getTransitionId();
         final AnimationState animationState = mAnimationStates.get(transitionId);
         if (animationState == null) {
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR,
-              "NoAnimationState",
-              "No animation state for transitionId=" + transitionId);
+          // This can happen when unmounting all items on running animations.
           continue;
         }
         final PropertyState propertyState =
