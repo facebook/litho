@@ -53,7 +53,7 @@ public abstract class TransitionSet extends Transition {
     }
   }
 
-  ArrayList<Transition> getChildren() {
+  public ArrayList<Transition> getChildren() {
     return mChildren;
   }
 

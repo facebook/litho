@@ -387,7 +387,7 @@ public class ComponentTree {
     }
     mLogger = builder.logger;
     mLogTag = builder.logTag;
-    mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
+    mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
     mIncrementalVisibility = builder.incrementalVisibility;
   }
 

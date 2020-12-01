@@ -26,6 +26,7 @@ import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

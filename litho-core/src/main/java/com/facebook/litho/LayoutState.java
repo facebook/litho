@@ -68,6 +68,7 @@ import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityModuleInput;

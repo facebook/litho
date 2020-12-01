@@ -295,7 +295,7 @@ public abstract class Transition {
       return mAnimationTarget;
     }
 
-    boolean hasAppearAnimation() {
+    public boolean hasAppearAnimation() {
       return mAppearFrom != null;
     }
 
@@ -327,7 +327,7 @@ public abstract class Transition {
       return mTraceName;
     }
 
-    void setOwnerKey(@Nullable String ownerKey) {
+    public void setOwnerKey(@Nullable String ownerKey) {
       mOwnerKey = ownerKey;
     }
 
@@ -336,7 +336,7 @@ public abstract class Transition {
       return mOwnerKey;
     }
 
-    boolean targets(TransitionId transitionId) {
+    public boolean targets(TransitionId transitionId) {
       switch (mAnimationTarget.componentTarget.componentTargetType) {
         case ALL:
         case AUTO_LAYOUT:
@@ -365,7 +365,7 @@ public abstract class Transition {
       }
     }
 
-    boolean targetsProperty(AnimatedProperty property) {
+    public boolean targetsProperty(AnimatedProperty property) {
       switch (mAnimationTarget.propertyTarget.propertyTargetType) {
         case AUTO_LAYOUT:
           return arrayContains(AnimatedProperties.AUTO_LAYOUT_PROPERTIES, property);
@@ -573,7 +573,7 @@ public abstract class Transition {
       mTransitionEndHandler = null;
     }
 
-    ArrayList<TransitionUnit> getTransitionUnits() {
+    public ArrayList<TransitionUnit> getTransitionUnits() {
       maybeCommitCurrentBuilder();
       return mBuiltTransitions;
     }
@@ -699,7 +699,7 @@ public abstract class Transition {
    * animate from so that in root Host on measure we can set initial value.
    */
   public static class RootBoundsTransition {
-    boolean hasTransition;
-    TransitionUnit appearTransition;
+    public boolean hasTransition;
+    public TransitionUnit appearTransition;
   }
 }

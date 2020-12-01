@@ -79,6 +79,7 @@ import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.utils.BoundsUtils;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;

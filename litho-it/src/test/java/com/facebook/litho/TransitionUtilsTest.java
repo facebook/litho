@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

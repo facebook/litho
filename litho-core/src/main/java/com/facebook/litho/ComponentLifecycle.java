@@ -33,6 +33,7 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
 import java.util.HashMap;

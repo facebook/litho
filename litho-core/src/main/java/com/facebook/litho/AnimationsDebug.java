@@ -18,7 +18,10 @@ package com.facebook.litho;
 
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
+import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /** Utilities for animations debug. */
@@ -57,5 +60,30 @@ public class AnimationsDebug {
                 + animationLockedIndices[i]);
       }
     }
+  }
+
+  static boolean areTransitionsEnabled(@Nullable Context context) {
+    if (ComponentsConfiguration.isAnimationDisabled) {
+      // mostly for unit tests
+      return false;
+    }
+
+    if (!ComponentsConfiguration.isEndToEndTestRun) {
+      return true;
+    }
+
+    if (!ComponentsConfiguration.CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS) {
+      return false;
+    }
+
+    if (context == null) {
+      return false;
+    }
+
+    float animatorDurationScale =
+        Settings.Global.getFloat(
+            context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
+    return ComponentsConfiguration.forceEnableTransitionsForInstrumentationTests
+        || animatorDurationScale != 0f;
   }
 }

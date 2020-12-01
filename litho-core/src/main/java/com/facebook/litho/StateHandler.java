@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.transitions.TransitionUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

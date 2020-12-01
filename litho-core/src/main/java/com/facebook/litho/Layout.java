@@ -660,7 +660,7 @@ class Layout {
    */
   static boolean areTransitionsEnabled(final @Nullable ComponentContext context) {
     if (context == null || context.getComponentTree() == null) {
-      return TransitionUtils.areTransitionsEnabled(null);
+      return AnimationsDebug.areTransitionsEnabled(null);
     }
     return context.getComponentTree().areTransitionsEnabled();
   }
