@@ -2705,7 +2705,7 @@ class MountState
       }
 
       final ComponentHost host = (ComponentHost) item.getHost();
-      host.unmountDisappearingItem(item);
+      host.finaliseDisappearingItem(item);
       maybeUnsetViewAttributes(item);
 
       unbindAndUnmountLifecycle(item);

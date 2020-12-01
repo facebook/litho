@@ -36,6 +36,7 @@ import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.transitions.DisappearingHost;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.utils.BoundsUtils;
@@ -174,7 +175,7 @@ public class TransitionsExtension
       // We only start unmount disappearing item on the root of the disappearing animation. The rest
       // will be unmounted after the animation finishes.
       if (isRoot) {
-        ((ComponentHost) host).startUnmountDisappearingItem(mountItem);
+        ((DisappearingHost) host).startDisappearingMountItem(mountItem);
       }
     }
   }
@@ -275,7 +276,7 @@ public class TransitionsExtension
    *
    * <p>1. Disappearing items: Update disappearing mount items that are no longer disappearing (e.g.
    * because they came back). This means canceling the animation and cleaning up the corresponding
-   * ComponentHost.
+   * Host.
    *
    * <p>2. New transitions: Use the transition manager to create new animations.
    *
@@ -591,7 +592,7 @@ public class TransitionsExtension
       final boolean isRoot) {
     final TransitionsExtensionState state = extensionState.getState();
     final Object content = mountItem.getContent();
-    if ((content instanceof ComponentHost) && !(content instanceof RootHost)) {
+    if ((content instanceof Host) && !(content instanceof RootHost)) {
       final Host contentHost = (Host) content;
       // Unmount descendant items in reverse order.
       for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
@@ -605,12 +606,12 @@ public class TransitionsExtension
       }
     }
 
-    final ComponentHost host = (ComponentHost) mountItem.getHost();
+    final Host host = mountItem.getHost();
     if (host == null) {
       throw new IllegalStateException("Disappearing mountItem has no host, can not be unmounted.");
     }
     if (isRoot) {
-      host.unmountDisappearingItem(mountItem);
+      ((DisappearingHost) host).finaliseDisappearingItem(mountItem);
     } else {
       host.unmount(mountItem);
     }

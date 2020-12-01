@@ -47,6 +47,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.transitions.DisappearingHost;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ import java.util.Map;
  * accordingly.
  */
 @DoNotStrip
-public class ComponentHost extends Host {
+public class ComponentHost extends Host implements DisappearingHost {
 
   public static final String TEXTURE_TOO_BIG = "TextureTooBig";
   public static final String TEXTURE_ZERO_DIM = "TextureZeroDim";
@@ -241,7 +242,8 @@ public class ComponentHost extends Host {
    *
    * @param mountItem
    */
-  void startUnmountDisappearingItem(MountItem mountItem) {
+  @Override
+  public void startDisappearingMountItem(MountItem mountItem) {
     final int index = mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
     startUnmountDisappearingItem(index, mountItem);
   }
@@ -266,7 +268,8 @@ public class ComponentHost extends Host {
     mDisappearingItems.add(mountItem);
   }
 
-  void unmountDisappearingItem(MountItem disappearingItem) {
+  @Override
+  public void finaliseDisappearingItem(MountItem disappearingItem) {
     ensureDisappearingItems();
     if (!mDisappearingItems.remove(disappearingItem)) {
       final TransitionId transitionId = getLayoutOutput(disappearingItem).getTransitionId();
