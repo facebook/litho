@@ -26,7 +26,6 @@ import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewParent;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -47,12 +46,6 @@ public class HostView extends Host {
   private @Nullable Object mViewTag;
   private @Nullable SparseArray<Object> mViewTags;
   private @Nullable Drawable mForeground;
-
-  /**
-   * {@link ViewGroup#getClipChildren()} was only added in API 18, will need to keep track of this
-   * flag ourselves on the lower versions
-   */
-  private boolean mClipChildren = true;
 
   public HostView(Context context) {
     this(context, null);
@@ -424,25 +417,6 @@ public class HostView extends Host {
     }
 
     return super.getTag(key);
-  }
-
-  @Override
-  public boolean getClipChildren() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18
-      return mClipChildren;
-    } else {
-      return super.getClipChildren();
-    }
-  }
-
-  @Override
-  public void setClipChildren(boolean clipChildren) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
-      mClipChildren = clipChildren;
-    }
-    super.setClipChildren(clipChildren);
   }
 
   private static void startTemporaryDetach(View view) {

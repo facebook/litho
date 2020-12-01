@@ -33,13 +33,16 @@ import com.facebook.litho.animation.ParallelBinding;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderCoreSystrace;
+import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -196,6 +199,7 @@ public class TransitionManager {
   private final OnAnimationCompleteListener mOnAnimationCompleteListener;
   private AnimationBinding mRootAnimationToRun;
   private final String mDebugTag;
+  private final Map<Host, Boolean> mOverriddenClipChildrenFlags = new LinkedHashMap<>();
 
   public TransitionManager(
       OnAnimationCompleteListener onAnimationCompleteListener, @Nullable final String debugTag) {
@@ -407,6 +411,7 @@ public class TransitionManager {
     mRunningRootAnimations.clear();
 
     mRootAnimationToRun = null;
+    mOverriddenClipChildrenFlags.clear();
   }
 
   /**
@@ -802,16 +807,23 @@ public class TransitionManager {
   }
 
   private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
-    if (view instanceof ComponentHost) {
+    if (view instanceof Host && !(view instanceof RootHost)) {
       if (clipChildren) {
-        ((ComponentHost) view).restoreChildClipping();
+        // When clip children is true we want to restore what the view had before.
+        // It can happen that two different animations run on the same parent, in that case we won't
+        // find the view in the map so it is ignored.
+        if (mOverriddenClipChildrenFlags.containsKey(view)) {
+          ((Host) view).setClipChildren(mOverriddenClipChildrenFlags.remove(view));
+        }
       } else {
-        ((ComponentHost) view).temporaryDisableChildClipping();
+        // In this case we save the actual configuration and then we set clip to false.
+        mOverriddenClipChildrenFlags.put((Host) view, ((Host) view).getClipChildren());
+        ((Host) view).setClipChildren(false);
       }
     }
 
     final ViewParent parent = view.getParent();
-    if (parent instanceof ComponentHost) {
+    if (parent instanceof Host && !(parent instanceof RootHost)) {
       recursivelySetChildClippingForView((View) parent, clipChildren);
     }
   }

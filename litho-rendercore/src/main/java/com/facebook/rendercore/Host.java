@@ -17,11 +17,18 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 public abstract class Host extends ViewGroup {
+
+  /**
+   * {@link ViewGroup#getClipChildren()} was only added in API 18, will need to keep track of this
+   * flag ourselves on the lower versions
+   */
+  private boolean mClipChildren = true;
 
   public Host(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
@@ -70,4 +77,23 @@ public abstract class Host extends ViewGroup {
    * @param newIndex The new index of the MountItem.
    */
   public abstract void moveItem(MountItem item, int oldIndex, int newIndex);
+
+  @Override
+  public boolean getClipChildren() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // There is no ViewGroup.getClipChildren() method on API < 18
+      return mClipChildren;
+    } else {
+      return super.getClipChildren();
+    }
+  }
+
+  @Override
+  public void setClipChildren(boolean clipChildren) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
+      mClipChildren = clipChildren;
+    }
+    super.setClipChildren(clipChildren);
+  }
 }
