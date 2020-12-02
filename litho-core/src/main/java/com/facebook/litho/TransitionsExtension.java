@@ -89,6 +89,11 @@ public class TransitionsExtension
     private boolean mTransitionsHasBeenCollected = false;
     private @Nullable Transition mRootTransition;
     private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
+    private final @Nullable String mDebugTag;
+
+    public TransitionsExtensionState(final @Nullable String debugTag) {
+      mDebugTag = debugTag;
+    }
   }
 
   private static class AnimationCompleteListener
@@ -110,9 +115,9 @@ public class TransitionsExtension
         endUnmountDisappearingItem(mExtensionState, disappearingGroup);
       } else {
         if (!mState.mAnimatingTransitionIds.remove(transitionId)) {
-          if (AnimationsDebug.ENABLED) {
+          if (mExtensionState.getState().mDebugTag != null) {
             Log.e(
-                AnimationsDebug.TAG,
+                mExtensionState.getState().mDebugTag,
                 "Ending animation for id "
                     + transitionId
                     + " but it wasn't recorded as animating!");
@@ -182,7 +187,7 @@ public class TransitionsExtension
 
   @Override
   protected TransitionsExtensionState createState() {
-    return new TransitionsExtensionState();
+    return new TransitionsExtensionState(mDebugTag);
   }
 
   @Override
