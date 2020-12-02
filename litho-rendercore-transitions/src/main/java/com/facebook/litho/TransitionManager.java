@@ -917,7 +917,9 @@ public class TransitionManager {
       updateAnimationStates(binding);
 
       final String traceName = mTraceNames.get(binding.hashCode());
-      RenderCoreSystrace.beginAsyncSection(traceName, binding.hashCode());
+      if (!TextUtils.isEmpty(traceName)) {
+        RenderCoreSystrace.beginAsyncSection(traceName, binding.hashCode());
+      }
     }
 
     @Override
