@@ -341,7 +341,8 @@ public class IncrementalMountExtension
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (state.mPreviousTopsIndex < count
-          && localVisibleRect.bottom >= byTopBounds.get(state.mPreviousTopsIndex).getBounds().top) {
+          && localVisibleRect.bottom >= byTopBounds.get(state.mPreviousTopsIndex).getBounds().top
+          && localVisibleRect.top <= byTopBounds.get(state.mPreviousTopsIndex).getBounds().bottom) {
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex);
         final long id = node.getId();
         if (!extensionState.ownsReference(id)) {

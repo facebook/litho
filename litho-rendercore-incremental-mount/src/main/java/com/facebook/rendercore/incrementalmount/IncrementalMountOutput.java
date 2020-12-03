@@ -33,8 +33,12 @@ public class IncrementalMountOutput {
       final @Nullable IncrementalMountOutput host) {
     this.id = id;
     this.index = index;
-    this.bounds = bounds;
+    this.bounds = new Rect(bounds);
     this.host = host;
+    // TODO: invert API to add child to a host rather than passing the host to the child.
+    if (host != null) {
+      ensureHostBounds(this, host);
+    }
   }
 
   public int getIndex() {
@@ -51,5 +55,41 @@ public class IncrementalMountOutput {
 
   public @Nullable IncrementalMountOutput getHostOutput() {
     return host;
+  }
+
+  /** Ensure the host IncrementalMountOuput's bounds are containing the bounds of this item. */
+  private static void ensureHostBounds(
+      final IncrementalMountOutput child, final @Nullable IncrementalMountOutput host) {
+    if (host == null) {
+      return;
+    }
+
+    final Rect childBounds = child.getBounds();
+    final Rect hostBounds = host.getBounds();
+    boolean needsUpdate = false;
+
+    if (childBounds.top < hostBounds.top) {
+      hostBounds.top = childBounds.top;
+      needsUpdate = true;
+    }
+
+    if (childBounds.bottom > hostBounds.bottom) {
+      hostBounds.bottom = childBounds.bottom;
+      needsUpdate = true;
+    }
+
+    if (childBounds.left < hostBounds.left) {
+      hostBounds.left = childBounds.left;
+      needsUpdate = true;
+    }
+
+    if (childBounds.right > hostBounds.right) {
+      hostBounds.right = childBounds.right;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      ensureHostBounds(host, host.getHostOutput());
+    }
   }
 }
