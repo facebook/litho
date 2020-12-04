@@ -601,8 +601,6 @@ public class MountStateIncrementalMountTest {
     assertThat(lifecycleTracker1.getSteps()).contains(LifecycleStep.ON_MOUNT);
   }
 
-  /** TODO: Fix this test */
-  @Ignore(value = "This test has incorrect assertions")
   @Test
   public void itemWithNegativeMargin_removeAndAdd_hostIsMounted() {
     final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
