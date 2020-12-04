@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,13 +42,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     DRAWABLE,
     VIEW,
   }
-
-  // Temporary data structures used for diffing extensions at update time.
-  private static final List<Extension> sTmpAttachDetachExtensionsToBind = new ArrayList<>();
-  private static final List<Extension> sTmpAttachDetachExtensionsToUnbind = new ArrayList<>();
-  private static final List<Extension> sTmpMountUnmountExtensionsToBind = new ArrayList<>();
-  private static final List<Extension> sTmpMountUnmountExtensionsToUnbind = new ArrayList<>();
-  private static final Map<Class<?>, Boolean> sTmpShouldUpdateMap = new HashMap<>();
 
   private final RenderType mRenderType;
   // These maps are used to match an extension with its Binder class. Every renderUnit should have
@@ -255,12 +249,15 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       RenderUnit<MOUNT_CONTENT> currentRenderUnit,
       @Nullable Object currentLayoutData,
       @Nullable Object newLayoutData) {
-    if (!sTmpAttachDetachExtensionsToBind.isEmpty()
-        || !sTmpAttachDetachExtensionsToUnbind.isEmpty()
-        || !sTmpMountUnmountExtensionsToBind.isEmpty()
-        || !sTmpMountUnmountExtensionsToUnbind.isEmpty()) {
-      throw new IllegalStateException("One of the auxiliary data structure wasn't empty.");
-    }
+
+    final List<Extension> attachDetachExtensionsForBind =
+        new ArrayList<>(sizeOrZero(mAttachDetachExtensions));
+    final List<Extension> attachDetachExtensionsForUnbind =
+        new ArrayList<>(sizeOrZero(currentRenderUnit.mAttachDetachExtensions));
+    final List<Extension> mountUnmountExtensionsForBind =
+        new ArrayList<>(sizeOrZero(mMountUnmountExtensions));
+    final List<Extension> mountUnmountExtensionsForUnbind =
+        new ArrayList<>(sizeOrZero(currentRenderUnit.mMountUnmountExtensions));
 
     // 1. Diff the extensions to resolve what's to bind/unbind.
     resolveExtensionsToUpdate(
@@ -270,8 +267,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
         mAttachDetachBinderTypeToExtensionMap,
         currentLayoutData,
         newLayoutData,
-        sTmpAttachDetachExtensionsToBind,
-        sTmpAttachDetachExtensionsToUnbind);
+        attachDetachExtensionsForBind,
+        attachDetachExtensionsForUnbind);
     resolveExtensionsToUpdate(
         currentRenderUnit.mMountUnmountExtensions,
         mMountUnmountExtensions,
@@ -279,26 +276,20 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
         mMountUnmountBinderTypeToExtensionMap,
         currentLayoutData,
         newLayoutData,
-        sTmpMountUnmountExtensionsToBind,
-        sTmpMountUnmountExtensionsToUnbind);
+        mountUnmountExtensionsForBind,
+        mountUnmountExtensionsForUnbind);
 
     // 2. unbind all attach binders which should update.
-    unbind(sTmpAttachDetachExtensionsToUnbind, context, content, currentLayoutData);
+    unbind(attachDetachExtensionsForUnbind, context, content, currentLayoutData);
 
     // 3. unbind all mount binders which should update.
-    unbind(sTmpMountUnmountExtensionsToUnbind, context, content, currentLayoutData);
+    unbind(mountUnmountExtensionsForUnbind, context, content, currentLayoutData);
 
     // 4. rebind all mount binder which did update.
-    bind(sTmpMountUnmountExtensionsToBind, context, content, newLayoutData);
+    bind(mountUnmountExtensionsForBind, context, content, newLayoutData);
 
     // 5. rebind all attach binder which did update.
-    bind(sTmpAttachDetachExtensionsToBind, context, content, newLayoutData);
-
-    // 6. Clear auxiliary data structures.
-    sTmpAttachDetachExtensionsToBind.clear();
-    sTmpAttachDetachExtensionsToUnbind.clear();
-    sTmpMountUnmountExtensionsToBind.clear();
-    sTmpMountUnmountExtensionsToUnbind.clear();
+    bind(attachDetachExtensionsForBind, context, content, newLayoutData);
   }
 
   /**
@@ -315,9 +306,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       @Nullable Object newLayoutData,
       List<Extension> extensionsToBind,
       List<Extension> extensionsToUnbind) {
-    if (!sTmpShouldUpdateMap.isEmpty()) {
-      throw new IllegalStateException("This map is supposed to be empty!");
-    }
 
     // There's nothing to unbind because there aren't any current extensions, we need to bind all
     // new Extensions.
@@ -334,6 +322,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       return;
     }
 
+    final Map<Class<?>, Boolean> binderToShouldUpdate = new HashMap<>(newExtensions.size());
+
     // Parse all newExtensions and resolve which ones are to bind.
     for (Extension newExtension : newExtensions) {
       final Class<?> binderClass = newExtension.binder.getClass();
@@ -348,7 +338,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       final boolean shouldUpdate =
           newExtension.shouldUpdate(currentExtension, currentLayoutData, newLayoutData);
       // Memoize the result for the next for-loop.
-      sTmpShouldUpdateMap.put(binderClass, shouldUpdate);
+      binderToShouldUpdate.put(binderClass, shouldUpdate);
       if (shouldUpdate) {
         extensionsToBind.add(newExtension);
       }
@@ -357,15 +347,12 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     // Parse all currentExtensions and resolve which ones are to unbind.
     for (Extension currentExtension : currentExtensions) {
       final Class<?> binderClass = currentExtension.binder.getClass();
-      if (!sTmpShouldUpdateMap.containsKey(binderClass) || sTmpShouldUpdateMap.get(binderClass)) {
+      if (!binderToShouldUpdate.containsKey(binderClass) || binderToShouldUpdate.get(binderClass)) {
         // Found a currentExtension which either is not in the new RenderUnit or shouldUpdate is
         // true, therefore we need to unbind it.
         extensionsToUnbind.add(currentExtension);
       }
     }
-
-    // Reset tmp memoization map.
-    sTmpShouldUpdateMap.clear();
   }
 
   private static <MOUNT_CONTENT> void bind(
@@ -395,6 +382,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       final Extension extension = extensions.get(i);
       extension.unbind(context, content, layoutData);
     }
+  }
+
+  private static int sizeOrZero(@Nullable Collection<?> collection) {
+    return collection == null ? 0 : collection.size();
   }
 
   /**
