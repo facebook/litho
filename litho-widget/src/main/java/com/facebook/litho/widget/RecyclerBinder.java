@@ -1683,20 +1683,37 @@ public class RecyclerBinder
     }
 
     synchronized (this) {
-      for (int i = 0, size = renderInfos.size(); i < size; i++) {
-        final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
-        final RenderInfo newRenderInfo = renderInfos.get(i);
+      try {
+        for (int i = 0, size = renderInfos.size(); i < size; i++) {
+          final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
+          final RenderInfo newRenderInfo = renderInfos.get(i);
 
-        assertNotNullRenderInfo(newRenderInfo);
+          assertNotNullRenderInfo(newRenderInfo);
 
-        // If this item is rendered with a view (or was rendered with a view before now) we still
-        // need to notify the RecyclerView's adapter that something changed.
-        if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
-          mInternalAdapter.notifyItemChanged(position + i);
+          // If this item is rendered with a view (or was rendered with a view before now) we still
+          // need to notify the RecyclerView's adapter that something changed.
+          if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
+            mInternalAdapter.notifyItemChanged(position + i);
+          }
+
+          mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
+          updateHolder(holder, newRenderInfo);
         }
-
-        mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
-        updateHolder(holder, newRenderInfo);
+      } catch (IndexOutOfBoundsException e) {
+        final String[] names = new String[renderInfos.size()];
+        for (int i = 0; i < renderInfos.size(); i++) {
+          names[i] = renderInfos.get(i).getName();
+        }
+        String debugInfo =
+            "("
+                + hashCode()
+                + ") updateRangeAt "
+                + position
+                + ", size: "
+                + renderInfos.size()
+                + ", names: "
+                + Arrays.toString(names);
+        throw new IndexOutOfBoundsException(debugInfo + e.getMessage());
       }
     }
 
