@@ -22,45 +22,6 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
-/** Builder for setting the same [all] padding to each edge of the child component. */
-@Deprecated(message = "Use Style.padding instead")
-inline fun DslScope.Padding(all: Dp, content: DslScope.() -> Component): Component =
-    content().apply { getOrCreateCommonProps.paddingPx(YogaEdge.ALL, all.toPx().value) }
-
-/** Builder for setting [horizontal] and [vertical] paddings to the child component. */
-@Deprecated(message = "Use Style.padding instead")
-inline fun DslScope.Padding(
-    horizontal: Dp = 0.dp,
-    vertical: Dp = 0.dp,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        paddingPx(YogaEdge.HORIZONTAL, horizontal.toPx().value)
-        paddingPx(YogaEdge.VERTICAL, vertical.toPx().value)
-      }
-    }
-
-/**
- * Builder for setting granular [left], [top], [right] and [bottom] paddings to the child component.
- */
-@Deprecated(message = "Use Style.padding instead")
-inline fun DslScope.Padding(
-    left: Dp = 0.dp,
-    top: Dp = 0.dp,
-    right: Dp = 0.dp,
-    bottom: Dp = 0.dp,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        paddingPx(YogaEdge.LEFT, left.toPx().value)
-        paddingPx(YogaEdge.TOP, top.toPx().value)
-        paddingPx(YogaEdge.RIGHT, right.toPx().value)
-        paddingPx(YogaEdge.BOTTOM, bottom.toPx().value)
-      }
-    }
-
 /** Builder for setting the same [all] margin for each edge of the child component. */
 @Deprecated(message = "Use Style.margin instead")
 inline fun DslScope.Margin(all: Dp, content: DslScope.() -> Component): Component =
