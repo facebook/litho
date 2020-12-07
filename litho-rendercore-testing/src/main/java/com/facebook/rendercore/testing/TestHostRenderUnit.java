@@ -32,24 +32,19 @@ package com.facebook.rendercore.testing;
 
 import android.content.Context;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.RenderUnit;
 
-public class TestHostRenderUnit extends RenderUnit<Host> {
+public class TestHostRenderUnit extends TestRenderUnit {
 
-  private final long mId;
+  public TestHostRenderUnit(long id) {
+    super(id);
+  }
 
   public TestHostRenderUnit() {
-    super(RenderType.VIEW);
-    mId = TestRenderUnit.sIdGenerator.incrementAndGet();
+    super();
   }
 
   @Override
   public Host createContent(Context c) {
     return new TestHost(c);
-  }
-
-  @Override
-  public long getId() {
-    return mId;
   }
 }

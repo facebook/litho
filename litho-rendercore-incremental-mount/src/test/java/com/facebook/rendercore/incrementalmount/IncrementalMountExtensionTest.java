@@ -10,10 +10,11 @@ import android.view.View;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.testing.TestHost;
+import com.facebook.rendercore.testing.TestHostRenderUnit;
+import com.facebook.rendercore.testing.TestRenderUnit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -191,45 +192,5 @@ public class IncrementalMountExtensionTest {
 
   private static MountState createMountState(Context c) {
     return new MountState(new TestHost(c));
-  }
-
-  private static class TestRenderUnit extends RenderUnit<View> {
-
-    private final long mId;
-
-    public TestRenderUnit(long id) {
-      super(RenderType.VIEW);
-      mId = id;
-    }
-
-    @Override
-    public View createContent(Context c) {
-      return new View(c);
-    }
-
-    @Override
-    public long getId() {
-      return mId;
-    }
-  }
-
-  private static class TestHostRenderUnit extends RenderUnit<View> {
-
-    private final long mId;
-
-    public TestHostRenderUnit(long id) {
-      super(RenderType.VIEW);
-      mId = id;
-    }
-
-    @Override
-    public View createContent(Context c) {
-      return new TestHost(c);
-    }
-
-    @Override
-    public long getId() {
-      return mId;
-    }
   }
 }

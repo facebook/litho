@@ -19,7 +19,6 @@ package com.facebook.rendercore.testing;
 import android.content.Context;
 import android.view.View;
 import com.facebook.rendercore.RenderUnit;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TestRenderUnit extends RenderUnit {
@@ -28,22 +27,13 @@ public class TestRenderUnit extends RenderUnit {
 
   private long mId;
 
-  public TestRenderUnit(
-      final List<? extends Extension> mountExtensions,
-      final List<? extends Extension> attachExtensions) {
-    super(RenderType.VIEW, mountExtensions, attachExtensions);
-    mId = sIdGenerator.incrementAndGet();
+  public TestRenderUnit(final long id) {
+    super(RenderType.VIEW);
+    mId = id;
   }
 
   public TestRenderUnit() {
-    super(RenderType.VIEW);
-    mId = sIdGenerator.incrementAndGet();
-  }
-
-  public TestRenderUnit(RenderUnit.Extension... attachDetachFunctions) {
-    super(RenderType.VIEW);
-    addAttachDetachExtensions(attachDetachFunctions);
-    mId = sIdGenerator.incrementAndGet();
+    this(sIdGenerator.incrementAndGet());
   }
 
   @Override
