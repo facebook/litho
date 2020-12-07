@@ -22,45 +22,6 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
-/** Builder for setting the same [all] margin for each edge of the child component. */
-@Deprecated(message = "Use Style.margin instead")
-inline fun DslScope.Margin(all: Dp, content: DslScope.() -> Component): Component =
-    content().apply { getOrCreateCommonProps.marginPx(YogaEdge.ALL, all.toPx().value) }
-
-/** Builder for setting [horizontal] and [vertical] margins for the child component. */
-@Deprecated(message = "Use Style.margin instead")
-inline fun DslScope.Margin(
-    horizontal: Dp = 0.dp,
-    vertical: Dp = 0.dp,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        marginPx(YogaEdge.HORIZONTAL, horizontal.toPx().value)
-        marginPx(YogaEdge.VERTICAL, vertical.toPx().value)
-      }
-    }
-
-/**
- * Builder for setting granular [left], [top], [right] and [bottom] paddings to the child component.
- */
-@Deprecated(message = "Use Style.margin instead")
-inline fun DslScope.Margin(
-    left: Dp = 0.dp,
-    top: Dp = 0.dp,
-    right: Dp = 0.dp,
-    bottom: Dp = 0.dp,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        marginPx(YogaEdge.LEFT, left.toPx().value)
-        marginPx(YogaEdge.TOP, top.toPx().value)
-        marginPx(YogaEdge.RIGHT, right.toPx().value)
-        marginPx(YogaEdge.BOTTOM, bottom.toPx().value)
-      }
-    }
-
 /**
  * Builder for positioning a child component absolutely within its parent's edges, independent of
  * its siblings. [left], [top], [right], [bottom] specify the offset of the child's respective side
