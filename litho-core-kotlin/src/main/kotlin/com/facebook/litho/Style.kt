@@ -268,3 +268,7 @@ fun Style.background(background: Drawable) = this + com.facebook.litho.backgroun
 fun foreground(foreground: Drawable) = Style(foreground = foreground)
 
 fun Style.foreground(foreground: Drawable) = this + com.facebook.litho.foreground(foreground)
+
+fun alignSelf(align: YogaAlign) = Style(alignSelf = align)
+
+fun Style.alignSelf(align: YogaAlign) = this + com.facebook.litho.alignSelf(align)
