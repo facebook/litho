@@ -43,7 +43,7 @@ public class ComponentShallowCopyTest {
     final LayoutState layoutState = new LayoutState(mContext);
 
     final ComponentContext c = new ComponentContext(mContext);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, mContext.getComponentTree()));
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c, 100, 100, new Size());
@@ -64,9 +64,9 @@ public class ComponentShallowCopyTest {
     final LayoutState layoutState2 = new LayoutState(mContext);
 
     final ComponentContext c1 = new ComponentContext(mContext);
-    c1.setLayoutStateContext(new LayoutStateContext(layoutState1));
+    c1.setLayoutStateContext(new LayoutStateContext(layoutState1, mContext.getComponentTree()));
     final ComponentContext c2 = new ComponentContext(mContext);
-    c2.setLayoutStateContext(new LayoutStateContext(layoutState2));
+    c2.setLayoutStateContext(new LayoutStateContext(layoutState2, mContext.getComponentTree()));
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c1, 100, 100, new Size());

@@ -1491,7 +1491,8 @@ public class LayoutState
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c, currentLayoutState);
-      layoutStateContext = new LayoutStateContext(layoutState, layoutStateFuture);
+      layoutStateContext =
+          new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
       layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);
 

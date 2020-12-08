@@ -112,11 +112,10 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecDelegate() throws Exception {
-    final ComponentContext c =
-        ComponentContext.withComponentTree(
-            mBaseContext, ComponentTree.create(mBaseContext).build());
+    final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
+    final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -171,11 +170,10 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasureDelegate() throws Exception {
-    final ComponentContext c =
-        ComponentContext.withComponentTree(
-            mBaseContext, ComponentTree.create(mBaseContext).build());
+    final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
+    final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -240,11 +238,10 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasure() throws Exception {
-    final ComponentContext c =
-        ComponentContext.withComponentTree(
-            mBaseContext, ComponentTree.create(mBaseContext).build());
+    final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
+    final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -316,11 +313,10 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpec() throws Exception {
-    final ComponentContext c =
-        ComponentContext.withComponentTree(
-            mBaseContext, ComponentTree.create(mBaseContext).build());
+    final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
+    final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);

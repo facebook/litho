@@ -32,6 +32,7 @@ import java.util.Map;
  */
 public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
+  private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private final @Nullable Map<String, Component> mGlobalKeyToComponent;
   private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
@@ -45,18 +46,22 @@ public class LayoutStateContext {
       sTestLayoutState = new LayoutState(c);
     }
 
-    return new LayoutStateContext(sTestLayoutState, null);
+    return new LayoutStateContext(sTestLayoutState, c.getComponentTree(), null);
   }
 
   @VisibleForTesting
-  LayoutStateContext(LayoutState layoutState) {
-    this(layoutState, null);
+  LayoutStateContext(final LayoutState layoutState, final ComponentTree componentTree) {
+    this(layoutState, componentTree, null);
   }
 
   @VisibleForTesting
-  LayoutStateContext(LayoutState layoutState, @Nullable LayoutStateFuture layoutStateFuture) {
+  LayoutStateContext(
+      final LayoutState layoutState,
+      final ComponentTree componentTree,
+      final @Nullable LayoutStateFuture layoutStateFuture) {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
+    mComponentTree = componentTree;
     if (ComponentsConfiguration.useStatelessComponent) {
       mGlobalKeyToComponent = new HashMap<>();
       mGlobalKeyToScopedContext = new HashMap<>();
@@ -80,12 +85,18 @@ public class LayoutStateContext {
   void releaseReference() {
     mLayoutStateRef = null;
     mLayoutStateFuture = null;
+    mComponentTree = null;
   }
 
   /** Returns the LayoutState instance or null if the layout state has been released. */
   @Nullable
   LayoutState getLayoutState() {
     return mLayoutStateRef;
+  }
+
+  @Nullable
+  ComponentTree getComponentTree() {
+    return mComponentTree;
   }
 
   @Nullable

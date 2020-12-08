@@ -356,7 +356,7 @@ public abstract class Component extends ComponentLifecycle
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final InternalNode internalNode =
         Layout.createAndMeasureComponent(
-            new LayoutStateContext(null), contextForLayout, this, widthSpec, heightSpec);
+            new LayoutStateContext(null, null), contextForLayout, this, widthSpec, heightSpec);
 
     outputSize.width = internalNode.getWidth();
     outputSize.height = internalNode.getHeight();

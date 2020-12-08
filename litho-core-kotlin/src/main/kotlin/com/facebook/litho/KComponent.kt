@@ -58,7 +58,7 @@ open class KComponent
       return false
     }
 
-    if (!ComponentsConfiguration.useStatelessComponent) { // Check hooks
+    if (!isStateless) { // Check hooks
       val hooksHandler = getScopedContext(null, null)?.hooksHandler
       val otherHooksHandler = other.getScopedContext(null, null)?.hooksHandler
       if (hooksHandler !== otherHooksHandler) {

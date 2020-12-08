@@ -405,7 +405,7 @@ public class InternalNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -429,7 +429,7 @@ public class InternalNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -451,7 +451,7 @@ public class InternalNodeTest {
   public void testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, null));
 
     final Component component =
         Column.create(c)
