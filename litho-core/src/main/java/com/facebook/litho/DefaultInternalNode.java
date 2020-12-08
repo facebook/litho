@@ -2024,7 +2024,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void setComponent(@Nullable Component component) {
+  public void setComponent(@Nullable Component component, @Nullable String globalKey) {
+    throw new UnsupportedOperationException(ERROR_UNSUPPORTED_OPERATION_IN_DIFFING);
+  }
+
+  @Override
+  public @Nullable String getComponentGlobalKey() {
     throw new UnsupportedOperationException(ERROR_UNSUPPORTED_OPERATION_IN_DIFFING);
   }
 

@@ -36,7 +36,10 @@ public interface DiffNode extends Cloneable {
   @Nullable
   Component getComponent();
 
-  void setComponent(@Nullable Component component);
+  @Nullable
+  String getComponentGlobalKey();
+
+  void setComponent(@Nullable Component component, @Nullable String globalKey);
 
   float getLastMeasuredWidth();
 

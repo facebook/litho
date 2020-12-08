@@ -253,8 +253,14 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
+  @Nullable
   @Override
-  public void setComponent(@Nullable Component component) {}
+  public String getComponentGlobalKey() {
+    return null;
+  }
+
+  @Override
+  public void setComponent(@Nullable Component component, @Nullable String globalKey) {}
 
   @Override
   public int getChildCount() {

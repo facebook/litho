@@ -2048,7 +2048,9 @@ public class LayoutState
     diffNode.setLastHeightSpec(node.getLastHeightSpec());
     diffNode.setLastMeasuredWidth(node.getLastMeasuredWidth());
     diffNode.setLastMeasuredHeight(node.getLastMeasuredHeight());
-    diffNode.setComponent(node.getTailComponent());
+    diffNode.setComponent(
+        node.getTailComponent(),
+        ComponentUtils.getGlobalKey(node.getTailComponent(), node.getTailComponentKey()));
     if (parent != null) {
       parent.addChild(diffNode);
     }

@@ -161,7 +161,7 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasureFunction() {
-    final Component component = TestDrawableComponent.create(mContext).build();
+    final Component component = TestDrawableComponent.create(mContext).key("global_key").build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DefaultDiffNode();
@@ -169,7 +169,7 @@ public class TreeDiffingTest {
     diffNode.setLastWidthSpec(mUnspecifiedSpec);
     diffNode.setLastMeasuredWidth(10);
     diffNode.setLastMeasuredHeight(5);
-    diffNode.setComponent(component);
+    diffNode.setComponent(component, "global_key");
 
     node.setCachedMeasuresValid(true);
     node.setDiffNode(diffNode);
@@ -182,7 +182,7 @@ public class TreeDiffingTest {
 
   @Test
   public void tesLastConstraints() {
-    final Component component = TestDrawableComponent.create(mContext).build();
+    final Component component = TestDrawableComponent.create(mContext).key("global_key").build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DefaultDiffNode();
@@ -190,7 +190,7 @@ public class TreeDiffingTest {
     diffNode.setLastHeightSpec(makeSizeSpec(5, SizeSpec.EXACTLY));
     diffNode.setLastMeasuredWidth(10f);
     diffNode.setLastMeasuredHeight(5f);
-    diffNode.setComponent(component);
+    diffNode.setComponent(component, "global_key");
 
     node.setCachedMeasuresValid(true);
     node.setDiffNode(diffNode);

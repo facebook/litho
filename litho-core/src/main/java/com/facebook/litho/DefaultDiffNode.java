@@ -35,6 +35,7 @@ public class DefaultDiffNode implements DiffNode {
   private int mLastWidthSpec;
   private int mLastHeightSpec;
   private final List<DiffNode> mChildren = new ArrayList<>(4);
+  private String mGlobalKey;
 
   /** package private constructor */
   DefaultDiffNode() {}
@@ -55,8 +56,14 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public void setComponent(@Nullable Component component) {
+  public @Nullable String getComponentGlobalKey() {
+    return mGlobalKey;
+  }
+
+  @Override
+  public void setComponent(@Nullable Component component, @Nullable String globalKey) {
     mComponent = component;
+    mGlobalKey = globalKey;
   }
 
   @Override
