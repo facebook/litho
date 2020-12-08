@@ -144,11 +144,10 @@ module.exports = {
   },
   plugins: [
     'docusaurus-plugin-sass',
-    require.resolve('docusaurus-plugin-internaldocs-fb'),
   ],
   presets: [
     [
-      '@docusaurus/preset-classic',
+      require.resolve('docusaurus-plugin-internaldocs-fb/docusaurus-preset'),
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
