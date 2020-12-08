@@ -248,16 +248,6 @@ public abstract class Component extends ComponentLifecycle
    */
   @Override
   public boolean isEquivalentTo(Component other) {
-    return isEquivalentTo(other, true);
-  }
-
-  /**
-   * Compares this component to a different one to check if they are equivalent.
-   *
-   * @param other the component to compare to
-   * @param shouldCompareState compare State if true
-   */
-  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
     if (this == other) {
       return true;
     }
@@ -268,13 +258,7 @@ public abstract class Component extends ComponentLifecycle
       return true;
     }
 
-    final boolean hasEquivalentState =
-        shouldCompareState
-            ? ComponentUtils.hasEquivalentState(getStateContainer(), other.getStateContainer())
-            : true;
-
-    return hasEquivalentState
-        && ComponentUtils.hasEquivalentFields(this, other, shouldCompareState);
+    return ComponentUtils.hasEquivalentFields(this, other);
   }
 
   public Component makeShallowCopy() {

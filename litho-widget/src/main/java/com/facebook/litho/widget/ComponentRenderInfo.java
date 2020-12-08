@@ -139,7 +139,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     }
 
     @Override
-    public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
+    public boolean isEquivalentTo(Component other) {
       return EmptyComponent.this == other
           || (other != null && EmptyComponent.this.getClass() == other.getClass());
     }

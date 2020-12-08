@@ -64,7 +64,7 @@ public class ComponentUtils {
    * @param next next Component
    * @return {@code true} iff the component fields are equivalent.
    */
-  public static boolean isEquivalentToIgnoringState(
+  public static boolean isEquivalent(
       @Nullable final Component current, @Nullable final Component next) {
     if (current == next) {
       return true;
@@ -74,10 +74,10 @@ public class ComponentUtils {
       return false;
     }
 
-    return current.isEquivalentTo(next, /* shouldCompareState = */ false);
+    return current.isEquivalentTo(next);
   }
 
-  public static boolean hasEquivalentState(
+  static boolean hasEquivalentState(
       @Nullable StateContainer stateContainer1, @Nullable StateContainer stateContainer2) {
     if (stateContainer1 == null && stateContainer2 == null) {
       return true;
@@ -104,12 +104,7 @@ public class ComponentUtils {
    * @param obj2
    * @return true if the two instances are equivalent. False otherwise.
    */
-  public static boolean hasEquivalentFields(Object obj1, Object obj2) {
-    return hasEquivalentFields(obj1, obj2, /* shouldCompareStateContainers */ true);
-  }
-
-  static boolean hasEquivalentFields(
-      final Object obj1, final Object obj2, final boolean shouldCompareStateContainers) {
+  public static boolean hasEquivalentFields(final Object obj1, final Object obj2) {
     if (obj1 == null || obj2 == null || obj1.getClass() != obj2.getClass()) {
       throw new IllegalArgumentException("The input is invalid.");
     }
@@ -133,9 +128,8 @@ public class ComponentUtils {
 
       boolean intermediateResult =
           ComponentsConfiguration.disableGetAnnotationUsage
-              ? isEquivalentUtilWithoutGetAnnotation(
-                  field, classType, val1, val2, shouldCompareStateContainers)
-              : isEquivalentUtil(field, classType, val1, val2, shouldCompareStateContainers);
+              ? isEquivalentUtilWithoutGetAnnotation(field, classType, val1, val2)
+              : isEquivalentUtil(field, classType, val1, val2);
       if (!intermediateResult) {
         return intermediateResult;
       }
@@ -145,11 +139,7 @@ public class ComponentUtils {
   }
 
   private static boolean isEquivalentUtil(
-      Field field,
-      Class<?> classType,
-      @Nullable Object val1,
-      @Nullable Object val2,
-      boolean shouldCompareStateContainers) {
+      Field field, Class<?> classType, @Nullable Object val1, @Nullable Object val2) {
     @Comparable.Type int comparableType;
     try {
       comparableType = field.getAnnotation(Comparable.class).type();
@@ -214,9 +204,7 @@ public class ComponentUtils {
         break;
 
       case Comparable.COMPONENT:
-        if (val1 != null
-            ? !((Component) val1).isEquivalentTo((Component) val2, shouldCompareStateContainers)
-            : val2 != null) {
+        if (val1 != null ? !((Component) val1).isEquivalentTo((Component) val2) : val2 != null) {
           return false;
         }
         break;
@@ -245,11 +233,7 @@ public class ComponentUtils {
   }
 
   private static boolean isEquivalentUtilWithoutGetAnnotation(
-      Field field,
-      Class<?> classType,
-      @Nullable Object val1,
-      @Nullable Object val2,
-      boolean shouldCompareStateContainers) {
+      Field field, Class<?> classType, @Nullable Object val1, @Nullable Object val2) {
 
     final Type type = field.getGenericType();
 
@@ -279,9 +263,7 @@ public class ComponentUtils {
       return areCollectionsEquals(type, (Collection) val1, (Collection) val2);
 
     } else if (Component.class.isAssignableFrom(classType)) {
-      if (val1 != null
-          ? !((Component) val1).isEquivalentTo((Component) val2, shouldCompareStateContainers)
-          : val2 != null) {
+      if (val1 != null ? !((Component) val1).isEquivalentTo((Component) val2) : val2 != null) {
         return false;
       }
 
@@ -300,7 +282,6 @@ public class ComponentUtils {
           : val2 != null) {
         return false;
       }
-
     } else if (val1 != null ? !val1.equals(val2) : val2 != null) {
       return false;
     }

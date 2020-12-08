@@ -608,7 +608,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return true if the component needs an update, false otherwise.
    */
   protected boolean shouldUpdate(Component previous, Component next) {
-    return !previous.isEquivalentTo(next);
+    final StateContainer prevStateContainer =
+        previous == null ? null : previous.getStateContainer();
+    final StateContainer nextStateContainer = next == null ? null : next.getStateContainer();
+    return !previous.isEquivalentTo(next)
+        || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 
   /**

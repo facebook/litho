@@ -44,9 +44,7 @@ open class KComponent
    * Compare this component to a different one to check if they are equivalent. This is used to be
    * able to skip rendering a component again.
    */
-  override fun isEquivalentTo(other: Component?): Boolean = isEquivalentTo(other, true)
-
-  override fun isEquivalentTo(other: Component?, shouldCompareState: Boolean): Boolean {
+  override fun isEquivalentTo(other: Component): Boolean {
     if (this === other) {
       return true
     }
@@ -60,7 +58,7 @@ open class KComponent
       return false
     }
 
-    if (!ComponentsConfiguration.useStatelessComponent && shouldCompareState) { // Check hooks
+    if (!ComponentsConfiguration.useStatelessComponent) { // Check hooks
       val hooksHandler = getScopedContext(null, null)?.hooksHandler
       val otherHooksHandler = other.getScopedContext(null, null)?.hooksHandler
       if (hooksHandler !== otherHooksHandler) {

@@ -127,7 +127,7 @@ class HostComponent extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other, boolean shouldCompareState) {
+  public boolean isEquivalentTo(Component other) {
     return this == other;
   }
 

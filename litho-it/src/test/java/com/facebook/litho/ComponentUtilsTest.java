@@ -82,16 +82,6 @@ public class ComponentUtilsTest {
   }
 
   @Test
-  public void areComponentsWithStateEquivalent() {
-    mC1.setStateContainer(new StateTest(true, 3f));
-    mC2.setStateContainer(new StateTest(true, 3f));
-    assertThat(mC1.isEquivalentTo(mC2)).isTrue();
-
-    mC2.setStateContainer(new StateTest(true, 2f));
-    assertThat(mC1.isEquivalentTo(mC2)).isFalse();
-  }
-
-  @Test
   public void hasEquivalentFieldsDoublePropTest() {
     mC1.propDouble = 2.0;
     mC2.propDouble = 2.0;
