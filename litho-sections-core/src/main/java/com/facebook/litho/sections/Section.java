@@ -64,9 +64,12 @@ public abstract class Section extends SectionLifecycle
   /** Simple name to identify the generated section. */
   private final String mSimpleName;
 
+  private StateContainer mStateContainer;
+
   protected Section(String simpleName) {
     mSimpleName = simpleName;
     mKey = getLogTag();
+    mStateContainer = createStateContainer();
   }
 
   @Override
@@ -352,6 +355,14 @@ public abstract class Section extends SectionLifecycle
 
   @Nullable
   protected StateContainer getStateContainer() {
+    return mStateContainer;
+  }
+
+  protected void setStateContainer(StateContainer stateContainer) {
+    mStateContainer = stateContainer;
+  }
+
+  protected @Nullable StateContainer createStateContainer() {
     return null;
   }
 

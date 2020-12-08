@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentUtils.hasEquivalentFields;
+import static com.facebook.litho.ComponentUtils.hasEquivalentState;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.Comparable;
@@ -72,12 +73,22 @@ public class ComponentUtilsTest {
 
   @Test
   public void hasEquivalentFieldsStateContainersTest() {
-    mC1.stateContainer = new StateTest(true, 3f);
-    mC2.stateContainer = new StateTest(true, 3f);
-    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
+    StateContainer sc1 = new StateTest(true, 3f);
+    StateContainer sc2 = new StateTest(true, 3f);
+    assertThat(hasEquivalentState(sc1, sc2)).isTrue();
 
-    mC2.stateContainer = new StateTest(true, 2f);
-    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+    sc2 = new StateTest(true, 2f);
+    assertThat(hasEquivalentState(sc1, sc2)).isFalse();
+  }
+
+  @Test
+  public void areComponentsWithStateEquivalent() {
+    mC1.setStateContainer(new StateTest(true, 3f));
+    mC2.setStateContainer(new StateTest(true, 3f));
+    assertThat(mC1.isEquivalentTo(mC2)).isTrue();
+
+    mC2.setStateContainer(new StateTest(true, 2f));
+    assertThat(mC1.isEquivalentTo(mC2)).isFalse();
   }
 
   @Test
@@ -302,9 +313,6 @@ public class ComponentUtilsTest {
 
     @Comparable(type = Comparable.OTHER)
     Object treePropObject;
-
-    @Comparable(type = Comparable.STATE_CONTAINER)
-    StateTest stateContainer = new StateTest();
 
     protected ComponentTest() {
       super("test");

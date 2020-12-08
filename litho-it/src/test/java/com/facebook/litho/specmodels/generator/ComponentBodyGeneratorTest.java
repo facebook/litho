@@ -228,14 +228,13 @@ public class ComponentBodyGeneratorTest {
   }
 
   @Test
-  public void testGenerateStateContainerGetter() {
+  public void testGenerateStateContainerImplGetter() {
     assertThat(
-            ComponentBodyGenerator.generateStateContainerGetter(ClassNames.STATE_CONTAINER)
+            ComponentBodyGenerator.generateStateContainerImplGetter(ClassNames.STATE_CONTAINER)
                 .toString())
         .isEqualTo(
-            "@java.lang.Override\n"
-                + "protected com.facebook.litho.StateContainer getStateContainer() {\n"
-                + "  return mStateContainer;\n"
+            "private com.facebook.litho.StateContainer getStateContainerImpl() {\n"
+                + "  return (com.facebook.litho.StateContainer) super.getStateContainer();\n"
                 + "}\n");
   }
 
@@ -424,7 +423,7 @@ public class ComponentBodyGeneratorTest {
                 + "  if (arg9 != null ? !arg9.equals(mountTestRef.arg9) : mountTestRef.arg9 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (mStateContainer.arg1 != mountTestRef.mStateContainer.arg1) {\n"
+                + "  if (getStateContainerImpl().arg1 != mountTestRef.getStateContainerImpl().arg1) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg3 != mountTestRef.arg3) {\n"
@@ -478,7 +477,7 @@ public class ComponentBodyGeneratorTest {
     StateParamModel stateParamModel = mock(StateParamModel.class);
     when(stateParamModel.getName()).thenReturn("stateParam");
     assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, stateParamModel, "c"))
-        .isEqualTo("mStateContainer.stateParam");
+        .isEqualTo("getStateContainerImpl().stateParam");
   }
 
   @Test
@@ -524,7 +523,7 @@ public class ComponentBodyGeneratorTest {
                 + "public Test makeShallowCopy() {\n"
                 + "  Test component = (Test) super.makeShallowCopy();\n"
                 + "  component.arg4 = component.arg4 != null ? component.arg4.makeShallowCopy() : null;\n"
-                + "  component.mStateContainer = new TestStateContainer();\n"
+                + "  component.setStateContainer(new TestStateContainer());\n"
                 + "  return component;\n"
                 + "}\n");
   }
@@ -540,7 +539,7 @@ public class ComponentBodyGeneratorTest {
             "@java.lang.Override\n"
                 + "public TestWithTransition makeShallowCopy() {\n"
                 + "  TestWithTransition component = (TestWithTransition) super.makeShallowCopy();\n"
-                + "  component.mStateContainer = new TestWithTransitionStateContainer();\n"
+                + "  component.setStateContainer(new TestWithTransitionStateContainer());\n"
                 + "  return component;\n"
                 + "}\n");
   }

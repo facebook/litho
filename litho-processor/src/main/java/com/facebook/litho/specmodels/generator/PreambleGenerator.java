@@ -16,11 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
-
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import javax.lang.model.element.Modifier;
 
@@ -54,14 +50,6 @@ public class PreambleGenerator {
           .addParameters(diConstructor.parameters);
     } else {
       constructorBuilder.addModifiers(Modifier.PRIVATE);
-    }
-
-    final boolean hasState = !specModel.getStateValues().isEmpty();
-    if (hasState) {
-      final ClassName stateContainerClass =
-          ClassName.bestGuess(getStateContainerClassName(specModel));
-      constructorBuilder.addStatement(
-          STATE_CONTAINER_FIELD_NAME + " = new $T()", stateContainerClass);
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(constructorBuilder.build()).build();

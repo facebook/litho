@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
 import androidx.annotation.VisibleForTesting;
@@ -145,8 +144,7 @@ public class StateGenerator {
                 stateContainerClassName,
                 STATE_CONTAINER_NAME,
                 stateContainerClassName)
-            .addStatement(
-                "transferState(component.$L, $L)", STATE_CONTAINER_FIELD_NAME, STATE_CONTAINER_NAME)
+            .addStatement("transferState(component.getStateContainer(), $L)", STATE_CONTAINER_NAME)
             .addStatement("c.applyLazyStateUpdatesForContainer($L)", STATE_CONTAINER_NAME)
             .addStatement("return $L", STATE_CONTAINER_NAME)
             .build();

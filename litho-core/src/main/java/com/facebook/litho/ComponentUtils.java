@@ -77,6 +77,23 @@ public class ComponentUtils {
     return current.isEquivalentTo(next, /* shouldCompareState = */ false);
   }
 
+  public static boolean hasEquivalentState(
+      @Nullable StateContainer stateContainer1, @Nullable StateContainer stateContainer2) {
+    if (stateContainer1 == null && stateContainer2 == null) {
+      return true;
+    }
+
+    if (stateContainer1 == null && stateContainer2 != null) {
+      return false;
+    }
+
+    if (stateContainer1 != null && stateContainer2 == null) {
+      return false;
+    }
+
+    return hasEquivalentFields(stateContainer1, stateContainer2);
+  }
+
   /**
    * Given two object instances of the same type, this method accesses all their internal fields,
    * including the fields of StateContainer if the class type is Component, to check if they are
@@ -223,16 +240,6 @@ public class ComponentUtils {
           return false;
         }
         break;
-
-      case Comparable.STATE_CONTAINER:
-        if (shouldCompareStateContainers) {
-          // If we have a state container field, we need to recursively call this method to
-          // inspect the state fields.
-          if (!hasEquivalentFields(val1, val2, /* shouldCompareStateContainers */ true)) {
-            return false;
-          }
-        }
-        break;
     }
     return true;
   }
@@ -291,12 +298,6 @@ public class ComponentUtils {
       if (val1 != null
           ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
           : val2 != null) {
-        return false;
-      }
-
-      // StateContainers have also fields that we need to check for being equivalent.
-    } else if (StateContainer.class.isAssignableFrom(classType)) {
-      if (shouldCompareStateContainers && !hasEquivalentFields(val1, val2, true)) {
         return false;
       }
 

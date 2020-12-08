@@ -16,7 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_ACCESSOR;
 
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.StateParamModel;
@@ -28,7 +28,7 @@ public class MethodParamGeneratorUtils {
 
   static String getImplAccessor(MethodParamModel methodParamModel) {
     if (methodParamModel instanceof StateParamModel) {
-      return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
+      return STATE_CONTAINER_ACCESSOR + "." + methodParamModel.getName();
     }
 
     return methodParamModel.getName();

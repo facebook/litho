@@ -107,7 +107,7 @@ public class TreePropGenerator {
             onCreateTreePropsMethod.methodParams.get(i), State.class)) {
           block.add(
               "$L.$L",
-              GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
+              GeneratorConstants.STATE_CONTAINER_ACCESSOR,
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else {
           block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());

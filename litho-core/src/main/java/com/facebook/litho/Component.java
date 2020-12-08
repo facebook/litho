@@ -136,14 +136,18 @@ public abstract class Component extends ComponentLifecycle
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable Context mBuilderContext;
 
+  private @Nullable StateContainer mStateContainer;
+
   protected Component() {
     mSimpleName = getClass().getSimpleName();
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+    mStateContainer = createStateContainer();
   }
 
   protected Component(String simpleName) {
     mSimpleName = simpleName;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+    mStateContainer = createStateContainer();
   }
 
   /**
@@ -155,6 +159,7 @@ public abstract class Component extends ComponentLifecycle
     super(identityHashCode);
     mSimpleName = simpleName;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+    mStateContainer = createStateContainer();
   }
 
   /**
@@ -263,7 +268,13 @@ public abstract class Component extends ComponentLifecycle
       return true;
     }
 
-    return ComponentUtils.hasEquivalentFields(this, other, shouldCompareState);
+    final boolean hasEquivalentState =
+        shouldCompareState
+            ? ComponentUtils.hasEquivalentState(getStateContainer(), other.getStateContainer())
+            : true;
+
+    return hasEquivalentState
+        && ComponentUtils.hasEquivalentFields(this, other, shouldCompareState);
   }
 
   public Component makeShallowCopy() {
@@ -604,6 +615,14 @@ public abstract class Component extends ComponentLifecycle
   }
 
   protected @Nullable StateContainer getStateContainer() {
+    return mStateContainer;
+  }
+
+  protected void setStateContainer(StateContainer stateContainer) {
+    mStateContainer = stateContainer;
+  }
+
+  protected @Nullable StateContainer createStateContainer() {
     return null;
   }
 

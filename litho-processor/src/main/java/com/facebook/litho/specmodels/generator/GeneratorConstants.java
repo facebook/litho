@@ -20,10 +20,12 @@ package com.facebook.litho.specmodels.generator;
 public interface GeneratorConstants {
   String ABSTRACT_PARAM_NAME = "_abstract";
   String REF_VARIABLE_NAME = "_ref";
-  String STATE_CONTAINER_FIELD_NAME = "mStateContainer";
   String PREVIOUS_RENDER_DATA_FIELD_NAME = "mPreviousRenderData";
   String STATE_CONTAINER_NAME_SUFFIX = "StateContainer";
   String STATE_UPDATE_NAME_SUFFIX = "StateUpdate";
   String STATE_TRANSITION_FIELD_NAME = "_transition";
   String DYNAMIC_PROPS = "mDynamicProps";
+  String STATE_CONTAINER_GETTER = "getStateContainer";
+  String STATE_CONTAINER_IMPL_GETTER = "getStateContainerImpl";
+  String STATE_CONTAINER_ACCESSOR = STATE_CONTAINER_IMPL_GETTER + "()";
 }

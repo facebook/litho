@@ -131,7 +131,7 @@ public class GroupSectionSpecGeneratorTest {
                 + "    (com.facebook.litho.sections.ChangesInfo) changesInfo,\n"
                 + "    (int) globalOffset,\n"
                 + "    (boolean) arg0,\n"
-                + "    (int) mStateContainer.arg1);\n"
+                + "    (int) getStateContainerImpl().arg1);\n"
                 + "}\n");
   }
 }

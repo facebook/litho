@@ -141,7 +141,7 @@ public class EventGeneratorTest {
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestSpec.testEventMethod1(\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) _ref.mStateContainer.arg1,\n"
+                + "    (int) _ref.getStateContainerImpl().arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
                 + "    (long) _ref.arg4,\n"

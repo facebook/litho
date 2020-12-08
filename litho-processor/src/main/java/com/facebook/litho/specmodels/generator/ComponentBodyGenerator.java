@@ -18,7 +18,9 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_ACCESSOR;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_GETTER;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
 import androidx.annotation.Nullable;
@@ -84,14 +86,8 @@ public class ComponentBodyGenerator {
     if (hasState) {
       final ClassName stateContainerClass =
           ClassName.bestGuess(getStateContainerClassName(specModel));
-      builder.addField(
-          FieldSpec.builder(stateContainerClass, STATE_CONTAINER_FIELD_NAME, Modifier.PRIVATE)
-              .addAnnotation(
-                  AnnotationSpec.builder(Comparable.class)
-                      .addMember("type", "$L", Comparable.STATE_CONTAINER)
-                      .build())
-              .build());
-      builder.addMethod(generateStateContainerGetter(specModel.getStateContainerClass()));
+      builder.addMethod(generateStateContainerImplGetter(stateContainerClass));
+      builder.addMethod(generateStateContainerCreator(stateContainerClass));
     }
 
     final boolean needsRenderDataInfra = !specModel.getRenderDataDiffs().isEmpty();
@@ -208,12 +204,21 @@ public class ComponentBodyGenerator {
     return refClassName.substring(0, 1).toLowerCase(Locale.ROOT) + refClassName.substring(1);
   }
 
-  static MethodSpec generateStateContainerGetter(TypeName stateContainerClassName) {
-    return MethodSpec.methodBuilder("getStateContainer")
+  static MethodSpec generateStateContainerImplGetter(TypeName stateContainerImplClassName) {
+    return MethodSpec.methodBuilder(STATE_CONTAINER_IMPL_GETTER)
+        .addModifiers(Modifier.PRIVATE)
+        .returns(stateContainerImplClassName)
+        .addStatement(
+            "return ($T) super." + STATE_CONTAINER_GETTER + "()", stateContainerImplClassName)
+        .build();
+  }
+
+  static MethodSpec generateStateContainerCreator(ClassName stateContainerImplClassName) {
+    return MethodSpec.methodBuilder("createStateContainer")
         .addModifiers(Modifier.PROTECTED)
         .addAnnotation(Override.class)
-        .returns(stateContainerClassName)
-        .addStatement("return $N", STATE_CONTAINER_FIELD_NAME)
+        .returns(stateContainerImplClassName)
+        .addStatement("return new $T()", stateContainerImplClassName)
         .build();
   }
 
@@ -532,9 +537,7 @@ public class ComponentBodyGenerator {
     final String stateContainerClassName = getStateContainerClassName(specModel);
     if (hasState) {
       builder.addStatement(
-          "component.$N = new $T()",
-          STATE_CONTAINER_FIELD_NAME,
-          ClassName.bestGuess(stateContainerClassName));
+          "component.setStateContainer(new $T())", ClassName.bestGuess(stateContainerClassName));
     }
 
     if (hasDeepCopy) {
@@ -831,7 +834,7 @@ public class ComponentBodyGenerator {
       boolean shallow) {
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
-      return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
+      return STATE_CONTAINER_ACCESSOR + "." + methodParamModel.getName();
     } else if (methodParamModel instanceof CachedValueParamModel) {
       if (contextParamName == null) {
         throw new IllegalStateException("Need a scoped context to access cached values.");
