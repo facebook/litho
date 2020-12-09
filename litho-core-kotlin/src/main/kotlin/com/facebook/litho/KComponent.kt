@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
 import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
