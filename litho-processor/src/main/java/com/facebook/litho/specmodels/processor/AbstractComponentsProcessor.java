@@ -24,6 +24,8 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +118,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         } catch (PrintableException e) {
           e.print(processingEnv.getMessager());
         } catch (Exception e) {
+          StringWriter stackWriter = new StringWriter();
+          e.printStackTrace(new PrintWriter(stackWriter));
           processingEnv
               .getMessager()
               .printMessage(
@@ -123,9 +127,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   String.format(
                       "Unexpected error thrown when generating this component spec. "
                           + "Please report stack trace to the components team.\n%s",
-                      e),
+                      stackWriter.toString()),
                   element);
-          e.printStackTrace();
         }
       }
     }
