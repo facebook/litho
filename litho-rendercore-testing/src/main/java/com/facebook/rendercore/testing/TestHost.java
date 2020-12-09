@@ -31,15 +31,12 @@
 package com.facebook.rendercore.testing;
 
 import android.content.Context;
-import android.util.SparseArray;
-import com.facebook.rendercore.Host;
+import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestHost extends Host {
-
-  private final SparseArray<MountItem> mMountItems = new SparseArray<>();
+public class TestHost extends HostView {
 
   private final List bindOrder;
   private final List unbindOrder;
@@ -59,48 +56,27 @@ public class TestHost extends Host {
 
   @Override
   public void mount(int index, MountItem mountItem) {
+    super.mount(index, mountItem);
     bindOrder.add(TestHost.this);
-    mMountItems.put(index, mountItem);
   }
 
   @Override
   public void unmount(MountItem mountItem) {
+    super.unmount(mountItem);
     unbindOrder.add(TestHost.this);
-    int idx = -1;
-    for (int i = 0; i < mMountItems.size(); i++) {
-      if (mMountItems.valueAt(i) == mountItem) {
-        idx = i;
-        break;
-      }
-    }
-    if (idx >= 0) {
-      mMountItems.removeAt(idx);
-    }
   }
 
   @Override
   public void unmount(int index, MountItem mountItem) {
+    super.unmount(index, mountItem);
     unbindOrder.add(TestHost.this);
-    mMountItems.remove(index);
-  }
-
-  @Override
-  public int getMountItemCount() {
-    return mMountItems.size();
-  }
-
-  @Override
-  public MountItem getMountItemAt(int index) {
-    return mMountItems.get(index);
   }
 
   @Override
   public void moveItem(MountItem item, int oldIndex, int newIndex) {
+    super.moveItem(item, oldIndex, newIndex);
     mMoveCount++;
   }
-
-  @Override
-  protected void onLayout(boolean b, int i, int i1, int i2, int i3) {}
 
   public int getMoveCount() {
     return mMoveCount;
