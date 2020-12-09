@@ -43,7 +43,7 @@ module.exports = {
       items: [
         {
           label: 'Docs',
-          to: 'docs/getting-started',
+          to: 'docs/intro/motivation',
           position: 'right',
         },
         {
@@ -142,9 +142,7 @@ module.exports = {
       additionalLanguages: ['groovy', 'kotlin'],
     },
   },
-  plugins: [
-    'docusaurus-plugin-sass',
-  ],
+  plugins: ['docusaurus-plugin-sass'],
   presets: [
     [
       require.resolve('docusaurus-plugin-internaldocs-fb/docusaurus-preset'),

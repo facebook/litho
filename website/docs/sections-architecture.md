@@ -19,7 +19,7 @@ The framework can perform incremental and conditional updates on the structure o
 
 To update a section tree to reflect new props, create a section with the new prop values and call [SectionTree#setRoot()](pathname:///javadoc/com/facebook/litho/sections/SectionTree.html#setRoot-com.facebook.litho.sections.Section-). This is also how you set an initial root section on a tree since it's essentially diffing a new section hierarchy with an empty hierarchy.
 
-To update a section tree when a state value changes, just perform a regular state update as described in the documentation for litho [State](state).
+To update a section tree when a state value changes, just perform a regular state update as described in the documentation for litho [State](/docs/mainconcepts/coordinate-state-actions/state-overview).
 
 You may notice that the `setRoot()` and `updateState()` methods also have "async" implementations (`setRootAsync()` and `updateStateAsync()`).  The `*async()` methods will ensure that the resulting ChangeSet calculation is performed on a background thread.  Otherwise the resulting ChangeSet calculation will be done synchronously on whatever thread `setRoot()` or `updateState()` was called. This is just like Litho's [asychronous layout](asynchronous-layout#sync-and-async-operations).
 
@@ -29,8 +29,8 @@ You may notice that the `setRoot()` and `updateState()` methods also have "async
 
 A tree is generated from a single root section by recursively calling `@OnCreateChildren` on group section specs until it reaches the leaf sections, diff section specs.  As it visits a new section, `SectionTree` will:
  - Create a new `SectionContext` scoped to this new section
- - Check if there's a corresponding section in the current hierarchy (via [key](state#keys-and-identifying-components)) and transfer any state and service values over to the new section.
- - Check if there's any pending state updates for the new section (via [key](state#keys-and-identifying-components)) and perform the updates if they exist.
+ - Check if there's a corresponding section in the current hierarchy (via [key](/docs/mainconcepts/coordinate-state-actions/state-overview#keys-and-identifying-components)) and transfer any state and service values over to the new section.
+ - Check if there's any pending state updates for the new section (via [key](/docs/mainconcepts/coordinate-state-actions/state-overview#keys-and-identifying-components)) and perform the updates if they exist.
  - Create the new child sections by calling `SectionLifecycle#createChildren` and recursively visit those child sections.
 
 After generating a new tree, `SectionTree` will recursively traverse the new tree and compare it against the current tree to generate a `ChangeSet`. This is where we call `SectionLifecycle#generateChangeSet` on Diff Sections. When traversing the new tree, the framework translates local indexes to global indexes as it merges all `ChangeSet`s into a single `ChangeSet` for the whole hierarchy.
@@ -41,6 +41,3 @@ NOTE: [SectionContext](pathname:///javadoc/com/facebook/litho/sections/SectionCo
 ### SectionTree and RecyclerCollectionComponent
 
 [RecyclerCollectionComponent](recycler-collection-component) is a Litho component that creates and binds a `SectionTree` to a `Recycler` behind the scenes to make it incredibly easy to use the Sections framework with Litho. `RecyclerCollectionComponent` creates and holds onto a `SectionTree` instance as state and exposes a prop to accept new sections.  Updating the SectionTree when using RecyclerCollectionComponent is as simple as updating the section prop passed into it.
-
-
-

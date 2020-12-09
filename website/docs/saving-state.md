@@ -5,7 +5,7 @@ title: Saving state on rotation
 
 ## Saving state on app configuration changes
 When the app goes through configuration changes, such as rotation, which cause the Activity to be torn down and recreated, the LithoView that the Activity was displaying will also be destroyed, along with the ComponentTree it was hosting.
-This means that all the Component [state](state) values maintained by the ComponentTree will be reset when the Activity is recreated, unless we do explicitly save and restore these values.
+This means that all the Component [state](/docs/mainconcepts/coordinate-state-actions/state-overview) values maintained by the ComponentTree will be reset when the Activity is recreated, unless we do explicitly save and restore these values.
 
 A full example on how to save and restore the state values when the Activity is destroyed can be found [here](https://github.com/facebook/litho/tree/master/codelabs/save-state-rotation).
 

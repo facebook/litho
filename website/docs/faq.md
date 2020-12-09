@@ -7,7 +7,7 @@ title: FAQ
 
 ### Using Litho with React Native
 
-React Native ships with its own version of Yoga which can cause conflicts when merging the 
+React Native ships with its own version of Yoga which can cause conflicts when merging the
 dex files. In order to avoid this, you can instruct Gradle to exclude one of the Yoga modules.
 
 To do this, add a section like this to your Gradle file after the dependency declaration:
@@ -57,7 +57,7 @@ If you are getting this error when running a Litho unit test, go through these s
 
 **For Gradle**
 
-- Follow the instructions under [Unit Testing - Caveats](unit-testing#caveats) for your setup.
+- Follow the instructions under [Unit Testing - Caveats](/docs/testing/unit-testing#caveats) for your setup.
 - Relaunch the gradle daemon with `./gradlew --stop`.
 
 ### `@InjectProp` fails for generated components

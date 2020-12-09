@@ -3,11 +3,13 @@ id: view-support
 title: 'Advanced: Mixing with Android Views'
 ---
 
-## UNDER CONSTRUCTION - T79180582
+:::danger UNDER CONSTRUCTION
+T79180582
+:::
 
 Sections work best when combined with the rendering optimizations that Litho Components offer. However, the API also provides support for rendering with Views instead of Components. This makes the transition to Sections easier and you can still take advantage of the performance benefits regardless of your product's UI using traditional Views, Litho Components or a mix of the two.
 
-View support is only offered by `DataDiffSection` at the moment. Let's have another look at the [DataDiffSection](../sections-building-blocks#datadiffsection) example to recap how you declare what the framework should render for a certain item.
+View support is only offered by `DataDiffSection` at the moment. Let's have another look at the [DataDiffSection](/docs/sections-building-blocks#datadiffsection) example to recap how you declare what the framework should render for a certain item.
 
 ```java
 @GroupSectionSpec

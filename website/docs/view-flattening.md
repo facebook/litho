@@ -7,7 +7,7 @@ Let's take a look at the layout in the example below. It contains an image, a ti
 
 ![View Flattening](/images/viewflatteningnobounds.jpeg)
 
-Litho automatically reduces the number of views your final UI hierarchy will contain. The layout tree that results from the layout calculation step is just a blueprint of your UI with no direct coupling with Android views. This allows the framework to process the layout tree for optimal rendering performance before the component is mounted.  
+Litho automatically reduces the number of views your final UI hierarchy will contain. The layout tree that results from the layout calculation step is just a blueprint of your UI with no direct coupling with Android views. This allows the framework to process the layout tree for optimal rendering performance before the component is mounted.
 We do this in two ways.
 
 First, Litho can completely skip containers after layout calculation because they are not used in the mount step. For our example, there won't be a view group wrapping title and subtitle when it is mounted.
@@ -18,4 +18,4 @@ As a result of these optimizations, the component for the UI in the example woul
 
 ![View Flattening](/images/viewflattening.png)
 
-While flatter views have important benefits for memory usage and drawing times, they are not a silver bullet for everything. Litho has a very general system to automatically "unflatten" the view hierarchy of mounted components when we want to lean on non-trivial features from Android views such as touch event handling, accessibility, or confining invalidations. For instance, if you wanted to enable clicking on the image or text in the example, the framework would automatically wrap them in a view if they have [click handlers](events-overview#callbacks).
+While flatter views have important benefits for memory usage and drawing times, they are not a silver bullet for everything. Litho has a very general system to automatically "unflatten" the view hierarchy of mounted components when we want to lean on non-trivial features from Android views such as touch event handling, accessibility, or confining invalidations. For instance, if you wanted to enable clicking on the image or text in the example, the framework would automatically wrap them in a view if they have [click handlers](/docs/mainconcepts/coordinate-state-actions/events#callbacks).

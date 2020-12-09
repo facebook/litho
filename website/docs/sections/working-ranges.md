@@ -3,7 +3,9 @@ id: working-ranges
 title: 'Advanced: Prefetch and pagination'
 ---
 
-## UNDER CONSTRUCTION - T79180572
+:::danger UNDER CONSTRUCTION
+T79180572
+:::
 
 The purpose of the working ranges API is to provide flexible appearance events for a component entering and exiting a given range to perform certain custom operations. The common useful case is for data prefetching or cache warming.
 
@@ -72,4 +74,4 @@ The `@OnEnteredRange` method is triggered when the component enters the range, a
 
 The name field in the annotation is used by the Annotation Processor Tool (APT) to generate register methods. For example, for the name "prefetch", the APT would generate a register method called "registerPrefetchWorkingRange", and in the `@OnRegisterRanges` method, we can register our working range with these register methods. The register method binds the working range and `@OnEnteredRange` / `@OnExitedRange` methods.
 
-When items in the list are inserted/removed/scrolled, the [RecyclerBinder](../recycler-component#recyclerbinder) would take care of checking if the its working range state changed (in range → out of range and vice versa) and trigger the corresponding `@OnEnteredRange` / `@OnExitedRange` methods on the components that registered the callbacks.
+When items in the list are inserted/removed/scrolled, the [RecyclerBinder](/docs/recycler-component#recyclerbinder) would take care of checking if the its working range state changed (in range → out of range and vice versa) and trigger the corresponding `@OnEnteredRange` / `@OnExitedRange` methods on the components that registered the callbacks.

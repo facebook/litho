@@ -64,7 +64,7 @@ exceptions that can be raised inside a method, you should handle them locally.
 Especially during development and for debug builds, it can be very helpful to
 provide error information instead of crashing the app for unexpected errors.
 Let's expand the previous example and show an error message in place of the
-wrapped component by using [State](state).
+wrapped component by using [State](/docs/mainconcepts/coordinate-state-actions/hoisting-state).
 
 ```java
 @LayoutSpec

@@ -68,7 +68,7 @@ static Transition onCreateTransition(ComponentContext c) {
 
 ### Transition end callback
 
-A listener can be added to receive a callback when an individual transition has ended. This is done through the Litho event dispatcher. See [Events overview](events-overview).
+A listener can be added to receive a callback when an individual transition has ended. This is done through the Litho event dispatcher. See [Events overview](/docs/mainconcepts/coordinate-state-actions/events).
 The `TransitionEndEvent` will be called with the transition key and the specific `AnimatedProperty` that has been animated for that key. If multiple `AnimatedProperty`s are added to the same transition, and all of them run at the same time, a callback will be excecuted for each one of those.
 
 ```java

@@ -3,7 +3,9 @@ id: diff-sections
 title: 'Advanced: Writing your own DiffSection'
 ---
 
-## UNDER CONSTRUCTION - T79180597
+:::danger UNDER CONSTRUCTION
+T79180597
+:::
 
 A *diff section spec* defines a section that explicitly outputs insert, update, and remove changes on the section hierarchy.
 
