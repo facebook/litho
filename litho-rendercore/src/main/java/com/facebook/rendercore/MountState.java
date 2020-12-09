@@ -726,7 +726,7 @@ public class MountState implements MountDelegateTarget {
     item.setIsBound(false);
   }
 
-  private void updateMountItemIfNeeded(
+  private static void updateMountItemIfNeeded(
       Context context, RenderTreeNode renderTreeNode, MountItem currentMountItem) {
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final Object newLayoutData = renderTreeNode.getLayoutData();
