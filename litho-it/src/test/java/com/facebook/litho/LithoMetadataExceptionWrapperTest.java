@@ -32,6 +32,8 @@ import com.facebook.litho.widget.OnClickCallbackComponent;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
+import com.facebook.litho.widget.OnMeasureCallbackComponent;
+import com.facebook.litho.widget.OnMeasureCallbackComponentSpec;
 import com.facebook.litho.widget.TriggerCallbackComponent;
 import com.facebook.litho.widget.TriggerCallbackComponentSpec;
 import java.util.ArrayList;
@@ -301,5 +303,32 @@ public class LithoMetadataExceptionWrapperTest {
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
     emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
+  }
+
+  @Test
+  public void onMeasureCrash_showsDebugMetadata() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("component_scope: OnMeasureCallbackComponent");
+
+    final ComponentContext c = mComponentsRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(
+                DebugMetadataTestComponent.create(c)
+                    .metadataKey("custom_key")
+                    .metadataValue("custom_value")
+                    .child(
+                        OnMeasureCallbackComponent.create(c)
+                            .widthPx(10)
+                            .callback(
+                                new OnMeasureCallbackComponentSpec.Callback() {
+                                  @Override
+                                  public void onMeasure(int widthSpec, int heightSpec) {
+                                    throw new RuntimeException("Expected Exception");
+                                  }
+                                })))
+            .build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
   }
 }

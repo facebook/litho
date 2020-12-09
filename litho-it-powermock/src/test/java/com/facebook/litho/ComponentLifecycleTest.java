@@ -434,7 +434,8 @@ public class ComponentLifecycleTest {
       measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
       fail("Should have failed without overridden onMeasure() when canMeasure() returns true.");
     } catch (Exception e) {
-      assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
+      assertThat(e).isExactlyInstanceOf(LithoMetadataExceptionWrapper.class);
+      assertThat(e.getCause()).isExactlyInstanceOf(IllegalStateException.class);
       assertThat(e.getMessage()).contains("canMeasure()");
     }
   }
@@ -448,7 +449,8 @@ public class ComponentLifecycleTest {
       measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
       fail("Should have failed when onMeasure() is empty.");
     } catch (Exception e) {
-      assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
+      assertThat(e).isExactlyInstanceOf(LithoMetadataExceptionWrapper.class);
+      assertThat(e.getCause()).isExactlyInstanceOf(IllegalStateException.class);
       assertThat(e.getMessage()).contains("MeasureOutput not set");
     }
   }

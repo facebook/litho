@@ -55,96 +55,100 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     final ComponentContext componentScopedContext =
         component.getScopedContext(mLayoutStateContext, componentGlobalKey);
 
-    if (componentScopedContext != null && componentScopedContext.wasLayoutCanceled()) {
-      return 0;
-    }
+    try {
+      if (componentScopedContext != null && componentScopedContext.wasLayoutCanceled()) {
+        return 0;
+      }
 
-    final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
+      final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
 
-    final int widthSpec;
-    final int heightSpec;
-    final boolean isTracing = ComponentsSystrace.isTracing();
+      final int widthSpec;
+      final int heightSpec;
+      final boolean isTracing = ComponentsSystrace.isTracing();
 
-    widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
-    heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+      widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
+      heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
 
-    if (isTracing) {
-      ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
-          .arg("widthSpec", SizeSpec.toString(widthSpec))
-          .arg("heightSpec", SizeSpec.toString(heightSpec))
-          .arg("componentId", component.getId())
-          .flush();
-    }
+      if (isTracing) {
+        ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
+            .arg("widthSpec", SizeSpec.toString(widthSpec))
+            .arg("heightSpec", SizeSpec.toString(heightSpec))
+            .arg("componentId", component.getId())
+            .flush();
+      }
 
-    node.setLastWidthSpec(widthSpec);
-    node.setLastHeightSpec(heightSpec);
+      node.setLastWidthSpec(widthSpec);
+      node.setLastHeightSpec(heightSpec);
 
-    int outputWidth = 0;
-    int outputHeight = 0;
+      int outputWidth = 0;
+      int outputHeight = 0;
 
-    ComponentContext context = node.getContext();
+      ComponentContext context = node.getContext();
 
-    if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
+      if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
 
-      // Find the nearest parent component context.
-      final Component head = node.getHeadComponent();
-      final String headKey = node.getHeadComponentKey();
-      final Component parent;
-      final String parentKey;
+        // Find the nearest parent component context.
+        final Component head = node.getHeadComponent();
+        final String headKey = node.getHeadComponentKey();
+        final Component parent;
+        final String parentKey;
 
-      if (component != head) { // If the head and tail are different, use the head.
-        parent = head;
-        parentKey = headKey;
-      } else if (node.getParent() != null) { // Otherwise use the tail of the parent node.
-        parent = node.getParent().getTailComponent();
-        parentKey = node.getParent().getTailComponentKey();
+        if (component != head) { // If the head and tail are different, use the head.
+          parent = head;
+          parentKey = headKey;
+        } else if (node.getParent() != null) { // Otherwise use the tail of the parent node.
+          parent = node.getParent().getTailComponent();
+          parentKey = node.getParent().getTailComponentKey();
+        } else {
+          parent = null;
+          parentKey = null;
+        }
+
+        if (parent != null) {
+          context = parent.getScopedContext(mLayoutStateContext, parentKey);
+        }
+
+        final InternalNode nestedTree = Layout.create(context, node, widthSpec, heightSpec);
+
+        outputWidth = nestedTree.getWidth();
+        outputHeight = nestedTree.getHeight();
+      } else if (diffNode != null
+          && diffNode.getLastWidthSpec() == widthSpec
+          && diffNode.getLastHeightSpec() == heightSpec
+          && !component.shouldAlwaysRemeasure()) {
+        outputWidth = (int) diffNode.getLastMeasuredWidth();
+        outputHeight = (int) diffNode.getLastMeasuredHeight();
       } else {
-        parent = null;
-        parentKey = null;
+        final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
+
+        component.onMeasure(componentScopedContext, node, widthSpec, heightSpec, size);
+
+        if (size.width < 0 || size.height < 0) {
+          throw new IllegalStateException(
+              "MeasureOutput not set, ComponentLifecycle is: " + component);
+        }
+
+        outputWidth = size.width;
+        outputHeight = size.height;
+
+        if (node.getDiffNode() != null) {
+          node.getDiffNode().setLastWidthSpec(widthSpec);
+          node.getDiffNode().setLastHeightSpec(heightSpec);
+          node.getDiffNode().setLastMeasuredWidth(outputWidth);
+          node.getDiffNode().setLastMeasuredHeight(outputHeight);
+        }
       }
 
-      if (parent != null) {
-        context = parent.getScopedContext(mLayoutStateContext, parentKey);
+      node.setLastMeasuredWidth(outputWidth);
+      node.setLastMeasuredHeight(outputHeight);
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
 
-      final InternalNode nestedTree = Layout.create(context, node, widthSpec, heightSpec);
-
-      outputWidth = nestedTree.getWidth();
-      outputHeight = nestedTree.getHeight();
-    } else if (diffNode != null
-        && diffNode.getLastWidthSpec() == widthSpec
-        && diffNode.getLastHeightSpec() == heightSpec
-        && !component.shouldAlwaysRemeasure()) {
-      outputWidth = (int) diffNode.getLastMeasuredWidth();
-      outputHeight = (int) diffNode.getLastMeasuredHeight();
-    } else {
-      final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
-
-      component.onMeasure(componentScopedContext, node, widthSpec, heightSpec, size);
-
-      if (size.width < 0 || size.height < 0) {
-        throw new IllegalStateException(
-            "MeasureOutput not set, ComponentLifecycle is: " + component);
-      }
-
-      outputWidth = size.width;
-      outputHeight = size.height;
-
-      if (node.getDiffNode() != null) {
-        node.getDiffNode().setLastWidthSpec(widthSpec);
-        node.getDiffNode().setLastHeightSpec(heightSpec);
-        node.getDiffNode().setLastMeasuredWidth(outputWidth);
-        node.getDiffNode().setLastMeasuredHeight(outputHeight);
-      }
+      return YogaMeasureOutput.make(outputWidth, outputHeight);
+    } catch (Exception e) {
+      throw ComponentUtils.wrapWithMetadata(componentScopedContext, e);
     }
-
-    node.setLastMeasuredWidth(outputWidth);
-    node.setLastMeasuredHeight(outputHeight);
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    return YogaMeasureOutput.make(outputWidth, outputHeight);
   }
 }
