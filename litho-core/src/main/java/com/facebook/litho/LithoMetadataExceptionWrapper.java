@@ -71,7 +71,7 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
   @Override
   @SuppressLint({"BadMethodUse-java.lang.Class.getName", "ReflectionMethodUse"})
   public String getMessage() {
-    final Throwable cause = Assertions.assertNotNull(getCause());
+    final Throwable cause = getDeepestCause();
     final StringBuilder msg =
         new StringBuilder("Real Cause => ")
             .append(cause.getClass().getCanonicalName())
@@ -122,6 +122,14 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     appendMap(msg, mCustomMetadata);
 
     return msg.toString().trim();
+  }
+
+  private Throwable getDeepestCause() {
+    Throwable cause = Assertions.assertNotNull(getCause());
+    while (cause.getCause() != null) {
+      cause = cause.getCause();
+    }
+    return cause;
   }
 
   private static void appendMap(StringBuilder msg, Map<String, String> map) {

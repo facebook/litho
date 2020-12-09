@@ -331,4 +331,35 @@ public class LithoMetadataExceptionWrapperTest {
 
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
   }
+
+  @Test
+  public void onCrash_withMultipleNestedExceptions_showsDeepestException() {
+    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("Real Cause => java.lang.RuntimeException: Exception Level 3");
+
+    final ComponentContext c = mComponentsRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(
+                DebugMetadataTestComponent.create(c)
+                    .metadataKey("custom_key")
+                    .metadataValue("custom_value")
+                    .child(
+                        OnMeasureCallbackComponent.create(c)
+                            .widthPx(10)
+                            .callback(
+                                new OnMeasureCallbackComponentSpec.Callback() {
+                                  @Override
+                                  public void onMeasure(int widthSpec, int heightSpec) {
+                                    throw new RuntimeException(
+                                        "Exception Level 1",
+                                        new RuntimeException(
+                                            "Exception Level 2",
+                                            new RuntimeException("Exception Level 3")));
+                                  }
+                                })))
+            .build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+  }
 }
