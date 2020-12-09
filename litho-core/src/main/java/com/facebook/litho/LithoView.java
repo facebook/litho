@@ -1060,7 +1060,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   // We pause mounting while the visibility hint is set to false, because the visible rect of
   // the LithoView is not consistent with what's currently on screen.
   private boolean shouldPauseMountingWithVisibilityHintFalse() {
-    return ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse
+    return (mComponentTree != null && mComponentTree.skipIncrementalMountOnSetVisibilityHintFalse())
         && mHasVisibilityHint
         && !mVisibilityHintIsVisible;
   }
