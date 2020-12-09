@@ -103,6 +103,12 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
       msg.append("  tree_root: ").append(componentTree.getRoot().getSimpleName()).append("\n");
     }
 
+    if (mComponentContext != null && mComponentContext.getComponentScope() != null) {
+      msg.append("  component_scope: ")
+          .append(mComponentContext.getComponentScope().getSimpleName())
+          .append("\n");
+    }
+
     msg.append("  thread_name: ").append(Thread.currentThread().getName()).append("\n");
 
     if (mComponentContext != null) {

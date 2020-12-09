@@ -163,6 +163,7 @@ public class LithoMetadataExceptionWrapperTest {
   public void onClickEvent_withLogTag_showsLogTagInStack() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("log_tag: myLogTag");
+    mExpectedException.expectMessage("component_scope: OnClickCallbackComponent");
 
     final ComponentContext c =
         new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
@@ -195,6 +196,7 @@ public class LithoMetadataExceptionWrapperTest {
   public void onTrigger_withLogTag_showsLogTagInStack() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage("log_tag: myLogTag");
+    mExpectedException.expectMessage("component_scope: TriggerCallbackComponent");
 
     final ComponentContext c =
         new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
