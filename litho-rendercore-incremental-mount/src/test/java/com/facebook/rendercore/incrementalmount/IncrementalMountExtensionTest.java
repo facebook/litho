@@ -1,4 +1,16 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.rendercore.incrementalmount;
 
@@ -7,14 +19,25 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.MountState;
+import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RootHostView;
 import com.facebook.rendercore.extensions.ExtensionState;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
+import com.facebook.rendercore.testing.RenderCoreTestRule;
+import com.facebook.rendercore.testing.SimpleLayoutResult;
+import com.facebook.rendercore.testing.SimpleViewUnit;
+import com.facebook.rendercore.testing.SimpleWrapperNode;
 import com.facebook.rendercore.testing.TestHost;
 import com.facebook.rendercore.testing.TestHostRenderUnit;
 import com.facebook.rendercore.testing.TestRenderUnit;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -22,6 +45,148 @@ import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 public class IncrementalMountExtensionTest {
+
+  public final @Rule RenderCoreTestRule mRenderCoreTestRule = new RenderCoreTestRule();
+
+  @Test
+  public void whenVisibleBoundsIsEqualToHierarchy_shouldMountEverything() {
+    final Context c = mRenderCoreTestRule.getContext();
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+            .width(100)
+            .height(100)
+            .build();
+
+    mRenderCoreTestRule
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(100, 100)
+        .render();
+
+    final HostView host = (HostView) mRenderCoreTestRule.getRootHost();
+
+    assertThat(host.getChildCount()).isEqualTo(1);
+    assertThat(host.getChildAt(0)).isInstanceOf(TextView.class);
+  }
+
+  @Test
+  public void whenVisibleBoundsIntersectsHierarchy_shouldMountEverything() {
+    final Context c = mRenderCoreTestRule.getContext();
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+            .width(100)
+            .height(100)
+            .build();
+
+    mRenderCoreTestRule
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(50, 50)
+        .render();
+
+    final HostView host = (HostView) mRenderCoreTestRule.getRootHost();
+
+    assertThat(host.getChildCount()).isEqualTo(1);
+    assertThat(host.getChildAt(0)).isInstanceOf(TextView.class);
+  }
+
+  @Test
+  public void whenVisibleBoundsIsZero_shouldNotMountAnything() {
+    final Context c = mRenderCoreTestRule.getContext();
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+            .width(100)
+            .height(100)
+            .build();
+
+    mRenderCoreTestRule
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(0, 0)
+        .render();
+
+    final HostView host = (HostView) mRenderCoreTestRule.getRootHost();
+
+    assertThat(host.getChildCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void whenVisibleBoundsChangeWithBoundaryConditions_shouldMountAndUnMountCorrectly() {
+    final Context c = mRenderCoreTestRule.getContext();
+
+    final FrameLayout parent = new FrameLayout(c);
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 300);
+
+    final RootHostView host = new RootHostView(c);
+    parent.addView(host);
+
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new HostView(c), 0))
+            .width(100)
+            .height(300)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .y(100)
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .y(200)
+                    .width(100)
+                    .height(100))
+            .build();
+
+    mRenderCoreTestRule
+        .useRootHost(host)
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(100, 300)
+        .render();
+
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    // Translate host up to boundary condition.
+    host.offsetTopAndBottom(100);
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    // Translate host beyond the boundary condition.
+    host.offsetTopAndBottom(1); // 100 + 1 = 101
+    assertThat(host.getChildCount()).isEqualTo(2);
+
+    // Translate host up to boundary condition is reverse direction.
+    host.offsetTopAndBottom(-1 - 100 - 100); // 101 - 1 - 100 - 100 = -100
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    // Translate host beyond the boundary condition is reverse direction.
+    host.offsetTopAndBottom(-1); // -100 - 1 = -101
+    assertThat(host.getChildCount()).isEqualTo(2);
+  }
 
   @Test
   public void testNegativeMarginChild_forcesHostMount() {

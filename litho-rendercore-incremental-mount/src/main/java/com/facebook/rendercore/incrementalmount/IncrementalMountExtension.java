@@ -299,7 +299,7 @@ public class IncrementalMountExtension
 
       while (state.mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              < byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom
+              <= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom
           && localVisibleRect.bottom
               > byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().top) {
         state.mPreviousBottomsIndex--;

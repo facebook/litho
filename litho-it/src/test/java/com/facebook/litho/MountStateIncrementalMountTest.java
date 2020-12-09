@@ -168,6 +168,10 @@ public class MountStateIncrementalMountTest {
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isTrue();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
+    assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
   }
 
@@ -454,6 +458,10 @@ public class MountStateIncrementalMountTest {
     assertThat(lifecycleTracker2.isMounted()).isTrue();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
     assertThat(lifecycleTracker2.isMounted()).isFalse();
   }

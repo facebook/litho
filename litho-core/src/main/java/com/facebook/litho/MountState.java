@@ -3284,7 +3284,7 @@ class MountState
         layoutState.getOutputsOrderedByBottomBounds();
     final int count = layoutState.getMountableOutputCount();
 
-    if (localVisibleRect.top > 0 || mPreviousLocalVisibleRect.top > 0) {
+    if (localVisibleRect.top >= 0 || mPreviousLocalVisibleRect.top >= 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
@@ -3305,7 +3305,7 @@ class MountState
 
       while (mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              < layoutState
+              <= layoutState
                   .getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex - 1))
                   .getBounds()
                   .bottom) {
@@ -3328,7 +3328,7 @@ class MountState
       // that has changed.
       while (mPreviousTopsIndex < count
           && localVisibleRect.bottom
-              > layoutState
+              >= layoutState
                   .getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex))
                   .getBounds()
                   .top) {
@@ -3346,7 +3346,7 @@ class MountState
 
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              <= layoutState
+              < layoutState
                   .getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex - 1))
                   .getBounds()
                   .top) {
