@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -186,6 +188,103 @@ public class IncrementalMountExtensionTest {
     // Translate host beyond the boundary condition is reverse direction.
     host.offsetTopAndBottom(-1); // -100 - 1 = -101
     assertThat(host.getChildCount()).isEqualTo(2);
+  }
+
+  @Test
+  public void whenPreviousHostIsMovedOutOfBounds_shouldMountItemsCorrectly() {
+    final Context c = mRenderCoreTestRule.getContext();
+
+    final FrameLayout parent = new FrameLayout(c);
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(99, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 100, 200);
+
+    final RootHostView host = new RootHostView(c);
+    parent.addView(host);
+
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .width(100)
+            .height(201)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new HostView(c), 1))
+                    .width(100)
+                    .height(100)
+                    .child(
+                        SimpleLayoutResult.create()
+                            .renderUnit(new SimpleViewUnit(new HostView(c), 2))
+                            .width(100)
+                            .height(100)
+                            .child(
+                                SimpleLayoutResult.create()
+                                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                                    .width(100)
+                                    .height(100))))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new HostView(c), 4))
+                    .y(100)
+                    .width(100)
+                    .height(101))
+            .build();
+
+    host.setTranslationY(100);
+
+    mRenderCoreTestRule
+        .useRootHost(host)
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(100, 201)
+        .render();
+
+    assertThat(host.getChildCount()).isEqualTo(2);
+    assertThat(((HostView) host.getChildAt(0)).getChildCount()).isEqualTo(1);
+
+    final LayoutResult<?> newRoot =
+        SimpleLayoutResult.create()
+            .width(100)
+            .height(201)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new HostView(c), 1))
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new HostView(c), 4))
+                    .y(100)
+                    .width(100)
+                    .height(101)
+                    .child(
+                        SimpleLayoutResult.create()
+                            .renderUnit(new SimpleViewUnit(new HostView(c), 2)) // Host changed.
+                            .y(1)
+                            .width(100)
+                            .height(100)
+                            .child(
+                                SimpleLayoutResult.create()
+                                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                                    .width(100)
+                                    .height(100))))
+            .build();
+
+    mRenderCoreTestRule.useRootNode(new SimpleWrapperNode(newRoot)).setSizePx(100, 201).render();
+
+    // Un-mounts the Host with id 2.
+    assertThat(((HostView) host.getChildAt(0)).getChildCount()).isEqualTo(0);
+    // Host with id 2 is not mounted because it is outside of visible bounds.
+    assertThat(((HostView) host.getChildAt(1)).getChildCount()).isEqualTo(0);
+
+    // Scroll Host with id 2 into the view port
+    host.offsetTopAndBottom(-2);
+
+    // Host with id 2 is mounted because it enters the visible bounds.
+    assertThat(((HostView) host.getChildAt(1)).getChildCount()).isEqualTo(1);
   }
 
   @Test
