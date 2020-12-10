@@ -196,6 +196,29 @@ public class IncrementalMountExtension
     return true;
   }
 
+  private static void acquireMountReferenceEnsureHostIsMounted(
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final IncrementalMountOutput output,
+      final boolean isMounting) {
+
+    final IncrementalMountOutput host = output.getHostOutput();
+
+    // If id is ROOT_HOST_ID then already at root host.
+    if (host != null) {
+
+      // Make sure the host is mounted before the child.
+      final IncrementalMountExtensionState state = extensionState.getState();
+
+      // If not root host or if no reference was acquired, acquire it.
+      if (!extensionState.ownsReference(host.getId())) {
+        acquireMountReferenceEnsureHostIsMounted(
+            extensionState, host, isMounting || state.mAcquireReferencesDuringMount);
+      }
+    }
+
+    extensionState.acquireMountReference(output.getId(), isMounting);
+  }
+
   static void recursivelyNotifyVisibleBoundsChanged(
       final IncrementalMountExtensionInput input, final long id, final Object content) {
     assertMainThread();
@@ -251,7 +274,7 @@ public class IncrementalMountExtension
             || isRootItem(id);
     final boolean hasAcquiredMountRef = extensionState.ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
-      extensionState.acquireMountReference(id, isMounting);
+      acquireMountReferenceEnsureHostIsMounted(extensionState, incrementalMountOutput, isMounting);
     } else if (!isMountable && hasAcquiredMountRef) {
       extensionState.releaseMountReference(id, isMounting);
     } else if (isMountable && hasAcquiredMountRef && isMounting) {
@@ -306,7 +329,7 @@ public class IncrementalMountExtension
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex);
         final long id = node.getId();
         if (!extensionState.ownsReference(id)) {
-          extensionState.acquireMountReference(id, true);
+          acquireMountReferenceEnsureHostIsMounted(extensionState, node, true);
           state.mComponentIdsMountedInThisFrame.add(id);
         }
       }
@@ -323,7 +346,7 @@ public class IncrementalMountExtension
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex);
         final long id = node.getId();
         if (!extensionState.ownsReference(id)) {
-          extensionState.acquireMountReference(id, true);
+          acquireMountReferenceEnsureHostIsMounted(extensionState, node, true);
           state.mComponentIdsMountedInThisFrame.add(id);
         }
         state.mPreviousTopsIndex++;
