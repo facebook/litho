@@ -118,7 +118,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         } catch (PrintableException e) {
           e.print(processingEnv.getMessager());
         } catch (Exception e) {
-          StringWriter stackWriter = new StringWriter();
+          final StringWriter stackWriter = new StringWriter();
           e.printStackTrace(new PrintWriter(stackWriter));
           processingEnv
               .getMessager()
