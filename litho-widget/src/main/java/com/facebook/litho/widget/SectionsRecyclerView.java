@@ -112,7 +112,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     return mStickyHeader.getVisibility() == View.GONE;
   }
 
-  public void setItemAnimator(ItemAnimator itemAnimator) {
+  public void setItemAnimator(@Nullable ItemAnimator itemAnimator) {
     mDetachedItemAnimator = mRecyclerView.getItemAnimator();
     mRecyclerView.setItemAnimator(itemAnimator);
   }

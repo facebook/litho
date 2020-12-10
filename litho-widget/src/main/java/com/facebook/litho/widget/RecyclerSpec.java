@@ -147,7 +147,7 @@ class RecyclerSpec {
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
       @Prop(optional = true, isCommonProp = true) CharSequence contentDescription,
-      @Prop(optional = true) ItemAnimator itemAnimator) {
+      @Prop(optional = true) @Nullable ItemAnimator itemAnimator) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
@@ -196,7 +196,7 @@ class RecyclerSpec {
           List<OnScrollListener> onScrollListeners,
       @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
-      @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler) {
 
     // contentDescription should be set on the recyclerView itself, and not the sectionsRecycler.
