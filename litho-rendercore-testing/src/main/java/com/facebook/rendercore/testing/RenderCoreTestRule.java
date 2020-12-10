@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,7 +66,8 @@ public class RenderCoreTestRule implements TestRule {
   private Context context;
   private @Nullable RootHost rootHost;
   private @Nullable RenderTreeHost renderTreeHost;
-  private @Nullable Node rootNode;
+  private @Nullable RenderState<?, ?> renderState;
+  private @Nullable Node<?> rootNode;
   private int widthSpec = DEFAULT_WIDTH_SPEC;
   private int heightSpec = DEFAULT_HEIGHT_SPEC;
   private RenderCoreExtension<?, ?>[] extensions;
@@ -109,6 +112,14 @@ public class RenderCoreTestRule implements TestRule {
       renderTreeHost = new RenderTreeHostView(context);
     }
     return renderTreeHost;
+  }
+
+  public RenderState<?, ?> getRenderState() {
+    if (renderState == null) {
+      renderState = new RenderState(getContext(), DELEGATE, null, extensions);
+    }
+
+    return renderState;
   }
 
   /** Gets the current root {@link Node}. */
@@ -159,6 +170,7 @@ public class RenderCoreTestRule implements TestRule {
    */
   public RenderCoreTestRule useExtensions(RenderCoreExtension[] extensions) {
     this.extensions = extensions;
+    renderState = null;
     return this;
   }
 
@@ -184,8 +196,7 @@ public class RenderCoreTestRule implements TestRule {
     checkRootHost();
     final View rootHostView = (View) getRootHost();
 
-    final RenderState renderState =
-        new RenderState(rootHostView.getContext(), DELEGATE, null, extensions);
+    renderState = getRenderState();
     renderState.setTree(new SimpleLazyTree(getRootNode()));
     getRootHost().setRenderState(renderState);
 
