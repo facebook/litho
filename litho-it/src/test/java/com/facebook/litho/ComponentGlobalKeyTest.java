@@ -34,6 +34,7 @@ import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
+import com.facebook.rendercore.LogLevel;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -174,7 +175,7 @@ public class ComponentGlobalKeyTest {
             + "result in unexpected behavior if you don't change it.";
 
     assertThat(mComponentsReporter.getLoggedMessages())
-        .contains(Pair.create(ComponentsReporter.LogLevel.WARNING, expectedError));
+        .contains(Pair.create(LogLevel.WARNING, expectedError));
   }
 
   @Test
@@ -271,7 +272,7 @@ public class ComponentGlobalKeyTest {
             + "result in unexpected behavior if you don't change it.";
 
     assertThat(mComponentsReporter.getLoggedMessages())
-        .contains(Pair.create(ComponentsReporter.LogLevel.WARNING, expectedError));
+        .contains(Pair.create(LogLevel.WARNING, expectedError));
   }
 
   @Test

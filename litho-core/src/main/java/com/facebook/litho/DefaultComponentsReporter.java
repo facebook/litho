@@ -16,19 +16,43 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentsReporter.map;
+
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.AbstractErrorReporter;
+import com.facebook.rendercore.LogLevel;
 import java.util.Map;
 
-public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
+public class DefaultComponentsReporter extends AbstractErrorReporter {
+
   private static final String CATEGORY_PREFIX = "Litho:";
 
   @Override
+  public void report(
+      LogLevel level,
+      String categoryKey,
+      String message,
+      @Nullable Throwable cause,
+      int samplingFrequency,
+      @Nullable Map<String, Object> metadata) {
+    switch (level) {
+      case WARNING:
+        Log.w(CATEGORY_PREFIX + categoryKey, message, cause);
+        break;
+      case ERROR:
+        Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        break;
+      case FATAL:
+        Log.e(CATEGORY_PREFIX + categoryKey, message, cause);
+        throw new RuntimeException(message);
+    }
+  }
+
   public void emitMessage(ComponentsReporter.LogLevel level, String categoryKey, String message) {
     emitMessage(level, categoryKey, message, /* take default*/ 0);
   }
 
-  @Override
   public void emitMessage(
       ComponentsReporter.LogLevel level,
       String categoryKey,
@@ -37,23 +61,12 @@ public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
     emitMessage(level, categoryKey, message, samplingFrequency, null);
   }
 
-  @Override
   public void emitMessage(
       ComponentsReporter.LogLevel level,
       String categoryKey,
       String message,
       int samplingFrequency,
       @Nullable Map<String, Object> metadata) {
-    switch (level) {
-      case WARNING:
-        Log.w(CATEGORY_PREFIX + categoryKey, message);
-        break;
-      case ERROR:
-        Log.e(CATEGORY_PREFIX + categoryKey, message);
-        break;
-      case FATAL:
-        Log.e(CATEGORY_PREFIX + categoryKey, message);
-        throw new RuntimeException(message);
-    }
+    report(map(level), categoryKey, message, null, samplingFrequency, metadata);
   }
 }

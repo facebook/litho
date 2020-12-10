@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentsReporter.LogLevel.ERROR;
-import static com.facebook.litho.ComponentsReporter.LogLevel.FATAL;
-import static com.facebook.litho.ComponentsReporter.LogLevel.WARNING;
+import static com.facebook.rendercore.LogLevel.ERROR;
+import static com.facebook.rendercore.LogLevel.FATAL;
+import static com.facebook.rendercore.LogLevel.WARNING;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
@@ -60,7 +60,8 @@ public class ComponentsReporterTest {
             new ThrowableAssert.ThrowingCallable() {
               @Override
               public void call() throws Throwable {
-                ComponentsReporter.emitMessage(FATAL, CATEGORY_KEY, FATAL_MSG);
+                ComponentsReporter.emitMessage(
+                    ComponentsReporter.LogLevel.FATAL, CATEGORY_KEY, FATAL_MSG);
 
                 assertThat(mReporter.getLoggedMessages().size()).isEqualTo(1);
                 assertThat(mReporter.getLoggedMessages()).contains(new Pair<>(FATAL, FATAL_MSG));
@@ -72,7 +73,7 @@ public class ComponentsReporterTest {
 
   @Test
   public void testEmitErrorMessage() {
-    ComponentsReporter.emitMessage(ERROR, CATEGORY_KEY, ERROR_MSG);
+    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, CATEGORY_KEY, ERROR_MSG);
 
     assertThat(mReporter.getLoggedMessages().size()).isEqualTo(1);
     assertThat(mReporter.getLoggedMessages()).contains(new Pair<>(ERROR, ERROR_MSG));
@@ -80,7 +81,7 @@ public class ComponentsReporterTest {
 
   @Test
   public void testEmitWarningMessage() {
-    ComponentsReporter.emitMessage(WARNING, CATEGORY_KEY, WARNING_MSG);
+    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.WARNING, CATEGORY_KEY, WARNING_MSG);
 
     assertThat(mReporter.getLoggedMessages().size()).isEqualTo(1);
     assertThat(mReporter.getLoggedMessages()).contains(new Pair<>(WARNING, WARNING_MSG));

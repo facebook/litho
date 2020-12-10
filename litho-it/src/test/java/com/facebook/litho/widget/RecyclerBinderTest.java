@@ -74,6 +74,7 @@ import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.RecyclerBinder.RenderCompleteRunnable;
+import com.facebook.rendercore.LogLevel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -4605,7 +4606,7 @@ public class RecyclerBinderTest {
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
-    assertThat(reporter.hasMessageType(ComponentsReporter.LogLevel.ERROR)).isTrue();
+    assertThat(reporter.hasMessageType(LogLevel.ERROR)).isTrue();
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
   }
 

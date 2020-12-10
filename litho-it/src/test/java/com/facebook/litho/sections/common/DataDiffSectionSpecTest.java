@@ -28,6 +28,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.DefaultComponentsReporter;
 import com.facebook.litho.EventHandler;
@@ -41,11 +42,13 @@ import com.facebook.litho.testing.sections.TestGroupSection;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.sections.TestTarget.Operation;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.LogLevel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import org.junit.Before;
 import org.junit.Test;
@@ -567,13 +570,15 @@ public class DataDiffSectionSpecTest {
     private final Queue<String> mMessages = new LinkedList<>();
 
     @Override
-    public void emitMessage(
-        ComponentsReporter.LogLevel level,
+    public void report(
+        LogLevel level,
         String categoryKey,
         String message,
-        int samplingFrequency) {
+        @Nullable Throwable cause,
+        int samplingFrequency,
+        @Nullable Map<String, Object> metadata) {
+      super.report(level, categoryKey, message, cause, samplingFrequency, metadata);
       mMessages.offer(message);
-      super.emitMessage(level, categoryKey, message, samplingFrequency);
     }
 
     boolean containsMessage(String message) {

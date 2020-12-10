@@ -17,43 +17,28 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import android.util.Log
-import com.facebook.litho.ComponentsReporter
+import com.facebook.rendercore.AbstractErrorReporter;
+import com.facebook.rendercore.LogLevel;
 
-class SampleComponentsReporter : ComponentsReporter.Reporter {
+class SampleComponentsReporter : AbstractErrorReporter() {
   private val tag = "LITHOSAMPLE"
 
-  override fun emitMessage(
-      level: ComponentsReporter.LogLevel,
-      categoryKey: String,
-      message: String
-  ) {
-    emitMessage(level, categoryKey, message, 0)
-  }
-
-  override fun emitMessage(
-      level: ComponentsReporter.LogLevel,
+  override fun report(
+      level: LogLevel,
       categoryKey: String,
       message: String,
-      samplingFrequency: Int
-  ) {
-    emitMessage(level, categoryKey, message, samplingFrequency, null)
-  }
-
-  override fun emitMessage(
-      level: ComponentsReporter.LogLevel,
-      categoryKey: String,
-      message: String,
+      cause: Throwable?,
       samplingFrequency: Int,
       metadata: Map<String, Any>?
   ) {
     when (level) {
-      ComponentsReporter.LogLevel.WARNING -> {
+      LogLevel.WARNING -> {
         Log.w(tag, message)
       }
-      ComponentsReporter.LogLevel.ERROR -> {
+      LogLevel.ERROR -> {
         Log.e(tag, message)
       }
-      ComponentsReporter.LogLevel.FATAL -> {
+      LogLevel.FATAL -> {
         Log.wtf(tag, message)
         throw RuntimeException(message)
       }

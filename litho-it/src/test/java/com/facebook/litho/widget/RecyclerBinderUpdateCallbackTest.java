@@ -31,6 +31,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.DefaultComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.ErrorReporterDelegate;
+import com.facebook.rendercore.LogLevel;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -54,7 +56,7 @@ public class RecyclerBinderUpdateCallbackTest {
   private ComponentContext mComponentContext;
   private RecyclerBinderUpdateCallback.ComponentRenderer mComponentRenderer;
   private RecyclerBinderUpdateCallback.OperationExecutor mOperationExecutor;
-  private ComponentsReporter.Reporter mReporter;
+  private ErrorReporterDelegate mReporter;
 
   @Before
   public void setup() {
@@ -80,7 +82,7 @@ public class RecyclerBinderUpdateCallbackTest {
         .when(mOperationExecutor)
         .executeOperations((ComponentContext) any(), anyList());
 
-    mReporter = mock(ComponentsReporter.Reporter.class);
+    mReporter = mock(ErrorReporterDelegate.class);
     doAnswer(
             new Answer() {
               @Override
@@ -89,7 +91,7 @@ public class RecyclerBinderUpdateCallbackTest {
               }
             })
         .when(mReporter)
-        .emitMessage(eq(ComponentsReporter.LogLevel.ERROR), anyString(), anyString());
+        .report(eq(LogLevel.ERROR), anyString(), anyString());
     ComponentsReporter.provide(mReporter);
   }
 
@@ -104,8 +106,7 @@ public class RecyclerBinderUpdateCallbackTest {
         new RecyclerBinderUpdateCallback(null, mOldData, mComponentRenderer, mOperationExecutor);
     callback.onInserted(0, OLD_DATA_SIZE);
     callback.applyChangeset(mComponentContext);
-    verify(mReporter, never())
-        .emitMessage((ComponentsReporter.LogLevel) any(), anyString(), anyString());
+    verify(mReporter, never()).report((LogLevel) any(), anyString(), anyString());
 
     final List<RecyclerBinderUpdateCallback.Operation> operations = callback.getOperations();
     assertThat(operations.size()).isEqualTo(1);
@@ -136,8 +137,7 @@ public class RecyclerBinderUpdateCallbackTest {
         new RecyclerBinderUpdateCallback(null, oldData, mComponentRenderer, mOperationExecutor);
     callback.onInserted(0, 12);
     callback.applyChangeset(mComponentContext);
-    verify(mReporter, never())
-        .emitMessage((ComponentsReporter.LogLevel) any(), anyString(), anyString());
+    verify(mReporter, never()).report((LogLevel) any(), anyString(), anyString());
 
     final RecyclerBinderUpdateCallback callback2 =
         new RecyclerBinderUpdateCallback(oldData, newData, mComponentRenderer, mOperationExecutor);
@@ -176,8 +176,7 @@ public class RecyclerBinderUpdateCallbackTest {
         new RecyclerBinderUpdateCallback(null, mOldData, mComponentRenderer, mOperationExecutor);
     callback1.onInserted(0, OLD_DATA_SIZE);
     callback1.applyChangeset(mComponentContext);
-    verify(mReporter, never())
-        .emitMessage((ComponentsReporter.LogLevel) any(), anyString(), anyString());
+    verify(mReporter, never()).report((LogLevel) any(), anyString(), anyString());
     final RecyclerBinderUpdateCallback.Operation operation =
         (RecyclerBinderUpdateCallback.Operation) callback1.getOperations().get(0);
     assertOperationComponentContainer(operation, mOldData);
@@ -203,7 +202,7 @@ public class RecyclerBinderUpdateCallbackTest {
     callback2.onChanged(10, 1, null);
     callback2.onRemoved(0, 1);
     callback2.applyChangeset(mComponentContext);
-    verify(mReporter).emitMessage(eq(ComponentsReporter.LogLevel.ERROR), anyString(), anyString());
+    verify(mReporter).report(eq(LogLevel.ERROR), anyString(), anyString());
 
     final List<RecyclerBinderUpdateCallback.Operation> operations = callback2.getOperations();
     assertThat(operations.size()).isEqualTo(2);

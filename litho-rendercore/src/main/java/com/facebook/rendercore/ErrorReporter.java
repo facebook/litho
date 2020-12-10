@@ -133,7 +133,7 @@ public class ErrorReporter {
     getInstance().report(level, categoryKey, message, cause, samplingFrequency, metadata);
   }
 
-  private static ErrorReporterDelegate getInstance() {
+  public static ErrorReporterDelegate getInstance() {
     if (sInstance == null) {
       synchronized (ErrorReporter.class) {
         if (sInstance == null) {

@@ -50,6 +50,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaNode;
 import org.junit.Before;
@@ -505,8 +506,7 @@ public class InternalNodeTest {
     assertThat(mComponentsReporter.getLoggedMessages())
         .contains(
             new Pair<>(
-                ComponentsReporter.LogLevel.WARNING,
-                "You should not set alignSelf, flex to a root layout in Column"));
+                LogLevel.WARNING, "You should not set alignSelf, flex to a root layout in Column"));
   }
 
   @Test

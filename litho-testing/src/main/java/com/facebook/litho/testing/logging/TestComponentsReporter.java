@@ -17,37 +17,35 @@
 package com.facebook.litho.testing.logging;
 
 import android.util.Pair;
-import com.facebook.litho.ComponentsReporter;
+import androidx.annotation.Nullable;
 import com.facebook.litho.DefaultComponentsReporter;
+import com.facebook.rendercore.LogLevel;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class TestComponentsReporter extends DefaultComponentsReporter {
-  private final List<Pair<ComponentsReporter.LogLevel, String>> mLoggedMessages =
-      new LinkedList<>();
 
-  @Override
-  public void emitMessage(ComponentsReporter.LogLevel level, String categoryKey, String message) {
-    emitMessage(level, categoryKey, message, 0);
-  }
+  private final List<Pair<LogLevel, String>> mLoggedMessages = new LinkedList<>();
 
-  @Override
-  public void emitMessage(
-      ComponentsReporter.LogLevel level,
-      String categoryKey,
-      String message,
-      int samplingFrequency) {
-    super.emitMessage(level, categoryKey, message, samplingFrequency);
-
-    mLoggedMessages.add(new Pair<>(level, message));
-  }
-
-  public List<Pair<ComponentsReporter.LogLevel, String>> getLoggedMessages() {
+  public List<Pair<LogLevel, String>> getLoggedMessages() {
     return mLoggedMessages;
   }
 
-  public boolean hasMessageType(ComponentsReporter.LogLevel logLevel) {
-    for (Pair<ComponentsReporter.LogLevel, String> loggedMessage : mLoggedMessages) {
+  @Override
+  public void report(
+      LogLevel level,
+      String categoryKey,
+      String message,
+      @Nullable Throwable cause,
+      int samplingFrequency,
+      @Nullable Map<String, Object> metadata) {
+    super.report(level, categoryKey, message, cause, samplingFrequency, metadata);
+    mLoggedMessages.add(new Pair<>(level, message));
+  }
+
+  public boolean hasMessageType(LogLevel logLevel) {
+    for (Pair<LogLevel, String> loggedMessage : mLoggedMessages) {
       if (loggedMessage.first == logLevel) {
         return true;
       }
