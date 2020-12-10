@@ -441,6 +441,10 @@ class TextInputSpec {
       inputType &= ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
       editText.setLines(1);
     }
+
+    if (!editable) {
+      inputType = EditorInfo.TYPE_NULL;
+    }
     setInputTypeIfChanged(editText, inputType);
 
     // Needs to be set before the text so it would apply to the current text
@@ -469,7 +473,6 @@ class TextInputSpec {
     editText.setImeOptions(imeOptions);
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
-    editText.setClickable(editable);
     editText.setLongClickable(editable);
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
