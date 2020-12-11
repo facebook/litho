@@ -17,8 +17,8 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import android.util.Log
-import com.facebook.rendercore.AbstractErrorReporter;
-import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.AbstractErrorReporter
+import com.facebook.rendercore.LogLevel
 
 class SampleComponentsReporter : AbstractErrorReporter() {
   private val tag = "LITHOSAMPLE"
