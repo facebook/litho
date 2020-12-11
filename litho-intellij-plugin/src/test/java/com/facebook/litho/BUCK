@@ -28,5 +28,6 @@ fb_java_test(
         make_dep_path("litho-intellij-plugin/src/main:main"),
         make_dep_path("litho-intellij-plugin/src/main/java/com/facebook/litho/intellij/extensions:lib"),
         make_dep_path("litho-processor/src/test/java/com/facebook/litho/specmodels/processor:processor"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
     ],
 )

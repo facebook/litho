@@ -26,3 +26,21 @@ fb_java_library(
         LITHO_JSR_TARGET,
     ],
 )
+
+# Copy of the target to use in intellij plugin with provided deps
+fb_java_library(
+    name = "internal4idea",
+    srcs = glob(["*.java"]),
+    java_version = "8",
+    labels = ["supermodule:android/default/litho.core"],
+    provided_deps = [
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
+    ],
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)

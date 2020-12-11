@@ -114,6 +114,8 @@ LITHO_JSR_TARGET = make_dep_path("lib/jsr-305:jsr-305")
 
 LITHO_ANDROIDSUPPORT_TARGET = make_dep_path("lib/androidx:androidx")
 
+LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET = make_dep_path("lib/androidx:annotation")
+
 LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path("lib/androidx:androidx-recyclerview")
 
 LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET = make_dep_path("lib/androidx:androidx-appcompat")

@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANNOTATIONS_TARGET",
     "LITHO_JAVAPOET_TARGET",
@@ -55,5 +56,33 @@ fb_java_library(
     ],
     exported_deps = [
         LITHO_ANNOTATIONS_TARGET,
+    ],
+)
+
+# Copy of the target to use in intellij plugin with limited androidsupport target
+fb_java_library(
+    name = "specmodels-bare4idea",
+    srcs = glob(
+        ["**/*.java"],
+        exclude = glob([
+            "processor/**/*.java",
+            "internal/*.java",
+            "*/testing/*.java",
+        ]),
+    ),
+    labels = ["supermodule:android/default/litho.core"],
+    provided_deps = [
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+    ],
+    source = "8",
+    target = "8",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_ANDROIDSUPPORT_ANNOTATION_TARGET,
     ],
 )

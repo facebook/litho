@@ -80,3 +80,26 @@ fb_java_library(
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
     ],
 )
+
+# Copy of the target to use in intellij plugin with java 8
+fb_java_library(
+    name = "processor-lib-bare4idea",
+    srcs = glob(
+        ["*.java"],
+        exclude = ["ParamNameExtractor.java"],
+    ),
+    labels = ["supermodule:android/default/litho.core"],
+    provided_deps = [
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare4idea"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal4idea"),
+        make_dep_path("litho-processor/src/main/java8:files4idea"),
+    ],
+    source = "8",
+    target = "8",
+    visibility = [
+        "PUBLIC",
+    ],
+)
