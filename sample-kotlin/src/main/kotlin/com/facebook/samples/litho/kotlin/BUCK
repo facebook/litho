@@ -43,6 +43,7 @@ load(
 fb_android_library(
     name = "litho",
     srcs = glob(["**/*.kt"]),
+    autoglob = False,
     is_androidx = True,
     language = "KOTLIN",
     plugins = [

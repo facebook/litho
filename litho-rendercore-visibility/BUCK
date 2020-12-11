@@ -11,6 +11,7 @@ load(
 fb_android_library(
     name = "rendercore-visibility-stub",
     srcs = glob(["src/main/java/**/*.java"]),
+    autoglob = False,
     labels = ["supermodule:android/default/rendercore"],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
