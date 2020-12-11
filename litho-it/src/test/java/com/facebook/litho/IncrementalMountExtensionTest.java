@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateInput;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -89,6 +90,8 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
+    final MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
+    when(mountDelegate.getMountDelegateTarget()).thenReturn(mountDelegateTarget);
     final IncrementalMountExtension extension =
         IncrementalMountExtension.getInstance(mExtensionAcquireDuringMount);
 
@@ -134,6 +137,8 @@ public class IncrementalMountExtensionTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.getHeight()).thenReturn(50);
     final MountDelegate mountDelegate = mock(MountDelegate.class);
+    final MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
+    when(mountDelegate.getMountDelegateTarget()).thenReturn(mountDelegateTarget);
     final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
     mountDelegate.addExtension(extension);
 

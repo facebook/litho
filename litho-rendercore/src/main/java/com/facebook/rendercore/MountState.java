@@ -501,7 +501,9 @@ public class MountState implements MountDelegateTarget {
 
     final MountItem mountItem = mIndexToMountedItemMap.get(parentRenderUnit.getId());
     if (mountItem == null) {
-      throw new RuntimeException(
+      throw new HostNotMountedException(
+          renderUnit,
+          parentRenderUnit,
           "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
               + "Parent RenderUnit: "
               + "id="

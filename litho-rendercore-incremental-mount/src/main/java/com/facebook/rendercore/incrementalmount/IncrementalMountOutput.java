@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 /** The output object for incremental mount extension */
 public class IncrementalMountOutput {
   private final int index;
+  private @Nullable Rect originalBounds;
   private final Rect bounds;
   private final long id;
   private final @Nullable IncrementalMountOutput host;
@@ -49,6 +50,10 @@ public class IncrementalMountOutput {
     return bounds;
   }
 
+  public @Nullable Rect getOriginalBounds() {
+    return originalBounds;
+  }
+
   public long getId() {
     return id;
   }
@@ -69,27 +74,37 @@ public class IncrementalMountOutput {
     boolean needsUpdate = false;
 
     if (childBounds.top < hostBounds.top) {
+      maybeCacheOriginalBounds(host);
       hostBounds.top = childBounds.top;
       needsUpdate = true;
     }
 
     if (childBounds.bottom > hostBounds.bottom) {
+      maybeCacheOriginalBounds(host);
       hostBounds.bottom = childBounds.bottom;
       needsUpdate = true;
     }
 
     if (childBounds.left < hostBounds.left) {
+      maybeCacheOriginalBounds(host);
       hostBounds.left = childBounds.left;
       needsUpdate = true;
     }
 
     if (childBounds.right > hostBounds.right) {
+      maybeCacheOriginalBounds(host);
       hostBounds.right = childBounds.right;
       needsUpdate = true;
     }
 
     if (needsUpdate) {
       ensureHostBounds(host, host.getHostOutput());
+    }
+  }
+
+  private static void maybeCacheOriginalBounds(IncrementalMountOutput output) {
+    if (output.originalBounds == null) {
+      output.originalBounds = new Rect(output.bounds);
     }
   }
 }
