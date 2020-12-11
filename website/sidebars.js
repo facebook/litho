@@ -52,7 +52,7 @@ module.exports = {
       'sections/diff-sections',
       'sections/architecture',
     ],
-    Widgets: [
+    'Widgets': [
       'widgets/builtin-widgets',
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
@@ -60,7 +60,7 @@ module.exports = {
       'devex/android-studio-plugin',
       'devex/flipper-plugins',
     ],
-    Testing: [
+    'Testing': [
       'testing/testing-overview',
       'testing/unit-testing',
       'testing/subcomponent-testing',
@@ -90,7 +90,7 @@ module.exports = {
         },
       ]),
     ],
-    Animations: [
+    'Animations': [
       'animations/transition-basics',
       'animations/transition-types',
       'animations/transition-choreography',
@@ -98,8 +98,8 @@ module.exports = {
       'animations/transition-key-types',
       'animations/dynamic-props',
     ],
-    Accessibility: ['accessibility/accessibility-overview'],
-    Performance: [
+    'Accessibility': ['accessibility/accessibility-overview'],
+    'Performance': [
       'performance/analysing-performance',
       'performance/spotting-performance-regressions',
     ],
@@ -114,7 +114,7 @@ module.exports = {
         'fb/internal-litho',
         'fb/video-lessons',
         {
-          Architecture: [
+          'Architecture': [
             'fb/architecture-sections-in-a-fragment-or-activity',
             'fb/architecture-thread-safety',
             'fb/architecture-litho-tricks',
@@ -154,9 +154,9 @@ module.exports = {
           'writing-components',
           'using-components',
         ],
-        Reference: ['props', 'common-props', 'cached-values'],
+        'Reference': ['props', 'common-props', 'cached-values'],
         'Handling Events': ['events-touch-handling', 'visibility-handling'],
-        Sections: [
+        'Sections': [
           'sections-intro',
           'sections-tutorial',
           'group-sections',
@@ -179,7 +179,7 @@ module.exports = {
           'tooltips',
           'saving-state',
         ],
-        Compatibility: ['styles', 'rtl'],
+        'Compatibility': ['styles', 'rtl'],
         'Advanced Guides': [
           'architecture-overview',
           'recycler-component',
@@ -187,16 +187,16 @@ module.exports = {
           'error-boundaries',
           'onattached-ondetached',
         ],
-        Architecture: [
+        'Architecture': [
           'codegen',
           'asynchronous-layout',
           'view-flattening',
           'recycling',
         ],
-        Experimental: ['mount-extensions'],
+        'Experimental': ['mount-extensions'],
         'Additional Resources': ['faq', 'glossary'],
-        Tools: ['debugging', 'dev-options'],
-        Contributing: ['contributing', 'community-showcase', 'repo-structure'],
+        'Tools': ['debugging', 'dev-options'],
+        'Contributing': ['contributing', 'community-showcase', 'repo-structure'],
       },
     ],
   },
