@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "litho_android
 
 litho_android_library(
     name = "flipper",
+    autoglob = False,
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":flipper-core",

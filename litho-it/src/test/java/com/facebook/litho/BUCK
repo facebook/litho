@@ -47,6 +47,7 @@ litho_robolectric4_test(
             "testing/**/*.java",
         ],
     ),
+    autoglob = False,
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     is_androidx = True,
     provided_deps = [

@@ -13,6 +13,7 @@ load(
 litho_android_library(
     name = "eventhandler",
     srcs = glob(["*.java"]),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

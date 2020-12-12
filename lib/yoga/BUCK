@@ -10,6 +10,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_libra
 litho_android_library(
     name = "yoga",
     srcs = glob(["src/main/java/**/*.java"]),
+    autoglob = False,
     visibility = LITHO_VISIBILITY,
     deps = [
         LITHO_PROGUARDANNOTATIONS_TARGET,

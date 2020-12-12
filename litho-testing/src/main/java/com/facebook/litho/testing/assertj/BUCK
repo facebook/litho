@@ -24,6 +24,7 @@ COMMON_DEPS = [
 litho_android_library(
     name = "assertj",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",

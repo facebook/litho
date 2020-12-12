@@ -16,6 +16,7 @@ load(
 litho_android_library(
     name = "subcomponents",
     srcs = glob(["*.java"]),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

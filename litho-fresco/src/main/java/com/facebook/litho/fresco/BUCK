@@ -18,6 +18,7 @@ litho_android_library(
         ["*.java"],
         exclude = ["common/**/*"],
     ),
+    autoglob = False,
     labels = ["supermodule:android/default/litho.core"],
     plugins = [
         LITHO_PROCESSOR_TARGET,

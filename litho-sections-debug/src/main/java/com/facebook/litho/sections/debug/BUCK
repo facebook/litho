@@ -16,6 +16,7 @@ load(
 litho_android_library(
     name = "debug",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     required_for_source_only_abi = True,

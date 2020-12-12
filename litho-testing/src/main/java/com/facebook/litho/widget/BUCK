@@ -33,6 +33,7 @@ litho_android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
+    autoglob = False,
     is_androidx = True,
     visibility = ["PUBLIC"],
     deps = [

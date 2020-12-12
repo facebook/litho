@@ -15,6 +15,7 @@ load(
 litho_android_library(
     name = "config",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [

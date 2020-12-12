@@ -12,6 +12,7 @@ load(
 litho_android_library(
     name = "perfboost",
     srcs = glob(["*.java"]),
+    autoglob = False,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_BUILD_CONFIG_TARGET,

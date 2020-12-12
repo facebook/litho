@@ -24,6 +24,7 @@ load(
 
 litho_android_library(
     name = "components",
+    autoglob = False,
     visibility = LITHO_COMPONENTS_TARGET_VISIBILITY,
     deps = [
         LITHO_BUILD_CONFIG_TARGET,
@@ -37,6 +38,7 @@ litho_android_library(
 
 litho_android_library(
     name = "sections_core",
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
@@ -49,6 +51,7 @@ litho_android_library(
 
 litho_android_library(
     name = "litho_core_kotlin",
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
