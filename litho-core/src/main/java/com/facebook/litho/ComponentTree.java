@@ -2152,7 +2152,7 @@ public class ComponentTree {
             extraAttribution);
 
     if (localLayoutState == null) {
-      if (!isReleased() && isFromSyncLayout(source)) {
+      if (!isReleased() && isFromSyncLayout(source) && !mUseCancelableLayoutFutures) {
         throw new IllegalStateException(
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
