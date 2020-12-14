@@ -34,6 +34,7 @@ module.exports = {
           'mainconcepts/coordinate-state-actions/trigger-events',
           'mainconcepts/coordinate-state-actions/treeprops',
           'mainconcepts/coordinate-state-actions/componenttree',
+          'mainconcepts/coordinate-state-actions/dynamic-props',
         ],
         'Handling User Interactions': [],
       },
@@ -96,7 +97,6 @@ module.exports = {
       'animations/transition-choreography',
       'animations/transition-definitions',
       'animations/transition-key-types',
-      'animations/dynamic-props',
     ],
     'Accessibility': ['accessibility/accessibility-overview'],
     'Performance': [
