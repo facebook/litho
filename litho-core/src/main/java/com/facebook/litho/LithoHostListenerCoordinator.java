@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -28,16 +29,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Helper for dispatching events to multiple MountListenerExtensions in Litho. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoHostListenerCoordinator {
 
   private final List<MountExtension> mMountExtensions;
   private final MountDelegateTarget mMountDelegateTarget;
-  private IncrementalMountExtension mIncrementalMountExtension;
-  private VisibilityMountExtension mVisibilityExtension;
-  private TransitionsExtension mTransitionsExtension;
-  private EndToEndTestingExtension mEndToEndTestingExtension;
-  private DynamicPropsExtension mDynamicPropsExtension;
-  private LithoViewAttributesExtension mViewAttributesExtension;
+  @Nullable private IncrementalMountExtension mIncrementalMountExtension;
+  @Nullable private VisibilityMountExtension mVisibilityExtension;
+  @Nullable private TransitionsExtension mTransitionsExtension;
+  @Nullable private EndToEndTestingExtension mEndToEndTestingExtension;
+  @Nullable private DynamicPropsExtension mDynamicPropsExtension;
+  @Nullable private LithoViewAttributesExtension mViewAttributesExtension;
 
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountExtensions = new ArrayList<>();
