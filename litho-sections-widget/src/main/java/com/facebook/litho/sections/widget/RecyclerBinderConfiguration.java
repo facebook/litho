@@ -70,7 +70,7 @@ public class RecyclerBinderConfiguration {
       boolean circular,
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
-      LayoutThreadPoolConfiguration threadPoolConfiguration,
+      @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
@@ -137,6 +137,7 @@ public class RecyclerBinderConfiguration {
     return mHScrollAsyncMode;
   }
 
+  @Nullable
   public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
     return mThreadPoolConfiguration;
   }

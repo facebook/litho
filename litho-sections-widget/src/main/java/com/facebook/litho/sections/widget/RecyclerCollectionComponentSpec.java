@@ -138,7 +138,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) @Nullable Component errorComponent,
       @Prop(optional = true, varArg = "onScrollListener") @Nullable
           List<OnScrollListener> onScrollListeners,
-      @Prop(optional = true) final LoadEventsHandler loadEventsHandler,
+      @Nullable @Prop(optional = true) final LoadEventsHandler loadEventsHandler,
       @Prop(optional = true) boolean clipToPadding,
       @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
