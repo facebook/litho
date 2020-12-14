@@ -19,6 +19,7 @@ package com.facebook.samples.lithobarebones;
 import android.app.Application;
 import com.facebook.soloader.SoLoader;
 
+// app_setup_start
 public class SampleApplication extends Application {
 
   @Override
@@ -28,3 +29,4 @@ public class SampleApplication extends Application {
     SoLoader.init(this, false);
   }
 }
+// app_setup_end
