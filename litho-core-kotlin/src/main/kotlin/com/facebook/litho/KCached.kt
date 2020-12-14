@@ -36,13 +36,13 @@ fun <T> DslScope.useCached(vararg inputs: Any, calculator: () -> T): CachedDeleg
     CachedDelegate(context, inputs = inputs, calculator = calculator)
 
 class CachedDelegate<T>
-    internal constructor(
-        private val c: ComponentContext,
-        private val input1: Any? = null,
-        private val input2: Any? = null,
-        private val inputs: Array<out Any>? = null,
-        private val calculator: () -> T
-    ) {
+internal constructor(
+    private val c: ComponentContext,
+    private val input1: Any? = null,
+    private val input2: Any? = null,
+    private val inputs: Array<out Any>? = null,
+    private val calculator: () -> T
+) {
   operator fun getValue(nothing: Nothing?, property: KProperty<*>): T {
     val cacheInputs =
         CachedInputs(c.componentScope.javaClass, property.name, input1, input2, inputs)
