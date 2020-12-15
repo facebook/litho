@@ -39,10 +39,13 @@ public final class ThreadUtils {
   private ThreadUtils() {}
 
   public static void assertMainThread() {
+    assertMainThread(
+        "This must run on the main thread; but is running on " + Thread.currentThread().getName());
+  }
+
+  public static void assertMainThread(String message) {
     if (!isMainThread()) {
-      throw new IllegalStateException(
-          "This must run on the main thread; but is running on "
-              + Thread.currentThread().getName());
+      throw new IllegalStateException(message);
     }
   }
 
