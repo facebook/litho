@@ -2,7 +2,7 @@
 
 ## Version 1.6.2
 
--2020-xx-xx_
+_2020-12-16_
 
 * Fix: Logging for method/param goto navigation to include class.
 * Fix: Dynamic template (add dynamic method name).
