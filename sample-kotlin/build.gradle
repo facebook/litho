@@ -67,6 +67,7 @@ dependencies {
     implementation deps.fresco
 
     implementation deps.supportRecyclerView
+    implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib
     implementation deps.supportAppCompat
 

@@ -47,6 +47,7 @@ dependencies {
 
     implementation deps.soloader
     implementation deps.supportRecyclerView
+    implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib
 }
 repositories {

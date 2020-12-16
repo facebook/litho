@@ -47,7 +47,7 @@ android {
                 events "passed", "skipped", "failed", "standardOut", "standardError"
                 exceptionFormat = 'full'
             }
-            
+
             // This test requires some resources configuration with Gradle and Robolectric
             // that we haven't had time to figure out
             exclude '/com/facebook/litho/ApplyStylesTest.class'
@@ -72,6 +72,7 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
+    implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib
 
     compileOnly project(':litho-sections-annotations')

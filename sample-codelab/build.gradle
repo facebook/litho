@@ -57,6 +57,7 @@ dependencies {
     // Support Library
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
+    implementation deps.supportSwipeRefresh
 
     // Unit test only
     testImplementation project(':litho-testing')

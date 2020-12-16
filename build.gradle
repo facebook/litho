@@ -77,7 +77,7 @@ ext.deps = [
         supportAppCompat   : 'androidx.appcompat:appcompat:1.0.0',
         supportCore        : 'androidx.core:core:1.0.0',
         supportCustomView  : 'androidx.customview:customview:1.0.0',
-        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.0.0',
+        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.2.0-beta01',
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.1',
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.1',
         supportTestCore    : 'androidx.test:core:1.2.0',
@@ -87,6 +87,7 @@ ext.deps = [
         supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
         supportMaterial    : 'com.google.android.material:material:1.2.0',
         supportTransition  : 'androidx.transition:transition:1.0.0',
+        supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
         // Arch
         archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
         // First-party

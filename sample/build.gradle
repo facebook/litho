@@ -65,6 +65,7 @@ dependencies {
     // Support Library
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
+    implementation deps.supportSwipeRefresh
     implementation deps.supportTransition
 
     // Integration test only
