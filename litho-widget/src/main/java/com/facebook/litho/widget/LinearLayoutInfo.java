@@ -21,6 +21,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,7 +90,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public void setRenderInfoCollection(RenderInfoCollection renderInfoCollection) {
+  public void setRenderInfoCollection(@Nullable RenderInfoCollection renderInfoCollection) {
     // Do nothing
   }
 

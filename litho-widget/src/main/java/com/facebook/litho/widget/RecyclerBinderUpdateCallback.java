@@ -130,7 +130,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   @Override
-  public void onChanged(int position, int count, Object payload) {
+  public void onChanged(int position, int count, @Nullable Object payload) {
     final List<ComponentContainer> placeholders = new ArrayList<>();
     final List<Diff> dataHolders = new ArrayList<>(count);
 
@@ -308,7 +308,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     private RenderInfo mRenderInfo;
     private boolean mNeedsComputation;
 
-    public ComponentContainer(RenderInfo renderInfo, boolean needsComputation) {
+    public ComponentContainer(@Nullable RenderInfo renderInfo, boolean needsComputation) {
       mRenderInfo = renderInfo;
       mNeedsComputation = needsComputation;
     }

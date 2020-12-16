@@ -170,6 +170,7 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
     mRenderInfo.setViewType(viewType);
   }
 
+  @Nullable
   public TreeProps getTreeProps() {
     return mTreeProps;
   }

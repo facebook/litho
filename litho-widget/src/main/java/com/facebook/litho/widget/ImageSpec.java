@@ -113,7 +113,7 @@ class ImageSpec {
       ComponentContext c,
       ComponentLayout layout,
       @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable,
-      @Prop(optional = true) ScaleType scaleType,
+      @Nullable @Prop(optional = true) ScaleType scaleType,
       Output<DrawableMatrix> drawableMatrix,
       Output<Integer> drawableWidth,
       Output<Integer> drawableHeight) {
@@ -152,7 +152,7 @@ class ImageSpec {
       ComponentContext c,
       MatrixDrawable matrixDrawable,
       @Prop(resType = ResType.DRAWABLE) @Nullable Drawable drawable,
-      @FromBoundsDefined DrawableMatrix drawableMatrix) {
+      @Nullable @FromBoundsDefined DrawableMatrix drawableMatrix) {
     matrixDrawable.mount(drawable, drawableMatrix);
   }
 

@@ -366,7 +366,7 @@ public class RecyclerBinder
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
-        LithoHandler layoutHandler,
+        @Nullable LithoHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,

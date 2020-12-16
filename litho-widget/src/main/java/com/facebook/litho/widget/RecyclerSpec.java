@@ -146,7 +146,7 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
-      @Prop(optional = true, isCommonProp = true) CharSequence contentDescription,
+      @Nullable @Prop(optional = true, isCommonProp = true) CharSequence contentDescription,
       @Prop(optional = true) @Nullable ItemAnimator itemAnimator) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
@@ -194,7 +194,7 @@ class RecyclerSpec {
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") @Nullable
           List<OnScrollListener> onScrollListeners,
-      @Prop(optional = true) SnapHelper snapHelper,
+      @Nullable @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
       @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler) {
@@ -288,7 +288,7 @@ class RecyclerSpec {
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
-      @Prop(optional = true) SnapHelper snapHelper) {
+      @Nullable @Prop(optional = true) SnapHelper snapHelper) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {

@@ -137,7 +137,7 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder layoutHandler(LithoHandler layoutHandler) {
+    public Builder layoutHandler(@Nullable LithoHandler layoutHandler) {
       this.layoutHandler = layoutHandler;
       return this;
     }

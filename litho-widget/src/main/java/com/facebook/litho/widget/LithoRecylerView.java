@@ -36,11 +36,11 @@ public class LithoRecylerView extends RecyclerView implements HasPostDispatchDra
     this(context, null);
   }
 
-  public LithoRecylerView(Context context, AttributeSet attrs) {
+  public LithoRecylerView(Context context, @Nullable AttributeSet attrs) {
     this(context, attrs, 0);
   }
 
-  public LithoRecylerView(Context context, AttributeSet attrs, int defStyle) {
+  public LithoRecylerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
   }
 
