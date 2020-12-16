@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.Collection;
@@ -26,7 +27,7 @@ public class Logger implements SectionsDebugLogger {
 
   protected Set<SectionsDebugLogger> mSectionsDebugLoggers;
 
-  public Logger(Collection<SectionsDebugLogger> sectionsDebugLoggers) {
+  public Logger(@Nullable Collection<SectionsDebugLogger> sectionsDebugLoggers) {
     mSectionsDebugLoggers = new HashSet<>();
     if (sectionsDebugLoggers != null) {
       for (SectionsDebugLogger sectionsDebugLogger : sectionsDebugLoggers) {
@@ -83,7 +84,7 @@ public class Logger implements SectionsDebugLogger {
   @Override
   public void logShouldUpdate(
       String tag,
-      Object previous,
+      @Nullable Object previous,
       Object next,
       String previousPrefix,
       String nextPrefix,

@@ -50,14 +50,15 @@ public class SectionContext extends ComponentContext {
         context.getTreePropsCopy());
   }
 
-  public SectionContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
+  public SectionContext(
+      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
     this(context, logTag, logger, null);
   }
 
   public SectionContext(
       Context context,
       @Nullable String logTag,
-      ComponentsLogger logger,
+      @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
     super(context, logTag, logger);
     super.setTreeProps(treeProps);
@@ -183,7 +184,7 @@ public class SectionContext extends ComponentContext {
   }
 
   @Override
-  public void setTreeProps(TreeProps treeProps) {
+  public void setTreeProps(@Nullable TreeProps treeProps) {
     super.setTreeProps(treeProps);
   }
 

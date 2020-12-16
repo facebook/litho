@@ -199,7 +199,7 @@ public class SectionTree {
 
     public synchronized void ensurePosted(
         @ApplyNewChangeSet int source,
-        String attribution,
+        @Nullable String attribution,
         @Nullable ChangesetDebugInfo changesetDebugInfo) {
       if (!mIsPosted) {
         mIsPosted = true;
@@ -999,7 +999,7 @@ public class SectionTree {
     mCachedValues.put(cachedValueInputs, cachedValue);
   }
 
-  private static @Nullable Section copy(Section section, boolean deep) {
+  private static @Nullable Section copy(@Nullable Section section, boolean deep) {
     return section != null ? section.makeShallowCopy(deep) : null;
   }
 
@@ -1052,8 +1052,8 @@ public class SectionTree {
   private void applyNewChangeSet(
       @ApplyNewChangeSet int source,
       @Nullable String attribution,
-      ThreadTracingRunnable prevTracingRunnable,
-      ChangesetDebugInfo changesetDebugInfo) {
+      @Nullable ThreadTracingRunnable prevTracingRunnable,
+      @Nullable ChangesetDebugInfo changesetDebugInfo) {
     if (attribution == null) {
       attribution = mTag;
     }
@@ -1334,7 +1334,8 @@ public class SectionTree {
   }
 
   private void postNewChangeSets(
-      ThreadTracingRunnable prevTracingRunnable, final ChangesetDebugInfo changesetDebugInfo) {
+      @Nullable ThreadTracingRunnable prevTracingRunnable,
+      @Nullable final ChangesetDebugInfo changesetDebugInfo) {
     if (mUseBackgroundChangeSets) {
       applyChangeSetsToTargetBackgroundAllowed(prevTracingRunnable, changesetDebugInfo);
       return;
@@ -1424,7 +1425,8 @@ public class SectionTree {
   }
 
   @UiThread
-  private void applyChangeSetsToTargetUIThreadOnly(ChangesetDebugInfo changesetDebugInfo) {
+  private void applyChangeSetsToTargetUIThreadOnly(
+      @Nullable ChangesetDebugInfo changesetDebugInfo) {
     assertMainThread();
     if (mUseBackgroundChangeSets) {
       throw new IllegalStateException(
@@ -1468,7 +1470,7 @@ public class SectionTree {
   private void applyChangeSetsToTargetUnchecked(
       final Section currentSection,
       List<ChangeSet> changeSets,
-      final ChangesetDebugInfo changesetDebugInfo) {
+      @Nullable final ChangesetDebugInfo changesetDebugInfo) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1576,7 +1578,7 @@ public class SectionTree {
 
   private static ChangeSetState calculateNewChangeSet(
       SectionContext context,
-      Section currentRoot,
+      @Nullable Section currentRoot,
       Section nextRoot,
       Map<String, List<StateContainer.StateUpdate>> pendingStateUpdates,
       SectionsDebugLogger sectionsDebugLogger,
@@ -1624,7 +1626,7 @@ public class SectionTree {
    */
   private static void createNewTreeAndApplyStateUpdates(
       SectionContext context,
-      Section currentRoot,
+      @Nullable Section currentRoot,
       Section nextRoot,
       Map<String, List<StateContainer.StateUpdate>> pendingStateUpdates,
       SectionsDebugLogger sectionsDebugLogger,

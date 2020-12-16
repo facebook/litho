@@ -138,7 +138,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * two {@link Section} with the same global scope.
    */
   protected void transferState(
-      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
+      @Nullable StateContainer previousStateContainer,
+      @Nullable StateContainer nextStateContainer) {}
 
   /** Call this to transfer the Services between two {@link Section} with the same global scope. */
   protected void transferService(SectionContext c, Section oldSection, Section newSection) {}
@@ -257,10 +258,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * Retrieves all of the tree props used by this Section from the TreeProps map and sets the tree
    * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(TreeProps parentTreeProps) {}
+  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 
   /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected TreeProps getTreePropsForChildren(SectionContext c, TreeProps previousTreeProps) {
+  protected TreeProps getTreePropsForChildren(
+      SectionContext c, @Nullable TreeProps previousTreeProps) {
     return previousTreeProps;
   }
 

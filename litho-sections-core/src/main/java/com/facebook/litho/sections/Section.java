@@ -223,12 +223,14 @@ public abstract class Section extends SectionLifecycle
   }
 
   /** @return the direct children of this {@link Section}. */
+  @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public List<Section> getChildren() {
     return mChildren;
   }
 
   /** @return the parent of this {@link Section} in the tree. */
+  @Nullable
   public Section getParent() {
     return mParent;
   }

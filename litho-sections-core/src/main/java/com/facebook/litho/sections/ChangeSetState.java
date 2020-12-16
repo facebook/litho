@@ -162,7 +162,7 @@ public class ChangeSetState {
 
   private static ChangeSet generateChangeSetRecursive(
       SectionContext sectionContext,
-      Section currentRoot,
+      @Nullable Section currentRoot,
       Section newRoot,
       List<Section> removedComponents,
       SectionsDebugLogger sectionsDebugLogger,
@@ -465,7 +465,7 @@ public class ChangeSetState {
     return count;
   }
 
-  private static final String updatePrefix(Section root, String prefix) {
+  private static final String updatePrefix(@Nullable Section root, String prefix) {
     if (root != null && root.getParent() == null) {
       return root.getClass().getSimpleName();
     } else if (root != null) {
@@ -475,7 +475,7 @@ public class ChangeSetState {
   }
 
   private static void checkCount(
-      Section currentRoot, Section newRoot, ChangeSetState changeSetState) {
+      @Nullable Section currentRoot, Section newRoot, ChangeSetState changeSetState) {
     final boolean hasNegativeCount =
         (currentRoot != null && currentRoot.getCount() < 0)
             || (newRoot != null && newRoot.getCount() < 0);
