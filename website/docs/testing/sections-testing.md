@@ -1,6 +1,6 @@
 ---
 id: sections-testing
-title: Unit Testing Sections
+title: Testing Sections
 ---
 
 [SectionComponentTestHelper](pathname:///javadoc/com/facebook/litho/testing/sections/SectionComponentTestHelper.html) provides helper functions to easily test the output of GroupSectionSpecs and state updates.

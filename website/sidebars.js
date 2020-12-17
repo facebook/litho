@@ -43,7 +43,6 @@ module.exports = {
       'sections/start',
       'sections/recycler-collection-component',
       'sections/best-practices',
-      'sections/testing',
       'sections/hscrolls',
       'sections/api-overview',
       'sections/working-ranges',
@@ -68,6 +67,7 @@ module.exports = {
       'testing/testing-treeprops',
       'testing/injectprop-matching',
       'testing/event-handler-testing',
+      'testing/sections-testing',
       'testing/espresso-testing',
       'testing/tests-in-android-studio',
       ...fbInternalOnly([
@@ -175,7 +175,6 @@ module.exports = {
           'recycler-collection-component',
           'hscrolls',
           'communicating-with-the-ui',
-          'sections-testing',
           'sections-view-support',
           'services',
           'sections-architecture',
