@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.isA;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import android.graphics.Color;
 import android.widget.FrameLayout;
@@ -32,7 +33,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LEGACY)
 @RunWith(LithoTestRunner.class)
 public class SizeSpecMountWrapperComponentSpecTest {
 

@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -32,7 +33,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LEGACY)
 @RunWith(LithoTestRunner.class)
 public class IncrementalModuleTest {
 
