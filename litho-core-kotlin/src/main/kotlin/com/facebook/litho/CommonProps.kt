@@ -18,8 +18,6 @@
 
 package com.facebook.litho
 
-import android.graphics.drawable.Drawable
-
 /**
  * Builder for setting an [onClick] event handler for component.
  *
@@ -72,20 +70,6 @@ inline fun DslScope.VisibilityHandler(
         onVisible?.let { visibleHandler(eventHandler(it)) }
         onFocused?.let { focusedHandler(eventHandler(it)) }
         onFullImpression?.let { fullImpressionHandler(eventHandler(it)) }
-      }
-    }
-
-/** Builder for decorating a child component with [background] or [foreground]. */
-@Deprecated(message = "Use Style.background and Style.foreground instead")
-inline fun DslScope.Decoration(
-    foreground: Drawable? = null,
-    background: Drawable? = null,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        foreground?.let { foreground(it) }
-        background?.let { background(it) }
       }
     }
 

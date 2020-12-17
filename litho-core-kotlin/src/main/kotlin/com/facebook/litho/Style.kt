@@ -264,13 +264,13 @@ fun Style.positionRelative(
     bottom: Dp? = null
 ) = this + com.facebook.litho.positionRelative(start, top, end, bottom)
 
-fun background(background: Drawable) = Style(background = background)
+fun background(background: Drawable?) = Style(background = background)
 
-fun Style.background(background: Drawable) = this + com.facebook.litho.background(background)
+fun Style.background(background: Drawable?) = this + com.facebook.litho.background(background)
 
-fun foreground(foreground: Drawable) = Style(foreground = foreground)
+fun foreground(foreground: Drawable?) = Style(foreground = foreground)
 
-fun Style.foreground(foreground: Drawable) = this + com.facebook.litho.foreground(foreground)
+fun Style.foreground(foreground: Drawable?) = this + com.facebook.litho.foreground(foreground)
 
 fun alignSelf(align: YogaAlign) = Style(alignSelf = align)
 

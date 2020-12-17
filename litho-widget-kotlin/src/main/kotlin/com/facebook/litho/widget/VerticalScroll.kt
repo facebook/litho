@@ -22,6 +22,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.Dp
 import com.facebook.litho.DslScope
 import com.facebook.litho.Px
+import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.px
 
@@ -38,6 +39,7 @@ inline fun DslScope.VerticalScroll(
     incrementalMountEnabled: Boolean = false,
     noinline onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
+    style: Style? = null,
     child: DslScope.() -> Component
 ): VerticalScroll =
     VerticalScroll.create(context)
@@ -57,3 +59,4 @@ inline fun DslScope.VerticalScroll(
         }
         .onInterceptTouchListener(onInterceptTouch)
         .build()
+        .apply { applyStyle(style) }
