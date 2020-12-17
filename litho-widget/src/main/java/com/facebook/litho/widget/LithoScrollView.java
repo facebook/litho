@@ -24,15 +24,17 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.VerticalScrollSpec.OnInterceptTouchListener;
 import com.facebook.litho.widget.VerticalScrollSpec.ScrollPosition;
+import java.util.List;
 
 /**
  * Extension of {@link NestedScrollView} that allows to add more features needed for @{@link
  * VerticalScrollSpec}.
  */
-public class LithoScrollView extends NestedScrollView {
+public class LithoScrollView extends NestedScrollView implements HasLithoViewChildren {
 
   private final LithoView mLithoView;
 
@@ -96,6 +98,11 @@ public class LithoScrollView extends NestedScrollView {
     mOnInterceptTouchListener = onInterceptTouchListener;
   }
 
+  @Override
+  public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+    lithoViews.add(mLithoView);
+  }
+
   void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
@@ -122,6 +129,7 @@ public class LithoScrollView extends NestedScrollView {
   }
 
   void unmount() {
+    mLithoView.unmountAllItems();
     mLithoView.setComponentTree(null);
 
     mScrollPosition = null;
