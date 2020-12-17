@@ -29,8 +29,8 @@ import com.facebook.litho.padding
 class ActionsComponent(style: Style) : KComponent(style) {
 
   override fun DslScope.render(): Component? {
-    return Row(style = Style.padding(2.dp).background(drawableColor(0xddffffff))) {
-      +FavouriteButton()
-    }
+    return Row(
+        style = Style.padding(2.dp).background(drawableColor(0xddffffff)),
+        children = listOf(FavouriteButton()))
   }
 }
