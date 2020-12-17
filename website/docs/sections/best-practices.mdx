@@ -7,7 +7,7 @@ When working with Sections, it is not unfrequent to ask yourself whether what yo
 
 In this document we’ll introduce the **two key qualities of performance** in Sections: **identity** and **immutability**. These qualities of a data model identity is what is **used by Sections to define whether a section needs to be redrawn**. The more unnecessary redraws, the worse your component will perform. Skipping a redraw for a component that has meaningfully changed is not acceptable.
 
-Once you read through this document if you feel you need to know *more* and *deeper* about RecyclerView, we recommend the original articles on [RecyclerBinder](https://developer.android.com/guide/topics/ui/layout/recyclerview) and [DiffUtils](https://developer.android.com/reference/androidx/recyclerview/widget/DiffUtil), the foundations of Sections. You’ll find they have an extensive API full of flexibility and pitfalls we’ve condensed and simplified for Facebook use cases.
+Once you read through this document if you feel you need to know *more* and *deeper* about RecyclerView, we recommend the original articles on [RecyclerView](https://developer.android.com/guide/topics/ui/layout/recyclerview) and [DiffUtils](https://developer.android.com/reference/androidx/recyclerview/widget/DiffUtil), the foundations of Sections. You’ll find they have an extensive API full of flexibility and pitfalls we’ve condensed and simplified for Facebook use cases.
 
 ## Immutability
 
