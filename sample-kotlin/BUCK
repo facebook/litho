@@ -22,6 +22,9 @@ fb_native.android_binary(
     manifest = "src/main/AndroidManifest.xml",
     use_split_dex = True,
     aapt_mode = "aapt2",
+    visibility = [
+        "PUBLIC",
+    ],
     deps = [
         LITHO_SAMPLE_KOTLIN,
     ],
