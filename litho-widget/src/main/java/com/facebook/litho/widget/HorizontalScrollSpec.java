@@ -303,6 +303,7 @@ class HorizontalScrollSpec {
       mComponentHeight = 0;
       mScrollPosition = null;
       mOnScrollChangeListener = null;
+      setScrollX(0);
     }
   }
 
