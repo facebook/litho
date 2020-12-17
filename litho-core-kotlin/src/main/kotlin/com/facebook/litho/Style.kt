@@ -64,7 +64,10 @@ open class Style(
     val foreground: Drawable? = null
 ) {
 
-  operator fun plus(other: Style): Style {
+  operator fun plus(other: Style?): Style {
+    if (other == null) {
+      return this
+    }
     return Style(
         width = other.width ?: width,
         height = other.height ?: height,
