@@ -66,6 +66,8 @@ public class TextInputSpecTest {
 
     assertThat(editText.getText().toString()).isEqualTo(text);
     assertThat(editText.getTextSize()).isEqualTo(textSize);
+    assertThat(editText.getSelectionStart()).isEqualTo(textSize);
+    assertThat(editText.getSelectionEnd()).isEqualTo(textSize);
   }
 
   @Test

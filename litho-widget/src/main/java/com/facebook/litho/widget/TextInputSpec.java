@@ -516,6 +516,7 @@ class TextInputSpec {
     }
     if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
+      editText.setSelection(text.length());
     }
   }
 
@@ -910,6 +911,7 @@ class TextInputSpec {
 
     // If line count changes state update will be triggered by view
     editText.setText(text);
+    editText.setSelection(text.length());
     return false;
   }
 
