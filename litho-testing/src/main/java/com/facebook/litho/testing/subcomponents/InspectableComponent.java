@@ -143,6 +143,17 @@ public class InspectableComponent {
     return mComponent.getTestKey();
   }
 
+  /**
+   * Returns this component's testKey or null if none is set.
+   *
+   * <p>Unlike {@link #getTestKey()}, this function can return a test key set on any Component,
+   * including container Components which resolve into LayoutNodes.
+   */
+  @Nullable
+  public String getComponentTestKey() {
+    return mComponent.getComponentTestKey();
+  }
+
   /** @return This component's componentTag or null if none is set. */
   @Nullable
   public Object getComponentTag() {

@@ -116,6 +116,12 @@ class CommonPropsHolder implements CommonProps {
 
   @Override
   @Nullable
+  public String getTestKey() {
+    return (mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0 ? mTestKey : null;
+  }
+
+  @Override
+  @Nullable
   public Object getComponentTag() {
     return mComponentTag;
   }

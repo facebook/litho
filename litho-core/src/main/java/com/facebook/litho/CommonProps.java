@@ -57,6 +57,9 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void background(@Nullable Drawable background);
 
+  @Nullable
+  String getTestKey();
+
   void testKey(String testKey);
 
   @Nullable
