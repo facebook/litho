@@ -38,6 +38,7 @@ import com.facebook.samples.litho.animations.docs.SimpleAllLayoutTransitionCompo
 import com.facebook.samples.litho.animations.docs.StaggerTransitionComponent;
 import com.facebook.samples.litho.animations.docs.StaggerTransitionSameComponent;
 import com.facebook.samples.litho.animations.docs.StaggerTransitionWithDelayComponent;
+import com.facebook.samples.litho.animations.docs.keyscope.GlobalKeyParentComponent;
 import com.facebook.samples.litho.animations.expandableelement.ExpandableElementActivity;
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.sharedelements.SharedElementsActivity;
@@ -175,6 +176,14 @@ public class Demos {
                                 @Override
                                 public Component create(ComponentContext c) {
                                   return SequenceTransitionLoopComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Global key Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return GlobalKeyParentComponent.create(c).build();
                                 }
                               }))),
                   new DemoGrouping(
