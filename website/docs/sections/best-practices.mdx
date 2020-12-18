@@ -11,9 +11,9 @@ Once you read through this document if you feel you need to know *more* and *dee
 
 ## Immutability
 
-Immutability is a quality of a data model, where its values cannot change over time. An example of mutable data is an ArrayList, which can `add` new elements. An example of immutable data is Java’s `String`, which cannot be modified in-place, and whose operations always create a new `String`.
+Immutability is a quality of a data model, where its values cannot change over time. An example of mutable data is an `ArrayList`, which can *add* new elements. An example of immutable data is Java’s `String`, which cannot be modified in-place, and whose operations always create a new `String` instance.
 
-As a performance-oriented person your intuition may be that creating objects incurs on a penalty and mutability is obviously faster. This is certainly true for cases with small locality, such as single-class cpu-bound algorithms. For large-scale cases where concurrency is involved, **the complexity added to prevent data races and other nasty behaviours heavily offsets the cost of a few additional allocations per second**.
+As a performance-oriented person your intuition may be that creating objects incurs on a penalty and mutability is obviously faster. This is certainly true for cases with small locality, such as single-class CPU-bound algorithms. For large-scale cases where concurrency is involved, **the complexity added to prevent data races and other nasty behaviours heavily offsets the cost of a few additional allocations per second**.
 
 So, what can we do to minimise the number of additional allocations of immutable data models? Never request them if they’re not necessary! To do this **on Sections we visit your data model to find the smallest granularity we have to request a redraw for**. This is done using the data model’s identity.
 
@@ -108,7 +108,7 @@ The diffing algorithm for Components starts by checking the *referential equalit
 
 ## DataDiffSection Diffing
 
-The main API of Sections is a wrapper around Android’s RecyclerView operations, calling notifications for updates, insertions and removals behind the scenes. It takes a `List` of elements and uses a **traversal algorithm that takes into account all the kinds of identity equality listed above by using ==, equals and user defined Events**.
+The main API of Sections is a wrapper around Android’s `RecyclerView` operations, calling notifications for updates, insertions and removals behind the scenes. It takes a `List` of elements and uses a **traversal algorithm that takes into account all the kinds of identity equality listed above by using `==`, `equals` and user defined Events**.
 
 First it checks whether it needs to do a granular identity check on the data model, and if the check passes it visits the contents of the data model.
 
@@ -142,7 +142,7 @@ protected static boolean onCheckIsSameContent(
 }
 ```
 
-This means that we’ve made the algorithm check if two `BookmarkFolderItemComponentGraphQL` have the same *reference* with ==, then if they have the same `id` *identifier*, and lastly if they match their *structure* with `equals`. If either of these checks pass, then we dig deeper to compare the *structure* of their bookmark field.
+This means that we’ve made the algorithm check if two `BookmarkFolderItemComponentGraphQL` have the same *reference* with `==`, then if they have the same `id` *identifier*, and lastly if they match their *structure* with `equals`. If either of these checks pass, then we dig deeper to compare the *structure* of their bookmark field.
 
 ## Usage pitfalls to avoid
 
@@ -157,6 +157,10 @@ Same as with any other Component, Sections have a key that can be overloaded to 
 Any bugs or unexpected behaviours inherited from the Android implementation remain. **It is not uncommon to encounter a known issue, so be sure to also search the Android bugtracker**.
 
 One frequent support request asks **why adding elements before the first element doesn’t scroll the view to the top on the first redraw?** This is an inherited behaviour that is easily solved by `requestFocus` to scroll to the current top position.
+
+### Sections may have different contexts than their Components
+
+This happens frequently when **events are not triggered** when the caller and the listener are on different `ComponentContext`. Check that your container `ComponentTree` and the Components you're displaying belong in the same context.
 
 ## Usage tips to follow
 
