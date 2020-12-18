@@ -1,0 +1,56 @@
+---
+id: first-steps 
+title: Litho 101
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# 1. Hello World
+
+Displaying "Hello World!" is about as simple as we can get! This example shows how to integrate a Litho component into your View hiearchy.
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/onboarding/HelloWorldActivity.java start=start_example end=end_example
+```
+
+#### Key Points:
+- `LithoView`: A hierarchy of Litho components is rendered using a LithoView
+- `Text.create(c)`: This is how you create a component, both built-in ones and components you define yourself.
+- `.text('Hello World!')`: `text` is a **prop** of the Text component
+
+Ignore `ComponentContext` for now, just know you need one to create a component.
+
+# 2. First Component Spec
+
+Welcome to your first Litho component spec! Previously you used a built-in component (`Text`) but now you'll define your own. Like Text, your new component can also take **props**. Props configure a component.
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentSpec.java start=start end=end
+```
+
+To use your component, you can just replace the Text component from above with your component, setting the `name` prop:
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/onboarding/FirstComponentSpecActivity.java start=start_example end=end_example
+```
+
+#### Key Points:
+- `@LayoutSpec`: This annotation tells us that the class defines a component. The name of your component is the name of the spec minus 'Spec'.**
+- `@OnCreateLayout`: This static method returns what your component should render. `@LayoutSpec` components delegate to other components, combining, configuring, and putting them into layouts. **Composition of components is a key Litho concept!**
+- `@Prop`: This defines a **prop** for your component. It will automatically be added to your component builder and is required for your component to be built.
+
+:::tip
+Your component class is generated at build time via the annotation processor. To get proper IDE autocompletion without having to rebuild, make sure you've installed the Litho Android Studio plugin!
+:::
+
+# 3. Introducing Layout
+
+Layout in Litho is performed via the Flexbox API. Flexbox is a web standard so there are [many resources](https://css-tricks.com/snippets/css/a-guide-to-flexbox/) online on how to use it. You can also explore using flexbox using the [Yoga Layout Playground](https://yogalayout.com/). In our first usage, we'll just arrange our components in a **Column**.
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/onboarding/IntroducingLayoutComponentSpec.java start=start end=end
+```
+
+We can also built up more complex layouts, though at some point you'll probably want to extract pieces out into their own components (just like with any function, you don't want a component to do too much!). This layout incorporates an image and some new flexbox styling properties:
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/onboarding/LayoutWithImageComponentSpec.java start=start end=end
+```
+
+#### Key Points:
+- `Column`: Along with `Row`, this is one of the key container types in Litho. They stack children vertically and horizontally, respectively.
+- `paddingDip`: This prop sets padding in Android dp units. `padding` is one of many props where you will find variants like `paddingRes`, `paddingPx`, and `paddingAttr` that allow you to define it in different ways.
+- `Image`: Image is another built-in component that can render a drawable, and `drawableRes` is another prop like padding that can accept a drawable in different ways.

@@ -49,6 +49,10 @@ import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomViewContainerActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
+import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity;
+import com.facebook.samples.litho.onboarding.HelloWorldActivity;
+import com.facebook.samples.litho.onboarding.IntroducingLayoutComponent;
+import com.facebook.samples.litho.onboarding.LayoutWithImageComponent;
 import com.facebook.samples.litho.playground.PlaygroundComponent;
 import com.facebook.samples.litho.stateupdates.SectionStateUpdateFromComponentSection;
 import com.facebook.samples.litho.stateupdates.StateUpdateFromOutsideTreeActivity;
@@ -207,7 +211,32 @@ public class Demos {
                           new SingleDemo("Items re-rendering", ItemsRerenderingActivity.class),
                           new SingleDemo("Not updating with new props", PropUpdatingActivity.class),
                           new SingleDemo(
-                              "List scrolls to bottom", ScrollingToBottomActivity.class))))));
+                              "List scrolls to bottom", ScrollingToBottomActivity.class))))),
+          new DemoList(
+              "Tutorial",
+              Arrays.asList(
+                  new DemoGrouping(
+                      "Onboarding",
+                      Arrays.asList(
+                          new SingleDemo("1. Hello World", HelloWorldActivity.class),
+                          new SingleDemo(
+                              "2. First Litho Component", FirstComponentSpecActivity.class),
+                          new SingleDemo(
+                              "3. Introducing Layout",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return IntroducingLayoutComponent.create(c).name("Linda").build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "3.1. More with Layout",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return LayoutWithImageComponent.create(c).name("Linda").build();
+                                }
+                              }))))));
 
   public interface DemoItem {
     String getName();

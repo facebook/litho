@@ -20,6 +20,7 @@ const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 module.exports = {
   mainSidebar: {
     'What is Litho?': ['intro/motivation', 'intro/built-with-litho'],
+    'Getting Started': ['onboarding/env-setup', 'onboarding/first-steps'],
     'Main Concepts': [
       {
         'UI Composition': [
