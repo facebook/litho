@@ -183,7 +183,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     this(context, null);
   }
 
-  public LithoView(Context context, AttributeSet attrs) {
+  public LithoView(Context context, @Nullable AttributeSet attrs) {
     this(new ComponentContext(context), attrs);
   }
 
@@ -195,7 +195,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     this(context, null, useExtensions, delegateToRenderCore);
   }
 
-  public LithoView(ComponentContext context, AttributeSet attrs) {
+  public LithoView(ComponentContext context, @Nullable AttributeSet attrs) {
     this(
         context,
         attrs,
@@ -205,7 +205,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   public LithoView(
       ComponentContext context,
-      AttributeSet attrs,
+      @Nullable AttributeSet attrs,
       final boolean useExtensions,
       final boolean delegateToRenderCore) {
     super(context, attrs);

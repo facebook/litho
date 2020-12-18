@@ -154,7 +154,7 @@ public class ComponentsPools {
   private static class PoolsActivityCallback implements Application.ActivityLifecycleCallbacks {
 
     @Override
-    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    public void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
       ComponentsPools.onContextCreated(activity);
     }
 

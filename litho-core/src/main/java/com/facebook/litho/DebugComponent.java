@@ -395,19 +395,20 @@ public final class DebugComponent {
     return getComponent().getStateContainer();
   }
 
+  @Nullable
   private static InternalNode parent(InternalNode node) {
     final InternalNode parent = node.getParent();
     return parent != null ? parent : node.getNestedTreeHolder();
   }
 
-  private static int getXFromRoot(InternalNode node) {
+  private static int getXFromRoot(@Nullable InternalNode node) {
     if (node == null) {
       return 0;
     }
     return node.getX() + getXFromRoot(parent(node));
   }
 
-  private static int getYFromRoot(InternalNode node) {
+  private static int getYFromRoot(@Nullable InternalNode node) {
     if (node == null) {
       return 0;
     }

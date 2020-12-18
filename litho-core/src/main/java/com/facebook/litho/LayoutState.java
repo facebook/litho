@@ -399,9 +399,10 @@ public class LayoutState
     return hostOutput;
   }
 
+  /* TODO: (T81557408) Fix @Nullable issue */
   private static LayoutOutput createDrawableLayoutOutput(
       Component component,
-      String componentKey,
+      @Nullable String componentKey,
       LayoutState layoutState,
       InternalNode node,
       boolean hasHostView) {
@@ -424,7 +425,7 @@ public class LayoutState
 
   private static LayoutOutput createLayoutOutput(
       Component component,
-      String componentKey,
+      @Nullable String componentKey,
       long hostMarker,
       LayoutState layoutState,
       InternalNode node,
@@ -585,7 +586,7 @@ public class LayoutState
   }
 
   private static TestOutput createTestOutput(
-      InternalNode node, LayoutState layoutState, LayoutOutput layoutOutput) {
+      InternalNode node, LayoutState layoutState, @Nullable LayoutOutput layoutOutput) {
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
     final int r = l + node.getWidth();
@@ -718,7 +719,7 @@ public class LayoutState
       @Nullable DebugHierarchy.Node parentHierarchy,
       InternalNode node,
       LayoutState layoutState,
-      DiffNode parentDiffNode) {
+      @Nullable DiffNode parentDiffNode) {
     if (parentContext.wasLayoutCanceled()) {
       return;
     }
@@ -1279,7 +1280,7 @@ public class LayoutState
   }
 
   private static void maybeAddLayoutOutputToAffinityGroup(
-      OutputUnitsAffinityGroup<AnimatableItem> group,
+      @Nullable OutputUnitsAffinityGroup<AnimatableItem> group,
       @OutputUnitType int outputType,
       LayoutOutput layoutOutput) {
     if (group != null) {
@@ -1326,11 +1327,11 @@ public class LayoutState
     layoutState.mCurrentLayoutOutputAffinityGroup = null;
     layoutState.mCurrentTransitionId = null;
   }
-
+  /* TODO: (T81557408) Fix @Nullable issue */
   private static LayoutOutput addDrawableLayoutOutput(
       final @Nullable RenderTreeNode parent,
       Component drawableComponent,
-      String drawableComponentKey,
+      @Nullable String drawableComponentKey,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
       InternalNode node,
@@ -2041,7 +2042,7 @@ public class LayoutState
     mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 
-  static DiffNode createDiffNode(InternalNode node, DiffNode parent) {
+  static DiffNode createDiffNode(InternalNode node, @Nullable DiffNode parent) {
     DiffNode diffNode = new DefaultDiffNode();
 
     diffNode.setLastWidthSpec(node.getLastWidthSpec());
@@ -2205,6 +2206,7 @@ public class LayoutState
    *
    * @return the state handler
    */
+  @Nullable
   @CheckReturnValue
   StateHandler consumeStateHandler() {
     final StateHandler stateHandler = mStateHandler;
@@ -2217,6 +2219,7 @@ public class LayoutState
     return mContext.getHooksHandler();
   }
 
+  @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public InternalNode getLayoutRoot() {
     return mLayoutRoot;

@@ -19,11 +19,12 @@ package com.facebook.litho;
 import static com.facebook.litho.EventDispatcherUtils.dispatchOnLongClick;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 /** Long click listener that triggers its underlying event handler. */
 class ComponentLongClickListener implements View.OnLongClickListener {
 
-  private EventHandler<LongClickEvent> mEventHandler;
+  private @Nullable EventHandler<LongClickEvent> mEventHandler;
 
   @Override
   public boolean onLongClick(View view) {
@@ -38,7 +39,7 @@ class ComponentLongClickListener implements View.OnLongClickListener {
     return mEventHandler;
   }
 
-  void setEventHandler(EventHandler<LongClickEvent> eventHandler) {
+  void setEventHandler(@Nullable EventHandler<LongClickEvent> eventHandler) {
     mEventHandler = eventHandler;
   }
 }

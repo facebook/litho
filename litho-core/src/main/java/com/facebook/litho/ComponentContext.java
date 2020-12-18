@@ -103,7 +103,8 @@ public class ComponentContext {
    * @param logTag a log tag to be used with the logger.
    * @param logger a lifecycle logger to be used.
    */
-  public ComponentContext(Context context, String logTag, @Nullable ComponentsLogger logger) {
+  public ComponentContext(
+      Context context, @Nullable String logTag, @Nullable ComponentsLogger logger) {
     this(context, logTag, logger, null);
   }
 
@@ -531,7 +532,7 @@ public class ComponentContext {
   /**
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */
-  <E> EventTrigger<E> newEventTrigger(String childKey, int id, Handle handle) {
+  <E> EventTrigger<E> newEventTrigger(String childKey, int id, @Nullable Handle handle) {
     String parentKey = mComponentScope == null ? "" : getGlobalKey();
     return new EventTrigger<>(parentKey, id, childKey, handle);
   }

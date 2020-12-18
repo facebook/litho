@@ -31,7 +31,7 @@ public class EventTrigger<E> {
   private final String mKey;
   @Nullable private final Handle mHandle;
 
-  public EventTrigger(String parentKey, int id, String childKey, Handle handle) {
+  public EventTrigger(String parentKey, int id, String childKey, @Nullable Handle handle) {
     mId = id;
     mKey = parentKey + id + childKey;
     mHandle = handle;

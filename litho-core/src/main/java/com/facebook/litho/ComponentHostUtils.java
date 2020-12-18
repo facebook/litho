@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
@@ -68,12 +69,13 @@ class ComponentHostUtils {
   }
 
   /** Returns true if scrapItems is not null and contains an item with key index. */
-  static <T> boolean existsScrapItemAt(int index, SparseArrayCompat<T> scrapItems) {
+  static <T> boolean existsScrapItemAt(int index, @Nullable SparseArrayCompat<T> scrapItems) {
     return scrapItems != null && scrapItems.get(index) != null;
   }
 
   /** Sets the state on a drawable if it is clickable or should duplicate its parent's state. */
-  static void maybeSetDrawableState(View view, Drawable drawable, int flags, NodeInfo nodeInfo) {
+  static void maybeSetDrawableState(
+      View view, Drawable drawable, int flags, @Nullable NodeInfo nodeInfo) {
     final boolean shouldSetState =
         (nodeInfo != null && nodeInfo.hasTouchEventHandlers())
             || LayoutOutput.isDuplicateParentState(flags);
@@ -88,7 +90,7 @@ class ComponentHostUtils {
    * item exists there at given index, otherwise it is removed from {@param items}.
    */
   static <T> void removeItem(
-      int index, SparseArrayCompat<T> items, SparseArrayCompat<T> scrapItems) {
+      int index, SparseArrayCompat<T> items, @Nullable SparseArrayCompat<T> scrapItems) {
     if (existsScrapItemAt(index, scrapItems)) {
       scrapItems.remove(index);
     } else {

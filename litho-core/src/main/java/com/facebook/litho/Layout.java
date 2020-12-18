@@ -56,11 +56,12 @@ class Layout {
         layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null);
   }
 
+  /* TODO: (T81557408) Fix @Nullable issue */
   static InternalNode createAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
-      final String globalKeyToReuse,
+      @Nullable final String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
       final @Nullable InternalNode current,
@@ -391,12 +392,15 @@ class Layout {
     return root != null && root.getId() > 0 ? root : null;
   }
 
-  /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
+  /**
+   * TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}.
+   * TODO: (T81557408) Fix @Nullable issue
+   */
   static ComponentContext update(
       final ComponentContext parent,
       final Component original,
       final boolean reuseGlobalKey,
-      final String globalKeyToReuse) {
+      @Nullable final String globalKeyToReuse) {
 
     final Component component = original.getThreadSafeInstance();
 

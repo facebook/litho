@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.widget.Checkable;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Collections;
@@ -93,7 +94,7 @@ public class TestItem {
     mHost = host;
   }
 
-  void setContent(Object content) {
+  void setContent(@Nullable Object content) {
     mContent = content;
   }
 

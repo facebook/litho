@@ -1890,17 +1890,17 @@ public class ComponentTree {
    * This internal version of {@link #setRootAndSizeSpecInternal(Component, int, int, boolean, Size,
    * int, String, TreeProps)} wraps the provided root in a wrapper component first. Ensure to only
    * call this for entry calls to setRoot, i.e. non-recurring calls as you will otherwise continue
-   * rewrapping the component.
+   * rewrapping the component. TODO: (T81557408) Fix @Nullable issue
    */
   private void setRootAndSizeSpecAndWrapper(
       Component root,
       int widthSpec,
       int heightSpec,
       boolean isAsync,
-      Size output,
+      @Nullable Size output,
       @CalculateLayoutSource int source,
       int externalRootVersion,
-      String extraAttribution,
+      @Nullable String extraAttribution,
       @Nullable TreeProps treeProps) {
 
     setRootAndSizeSpecInternal(
@@ -1941,15 +1941,16 @@ public class ComponentTree {
         false);
   }
 
+  /* TODO: (T81557408) Fix @Nullable issue */
   private void setRootAndSizeSpecInternal(
-      Component root,
+      @Nullable Component root,
       int widthSpec,
       int heightSpec,
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
       int externalRootVersion,
-      String extraAttribution,
+      @Nullable String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress,
       boolean forceLayout) {
@@ -2426,7 +2427,7 @@ public class ComponentTree {
   }
 
   @GuardedBy("this")
-  private boolean isCompatibleComponentAndSpec(LayoutState layoutState) {
+  private boolean isCompatibleComponentAndSpec(@Nullable LayoutState layoutState) {
     assertHoldsLock(this);
 
     return mRoot != null
@@ -2494,7 +2495,7 @@ public class ComponentTree {
   }
 
   private static boolean isCompatibleComponentAndSpec(
-      LayoutState layoutState, int componentId, int widthSpec, int heightSpec) {
+      @Nullable LayoutState layoutState, int componentId, int widthSpec, int heightSpec) {
     return layoutState != null
         && layoutState.isCompatibleComponentAndSpec(componentId, widthSpec, heightSpec)
         && layoutState.isCompatibleAccessibility();
@@ -2521,6 +2522,7 @@ public class ComponentTree {
   }
 
   // TODO: T48569046 remove this method and use mLogger
+  @Nullable
   private ComponentsLogger getContextLogger() {
     return mLogger == null ? mContext.getLogger() : mLogger;
   }
@@ -3219,7 +3221,7 @@ public class ComponentTree {
     }
 
     /** Specify the handler for to preAllocateMountContent */
-    public Builder preAllocateMountContentHandler(LithoHandler handler) {
+    public Builder preAllocateMountContentHandler(@Nullable LithoHandler handler) {
       preAllocateMountContentHandler = handler;
       return this;
     }
@@ -3249,7 +3251,7 @@ public class ComponentTree {
      * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
      * you don't specify a Looper here, the Components default Looper will be used.
      */
-    public Builder layoutThreadHandler(LithoHandler handler) {
+    public Builder layoutThreadHandler(@Nullable LithoHandler handler) {
       layoutThreadHandler = handler;
       return this;
     }
@@ -3258,12 +3260,12 @@ public class ComponentTree {
      * Specify an initial state handler object that the ComponentTree can use to set the current
      * values for states.
      */
-    public Builder stateHandler(StateHandler stateHandler) {
+    public Builder stateHandler(@Nullable StateHandler stateHandler) {
       this.stateHandler = stateHandler;
       return this;
     }
 
-    public Builder hooksHandler(HooksHandler hooksHandler) {
+    public Builder hooksHandler(@Nullable HooksHandler hooksHandler) {
       this.hooksHandler = hooksHandler;
       return this;
     }
@@ -3312,7 +3314,7 @@ public class ComponentTree {
       return this;
     }
 
-    public Builder measureListener(MeasureListener measureListener) {
+    public Builder measureListener(@Nullable MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
       return this;
     }
