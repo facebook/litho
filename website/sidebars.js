@@ -172,22 +172,7 @@ module.exports = {
         ],
         'Reference': ['props', 'common-props', 'cached-values'],
         'Handling Events': ['events-touch-handling', 'visibility-handling'],
-        'Sections': [
-          'sections-intro',
-          'sections-tutorial',
-          'group-sections',
-          'diff-sections',
-          'sections-building-blocks',
-          'recycler-collection-component',
-          'hscrolls',
-          'communicating-with-the-ui',
-          'sections-view-support',
-          'services',
-          'sections-architecture',
-          'sections-working-ranges',
-          // TODO(festevezga, T79180347) - remove all of the above and use the ones in Under construction
-          // once new docs are ready
-        ],
+        'Sections': ['sections-tutorial', 'communicating-with-the-ui'],
         'Common use cases': [
           'updating-ui',
           'borders',

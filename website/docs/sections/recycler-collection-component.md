@@ -3,7 +3,7 @@ id: recycler-collection-component
 title: Adding and adapting RecyclerCollection to your App
 ---
 
-[RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items. Litho recommends using [RecyclerCollectionComponent](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) and [Sections](/docs/sections-intro) to build scrolling lists easily.  These APIs can be used to build everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
+[RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items. Litho recommends using [RecyclerCollectionComponent](pathname:///javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) and [Sections](start) to build scrolling lists easily.  These APIs can be used to build everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
 
 In this document we'll cover some of the properties available for `RecyclerCollectionComponent` that you may need for your use case such as horizontal lists, snapping or a fixed height.
 
@@ -22,7 +22,7 @@ static Component onCreateLayout(
 ```
 
 This code will eventually render as a `RecyclerView` who's rows are backed by the contents of the section.
-You can learn more about how to create sections by checking out some of the [building blocks](/docs/sections-building-blocks) included in the library.
+You can learn more about how to create sections by checking out some of the [building blocks](start) included in the library.
 
 ## Batteries Included
 
