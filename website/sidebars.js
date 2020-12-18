@@ -98,6 +98,7 @@ module.exports = {
     'Animations': [
       'animations/transition-basics',
       'animations/transition-types',
+      'animations/transition-all-layout',
       'animations/transition-choreography',
       'animations/transition-definitions',
       'animations/transition-key-types',
