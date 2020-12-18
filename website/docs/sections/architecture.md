@@ -1,11 +1,9 @@
 ---
 id: architecture
-title: 'Internal 🏗: Sections architecture'
+title: 'Internal 🏗: Sections implementation architecture'
 ---
 
-:::danger UNDER CONSTRUCTION
-T79180610
-:::
+This document gives an insight into the implementation of Sections, for those hackers and code explorers who want to take a peek behind the scenes for inspiration or to contribute. The understanding of the implementation details described in this document are not necessary for just using Sections.
 
 At its core, the Sections framework is responsible for producing a [ChangeSet](pathname:///javadoc/com/facebook/litho/sections/ChangeSet.html) from immutable props and a hierarchy of [Sections](pathname:///javadoc/com/facebook/litho/sections/Section.html). The framework produces these `ChangeSets` by creating a new section hierarchy whenever a `SectionTree` is set with a Section with new props or whenever a Section in the hierarchy updates it's internal state and comparing the new hierarchy with the old hierarchy.
 
