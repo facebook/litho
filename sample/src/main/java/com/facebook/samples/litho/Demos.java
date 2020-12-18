@@ -30,6 +30,11 @@ import com.facebook.samples.litho.animations.animationcomposition.ComposedAnimat
 import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBookActivity;
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
+import com.facebook.samples.litho.animations.docs.ParallelTransitionWithAnimatorsComponent;
+import com.facebook.samples.litho.animations.docs.SequenceTransitionLoopComponent;
+import com.facebook.samples.litho.animations.docs.StaggerTransitionComponent;
+import com.facebook.samples.litho.animations.docs.StaggerTransitionSameComponent;
+import com.facebook.samples.litho.animations.docs.StaggerTransitionWithDelayComponent;
 import com.facebook.samples.litho.animations.expandableelement.ExpandableElementActivity;
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.sharedelements.SharedElementsActivity;
@@ -104,7 +109,47 @@ public class Demos {
                           new SingleDemo(
                               "Fragments Transition with Shared elements",
                               SharedElementsFragmentActivity.class),
-                          new SingleDemo("Transitions", TransitionsActivity.class))),
+                          new SingleDemo("Transitions", TransitionsActivity.class),
+                          new SingleDemo(
+                              "Stagger Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return StaggerTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Stagger Transition on same Component",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return StaggerTransitionSameComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Stagger Transition with Delay",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return StaggerTransitionWithDelayComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Parallel Transition with Animators",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return ParallelTransitionWithAnimatorsComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Sequence Transition loop",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return SequenceTransitionLoopComponent.create(c).build();
+                                }
+                              }))),
                   new DemoGrouping(
                       "Collections",
                       Arrays.asList(
