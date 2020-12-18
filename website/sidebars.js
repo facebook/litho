@@ -21,6 +21,14 @@ module.exports = {
   mainSidebar: {
     'What is Litho?': ['intro/motivation', 'intro/built-with-litho'],
     'Getting Started': ['onboarding/env-setup', 'onboarding/first-steps'],
+    'Tutorial': [
+      'tutorial/overview',
+      'tutorial/getting-started',
+      'tutorial/first-component',
+      'tutorial/adding-state',
+      'tutorial/handling-events',
+      'tutorial/building-lists',
+    ],
     'Main Concepts': [
       {
         'UI Composition': [
