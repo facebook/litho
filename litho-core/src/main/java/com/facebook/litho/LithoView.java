@@ -389,6 +389,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.onMeasure");
+      }
+      onMeasureInternal(widthMeasureSpec, heightMeasureSpec);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void onMeasureInternal(int widthMeasureSpec, int heightMeasureSpec) {
     widthMeasureSpec =
         DoubleMeasureFixUtil.correctWidthSpecForAndroidDoubleMeasureBug(
             getResources(), getContext().getPackageManager(), widthMeasureSpec);
@@ -508,6 +522,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.performLayout");
+      }
+      performLayoutInternal(changed, left, top, right, bottom);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void performLayoutInternal(boolean changed, int left, int top, int right, int bottom) {
     if (mComponentTree != null) {
       if (mComponentTree.isReleased()) {
         throw new IllegalStateException(
@@ -947,6 +975,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   public void draw(Canvas canvas) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.draw");
+      }
+      drawInternal(canvas);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void drawInternal(Canvas canvas) {
     try {
       canvas.translate(getPaddingLeft(), getPaddingTop());
       super.draw(canvas);
