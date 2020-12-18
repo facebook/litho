@@ -64,6 +64,7 @@ litho_android_test_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
+    autoglob = False,
     fblite = False,
     deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
