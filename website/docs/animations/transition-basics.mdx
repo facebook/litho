@@ -3,33 +3,17 @@ id: transition-basics
 title: Animation basics
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
-T81099025
-:::
-
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-There is very little setup needed to start using Litho Transition.
+## Introduction
 
-To show that, let's imagine that we have a simple Component that renders a yellow square, and aligns it to either right or left edge of screen based on value of the `@State boolean toRight`.
+In Litho we perform UI updates by changing state or props on the component tree instead of mutating the views directly. In a similar way, the animation framework adds transitions to components that are triggered when regenerating a tree. It is important to avoid accessing the underlying view to add animations as these values will probably not be preserved.
 
-```java
-@LayoutSpec
-class MyComponentSpec {
+Transitions can be used to animate view properties when they change between layouts, i.e. due to a state update or new props from the parent. In the following example we will create a layout with a simple state change triggered by a click. We will then demonstraight the different ways of applying transitions animations.
 
-    @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c, @State boolean toRight) {
-        return Column.create(c)
-            .child(
-                Rect.create(c)
-                    .color(YELLOW)
-                    .widthDip(80)
-                    .heightDip(80))
-            .alignItems(toRight ? YogaAlign.FLEX_END : YogaAlign.FLEX_START)
-            .build();
-    }
-}
+When we make changes to a tree due to a new state, these changes happen immediately. Let's imagine that we have a simple Component that renders a yellow square, and aligns it to either the right or left edge of screen based on value of the `@State boolean toRight`.
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=start end=no_animation
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -37,40 +21,13 @@ class MyComponentSpec {
   <p>Your browser does not support the video element.</p>
 </video>
 
-However, when the value of the state changes, we re-render the `ComponentTree` which makes the square simply “jump” from its previous position to the new one. If such transition between states isn't what you want and you wish it would rather “flow” from one place to the other, we have good news: there are just a couple of things you need to add to your code to make it happen.
+When the value of the state changes we re-render the `ComponentTree` which makes the square appear to “jump” from its previous position to the new one. In the next stem we will show how to replace this "jump" with a transition animation.
 
-Here are the key elements you'll need to work with:
+### Bounds Transitions
 
-* **`@OnCreateTransition`** method. You need to add a method annotated with `@OnCreateTransition` to your Spec, which is what we use to define the transition animations. It should return a [`Transition`](pathname:///javadoc/com/facebook/litho/Transition.html), and its first argument should always be of `ComponentContext` type. As other lifecycle methods in a Spec, it could also have `@Prop` arguments, as well as arguments of `StateValue` type, although this comes at a cost - more on this later.
-* **`Transition`** is a description of which Component/Property (mandatory) and how (optional) you want to animate. You will not use a constructor to create `Transition` instances, instead you will use one of the provided `Builder`s.
-* **`transitionKey`** is an identifier that you normally assign to a `Component` that you want to animate, and then use it when defining `Transition`.
-* **`AnimatedProperties`** are used to target the property of a `Component` that should be animated when its value changes.
+There is a simple way to add bounds animations to all transitioning components between tree changes. Add the following:
 
-To put it all together, here is what it would look like in our case:
-
-```java
-@LayoutSpec
-class MyComponentSpec {
-
-    @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c, @State boolean toRight) {
-        return Column.create(c)
-            .child(
-                Rect.create(c)
-                    .color(YELLOW)
-                    .widthDip(80)
-                    .heightDip(80)
-                    .transitionKey("square"))
-            .alignItems(toRight ? YogaAlign.FLEX_END : YogaAlign.FLEX_START)
-            .build();
-    }
-
-    @OnCreateTransition
-    static Transition onCreateTransition(ComponentContext c) {
-        return Transition.create("square")
-            .animate(AnimatedProperties.X);
-    }
-}
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=no_animation end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -78,22 +35,51 @@ class MyComponentSpec {
   <p>Your browser does not support the video element.</p>
 </video>
 
-Notice that we:
-1. On *line 12* we assign a `transitionKey` to the `Rect` component using [`Component.Builder#transitionKey()`](pathname:///javadoc/com/facebook/litho/Component.Builder.html#transitionKey-java.lang.String-) method.
-2. On *lines 19-20* we create a `Transition` using [`Transition.create()`](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and then specify the property of the component using [`.animate()`](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method that takes an [`AnimatedProperty`](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html).
+Returning [`Transition.allLayout()`](https://staticdocs.thefacebook.com/litho/javadoc/com/facebook/litho/Transition.html#allLayout--) will create a Transition that will automatically animate any changes to position or width and height.
 
-Both of these methods take [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), so the description of the multiple `Transition`s may nicely be collapsed and it may look like this:
+This only works when changing the bounds of a component and will not work with:
+* Other properties including scale, alpha and rotation.
+* Components that are being added or removed.
+
+
+### Transitions
+
+Once we move out of just bounds and instead of animating the `X` we want to animate `ALPHA` there are just a couple of things you need to add to your code to make it happen.
+
+For more control over the transitions we can use these apis:
+* **`@OnCreateTransition`** method. You need to add a method annotated with `@OnCreateTransition` to your Spec, which is what we use to define the transition animations. It should return a [`Transition`](pathname:///javadoc/com/facebook/litho/Transition.html), and its first argument should always be of `ComponentContext` type. As other lifecycle methods in a Spec, it could also have `@Prop` arguments, as well as arguments of `StateValue` type, although this comes at a cost - more on this later.
+* **`Transition`** is a description of which Component/Property (mandatory) and how (optional) you want to animate. You will not use a constructor to create `Transition` instances, instead you will use one of the provided `Builder`s.
+* **`transitionKey`** is an identifier that you normally assign to a `Component` that you want to animate, and then use it when defining `Transition`.
+* **`AnimatedProperties`** are used to target the property of a `Component` that should be animated when its value changes.
+
+To put it all together, here is what it would look like in our case:
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/docs/AlphaTransitionComponentSpec.java start=start end=end
+```
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/basics3.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+Notice that we:
+1. On *line 16* we assign a `transitionKey` to the `SolidColor` component using [`Component.Builder#transitionKey()`](pathname:///javadoc/com/facebook/litho/Component.Builder.html#transitionKey-java.lang.String-) method.
+2. On *lines 22-23* we create a `Transition` using [`Transition.create()`](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and then specify the property of the component using [`.animate()`](pathname:///javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method that takes an [`AnimatedProperty`](pathname:///javadoc/com/facebook/litho/animation/AnimatedProperties.html).
+
+Both of these methods take a [variable number of arguments](pathname:///javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), so multiple `Transition`s may be expressed like:
 
 ```java
+private static final String SQUARE_KEY = "square";
+private static final String SQUARE_KEY = "oval";
+private static final String SQUARE_KEY = "another_shape";
+
+...
+
 @OnCreateTransition
 static Transition onCreateTransition(ComponentContext c) {
-    return Transition.create("square", "oval", "another_shape")
+    return Transition.create(SQUARE_KEY, OVAL_KEY, ANOTHER_SHAPE)
         .animate(AnimatedProperties.X, AnimatedProperties.Y);
 }
 ```
 
-### Key Features
-
-- *Interruptible*: Animations can be interrupted and driven to a new ending value automatically.
-- *Declarative*: The framework handles and drives the animations for you, meaning you get 60fps, interruptible animations without extra work.
-- *Animated Properties*: Supports animating `X`, `Y`, `WIDTH`, `HEIGHT`, `SCALE`, `ALPHA`, and `ROTATION`.
+The transitions animations API supports three [types of transitions](/docs/animations/transition-types), **change**, **appear** and **disappear** which work differently depending on how the tree changes between states. In this example we did a **change** transition.

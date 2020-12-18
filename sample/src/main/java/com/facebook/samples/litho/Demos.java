@@ -30,8 +30,10 @@ import com.facebook.samples.litho.animations.animationcomposition.ComposedAnimat
 import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBookActivity;
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
+import com.facebook.samples.litho.animations.docs.AlphaTransitionComponent;
 import com.facebook.samples.litho.animations.docs.ParallelTransitionWithAnimatorsComponent;
 import com.facebook.samples.litho.animations.docs.SequenceTransitionLoopComponent;
+import com.facebook.samples.litho.animations.docs.SimpleAllLayoutTransitionComponent;
 import com.facebook.samples.litho.animations.docs.StaggerTransitionComponent;
 import com.facebook.samples.litho.animations.docs.StaggerTransitionSameComponent;
 import com.facebook.samples.litho.animations.docs.StaggerTransitionWithDelayComponent;
@@ -110,6 +112,22 @@ public class Demos {
                               "Fragments Transition with Shared elements",
                               SharedElementsFragmentActivity.class),
                           new SingleDemo("Transitions", TransitionsActivity.class),
+                          new SingleDemo(
+                              "All Layout Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return SimpleAllLayoutTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Alpha Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return AlphaTransitionComponent.create(c).build();
+                                }
+                              }),
                           new SingleDemo(
                               "Stagger Transition",
                               new ComponentCreator() {
