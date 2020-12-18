@@ -1,6 +1,7 @@
 ---
 id: flexbox-yoga
 title: Layout System with Flexbox
+hide_table_of_contents: true
 ---
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -86,13 +87,12 @@ You can also use the [Yoga Playground](https://yogalayout.com/playground) to try
 Let's look at typical layout configurations in Android and how they translate to Litho with Yoga.
 
 #### Vertically stacked items.
-<Tabs
-  defaultValue="android"
-  values={[
-    {label: 'Android Views', value: 'android'},
-    {label: 'Litho with Yoga', value: 'litho'},
-  ]}>
-  <TabItem value="android">
+<table>
+<tr>
+  <th>Android Views</th>
+  <th>Litho with Yoga</th>
+</tr>
+<tr><td>
 
 ```xml
 <LinearLayout
@@ -111,8 +111,7 @@ Let's look at typical layout configurations in Android and how they translate to
         android:text="Text 2" />
 </LinearLayout>
 ```
-  </TabItem>
-  <TabItem value="litho">
+</td><td>
 
 ```java
 Column.create(c)
@@ -124,20 +123,19 @@ Column.create(c)
             .text("Text 2"))
     .build();
 ```
-  </TabItem>
-</Tabs>
+</td></tr>
+</table>
 
 #### Two items equally stretched horizontally.
 
 To achieve an effect similar to a `LinearLayout` with weights Flexbox provides a concept called `flexGrow(<weight>)`.
 
-<Tabs
-  defaultValue="android"
-  values={[
-    {label: 'Android Views', value: 'android'},
-    {label: 'Litho with Yoga', value: 'litho'},
-  ]}>
-  <TabItem value="android">
+<table>
+<tr>
+  <th>Android Views</th>
+  <th>Litho with Yoga</th>
+</tr>
+<tr><td>
 
 ```xml
 <LinearLayout
@@ -156,8 +154,7 @@ To achieve an effect similar to a `LinearLayout` with weights Flexbox provides a
         android:layout_weight="1"/>
 </LinearLayout>
 ```
-  </TabItem>
-  <TabItem value="litho">
+</td><td>
 
 ```java
 Row.create(c)
@@ -171,20 +168,19 @@ Row.create(c)
             .flexGrow(1))
     .build();
 ```
-  </TabItem>
-</Tabs>
+</td></tr>
+</table>
 
 #### Absolutely positioned items
 
 If you would like to overlay one view on top of the other similar to a `FrameLayout`, Flexbox can do that with `positionType(ABSOLUTE)`.
 
-<Tabs
-  defaultValue="android"
-  values={[
-    {label: 'Android Views', value: 'android'},
-    {label: 'Litho with Yoga', value: 'litho'},
-  ]}>
-  <TabItem value="android">
+<table>
+<tr>
+  <th>Android Views</th>
+  <th>Litho with Yoga</th>
+</tr>
+<tr><td>
 
 ```xml
 <FrameLayout
@@ -198,10 +194,9 @@ If you would like to overlay one view on top of the other similar to a `FrameLay
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Overlaid text"/>
-</LinearLayout>
+</FrameLayout>
 ```
-  </TabItem>
-  <TabItem value="litho">
+</td><td>
 
 ```java
 Column.create(c)
@@ -216,5 +211,5 @@ Column.create(c)
             .positionType(ABSOLUTE))
     .build();
 ```
-  </TabItem>
-</Tabs>
+</td></tr>
+</table>
