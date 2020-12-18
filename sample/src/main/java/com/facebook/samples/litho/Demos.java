@@ -31,6 +31,7 @@ import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBook
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
 import com.facebook.samples.litho.animations.docs.AlphaTransitionComponent;
+import com.facebook.samples.litho.animations.docs.AppearTransitionComponent;
 import com.facebook.samples.litho.animations.docs.ParallelTransitionWithAnimatorsComponent;
 import com.facebook.samples.litho.animations.docs.SequenceTransitionLoopComponent;
 import com.facebook.samples.litho.animations.docs.SimpleAllLayoutTransitionComponent;
@@ -126,6 +127,14 @@ public class Demos {
                                 @Override
                                 public Component create(ComponentContext c) {
                                   return AlphaTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Appear Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return AppearTransitionComponent.create(c).build();
                                 }
                               }),
                           new SingleDemo(
