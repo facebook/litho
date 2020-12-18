@@ -64,9 +64,9 @@ module.exports = {
       'widgets/builtin-widgets',
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
-    'Developer Experience': [
-      'devex/android-studio-plugin',
-      'devex/flipper-plugins',
+    'Developer Tools': [
+      'devtools/android-studio-plugin',
+      'devtools/flipper-plugins',
     ],
     'Testing': [
       'testing/testing-overview',
