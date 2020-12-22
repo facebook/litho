@@ -74,6 +74,9 @@
     <activity android:name=".animations.sharedelements.SharedElementsFragmentActivity" />
     <activity android:name=".animations.sharedelements.DetailActivity" />
     <activity android:name=".editor.SimpleEditorExampleActivity" />
+    <activity android:name=".onboarding.HelloWorldActivity" />
+    <activity android:name=".onboarding.FirstComponentSpecActivity" />
+
   </application>
 
 

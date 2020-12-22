@@ -846,7 +846,7 @@ class TextSpec {
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
       @Nullable @FromBoundsDefined ClickableSpan[] clickableSpans,
-      @FromBoundsDefined ImageSpan[] imageSpans) {
+      @Nullable @FromBoundsDefined ImageSpan[] imageSpans) {
 
     TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
 

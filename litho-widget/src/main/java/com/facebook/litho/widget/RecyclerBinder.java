@@ -385,8 +385,8 @@ public class RecyclerBinder
         @Override
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
-            LithoHandler layoutHandler,
-            ComponentTreeMeasureListenerFactory measureListenerFactory,
+            @Nullable LithoHandler layoutHandler,
+            @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
@@ -394,7 +394,7 @@ public class RecyclerBinder
             boolean isReconciliationEnabled,
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
-            LithoHandler preallocateHandler,
+            @Nullable LithoHandler preallocateHandler,
             boolean preallocatePerMountSpec,
             boolean incrementalVisibility) {
           return ComponentTreeHolder.create()
@@ -424,7 +424,7 @@ public class RecyclerBinder
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
-    private LithoViewFactory lithoViewFactory;
+    private @Nullable LithoViewFactory lithoViewFactory;
     private boolean isCircular;
     private boolean hasDynamicItemHeight;
     private boolean wrapContent;
@@ -434,7 +434,7 @@ public class RecyclerBinder
     private boolean enableStableIds;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private LayoutThreadPoolConfiguration threadPoolConfig;
+    private @Nullable LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean incrementalMount = true;
@@ -501,7 +501,7 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder lithoViewFactory(LithoViewFactory lithoViewFactory) {
+    public Builder lithoViewFactory(@Nullable LithoViewFactory lithoViewFactory) {
       this.lithoViewFactory = lithoViewFactory;
       return this;
     }
@@ -621,7 +621,7 @@ public class RecyclerBinder
      *     created by the factory will be used instead of the one that would have been created by
      *     this config.
      */
-    public Builder threadPoolConfig(LayoutThreadPoolConfiguration config) {
+    public Builder threadPoolConfig(@Nullable LayoutThreadPoolConfiguration config) {
       this.threadPoolConfig = config;
       return this;
     }
@@ -757,7 +757,7 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder componentWarmer(ComponentWarmer componentWarmer) {
+    public Builder componentWarmer(@Nullable ComponentWarmer componentWarmer) {
       mComponentWarmer = componentWarmer;
       return this;
     }

@@ -19,17 +19,9 @@ package com.facebook.litho
 import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
-open class KComponent
-private constructor(
-    private val content: (DslScope.() -> Component?)? = null,
-    private val style: Style? = null
-) : Component() {
-  constructor(style: Style? = null) : this(null, style)
-  constructor(content: DslScope.() -> Component?) : this(content, null)
+open class KComponent(private val content: (DslScope.() -> Component?)? = null) : Component() {
 
-  override fun onCreateLayout(c: ComponentContext): Component? {
-    return DslScope(c).run { render()?.apply { applyStyle(style) } }
-  }
+  override fun onCreateLayout(c: ComponentContext): Component? = DslScope(c).render()
 
   open fun DslScope.render(): Component? {
     val render =

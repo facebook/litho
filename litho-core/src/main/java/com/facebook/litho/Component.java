@@ -367,6 +367,7 @@ public abstract class Component extends ComponentLifecycle
     // Do nothing by default
   }
 
+  @Nullable
   InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
     if (layout != null && ComponentsConfiguration.useStatelessComponent) {
@@ -408,6 +409,7 @@ public abstract class Component extends ComponentLifecycle
    *
    * @return
    */
+  @Nullable
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
     if (component.mUseStatelessComponent) {
       if (scopedContext == null) {
@@ -420,6 +422,7 @@ public abstract class Component extends ComponentLifecycle
     return component.getGlobalKey();
   }
 
+  @Nullable
   @VisibleForTesting
   String getGlobalKey() {
     if (mUseStatelessComponent) {
@@ -454,7 +457,7 @@ public abstract class Component extends ComponentLifecycle
    *
    * @param handle handle
    */
-  void setHandle(Handle handle) {
+  void setHandle(@Nullable Handle handle) {
     mHandle = handle;
   }
 
@@ -1287,7 +1290,7 @@ public abstract class Component extends ComponentLifecycle
       return mContext;
     }
 
-    public T handle(Handle handle) {
+    public T handle(@Nullable Handle handle) {
       mComponent.setHandle(handle);
       return getThis();
     }
@@ -2095,7 +2098,7 @@ public abstract class Component extends ComponentLifecycle
       mComponent.setBuilderContext(c.getAndroidContext());
     }
 
-    private Component getOwner() {
+    private @Nullable Component getOwner() {
       return mContext.getComponentScope();
     }
 

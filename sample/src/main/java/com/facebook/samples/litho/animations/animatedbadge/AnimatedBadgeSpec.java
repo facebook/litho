@@ -162,6 +162,7 @@ public class AnimatedBadgeSpec {
     state.set((state.get() + 1) % 4);
   }
 
+  // start
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.parallel(
@@ -177,6 +178,7 @@ public class AnimatedBadgeSpec {
             .disappearTo(0f)
             .animator(ANIMATOR));
   }
+  // end
 
   private static Drawable buildRoundedRect(ComponentContext c, int color, int cornerRadiusDp) {
     final float cornerRadiusPx =

@@ -20,6 +20,7 @@ litho_android_library(
     srcs = glob([
         "src/main/java/com/facebook/rendercore/**/*.java",
     ]),
+    autoglob = False,
     is_androidx = True,
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,

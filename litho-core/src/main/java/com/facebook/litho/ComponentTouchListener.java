@@ -20,16 +20,17 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnTouch;
 
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.annotation.Nullable;
 
 /** Touch listener that triggers its underlying event handler. */
 class ComponentTouchListener implements View.OnTouchListener {
-  private EventHandler<TouchEvent> mEventHandler;
+  private @Nullable EventHandler<TouchEvent> mEventHandler;
 
   EventHandler<TouchEvent> getEventHandler() {
     return mEventHandler;
   }
 
-  void setEventHandler(EventHandler<TouchEvent> eventHandler) {
+  void setEventHandler(@Nullable EventHandler<TouchEvent> eventHandler) {
     mEventHandler = eventHandler;
   }
 

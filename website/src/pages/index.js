@@ -126,7 +126,7 @@ function Home() {
             </Link>
             <Link
               className={clsx('button button--outline', styles.button)}
-              to={useBaseUrl('docs/tutorial')}>
+              to={useBaseUrl('docs/tutorial/overview')}>
               TUTORIAL
             </Link>
           </div>

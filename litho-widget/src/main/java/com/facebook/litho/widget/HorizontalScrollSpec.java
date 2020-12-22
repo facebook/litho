@@ -347,6 +347,7 @@ class HorizontalScrollSpec {
       mComponentHeight = 0;
       mScrollPosition = null;
       mOnScrollChangeListener = null;
+      setScrollX(0);
       if (mScrollStateDetector != null) {
         mScrollStateDetector.setListener(null);
       }

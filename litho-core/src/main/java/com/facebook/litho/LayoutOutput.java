@@ -66,13 +66,13 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mIndex;
   private long mId;
   private int mUpdateState = STATE_UNKNOWN;
-
+  /* TODO: (T81557408) Fix @Nullable issue */
   public LayoutOutput(
       @Nullable LayoutStateContext layoutStateContext,
       @Nullable NodeInfo nodeInfo,
       @Nullable ViewNodeInfo viewNodeInfo,
       Component component,
-      String key,
+      @Nullable String key,
       Rect bounds,
       int hostTranslationX,
       int hostTranslationY,
@@ -221,6 +221,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mHierarchy = node;
   }
 
+  @Nullable
   NodeInfo getNodeInfo() {
     return mNodeInfo;
   }

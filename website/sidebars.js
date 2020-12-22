@@ -20,6 +20,15 @@ const {fbContent, fbInternalOnly} = require('internaldocs-fb-helpers');
 module.exports = {
   mainSidebar: {
     'What is Litho?': ['intro/motivation', 'intro/built-with-litho'],
+    'Getting Started': ['onboarding/first-steps'],
+    'Tutorial': [
+      'tutorial/overview',
+      'tutorial/project-setup',
+      'tutorial/first-component',
+      'tutorial/adding-state',
+      'tutorial/handling-events',
+      'tutorial/building-lists',
+    ],
     'Main Concepts': [
       {
         'UI Composition': [
@@ -43,32 +52,35 @@ module.exports = {
       'sections/start',
       'sections/recycler-collection-component',
       'sections/best-practices',
-      'sections/testing',
       'sections/hscrolls',
       'sections/api-overview',
-      'sections/api-lifecycles',
       'sections/working-ranges',
       'sections/services',
       'sections/view-support',
       'sections/diff-sections',
       'sections/architecture',
     ],
-    Widgets: [
+    'Widgets': [
       'widgets/builtin-widgets',
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
-    'Developer Experience': [
-      'devex/android-studio-plugin',
-      'devex/flipper-plugins',
+    'Developer Tools': [
+      'devtools/android-studio-plugin',
+      'devtools/flipper-plugins',
     ],
-    Testing: [
+    'Testing': [
       'testing/testing-overview',
-      'testing/unit-testing',
-      'testing/subcomponent-testing',
-      'testing/prop-matching',
-      'testing/testing-treeprops',
-      'testing/injectprop-matching',
-      'testing/event-handler-testing',
+      {
+        'Unit Tests': [
+          'testing/unit-testing',
+          'testing/subcomponent-testing',
+          'testing/prop-matching',
+          'testing/testing-treeprops',
+          'testing/injectprop-matching',
+          'testing/event-handler-testing',
+          'testing/sections-testing',
+        ],
+      },
       'testing/espresso-testing',
       'testing/tests-in-android-studio',
       ...fbInternalOnly([
@@ -91,15 +103,16 @@ module.exports = {
         },
       ]),
     ],
-    Animations: [
+    'Animations': [
       'animations/transition-basics',
       'animations/transition-types',
+      'animations/transition-all-layout',
       'animations/transition-choreography',
       'animations/transition-definitions',
       'animations/transition-key-types',
     ],
-    Accessibility: ['accessibility/accessibility-overview'],
-    Performance: [
+    'Accessibility': ['accessibility/accessibility-overview'],
+    'Performance': [
       'performance/analysing-performance',
       'performance/spotting-performance-regressions',
     ],
@@ -165,32 +178,16 @@ module.exports = {
           'writing-components',
           'using-components',
         ],
-        Reference: ['props', 'common-props', 'cached-values'],
+        'Reference': ['props', 'common-props', 'cached-values'],
         'Handling Events': ['events-touch-handling', 'visibility-handling'],
-        Sections: [
-          'sections-intro',
-          'sections-tutorial',
-          'group-sections',
-          'diff-sections',
-          'sections-building-blocks',
-          'recycler-collection-component',
-          'hscrolls',
-          'communicating-with-the-ui',
-          'sections-testing',
-          'sections-view-support',
-          'services',
-          'sections-architecture',
-          'sections-working-ranges',
-          // TODO(festevezga, T79180347) - remove all of the above and use the ones in Under construction
-          // once new docs are ready
-        ],
+        'Sections': ['sections-tutorial', 'communicating-with-the-ui'],
         'Common use cases': [
           'updating-ui',
           'borders',
           'tooltips',
           'saving-state',
         ],
-        Compatibility: ['styles', 'rtl'],
+        'Compatibility': ['styles', 'rtl'],
         'Advanced Guides': [
           'architecture-overview',
           'recycler-component',
@@ -198,16 +195,20 @@ module.exports = {
           'error-boundaries',
           'onattached-ondetached',
         ],
-        Architecture: [
+        'Architecture': [
           'codegen',
           'asynchronous-layout',
           'view-flattening',
           'recycling',
         ],
-        Experimental: ['mount-extensions'],
+        'Experimental': ['mount-extensions'],
         'Additional Resources': ['faq', 'glossary'],
-        Tools: ['debugging', 'dev-options'],
-        Contributing: ['contributing', 'community-showcase', 'repo-structure'],
+        'Tools': ['debugging', 'dev-options'],
+        'Contributing': [
+          'contributing',
+          'community-showcase',
+          'repo-structure',
+        ],
       },
     ],
   },

@@ -19,11 +19,12 @@ package com.facebook.litho;
 import static com.facebook.litho.EventDispatcherUtils.dispatchOnClick;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 /** Click listener that triggers its underlying event handler. */
 class ComponentClickListener implements View.OnClickListener {
 
-  private EventHandler<ClickEvent> mEventHandler;
+  private @Nullable EventHandler<ClickEvent> mEventHandler;
 
   @Override
   public void onClick(View view) {
@@ -53,7 +54,7 @@ class ComponentClickListener implements View.OnClickListener {
     return mEventHandler;
   }
 
-  void setEventHandler(EventHandler<ClickEvent> eventHandler) {
+  void setEventHandler(@Nullable EventHandler<ClickEvent> eventHandler) {
     mEventHandler = eventHandler;
   }
 }

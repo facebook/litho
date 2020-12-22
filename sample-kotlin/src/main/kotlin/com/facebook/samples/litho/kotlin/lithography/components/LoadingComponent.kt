@@ -26,5 +26,7 @@ import com.facebook.yoga.YogaJustify.CENTER
 
 class LoadingComponent :
     KComponent({
-      Row(justifyContent = CENTER) { +Progress(color = Color.DKGRAY, style = size(50.dp)) }
+      Row(
+          justifyContent = CENTER,
+          children = listOf(Progress(color = Color.DKGRAY, style = size(50.dp))))
     })

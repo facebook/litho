@@ -337,6 +337,7 @@ public class StateHandler {
     return list;
   }
 
+  @Nullable
   synchronized Map<String, StateContainer> getStateContainers() {
     return mStateContainers;
   }
@@ -356,6 +357,7 @@ public class StateHandler {
     return mPendingStateUpdateTransitions;
   }
 
+  @Nullable
   @VisibleForTesting
   synchronized Map<String, List<StateUpdate>> getAppliedStateUpdates() {
     return mAppliedStateUpdates;
@@ -446,7 +448,7 @@ public class StateHandler {
    * Copies the list of given state containers into the map that holds the current state containers
    * of components.
    */
-  private void copyCurrentStateContainers(Map<String, StateContainer> stateContainers) {
+  private void copyCurrentStateContainers(@Nullable Map<String, StateContainer> stateContainers) {
     if (stateContainers == null || stateContainers.isEmpty()) {
       return;
     }

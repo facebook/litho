@@ -26,5 +26,7 @@ import com.facebook.litho.widget.Text
 
 class FooterComponent(text: String) :
     KComponent({
-      Column(style = padding(8.dp)) { +Text(text = text, textColor = GRAY, textStyle = ITALIC) }
+      Column(
+          style = padding(8.dp),
+          children = listOf(Text(text = text, textColor = GRAY, textStyle = ITALIC)))
     })

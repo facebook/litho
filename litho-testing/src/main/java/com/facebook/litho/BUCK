@@ -50,6 +50,7 @@ litho_android_library(
 litho_android_library(
     name = "benchmarkhelper",
     srcs = glob(["BenchmarkTestHelper.java"]),
+    autoglob = False,
     deps = [
         LITHO_JAVA_TARGET,
     ],

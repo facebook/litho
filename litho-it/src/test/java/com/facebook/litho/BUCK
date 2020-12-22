@@ -109,6 +109,7 @@ litho_android_library(
         "StateUpdateTestComponent.java",
         "TouchExpansionTestInternalNode.java",
     ],
+    autoglob = False,
     source = "8",
     target = "8",
     visibility = [

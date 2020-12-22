@@ -45,7 +45,7 @@ public final class DrawableMatrix extends Matrix {
    * @return The scale matrix or null if the drawable does not need to be scaled.
    */
   public static @Nullable DrawableMatrix create(
-      final Drawable d, ScaleType scaleType, final int width, final int height) {
+      final Drawable d, @Nullable ScaleType scaleType, final int width, final int height) {
 
     if (scaleType == null) {
       scaleType = ScaleType.FIT_CENTER;

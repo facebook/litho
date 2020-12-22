@@ -64,7 +64,10 @@ open class Style(
     val foreground: Drawable? = null
 ) {
 
-  operator fun plus(other: Style): Style {
+  operator fun plus(other: Style?): Style {
+    if (other == null) {
+      return this
+    }
     return Style(
         width = other.width ?: width,
         height = other.height ?: height,
@@ -261,13 +264,13 @@ fun Style.positionRelative(
     bottom: Dp? = null
 ) = this + com.facebook.litho.positionRelative(start, top, end, bottom)
 
-fun background(background: Drawable) = Style(background = background)
+fun background(background: Drawable?) = Style(background = background)
 
-fun Style.background(background: Drawable) = this + com.facebook.litho.background(background)
+fun Style.background(background: Drawable?) = this + com.facebook.litho.background(background)
 
-fun foreground(foreground: Drawable) = Style(foreground = foreground)
+fun foreground(foreground: Drawable?) = Style(foreground = foreground)
 
-fun Style.foreground(foreground: Drawable) = this + com.facebook.litho.foreground(foreground)
+fun Style.foreground(foreground: Drawable?) = this + com.facebook.litho.foreground(foreground)
 
 fun alignSelf(align: YogaAlign) = Style(alignSelf = align)
 

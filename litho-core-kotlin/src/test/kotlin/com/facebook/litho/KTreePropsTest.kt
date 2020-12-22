@@ -94,20 +94,20 @@ class KTreePropsTest {
         KComponent {
           createTreeProp { "kavabanga" }
 
-          Row {
-            +KComponent { // child 1
-              createTreeProp { 42 }
+          Row(
+              children =
+                  listOf(
+                      KComponent { // child 1
+                        createTreeProp { 42 }
 
-              child1StringPropRef.prop = useTreeProp<String>()
-              child1IntPropRef.prop = useTreeProp<Int>()
-              null
-            }
-
-            +KComponent { // child 2
-              child2IntPropRef.prop = useTreeProp<Int>()
-              null
-            }
-          }
+                        child1StringPropRef.prop = useTreeProp<String>()
+                        child1IntPropRef.prop = useTreeProp<Int>()
+                        null
+                      },
+                      KComponent { // child 2
+                        child2IntPropRef.prop = useTreeProp<Int>()
+                        null
+                      }))
         }
     ComponentTestHelper.mountComponent(context, parent)
 

@@ -53,7 +53,7 @@ module.exports = {
         },
         {
           label: 'Tutorial',
-          to: 'docs/tutorial',
+          to: 'docs/tutorial/overview',
           position: 'right',
         },
         {

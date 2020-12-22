@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -40,6 +41,7 @@ public class RecyclePool<T> implements PoolWithDebugInfo {
     mPool = sync ? new Pools.SynchronizedPool<T>(maxSize) : new Pools.SimplePool<T>(maxSize);
   }
 
+  @Nullable
   public T acquire() {
     T item;
     if (mIsSync) {

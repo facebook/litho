@@ -25,7 +25,7 @@ import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
 class FeedItemCard(artist: Artist) :
     KComponent({
-      Column(style = padding(horizontal = 16.dp, vertical = 8.dp)) {
-        +Card { FeedItemComponent(artist = artist) }
-      }
+      Column(
+          style = padding(horizontal = 16.dp, vertical = 8.dp),
+          children = listOf(Card { FeedItemComponent(artist = artist) }))
     })

@@ -50,14 +50,14 @@ public class LayoutStateContext {
   }
 
   @VisibleForTesting
-  LayoutStateContext(final LayoutState layoutState, final ComponentTree componentTree) {
+  LayoutStateContext(final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
     this(layoutState, componentTree, null);
   }
 
   @VisibleForTesting
   LayoutStateContext(
       final LayoutState layoutState,
-      final ComponentTree componentTree,
+      @Nullable final ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture) {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;

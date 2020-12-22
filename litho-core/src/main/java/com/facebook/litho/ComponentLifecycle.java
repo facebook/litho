@@ -199,6 +199,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             context, context.getWidthSpec(), context.getHeightSpec());
   }
 
+  @Nullable
   @ThreadSafe(enableChecks = false)
   Component createComponentLayout(ComponentContext c) {
     Component layoutComponent = null;
@@ -698,8 +699,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
+  /* TODO: (T81557408) Fix @Nullable issue. */
   protected static <E> EventTrigger<E> newEventTrigger(
-      ComponentContext c, String childKey, int id, Handle handle) {
+      ComponentContext c, String childKey, int id, @Nullable Handle handle) {
     return c.newEventTrigger(childKey, id, handle);
   }
 

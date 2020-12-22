@@ -29,6 +29,7 @@ load(
 litho_android_test_library(
     name = "whitebox",
     srcs = glob(["Whitebox.java"]),
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
@@ -40,6 +41,7 @@ litho_android_test_library(
         ["*.java"],
         exclude = ["Whitebox.java"],
     ),
+    autoglob = False,
     is_androidx = True,
     plugins = [
         LITHO_PROCESSOR_TARGET,
