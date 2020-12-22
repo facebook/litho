@@ -21,6 +21,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
@@ -175,6 +177,7 @@ class HorizontalScrollSpec {
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
@@ -186,6 +189,7 @@ class HorizontalScrollSpec {
         childComponentTree,
         lastScrollPosition,
         onScrollChangeListener,
+        scrollStateListener,
         componentWidth,
         componentHeight);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
@@ -249,11 +253,28 @@ class HorizontalScrollSpec {
 
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private HorizontalScrollSpec.OnScrollChangeListener mOnScrollChangeListener;
+    @Nullable private ScrollStateDetector mScrollStateDetector;
 
     public HorizontalScrollLithoView(Context context) {
       super(context);
       mLithoView = new LithoView(context);
       addView(mLithoView);
+    }
+
+    @Override
+    public void fling(int velocityX) {
+      super.fling(velocityX);
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.fling();
+      }
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+      super.draw(canvas);
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onDraw();
+      }
     }
 
     @Override
@@ -266,6 +287,21 @@ class HorizontalScrollSpec {
         }
         mScrollPosition.x = getScrollX();
       }
+
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onScrollChanged();
+      }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+      boolean isConsumed = super.onTouchEvent(motionEvent);
+
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onTouchEvent(motionEvent);
+      }
+
+      return isConsumed;
     }
 
     @Override
@@ -287,8 +323,11 @@ class HorizontalScrollSpec {
         ComponentTree componentTree,
         ScrollPosition scrollPosition,
         @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
+        ScrollStateListener scrollStateListener,
         int width,
         int height) {
+      mScrollStateDetector =
+          scrollStateListener == null ? null : new ScrollStateDetector(this, scrollStateListener);
       mLithoView.setComponentTree(componentTree);
       mScrollPosition = scrollPosition;
       mOnScrollChangeListener = onScrollChangeListener;
@@ -303,6 +342,7 @@ class HorizontalScrollSpec {
       mComponentHeight = 0;
       mScrollPosition = null;
       mOnScrollChangeListener = null;
+      mScrollStateDetector = null;
     }
   }
 
