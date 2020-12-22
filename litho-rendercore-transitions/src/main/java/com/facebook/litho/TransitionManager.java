@@ -284,10 +284,12 @@ public class TransitionManager {
     List<AnimationBinding> currentAnimationBindings = new ArrayList<>();
     if (currentLayoutState != null) {
       List<Transition> currentTransitions = currentLayoutState.getTransitions();
-      for (Transition transition : currentTransitions) {
-        AnimationBinding binding = createAnimationsForTransition(transition);
-        if (binding != null) {
-          currentAnimationBindings.add(binding);
+      if (currentTransitions != null) {
+        for (Transition transition : currentTransitions) {
+          AnimationBinding binding = createAnimationsForTransition(transition);
+          if (binding != null) {
+            currentAnimationBindings.add(binding);
+          }
         }
       }
     }
