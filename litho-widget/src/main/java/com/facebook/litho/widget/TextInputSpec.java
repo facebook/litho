@@ -1163,6 +1163,14 @@ class TextInputSpec {
     }
   }
 
+  /**
+   * We use this instead of vanilla EditText for measurement as the ConstantState of the EditText
+   * background drawable is not thread-safe and shared across all EditText instances. This is
+   * especially important as we measure this component mostly in background thread and it could lead
+   * to race conditions where different instances are accessing/modifying same ConstantState
+   * concurrently. Mutating background drawable will make sure that ConstantState is not shared
+   * therefore will become thread-safe.
+   */
   static class ForMeasureEditText extends EditText {
 
     public ForMeasureEditText(Context context) {
@@ -1172,5 +1180,13 @@ class TextInputSpec {
     // This view is not intended to be drawn and invalidated
     @Override
     public void invalidate() {}
+
+    @Override
+    public void setBackground(Drawable background) {
+      if (background != null) {
+        background.mutate();
+      }
+      super.setBackground(background);
+    }
   }
 }
