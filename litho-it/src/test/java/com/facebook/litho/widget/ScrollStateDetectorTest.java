@@ -21,7 +21,8 @@ public class ScrollStateDetectorTest {
   public void setup() {
     View hostView = new View(RuntimeEnvironment.application.getApplicationContext());
     scrollStateListener = new TestScrollStateListener();
-    detector = new ScrollStateDetector(hostView, scrollStateListener);
+    detector = new ScrollStateDetector(hostView);
+    detector.setListener(scrollStateListener);
   }
 
   // For scroll driven by non-fling gesture, the first onScrollChange callback triggers start event
@@ -35,6 +36,33 @@ public class ScrollStateDetectorTest {
     detector.onScrollChanged();
     detector.onScrollChanged();
     detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_UP));
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
+  @Test
+  public void testSlowScrollWithCancel() {
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_DOWN));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
+  @Test
+  public void testSlowScrollWithDownMoveAndCancel() {
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_DOWN));
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_MOVE));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
     assertThat(scrollStateListener.startCount).isEqualTo(1);
     assertThat(scrollStateListener.stopCount).isEqualTo(1);
   }
@@ -56,6 +84,40 @@ public class ScrollStateDetectorTest {
     assertThat(scrollStateListener.stopCount).isEqualTo(1);
   }
 
+  @Test
+  public void testSlowScrollWithRandomOnDrawAndCancel() {
+    detector.onDraw();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_DOWN));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
+    detector.onDraw();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
+  @Test
+  public void testSlowScrollWithMoveRandomOnDrawAndCancel() {
+    detector.onDraw();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_MOVE));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
+    detector.onDraw();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
   // For scroll driven by fling gesture, the first onScrollChange callback triggers start event
   // and then detector checks if there's an onScrollChanged() callback between onDraw() to determine
   // if scroll stops.
@@ -69,6 +131,76 @@ public class ScrollStateDetectorTest {
     detector.onScrollChanged();
     detector.fling();
     detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_UP));
+    detector.onDraw();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onDraw();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onDraw();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
+  @Test
+  public void testFlingWithCancel() {
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_DOWN));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.fling();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
+    detector.onDraw();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onDraw();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onDraw();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
+  @Test
+  public void testFlingWithMoveAndCancel() {
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_MOVE));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.fling();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
+    detector.onDraw();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onDraw();
+    assertThat(scrollStateListener.stopCount).isEqualTo(0);
+    detector.onScrollChanged();
+    detector.onDraw();
+    detector.onDraw();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    assertThat(scrollStateListener.stopCount).isEqualTo(1);
+  }
+
+  @Test
+  public void testFlingWithDownMoveAndCancel() {
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_DOWN));
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_MOVE));
+    detector.onScrollChanged();
+    assertThat(scrollStateListener.startCount).isEqualTo(1);
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.onScrollChanged();
+    detector.fling();
+    detector.onTouchEvent(createFakeEvent(MotionEvent.ACTION_CANCEL));
     detector.onDraw();
     assertThat(scrollStateListener.stopCount).isEqualTo(0);
     detector.onScrollChanged();

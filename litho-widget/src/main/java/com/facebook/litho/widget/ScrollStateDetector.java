@@ -1,11 +1,14 @@
 package com.facebook.litho.widget;
 
+import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
 import static android.view.MotionEvent.ACTION_UP;
 
-import android.support.annotation.UiThread;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.annotation.UiThread;
+import javax.annotation.Nullable;
 
 // Detects scroll status based on onTouch(), onScrollChanged(), fling(), and
 // draw() callbacks.
@@ -24,7 +27,7 @@ import android.view.View;
 class ScrollStateDetector {
 
   private final View mHostView;
-  private final ScrollStateListener mScrollStateListener;
+  @Nullable private final ScrollStateListener scrollStateListener;
 
   /**
    * The potential timeline of events.
@@ -42,25 +45,26 @@ class ScrollStateDetector {
   private boolean mScrollStopped;
   private boolean mHasScrolledBetweenDraw;
 
-  ScrollStateDetector(View view, ScrollStateListener scrollStateListener) {
+  ScrollStateDetector(View view) {
     this.mHostView = view;
-    this.mScrollStateListener = scrollStateListener;
   }
 
   @UiThread
   void onTouchEvent(MotionEvent motionEvent) {
-    if (motionEvent.getAction() == ACTION_DOWN) {
+    if (motionEvent.getAction() == ACTION_DOWN || motionEvent.getAction() == ACTION_MOVE) {
       if (mScrollStopped) {
         reset();
       } else {
         mFlingStarted = false;
         mHasScrolledBetweenDraw = true;
       }
-    } else if (motionEvent.getAction() == ACTION_UP) {
+    } else if (motionEvent.getAction() == ACTION_UP || motionEvent.getAction() == ACTION_CANCEL) {
       // if the touch events hasn't triggered fling, the up event leads to scroll_stop.
       if (!mFlingStarted && mScrollStarted && !mScrollStopped) {
-        mScrollStateListener.onScrollStateChanged(mHostView, ScrollStateListener.SCROLL_STOPPED);
         mScrollStopped = true;
+        if (scrollStateListener != null) {
+          scrollStateListener.onScrollStateChanged(mHostView, ScrollStateListener.SCROLL_STOPPED);
+        }
       }
     }
   }
@@ -68,8 +72,10 @@ class ScrollStateDetector {
   @UiThread
   void onScrollChanged() {
     if (!mScrollStarted && !mScrollStopped) {
-      mScrollStateListener.onScrollStateChanged(mHostView, ScrollStateListener.SCROLL_STARTED);
       mScrollStarted = true;
+      if (scrollStateListener != null) {
+        scrollStateListener.onScrollStateChanged(mHostView, ScrollStateListener.SCROLL_STARTED);
+      }
     }
     mHasScrolledBetweenDraw = true;
   }
@@ -78,9 +84,11 @@ class ScrollStateDetector {
   void onDraw() {
     if (mFlingStarted && !mScrollStopped) {
       if (!mHasScrolledBetweenDraw) {
-        mScrollStateListener.onScrollStateChanged(mHostView, ScrollStateListener.SCROLL_STOPPED);
         mScrollStopped = true;
         mFlingStarted = false;
+        if (scrollStateListener != null) {
+          scrollStateListener.onScrollStateChanged(mHostView, ScrollStateListener.SCROLL_STOPPED);
+        }
       }
       mHasScrolledBetweenDraw = false;
     }
@@ -89,6 +97,11 @@ class ScrollStateDetector {
   @UiThread
   void fling() {
     mFlingStarted = true;
+  }
+
+  @UiThread
+  void setListener(@Nullable ScrollStateListener listener) {
+    this.scrollStateListener = listener;
   }
 
   @UiThread

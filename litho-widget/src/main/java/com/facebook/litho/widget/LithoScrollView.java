@@ -153,8 +153,12 @@ public class LithoScrollView extends NestedScrollView {
     getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
 
     mOnPreDrawListener = onPreDrawListener;
-    mScrollStateDetector =
-        scrollStateListener == null ? null : new ScrollStateDetector(this, scrollStateListener);
+    if (scrollStateListener != null) {
+      if (mScrollStateDetector == null) {
+        mScrollStateDetector = new ScrollStateDetector(this);
+      }
+      mScrollStateDetector.setListener(scrollStateListener);
+    }
   }
 
   void unmount() {
@@ -163,6 +167,8 @@ public class LithoScrollView extends NestedScrollView {
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     mOnPreDrawListener = null;
-    mScrollStateDetector = null;
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.setListener(null);
+    }
   }
 }

@@ -326,13 +326,18 @@ class HorizontalScrollSpec {
         ScrollStateListener scrollStateListener,
         int width,
         int height) {
-      mScrollStateDetector =
-          scrollStateListener == null ? null : new ScrollStateDetector(this, scrollStateListener);
       mLithoView.setComponentTree(componentTree);
       mScrollPosition = scrollPosition;
       mOnScrollChangeListener = onScrollChangeListener;
       mComponentWidth = width;
       mComponentHeight = height;
+
+      if (scrollStateListener != null) {
+        if (mScrollStateDetector == null) {
+          mScrollStateDetector = new ScrollStateDetector(this);
+        }
+        mScrollStateDetector.setListener(scrollStateListener);
+      }
     }
 
     void unmount() {
@@ -342,7 +347,9 @@ class HorizontalScrollSpec {
       mComponentHeight = 0;
       mScrollPosition = null;
       mOnScrollChangeListener = null;
-      mScrollStateDetector = null;
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.setListener(null);
+      }
     }
   }
 
