@@ -900,7 +900,7 @@ class TextInputSpec {
   static boolean setTextEditText(
       AtomicReference<EditTextWithEventHandlers> mountedView,
       AtomicReference<CharSequence> savedText,
-      CharSequence text) {
+      @Nullable CharSequence text) {
     ThreadUtils.assertMainThread();
 
     EditTextWithEventHandlers editText = mountedView.get();
@@ -911,7 +911,7 @@ class TextInputSpec {
 
     // If line count changes state update will be triggered by view
     editText.setText(text);
-    editText.setSelection(text.length());
+    editText.setSelection(text != null ? text.length() : 0);
     return false;
   }
 
