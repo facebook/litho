@@ -305,7 +305,7 @@ class HorizontalScrollSpec {
     }
 
     void unmount() {
-      mLithoView.unmountAllItems();
+      mLithoView.unbind();
       mLithoView.setComponentTree(null);
 
       mComponentWidth = 0;
