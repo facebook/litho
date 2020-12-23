@@ -41,7 +41,7 @@ android {
         }
 
         release {
-            buildConfigField 'boolean', internalBuildField, 'false';
+            buildConfigField 'boolean', internalBuildField, 'false'
             buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
     }
@@ -70,6 +70,7 @@ dependencies {
 
     // Android Support Library
     compileOnly deps.supportAnnotations
+    implementation deps.guava
     implementation deps.supportCore
     implementation deps.supportCustomView
     implementation deps.supportViewPager
