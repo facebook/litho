@@ -21,7 +21,7 @@ module.exports = {
   mainSidebar: {
     'What is Litho?': ['intro/motivation', 'intro/built-with-litho'],
     'Getting Started': ['onboarding/first-steps'],
-    'Tutorial': [
+    Tutorial: [
       'tutorial/overview',
       'tutorial/project-setup',
       'tutorial/first-component',
@@ -60,7 +60,7 @@ module.exports = {
       'sections/diff-sections',
       'sections/architecture',
     ],
-    'Widgets': [
+    Widgets: [
       'widgets/builtin-widgets',
       ...fbInternalOnly(['fb/widgets/design-components']),
     ],
@@ -68,11 +68,12 @@ module.exports = {
       'devtools/android-studio-plugin',
       'devtools/flipper-plugins',
     ],
-    'Testing': [
+    Testing: [
       'testing/testing-overview',
       {
         'Unit Tests': [
           'testing/unit-testing',
+          ...fbInternalOnly(['testing/fb/unit-testing-at-facebook']),
           'testing/subcomponent-testing',
           'testing/prop-matching',
           'testing/testing-treeprops',
@@ -81,29 +82,31 @@ module.exports = {
           'testing/sections-testing',
         ],
       },
-      'testing/espresso-testing',
-      'testing/tests-in-android-studio',
+      {
+        'UI Tests': [
+          'testing/espresso-testing',
+          ...fbInternalOnly(['testing/fb/buddy-tests-at-facebook']),
+        ],
+      },
       ...fbInternalOnly([
         {
-          '[Internal]': [
-            'fb/testing/testing-overview',
-            'fb/testing/end-to-end-testing',
-            'fb/testing/unit-testing',
-            'fb/testing/litho-benchmark-tests',
+          'Benchmark Tests': [
+            'testing/fb/litho-benchmark-tests',
             {
-              'MobileLab Benchmark Tests': [
-                'fb/testing/mobilelab-benchmark-tests/overview',
-                'fb/testing/mobilelab-benchmark-tests/getting-started',
-                'fb/testing/mobilelab-benchmark-tests/memory-benchmarks',
-                'fb/testing/mobilelab-benchmark-tests/integrate-into-mobilelab',
-                'fb/testing/mobilelab-benchmark-tests/profiling-benchmarks',
+              'MobileLab Tests': [
+                'testing/fb/mobilelab-benchmark-tests/mobilelab-tests',
+                'testing/fb/mobilelab-benchmark-tests/getting-started',
+                'testing/fb/mobilelab-benchmark-tests/memory-benchmarks',
+                'testing/fb/mobilelab-benchmark-tests/mobilelab-integration',
+                'testing/fb/mobilelab-benchmark-tests/profiling-benchmarks',
               ],
             },
           ],
         },
       ]),
+      'testing/tests-in-android-studio',
     ],
-    'Animations': [
+    Animations: [
       'animations/transition-basics',
       'animations/transition-types',
       'animations/transition-all-layout',
@@ -111,8 +114,8 @@ module.exports = {
       'animations/transition-definitions',
       'animations/transition-key-types',
     ],
-    'Accessibility': ['accessibility/accessibility-overview'],
-    'Performance': [
+    Accessibility: ['accessibility/accessibility-overview'],
+    Performance: [
       'performance/analysing-performance',
       'performance/spotting-performance-regressions',
     ],
@@ -178,16 +181,16 @@ module.exports = {
           'writing-components',
           'using-components',
         ],
-        'Reference': ['props', 'common-props', 'cached-values'],
+        Reference: ['props', 'common-props', 'cached-values'],
         'Handling Events': ['events-touch-handling', 'visibility-handling'],
-        'Sections': ['sections-tutorial', 'communicating-with-the-ui'],
+        Sections: ['sections-tutorial', 'communicating-with-the-ui'],
         'Common use cases': [
           'updating-ui',
           'borders',
           'tooltips',
           'saving-state',
         ],
-        'Compatibility': ['styles', 'rtl'],
+        Compatibility: ['styles', 'rtl'],
         'Advanced Guides': [
           'architecture-overview',
           'recycler-component',
@@ -195,20 +198,16 @@ module.exports = {
           'error-boundaries',
           'onattached-ondetached',
         ],
-        'Architecture': [
+        Architecture: [
           'codegen',
           'asynchronous-layout',
           'view-flattening',
           'recycling',
         ],
-        'Experimental': ['mount-extensions'],
+        Experimental: ['mount-extensions'],
         'Additional Resources': ['faq', 'glossary'],
-        'Tools': ['debugging', 'dev-options'],
-        'Contributing': [
-          'contributing',
-          'community-showcase',
-          'repo-structure',
-        ],
+        Tools: ['debugging', 'dev-options'],
+        Contributing: ['contributing', 'community-showcase', 'repo-structure'],
       },
     ],
   },
