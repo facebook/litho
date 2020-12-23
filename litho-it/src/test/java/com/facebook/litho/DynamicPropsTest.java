@@ -221,25 +221,7 @@ public class DynamicPropsTest {
           protected void setComponent(Component component) {}
         };
 
-    // We are using an old version of Robolectric which has a very limited
-    // implementation of RenderNode which will always returns an elevation
-    // of 0. To get around this we verify the correct elevation values are
-    // applied using the fake LithoView extension below.
-    final LithoView lithoView =
-        new LithoView(mContext) {
-          private float elevation;
-
-          @Override
-          public void setElevation(float elevation) {
-            this.elevation = elevation;
-            super.setElevation(elevation);
-          }
-
-          @Override
-          public float getElevation() {
-            return this.elevation;
-          }
-        };
+    final LithoView lithoView = new LithoView(mContext);
 
     final float startValue = 1f;
     final DynamicValue<Float> elevationDV = new DynamicValue<>(startValue);
