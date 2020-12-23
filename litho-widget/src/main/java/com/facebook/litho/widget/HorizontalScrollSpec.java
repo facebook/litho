@@ -29,6 +29,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
@@ -50,6 +51,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaDirection;
+import java.util.List;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
@@ -241,7 +243,8 @@ class HorizontalScrollSpec {
             .build());
   }
 
-  static class HorizontalScrollLithoView extends HorizontalScrollView {
+  static class HorizontalScrollLithoView extends HorizontalScrollView
+      implements HasLithoViewChildren {
     private final LithoView mLithoView;
 
     private int mComponentWidth;
@@ -283,6 +286,11 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
 
+    @Override
+    public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+      lithoViews.add(mLithoView);
+    }
+
     void mount(
         ComponentTree componentTree,
         ScrollPosition scrollPosition,
@@ -297,8 +305,9 @@ class HorizontalScrollSpec {
     }
 
     void unmount() {
-      // Clear all component-related state from the view.
       mLithoView.unbind();
+      mLithoView.setComponentTree(null);
+
       mComponentWidth = 0;
       mComponentHeight = 0;
       mScrollPosition = null;
