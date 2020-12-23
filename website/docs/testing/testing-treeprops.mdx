@@ -3,29 +3,20 @@ id: testing-treeprops
 title: Matching @TreeProp
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
-:::
-
 import {VersionedCodeBlock} from './../versionedCodeBlock';
 
-## Prerequisites
+:::note
+Checkout the [getting started](unit-testing) section to setup the test environment correctly.
+:::
 
-The package is shipped as a separate module. It is available via maven as
-`com.facebook.litho:litho-testing`. To include it in your gradle build, add this
-line to your `dependencies` block:
-
-export const dependencyCode = `testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'`;
-
-<VersionedCodeBlock language="groovy" code={dependencyCode} />
+:::tip
+Checkout the [**sub-component testing**](subcomponent-testing) section before diving into `@TreeProp` testing.
+:::
 
 ## Testing components with @TreeProp
 
-While `@Prop` are received from the immediate parent, [`@TreeProp`](/docs/mainconcepts/coordinate-state-actions/treeprops) can be passed down to a
-components from any of its ancestors in the current component hierarchy.
-
-## Testing a Component with @TreeProp
-
+While `@Prop` are received from the immediate parent, [`@TreeProp`](/docs/mainconcepts/coordinate-state-actions/treeprops)
+can be passed down to a component from any of its ancestors in the current component hierarchy.
 When testing hierarchies containing components which contain `@TreeProp`, tree props should be be
 passed down to the components as expected.
 
@@ -62,12 +53,11 @@ public class ComponentWithTreePropTest {
       .measure()
       .layout();
 
-    // test you assertions as usual
+    // test assertions as usual
   }
 }
 ```
 
-## Next
-
-Either head back to the [testing overview](testing-overview) or
-continue with the next section, [Testing InjectProps](injectprop-matching).
+:::info
+`@TestSpec` does not support matching `@TreeProp`.
+:::
