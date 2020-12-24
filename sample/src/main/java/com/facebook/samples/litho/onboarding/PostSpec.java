@@ -16,20 +16,36 @@
 
 package com.facebook.samples.litho.onboarding;
 
+import android.graphics.Typeface;
+import android.widget.ImageView;
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 
-// start
+// start_example
 @LayoutSpec
-public class FirstComponentSpec {
+public class PostSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop String name) {
-    return Text.create(c).text("Hello " + name + "!").build();
+  static Component onCreateLayout(
+      ComponentContext c, @Prop String username, @Prop int avatarRes, @Prop int imageRes) {
+    return Column.create(c)
+        .child(
+            Row.create(c)
+                .child(Image.create(c).drawableRes(avatarRes))
+                .child(Text.create(c).text(username).textStyle(Typeface.BOLD)))
+        .child(
+            Image.create(c)
+                .drawableRes(imageRes)
+                .scaleType(ImageView.ScaleType.CENTER_CROP)
+                .aspectRatio(1))
+        .build();
   }
 }
-// end
+// end_example
