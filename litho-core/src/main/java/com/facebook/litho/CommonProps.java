@@ -29,9 +29,7 @@ import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.yoga.YogaEdge;
 
-/**
- * Common props that are accessible outside of the framework.
- */
+/** Common props that are accessible outside of the framework. */
 @ThreadConfined(ThreadConfined.ANY)
 public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
@@ -156,7 +154,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   void dispatchPopulateAccessibilityEventHandler(
       @Nullable
           EventHandler<DispatchPopulateAccessibilityEventEvent>
-          dispatchPopulateAccessibilityEventHandler);
+              dispatchPopulateAccessibilityEventHandler);
 
   void onInitializeAccessibilityEventHandler(
       @Nullable
@@ -165,7 +163,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   void onInitializeAccessibilityNodeInfoHandler(
       @Nullable
           EventHandler<OnInitializeAccessibilityNodeInfoEvent>
-          onInitializeAccessibilityNodeInfoHandler);
+              onInitializeAccessibilityNodeInfoHandler);
 
   void onPopulateAccessibilityEventHandler(
       @Nullable
@@ -174,7 +172,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   void onRequestSendAccessibilityEventHandler(
       @Nullable
           EventHandler<OnRequestSendAccessibilityEventEvent>
-          onRequestSendAccessibilityEventHandler);
+              onRequestSendAccessibilityEventHandler);
 
   void performAccessibilityActionHandler(
       @Nullable EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler);
@@ -185,7 +183,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   void sendAccessibilityEventUncheckedHandler(
       @Nullable
           EventHandler<SendAccessibilityEventUncheckedEvent>
-          sendAccessibilityEventUncheckedHandler);
+              sendAccessibilityEventUncheckedHandler);
 
   void scale(float scale);
 
