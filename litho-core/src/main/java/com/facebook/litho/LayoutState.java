@@ -2424,23 +2424,26 @@ public class LayoutState
     }
     componentTree.applyPreviousRenderData(this);
 
-    if (mComponentsNeedingPreviousRenderData == null) {
-      return null;
-    }
+    List<Transition> mountTimeTransitions = null;
 
-    List<Transition> mountTimeTransitions = new ArrayList<>();
-    for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
-      final Component component = mComponentsNeedingPreviousRenderData.get(i);
-      final Transition transition =
-          component.createTransition(
-              component.getScopedContext(getLayoutStateContext(), component.getGlobalKey()));
-      if (transition != null) {
-        mountTimeTransitions.add(transition);
+    if (mComponentsNeedingPreviousRenderData != null) {
+      mountTimeTransitions = new ArrayList<>();
+      for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
+        final Component component = mComponentsNeedingPreviousRenderData.get(i);
+        final Transition transition =
+            component.createTransition(
+                component.getScopedContext(getLayoutStateContext(), component.getGlobalKey()));
+        if (transition != null) {
+          mountTimeTransitions.add(transition);
+        }
       }
     }
 
     final List<Transition> updateStateTransitions = componentTree.getStateUpdateTransitions();
     if (updateStateTransitions != null) {
+      if (mountTimeTransitions == null) {
+        mountTimeTransitions = new ArrayList<>();
+      }
       mountTimeTransitions.addAll(updateStateTransitions);
     }
 
