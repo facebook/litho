@@ -19,7 +19,6 @@ package com.facebook.litho.intellij.inspections;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
-import com.facebook.litho.intellij.redsymbols.FileGenerateUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
@@ -48,21 +47,18 @@ public class SpecAnnotator implements Annotator {
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
+    // Reduce warnings check to Class objects only
     PsiClass spec = null;
-    if (element instanceof PsiClass
-        && (LithoPluginUtils.isLayoutSpec((PsiClass) element)
-            || LithoPluginUtils.isMountSpec((PsiClass) element))) {
+    if (element instanceof PsiClass) {
       spec = (PsiClass) element;
     } else if (element instanceof PsiFile) {
-      spec =
-          LithoPluginUtils.getFirstClass(
-                  (PsiFile) element,
-                  cls -> (LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls)))
-              .orElse(null);
+      spec = LithoPluginUtils.getFirstClass((PsiFile) element, cls -> true).orElse(null);
+    } else {
+      return;
     }
 
+    // Verify Litho classes only
     final String loggingType;
-    // null check performed inside isLayoutSpec() and isMountSpec()
     if (LithoPluginUtils.isLayoutSpec(spec)) {
       loggingType = "layout_spec";
     } else if (LithoPluginUtils.isMountSpec(spec)) {
@@ -74,14 +70,12 @@ public class SpecAnnotator implements Annotator {
     SpecModel specModel = null;
     try {
       // Assuming that this Annotator is called sequentially and not in parallel, we don't do extra
-      // work by calling update directly.
+      // work by calling update directly
       specModel = ComponentGenerateService.getInstance().getOrCreateSpecModel(spec, false);
-      FileGenerateUtils.generateClass(spec);
     } catch (Exception e) {
       // Model might contain errors. Proceed to surfacing them.
       DEBUG_LOGGER.debug(e);
     }
-    DEBUG_LOGGER.debug(element + " under analysis");
 
     final List<SpecModelValidationError> errors =
         Optional.ofNullable(specModel)

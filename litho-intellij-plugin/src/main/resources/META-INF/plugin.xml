@@ -70,7 +70,7 @@
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.SpecAnnotator"/>
+    <annotator order="first" language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.SpecAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.MethodCallAnnotator"/>
 
@@ -85,7 +85,7 @@
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.EventHandlerCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.ParamCompletionContributor" order="first"/>
 
-    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
+    <findUsagesHandlerFactory implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
 
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
@@ -116,6 +116,7 @@
     <projectService serviceImplementation="com.facebook.litho.intellij.redsymbols.ComponentsCacheService"/>
     <java.shortNamesCache implementation="com.facebook.litho.intellij.redsymbols.ComponentShortNamesCache"/>
     <postStartupActivity implementation="com.facebook.litho.intellij.redsymbols.LithoStartupActivity"/>
+    <externalAnnotator order="last" language="JAVA" implementationClass="com.facebook.litho.intellij.redsymbols.FileGeneratingAnnotator"/>
   </extensions>
 
   <actions>
