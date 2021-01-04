@@ -127,7 +127,7 @@
         icon="LithoPluginIcons.BASE_ACTION"
       />
       <action id="GenerateComponentAction"
-          class="com.facebook.litho.intellij.actions.GenerateComponentAction"
+          class="com.facebook.litho.intellij.redsymbols.GenerateComponentAction"
           text="Regenerate Component"
           icon="LithoPluginIcons.BASE_ACTION"
       />

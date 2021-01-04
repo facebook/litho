@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.actions;
+package com.facebook.litho.intellij.redsymbols;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.redsymbols.FileGenerateUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -65,7 +64,7 @@ public class GenerateComponentAction extends AnAction {
                     }
                   };
               DumbService.getInstance(project).smartInvokeLater(job);
-              PsiJavaFile file = (PsiJavaFile) cls.getContainingFile();
+              final PsiJavaFile file = (PsiJavaFile) cls.getContainingFile();
               eventMetadata.put(EventLogger.KEY_FILE, file.getPackageName() + "." + file.getName());
             });
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_GENERATE_COMPONENT, eventMetadata);
