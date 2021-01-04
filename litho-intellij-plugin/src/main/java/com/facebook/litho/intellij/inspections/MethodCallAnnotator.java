@@ -18,6 +18,7 @@ package com.facebook.litho.intellij.inspections;
 
 import static com.facebook.litho.intellij.LithoPluginUtils.resolveEventName;
 
+import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
@@ -27,10 +28,12 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
+import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -40,12 +43,13 @@ import com.intellij.psi.PsiExpressionList;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Annotator creates quick fix to add existing EventHandler to the method without arguments. */
-public class EventHandlerAnnotator implements Annotator {
+public class MethodCallAnnotator implements Annotator {
   private static final IntervalLogger DEBUG_LOGGER =
-      new IntervalLogger(Logger.getInstance(EventHandlerAnnotator.class));
+      new IntervalLogger(Logger.getInstance(MethodCallAnnotator.class));
   static final String FIX_FAMILY_NAME = "LithoFix";
 
   @Override
@@ -55,18 +59,29 @@ public class EventHandlerAnnotator implements Annotator {
     if (!(element instanceof PsiMethodCallExpression)) {
       return;
     }
+
     // MethodCall == method usage
-    final PsiMethodCallExpression eventHandlerSetter = (PsiMethodCallExpression) element;
-    final PsiExpressionList list = eventHandlerSetter.getArgumentList();
+    final PsiMethodCallExpression methodCall = (PsiMethodCallExpression) element;
+
+    formatRequiredProp(methodCall, holder);
+
+    addEventHandlerFix(holder, methodCall);
+
+    DEBUG_LOGGER.logStep("end " + element);
+  }
+
+  private static void addEventHandlerFix(
+      AnnotationHolder holder, PsiMethodCallExpression methodCall) {
+    final PsiExpressionList list = methodCall.getArgumentList();
     if (!list.isEmpty()) {
       return;
     }
-    final String eventQualifiedName = resolveEventName(eventHandlerSetter);
+    final String eventQualifiedName = resolveEventName(methodCall);
     if (eventQualifiedName == null) {
       return;
     }
     final PsiClass parentCls =
-        (PsiClass) PsiTreeUtil.findFirstParent(eventHandlerSetter, PsiClass.class::isInstance);
+        (PsiClass) PsiTreeUtil.findFirstParent(methodCall, PsiClass.class::isInstance);
     if (parentCls == null) {
       return;
     }
@@ -77,9 +92,9 @@ public class EventHandlerAnnotator implements Annotator {
     final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
         implementedEventHandlers = parentModel.getEventMethods();
     final String componentQualifiedName = parentModel.getComponentTypeName().toString();
-    final Project project = eventHandlerSetter.getProject();
+    final Project project = methodCall.getProject();
     final PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
-    final String message = "Add " + AddArgumentFix.getCapitalizedMethoName(eventHandlerSetter);
+    final String message = "Add " + AddArgumentFix.getCapitalizedMethoName(methodCall);
     final SpecModelValidationError error = new SpecModelValidationError(list, message);
 
     final List<IntentionAction> fixes =
@@ -90,16 +105,28 @@ public class EventHandlerAnnotator implements Annotator {
             .map(
                 methodName ->
                     AddArgumentFix.createAddMethodCallFix(
-                        eventHandlerSetter, componentQualifiedName, methodName, elementFactory))
+                        methodCall, componentQualifiedName, methodName, elementFactory))
             .collect(Collectors.toList());
 
     final PsiClass event = PsiSearchUtils.findClass(project, eventQualifiedName);
     if (event != null) {
       fixes.add(
           AddArgumentFix.createNewMethodCallFix(
-              eventHandlerSetter, componentQualifiedName, event, parentCls));
+              methodCall, componentQualifiedName, event, parentCls));
     }
     AnnotatorUtils.addError(holder, error, fixes);
-    DEBUG_LOGGER.logStep("end " + element);
+  }
+
+  private static void formatRequiredProp(
+      PsiMethodCallExpression expression, AnnotationHolder holder) {
+    Optional.ofNullable(expression.resolveMethod())
+        .map(method -> PsiAnnotationProxyUtils.findAnnotationInHierarchy(method, PropSetter.class))
+        .filter(PropSetter::required)
+        .map(ignore -> expression.getMethodExpression().getReferenceNameElement())
+        .ifPresent(
+            element ->
+                holder
+                    .createInfoAnnotation(element, null)
+                    .setTextAttributes(DefaultLanguageHighlighterColors.KEYWORD));
   }
 }

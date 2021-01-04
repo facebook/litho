@@ -72,7 +72,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.SpecAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
-    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.EventHandlerAnnotator"/>
+    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.MethodCallAnnotator"/>
 
     <applicationService serviceImplementation="com.facebook.litho.intellij.services.ComponentGenerateService" />
 

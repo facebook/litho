@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.lang.annotation.Annotation;
+import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -33,9 +34,9 @@ import com.intellij.psi.util.PsiTreeUtil;
 import java.util.List;
 import org.junit.Test;
 
-public class EventHandlerAnnotatorTest extends LithoPluginIntellijTest {
+public class MethodCallAnnotatorTest extends LithoPluginIntellijTest {
 
-  public EventHandlerAnnotatorTest() {
+  public MethodCallAnnotatorTest() {
     super("testdata/inspections");
   }
 
@@ -50,7 +51,7 @@ public class EventHandlerAnnotatorTest extends LithoPluginIntellijTest {
               PsiTreeUtil.findChildOfType(cls, PsiMethodCallExpression.class);
           assertThat(call.getText()).isEqualTo("Component.create(c).testEventHandler()");
 
-          EventHandlerAnnotator eventHandlerAnnotator = new EventHandlerAnnotator();
+          Annotator eventHandlerAnnotator = new MethodCallAnnotator();
 
           TestHolder holder1 = new TestHolder();
           eventHandlerAnnotator.annotate(call, holder1);
