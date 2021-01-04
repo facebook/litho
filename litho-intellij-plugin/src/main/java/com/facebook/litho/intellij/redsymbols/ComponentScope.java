@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.redsymbols;
 
+import static com.facebook.litho.intellij.LithoPluginUtils.getVirtualFile;
+
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
@@ -63,13 +65,6 @@ public class ComponentScope extends GlobalSearchScope {
 
   private static boolean containsInternal(VirtualFile file) {
     return StdFileTypes.JAVA.equals(file.getFileType()) && file.getUserData(KEY) != null;
-  }
-
-  public static VirtualFile getVirtualFile(PsiFile file) {
-    final VirtualFile vf = file.getVirtualFile();
-    if (vf != null) return vf;
-
-    return file.getViewProvider().getVirtualFile();
   }
 
   @Override
