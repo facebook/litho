@@ -1866,7 +1866,7 @@ public class RecyclerBinder
    */
   @UiThread
   public void notifyChangeSetComplete(
-      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
+      boolean isDataChanged, @Nullable ChangeSetCompleteCallback changeSetCompleteCallback) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("notifyChangeSetComplete");
@@ -1883,8 +1883,10 @@ public class RecyclerBinder
             "Trying to do a sync notifyChangeSetComplete when using asynchronous mutations!");
       }
 
-      changeSetCompleteCallback.onDataBound();
-      mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
+      if (changeSetCompleteCallback != null) {
+        changeSetCompleteCallback.onDataBound();
+        mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
+      }
       maybeDispatchDataRendered();
 
       if (isDataChanged) {
