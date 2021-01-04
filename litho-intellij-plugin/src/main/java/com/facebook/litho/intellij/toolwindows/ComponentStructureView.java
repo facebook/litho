@@ -46,17 +46,34 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.FormBuilder;
-import com.siyeh.ig.ui.BlankFiller;
+import com.intellij.util.ui.UI;
+import com.intellij.util.ui.UIUtil;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
+import javax.swing.JTextArea;
 import org.jetbrains.annotations.Nullable;
 
 /** Service creates structure view reflecting {@link ComponentTreeModel}. */
 class ComponentStructureView implements Disposable {
-  private static final BlankFiller STUB = new BlankFiller();
+  private static final JComponent STUB;
+
+  static {
+    final JTextArea text =
+        new JTextArea(
+            "Spec structure will be shown here for a valid ComponentSpec file (LayoutSpec, MountSpec)");
+    text.setLineWrap(true);
+    text.setEditable(false);
+    text.setBackground(null);
+    text.setWrapStyleWord(true);
+    text.setFont(UIUtil.getLabelFont());
+    text.setMargin(UI.insets(10));
+
+    STUB = UI.PanelFactory.panel(text).createPanel();
+  }
+
   private final AtomicBoolean isVisible = new AtomicBoolean(false);
   private final Project project;
   private ContentManager contentManager;
