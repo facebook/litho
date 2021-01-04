@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.redsymbols.FileGenerateUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -56,8 +57,9 @@ public class GenerateComponentAction extends AnAction {
               final Project project = cls.getProject();
               final Runnable job =
                   () -> {
-                    final PsiClass component =
-                        ComponentGenerateService.getInstance().updateComponentSync(cls);
+                    // Force model update
+                    ComponentGenerateService.getInstance().getOrCreateSpecModel(cls, false);
+                    final PsiClass component = FileGenerateUtils.generateClass(cls);
                     if (component != null) {
                       LithoPluginUtils.showInfo(component.getName() + " was regenerated", project);
                     }

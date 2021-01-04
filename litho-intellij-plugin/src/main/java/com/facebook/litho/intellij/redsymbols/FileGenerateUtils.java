@@ -18,12 +18,14 @@ package com.facebook.litho.intellij.redsymbols;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDocumentManager;
@@ -34,6 +36,16 @@ import org.jetbrains.annotations.Nullable;
 
 /** Utility class with methods to create, update, and cache files. */
 public class FileGenerateUtils {
+
+  /** Alternative method to {@link RedSymbolsResolver} for invoking component generation. */
+  @Nullable
+  public static PsiClass generateClass(PsiClass specCls) {
+    final Pair<String, String> newComponent =
+        ComponentGenerateService.getInstance().createLithoFileContent(specCls);
+    if (newComponent == null) return null;
+
+    return updateClass(newComponent.first, newComponent.second, specCls.getProject());
+  }
 
   /** Updates generated Component file with new content. */
   @Nullable

@@ -23,11 +23,9 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import java.io.IOException;
-import java.util.function.BiConsumer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,65 +48,6 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
   public void tearDown() throws Exception {
     super.tearDown();
     PsiSearchUtils.clearMocks();
-  }
-
-  @Test
-  public void updateLayoutComponentAsync_specNotChanged_sameInMemoryComponent() throws IOException {
-    retrieveInitialAndUpdatedComponents(
-        "InitialLayoutSpec.java",
-        "UpdatedLayoutSpecWithSameInterface.java",
-        (initialComponent, updatedComponent) ->
-            assertThat(updatedComponent).isSameAs(initialComponent));
-  }
-
-  @Test
-  public void updateMountComponentAsync_specNotChanged_sameInMemoryComponent() throws IOException {
-    retrieveInitialAndUpdatedComponents(
-        "InitialMountSpec.java",
-        "UpdatedMountSpecWithSameInterface.java",
-        (initialComponent, updatedComponent) ->
-            assertThat(updatedComponent).isSameAs(initialComponent));
-  }
-
-  @Test
-  public void updateLayoutComponentAsync_specChanged_notSameInMemoryComponent() throws IOException {
-    retrieveInitialAndUpdatedComponents(
-        "InitialLayoutSpec.java",
-        "UpdatedLayoutSpecWithDifferentInterface.java",
-        (initialComponent, updatedComponent) ->
-            assertThat(updatedComponent).isNotSameAs(initialComponent));
-  }
-
-  @Test
-  public void updateMountComponentAsync_specChanged_notSameInMemoryComponent() throws IOException {
-    retrieveInitialAndUpdatedComponents(
-        "InitialMountSpec.java",
-        "UpdatedMountSpecWithDifferentInterface.java",
-        (initialComponent, updatedComponent) ->
-            assertThat(updatedComponent).isNotSameAs(initialComponent));
-  }
-
-  private void retrieveInitialAndUpdatedComponents(
-      String fileName, String fileChangedName, BiConsumer<PsiClass, PsiClass> assertion)
-      throws IOException {
-    final PsiFile file = testHelper.configure(fileName);
-    final PsiFile fileChanged = testHelper.configure(fileChangedName);
-    final Project project = testHelper.getProject();
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              final PsiClass spec = LithoPluginUtils.getFirstClass(file, psiClass -> true).get();
-              final PsiClass component =
-                  ComponentGenerateService.getInstance().updateComponentSync(spec);
-
-              assertThat(component).isNotNull();
-
-              final PsiClass updatedSpec =
-                  LithoPluginUtils.getFirstClass(fileChanged, psiClass -> true).get();
-              final PsiClass updatedComponent =
-                  ComponentGenerateService.getInstance().updateComponentSync(updatedSpec);
-              assertion.accept(component, updatedComponent);
-            });
   }
 
   @Test

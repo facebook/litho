@@ -19,7 +19,6 @@ package com.facebook.litho.intellij.redsymbols;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -54,7 +53,7 @@ public class ComponentFinderTest extends LithoPluginIntellijTest {
               final ComponentFinder finder = new ComponentFinder(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
-              ComponentGenerateService.getInstance().updateComponentSync(cls);
+              FileGenerateUtils.generateClass(cls);
 
               // No result with project scope
               final PsiClass result1 =

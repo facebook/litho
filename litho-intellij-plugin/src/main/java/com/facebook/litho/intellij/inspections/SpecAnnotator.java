@@ -19,10 +19,12 @@ package com.facebook.litho.intellij.inspections;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
+import com.facebook.litho.intellij.redsymbols.FileGenerateUtils;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -69,10 +71,12 @@ public class SpecAnnotator implements Annotator {
       return;
     }
 
+    SpecModel specModel = null;
     try {
       // Assuming that this Annotator is called sequentially and not in parallel, we don't do extra
       // work by calling update directly.
-      ComponentGenerateService.getInstance().updateComponentSync(spec);
+      specModel = ComponentGenerateService.getInstance().getOrCreateSpecModel(spec, false);
+      FileGenerateUtils.generateClass(spec);
     } catch (Exception e) {
       // Model might contain errors. Proceed to surfacing them.
       DEBUG_LOGGER.debug(e);
@@ -80,7 +84,7 @@ public class SpecAnnotator implements Annotator {
     DEBUG_LOGGER.debug(element + " under analysis");
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.getInstance().getOrCreateSpecModel(spec))
+        Optional.ofNullable(specModel)
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
