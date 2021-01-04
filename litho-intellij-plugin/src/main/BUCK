@@ -12,12 +12,18 @@ fb_java_library(
     name = "main",
     srcs = glob(
         ["java/**/*.java"],
-        exclude = ["java/com/facebook/litho/intellij/extensions/*.java"],
+        exclude = [
+            "java/com/facebook/litho/intellij/extensions/*.java",
+            "java/com/facebook/litho/intellij/redsymbols/**",
+        ],
     ),
     provided_deps = [
         ANDROID_STUDIO_PLUGIN_SDK,
     ],
-    resources = glob(["resources/**/*"]),
+    resources = glob(
+        ["resources/**/*"],
+        exclude = ["resources/META-INF/redsymbols.xml"],
+    ),
     resources_root = "resources",
     source = "8",
     target = "8",
