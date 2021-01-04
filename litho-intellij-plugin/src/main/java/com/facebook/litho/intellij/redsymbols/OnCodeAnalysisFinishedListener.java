@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Daemon finished listener invokes red symbols analysis. */
-public class OnCodeAnalysisFinishedListener
+class OnCodeAnalysisFinishedListener
     implements DaemonCodeAnalyzer.DaemonListener, FileEditorManagerListener, Disposable {
   private static final Logger LOG = Logger.getInstance(OnCodeAnalysisFinishedListener.class);
   private final Set<String> analyzedFiles = Collections.synchronizedSet(new HashSet<>());

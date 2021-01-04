@@ -27,7 +27,7 @@ import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
 
 /** Locates Litho component by full-qualified name, or null if it wasn't found. */
-public class ComponentFinder extends PsiElementFinder {
+class ComponentFinder extends PsiElementFinder {
   private final Project project;
   private final VirtualFile dummyFile;
 

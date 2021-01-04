@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import com.intellij.openapi.util.Disposer;
 
-public class LithoStartupActivity implements StartupActivity {
+class LithoStartupActivity implements StartupActivity {
 
   @Override
   public void runActivity(Project project) {

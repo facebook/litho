@@ -36,13 +36,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.Nullable;
 
 /** Stores generated in-memory components. */
-public class ComponentsCacheService implements Disposable {
+class ComponentsCacheService implements Disposable {
   private static final Logger LOG = Logger.getInstance(ComponentsCacheService.class);
 
   private final Map<String, PsiClass> componentNameToClass = new ConcurrentHashMap<>();
   private final Project project;
 
-  public ComponentsCacheService(Project project) {
+  ComponentsCacheService(Project project) {
     this.project = project;
   }
 

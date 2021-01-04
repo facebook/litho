@@ -22,7 +22,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nullable;
 
-public class FileGeneratingAnnotator extends ExternalAnnotator<Void, Void> {
+class FileGeneratingAnnotator extends ExternalAnnotator<Void, Void> {
 
   @Nullable
   @Override

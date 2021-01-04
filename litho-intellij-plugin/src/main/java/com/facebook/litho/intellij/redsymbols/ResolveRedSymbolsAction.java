@@ -36,7 +36,7 @@ import java.util.Map;
  * Finds errors in the current file, tries to resolve them to Litho Specs, and updates generated
  * components.
  */
-public class ResolveRedSymbolsAction extends AnAction {
+class ResolveRedSymbolsAction extends AnAction {
 
   @Override
   public void update(AnActionEvent e) {

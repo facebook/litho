@@ -54,7 +54,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class RedSymbolsResolver {
+class RedSymbolsResolver {
   private static final Logger LOG = Logger.getInstance(RedSymbolsResolver.class);
 
   /**
@@ -68,7 +68,7 @@ public class RedSymbolsResolver {
    * @param onFinished accepts true, iff red symbols were found and bind, false otherwise. May be
    *     called before symbols binding.
    */
-  public static void resolveRedSymbols(
+  static void resolveRedSymbols(
       PsiJavaFile psiFile,
       VirtualFile virtualFile,
       Editor editor,

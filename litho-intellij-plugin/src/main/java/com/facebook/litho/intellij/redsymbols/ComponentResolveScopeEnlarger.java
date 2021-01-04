@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see ComponentScope
  */
-public class ComponentResolveScopeEnlarger extends ResolveScopeEnlarger {
+class ComponentResolveScopeEnlarger extends ResolveScopeEnlarger {
 
   @Nullable
   @Override

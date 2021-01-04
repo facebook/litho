@@ -38,7 +38,7 @@ import java.util.Optional;
  * Updates Component file for the given Spec file. Update logic is defined by the {@link
  * ComponentGenerateService}. Works with {@link LayoutSpec} and {@link MountSpec}.
  */
-public class GenerateComponentAction extends AnAction {
+class GenerateComponentAction extends AnAction {
 
   @Override
   public void update(AnActionEvent e) {

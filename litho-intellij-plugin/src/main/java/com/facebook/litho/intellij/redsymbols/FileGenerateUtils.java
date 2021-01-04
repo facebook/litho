@@ -35,11 +35,11 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 /** Utility class with methods to create, update, and cache files. */
-public class FileGenerateUtils {
+class FileGenerateUtils {
 
   /** Alternative method to {@link RedSymbolsResolver} for invoking component generation. */
   @Nullable
-  public static PsiClass generateClass(PsiClass specCls) {
+  static PsiClass generateClass(PsiClass specCls) {
     final Pair<String, String> newComponent =
         ComponentGenerateService.getInstance().createLithoFileContent(specCls);
     if (newComponent == null) return null;
@@ -49,7 +49,7 @@ public class FileGenerateUtils {
 
   /** Updates generated Component file with new content. */
   @Nullable
-  public static PsiClass updateClass(String classFQN, String newContent, Project project) {
+  static PsiClass updateClass(String classFQN, String newContent, Project project) {
     final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, classFQN))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));

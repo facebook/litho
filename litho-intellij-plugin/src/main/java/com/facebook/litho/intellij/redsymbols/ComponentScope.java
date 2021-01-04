@@ -33,11 +33,11 @@ import com.intellij.psi.search.GlobalSearchScope;
  *
  * @see ComponentResolveScopeEnlarger
  */
-public class ComponentScope extends GlobalSearchScope {
+class ComponentScope extends GlobalSearchScope {
   private static final Key<Boolean> KEY = Key.create("com.facebook.litho.intellij.file.Component");
   private static final Logger LOG = Logger.getInstance(ComponentScope.class);
 
-  public static ComponentScope getInstance() {
+  static ComponentScope getInstance() {
     return Holder.INSTANCE;
   }
 
@@ -53,13 +53,13 @@ public class ComponentScope extends GlobalSearchScope {
    * Includes {@link VirtualFile} of the given {@link PsiFile} in the scope and returns included
    * file.
    */
-  public static VirtualFile include(PsiFile file) {
+  static VirtualFile include(PsiFile file) {
     final VirtualFile vf = getVirtualFile(file);
     vf.putUserData(KEY, true);
     return vf;
   }
 
-  public static boolean contains(PsiFile file) {
+  static boolean contains(PsiFile file) {
     return containsInternal(getVirtualFile(file));
   }
 
