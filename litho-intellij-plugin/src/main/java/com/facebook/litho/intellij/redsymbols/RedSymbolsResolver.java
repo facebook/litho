@@ -194,15 +194,16 @@ class RedSymbolsResolver {
       Map<String, String> eventMetadata) {
     final Map<String, PsiClass> redSymbolToClass = new HashMap<>();
     for (String redSymbol : allRedSymbols) {
-      final LithoGeneratedFileProvider provider = new LithoGeneratedFileProvider(redSymbol);
-      provider.guessQualifiedNames(project, symbolsScope, eventMetadata).stream()
+      LithoGeneratedFileProvider.INSTANCE()
+          .guessQualifiedNames(project, symbolsScope, redSymbol, eventMetadata).stream()
           .map(
               fqn -> {
                 // Red symbol might exist for present but not-bind class
                 final PsiClass existingComponent = PsiSearchUtils.findOriginalClass(project, fqn);
                 if (existingComponent != null) return existingComponent;
 
-                final String newContent = provider.createFileContent(fqn);
+                final String newContent =
+                    LithoGeneratedFileProvider.INSTANCE().createFileContent(fqn);
                 if (newContent == null) return null;
 
                 return FileGenerateUtils.updateClass(fqn, newContent, project);
@@ -210,6 +211,7 @@ class RedSymbolsResolver {
           .filter(Objects::nonNull)
           .forEach(component -> redSymbolToClass.put(redSymbol, component));
     }
+    LithoGeneratedFileProvider.INSTANCE().clear();
     return redSymbolToClass;
   }
 
