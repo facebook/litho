@@ -40,7 +40,7 @@ public class EventHandlerCompletionContributorTest extends LithoPluginIntellijTe
 
   @Test
   public void
-      EventHandlerCompletionContributor_whenTriggeringCompletion_showsEventHandlersFromGeneratedComponent()
+      EventHandlerCompletionContributor_whenTriggeringCompletionWithEventName_showsEventHandlersFromGeneratedComponent()
           throws IOException {
     PsiFile psiFile = testHelper.configure("EventHandlerCompletionContributorTest.java");
     ApplicationManager.getApplication()
@@ -54,6 +54,28 @@ public class EventHandlerCompletionContributorTest extends LithoPluginIntellijTe
               List<String> completion = fixture.getLookupElementStrings();
               assertThat(completion).isNotNull();
               assertThat(completion).hasSize(6);
+              assertThat(completion)
+                  .containsAll(
+                      Arrays.asList(
+                          "EventHandlerAnnotator.handler1()",
+                          "EventHandlerAnnotator.handlerTwo()",
+                          "EventHandlerAnnotator.thirdHandler()"));
+            });
+  }
+
+  @Test
+  public void
+      EventHandlerCompletionContributor_whenTriggeringCompletionWithMethodName_showsEventHandlersFromGeneratedComponent()
+          throws IOException {
+    testHelper.configure("EventHandlerCompletionContributorTest2.java");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              CodeInsightTestFixture fixture = testHelper.getFixture();
+              fixture.complete(CompletionType.BASIC);
+              List<String> completion = fixture.getLookupElementStrings();
+              assertThat(completion).isNotNull();
+              assertThat(completion).hasSize(3);
               assertThat(completion)
                   .containsAll(
                       Arrays.asList(
