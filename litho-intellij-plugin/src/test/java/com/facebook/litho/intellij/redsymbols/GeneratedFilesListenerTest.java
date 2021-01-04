@@ -45,8 +45,9 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
   @After
   @Override
   public void tearDown() throws Exception {
-    super.tearDown();
     PsiSearchUtils.clearMocks();
+    ComponentsCacheService.getInstance(testHelper.getProject()).dispose();
+    super.tearDown();
   }
 
   @Test
