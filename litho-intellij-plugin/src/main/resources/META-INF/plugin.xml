@@ -91,10 +91,6 @@
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentsMethodDeclarationHandler"/>
 
-    <java.elementFinder implementation="com.facebook.litho.intellij.redsymbols.ComponentFinder" id="java" order="last"/>
-
-    <java.shortNamesCache implementation="com.facebook.litho.intellij.redsymbols.ComponentShortNamesCache"/>
-
     <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
 
     <localInspection groupName="Litho" language="JAVA"
@@ -104,20 +100,22 @@
       enabledByDefault="true"
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
-    <postStartupActivity implementation="com.facebook.litho.intellij.redsymbols.LithoStartupActivity"/>
-
     <projectConfigurable parentId="tools" instance="com.facebook.litho.intellij.settings.AppSettingsController"
       id="com.facebook.litho.intellij.settings.AppSettingsController" nonDefaultProject="false" />
     <projectService serviceImplementation="com.facebook.litho.intellij.settings.AppSettingsState"/>
-    <projectService serviceImplementation="com.facebook.litho.intellij.redsymbols.ComponentsCacheService"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.toolwindows.ComponentStructureView"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
-
-    <resolveScopeEnlarger implementation="com.facebook.litho.intellij.redsymbols.ComponentResolveScopeEnlarger"/>
 
     <toolWindow id="Litho Spec" anchor="left" icon="LithoPluginIcons.TOOLWINDOW"
       factoryClass="com.facebook.litho.intellij.toolwindows.LithoToolWindowFactory"
       conditionClass="com.facebook.litho.intellij.toolwindows.LithoToolWindowFactory"/>
+
+    <!-- red symbols -->
+    <java.elementFinder implementation="com.facebook.litho.intellij.redsymbols.ComponentFinder" id="java" order="last"/>
+    <resolveScopeEnlarger implementation="com.facebook.litho.intellij.redsymbols.ComponentResolveScopeEnlarger"/>
+    <projectService serviceImplementation="com.facebook.litho.intellij.redsymbols.ComponentsCacheService"/>
+    <java.shortNamesCache implementation="com.facebook.litho.intellij.redsymbols.ComponentShortNamesCache"/>
+    <postStartupActivity implementation="com.facebook.litho.intellij.redsymbols.LithoStartupActivity"/>
   </extensions>
 
   <actions>
