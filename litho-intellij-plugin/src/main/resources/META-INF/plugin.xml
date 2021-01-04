@@ -122,7 +122,7 @@
     <group id="litho.EditorPopupMenu">
       <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="EditorPopupMenu1"/>
       <action id="ResolveLithoRedSymbolsAction"
-        class="com.facebook.litho.intellij.actions.ResolveRedSymbolsAction"
+        class="com.facebook.litho.intellij.redsymbols.ResolveRedSymbolsAction"
         text="Resolve Litho Red Symbols"
         icon="LithoPluginIcons.BASE_ACTION"
       />

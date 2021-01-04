@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.actions;
+package com.facebook.litho.intellij.redsymbols;
 
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.redsymbols.RedSymbolsResolver;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -38,7 +37,6 @@ import java.util.Map;
  * components.
  */
 public class ResolveRedSymbolsAction extends AnAction {
-  private static final String ACTION = "Resolving Litho Red Symbols";
 
   @Override
   public void update(AnActionEvent e) {
