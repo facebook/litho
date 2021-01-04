@@ -141,11 +141,10 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
                   LithoPluginUtils.getFirstClass(psiFile2, psiClass -> true).get();
               assertThat(psiClass1.getQualifiedName()).isEqualTo(psiClass2.getQualifiedName());
 
-              ComponentGenerateService.getInstance().updateComponentSync(psiClass1);
               final SpecModel specModel1 =
-                  ComponentGenerateService.getInstance().getSpecModel(psiClass1);
+                  ComponentGenerateService.getInstance().getOrCreateSpecModel(psiClass1);
               final SpecModel specModel2 =
-                  ComponentGenerateService.getInstance().getSpecModel(psiClass2);
+                  ComponentGenerateService.getInstance().getOrCreateSpecModel(psiClass2);
               assertThat(specModel2).isNotNull();
               assertThat(specModel2).isEqualTo(specModel1);
             });

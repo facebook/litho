@@ -19,13 +19,8 @@ package com.facebook.litho.intellij.completion;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.Arrays;
@@ -42,13 +37,10 @@ public class EventHandlerCompletionContributorTest extends LithoPluginIntellijTe
   public void
       EventHandlerCompletionContributor_whenTriggeringCompletionWithEventName_showsEventHandlersFromGeneratedComponent()
           throws IOException {
-    PsiFile psiFile = testHelper.configure("EventHandlerCompletionContributorTest.java");
+    testHelper.configure("EventHandlerCompletionContributorTest.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              PsiClass psiClass = LithoPluginUtils.getFirstLayoutSpec(psiFile).get();
-              ComponentGenerateService.getInstance().updateComponentSync(psiClass);
-              SpecModel test = ComponentGenerateService.getInstance().getSpecModel(psiClass);
               CodeInsightTestFixture fixture = testHelper.getFixture();
               fixture.complete(CompletionType.BASIC);
               List<String> completion = fixture.getLookupElementStrings();

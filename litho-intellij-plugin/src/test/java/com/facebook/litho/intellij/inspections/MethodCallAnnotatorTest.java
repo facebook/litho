@@ -21,7 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.CaretModel;
@@ -45,7 +44,6 @@ public class MethodCallAnnotatorTest extends LithoPluginIntellijTest {
     testHelper.getPsiClass(
         classes -> {
           PsiClass cls = classes.get(0);
-          ComponentGenerateService.getInstance().updateComponentSync(cls);
 
           PsiMethodCallExpression call =
               PsiTreeUtil.findChildOfType(cls, PsiMethodCallExpression.class);

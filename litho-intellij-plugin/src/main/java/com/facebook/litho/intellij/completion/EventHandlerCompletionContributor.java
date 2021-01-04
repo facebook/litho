@@ -91,7 +91,7 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
           return;
         }
         final SpecModel parentModel =
-            ComponentGenerateService.getInstance().getSpecModel(parentCls);
+            ComponentGenerateService.getInstance().getOrCreateSpecModel(parentCls);
         if (parentModel == null) {
           return;
         }

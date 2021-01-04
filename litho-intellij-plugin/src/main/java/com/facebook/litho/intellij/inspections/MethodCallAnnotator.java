@@ -85,7 +85,8 @@ public class MethodCallAnnotator implements Annotator {
     if (parentCls == null) {
       return;
     }
-    final SpecModel parentModel = ComponentGenerateService.getInstance().getSpecModel(parentCls);
+    final SpecModel parentModel =
+        ComponentGenerateService.getInstance().getOrCreateSpecModel(parentCls);
     if (parentModel == null) {
       return;
     }

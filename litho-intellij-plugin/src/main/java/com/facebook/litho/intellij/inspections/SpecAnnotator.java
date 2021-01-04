@@ -80,7 +80,7 @@ public class SpecAnnotator implements Annotator {
     DEBUG_LOGGER.debug(element + " under analysis");
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.getInstance().getSpecModel(spec))
+        Optional.ofNullable(ComponentGenerateService.getInstance().getOrCreateSpecModel(spec))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {

@@ -77,8 +77,13 @@ public class ComponentGenerateService {
   }
 
   @Nullable
-  public SpecModel getSpecModel(PsiClass specClass) {
-    return specFqnToModelMap.get(specClass.getQualifiedName());
+  public SpecModel getOrCreateSpecModel(PsiClass specClass) {
+    final String specFQN = specClass.getQualifiedName();
+    if (specFqnToModelMap.containsKey(specFQN)) {
+      return specFqnToModelMap.get(specFQN);
+    }
+
+    return createSpecModel(specClass);
   }
 
   /**
@@ -94,19 +99,27 @@ public class ComponentGenerateService {
         LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
     if (componentQN == null) return null;
 
+    final SpecModel model = createSpecModel(specCls);
+    if (model == null) return null;
+
+    final String newContent = createFileContentFromModel(componentQN, model);
+    return Pair.create(componentQN, newContent);
+  }
+
+  @Nullable
+  private SpecModel createSpecModel(PsiClass specCls) {
+    final String specFQN = specCls.getQualifiedName();
     final SpecModel model = createModel(specCls);
     if (model == null) return null;
 
     // New model might be malformed to generate component, but it's accurate to the Spec
-    specFqnToModelMap.put(specCls.getQualifiedName(), model);
+    specFqnToModelMap.put(specFQN, model);
     Set<SpecUpdateNotifier> copy;
     synchronized (listeners) {
       copy = new HashSet<>(listeners);
     }
     copy.forEach(listener -> listener.onSpecModelUpdated(specCls));
-
-    final String newContent = createFileContentFromModel(componentQN, model);
-    return Pair.create(componentQN, newContent);
+    return model;
   }
 
   /**

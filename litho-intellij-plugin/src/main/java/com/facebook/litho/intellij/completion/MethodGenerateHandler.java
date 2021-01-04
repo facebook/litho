@@ -141,7 +141,8 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
   }
 
   private static Pair<String, String> getFirstStateTypeAndName(PsiClass specClass) {
-    final SpecModel specModel = ComponentGenerateService.getInstance().getSpecModel(specClass);
+    final SpecModel specModel =
+        ComponentGenerateService.getInstance().getOrCreateSpecModel(specClass);
     if (specModel != null && !specModel.getStateValues().isEmpty()) {
       final StateParamModel stateParamModel = specModel.getStateValues().get(0);
       return new Pair<>(stateParamModel.getTypeName().toString(), stateParamModel.getName());
