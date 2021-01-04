@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -43,6 +45,8 @@ public class RecyclerSpecTest {
   private ComponentContext mComponentContext;
   private TestSectionsRecyclerView mSectionsRecyclerView;
   private TestLithoRecyclerView mRecyclerView;
+  private ItemAnimator mAnimator;
+  private OnItemTouchListener onItemTouchListener;
 
   @Before
   public void setup() {
@@ -51,6 +55,9 @@ public class RecyclerSpecTest {
     mSectionsRecyclerView =
         new TestSectionsRecyclerView(mComponentContext.getAndroidContext(), mRecyclerView);
     mSectionsRecyclerView.setHasBeenDetachedFromWindow(true);
+    mAnimator = mock(RecyclerView.ItemAnimator.class);
+    mRecyclerView.setItemAnimator(mAnimator);
+    onItemTouchListener = mock(OnItemTouchListener.class);
   }
 
   @Test
@@ -75,6 +82,7 @@ public class RecyclerSpecTest {
         snapHelper,
         true,
         touchInterceptor,
+        onItemTouchListener,
         refreshHandler);
 
     assertThat(mSectionsRecyclerView.isEnabled()).isTrue();
@@ -99,7 +107,13 @@ public class RecyclerSpecTest {
     final int size = 3;
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
-    RecyclerSpec.onUnbind(mComponentContext, mSectionsRecyclerView, binder, null, scrollListeners);
+    RecyclerSpec.onUnbind(
+        mComponentContext,
+        mSectionsRecyclerView,
+        binder,
+        null,
+        onItemTouchListener,
+        scrollListeners);
 
     verify(binder).unbind(mRecyclerView);
     verifyRemoveOnScrollListenerWasCalledNTimes(mRecyclerView, size);

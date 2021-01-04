@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.Column;
@@ -159,6 +160,7 @@ public class RecyclerCollectionComponentSpec {
           Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) OnItemTouchListener itemTouchListener,
       @Prop(optional = true) boolean setRootAsync,
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
@@ -221,6 +223,7 @@ public class RecyclerCollectionComponentSpec {
             .refreshProgressBarColor(refreshProgressBarColor)
             .snapHelper(snapHelper)
             .touchInterceptor(touchInterceptor)
+            .onItemTouchListener(itemTouchListener)
             .binder(binder)
             .itemAnimator(
                 RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
