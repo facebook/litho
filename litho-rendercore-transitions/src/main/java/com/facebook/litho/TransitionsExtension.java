@@ -551,16 +551,18 @@ public class TransitionsExtension
         for (int j = i; j <= lastDescendantIndex; j++) {
           if (getMountTarget(extensionState).getMountItemAt(j) == null) {
             // We need to release any mount reference to this because we need to force mount here.
-            if (extensionState.ownsReference(
-                state.mLastTransitionsExtensionInput.getMountableOutputAt(j))) {
-              extensionState.releaseMountReference(
-                  state.mLastTransitionsExtensionInput.getMountableOutputAt(j), false);
+            final long id =
+                state
+                    .mLastTransitionsExtensionInput
+                    .getMountableOutputAt(j)
+                    .getRenderUnit()
+                    .getId();
+            if (extensionState.ownsReference(id)) {
+              extensionState.releaseMountReference(id, false);
             }
-            extensionState.acquireMountReference(
-                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), true);
+            extensionState.acquireMountReference(id, true);
             // Here we have to release the ref count without mounting.
-            extensionState.releaseMountReference(
-                state.mLastTransitionsExtensionInput.getMountableOutputAt(j), false);
+            extensionState.releaseMountReference(id, false);
           }
           final RenderUnit renderUnit =
               getMountTarget(extensionState).getMountItemAt(j).getRenderTreeNode().getRenderUnit();
@@ -816,13 +818,14 @@ public class TransitionsExtension
     final int lastDescendantIndex = findLastDescendantIndex(input, index);
     for (int i = index; i <= lastDescendantIndex; i++) {
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
+      final long id = renderTreeNode.getRenderUnit().getId();
       if (increment) {
-        if (!extensionState.ownsReference(renderTreeNode)) {
-          extensionState.acquireMountReference(renderTreeNode, false);
+        if (!extensionState.ownsReference(id)) {
+          extensionState.acquireMountReference(id, false);
         }
       } else {
-        if (extensionState.ownsReference(renderTreeNode)) {
-          extensionState.releaseMountReference(renderTreeNode, false);
+        if (extensionState.ownsReference(id)) {
+          extensionState.releaseMountReference(id, false);
         }
       }
     }
@@ -830,17 +833,18 @@ public class TransitionsExtension
     // Update parents
     RenderTreeNode parentRenderTreeNode = input.getMountableOutputAt(index).getParent();
     while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
+      final long id = parentRenderTreeNode.getRenderUnit().getId();
       if (increment) {
         // We use the position as 0 as we are not mounting it, just acquiring reference.
-        if (!extensionState.ownsReference(parentRenderTreeNode)) {
-          extensionState.acquireMountReference(parentRenderTreeNode, false);
+        if (!extensionState.ownsReference(id)) {
+          extensionState.acquireMountReference(id, false);
         }
-        if (!extensionState.ownsReference(parentRenderTreeNode)) {
-          extensionState.acquireMountReference(parentRenderTreeNode, false);
+        if (!extensionState.ownsReference(id)) {
+          extensionState.acquireMountReference(id, false);
         }
       } else {
-        if (extensionState.ownsReference(parentRenderTreeNode)) {
-          extensionState.releaseMountReference(parentRenderTreeNode, false);
+        if (extensionState.ownsReference(id)) {
+          extensionState.releaseMountReference(id, false);
         }
       }
       parentRenderTreeNode = parentRenderTreeNode.getParent();

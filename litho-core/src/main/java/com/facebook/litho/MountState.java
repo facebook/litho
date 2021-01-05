@@ -3263,7 +3263,7 @@ class MountState
       if (mTransitionsExtensionState == null) {
         throw new IllegalStateException("Need a state when using the TransitionsExtension.");
       }
-      return mTransitionsExtensionState.ownsReference(renderTreeNode);
+      return mTransitionsExtensionState.ownsReference(renderTreeNode.getRenderUnit().getId());
     }
     return isAnimationLocked(index);
   }
