@@ -191,6 +191,72 @@ public class IncrementalMountExtensionTest {
   }
 
   @Test
+  public void whenVisibleBoundsChangeHorizontally_shouldMountAndUnMountCorrectly() {
+    final Context c = mRenderCoreTestRule.getContext();
+
+    final FrameLayout parent = new FrameLayout(c);
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 300, 100);
+
+    final RootHostView host = new RootHostView(c);
+    parent.addView(host);
+
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new HostView(c), 0))
+            .width(300)
+            .height(100)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .x(100)
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .x(200)
+                    .width(100)
+                    .height(100))
+            .build();
+
+    mRenderCoreTestRule
+        .useRootHost(host)
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(300, 100)
+        .render();
+
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    // Translate host up to boundary condition.
+    host.offsetLeftAndRight(99);
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    // Translate host beyond the boundary condition.
+    host.offsetLeftAndRight(1); // 100 + 1 = 101
+    assertThat(host.getChildCount()).isEqualTo(2);
+
+    // Translate host up to boundary condition is reverse direction.
+    host.offsetLeftAndRight(-1 - 99 - 99); // 101 - 1 - 100 - 100 = -100
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    // Translate host beyond the boundary condition is reverse direction.
+    host.offsetLeftAndRight(-1); // -100 - 1 = -101
+    assertThat(host.getChildCount()).isEqualTo(2);
+  }
+
+  @Test
   public void whenPreviousHostIsMovedOutOfBounds_shouldMountItemsCorrectly() {
     final Context c = mRenderCoreTestRule.getContext();
 
