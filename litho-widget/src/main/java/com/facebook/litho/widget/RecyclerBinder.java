@@ -643,10 +643,10 @@ public class RecyclerBinder
     }
 
     /**
-     * This is a temporary hack that allows a surface to manually provide an estimated range. It
-     * will go away so don't depend on it.
+     * This is used in very specific cases on critical performance paths where measuring the first
+     * item cannot be relied on to estimate the viewport count. It should not be used in the common
+     * case, use with caution.
      */
-    @Deprecated
     public Builder estimatedViewportCount(int estimatedViewportCount) {
       if (estimatedViewportCount <= 0) {
         throw new IllegalArgumentException(
