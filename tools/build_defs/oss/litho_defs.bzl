@@ -188,6 +188,8 @@ LITHO_RENDERCORE_VISIBILITY_TARGET = make_dep_path("litho-rendercore-visibility:
 
 LITHO_RENDERCORE_TRANSITIONS_TARGET = make_dep_path("litho-rendercore-transitions:rendercore-transitions-stub")
 
+LITHO_RENDERCORE_INCREMENTAL_MOUNT_TARGET = make_dep_path("litho-rendercore-incremental-mount:rendercore-incremental-mount-stub")
+
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
 
