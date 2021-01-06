@@ -259,6 +259,7 @@ def litho_robolectric4_test(
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
 
     annotation_processor_params = kwargs.pop("annotation_processor_params", [])
     found = False
@@ -283,6 +284,7 @@ def fb_java_test(*args, **kwargs):
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
     java_test(*args, **kwargs)
 
 def litho_android_library(name, srcs = None, *args, **kwargs):
@@ -293,6 +295,7 @@ def litho_android_library(name, srcs = None, *args, **kwargs):
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
     native.android_library(name, srcs = srcs, *args, **kwargs)
 
 def litho_android_test_library(**kwargs):
@@ -333,6 +336,7 @@ def fb_java_library(**kwargs):
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
     native.java_library(**kwargs)
 
 def fb_android_library(**kwargs):
@@ -340,6 +344,7 @@ def fb_android_library(**kwargs):
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
     native.android_library(**kwargs)
 
 def fb_prebuilt_cxx_library(**kwargs):
@@ -354,12 +359,14 @@ def instrumentation_test(**kwargs):
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
     _ignore = kwargs
     pass
 
 def fb_core_android_library(**kwargs):
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
+    kwargs.pop("autoglob", False)
     native.android_library(**kwargs)
 
 # This target is only used in open source and will break the monobuild
