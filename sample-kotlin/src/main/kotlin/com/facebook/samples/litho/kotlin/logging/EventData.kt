@@ -22,13 +22,15 @@ data class EventData(val startTimeNs: Long) {
 
   var endTimeNs: Long? = null
 
-  fun addAnnotation(annotationKey: String, annotationValue: Any?): EventData =
-      apply { annotations[annotationKey] = annotationValue }
+  fun addAnnotation(annotationKey: String, annotationValue: Any?): EventData = apply {
+    annotations[annotationKey] = annotationValue
+  }
 
   fun getAnnotations(): Map<String, Any?> = annotations
 
-  fun addMarker(timeNs: Long, eventName: String): EventData =
-      apply { markers.add(Pair(timeNs, eventName)) }
+  fun addMarker(timeNs: Long, eventName: String): EventData = apply {
+    markers.add(Pair(timeNs, eventName))
+  }
 
   fun getMarkers(): List<Pair<Long, String>> = markers
 }

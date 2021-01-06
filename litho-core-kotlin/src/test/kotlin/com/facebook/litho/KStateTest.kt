@@ -47,16 +47,15 @@ class KStateTest {
     lateinit var stateRef: AtomicReference<State<String>>
     lateinit var row: Row
 
-    val root =
-        KComponent {
-          val state by useState { "hello" }
-          stateRef = AtomicReference(state)
+    val root = KComponent {
+      val state by useState { "hello" }
+      stateRef = AtomicReference(state)
 
-          Clickable(onClick = { updateState { state.value = "world" } }) {
-            row = Row()
-            row
-          }
-        }
+      Clickable(onClick = { updateState { state.value = "world" } }) {
+        row = Row()
+        row
+      }
+    }
     lithoViewRule.setRoot(root)
     lithoViewRule.attachToWindow().measure().layout()
 
@@ -86,25 +85,24 @@ class KStateTest {
     lateinit var state2Ref: AtomicReference<State<Int>>
     lateinit var row: Row
 
-    val root =
-        KComponent {
-          val state1 = useCustomState("hello")
-          val state2 = useCustomState(20)
+    val root = KComponent {
+      val state1 = useCustomState("hello")
+      val state2 = useCustomState(20)
 
-          state1Ref = AtomicReference(state1)
-          state2Ref = AtomicReference(state2)
+      state1Ref = AtomicReference(state1)
+      state2Ref = AtomicReference(state2)
 
-          Clickable(
-              onClick = {
-                updateState {
-                  state1.value = "world"
-                  state2.value++
-                }
-              }) {
-            row = Row()
-            row
-          }
-        }
+      Clickable(
+          onClick = {
+            updateState {
+              state1.value = "world"
+              state2.value++
+            }
+          }) {
+        row = Row()
+        row
+      }
+    }
     lithoViewRule.setRoot(root)
     lithoViewRule.attachToWindow().measure().layout()
 
@@ -128,24 +126,22 @@ class KStateTest {
     val firstCountDownLatch = CountDownLatch(1)
     val secondCountDownLatch = CountDownLatch(1)
 
-    val thread1 =
-        Thread {
-          lithoViewRule.setRootAndSizeSpec(
-              CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
-              SizeSpec.makeSizeSpec(100, EXACTLY),
-              SizeSpec.makeSizeSpec(100, EXACTLY))
-          countDownLatch.countDown()
-        }
-    val thread2 =
-        Thread {
-          firstCountDownLatch.await()
+    val thread1 = Thread {
+      lithoViewRule.setRootAndSizeSpec(
+          CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
+          SizeSpec.makeSizeSpec(100, EXACTLY),
+          SizeSpec.makeSizeSpec(100, EXACTLY))
+      countDownLatch.countDown()
+    }
+    val thread2 = Thread {
+      firstCountDownLatch.await()
 
-          lithoViewRule.setRootAndSizeSpec(
-              CountDownLatchComponent(secondCountDownLatch, null, initCounter),
-              SizeSpec.makeSizeSpec(200, EXACTLY),
-              SizeSpec.makeSizeSpec(200, EXACTLY))
-          countDownLatch.countDown()
-        }
+      lithoViewRule.setRootAndSizeSpec(
+          CountDownLatchComponent(secondCountDownLatch, null, initCounter),
+          SizeSpec.makeSizeSpec(200, EXACTLY),
+          SizeSpec.makeSizeSpec(200, EXACTLY))
+      countDownLatch.countDown()
+    }
     thread1.start()
     thread2.start()
     countDownLatch.await()
@@ -169,24 +165,22 @@ class KStateTest {
     val firstCountDownLatch = CountDownLatch(1)
     val secondCountDownLatch = CountDownLatch(1)
 
-    val thread1 =
-        Thread {
-          lithoViewRule.setRootAndSizeSpec(
-              CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
-              SizeSpec.makeSizeSpec(100, EXACTLY),
-              SizeSpec.makeSizeSpec(100, EXACTLY))
-          countDownLatch.countDown()
-        }
-    val thread2 =
-        Thread {
-          firstCountDownLatch.await()
+    val thread1 = Thread {
+      lithoViewRule.setRootAndSizeSpec(
+          CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
+          SizeSpec.makeSizeSpec(100, EXACTLY),
+          SizeSpec.makeSizeSpec(100, EXACTLY))
+      countDownLatch.countDown()
+    }
+    val thread2 = Thread {
+      firstCountDownLatch.await()
 
-          lithoViewRule.setRootAndSizeSpec(
-              CountDownLatchComponent(secondCountDownLatch, null, initCounter),
-              SizeSpec.makeSizeSpec(200, EXACTLY),
-              SizeSpec.makeSizeSpec(200, EXACTLY))
-          countDownLatch.countDown()
-        }
+      lithoViewRule.setRootAndSizeSpec(
+          CountDownLatchComponent(secondCountDownLatch, null, initCounter),
+          SizeSpec.makeSizeSpec(200, EXACTLY),
+          SizeSpec.makeSizeSpec(200, EXACTLY))
+      countDownLatch.countDown()
+    }
     thread1.start()
     thread2.start()
     countDownLatch.await()
