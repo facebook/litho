@@ -42,7 +42,7 @@ class SimpleMountSpecTesterSpec {
       Size size,
       @Prop(optional = true) @Nullable Integer measuredWidth,
       @Prop(optional = true) @Nullable Integer measuredHeight) {
-    if (measuredHeight == null && measuredHeight == null) {
+    if (measuredWidth == null && measuredHeight == null) {
       size.width = SizeSpec.getSize(widthSpec);
       size.height = SizeSpec.getSize(heightSpec);
     } else {
