@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -54,7 +55,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 
 /**
@@ -934,7 +934,8 @@ public class AnimationTest {
 
   @Test
   public void animation_reUsingLithoViewWithDifferentComponentTrees_shouldNotCrash() {
-    ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext componentContext = new ComponentContext(
+        ApplicationProvider.getApplicationContext());
 
     mLithoViewRule.setRoot(getNonAnimatingComponent());
     // We measure and layout this non animating component to initialize the transition extension.

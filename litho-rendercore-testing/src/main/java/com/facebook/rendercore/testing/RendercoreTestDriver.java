@@ -34,7 +34,7 @@ import com.facebook.rendercore.RootHost;
  *   Example:
  *
  *   Node rootNode = ...;
- *   RootHostView rootHostView = new RootHostView(RuntimeEnvironment.application);
+ *   RootHostView rootHostView = new RootHostView(ApplicationProvider.getApplicationContext());
  *
  *   RendercoreTestDriver.forHost(rootHostView)
  *       .withNode(root)

@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.viewtree;
 
 import android.content.res.Resources.NotFoundException;
-import org.robolectric.RuntimeEnvironment;
+import androidx.test.core.app.ApplicationProvider;
 
 /** Utility methods for {@link ViewTreeAssert}. */
 public final class ViewTreeUtil {
@@ -25,7 +25,9 @@ public final class ViewTreeUtil {
   /** @return the resource name or "<undefined>" */
   public static String getResourceName(final int resourceId) {
     try {
-      return RuntimeEnvironment.application.getResources().getResourceEntryName(resourceId);
+      return ApplicationProvider.getApplicationContext()
+          .getResources()
+          .getResourceEntryName(resourceId);
     } catch (final NotFoundException notFoundException) {
       return "<undefined>";
     }
