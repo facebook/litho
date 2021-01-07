@@ -194,11 +194,13 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) ScrollStateListener scrollStateListener,
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
       @Prop(optional = true) @Nullable OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
-    lithoScrollView.mount(childComponentTree, scrollPosition, incrementalMountEnabled);
+    lithoScrollView.mount(
+        childComponentTree, scrollPosition, scrollStateListener, incrementalMountEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
     lithoScrollView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
