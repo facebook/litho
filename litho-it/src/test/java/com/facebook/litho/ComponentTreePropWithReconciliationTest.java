@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import android.view.View;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -25,7 +26,9 @@ import com.facebook.litho.widget.TreePropTestContainerComponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LEGACY)
 @RunWith(LithoTestRunner.class)
 public class ComponentTreePropWithReconciliationTest {
 
