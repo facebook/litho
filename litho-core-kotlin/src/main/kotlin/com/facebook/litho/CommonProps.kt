@@ -37,22 +37,6 @@ inline fun DslScope.Clickable(
     }
 
 /**
- * Builder for setting a [ClickEvent] [EventHandler] for a component. Can be used to provide an
- * [EventHandler] generated from a Spec.
- */
-inline fun DslScope.Clickable(
-    clickHandler: EventHandler<ClickEvent>? = null,
-    longClickHandler: EventHandler<LongClickEvent>? = null,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        clickHandler?.let { clickHandler(it) }
-        longClickHandler?.let { longClickHandler(it) }
-      }
-    }
-
-/**
  * Builder for setting [onVisible], [onFocused], and [onFullImpression] event handlers for
  * component.
  *
