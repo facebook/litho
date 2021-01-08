@@ -20,7 +20,6 @@ load(
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_SOLOADER_TARGET",
     "LITHO_STATS_TARGET",
-    "LITHO_TESTING_CORE_TARGET",
     "LITHO_TESTING_TARGET",
     "LITHO_TESTING_WHITEBOX_TARGET",
     "LITHO_TEST_RES",
@@ -28,28 +27,17 @@ load(
     "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
-    "litho_android_library",
     "litho_robolectric4_test",
     "make_dep_path",
 )
 
 litho_robolectric4_test(
-    name = "litho",
+    name = "animation",
     srcs = glob(
         [
-            "**/*.java",
-        ],
-        exclude = [
-            "animation/**/*.java",
-            "dataflow/**/*.java",
-            "intellij/**/*.java",
-            "sections/specmodels/**/*.java",
-            "processor/**/*.java",
-            "specmodels/**/*.java",
-            "testing/**/*.java",
+            "*.java",
         ],
     ),
-    autoglob = False,
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     is_androidx = True,
     provided_deps = [
@@ -59,7 +47,6 @@ litho_robolectric4_test(
     target = "8",
     use_binary_resources = False,
     deps = [
-        ":testutil",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
@@ -103,26 +90,5 @@ litho_robolectric4_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
-    ],
-)
-
-litho_android_library(
-    name = "testutil",
-    srcs = [
-        "StateUpdateTestComponent.java",
-        "TouchExpansionTestInternalNode.java",
-    ],
-    autoglob = False,
-    source = "8",
-    target = "8",
-    visibility = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
-    ],
-    deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_JSR_TARGET,
-        LITHO_TESTING_CORE_TARGET,
-        LITHO_YOGA_TARGET,
     ],
 )
