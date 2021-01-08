@@ -117,15 +117,15 @@ infix fun Dp?.plusSafe(other: Dp?) = (this ?: 0.dp) + (other ?: 0.dp)
 
 internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
   props.apply {
-    style.width?.let { widthPx(if (it == Dp.Hairline) 1 else it.toPx().value) }
-    style.height?.let { heightPx(if (it == Dp.Hairline) 1 else it.toPx().value) }
+    style.width?.let { widthPx(if (it == Dp.Hairline) 1 else it.toPixels()) }
+    style.height?.let { heightPx(if (it == Dp.Hairline) 1 else it.toPixels()) }
     style.widthPercent?.let { widthPercent(it) }
     style.heightPercent?.let { heightPercent(it) }
 
-    style.minWidth?.let { minWidthPx(it.toPx().value) }
-    style.minHeight?.let { minHeightPx(it.toPx().value) }
-    style.maxWidth?.let { maxWidthPx(it.toPx().value) }
-    style.maxHeight?.let { maxHeightPx(it.toPx().value) }
+    style.minWidth?.let { minWidthPx(it.toPixels()) }
+    style.minHeight?.let { minHeightPx(it.toPixels()) }
+    style.maxWidth?.let { maxWidthPx(it.toPixels()) }
+    style.maxHeight?.let { maxHeightPx(it.toPixels()) }
     style.minWidthPercent?.let { minWidthPercent(it) }
     style.minHeightPercent?.let { minHeightPercent(it) }
     style.maxWidthPercent?.let { maxWidthPercent(it) }
@@ -136,30 +136,30 @@ internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
     style.flex?.let { flex(it) }
     style.flexGrow?.let { flexGrow(it) }
     style.flexShrink?.let { flexShrink(it) }
-    style.flexBasis?.let { flexBasisPx(it.toPx().value) }
+    style.flexBasis?.let { flexBasisPx(it.toPixels()) }
 
     style.aspectRatio?.let { aspectRatio(it) }
 
-    style.paddingStart?.let { paddingPx(YogaEdge.START, it.toPx().value) }
-    style.paddingTop?.let { paddingPx(YogaEdge.TOP, it.toPx().value) }
-    style.paddingEnd?.let { paddingPx(YogaEdge.END, it.toPx().value) }
-    style.paddingBottom?.let { paddingPx(YogaEdge.BOTTOM, it.toPx().value) }
-    style.paddingHorizontal?.let { paddingPx(YogaEdge.HORIZONTAL, it.toPx().value) }
-    style.paddingVertical?.let { paddingPx(YogaEdge.VERTICAL, it.toPx().value) }
-    style.paddingAll?.let { paddingPx(YogaEdge.ALL, it.toPx().value) }
+    style.paddingStart?.let { paddingPx(YogaEdge.START, it.toPixels()) }
+    style.paddingTop?.let { paddingPx(YogaEdge.TOP, it.toPixels()) }
+    style.paddingEnd?.let { paddingPx(YogaEdge.END, it.toPixels()) }
+    style.paddingBottom?.let { paddingPx(YogaEdge.BOTTOM, it.toPixels()) }
+    style.paddingHorizontal?.let { paddingPx(YogaEdge.HORIZONTAL, it.toPixels()) }
+    style.paddingVertical?.let { paddingPx(YogaEdge.VERTICAL, it.toPixels()) }
+    style.paddingAll?.let { paddingPx(YogaEdge.ALL, it.toPixels()) }
 
-    style.marginStart?.let { marginPx(YogaEdge.START, it.toPx().value) }
-    style.marginTop?.let { marginPx(YogaEdge.TOP, it.toPx().value) }
-    style.marginEnd?.let { marginPx(YogaEdge.END, it.toPx().value) }
-    style.marginBottom?.let { marginPx(YogaEdge.BOTTOM, it.toPx().value) }
-    style.marginHorizontal?.let { marginPx(YogaEdge.HORIZONTAL, it.toPx().value) }
-    style.marginVertical?.let { marginPx(YogaEdge.VERTICAL, it.toPx().value) }
-    style.marginAll?.let { marginPx(YogaEdge.ALL, it.toPx().value) }
+    style.marginStart?.let { marginPx(YogaEdge.START, it.toPixels()) }
+    style.marginTop?.let { marginPx(YogaEdge.TOP, it.toPixels()) }
+    style.marginEnd?.let { marginPx(YogaEdge.END, it.toPixels()) }
+    style.marginBottom?.let { marginPx(YogaEdge.BOTTOM, it.toPixels()) }
+    style.marginHorizontal?.let { marginPx(YogaEdge.HORIZONTAL, it.toPixels()) }
+    style.marginVertical?.let { marginPx(YogaEdge.VERTICAL, it.toPixels()) }
+    style.marginAll?.let { marginPx(YogaEdge.ALL, it.toPixels()) }
 
-    style.positionStart?.let { positionPx(YogaEdge.START, it.toPx().value) }
-    style.positionTop?.let { positionPx(YogaEdge.TOP, it.toPx().value) }
-    style.positionEnd?.let { positionPx(YogaEdge.END, it.toPx().value) }
-    style.positionBottom?.let { positionPx(YogaEdge.BOTTOM, it.toPx().value) }
+    style.positionStart?.let { positionPx(YogaEdge.START, it.toPixels()) }
+    style.positionTop?.let { positionPx(YogaEdge.TOP, it.toPixels()) }
+    style.positionEnd?.let { positionPx(YogaEdge.END, it.toPixels()) }
+    style.positionBottom?.let { positionPx(YogaEdge.BOTTOM, it.toPixels()) }
     style.positionType?.let { positionType(it) }
 
     style.background?.let { background(it) }
