@@ -80,6 +80,8 @@ LITHO_TESTING_ESPRESSO_TARGET = make_dep_path("litho-espresso/src/main/java/com/
 
 LITHO_TEST_RES = make_dep_path("litho-it/src/main:res")
 
+LITHO_TEST_MANIFEST = make_dep_path("litho-it/src/main:manifest")
+
 LITHO_SECTIONS_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections:sections")
 
 LITHO_SECTIONS_COMMON_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common")
@@ -256,6 +258,7 @@ def litho_robolectric4_test(
     kwargs["cxx_library_whitelist"] = [
         "//lib/yogajni:jni",
     ]
+    kwargs["robolectric_manifest"] = kwargs.pop("robolectric_manifest", LITHO_TEST_MANIFEST)
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)

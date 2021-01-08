@@ -27,7 +27,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,15 +37,8 @@ public class ApplyStylesTest {
 
   public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
-  @Before
-  public void setup() {
-    setComponentStyleableAttributes();
-  }
-
   @Test
   public void styles_withWidthHeightStyle_appliesWidthHeight() {
-    setComponentStyleableAttributes();
-
     mLithoViewRule
         .setSizeSpecs(
             View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
@@ -324,57 +316,5 @@ public class ApplyStylesTest {
                 .child(
                     ViewMatchNode.forType(ComponentHost.class)
                         .prop("isDuplicateParentStateEnabled", true)));
-  }
-
-  /**
-   * This is a hack around a BUCK and/or Robolectric issue where we use incorrect resource values.
-   * Component tests require the correct values for the ComponentLayout styleable array in order to
-   * bind props to the layout. The array that we define here needs to be kept up-to-date with the
-   * attrs defined in litho-core/src/main/res/*attrs.xml files.
-   */
-  static void setComponentStyleableAttributes() {
-
-    System.arraycopy(
-        new int[] {
-          com.facebook.litho.R.attr.flex_direction,
-          com.facebook.litho.R.attr.flex_layoutDirection,
-          com.facebook.litho.R.attr.flex_justifyContent,
-          com.facebook.litho.R.attr.flex_alignItems,
-          com.facebook.litho.R.attr.flex_alignSelf,
-          com.facebook.litho.R.attr.flex_positionType,
-          com.facebook.litho.R.attr.flex_wrap,
-          com.facebook.litho.R.attr.flex_left,
-          com.facebook.litho.R.attr.flex_top,
-          com.facebook.litho.R.attr.flex_right,
-          com.facebook.litho.R.attr.flex_bottom,
-          com.facebook.litho.R.attr.flex,
-          android.R.attr.layout_width,
-          android.R.attr.layout_height,
-          android.R.attr.padding,
-          android.R.attr.paddingLeft,
-          android.R.attr.paddingTop,
-          android.R.attr.paddingRight,
-          android.R.attr.paddingBottom,
-          android.R.attr.paddingStart,
-          android.R.attr.paddingEnd,
-          android.R.attr.layout_margin,
-          android.R.attr.layout_marginLeft,
-          android.R.attr.layout_marginTop,
-          android.R.attr.layout_marginRight,
-          android.R.attr.layout_marginBottom,
-          android.R.attr.layout_marginStart,
-          android.R.attr.layout_marginEnd,
-          android.R.attr.contentDescription,
-          android.R.attr.background,
-          android.R.attr.foreground,
-          android.R.attr.minHeight,
-          android.R.attr.minWidth,
-          android.R.attr.importantForAccessibility,
-          android.R.attr.duplicateParentState,
-        },
-        /* srcPos */ 0,
-        com.facebook.litho.R.styleable.ComponentLayout,
-        /* destPos */ 0,
-        com.facebook.litho.R.styleable.ComponentLayout.length);
   }
 }

@@ -47,7 +47,6 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
-    use_binary_resources = False,
     deps = [
         ":nodes",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
