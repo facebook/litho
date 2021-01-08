@@ -195,7 +195,7 @@ public final class DebugComponent {
   @Nullable
   public View getMountedView() {
     final Component component = mNode.getTailComponent();
-    if (component != null && Component.isMountViewSpec(component)) {
+    if (Component.isMountViewSpec(component)) {
       return (View) getMountedContent();
     }
 
@@ -206,7 +206,7 @@ public final class DebugComponent {
   @Nullable
   public Drawable getMountedDrawable() {
     final Component component = mNode.getTailComponent();
-    if (component != null && Component.isMountDrawableSpec(component)) {
+    if (Component.isMountDrawableSpec(component)) {
       return (Drawable) getMountedContent();
     }
 
