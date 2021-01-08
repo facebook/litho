@@ -16,7 +16,7 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import com.facebook.litho.Dp
+import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -41,7 +41,7 @@ class DecadeSeparator(decade: Decade) :
               listOf(
                   Row(
                       style =
-                          Style.size(height = Dp.Hairline)
+                          Style.size(height = Dimen.Hairline)
                               .flex(grow = 1f)
                               .background(drawableColor(0xFFAAAAAA))),
                   Text(
@@ -51,7 +51,7 @@ class DecadeSeparator(decade: Decade) :
                       style = Style.margin(horizontal = 10.dp).flex(shrink = 0f)),
                   Row(
                       style =
-                          Style.size(height = Dp.Hairline)
+                          Style.size(height = Dimen.Hairline)
                               .flex(grow = 1f)
                               .background(drawableColor(0xFFAAAAAA)))))
     })

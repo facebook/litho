@@ -23,14 +23,14 @@ import com.facebook.yoga.YogaPositionType
 
 // TODO should be `data` if we want to consider it for comparison as a Prop.
 open class Style(
-    val width: Dp? = null,
-    val height: Dp? = null,
+    val width: Dimen? = null,
+    val height: Dimen? = null,
     val widthPercent: Float? = null,
     val heightPercent: Float? = null,
-    val minWidth: Dp? = null,
-    val minHeight: Dp? = null,
-    val maxWidth: Dp? = null,
-    val maxHeight: Dp? = null,
+    val minWidth: Dimen? = null,
+    val minHeight: Dimen? = null,
+    val maxWidth: Dimen? = null,
+    val maxHeight: Dimen? = null,
     val minWidthPercent: Float? = null,
     val minHeightPercent: Float? = null,
     val maxWidthPercent: Float? = null,
@@ -39,26 +39,26 @@ open class Style(
     val flex: Float? = null,
     val flexGrow: Float? = null,
     val flexShrink: Float? = null,
-    val flexBasis: Dp? = null,
+    val flexBasis: Dimen? = null,
     val aspectRatio: Float? = null,
-    val paddingStart: Dp? = null,
-    val paddingTop: Dp? = null,
-    val paddingEnd: Dp? = null,
-    val paddingBottom: Dp? = null,
-    val paddingHorizontal: Dp? = null,
-    val paddingVertical: Dp? = null,
-    val paddingAll: Dp? = null,
-    val marginStart: Dp? = null,
-    val marginTop: Dp? = null,
-    val marginEnd: Dp? = null,
-    val marginBottom: Dp? = null,
-    val marginHorizontal: Dp? = null,
-    val marginVertical: Dp? = null,
-    val marginAll: Dp? = null,
-    val positionStart: Dp? = null,
-    val positionTop: Dp? = null,
-    val positionEnd: Dp? = null,
-    val positionBottom: Dp? = null,
+    val paddingStart: Dimen? = null,
+    val paddingTop: Dimen? = null,
+    val paddingEnd: Dimen? = null,
+    val paddingBottom: Dimen? = null,
+    val paddingHorizontal: Dimen? = null,
+    val paddingVertical: Dimen? = null,
+    val paddingAll: Dimen? = null,
+    val marginStart: Dimen? = null,
+    val marginTop: Dimen? = null,
+    val marginEnd: Dimen? = null,
+    val marginBottom: Dimen? = null,
+    val marginHorizontal: Dimen? = null,
+    val marginVertical: Dimen? = null,
+    val marginAll: Dimen? = null,
+    val positionStart: Dimen? = null,
+    val positionTop: Dimen? = null,
+    val positionEnd: Dimen? = null,
+    val positionBottom: Dimen? = null,
     val positionType: YogaPositionType? = null,
     val background: Drawable? = null,
     val foreground: Drawable? = null
@@ -87,20 +87,20 @@ open class Style(
         flexShrink = other.flexShrink ?: flexShrink,
         flexBasis = other.flexBasis ?: flexBasis,
         aspectRatio = other.aspectRatio ?: aspectRatio,
-        paddingStart = paddingStart plusSafe other.paddingStart,
-        paddingTop = paddingTop plusSafe other.paddingTop,
-        paddingEnd = paddingEnd plusSafe other.paddingEnd,
-        paddingBottom = paddingBottom plusSafe other.paddingBottom,
-        paddingHorizontal = paddingHorizontal plusSafe other.paddingHorizontal,
-        paddingVertical = paddingVertical plusSafe other.paddingVertical,
-        paddingAll = paddingAll plusSafe other.paddingAll,
-        marginStart = marginStart plusSafe other.marginStart,
-        marginTop = marginTop plusSafe other.marginTop,
-        marginEnd = marginEnd plusSafe other.marginEnd,
-        marginBottom = marginBottom plusSafe other.marginBottom,
-        marginHorizontal = marginHorizontal plusSafe other.marginHorizontal,
-        marginVertical = marginVertical plusSafe other.marginVertical,
-        marginAll = marginAll plusSafe other.marginAll,
+        paddingStart = other.paddingStart ?: paddingStart,
+        paddingTop = other.paddingTop ?: paddingTop,
+        paddingEnd = other.paddingEnd ?: paddingEnd,
+        paddingBottom = other.paddingBottom ?: paddingBottom,
+        paddingHorizontal = other.paddingHorizontal ?: paddingHorizontal,
+        paddingVertical = other.paddingVertical ?: paddingVertical,
+        paddingAll = other.paddingAll ?: paddingAll,
+        marginStart = other.marginStart ?: marginStart,
+        marginTop = other.marginTop ?: marginTop,
+        marginEnd = other.marginEnd ?: marginEnd,
+        marginBottom = other.marginBottom ?: marginBottom,
+        marginHorizontal = other.marginHorizontal ?: marginHorizontal,
+        marginVertical = other.marginVertical ?: marginVertical,
+        marginAll = other.marginAll ?: marginAll,
         positionStart = other.positionStart ?: positionStart,
         positionTop = other.positionTop ?: positionTop,
         positionEnd = other.positionEnd ?: positionEnd,
@@ -113,12 +113,10 @@ open class Style(
   companion object : Style()
 }
 
-infix fun Dp?.plusSafe(other: Dp?) = (this ?: 0.dp) + (other ?: 0.dp)
-
 internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
   props.apply {
-    style.width?.let { widthPx(if (it == Dp.Hairline) 1 else it.toPixels()) }
-    style.height?.let { heightPx(if (it == Dp.Hairline) 1 else it.toPixels()) }
+    style.width?.let { widthPx(if (it == Dimen.Hairline) 1 else it.toPixels()) }
+    style.height?.let { heightPx(if (it == Dimen.Hairline) 1 else it.toPixels()) }
     style.widthPercent?.let { widthPercent(it) }
     style.heightPercent?.let { heightPercent(it) }
 
@@ -167,78 +165,86 @@ internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
   }
 }
 
-fun size(size: Dp) = Style(width = size, height = size)
+fun size(size: Dimen) = Style(width = size, height = size)
 
-fun Style.size(size: Dp) = this + com.facebook.litho.size(size)
+fun Style.size(size: Dimen) = this + com.facebook.litho.size(size)
 
-fun size(width: Dp? = null, height: Dp? = null) = Style(width, height)
+fun size(width: Dimen? = null, height: Dimen? = null) = Style(width, height)
 
-fun Style.size(width: Dp? = null, height: Dp? = null) =
+fun Style.size(width: Dimen? = null, height: Dimen? = null) =
     this + com.facebook.litho.size(width, height)
 
-fun width(minWidth: Dp? = null, maxWidth: Dp? = null) =
+fun width(minWidth: Dimen? = null, maxWidth: Dimen? = null) =
     Style(minWidth = minWidth, maxWidth = maxWidth)
 
-fun Style.width(minWidth: Dp? = null, maxWidth: Dp? = null) =
+fun Style.width(minWidth: Dimen? = null, maxWidth: Dimen? = null) =
     this + com.facebook.litho.width(minWidth, maxWidth)
 
-fun height(minHeight: Dp? = null, maxHeight: Dp? = null) =
+fun height(minHeight: Dimen? = null, maxHeight: Dimen? = null) =
     Style(minHeight = minHeight, maxHeight = maxHeight)
 
-fun Style.height(minHeight: Dp? = null, maxHeight: Dp? = null) =
+fun Style.height(minHeight: Dimen? = null, maxHeight: Dimen? = null) =
     this + com.facebook.litho.height(minHeight, maxHeight)
 
-fun flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
+fun flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null) =
     Style(flexGrow = grow, flexShrink = shrink, flexBasis = basis)
 
-fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
+fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null) =
     this + com.facebook.litho.flex(grow, shrink, basis)
 
 fun aspectRatio(aspectRatio: Float) = Style(aspectRatio = aspectRatio)
 
 fun Style.aspectRatio(aspectRatio: Float) = this + com.facebook.litho.aspectRatio(aspectRatio)
 
-fun padding(all: Dp) = Style(paddingAll = all)
+fun padding(all: Dimen) = Style(paddingAll = all)
 
-fun Style.padding(all: Dp) = this + com.facebook.litho.padding(all)
+fun Style.padding(all: Dimen) = this + com.facebook.litho.padding(all)
 
-fun padding(horizontal: Dp? = null, vertical: Dp? = null) =
+fun padding(horizontal: Dimen? = null, vertical: Dimen? = null) =
     Style(
         paddingStart = horizontal,
         paddingTop = vertical,
         paddingEnd = horizontal,
         paddingBottom = vertical)
 
-fun Style.padding(horizontal: Dp? = null, vertical: Dp? = null) =
+fun Style.padding(horizontal: Dimen? = null, vertical: Dimen? = null) =
     this + com.facebook.litho.padding(horizontal, vertical)
 
-fun padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+fun padding(start: Dimen? = null, top: Dimen? = null, end: Dimen? = null, bottom: Dimen? = null) =
     Style(paddingStart = start, paddingTop = top, paddingEnd = end, paddingBottom = bottom)
 
-fun Style.padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.padding(start, top, end, bottom)
+fun Style.padding(
+    start: Dimen? = null,
+    top: Dimen? = null,
+    end: Dimen? = null,
+    bottom: Dimen? = null
+) = this + com.facebook.litho.padding(start, top, end, bottom)
 
-fun margin(all: Dp) = Style(marginAll = all)
+fun margin(all: Dimen) = Style(marginAll = all)
 
-fun Style.margin(all: Dp) = this + com.facebook.litho.margin(all)
+fun Style.margin(all: Dimen) = this + com.facebook.litho.margin(all)
 
-fun margin(horizontal: Dp? = null, vertical: Dp? = null) =
+fun margin(horizontal: Dimen? = null, vertical: Dimen? = null) =
     Style(
         marginStart = horizontal,
         marginTop = vertical,
         marginEnd = horizontal,
         marginBottom = vertical)
 
-fun Style.margin(horizontal: Dp? = null, vertical: Dp? = null) =
+fun Style.margin(horizontal: Dimen? = null, vertical: Dimen? = null) =
     this + com.facebook.litho.margin(horizontal, vertical)
 
-fun margin(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+fun margin(start: Dimen? = null, top: Dimen? = null, end: Dimen? = null, bottom: Dimen? = null) =
     Style(marginStart = start, marginTop = top, marginEnd = end, marginBottom = bottom)
 
-fun Style.margin(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.margin(start, top, end, bottom)
+fun Style.margin(
+    start: Dimen? = null,
+    top: Dimen? = null,
+    end: Dimen? = null,
+    bottom: Dimen? = null
+) = this + com.facebook.litho.margin(start, top, end, bottom)
 
-fun position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+fun position(start: Dimen? = null, top: Dimen? = null, end: Dimen? = null, bottom: Dimen? = null) =
     Style(
         positionStart = start,
         positionTop = top,
@@ -246,10 +252,19 @@ fun position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = 
         positionBottom = bottom,
         positionType = YogaPositionType.ABSOLUTE)
 
-fun Style.position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.position(start, top, end, bottom)
+fun Style.position(
+    start: Dimen? = null,
+    top: Dimen? = null,
+    end: Dimen? = null,
+    bottom: Dimen? = null
+) = this + com.facebook.litho.position(start, top, end, bottom)
 
-fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
+fun positionRelative(
+    start: Dimen? = null,
+    top: Dimen? = null,
+    end: Dimen? = null,
+    bottom: Dimen? = null
+) =
     Style(
         positionStart = start,
         positionTop = top,
@@ -258,10 +273,10 @@ fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom
         positionType = YogaPositionType.RELATIVE)
 
 fun Style.positionRelative(
-    start: Dp? = null,
-    top: Dp? = null,
-    end: Dp? = null,
-    bottom: Dp? = null
+    start: Dimen? = null,
+    top: Dimen? = null,
+    end: Dimen? = null,
+    bottom: Dimen? = null
 ) = this + com.facebook.litho.positionRelative(start, top, end, bottom)
 
 fun background(background: Drawable?) = Style(background = background)
