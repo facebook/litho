@@ -16,6 +16,7 @@
 
 package com.facebook.litho.editor;
 
+import com.facebook.litho.editor.instances.AtomicBooleanEditorInstance;
 import com.facebook.litho.editor.instances.AtomicReferenceEditorInstance;
 import com.facebook.litho.editor.instances.BoolEditorInstance;
 import com.facebook.litho.editor.instances.NumberEditorInstance;
@@ -24,6 +25,7 @@ import com.facebook.litho.editor.model.EditorValue;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
@@ -184,5 +186,7 @@ public final class EditorRegistry {
     registerEditor(boolean.class, boolEditor);
 
     registerEditor(AtomicReference.class, new AtomicReferenceEditorInstance());
+
+    registerEditor(AtomicBoolean.class, new AtomicBooleanEditorInstance());
   }
 }
