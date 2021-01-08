@@ -208,15 +208,15 @@ public class MountItemsPool {
 
   /** Check whether contextWrapper is a wrapper of baseContext */
   private static boolean isContextWrapper(Context contextWrapper, Context baseContext) {
+    while (baseContext instanceof ContextWrapper) {
+      baseContext = ((ContextWrapper) baseContext).getBaseContext();
+    }
+
     Context currentContext = contextWrapper;
     while (currentContext instanceof ContextWrapper) {
       currentContext = ((ContextWrapper) currentContext).getBaseContext();
-
-      if (currentContext == baseContext) {
-        return true;
-      }
     }
 
-    return false;
+    return currentContext == baseContext;
   }
 }
