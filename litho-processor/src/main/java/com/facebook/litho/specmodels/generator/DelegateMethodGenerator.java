@@ -125,7 +125,9 @@ public class DelegateMethodGenerator {
     }
 
     if (methodUsesDiffs) {
+      methodSpec.addParameter(specModel.getContextClass(), "_prevScopedContext");
       methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
+      methodSpec.addParameter(specModel.getContextClass(), "_nextScopedContext");
       methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
       methodSpec.addStatement(
           "$L _prevImpl = ($L) _prevAbstractImpl", componentName, componentName);
@@ -224,8 +226,10 @@ public class DelegateMethodGenerator {
             methodParamModel.getTypeName(),
             methodParamModel.getName(),
             methodParamModel.getTypeName(),
-            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel, contextParamName),
-            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel, contextParamName));
+            ComponentBodyGenerator.getImplAccessor(
+                specModel, methodParamModel, "_prevScopedContext"),
+            ComponentBodyGenerator.getImplAccessor(
+                specModel, methodParamModel, "_nextScopedContext"));
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
       } else if (isOutputType(methodParamModel.getTypeName())) {

@@ -1100,13 +1100,21 @@ class MountState
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
-            && currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
+            && currentComponent.shouldComponentUpdate(
+                currentLayoutOutput.getScopedContext(),
+                currentComponent,
+                nextLayoutOutput.getScopedContext(),
+                nextComponent);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
+    return currentComponent.shouldComponentUpdate(
+        currentLayoutOutput.getScopedContext(),
+        currentComponent,
+        nextLayoutOutput.getScopedContext(),
+        nextComponent);
   }
 
   static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {

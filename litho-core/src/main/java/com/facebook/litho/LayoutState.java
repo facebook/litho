@@ -1219,10 +1219,13 @@ public class LayoutState
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(drawable);
+    final ComponentContext recycleScopedContext =
+        recycle == null ? null : recycle.getScopedContext();
     final boolean isOutputUpdated;
     if (recycle != null) {
       isOutputUpdated =
-          !drawableComponent.shouldComponentUpdate(recycle.getComponent(), drawableComponent);
+          !drawableComponent.shouldComponentUpdate(
+              recycleScopedContext, recycle.getComponent(), null, drawableComponent);
     } else {
       isOutputUpdated = false;
     }

@@ -231,7 +231,17 @@ public class ChangeSetState {
       final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(
               currentRootIsNull ? 0 : currentRoot.getCount(), newRoot, enableStats);
-      lifecycle.generateChangeSet(newRoot.getScopedContext(), changeSet, currentRoot, newRoot);
+      final SectionContext newRootScopedContext =
+          newRoot == null ? null : newRoot.getScopedContext();
+      final SectionContext currentRootScopedContext =
+          currentRoot == null ? null : currentRoot.getScopedContext();
+      lifecycle.generateChangeSet(
+          newRootScopedContext,
+          changeSet,
+          currentRootScopedContext,
+          currentRoot,
+          newRootScopedContext,
+          newRoot);
       newRoot.setCount(changeSet.getCount());
 
       if (isTracing) {

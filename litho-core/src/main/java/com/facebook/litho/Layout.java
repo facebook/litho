@@ -454,7 +454,7 @@ class Layout {
 
     if (diff != null) {
       ComponentsSystrace.beginSection("applyDiffNode");
-      applyDiffNodeToUnchangedNodes(root, diff);
+      applyDiffNodeToUnchangedNodes(c.getLayoutStateContext(), root, diff);
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
@@ -533,7 +533,9 @@ class Layout {
    * @param diffNode the root of the diffTree
    */
   static void applyDiffNodeToUnchangedNodes(
-      final InternalNode layoutNode, final DiffNode diffNode) {
+      final LayoutStateContext layoutStateContext,
+      final InternalNode layoutNode,
+      final DiffNode diffNode) {
     try {
       // Root of the main tree or of a nested tree.
       final boolean isTreeRoot = layoutNode.getParent() == null;
@@ -553,11 +555,12 @@ class Layout {
 
       if (layoutCount != 0 && diffCount != 0) {
         for (int i = 0; i < layoutCount && i < diffCount; i++) {
-          applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
+          applyDiffNodeToUnchangedNodes(
+              layoutStateContext, layoutNode.getChildAt(i), diffNode.getChildAt(i));
         }
 
         // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
-      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
+      } else if (!shouldComponentUpdate(layoutStateContext, layoutNode, diffNode)) {
         applyDiffNodeToLayoutNode(layoutNode, diffNode);
       }
     } catch (Throwable t) {
@@ -682,17 +685,52 @@ class Layout {
   }
 
   private static boolean shouldComponentUpdate(
-      final InternalNode layoutNode, final DiffNode diffNode) {
+      final LayoutStateContext layoutStateContext,
+      final InternalNode layoutNode,
+      final DiffNode diffNode) {
     if (diffNode == null) {
       return true;
     }
 
     final Component component = layoutNode.getTailComponent();
+    final String globalKey =
+        ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
     if (component != null) {
-      return component.shouldComponentUpdate(diffNode.getComponent(), component);
+      return component.shouldComponentUpdate(
+          getDiffNodeScopedContext(layoutStateContext, diffNode),
+          diffNode.getComponent(),
+          component.getScopedContext(layoutStateContext, globalKey),
+          component);
     }
 
     return true;
+  }
+
+  /** DiffNode state should be retrieved from the committed LayoutState. */
+  private static ComponentContext getDiffNodeScopedContext(
+      LayoutStateContext currentLayoutStateContext, DiffNode diffNode) {
+    if (currentLayoutStateContext == null) {
+      return null;
+    }
+
+    final ComponentTree componentTree = currentLayoutStateContext.getComponentTree();
+    if (componentTree == null) {
+      return null;
+    }
+
+    final LayoutStateContext committedContext = componentTree.getLayoutStateContext();
+    if (committedContext == null) {
+      return null;
+    }
+
+    final Component diffNodeComponent = diffNode.getComponent();
+    if (diffNodeComponent == null) {
+      return null;
+    }
+
+    return diffNodeComponent.getScopedContext(
+        committedContext,
+        ComponentUtils.getGlobalKey(diffNodeComponent, diffNode.getComponentGlobalKey()));
   }
 
   @VisibleForTesting

@@ -350,7 +350,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected boolean shouldUpdate(Component _prevAbstractImpl, Component _nextAbstractImpl) {
+  protected boolean shouldUpdate(ComponentContext _prevScopedContext, Component _prevAbstractImpl, ComponentContext _nextScopedContext, Component _nextAbstractImpl) {
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;

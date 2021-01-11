@@ -253,9 +253,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  final boolean shouldComponentUpdate(Component previous, Component next) {
+  final boolean shouldComponentUpdate(
+      ComponentContext previousScopedContext,
+      Component previous,
+      ComponentContext nextScopedContext,
+      Component next) {
     if (isPureRender()) {
-      return shouldUpdate(previous, next);
+      return shouldUpdate(previousScopedContext, previous, nextScopedContext, next);
     }
 
     return true;
@@ -608,7 +612,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param next the component that is now in use.
    * @return true if the component needs an update, false otherwise.
    */
-  protected boolean shouldUpdate(Component previous, Component next) {
+  protected boolean shouldUpdate(
+      ComponentContext previousScopedContext,
+      Component previous,
+      ComponentContext nextScopedContext,
+      Component next) {
     final StateContainer prevStateContainer =
         previous == null ? null : previous.getStateContainer();
     final StateContainer nextStateContainer = next == null ? null : next.getStateContainer();

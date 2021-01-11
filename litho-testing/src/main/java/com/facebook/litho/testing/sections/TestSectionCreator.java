@@ -140,7 +140,12 @@ public class TestSectionCreator {
 
     @Override
     protected void generateChangeSet(
-        SectionContext c, ChangeSet changeSet, Section previous, Section next) {
+        SectionContext c,
+        ChangeSet changeSet,
+        SectionContext previousScopedContext,
+        Section previous,
+        SectionContext nextScopedContext,
+        Section next) {
       if (mChanges != null) {
         for (int i = 0, size = mChanges.length; i < size; i++) {
           changeSet.addChange(mChanges[i]);
