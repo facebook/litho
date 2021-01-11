@@ -471,7 +471,7 @@ public class ComponentTree {
 
   @VisibleForTesting
   @Nullable
-  LayoutStateContext getLayoutStateContext() {
+  public LayoutStateContext getLayoutStateContext() {
     final LayoutState layoutState = getCommittedLayoutState();
     return layoutState == null ? null : layoutState.getLayoutStateContext();
   }

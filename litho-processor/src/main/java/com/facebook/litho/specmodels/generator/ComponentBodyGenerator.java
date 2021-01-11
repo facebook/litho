@@ -86,7 +86,7 @@ public class ComponentBodyGenerator {
     if (hasState) {
       final ClassName stateContainerClass =
           ClassName.bestGuess(getStateContainerClassName(specModel));
-      builder.addMethod(generateStateContainerImplGetter(stateContainerClass));
+      builder.addMethod(generateStateContainerImplGetter(specModel, stateContainerClass));
       builder.addMethod(generateStateContainerCreator(stateContainerClass));
     }
 
@@ -204,12 +204,14 @@ public class ComponentBodyGenerator {
     return refClassName.substring(0, 1).toLowerCase(Locale.ROOT) + refClassName.substring(1);
   }
 
-  static MethodSpec generateStateContainerImplGetter(TypeName stateContainerImplClassName) {
+  static MethodSpec generateStateContainerImplGetter(
+      SpecModel specModel, TypeName stateContainerImplClassName) {
     return MethodSpec.methodBuilder(STATE_CONTAINER_IMPL_GETTER)
         .addModifiers(Modifier.PRIVATE)
+        .addParameter(specModel.getContextClass(), "c")
         .returns(stateContainerImplClassName)
         .addStatement(
-            "return ($T) super." + STATE_CONTAINER_GETTER + "()", stateContainerImplClassName)
+            "return ($T) super." + STATE_CONTAINER_GETTER + "(c)", stateContainerImplClassName)
         .build();
   }
 
@@ -830,7 +832,11 @@ public class ComponentBodyGenerator {
       boolean shallow) {
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
-      return STATE_CONTAINER_ACCESSOR + "." + methodParamModel.getName();
+      return STATE_CONTAINER_IMPL_GETTER
+          + "("
+          + contextParamName
+          + ")."
+          + methodParamModel.getName();
     } else if (methodParamModel instanceof CachedValueParamModel) {
       if (contextParamName == null) {
         throw new IllegalStateException("Need a scoped context to access cached values.");

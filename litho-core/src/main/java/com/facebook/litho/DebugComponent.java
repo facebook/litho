@@ -122,7 +122,8 @@ public final class DebugComponent {
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
       overrider.applyComponentOverrides(key, component);
-      overrider.applyStateOverrides(key, component.getStateContainer());
+      overrider.applyStateOverrides(
+          key, component.getStateContainer(context.getLayoutStateContext(), componentKey));
     }
   }
 
@@ -390,6 +391,10 @@ public final class DebugComponent {
     return mNode.getComponents().get(mComponentIndex);
   }
 
+  private @Nullable String getGlobalKeyFromNode() {
+    return mNode.getComponentKeys() == null ? null : mNode.getComponentKeys().get(mComponentIndex);
+  }
+
   /** @return If this debug component represents a layout node, return it. */
   @Nullable
   public DebugLayoutNode getLayoutNode() {
@@ -408,7 +413,11 @@ public final class DebugComponent {
 
   @Nullable
   public StateContainer getStateContainer() {
-    return getComponent().getStateContainer();
+    final LayoutStateContext layoutStateContext = getContext().getLayoutStateContext();
+    final Component component = getComponent();
+    final String globalKey = ComponentUtils.getGlobalKey(component, getGlobalKeyFromNode());
+
+    return getComponent().getStateContainer(layoutStateContext, globalKey);
   }
 
   @Nullable

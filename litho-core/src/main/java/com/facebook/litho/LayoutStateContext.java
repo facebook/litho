@@ -36,6 +36,7 @@ public class LayoutStateContext {
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private final @Nullable Map<String, Component> mGlobalKeyToComponent;
   private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
+  private final @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
   private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction =
       ComponentsConfiguration.useStatelessComponent ? new LithoYogaMeasureFunction(this) : null;
 
@@ -65,9 +66,11 @@ public class LayoutStateContext {
     if (ComponentsConfiguration.useStatelessComponent) {
       mGlobalKeyToComponent = new HashMap<>();
       mGlobalKeyToScopedContext = new HashMap<>();
+      mGlobalKeyToScopedInfo = new HashMap<>();
     } else {
       mGlobalKeyToScopedContext = null;
       mGlobalKeyToComponent = null;
+      mGlobalKeyToScopedInfo = null;
     }
   }
 
@@ -75,11 +78,17 @@ public class LayoutStateContext {
       String globalKey, Component component, ComponentContext scopedContext) {
     mGlobalKeyToComponent.put(globalKey, component);
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
+    mGlobalKeyToScopedInfo.put(globalKey, new ScopedComponentInfo(component));
+  }
+
+  @Nullable
+  ScopedComponentInfo getScopedComponentInfo(String globalKey) {
+    return mGlobalKeyToScopedInfo.get(globalKey);
   }
 
   @Nullable
   ComponentContext getScopedContext(String globalKey) {
-    return mGlobalKeyToScopedContext.get(globalKey);
+    return mGlobalKeyToScopedInfo == null ? null : mGlobalKeyToScopedContext.get(globalKey);
   }
 
   void releaseReference() {

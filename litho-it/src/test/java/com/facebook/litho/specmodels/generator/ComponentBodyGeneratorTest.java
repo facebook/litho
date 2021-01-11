@@ -230,11 +230,12 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateStateContainerImplGetter() {
     assertThat(
-            ComponentBodyGenerator.generateStateContainerImplGetter(ClassNames.STATE_CONTAINER)
+            ComponentBodyGenerator.generateStateContainerImplGetter(
+                    mSpecModelDI, ClassNames.STATE_CONTAINER)
                 .toString())
         .isEqualTo(
-            "private com.facebook.litho.StateContainer getStateContainerImpl() {\n"
-                + "  return (com.facebook.litho.StateContainer) super.getStateContainer();\n"
+            "private com.facebook.litho.StateContainer getStateContainerImpl(com.facebook.litho.ComponentContext c) {\n"
+                + "  return (com.facebook.litho.StateContainer) super.getStateContainer(c);\n"
                 + "}\n");
   }
 
@@ -474,7 +475,7 @@ public class ComponentBodyGeneratorTest {
     StateParamModel stateParamModel = mock(StateParamModel.class);
     when(stateParamModel.getName()).thenReturn("stateParam");
     assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, stateParamModel, "c"))
-        .isEqualTo("getStateContainerImpl().stateParam");
+        .isEqualTo("getStateContainerImpl(c).stateParam");
   }
 
   @Test

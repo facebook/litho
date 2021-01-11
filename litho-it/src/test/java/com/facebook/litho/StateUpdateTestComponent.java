@@ -115,7 +115,7 @@ class StateUpdateTestComponent extends Component {
   }
 
   @Override
-  protected StateContainer getStateContainer() {
+  protected StateContainer getStateContainer(ComponentContext scopedContext) {
     return mStateContainer;
   }
 

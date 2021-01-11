@@ -47,6 +47,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -141,13 +142,17 @@ public abstract class Component extends ComponentLifecycle
   protected Component() {
     mSimpleName = getClass().getSimpleName();
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    mStateContainer = createStateContainer();
+    if (!mUseStatelessComponent) {
+      mStateContainer = createStateContainer();
+    }
   }
 
   protected Component(String simpleName) {
     mSimpleName = simpleName;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    mStateContainer = createStateContainer();
+    if (!mUseStatelessComponent) {
+      mStateContainer = createStateContainer();
+    }
   }
 
   /**
@@ -159,7 +164,9 @@ public abstract class Component extends ComponentLifecycle
     super(identityHashCode);
     mSimpleName = simpleName;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    mStateContainer = createStateContainer();
+    if (!mUseStatelessComponent) {
+      mStateContainer = createStateContainer();
+    }
   }
 
   /**
@@ -601,8 +608,29 @@ public abstract class Component extends ComponentLifecycle
     return null;
   }
 
-  protected @Nullable StateContainer getStateContainer() {
-    return mStateContainer;
+  protected @Nullable StateContainer getStateContainer(ComponentContext scopedContext) {
+    if (mUseStatelessComponent) {
+
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access a state container outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
+    } else {
+      return mStateContainer;
+    }
+  }
+
+  StateContainer getStateContainer(LayoutStateContext layoutStateContext, String globalKey) {
+    if (mUseStatelessComponent) {
+      return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
+    } else {
+      return mStateContainer;
+    }
   }
 
   protected void setStateContainer(StateContainer stateContainer) {

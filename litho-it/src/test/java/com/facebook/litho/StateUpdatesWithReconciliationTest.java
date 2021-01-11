@@ -409,7 +409,7 @@ public class StateUpdatesWithReconciliationTest {
     }
 
     @Override
-    protected StateContainer getStateContainer() {
+    protected StateContainer getStateContainer(ComponentContext scopedContext) {
       return mStateContainer;
     }
   }

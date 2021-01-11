@@ -618,8 +618,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentContext nextScopedContext,
       Component next) {
     final StateContainer prevStateContainer =
-        previous == null ? null : previous.getStateContainer();
-    final StateContainer nextStateContainer = next == null ? null : next.getStateContainer();
+        previous == null ? null : previous.getStateContainer(previousScopedContext);
+    final StateContainer nextStateContainer =
+        next == null ? null : next.getStateContainer(nextScopedContext);
     return !previous.isEquivalentTo(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
