@@ -1305,6 +1305,7 @@ public class MountStateIncrementalMountTest {
             .section(
                 SingleComponentSection.create(new SectionContext(mContext))
                     .component(root2)
+                    .sticky(true)
                     .build())
             .build();
 

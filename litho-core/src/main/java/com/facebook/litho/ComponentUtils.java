@@ -77,7 +77,7 @@ public class ComponentUtils {
     return current.isEquivalentTo(next);
   }
 
-  static boolean hasEquivalentState(
+  public static boolean hasEquivalentState(
       @Nullable StateContainer stateContainer1, @Nullable StateContainer stateContainer2) {
     if (stateContainer1 == null && stateContainer2 == null) {
       return true;

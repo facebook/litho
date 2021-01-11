@@ -437,10 +437,6 @@ public class ComponentBodyGenerator {
       isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, prop, runMode));
     }
 
-    for (StateParamModel state : specModel.getStateValues()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, state, runMode));
-    }
-
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       isEquivalentBuilder.addCode(
           getCompareStatement(specModel, instanceRefName, treeProp, runMode));

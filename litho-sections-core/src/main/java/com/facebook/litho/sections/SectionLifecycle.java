@@ -167,7 +167,19 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   protected boolean shouldUpdate(Section previous, Section next) {
-    return !(previous == next || (previous != null && previous.isEquivalentTo(next)));
+    if (previous == next) {
+      return false;
+    }
+
+    if (previous != null) {
+      final StateContainer prevStateContainer =
+          previous == null ? null : previous.getStateContainer();
+      final StateContainer nextStateContainer = next == null ? null : next.getStateContainer();
+      return !previous.isEquivalentTo(next)
+          || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
+    }
+
+    return true;
   }
 
   /**
