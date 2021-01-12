@@ -425,17 +425,7 @@ public abstract class Component extends ComponentLifecycle
       return scopedContext.getGlobalKey();
     }
 
-    return component.getGlobalKey();
-  }
-
-  @Nullable
-  @VisibleForTesting
-  String getGlobalKey() {
-    if (mUseStatelessComponent) {
-      throw new IllegalStateException("Should not call this method for stateless components");
-    }
-
-    return mGlobalKey;
+    return component.mGlobalKey;
   }
 
   /**
