@@ -18,7 +18,6 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_ACCESSOR;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_GETTER;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;

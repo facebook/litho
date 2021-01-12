@@ -179,7 +179,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       Section previous,
       SectionContext nextScopedContext,
       Section next) {
-   
+
     if (previous == next) {
       return false;
     }

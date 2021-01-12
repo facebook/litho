@@ -47,7 +47,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
