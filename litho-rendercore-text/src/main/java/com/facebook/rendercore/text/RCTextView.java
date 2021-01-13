@@ -368,6 +368,7 @@ public class RCTextView extends View {
     public RCTextAccessibilityDelegate() {
       super(RCTextView.this);
 
+      RCTextView.this.setFocusable(false);
       setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
 
