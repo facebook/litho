@@ -17,10 +17,12 @@
 package com.facebook.litho.testing.viewtree;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
 import com.google.common.base.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.robolectric.Shadows;
@@ -120,7 +122,15 @@ class ComponentQueries {
    */
   private static boolean satisfiesPredicate(
       final ComponentHost host, final Predicate<Drawable> predicate) {
-    final List<Drawable> drawables = host.getDrawables();
+    final List<Drawable> drawables = new ArrayList<>(host.getDrawables());
+    if (host.getBackground() != null) {
+      drawables.add(host.getBackground());
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (host.getForeground() != null) {
+        drawables.add(host.getForeground());
+      }
+    }
     for (final Drawable drawable : drawables) {
       if (predicate.apply(drawable)) {
         return true;
