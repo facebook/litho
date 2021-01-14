@@ -26,6 +26,7 @@ import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaPositionType
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -327,7 +328,8 @@ class CommonStylesTest {
                   listOf(
                       Row(
                           style =
-                              Style.position(
+                              Style.positionType(YogaPositionType.ABSOLUTE)
+                                  .position(
                                       start = left.px,
                                       top = top.px,
                                       end = right.px,

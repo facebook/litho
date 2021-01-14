@@ -20,13 +20,8 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.flex
-import com.facebook.litho.margin
-import com.facebook.litho.padding
-import com.facebook.litho.size
 import com.facebook.litho.sp
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Decade

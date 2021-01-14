@@ -21,10 +21,8 @@ import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.padding
 
 class ActionsComponent(val style: Style? = null) : KComponent() {
 

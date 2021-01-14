@@ -22,10 +22,8 @@ import com.facebook.litho.Clickable
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
-import com.facebook.litho.size
 import com.facebook.litho.updateState
 import com.facebook.litho.useState
 import com.facebook.litho.value
