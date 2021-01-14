@@ -61,7 +61,8 @@ open class Style(
     val positionBottom: Dimen? = null,
     val positionType: YogaPositionType? = null,
     val background: Drawable? = null,
-    val foreground: Drawable? = null
+    val foreground: Drawable? = null,
+    val wrapInView: Boolean? = null,
 ) {
 
   operator fun plus(other: Style?): Style {
@@ -107,7 +108,8 @@ open class Style(
         positionBottom = other.positionBottom ?: positionBottom,
         positionType = other.positionType ?: positionType,
         background = other.background ?: background,
-        foreground = other.foreground ?: foreground)
+        foreground = other.foreground ?: foreground,
+        wrapInView = other.wrapInView ?: wrapInView)
   }
 
   companion object : Style()
@@ -162,6 +164,9 @@ internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
 
     style.background?.let { background(it) }
     style.foreground?.let { foreground(it) }
+    if (style.wrapInView == true) {
+      wrapInView()
+    }
   }
 }
 
@@ -290,3 +295,7 @@ fun Style.foreground(foreground: Drawable?) = this + com.facebook.litho.foregrou
 fun alignSelf(align: YogaAlign) = Style(alignSelf = align)
 
 fun Style.alignSelf(align: YogaAlign) = this + com.facebook.litho.alignSelf(align)
+
+fun wrapInView() = Style(wrapInView = true)
+
+fun Style.wrapInView() = this + com.facebook.litho.wrapInView()
