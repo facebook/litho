@@ -21,7 +21,6 @@ import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.LithoTestRunner
-import com.facebook.litho.util.TreePropHolder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -112,4 +111,8 @@ class KTreePropsTest {
     assertThat(child1IntPropRef.prop).isEqualTo(42)
     assertThat(child2IntPropRef.prop).isNull()
   }
+}
+
+class TreePropHolder {
+  var prop: Any? = null
 }
