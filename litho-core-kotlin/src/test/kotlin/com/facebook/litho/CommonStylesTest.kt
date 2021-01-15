@@ -87,7 +87,7 @@ class CommonStylesTest {
   }
 
   @Test
-  fun flexBasis_whenSet_isRespected() {
+  fun flexBasis_whenSet_becomesChildWidth() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
@@ -103,7 +103,7 @@ class CommonStylesTest {
   }
 
   @Test
-  fun flexGrow_whenSet_isRespected() {
+  fun flexGrow_whenSet_childTakesWholeSpace() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
@@ -119,7 +119,7 @@ class CommonStylesTest {
   }
 
   @Test
-  fun flexShrink_whenSet_isRespected() {
+  fun flexShrink_whenSet_makesChildAsSmallAsPossible() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
@@ -178,7 +178,7 @@ class CommonStylesTest {
               alignItems = YogaAlign.STRETCH,
               style =
                   Style.size(width = 100.px, height = 100.px)
-                      .padding(start = left.dp, top = top.dp, end = right.dp, bottom = bottom.dp),
+                      .padding(start = left.px, top = top.px, end = right.px, bottom = bottom.px),
               children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
         }
         .assertMatches(
@@ -200,7 +200,7 @@ class CommonStylesTest {
               alignItems = YogaAlign.STRETCH,
               style =
                   Style.size(width = 100.px, height = 100.px)
-                      .padding(horizontal = horizontal.dp, vertical = vertical.dp),
+                      .padding(horizontal = horizontal.px, vertical = vertical.px),
               children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
         }
         .assertMatches(
@@ -221,7 +221,7 @@ class CommonStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.size(width = 100.px, height = 100.px).padding(padding.dp),
+              style = Style.size(width = 100.px, height = 100.px).padding(padding.px),
               children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
         }
         .assertMatches(
@@ -251,10 +251,10 @@ class CommonStylesTest {
                       Row(
                           style =
                               Style.margin(
-                                      start = left.dp,
-                                      top = top.dp,
-                                      end = right.dp,
-                                      bottom = bottom.dp)
+                                      start = left.px,
+                                      top = top.px,
+                                      end = right.px,
+                                      bottom = bottom.px)
                                   .flex(grow = 1f)
                                   .wrapInView())))
         }
@@ -280,7 +280,7 @@ class CommonStylesTest {
                   listOf(
                       Row(
                           style =
-                              Style.margin(horizontal = horizontal.dp, vertical = vertical.dp)
+                              Style.margin(horizontal = horizontal.px, vertical = vertical.px)
                                   .flex(grow = 1f)
                                   .wrapInView())))
         }
@@ -303,7 +303,7 @@ class CommonStylesTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.size(width = 100.px, height = 100.px),
-              children = listOf(Row(style = Style.margin(margin.dp).flex(grow = 1f).wrapInView())))
+              children = listOf(Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView())))
         }
         .assertMatches(
             match<LithoView> {
