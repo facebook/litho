@@ -75,6 +75,7 @@ private enum class ObjectField {
   BACKGROUND,
   FOREGROUND,
   WRAP_IN_VIEW,
+  VIEW_TAG,
 }
 
 /**
@@ -148,6 +149,7 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
+      ObjectField.VIEW_TAG -> commonProps.viewTag(value)
     }.exhaustive
   }
 }
@@ -221,6 +223,8 @@ open class Style(
           shrink?.let { FloatStyleItem(FloatField.FLEX_SHRINK, it) } +
           basis?.let { DimenStyleItem(DimenField.FLEX_BASIS, it) }
 
+  fun alignSelf(align: YogaAlign) = this + ObjectStyleItem(ObjectField.ALIGN_SELF, align)
+
   fun aspectRatio(aspectRatio: Float) = this + FloatStyleItem(FloatField.ASPECT_RATIO, aspectRatio)
 
   fun padding(all: Dimen) = this + DimenStyleItem(DimenField.PADDING_ALL, all)
@@ -284,7 +288,7 @@ open class Style(
 
   fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
 
-  fun alignSelf(align: YogaAlign) = this + ObjectStyleItem(ObjectField.ALIGN_SELF, align)
+  fun viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
 
   open fun forEach(lambda: (StyleItem) -> Unit) {
     previousStyle?.forEach(lambda)

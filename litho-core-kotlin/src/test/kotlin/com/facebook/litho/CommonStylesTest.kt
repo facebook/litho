@@ -393,6 +393,28 @@ class CommonStylesTest {
             })
   }
 
+  @Test
+  fun viewTag_whenSet_isAddedToView() {
+    assertThat(
+            lithoViewRule
+                .setSizeSpecs(unspecified(), unspecified())
+                .setRoot {
+                  Row(
+                      style = Style.size(width = 200.px, height = 200.px),
+                      children =
+                          listOf(
+                              Row(
+                                  style =
+                                      Style.size(width = 100.px, height = 100.px)
+                                          .viewTag("view_tag"))))
+                }
+                .measure()
+                .layout()
+                .attachToWindow()
+                .findViewWithTag("view_tag"))
+        .isNotNull()
+  }
+
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
     assertThat(componentHost.drawables).hasSize(1).first().isInstanceOf(MatrixDrawable::class.java)
     assertThat((componentHost.drawables[0] as MatrixDrawable<ColorDrawable>).mountedDrawable)
