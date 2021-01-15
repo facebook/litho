@@ -254,7 +254,6 @@ def litho_robolectric4_test(
     ]
     kwargs["vm_args"] = extra_vm_args
     kwargs["use_cxx_libraries"] = True
-    kwargs["use_old_styleable_format"] = True
     kwargs["cxx_library_whitelist"] = [
         "//lib/yogajni:jni",
     ]
