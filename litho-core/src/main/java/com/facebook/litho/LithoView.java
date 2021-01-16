@@ -56,7 +56,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String TAG = LithoView.class.getSimpleName();
-  private final boolean mDisableTransitionsExtension;
   private final boolean mAcquireDuringMount;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
@@ -230,8 +229,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-    mDisableTransitionsExtension =
-        ComponentsConfiguration.disableTransitionsExtensionForMountDelegate;
   }
 
   boolean shouldAcquireDuringMount() {
@@ -735,9 +732,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
       }
 
-      if (!mDisableTransitionsExtension) {
-        mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
-      }
+      mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
 
       if (ComponentsConfiguration.isEndToEndTestRun) {
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing(mMountDelegateTarget);
