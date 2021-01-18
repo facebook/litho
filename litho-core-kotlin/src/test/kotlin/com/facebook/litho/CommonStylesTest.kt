@@ -27,6 +27,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType
+import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -375,6 +376,55 @@ class CommonStylesTest {
         .attachToWindow()
 
     assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+  }
+
+  @Test
+  fun onClick_whenSet_isDispatchedOnClick() {
+    val wasClicked = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style = Style.size(width = 200.px, height = 200.px),
+              children =
+                  listOf(
+                      Row(
+                          style =
+                              Style.size(width = 100.px, height = 100.px)
+                                  .viewTag("click_me")
+                                  .onClick { wasClicked.set(true) })))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(wasClicked.get()).isFalse()
+    lithoViewRule.findViewWithTag("click_me").performClick()
+    assertThat(wasClicked.get()).isTrue()
+  }
+
+  @Test
+  fun onLongClick_whenSet_isDispatchedOnLongClick() {
+    val wasLongClicked = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.size(width = 100.px, height = 100.px).viewTag("click_me").onLongClick {
+                    wasLongClicked.set(true)
+                    true
+                  })
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(wasLongClicked.get()).isFalse()
+    lithoViewRule.findViewWithTag("click_me").performLongClick()
+    assertThat(wasLongClicked.get()).isTrue()
   }
 
   @Test

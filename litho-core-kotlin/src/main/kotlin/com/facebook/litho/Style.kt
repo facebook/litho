@@ -74,6 +74,8 @@ private enum class ObjectField {
   POSITION_TYPE,
   BACKGROUND,
   FOREGROUND,
+  ON_CLICK,
+  ON_LONG_CLICK,
   WRAP_IN_VIEW,
   VIEW_TAG,
 }
@@ -148,6 +150,11 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
       ObjectField.POSITION_TYPE -> value?.let { commonProps.positionType(it as YogaPositionType) }
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
+      ObjectField.ON_CLICK ->
+          commonProps.clickHandler(eventHandler(value as ((ClickEvent) -> Unit)))
+      ObjectField.ON_LONG_CLICK ->
+          commonProps.longClickHandler(
+              eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
     }.exhaustive
@@ -285,6 +292,11 @@ open class Style(
   fun background(background: Drawable?) = this + ObjectStyleItem(ObjectField.BACKGROUND, background)
 
   fun foreground(foreground: Drawable?) = this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
+
+  fun onClick(onClick: (ClickEvent) -> Unit) = this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
+
+  fun onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
+      this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
 
   fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
 

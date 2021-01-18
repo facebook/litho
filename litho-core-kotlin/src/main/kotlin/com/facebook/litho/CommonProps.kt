@@ -19,24 +19,6 @@
 package com.facebook.litho
 
 /**
- * Builder for setting an [onClick] event handler for component.
- *
- * TODO Currently lambda captures possibly old props. Find a better option. This will work for core
- * Litho, but may break Sections.
- */
-inline fun DslScope.Clickable(
-    noinline onClick: ((ClickEvent) -> Unit)? = null,
-    noinline onLongClick: ((LongClickEvent) -> Unit)? = null,
-    content: DslScope.() -> Component
-): Component =
-    content().apply {
-      getOrCreateCommonProps.apply {
-        onClick?.let { clickHandler(eventHandler(it)) }
-        onLongClick?.let { longClickHandler(eventHandler(it)) }
-      }
-    }
-
-/**
  * Builder for setting [onVisible], [onFocused], and [onFullImpression] event handlers for
  * component.
  *

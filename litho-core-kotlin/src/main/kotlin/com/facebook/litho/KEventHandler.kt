@@ -17,14 +17,19 @@
 package com.facebook.litho
 
 @Suppress("NOTHING_TO_INLINE")
+inline fun <reified E : Any, R> eventHandlerWithReturn(
+    noinline onEvent: (E) -> R
+): EventHandler<E> = KEventHandler(onEvent)
+
+@Suppress("NOTHING_TO_INLINE")
 inline fun <reified E : Any> eventHandler(noinline onEvent: (E) -> Unit): EventHandler<E> =
-    KEventHandler<E>(onEvent)
+    KEventHandler(onEvent)
 
 /**
  * [EventHandler] for codegen-free Components which squashes [EventHandler], [HasEventDispatcher]
  * and [EventDispatcher] together in one object allocation.
  */
-class KEventHandler<E : Any>(private val onEvent: (event: E) -> Unit) :
+class KEventHandler<E : Any, R>(private val onEvent: (event: E) -> R) :
     EventHandler<E>(null, -1), HasEventDispatcher, EventDispatcher {
 
   init {
@@ -35,7 +40,7 @@ class KEventHandler<E : Any>(private val onEvent: (event: E) -> Unit) :
     onEvent(event)
   }
 
-  override fun dispatchOnEvent(eventHandler: EventHandler<*>, eventState: Any): Any? {
+  override fun dispatchOnEvent(eventHandler: EventHandler<*>, eventState: Any): R {
     @Suppress("UNCHECKED_CAST")
     return onEvent(eventState as E)
   }
@@ -48,7 +53,7 @@ class KEventHandler<E : Any>(private val onEvent: (event: E) -> Unit) :
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
 
-    other as KEventHandler<*>
+    other as KEventHandler<*, *>
 
     return onEvent == other.onEvent
   }
