@@ -18,7 +18,6 @@ package com.facebook.samples.litho.kotlin.lithography.components
 
 import android.R.drawable.star_off
 import android.R.drawable.star_on
-import com.facebook.litho.Clickable
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -33,7 +32,9 @@ class FavouriteButton :
       val isFavourite by useState { false }
       val star = drawableRes(if (isFavourite.value) star_on else star_off)
 
-      Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
-        Row(style = Style.size(32.dp).background(star))
-      }
+      Row(
+          style =
+              Style.size(32.dp).background(star).onClick {
+                updateState { isFavourite.value = !isFavourite.value }
+              })
     })

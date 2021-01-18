@@ -51,10 +51,8 @@ class KStateTest {
       val state by useState { "hello" }
       stateRef = AtomicReference(state)
 
-      Clickable(onClick = { updateState { state.value = "world" } }) {
-        row = Row()
-        row
-      }
+      row = Row(style = Style.onClick { updateState { state.value = "world" } })
+      row
     }
     lithoViewRule.setRoot(root)
     lithoViewRule.attachToWindow().measure().layout()
@@ -92,16 +90,16 @@ class KStateTest {
       state1Ref = AtomicReference(state1)
       state2Ref = AtomicReference(state2)
 
-      Clickable(
-          onClick = {
-            updateState {
-              state1.value = "world"
-              state2.value++
-            }
-          }) {
-        row = Row()
-        row
-      }
+      row =
+          Row(
+              style =
+                  Style.onClick {
+                    updateState {
+                      state1.value = "world"
+                      state2.value++
+                    }
+                  })
+      row
     }
     lithoViewRule.setRoot(root)
     lithoViewRule.attachToWindow().measure().layout()
