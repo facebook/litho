@@ -411,7 +411,7 @@ class CommonStylesTest {
                 .measure()
                 .layout()
                 .attachToWindow()
-                .findViewWithTag("view_tag"))
+                .findViewWithTagOrNull("view_tag"))
         .isNotNull()
   }
 
