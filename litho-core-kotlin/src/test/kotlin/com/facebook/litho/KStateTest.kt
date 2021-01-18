@@ -20,6 +20,8 @@ import android.view.View.MeasureSpec.EXACTLY
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
@@ -45,22 +47,26 @@ class KStateTest {
   @Test
   fun useState_updateState_stateIsUpdated() {
     lateinit var stateRef: AtomicReference<State<String>>
-    lateinit var row: Row
 
-    val root = KComponent {
-      val state by useState { "hello" }
-      stateRef = AtomicReference(state)
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot {
+          KComponent {
+            val state by useState { "hello" }
+            stateRef = AtomicReference(state)
 
-      row = Row(style = Style.onClick { updateState { state.value = "world" } })
-      row
-    }
-    lithoViewRule.setRoot(root)
-    lithoViewRule.attachToWindow().measure().layout()
+            Row(
+                style =
+                    Style.viewTag("test_view").onClick { updateState { state.value = "world" } })
+          }
+        }
+        .attachToWindow()
+        .measure()
+        .layout()
 
     assertThat(stateRef.get().value).isEqualTo("hello")
 
-    // Simulate clicking by dispatching a click event.
-    EventDispatcherUtils.dispatchOnClick(row.commonProps!!.clickHandler, lithoViewRule.lithoView)
+    lithoViewRule.findViewWithTag("test_view").performClick()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     assertThat(stateRef.get().value).describedAs("String state is updated").isEqualTo("world")
@@ -81,34 +87,35 @@ class KStateTest {
 
     lateinit var state1Ref: AtomicReference<State<String>>
     lateinit var state2Ref: AtomicReference<State<Int>>
-    lateinit var row: Row
 
-    val root = KComponent {
-      val state1 = useCustomState("hello")
-      val state2 = useCustomState(20)
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot {
+          KComponent {
+            val state1 = useCustomState("hello")
+            val state2 = useCustomState(20)
 
-      state1Ref = AtomicReference(state1)
-      state2Ref = AtomicReference(state2)
+            state1Ref = AtomicReference(state1)
+            state2Ref = AtomicReference(state2)
 
-      row =
-          Row(
-              style =
-                  Style.onClick {
-                    updateState {
-                      state1.value = "world"
-                      state2.value++
-                    }
-                  })
-      row
-    }
-    lithoViewRule.setRoot(root)
-    lithoViewRule.attachToWindow().measure().layout()
+            Row(
+                style =
+                    Style.viewTag("test_view").onClick {
+                      updateState {
+                        state1.value = "world"
+                        state2.value++
+                      }
+                    })
+          }
+        }
+        .attachToWindow()
+        .measure()
+        .layout()
 
     assertThat(state1Ref.get().value).isEqualTo("hello")
     assertThat(state2Ref.get().value).isEqualTo(20)
 
-    // Simulate clicking by dispatching a click event.
-    EventDispatcherUtils.dispatchOnClick(row.commonProps!!.clickHandler, lithoViewRule.lithoView)
+    lithoViewRule.findViewWithTag("test_view").performClick()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
