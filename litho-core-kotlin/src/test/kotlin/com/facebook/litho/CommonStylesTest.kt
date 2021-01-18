@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.widget.FrameLayout
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -463,6 +464,68 @@ class CommonStylesTest {
                 .attachToWindow()
                 .findViewWithTagOrNull("view_tag"))
         .isNotNull()
+  }
+
+  @Test
+  fun onVisible_whenSet_firesWhenVisible() {
+    val eventFired = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.size(width = 200.px, height = 200.px).onVisible { eventFired.set(true) })
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(eventFired.get()).isTrue()
+  }
+
+  @Test
+  fun onFocusedVisible_whenSet_firesWhenVisible() {
+    val eventFired = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.size(width = 200.px, height = 200.px).onFocusedVisible {
+                    eventFired.set(true)
+                  })
+        }
+        .attachToWindow()
+
+    // FocusedVisible requires a measured parent
+    val frameLayout = FrameLayout(lithoViewRule.context.androidContext)
+    frameLayout.addView(lithoViewRule.lithoView)
+    frameLayout.measure(unspecified(), unspecified())
+    frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
+
+    assertThat(eventFired.get()).isTrue()
+  }
+
+  @Test
+  fun onFullImpression_whenSet_firesWhenVisible() {
+    val eventFired = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.size(width = 200.px, height = 200.px).onFullImpression {
+                    eventFired.set(true)
+                  })
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(eventFired.get()).isTrue()
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {

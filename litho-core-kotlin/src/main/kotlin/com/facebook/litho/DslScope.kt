@@ -28,6 +28,6 @@ inline class DslScope(val context: ComponentContext) {
 
   /*inline*/ fun Component.applyStyle(style: Style?) {
     style ?: return
-    copyStyleToProps(style, getOrCreateCommonProps)
+    copyStyleToProps(style, getOrCreateCommonProps())
   }
 }
