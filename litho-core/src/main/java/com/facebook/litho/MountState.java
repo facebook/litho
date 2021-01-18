@@ -68,8 +68,10 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
@@ -2242,14 +2244,12 @@ class MountState
       view.setPadding(0, 0, 0, 0);
     } catch (NullPointerException e) {
       // T53931759 Gathering extra info around this NPE
-      final String message =
-          "Component: "
-              + output.getComponent().getSimpleName()
-              + ", view: "
-              + view.getClass().getSimpleName()
-              + ", message: "
-              + e.getMessage();
-      throw new NullPointerException(message);
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "LITHO:NPE:UNSET_PADDING",
+              "From component: " + output.getComponent().getSimpleName(),
+              e);
     }
   }
 
