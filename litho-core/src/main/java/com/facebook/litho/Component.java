@@ -87,7 +87,7 @@ public abstract class Component extends ComponentLifecycle
   /** Holds an identifying name of the component, set at construction time. */
   private final String mSimpleName;
 
-  private final boolean mUseStatelessComponent;
+  final boolean mUseStatelessComponent;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link

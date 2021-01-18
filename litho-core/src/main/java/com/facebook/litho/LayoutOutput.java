@@ -89,7 +89,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
     mKey = key;
-    if (ComponentsConfiguration.useStatelessComponent && layoutStateContext == null) {
+    if (mComponent.mUseStatelessComponent && layoutStateContext == null) {
       // The LayoutOutput for the root host is created by MountState before a LayoutState is
       // calculated.
       mScopedContext = null;

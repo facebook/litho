@@ -206,7 +206,7 @@ public class ComponentContext {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = context.mComponentTree;
 
-    if (ComponentsConfiguration.useStatelessComponent
+    if (scope.mUseStatelessComponent
         && globalKey != null
         && componentContext.getLayoutStateContext() != null) {
       componentContext.mGlobalKey = globalKey;
