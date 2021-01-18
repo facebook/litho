@@ -31,11 +31,11 @@ public interface ClickableSpanListener {
    * @return true if click action needs to be handled here instead of delegating it to {@link
    *     ClickableSpan#onClick(View)}.
    */
-  public boolean onClick(ClickableSpan span, View view);
+  boolean onClick(ClickableSpan span, View view);
 
   /**
    * @return true if long click action needs to be handled here instead of delegating to {@link
    *     LongClickableSpan#onLongClick(View)}.
    */
-  public boolean onLongClick(LongClickableSpan span, View view);
+  boolean onLongClick(LongClickableSpan span, View view);
 }
