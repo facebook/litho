@@ -18,6 +18,8 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.it.R.drawable.background_with_padding;
+import static com.facebook.litho.testing.TestViewComponent.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,6 +40,7 @@ import android.util.SparseArray;
 import androidx.core.content.ContextCompat;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -421,5 +424,191 @@ public class CommonPropsTest {
     verify(node, times(2)).paddingPx(YogaEdge.TOP, 0);
     verify(node, times(2)).paddingPx(YogaEdge.RIGHT, 0);
     verify(node, times(2)).paddingPx(YogaEdge.BOTTOM, 0);
+  }
+
+  @Test
+  public void testSameObjectEquivalentTo() {
+    assertThat(mCommonProps.isEquivalentTo(mCommonProps)).isEqualTo(true);
+  }
+
+  @Test
+  public void testNullObjectEquivalentTo() {
+    assertThat(mCommonProps.isEquivalentTo(null)).isEqualTo(false);
+  }
+
+  @Test
+  public void testDifferentObjectWithSameContentEquivalentTo() {
+    mCommonProps = new CommonPropsHolder();
+    setCommonProps(mCommonProps);
+
+    CommonPropsHolder mCommonProps2 = new CommonPropsHolder();
+    setCommonProps(mCommonProps2);
+
+    assertThat(mCommonProps.isEquivalentTo(mCommonProps2)).isEqualTo(true);
+  }
+
+  @Test
+  public void testDifferentObjectWithDifferentContentEquivalentTo() {
+    mCommonProps = new CommonPropsHolder();
+    setCommonProps(mCommonProps);
+    mCommonProps.duplicateParentState(false);
+
+    CommonPropsHolder mCommonProps2 = new CommonPropsHolder();
+    setCommonProps(mCommonProps2);
+    mCommonProps2.duplicateParentState(true);
+
+    assertThat(mCommonProps.isEquivalentTo(mCommonProps2)).isEqualTo(false);
+  }
+
+  private void setCommonProps(CommonProps commonProps) {
+    commonProps.layoutDirection(YogaDirection.INHERIT);
+    commonProps.alignSelf(YogaAlign.AUTO);
+    commonProps.positionType(YogaPositionType.ABSOLUTE);
+    commonProps.flex(2);
+    commonProps.flexGrow(3);
+    commonProps.flexShrink(4);
+    commonProps.flexBasisPx(5);
+    commonProps.flexBasisPercent(6);
+
+    commonProps.importantForAccessibility(
+        ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    commonProps.duplicateParentState(false);
+
+    commonProps.marginPx(YogaEdge.ALL, 5);
+    commonProps.marginPx(YogaEdge.RIGHT, 6);
+    commonProps.marginPx(YogaEdge.LEFT, 4);
+    commonProps.marginPercent(YogaEdge.ALL, 10);
+    commonProps.marginPercent(YogaEdge.VERTICAL, 12);
+    commonProps.marginPercent(YogaEdge.RIGHT, 5);
+    commonProps.marginAuto(YogaEdge.LEFT);
+    commonProps.marginAuto(YogaEdge.TOP);
+    commonProps.marginAuto(YogaEdge.RIGHT);
+    commonProps.marginAuto(YogaEdge.BOTTOM);
+
+    commonProps.paddingPx(YogaEdge.ALL, 1);
+    commonProps.paddingPx(YogaEdge.RIGHT, 2);
+    commonProps.paddingPx(YogaEdge.LEFT, 3);
+    commonProps.paddingPercent(YogaEdge.VERTICAL, 7);
+    commonProps.paddingPercent(YogaEdge.RIGHT, 6);
+    commonProps.paddingPercent(YogaEdge.ALL, 5);
+
+    commonProps.border(Border.create(mComponentContext).build());
+
+    commonProps.positionPx(YogaEdge.ALL, 11);
+    commonProps.positionPx(YogaEdge.RIGHT, 12);
+    commonProps.positionPx(YogaEdge.LEFT, 13);
+    commonProps.positionPercent(YogaEdge.VERTICAL, 17);
+    commonProps.positionPercent(YogaEdge.RIGHT, 16);
+    commonProps.positionPercent(YogaEdge.ALL, 15);
+
+    commonProps.widthPx(5);
+    commonProps.widthPercent(50);
+    commonProps.minWidthPx(15);
+    commonProps.minWidthPercent(100);
+    commonProps.maxWidthPx(25);
+    commonProps.maxWidthPercent(26);
+
+    commonProps.heightPx(30);
+    commonProps.heightPercent(31);
+    commonProps.minHeightPx(32);
+    commonProps.minHeightPercent(33);
+    commonProps.maxHeightPx(34);
+    commonProps.maxHeightPercent(35);
+
+    commonProps.aspectRatio(20);
+
+    commonProps.touchExpansionPx(YogaEdge.RIGHT, 22);
+    commonProps.touchExpansionPx(YogaEdge.LEFT, 23);
+    commonProps.touchExpansionPx(YogaEdge.ALL, 21);
+    Drawable background = ComparableColorDrawable.create(Color.RED);
+    commonProps.background(background);
+    Drawable foreground = ComparableColorDrawable.create(Color.BLACK);
+    commonProps.foreground(foreground);
+
+    commonProps.wrapInView();
+
+    final TestComponent content = create(mComponentContext).build();
+
+    final EventHandler<ClickEvent> clickHandler = new EventHandler<>(content, 3);
+    final EventHandler<LongClickEvent> longClickHandler = new EventHandler<>(content, 3);
+    final EventHandler<TouchEvent> touchHandler = new EventHandler<>(content, 3);
+    final EventHandler<InterceptTouchEvent> interceptTouchHandler = new EventHandler<>(content, 3);
+    final EventHandler<FocusChangedEvent> focusChangedHandler = new EventHandler<>(content, 3);
+    commonProps.clickHandler(clickHandler);
+    commonProps.focusChangeHandler(focusChangedHandler);
+    commonProps.longClickHandler(longClickHandler);
+    commonProps.touchHandler(touchHandler);
+    commonProps.interceptTouchHandler(interceptTouchHandler);
+
+    commonProps.focusable(true);
+    commonProps.clickable(true);
+    commonProps.selected(false);
+    commonProps.enabled(false);
+    commonProps.visibleHeightRatio(55);
+    commonProps.visibleWidthRatio(56);
+    commonProps.accessibilityHeading(false);
+
+    final EventHandler<VisibleEvent> visibleHandler = new EventHandler<>(content, 3);
+    final EventHandler<FocusedVisibleEvent> focusedHandler = new EventHandler<>(content, 3);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = new EventHandler<>(content, 3);
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
+        new EventHandler<>(content, 3);
+    final EventHandler<InvisibleEvent> invisibleHandler = new EventHandler<>(content, 3);
+    final EventHandler<VisibilityChangedEvent> visibleRectChangedHandler =
+        new EventHandler<>(content, 3);
+    commonProps.visibleHandler(visibleHandler);
+    commonProps.focusedHandler(focusedHandler);
+    commonProps.unfocusedHandler(unfocusedHandler);
+    commonProps.fullImpressionHandler(fullImpressionHandler);
+    commonProps.invisibleHandler(invisibleHandler);
+    commonProps.visibilityChangedHandler(visibleRectChangedHandler);
+
+    commonProps.contentDescription("test");
+
+    commonProps.viewTag("Hello World");
+
+    commonProps.shadowElevationPx(60);
+    commonProps.clipToOutline(false);
+    commonProps.transitionKey("transitionKey", "");
+    commonProps.testKey("testKey");
+
+    final EventHandler<DispatchPopulateAccessibilityEventEvent>
+        dispatchPopulateAccessibilityEventHandler = new EventHandler<>(content, 3);
+    final EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler =
+        new EventHandler<>(content, 3);
+    final EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+        onInitializeAccessibilityNodeInfoHandler = new EventHandler<>(content, 3);
+    final EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler =
+        new EventHandler<>(content, 3);
+    final EventHandler<OnRequestSendAccessibilityEventEvent>
+        onRequestSendAccessibilityEventHandler = new EventHandler<>(content, 3);
+    final EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler =
+        new EventHandler<>(content, 3);
+    final EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler =
+        new EventHandler<>(content, 3);
+    final EventHandler<SendAccessibilityEventUncheckedEvent>
+        sendAccessibilityEventUncheckedHandler = new EventHandler<>(content, 3);
+    commonProps.accessibilityRole(AccessibilityRole.BUTTON);
+    commonProps.accessibilityRoleDescription("Test Role Description");
+    commonProps.dispatchPopulateAccessibilityEventHandler(
+        dispatchPopulateAccessibilityEventHandler);
+    commonProps.onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+
+    commonProps.onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    commonProps.onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+
+    commonProps.onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    commonProps.performAccessibilityActionHandler(performAccessibilityActionHandler);
+    commonProps.sendAccessibilityEventHandler(sendAccessibilityEventHandler);
+
+    commonProps.sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+
+    /*
+         Copied from ViewNodeInfo class TODO: (T33421916) We need compare StateListAnimators more accurately
+    */
+    //    final StateListAnimator stateListAnimator = mock(StateListAnimator.class);
+    //    commonProps.stateListAnimator(stateListAnimator);
+
+    commonProps.copyInto(mComponentContext, mNode);
   }
 }

@@ -19,7 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
 
-public class EventHandler<E> implements Function<Void> {
+public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
   public HasEventDispatcher mHasEventDispatcher;
   public final int id;
@@ -47,6 +47,7 @@ public class EventHandler<E> implements Function<Void> {
     mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
   }
 
+  @Override
   public boolean isEquivalentTo(@Nullable EventHandler other) {
     if (this == other) {
       return true;

@@ -147,6 +147,41 @@ public class EdgesTest {
     assertThat(mEdges.get(YogaEdge.ALL)).isEqualTo(10);
   }
 
+  @Test
+  public void testSameObjectEquivalentTo() {
+    assertThat(mEdges.isEquivalentTo(mEdges)).isEqualTo(true);
+  }
+
+  @Test
+  public void testNullObjectEquivalentTo() {
+    assertThat(mEdges.isEquivalentTo(null)).isEqualTo(false);
+  }
+
+  @Test
+  public void testDifferentObjectWithSameContentEquivalentTo() {
+    mEdges.set(YogaEdge.TOP, 1);
+    Edges mEdges2 = new Edges();
+    mEdges2.set(YogaEdge.TOP, 1);
+
+    assertThat(mEdges.isEquivalentTo(mEdges2)).isEqualTo(true);
+  }
+
+  @Test
+  public void testDifferentObjectWithDifferentContentEquivalentTo() {
+    mEdges.set(YogaEdge.LEFT, 1);
+    Edges mEdges2 = new Edges();
+    mEdges2.set(YogaEdge.TOP, 1);
+
+    assertThat(mEdges.isEquivalentTo(mEdges2)).isEqualTo(false);
+
+    mEdges = new Edges();
+    mEdges.set(YogaEdge.TOP, 1);
+    mEdges2 = new Edges();
+    mEdges2.set(YogaEdge.TOP, 2);
+
+    assertThat(mEdges.isEquivalentTo(mEdges2)).isEqualTo(false);
+  }
+
   private long getEdgesToValuesIndex() {
     return (long) Whitebox.getInternalState(mEdges, "mEdgesToValuesIndex");
   }

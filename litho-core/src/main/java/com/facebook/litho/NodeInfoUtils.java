@@ -43,7 +43,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getClickHandler(), y.getClickHandler())) {
+    if (!CommonUtils.isEquivalentTo(x.getClickHandler(), y.getClickHandler())) {
       return false;
     }
 
@@ -59,7 +59,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getDispatchPopulateAccessibilityEventHandler(),
         y.getDispatchPopulateAccessibilityEventHandler())) {
       return false;
@@ -69,7 +69,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getFocusChangeHandler(), y.getFocusChangeHandler())) {
+    if (!CommonUtils.isEquivalentTo(x.getFocusChangeHandler(), y.getFocusChangeHandler())) {
       return false;
     }
 
@@ -77,32 +77,32 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getInterceptTouchHandler(), y.getInterceptTouchHandler())) {
+    if (!CommonUtils.isEquivalentTo(x.getInterceptTouchHandler(), y.getInterceptTouchHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getLongClickHandler(), y.getLongClickHandler())) {
+    if (!CommonUtils.isEquivalentTo(x.getLongClickHandler(), y.getLongClickHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getOnInitializeAccessibilityEventHandler(),
         y.getOnInitializeAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getOnInitializeAccessibilityNodeInfoHandler(),
         y.getOnInitializeAccessibilityNodeInfoHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getOnPopulateAccessibilityEventHandler(), y.getOnPopulateAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getOnRequestSendAccessibilityEventHandler(),
         y.getOnRequestSendAccessibilityEventHandler())) {
       return false;
@@ -112,7 +112,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getPerformAccessibilityActionHandler(), y.getPerformAccessibilityActionHandler())) {
       return false;
     }
@@ -129,12 +129,12 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getSendAccessibilityEventHandler(), y.getSendAccessibilityEventHandler())) {
       return false;
     }
 
-    if (!CommonUtils.equals(
+    if (!CommonUtils.isEquivalentTo(
         x.getSendAccessibilityEventUncheckedHandler(),
         y.getSendAccessibilityEventUncheckedHandler())) {
       return false;
@@ -144,7 +144,7 @@ public class NodeInfoUtils {
       return false;
     }
 
-    if (!CommonUtils.equals(x.getTouchHandler(), y.getTouchHandler())) {
+    if (!CommonUtils.isEquivalentTo(x.getTouchHandler(), y.getTouchHandler())) {
       return false;
     }
 

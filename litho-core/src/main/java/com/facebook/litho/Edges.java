@@ -16,11 +16,12 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 
-public class Edges {
+public class Edges implements Equivalence<Edges> {
 
   public static final int EDGES_LENGTH = YogaEdge.values().length;
 
@@ -176,5 +177,20 @@ public class Edges {
       return Float.isNaN(f1) && Float.isNaN(f2);
     }
     return Math.abs(f2 - f1) < .00001f;
+  }
+
+  @Override
+  public boolean isEquivalentTo(@Nullable Edges other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
+    return mEdgesToValuesIndex == other.mEdgesToValuesIndex
+        && mHasAliasesSet == other.mHasAliasesSet
+        && Arrays.equals(mValues, other.mValues);
   }
 }

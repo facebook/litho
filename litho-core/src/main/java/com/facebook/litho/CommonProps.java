@@ -31,7 +31,7 @@ import com.facebook.yoga.YogaEdge;
 
 /** Common props that are accessible outside of the framework. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface CommonProps extends CommonPropsCopyable, LayoutProps {
+public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalence<CommonProps> {
 
   @Nullable
   EventHandler<ClickEvent> getClickHandler();
