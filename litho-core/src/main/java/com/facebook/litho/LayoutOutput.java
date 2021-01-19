@@ -21,7 +21,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
