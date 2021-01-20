@@ -838,12 +838,12 @@ class CommonPropsHolder implements CommonProps {
       mTransitionOwnerKey = ownerKey;
     }
 
-    private void transitionKeyType(Transition.TransitionKeyType type) {
+    private void transitionKeyType(@Nullable Transition.TransitionKeyType type) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
       mTransitionKeyType = type;
     }
 
-    private void stateListAnimator(StateListAnimator stateListAnimator) {
+    private void stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
       mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_IS_SET;
       mStateListAnimator = stateListAnimator;
     }
