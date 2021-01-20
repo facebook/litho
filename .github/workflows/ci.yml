@@ -136,4 +136,4 @@ jobs:
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Publish Snapshots
-        run: BUCK_PATH=`realpath buck` ./gradlew uploadArchives --stacktrace --dry-run
+        run: BUCK_PATH=`realpath buck` ./gradlew uploadArchives --stacktrace
