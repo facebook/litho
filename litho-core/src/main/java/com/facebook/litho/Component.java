@@ -547,7 +547,7 @@ public abstract class Component extends ComponentLifecycle
 
     // create updated tree props for children.
     final TreeProps treeProps =
-        getTreePropsForChildren(parentContext, parentContext.getTreeProps());
+        getTreePropsForChildren(scopedContext, parentContext.getTreeProps());
 
     // set updated tree props on the component.
     scopedContext.setTreeProps(treeProps);
