@@ -299,6 +299,17 @@ class HorizontalScrollSpec {
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent motionEvent) {
+      boolean isConsumed = super.onInterceptTouchEvent(motionEvent);
+
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onInterceptTouchEvent(this, motionEvent);
+      }
+
+      return isConsumed;
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
       boolean isConsumed = super.onTouchEvent(motionEvent);
 

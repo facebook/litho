@@ -27,18 +27,53 @@ import javax.annotation.Nullable;
  */
 public interface ScrollStateDetector {
 
+  /**
+   * Informs when hostView receives a touch event via onInterceptTouchEvent.
+   *
+   * @param hostView the host view associated with the touch event
+   * @param motionEvent the touch event that was received
+   */
+  @UiThread
+  void onInterceptTouchEvent(View hostView, MotionEvent motionEvent);
+
+  /**
+   * Informs when hostView receives a touch event via onTouchEvent.
+   *
+   * @param hostView the host view associated with the touch event
+   * @param motionEvent the touch event that was received
+   */
   @UiThread
   void onTouchEvent(View hostView, MotionEvent motionEvent);
 
+  /**
+   * Informs when hostView receives a scroll changed event.
+   *
+   * @param hostView the host view associated with the scroll change
+   */
   @UiThread
   void onScrollChanged(View hostView);
 
+  /**
+   * Informs when hostView onDraw is called.
+   *
+   * @param hostView the host view being drawn
+   */
   @UiThread
   void onDraw(View hostView);
 
+  /**
+   * Informs when hostView receives a fling.
+   *
+   * @param hostView the host view associated with the fling
+   */
   @UiThread
   void fling(View hostView);
 
+  /**
+   * Sets a listener that will be called back when this detector detects scroll state changes.
+   *
+   * @param listener the listener
+   */
   @UiThread
   void setListener(@Nullable ScrollStateListener listener);
 }

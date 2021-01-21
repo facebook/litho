@@ -63,6 +63,12 @@ class DefaultScrollStateDetector implements ScrollStateDetector {
 
   @Override
   @UiThread
+  public void onInterceptTouchEvent(View hostView, MotionEvent motionEvent) {
+    // no op - all detection is done through onTouchEvent
+  }
+
+  @Override
+  @UiThread
   public void onTouchEvent(View hostView, MotionEvent motionEvent) {
     if (motionEvent.getAction() == ACTION_DOWN || motionEvent.getAction() == ACTION_MOVE) {
       if (mScrollStopped) {

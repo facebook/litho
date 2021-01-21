@@ -68,6 +68,9 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     if (!result && super.onInterceptTouchEvent(ev)) {
       result = true;
     }
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.onInterceptTouchEvent(this, ev);
+    }
     return result;
   }
 
