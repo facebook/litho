@@ -48,122 +48,62 @@ import java.util.List;
  * @prop-required prop4 char[]
  * @prop-required prop5 char
  * @prop-required prop6 long
- *
  * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
 @TargetApi(17)
 public final class TestLayout<S extends View> extends Component implements TestTag {
   private TestLayoutRenderData mPreviousRenderData;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 0
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 0)
   float aspectRatio;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 10
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component child;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 3
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   boolean focusable;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 12
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 12)
   EventHandler<ClickEvent> handler;
 
-  @Prop(
-      resType = ResType.STRING,
-      optional = true,
-      varArg = "name"
-  )
-  @Comparable(
-      type = 5
-  )
+  @Prop(resType = ResType.STRING, optional = true, varArg = "name")
+  @Comparable(type = 5)
   List<String> names = TestLayoutSpec.names;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 3
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
-  @Comparable(
-      type = 3
-  )
+  @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 3)
   boolean prop2 = TestLayoutSpec.prop2;
 
   @Nullable
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 13
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 13)
   Object prop3;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 2
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 2)
   char[] prop4;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 3
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   char prop5;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  @Comparable(
-      type = 3
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   long prop6;
 
   @TreeProp
-  @Comparable(
-      type = 13
-  )
+  @Comparable(type = 13)
   TestTreeProp treeProp;
 
-  @Nullable
-  EventHandler testEventHandler;
+  @Nullable EventHandler testEventHandler;
 
   EventTrigger onClickEventTriggerTrigger;
 
@@ -199,9 +139,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
-    childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestLayoutSpec.onCreateFeedPrefetcherProp(
-        (ComponentContext) c,
-        prop6));
+    childTreeProps.put(
+        com.facebook.litho.processor.integration.resources.TestTreeProp.class,
+        TestLayoutSpec.onCreateFeedPrefetcherProp((ComponentContext) c, prop6));
     return childTreeProps;
   }
 
@@ -211,9 +151,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     Output<Boolean> prop2Tmp = new Output<>();
     Output<Object> prop3Tmp = new Output<>();
     TestLayoutSpec.onLoadStyle(
-      (ComponentContext) c,
-      (Output<Boolean>) prop2Tmp,
-      (Output<Object>) prop3Tmp);
+        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
@@ -225,10 +163,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState(
-      (ComponentContext) c,
-      (int) prop1,
-      (StateValue<S>) state2);
+    TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
       getStateContainerImpl(c).state2 = state2.get();
     }
@@ -237,27 +172,27 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected Component onCreateLayout(ComponentContext context) {
     Component _result;
-    _result = (Component) TestLayoutSpec.onCreateLayout(
-      (ComponentContext) context,
-      (Object) prop3,
-      (char[]) prop4,
-      (EventHandler<ClickEvent>) handler,
-      (Component) child,
-      (boolean) prop2,
-      (List<String>) names,
-      (long) getStateContainerImpl(context).state1,
-      (S) getStateContainerImpl(context).state2,
-      (int) getStateContainerImpl(context).state3,
-      (TestTreeProp) treeProp,
-      (int) getCached(context));
+    _result =
+        (Component)
+            TestLayoutSpec.onCreateLayout(
+                (ComponentContext) context,
+                (Object) prop3,
+                (char[]) prop4,
+                (EventHandler<ClickEvent>) handler,
+                (Component) child,
+                (boolean) prop2,
+                (List<String>) names,
+                (long) getStateContainerImpl(context).state1,
+                (S) getStateContainerImpl(context).state2,
+                (int) getStateContainerImpl(context).state3,
+                (TestTreeProp) treeProp,
+                (int) getCached(context));
     return _result;
   }
 
   @Override
   protected void onError(ComponentContext c, Exception e) {
-    TestLayoutSpec.onError(
-      (ComponentContext) c,
-      (Exception) e);
+    TestLayoutSpec.onError((ComponentContext) c, (Exception) e);
   }
 
   @Override
@@ -268,14 +203,17 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
     Transition _result;
-    Diff<Integer> _state3Diff = new Diff<Integer>(
-      mPreviousRenderData == null ? null : mPreviousRenderData.state3,
-      getStateContainerImpl(c).state3);
-    _result = (Transition) TestLayoutSpec.onCreateTransition(
-      (ComponentContext) c,
-      (Object) prop3,
-      (long) getStateContainerImpl(c).state1,
-      (Diff<Integer>) _state3Diff);
+    Diff<Integer> _state3Diff =
+        new Diff<Integer>(
+            mPreviousRenderData == null ? null : mPreviousRenderData.state3,
+            getStateContainerImpl(c).state3);
+    _result =
+        (Transition)
+            TestLayoutSpec.onCreateTransition(
+                (ComponentContext) c,
+                (Object) prop3,
+                (long) getStateContainerImpl(c).state1,
+                (Diff<Integer>) _state3Diff);
     return _result;
   }
 
@@ -295,38 +233,45 @@ public final class TestLayout<S extends View> extends Component implements TestT
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
-  private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
-      int param1) {
+  private void testLayoutEvent(
+      HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestLayout _ref = (TestLayout) _abstract;
     TestLayoutStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestLayoutSpec.testLayoutEvent(
-      c,
-      view,
-      param1,
-      (Object) _ref.prop3,
-      (char) _ref.prop5,
-      (float) _ref.aspectRatio,
-      (boolean) _ref.focusable,
-      (long) stateContainer.state1);
+        c,
+        view,
+        param1,
+        (Object) _ref.prop3,
+        (char) _ref.prop5,
+        (float) _ref.aspectRatio,
+        (boolean) _ref.focusable,
+        (long) stateContainer.state1);
   }
 
-  private void __internalOnErrorHandler(HasEventDispatcher _abstract, ComponentContext c,
-      Exception exception) {
+  private void __internalOnErrorHandler(
+      HasEventDispatcher _abstract, ComponentContext c, Exception exception) {
     TestLayout _ref = (TestLayout) _abstract;
-    onError(
-      c,
-      exception);
+    onError(c, exception);
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(TestLayout.class, "TestLayout", c, 1328162206, new Object[] {
-          c,
-          param1,
+    return newEventHandler(
+        TestLayout.class,
+        "TestLayout",
+        c,
+        1328162206,
+        new Object[] {
+          c, param1,
         });
   }
 
   public static EventHandler<ErrorEvent> __internalOnErrorHandler(ComponentContext c) {
-    return newEventHandler(TestLayout.class, "TestLayout", c, -1048037474, new Object[] {
+    return newEventHandler(
+        TestLayout.class,
+        "TestLayout",
+        c,
+        -1048037474,
+        new Object[] {
           c,
         });
   }
@@ -335,36 +280,39 @@ public final class TestLayout<S extends View> extends Component implements TestT
   protected Object dispatchOnEventImpl(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case 1328162206: {
-        ClickEvent _event = (ClickEvent) eventState;
-        testLayoutEvent(
+      case 1328162206:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
+          testLayoutEvent(
               eventHandler.mHasEventDispatcher,
               (ComponentContext) eventHandler.params[0],
               (View) _event.view,
               (int) eventHandler.params[1]);
-        return null;
-      }
-      case -1048037474: {
-        ErrorEvent _event = (ErrorEvent) eventState;
-        __internalOnErrorHandler(
+          return null;
+        }
+      case -1048037474:
+        {
+          ErrorEvent _event = (ErrorEvent) eventState;
+          __internalOnErrorHandler(
               eventHandler.mHasEventDispatcher,
               (ComponentContext) eventHandler.params[0],
               (Exception) _event.exception);
-        return null;
-      }
-      default:
           return null;
+        }
+      default:
+        return null;
     }
   }
 
-  private static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key,
-      Handle handle) {
+  private static EventTrigger onClickEventTriggerTrigger(
+      ComponentContext c, String key, Handle handle) {
     int methodId = -1670292499;
     return newEventTrigger(c, key, methodId, handle);
   }
 
   /**
-   * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #onClickEventTrigger(ComponentContext, Handle)}.
+   * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the
+   *     component a Handle and use {@link #onClickEventTrigger(ComponentContext, Handle)}.
    */
   @Deprecated
   public static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key) {
@@ -373,14 +321,12 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   private void onClickEventTrigger(ComponentContext c, EventTriggerTarget _abstract, View view) {
     TestLayout _ref = (TestLayout) _abstract;
-    TestLayoutSpec.onClickEventTrigger(
-      c,
-      view);
+    TestLayoutSpec.onClickEventTrigger(c, view);
   }
 
   /**
-   * This will send the onClickEventTrigger trigger to the component with the given handle.
-   * For more information about using triggers, see https://fblitho.com/docs/trigger-events
+   * This will send the onClickEventTrigger trigger to the component with the given handle. For more
+   * information about using triggers, see https://fblitho.com/docs/trigger-events
    */
   public static void onClickEventTrigger(ComponentContext c, Handle handle, View view) {
     int methodId = -1670292499;
@@ -390,13 +336,10 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {
-        });
+    trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /**
-   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
-   */
+  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
   @Deprecated
   public static void onClickEventTrigger(ComponentContext c, String key, View view) {
     int methodId = -1670292499;
@@ -406,48 +349,40 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {
-        });
+    trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /**
-   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
-   */
+  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
   @Deprecated
   public static void onClickEventTrigger(EventTrigger trigger, View view) {
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {
-        });
+    trigger.dispatchOnTrigger(_eventState, new Object[] {});
   }
 
-  /**
-   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
-   */
+  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
   @Deprecated
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestLayout component = (TestLayout) c.getComponentScope();
-    component.onClickEventTrigger(
-        c,
-        (EventTriggerTarget) component,
-        view);
+    component.onClickEventTrigger(c, (EventTriggerTarget) component, view);
   }
 
   @Override
-  protected Object acceptTriggerEventImpl(final EventTrigger eventTrigger, final Object eventState,
-      final Object[] params) {
+  protected Object acceptTriggerEventImpl(
+      final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
     int id = eventTrigger.mId;
-    switch(id) {
-      case -1670292499: {
-        ClickEvent _event = (ClickEvent) eventState;
-        onClickEventTrigger(
+    switch (id) {
+      case -1670292499:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
+          onClickEventTrigger(
               (com.facebook.litho.ComponentContext) eventTrigger.mComponentContext,
               eventTrigger.mTriggerTarget,
               _event.view);
-        return null;
-      }
-      default:
           return null;
+        }
+      default:
+        return null;
     }
   }
 
@@ -466,17 +401,19 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected void transferState(StateContainer _prevStateContainer,
-      StateContainer _nextStateContainer) {
-    TestLayoutStateContainer<S> prevStateContainer = (TestLayoutStateContainer<S>) _prevStateContainer;
-    TestLayoutStateContainer<S> nextStateContainer = (TestLayoutStateContainer<S>) _nextStateContainer;
+  protected void transferState(
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
+    TestLayoutStateContainer<S> prevStateContainer =
+        (TestLayoutStateContainer<S>) _prevStateContainer;
+    TestLayoutStateContainer<S> nextStateContainer =
+        (TestLayoutStateContainer<S>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
     nextStateContainer.state3 = prevStateContainer.state3;
   }
 
-  private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
-      TestLayout component) {
+  private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(
+      ComponentContext c, TestLayout component) {
     TestLayoutStateContainer _stateContainer = new TestLayoutStateContainer();
     transferState(component.getStateContainer(c), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
@@ -515,7 +452,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     if (_component == null) {
       return;
     }
-    StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(-2147483648, lazyUpdateValue);
+    StateContainer.StateUpdate _stateUpdate =
+        new StateContainer.StateUpdate(-2147483648, lazyUpdateValue);
     c.updateStateLazy(_stateUpdate);
   }
 
@@ -525,10 +463,10 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected ComponentLifecycle.RenderData recordRenderData(ComponentLifecycle.RenderData toRecycle) {
-    TestLayoutRenderData renderInfo = toRecycle != null ?
-      (TestLayoutRenderData) toRecycle :
-      new TestLayoutRenderData();
+  protected ComponentLifecycle.RenderData recordRenderData(
+      ComponentLifecycle.RenderData toRecycle) {
+    TestLayoutRenderData renderInfo =
+        toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
     renderInfo.record(this);
     return renderInfo;
   }
@@ -550,8 +488,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr,
-      int defStyleRes) {
+  public static <S extends View> Builder<S> create(
+      ComponentContext context, int defStyleAttr, int defStyleRes) {
     final Builder builder = new Builder();
     TestLayout instance = new TestLayout();
     builder.init(context, defStyleAttr, defStyleRes, instance);
@@ -560,10 +498,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   private int getCached(ComponentContext c) {
     String globalKey = c.getGlobalKey();
-    final CachedInputs inputs = new CachedInputs(globalKey,prop3,prop5,getStateContainerImpl(c).state1);
+    final CachedInputs inputs =
+        new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
     Integer cached = (Integer) c.getCachedValue(inputs);
     if (cached == null) {
-      cached = TestLayoutSpec.onCalculateCached(prop3,prop5,getStateContainerImpl(c).state1);
+      cached = TestLayoutSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
       c.putCachedValue(inputs, cached);
     }
     return cached;
@@ -574,26 +513,18 @@ public final class TestLayout<S extends View> extends Component implements TestT
     return child;
   }
 
-  @VisibleForTesting(
-      otherwise = 2
-  )
+  @VisibleForTesting(otherwise = 2)
   static class TestLayoutStateContainer<S extends View> extends StateContainer {
     @State
-    @Comparable(
-        type = 3
-    )
+    @Comparable(type = 3)
     long state1;
 
     @State
-    @Comparable(
-        type = 13
-    )
+    @Comparable(type = 13)
     S state2;
 
     @State
-    @Comparable(
-        type = 3
-    )
+    @Comparable(type = 3)
     int state3;
 
     @Override
@@ -618,9 +549,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  private static class TestLayoutRenderData<S extends View> implements ComponentLifecycle.RenderData {
-    @State
-    int state3;
+  private static class TestLayoutRenderData<S extends View>
+      implements ComponentLifecycle.RenderData {
+    @State int state3;
 
     void copy(TestLayoutRenderData info) {
       state3 = info.state3;
@@ -636,14 +567,25 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     ComponentContext mContext;
 
-    private final String[] REQUIRED_PROPS_NAMES = new String[] {"aspectRatio", "child", "focusable", "handler", "prop1", "prop3", "prop4", "prop5", "prop6"};
+    private final String[] REQUIRED_PROPS_NAMES =
+        new String[] {
+          "aspectRatio",
+          "child",
+          "focusable",
+          "handler",
+          "prop1",
+          "prop3",
+          "prop4",
+          "prop5",
+          "prop6"
+        };
 
     private final int REQUIRED_PROPS_COUNT = 9;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        TestLayout testLayoutRef) {
+    private void init(
+        ComponentContext context, int defStyleAttr, int defStyleRes, TestLayout testLayoutRef) {
       super.init(context, defStyleAttr, defStyleRes, testLayoutRef);
       mTestLayout = testLayoutRef;
       mContext = context;
@@ -656,10 +598,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     @Override
-    @PropSetter(
-        value = "aspectRatio",
-        required = true
-    )
+    @PropSetter(value = "aspectRatio", required = true)
     @RequiredProp("aspectRatio")
     public Builder<S> aspectRatio(float aspectRatio) {
       super.aspectRatio(aspectRatio);
@@ -668,10 +607,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "child",
-        required = true
-    )
+    @PropSetter(value = "child", required = true)
     @RequiredProp("child")
     public Builder<S> child(Component child) {
       this.mTestLayout.child = child == null ? null : child.makeShallowCopy();
@@ -679,10 +615,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "child",
-        required = true
-    )
+    @PropSetter(value = "child", required = true)
     @RequiredProp("child")
     public Builder<S> child(Component.Builder<?> childBuilder) {
       this.mTestLayout.child = childBuilder == null ? null : childBuilder.build();
@@ -691,10 +624,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     @Override
-    @PropSetter(
-        value = "focusable",
-        required = true
-    )
+    @PropSetter(value = "focusable", required = true)
     @RequiredProp("focusable")
     public Builder<S> focusable(boolean focusable) {
       this.mTestLayout.focusable = focusable;
@@ -702,10 +632,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "handler",
-        required = true
-    )
+    @PropSetter(value = "handler", required = true)
     @RequiredProp("handler")
     public Builder<S> handler(EventHandler<ClickEvent> handler) {
       this.mTestLayout.handler = handler;
@@ -713,15 +640,14 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> names(List<String> names) {
       if (names == null) {
         return this;
       }
-      if (this.mTestLayout.names == null || this.mTestLayout.names.isEmpty() || this.mTestLayout.names == TestLayoutSpec.names) {
+      if (this.mTestLayout.names == null
+          || this.mTestLayout.names.isEmpty()
+          || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = names;
       } else {
         this.mTestLayout.names.addAll(names);
@@ -729,10 +655,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> name(String name) {
       if (name == null) {
         return this;
@@ -744,10 +667,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> nameRes(@StringRes int resId) {
       if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
@@ -757,10 +677,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> namesRes(List<Integer> resIds) {
       if (resIds == null) {
         return this;
@@ -775,10 +692,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> nameRes(@StringRes int resId, Object... formatArgs) {
       if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
@@ -788,10 +702,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> namesRes(@StringRes List<Integer> resIds, Object... formatArgs) {
       if (resIds == null) {
         return this;
@@ -806,10 +717,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> nameAttr(@AttrRes int attrResId, @StringRes int defResId) {
       if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
@@ -819,10 +727,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> nameAttr(@AttrRes int attrResId) {
       if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
@@ -832,10 +737,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> namesAttr(List<Integer> attrResIds, @StringRes int defResId) {
       if (attrResIds == null) {
         return this;
@@ -850,10 +752,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "names",
-        required = false
-    )
+    @PropSetter(value = "names", required = false)
     public Builder<S> namesAttr(List<Integer> attrResIds) {
       if (attrResIds == null) {
         return this;
@@ -868,10 +767,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "prop1",
-        required = true
-    )
+    @PropSetter(value = "prop1", required = true)
     @RequiredProp("prop1")
     public Builder<S> prop1(int prop1) {
       this.mTestLayout.prop1 = prop1;
@@ -879,19 +775,13 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "prop2",
-        required = false
-    )
+    @PropSetter(value = "prop2", required = false)
     public Builder<S> prop2(boolean prop2) {
       this.mTestLayout.prop2 = prop2;
       return this;
     }
 
-    @PropSetter(
-        value = "prop3",
-        required = true
-    )
+    @PropSetter(value = "prop3", required = true)
     @RequiredProp("prop3")
     public Builder<S> prop3(@Nullable Object prop3) {
       this.mTestLayout.prop3 = prop3;
@@ -899,10 +789,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "prop4",
-        required = true
-    )
+    @PropSetter(value = "prop4", required = true)
     @RequiredProp("prop4")
     public Builder<S> prop4(char[] prop4) {
       this.mTestLayout.prop4 = prop4;
@@ -910,10 +797,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "prop5",
-        required = true
-    )
+    @PropSetter(value = "prop5", required = true)
     @RequiredProp("prop5")
     public Builder<S> prop5(char prop5) {
       this.mTestLayout.prop5 = prop5;
@@ -921,10 +805,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    @PropSetter(
-        value = "prop6",
-        required = true
-    )
+    @PropSetter(value = "prop6", required = true)
     @RequiredProp("prop6")
     public Builder<S> prop6(long prop6) {
       this.mTestLayout.prop6 = prop6;
@@ -943,9 +824,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     private void onClickEventTriggerTrigger(String key, Handle handle) {
-      com.facebook.litho.EventTrigger onClickEventTriggerTrigger = this.mTestLayout.onClickEventTriggerTrigger;
+      com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
+          this.mTestLayout.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
-        onClickEventTriggerTrigger = TestLayout.onClickEventTriggerTrigger(this.mContext, key, handle);
+        onClickEventTriggerTrigger =
+            TestLayout.onClickEventTriggerTrigger(this.mContext, key, handle);
       }
       onClickEventTriggerTrigger(onClickEventTriggerTrigger);
     }
@@ -1000,7 +883,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (!com.facebook.litho.CommonUtils.equals(globalKey, cachedValueInputs.globalKey)) {
         return false;
       }
-      if (prop3 != null ? !prop3.equals(cachedValueInputs.prop3) : cachedValueInputs.prop3 != null) {
+      if (prop3 != null
+          ? !prop3.equals(cachedValueInputs.prop3)
+          : cachedValueInputs.prop3 != null) {
         return false;
       }
       if (prop5 != cachedValueInputs.prop5) {
