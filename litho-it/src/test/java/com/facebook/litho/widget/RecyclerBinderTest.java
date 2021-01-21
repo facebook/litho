@@ -2383,6 +2383,7 @@ public class RecyclerBinderTest {
             .build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     verify(recyclerBinder).applyReadyBatches();
   }
 
