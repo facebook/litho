@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
@@ -47,6 +48,7 @@ public class RenderDataGeneratorTest {
     mSpecModelWithoutDiff = mock(SpecModel.class);
     mRenderDataDiffModel = mock(RenderDataDiffModel.class);
 
+    when(mSpecModelWithDiff.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
     when(mSpecModelWithDiff.getRenderDataDiffs())
         .thenReturn(ImmutableList.of(mRenderDataDiffModel));
     when(mSpecModelWithDiff.getComponentName()).thenReturn("WithDiffSpec");

@@ -926,7 +926,7 @@ public class ComponentTree {
       mPreviousRenderState = new RenderState();
     }
 
-    mPreviousRenderState.recordRenderData(components, keys);
+    mPreviousRenderState.recordRenderData(layoutState.getLayoutStateContext(), components, keys);
   }
 
   void detach() {

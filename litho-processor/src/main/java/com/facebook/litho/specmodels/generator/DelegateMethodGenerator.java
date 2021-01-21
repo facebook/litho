@@ -160,7 +160,8 @@ public class DelegateMethodGenerator {
           registerDelegation.add(
               "($T) $L",
               methodParamModel.getTypeName(),
-              getImplAccessor(specModel, methodParamModel, contextParamName));
+              getImplAccessor(
+                  methodDescription.name, specModel, methodParamModel, contextParamName));
           registerDelegation.add(
               (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
         }
@@ -227,9 +228,9 @@ public class DelegateMethodGenerator {
             methodParamModel.getName(),
             methodParamModel.getTypeName(),
             ComponentBodyGenerator.getImplAccessor(
-                specModel, methodParamModel, "_prevScopedContext"),
+                methodDescription.name, specModel, methodParamModel, "_prevScopedContext"),
             ComponentBodyGenerator.getImplAccessor(
-                specModel, methodParamModel, "_nextScopedContext"));
+                methodDescription.name, specModel, methodParamModel, "_nextScopedContext"));
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
       } else if (isOutputType(methodParamModel.getTypeName())) {
@@ -245,7 +246,7 @@ public class DelegateMethodGenerator {
         }
         releaseStatements.addStatement(
             "$L = $L.get()",
-            getImplAccessor(specModel, methodParamModel, contextParamName),
+            getImplAccessor(methodDescription.name, specModel, methodParamModel, contextParamName),
             localOutputName);
         if (isPropOutput) {
           releaseStatements.endControlFlow();
@@ -264,7 +265,7 @@ public class DelegateMethodGenerator {
 
         releaseStatements.addStatement(
             "$L = $L.get()",
-            getImplAccessor(specModel, methodParamModel, contextParamName),
+            getImplAccessor(methodDescription.name, specModel, methodParamModel, contextParamName),
             methodParamModel.getName());
 
         if (delegateMethod.name.toString().equals("createInitialState")) {
@@ -287,7 +288,10 @@ public class DelegateMethodGenerator {
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
                     methodParamModel.getName())
-                .add("$L);\n", getImplAccessor(specModel, methodParamModel, contextParamName))
+                .add(
+                    "$L);\n",
+                    getImplAccessor(
+                        methodDescription.name, specModel, methodParamModel, contextParamName))
                 .unindent()
                 .build();
         acquireStatements.add(block);
@@ -296,7 +300,8 @@ public class DelegateMethodGenerator {
         delegationParams.add(
             ParamTypeAndName.create(
                 methodParamModel.getTypeName(),
-                getImplAccessor(specModel, methodParamModel, contextParamName)));
+                getImplAccessor(
+                    methodDescription.name, specModel, methodParamModel, contextParamName)));
       }
     }
 

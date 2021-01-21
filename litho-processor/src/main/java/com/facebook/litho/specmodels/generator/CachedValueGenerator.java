@@ -90,7 +90,9 @@ public class CachedValueGenerator {
             .filter(
                 methodParamModel ->
                     !MethodParamModelUtils.isComponentContextParam(methodParamModel))
-            .map(methodParamModel -> new MethodParamCachedValueInput(methodParamModel))
+            .map(
+                methodParamModel ->
+                    new MethodParamCachedValueInput(onCalculateCachedValueMethod, methodParamModel))
             .collect(Collectors.toList());
     inputParams.add(0, new GlobalKeyCachedValueInput("globalKey"));
     return inputParams;
@@ -167,7 +169,9 @@ public class CachedValueGenerator {
         if (MethodParamModelUtils.isComponentContextParam(methodParamModel)) {
           argName = "c";
         } else {
-          argName = ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel, "c");
+          argName =
+              ComponentBodyGenerator.getImplAccessor(
+                  onCalculateCachedValueMethod.name.toString(), specModel, methodParamModel, "c");
         }
         if (i < paramSize - 1) {
           delegation.add("$L,", argName);
@@ -286,9 +290,13 @@ public class CachedValueGenerator {
   private static class MethodParamCachedValueInput implements CachedValueInput {
 
     private final MethodParamModel mMethodParamModel;
+    private final SpecMethodModel<DelegateMethod, Void> mOnCalculateCachedValueMethod;
 
-    private MethodParamCachedValueInput(MethodParamModel methodParamModel) {
+    private MethodParamCachedValueInput(
+        SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
+        MethodParamModel methodParamModel) {
       mMethodParamModel = methodParamModel;
+      mOnCalculateCachedValueMethod = onCalculateCachedValueMethod;
     }
 
     @Override
@@ -303,7 +311,8 @@ public class CachedValueGenerator {
 
     @Override
     public String getAccessor(SpecModel specModel) {
-      return ComponentBodyGenerator.getImplAccessor(specModel, mMethodParamModel, "c");
+      return ComponentBodyGenerator.getImplAccessor(
+          mOnCalculateCachedValueMethod.name.toString(), specModel, mMethodParamModel, "c");
     }
 
     @Override
@@ -314,6 +323,7 @@ public class CachedValueGenerator {
     @Override
     public CodeBlock createCompareStatement(String otherObjectName, EnumSet<RunMode> runMode) {
       return ComponentBodyGenerator.getCompareStatement(
+          mOnCalculateCachedValueMethod.name.toString(),
           mMethodParamModel,
           mMethodParamModel.getName(),
           otherObjectName + "." + mMethodParamModel.getName(),

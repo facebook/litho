@@ -241,7 +241,8 @@ public class EventGenerator {
             "($T) $L.$L",
             methodParamModel.getTypeName(),
             REF_VARIABLE_NAME,
-            getImplAccessor(specModel, methodParamModel, contextParamName));
+            getImplAccessor(
+                eventMethodModel.name.toString(), specModel, methodParamModel, contextParamName));
       }
 
       if (i < size - 1) {

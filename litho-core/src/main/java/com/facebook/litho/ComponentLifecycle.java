@@ -580,7 +580,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 
-  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
+  protected @Nullable RenderData recordRenderData(ComponentContext c, RenderData toRecycle) {
     return null;
   }
 
