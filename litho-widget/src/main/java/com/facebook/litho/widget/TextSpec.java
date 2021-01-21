@@ -625,6 +625,7 @@ class TextSpec {
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      @FromMeasure Float measuredLineDescent,
       Output<CharSequence> processedText,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
