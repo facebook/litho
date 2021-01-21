@@ -242,7 +242,8 @@ class TextSpec {
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
       Output<VerticalGravity> verticalGravity,
-      Output<Typeface> typeface) {
+      Output<Typeface> typeface,
+      Output<Float> measuredLineDescent) {
 
     TextStylesHelper.onLoadStyle(
         c,
@@ -369,9 +370,9 @@ class TextSpec {
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
     final int lineCount = newLayout.getLineCount();
+    final TextPaint paint = newLayout.getPaint();
+    measuredLineDescent.set(paint.descent());
     if (lineCount < minLines) {
-      final TextPaint paint = newLayout.getPaint();
-
       final int layoutLineHeight =
           Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
       preferredHeight += layoutLineHeight * (minLines - lineCount);
