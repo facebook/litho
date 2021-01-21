@@ -75,7 +75,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   public void fling(int velocityX) {
     super.fling(velocityX);
     if (mScrollStateDetector != null) {
-      mScrollStateDetector.fling();
+      mScrollStateDetector.fling(this);
     }
   }
 
@@ -83,7 +83,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   public void draw(Canvas canvas) {
     super.draw(canvas);
     if (mScrollStateDetector != null) {
-      mScrollStateDetector.onDraw();
+      mScrollStateDetector.onDraw(this);
     }
   }
 
@@ -100,7 +100,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     }
 
     if (mScrollStateDetector != null) {
-      mScrollStateDetector.onScrollChanged();
+      mScrollStateDetector.onScrollChanged(this);
     }
   }
 
@@ -109,7 +109,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     boolean isConsumed = super.onTouchEvent(motionEvent);
 
     if (mScrollStateDetector != null) {
-      mScrollStateDetector.onTouchEvent(motionEvent);
+      mScrollStateDetector.onTouchEvent(this, motionEvent);
     }
 
     return isConsumed;
@@ -139,6 +139,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
   void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
+      @Nullable ScrollStateDetector scrollStateDetector,
       @Nullable ScrollStateListener scrollStateListener,
       boolean isIncrementalMountEnabled) {
     mLithoView.setComponentTree(contentComponentTree);
@@ -160,10 +161,10 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
 
     mOnPreDrawListener = onPreDrawListener;
+
     if (scrollStateListener != null) {
-      if (mScrollStateDetector == null) {
-        mScrollStateDetector = new ScrollStateDetector(this);
-      }
+      mScrollStateDetector =
+          scrollStateDetector != null ? scrollStateDetector : new DefaultScrollStateDetector();
       mScrollStateDetector.setListener(scrollStateListener);
     }
   }
@@ -177,6 +178,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
     mOnPreDrawListener = null;
     if (mScrollStateDetector != null) {
       mScrollStateDetector.setListener(null);
+      mScrollStateDetector = null;
     }
   }
 }
