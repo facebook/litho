@@ -16,6 +16,9 @@
 
 package com.facebook.rendercore.visibility;
 
+import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
+
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
@@ -41,6 +44,8 @@ public class VisibilityUtils {
     if (sVisibleEvent == null) {
       sVisibleEvent = new VisibleEvent();
     }
+
+    log("Dispatch:VisibleEvent to: " + visibleHandler.toString());
     visibleHandler.call(sVisibleEvent);
 
     RenderCoreSystrace.endSection();
@@ -50,6 +55,8 @@ public class VisibilityUtils {
     if (sFocusedVisibleEvent == null) {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
+
+    log("Dispatch:FocusedVisibleEvent to: " + focusedHandler.toString());
     focusedHandler.call(sFocusedVisibleEvent);
   }
 
@@ -57,6 +64,8 @@ public class VisibilityUtils {
     if (sUnfocusedVisibleEvent == null) {
       sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
     }
+
+    log("Dispatch:UnfocusedVisibleEvent to: " + unfocusedHandler.toString());
     unfocusedHandler.call(sUnfocusedVisibleEvent);
   }
 
@@ -64,6 +73,8 @@ public class VisibilityUtils {
     if (sFullImpressionVisibleEvent == null) {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
+
+    log("Dispatch:FullImpressionVisibleEvent to: " + fullImpressionHandler.toString());
     fullImpressionHandler.call(sFullImpressionVisibleEvent);
   }
 
@@ -71,6 +82,8 @@ public class VisibilityUtils {
     if (sInvisibleEvent == null) {
       sInvisibleEvent = new InvisibleEvent();
     }
+
+    log("Dispatch:InvisibleEvent to: " + invisibleHandler.toString());
     invisibleHandler.call(sInvisibleEvent);
   }
 
@@ -94,6 +107,14 @@ public class VisibilityUtils {
     sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;
     sVisibleRectChangedEvent.percentVisibleWidth = percentVisibleWidth;
 
+    log("Dispatch:VisibilityChangedEvent to: " + visibilityChangedHandler.toString());
+
     visibilityChangedHandler.call(sVisibleRectChangedEvent);
+  }
+
+  public static void log(final String log) {
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, log);
+    }
   }
 }

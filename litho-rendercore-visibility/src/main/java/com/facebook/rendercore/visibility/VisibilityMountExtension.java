@@ -17,9 +17,12 @@
 package com.facebook.rendercore.visibility;
 
 import static com.facebook.rendercore.extensions.RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged;
+import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
+import static com.facebook.rendercore.visibility.VisibilityUtils.log;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -60,6 +63,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       ExtensionState<VisibilityMountExtensionState> extensionState,
       Input input,
       @Nullable Rect localVisibleRect) {
+
+    log("beforeMount");
+    RenderCoreSystrace.beginSection("VisibilityExtension.beforeMount");
+
     final VisibilityMountExtensionState state = extensionState.getState();
 
     state.mVisibilityOutputs = input.getVisibilityOutputs();
@@ -68,16 +75,24 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     state.mVisibilityModuleInput = input.getVisibilityModuleInput();
     state.mPreviousLocalVisibleRect.setEmpty();
     state.mCurrentLocalVisibleRect = localVisibleRect;
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
   public void afterMount(ExtensionState<VisibilityMountExtensionState> extensionState) {
+
+    log("afterMount");
+    RenderCoreSystrace.beginSection("VisibilityExtension.afterMount");
+
     final boolean processVisibilityOutputs = !hasTransientState(extensionState);
 
     if (processVisibilityOutputs) {
       final VisibilityMountExtensionState state = extensionState.getState();
       processVisibilityOutputs(extensionState, state.mCurrentLocalVisibleRect, true);
     }
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -86,9 +101,14 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       @Nullable Rect localVisibleRect) {
     final boolean processVisibilityOutputs = !hasTransientState(extensionState);
 
+    log("onVisibleBoundsChanged [hasTransientState=" + hasTransientState(extensionState) + "]");
+    RenderCoreSystrace.beginSection("VisibilityExtension.onVisibleBoundsChanged");
+
     if (processVisibilityOutputs) {
       processVisibilityOutputs(extensionState, localVisibleRect, false);
     }
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -140,7 +160,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       boolean isDirty) {
     final VisibilityMountExtensionState state = extensionState.getState();
     try {
-      RenderCoreSystrace.beginSection("processVisibilityOutputs");
+
+      log("processVisibilityOutputs");
+      RenderCoreSystrace.beginSection("VisibilityExtension.processVisibilityOutputs");
 
       if (state.mIncrementalVisibilityEnabled) {
         if (state.mVisibilityModule == null) {
@@ -177,14 +199,27 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       boolean isDirty) {
     final Rect previousVisibleRect = extensionState.getState().mPreviousLocalVisibleRect;
     if (localVisibleRect == null || (!isDirty && previousVisibleRect.equals(localVisibleRect))) {
+      log(
+          "Skip Processing: "
+              + "[isDirty="
+              + isDirty
+              + ", previousVisibleRect="
+              + previousVisibleRect
+              + "]");
+
       return;
     }
 
     final VisibilityMountExtensionState state = extensionState.getState();
+    final int size = state.mVisibilityOutputs.size();
 
-    for (int j = 0, size = state.mVisibilityOutputs.size(); j < size; j++) {
+    log("Visibility Outputs to process: " + size);
+
+    for (int j = 0; j < size; j++) {
       final VisibilityOutput visibilityOutput = state.mVisibilityOutputs.get(j);
       final String componentName = visibilityOutput.getKey();
+
+      log("Processing Visibility for: " + componentName);
       RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
 
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
@@ -317,6 +352,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
 
     for (long id : state.mRenderUnitIdsWhichHostRenderTrees) {
+      log("RecursivelyNotify:RenderUnit[id=" + id + "]");
       recursivelyNotifyVisibleBoundsChanged(extensionState.getMountDelegate().getContentById(id));
     }
 

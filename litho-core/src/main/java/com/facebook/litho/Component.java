@@ -630,6 +630,11 @@ public abstract class Component extends ComponentLifecycle
     return null;
   }
 
+  @Override
+  public String toString() {
+    return getSimpleName();
+  }
+
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected ComponentContext updateInternalChildState(

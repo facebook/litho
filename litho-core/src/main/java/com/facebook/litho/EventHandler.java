@@ -90,4 +90,9 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
 
     return true;
   }
+
+  @Override
+  public String toString() {
+    return mHasEventDispatcher != null ? mHasEventDispatcher.toString() : super.toString();
+  }
 }
