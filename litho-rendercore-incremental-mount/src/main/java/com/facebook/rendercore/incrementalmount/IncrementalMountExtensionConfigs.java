@@ -16,15 +16,16 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import static com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.DEBUG_TAG;
+/**
+ * This class contains mainly flags for features that are either used for development, or are not
+ * ready for public consumption, or for use in experiments.
+ *
+ * <p>The current values are safe defaults and should not require manual changes.
+ */
+public class IncrementalMountExtensionConfigs {
 
-import android.util.Log;
+  public static final String DEBUG_TAG = "IncrementalMount";
 
-public class IncrementalMountUtils {
-
-  public static void log(final String log) {
-    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
-      Log.d(DEBUG_TAG, log);
-    }
-  }
+  /** Set this to true to enable debug logs for the incremental mount extension. */
+  public static boolean isDebugLoggingEnabled = false;
 }

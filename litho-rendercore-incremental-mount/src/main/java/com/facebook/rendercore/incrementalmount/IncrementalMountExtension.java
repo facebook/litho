@@ -16,15 +16,19 @@
 
 package com.facebook.rendercore.incrementalmount;
 
+import static com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.DEBUG_TAG;
+import static com.facebook.rendercore.incrementalmount.IncrementalMountUtils.log;
 import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostNotMountedException;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -69,6 +73,10 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final IncrementalMountExtensionInput input,
       final Rect localVisibleRect) {
+
+    log("beforeMount");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMount");
+
     final IncrementalMountExtensionState state = extensionState.getState();
 
     releaseAcquiredReferencesForRemovedItems(extensionState, input);
@@ -80,15 +88,23 @@ public class IncrementalMountExtension
     }
 
     setVisibleRect(state, localVisibleRect);
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
   public void afterMount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
+
+    log("afterMount");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.afterMount");
+
     final IncrementalMountExtensionState state = extensionState.getState();
 
     if (mAcquireReferencesDuringMount) {
       setupPreviousMountableOutputData(state, state.mPreviousLocalVisibleRect);
     }
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -100,6 +116,9 @@ public class IncrementalMountExtension
       return;
     }
 
+    log("beforeMountItem [id=" + renderTreeNode.getRenderUnit().getId() + "]");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMountItem");
+
     final long id = renderTreeNode.getRenderUnit().getId();
     final IncrementalMountExtensionState state = extensionState.getState();
     final IncrementalMountOutput output = state.mInput.getIncrementalMountOutputForId(id);
@@ -108,6 +127,8 @@ public class IncrementalMountExtension
     }
 
     maybeAcquireReference(extensionState, state.mPreviousLocalVisibleRect, output, false);
+
+    RenderCoreSystrace.endSection();
   }
 
   /**
@@ -122,14 +143,21 @@ public class IncrementalMountExtension
       final Rect localVisibleRect) {
     assertMainThread();
 
+    log("onVisibleBoundsChanged [visibleBounds=" + localVisibleRect + "]");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.onVisibleBoundsChanged");
+
     final IncrementalMountExtensionState state = extensionState.getState();
     if (state.mInput == null) {
       // Something notified the host that the visible bounds changed, but nothing was mounted yet.
       // Nothing to do.
+      log("Skipping: Input is empty.");
+      RenderCoreSystrace.endSection();
       return;
     }
 
     if (localVisibleRect.isEmpty() && state.mPreviousLocalVisibleRect.isEmpty()) {
+      log("Skipping: Visible area is 0");
+      RenderCoreSystrace.endSection();
       return;
     }
 
@@ -144,6 +172,8 @@ public class IncrementalMountExtension
     }
 
     setVisibleRect(state, localVisibleRect);
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -341,7 +371,10 @@ public class IncrementalMountExtension
       final IncrementalMountExtensionInput input, final long id, final Object content) {
     assertMainThread();
     if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
+      log("RecursivelyNotify [RenderUnit=" + id + "]");
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
       RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(content);
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -425,6 +458,9 @@ public class IncrementalMountExtension
         state.mInput.getOutputsOrderedByBottomBounds();
     final int count = state.mInput.getIncrementalMountOutputCount();
 
+    int itemsMounted = 0;
+    int itemsUnmounted = 0;
+
     if (localVisibleRect.top >= 0 || state.mPreviousLocalVisibleRect.top >= 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
       // that has moved on/off the top of the screen.
@@ -435,6 +471,9 @@ public class IncrementalMountExtension
         final long id = node.getId();
         if (extensionState.ownsReference(id)) {
           extensionState.releaseMountReference(id, true);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsUnmounted++;
+          }
         }
         state.mPreviousBottomsIndex++;
       }
@@ -450,6 +489,9 @@ public class IncrementalMountExtension
         if (!extensionState.ownsReference(id)) {
           acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
           state.mComponentIdsMountedInThisFrame.add(id);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsMounted++;
+          }
         }
       }
     }
@@ -467,6 +509,9 @@ public class IncrementalMountExtension
         if (!extensionState.ownsReference(id)) {
           acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
           state.mComponentIdsMountedInThisFrame.add(id);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsMounted++;
+          }
         }
         state.mPreviousTopsIndex++;
       }
@@ -479,9 +524,14 @@ public class IncrementalMountExtension
         final long id = node.getId();
         if (extensionState.ownsReference(id)) {
           extensionState.releaseMountReference(id, true);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsUnmounted++;
+          }
         }
       }
     }
+
+    log("Updates: [Items Mounted=" + itemsMounted + ", Items Unmounted=" + itemsUnmounted + "]");
 
     final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
     for (IncrementalMountOutput output : outputs) {
