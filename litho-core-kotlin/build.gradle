@@ -27,14 +27,23 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            testLogging {
-                events 'failed', 'standardError'
-                showCauses = true
-                showExceptions = true
-                showStackTraces = true
-                exceptionFormat = 'full'
-                stackTraceFilters = []
+        unitTests {
+            includeAndroidResources = true
+
+            all {
+                // Because of native libraries loading (Yoga), we can never reuse a class loader and
+                // need to fork a new process per class.
+                forkEvery = 1
+                maxParallelForks = 2
+
+                testLogging {
+                    events 'failed', 'standardError'
+                    showCauses = true
+                    showExceptions = true
+                    showStackTraces = true
+                    exceptionFormat = 'full'
+                    stackTraceFilters = []
+                }
             }
         }
     }
@@ -69,7 +78,7 @@ dependencies {
     testImplementation deps.assertjCore
     testImplementation deps.junit
     testImplementation deps.robolectric
-    testImplementation deps.supportTestCore
+    testImplementation deps.supportTestJunit
 }
 
 apply from: rootProject.file('gradle/release.gradle')

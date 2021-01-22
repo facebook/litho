@@ -19,12 +19,12 @@ package com.facebook.litho
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.widget.FrameLayout
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType
@@ -35,7 +35,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for common styles defined in [Style]. */
-@RunWith(LithoTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class CommonStylesTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()

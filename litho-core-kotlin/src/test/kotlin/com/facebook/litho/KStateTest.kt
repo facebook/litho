@@ -17,12 +17,12 @@
 package com.facebook.litho
 
 import android.view.View.MeasureSpec.EXACTLY
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.setRoot
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
@@ -35,7 +35,7 @@ import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useState]. */
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(LithoTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class KStateTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
