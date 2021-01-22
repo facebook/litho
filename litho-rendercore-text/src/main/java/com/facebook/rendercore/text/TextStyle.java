@@ -63,9 +63,16 @@ public class TextStyle implements Copyable {
   int highlightStartOffset = UNSET;
   int highlightEndOffset = UNSET;
   boolean shouldLayoutEmptyText = false;
+  int manualBaselineSpacing = Integer.MIN_VALUE;
+  int manualCapSpacing = Integer.MIN_VALUE;
 
   public void setShouldLayoutEmptyText(boolean shouldLayoutEmptyText) {
     this.shouldLayoutEmptyText = shouldLayoutEmptyText;
+  }
+
+  public void setManualBaselineCapSpacing(int manualBaselineSpacing, int manualCapSpacing) {
+    this.manualBaselineSpacing = manualBaselineSpacing;
+    this.manualCapSpacing = manualCapSpacing;
   }
 
   @Override
