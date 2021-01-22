@@ -199,7 +199,7 @@ public class TreePropGeneratorTest {
                 + "  childTreeProps.put(boolean.class, TestSpec.onCreateTreeProp(\n"
                 + "      (com.facebook.litho.ComponentContext) c,\n"
                 + "      prop,\n"
-                + "      getStateContainerImpl().state));\n"
+                + "      getStateContainerImpl(c).state));\n"
                 + "  return childTreeProps;\n"
                 + "}\n");
   }

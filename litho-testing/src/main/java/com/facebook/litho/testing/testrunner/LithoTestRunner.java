@@ -36,47 +36,16 @@ public class LithoTestRunner extends RobolectricTestRunner {
     super(testClass);
   }
 
-  enum ProjectEnvironment {
-    INTERNAL,
-    OSS;
-
-    static ProjectEnvironment detectFromSystemProperties() {
-      final String property = System.getProperty("com.facebook.litho.is_oss");
-      // If this isn't set, you're probably not running Buck, ergo this isn't an internal build.
-      if (property == null) {
-        return OSS;
-      }
-
-      return property.equals("true") ? OSS : INTERNAL;
-    }
-  }
-
-  private static String getResPrefix() {
+  @Override
+  protected Config buildGlobalConfig() {
     // If we're running with gradle, the test runner will start running from within
     // the given sub-project.
     if (System.getProperty("org.gradle.test.worker") != null) {
-      return "../litho-it/src/main/";
+      return new Config.Builder().setManifest("../litho-it/src/main/AndroidManifest.xml").build();
     }
 
-    String prefix = "";
-    switch (ProjectEnvironment.detectFromSystemProperties()) {
-      case OSS:
-        break;
-      case INTERNAL:
-        final String internalRoot = System.getProperty("com.facebook.litho.internal_root");
-        if (internalRoot != null) {
-          prefix = internalRoot + "/";
-        }
-    }
-
-    return prefix + "litho-it/src/main/";
-  }
-
-  @Override
-  protected Config buildGlobalConfig() {
-    // We are hard-coding the path here instead of relying on BUCK internals
-    // to allow for building with gradle in the Open Source version.
-    return new Config.Builder().setManifest(getResPrefix() + "AndroidManifest.xml").build();
+    // BUCK will set up the manifest correctly, so nothing to do here.
+    return super.buildGlobalConfig();
   }
 
   @Override

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import groovy.xml.XmlUtil
+
 plugins {
     id 'idea'
     id 'java'
@@ -46,3 +48,29 @@ intellij {
     version '2019.1'
     updateSinceUntilBuild = false
 }
+
+task merge {
+    doLast {
+        def output = new File(project.buildDir, "patchedPluginXmlFiles/plugin.xml")
+
+        def parser = new XmlSlurper(false, false)
+        def base = parser.parse(output)
+        def addition = parser.parse(project(':litho-intellij-plugin').file("src/main/resources/META-INF/redsymbols.xml"))
+
+        base.'*'.find { node ->
+            node.name() == 'extensions' && node.@defaultExtensionNs == 'com.intellij'
+        }.appendNode(addition.extensions.'*')
+
+        base.actions.'*'.find { node ->
+            node.name() == 'group' && node.@id == 'litho.EditorPopupMenu'
+        }.appendNode(addition.actions.'*')
+
+        output.newWriter().withWriter { w ->
+            def content = XmlUtil.serialize(base)
+            w << content
+        }
+    }
+}
+
+merge.mustRunAfter patchPluginXml
+processResources.dependsOn merge

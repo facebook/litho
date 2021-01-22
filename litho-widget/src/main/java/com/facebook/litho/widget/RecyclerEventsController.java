@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ThreadUtils;
 
@@ -72,6 +73,35 @@ public class RecyclerEventsController {
     }
 
     sectionsRecyclerView.getRecyclerView().scrollToPosition(position);
+  }
+
+  /**
+   * Send the Recycler a request to scroll the content to a specific item in the binder with the
+   * given offset from resolved layout start. Animation will not be performed.
+   *
+   * <p>If you are just trying to make a position visible, use {@link #requestScrollToPosition(int,
+   * boolean)}.
+   *
+   * <p>Note: This offset is valid for LinearLayout only!
+   *
+   * @param position Index (starting at 0) of the reference item.
+   * @param offset The distance (in pixels) between the start edge of the item view and start edge
+   *     of the RecyclerView.
+   */
+  public void requestScrollToPositionWithOffset(final int position, final int offset) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null) {
+      return;
+    }
+
+    RecyclerView.LayoutManager layoutManager =
+        sectionsRecyclerView.getRecyclerView().getLayoutManager();
+    if (!(layoutManager instanceof LinearLayoutManager)) {
+      requestScrollToPosition(position, /* animated */ false);
+      return;
+    }
+
+    ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(position, offset);
   }
 
   public void clearRefreshing() {

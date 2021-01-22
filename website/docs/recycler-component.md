@@ -3,11 +3,11 @@ id: recycler-component
 title: Recycler
 ---
 
-If you choose to use Litho without using Sections, you can still use the
+If you choose to use Litho without using [Sections](/docs/sections/start), you can still use the
 [Recycler](pathname:///javadoc/com/facebook/litho/widget/Recycler.html) component to create lists.  `RecyclerCollectionComponent` uses `Recycler` under the hood.
 
 :::note
-Using the Recycler directly is not encouraged. Litho provides a utility component called [RecyclerCollectionComponent](recycler-collection-component) for writing lists, which abstracts all the complexity of using `Recycler` and `RecyclerBinder`.
+Using the Recycler directly is not encouraged. Litho provides a utility component called [RecyclerCollectionComponent](/docs/sections/recycler-collection-component#create-a-recyclercollectioncomponent) for writing lists, which abstracts all the complexity of using `Recycler` and `RecyclerBinder`.
 :::
 
 ### Create a Recycler component
@@ -19,7 +19,7 @@ You can use `Recycler` as you would use any other component in the framework by 
 static Component onCreateLayout(
     final ComponentContext c,
     @Prop RecyclerBinder recyclerBinder) {
-    
+
   return Recycler.create(c)
       .binder(recyclerBinder)
       .build();
@@ -93,9 +93,9 @@ Here's an example of how `DiffUtil` can be used with Litho:
     ComponentRenderInfo render(Data data, int idx) {
       return ComponentRenderInfo.create()
           .component(
-          	DataComponent.create(mComponentContext)
-          	    .data(data))
-          	    .build();
+            DataComponent.create(mComponentContext)
+              .data(data))
+          .build();
     }
   }
 

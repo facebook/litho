@@ -239,7 +239,8 @@ public class TreeDiffingTest {
     DiffNode node = prevLayoutState.getDiffTree();
 
     InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
-    Layout.applyDiffNodeToUnchangedNodes(layoutTreeRoot, node);
+    Layout.applyDiffNodeToUnchangedNodes(
+        LayoutStateContext.getTestInstance(mContext), layoutTreeRoot, node);
     checkAllComponentsHaveMeasureCache(layoutTreeRoot);
   }
 
@@ -260,7 +261,8 @@ public class TreeDiffingTest {
     DiffNode node = prevLayoutState.getDiffTree();
 
     InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
-    Layout.applyDiffNodeToUnchangedNodes(layoutTreeRoot, node);
+    Layout.applyDiffNodeToUnchangedNodes(
+        LayoutStateContext.getTestInstance(mContext), layoutTreeRoot, node);
     InternalNode child_1 = (InternalNode) layoutTreeRoot.getChildAt(0);
     assertCachedMeasurementsDefined(child_1);
 

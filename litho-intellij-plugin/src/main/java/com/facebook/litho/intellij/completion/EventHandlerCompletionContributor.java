@@ -44,6 +44,7 @@ import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +91,7 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
           return;
         }
         final SpecModel parentModel =
-            ComponentGenerateService.getInstance().getSpecModel(parentCls);
+            ComponentGenerateService.getInstance().getOrCreateSpecModel(parentCls);
         if (parentModel == null) {
           return;
         }
@@ -99,7 +100,12 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
 
         implementedEventHandlers.stream()
             .filter(handler -> eventQualifiedName.equals(handler.typeModel.name.reflectionName()))
-            .map(handler -> createLookupElement(parentModel.getComponentName(), handler))
+            .map(
+                handler ->
+                    createLookupElement(
+                        eventHandlerSetter.getMethodExpression().getReferenceName(),
+                        parentModel.getComponentName(),
+                        handler))
             .map(
                 lookupElement ->
                     PrioritizedLookupElement.withPriority(lookupElement, Integer.MAX_VALUE))
@@ -109,10 +115,12 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
   }
 
   private static LookupElement createLookupElement(
-      String componentName, SpecMethodModel<EventMethod, EventDeclarationModel> handler) {
+      String methodCallName,
+      String componentName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> handler) {
     String methodName = handler.name.toString();
     return LookupElementBuilder.create(componentName + "." + methodName + "()")
-        .withLookupString(methodName)
+        .withLookupStrings(Arrays.asList(methodName, methodCallName))
         .withPresentableText(methodName)
         .withTypeText("EventHandler<" + handler.typeModel.name.simpleName() + ">")
         .withInsertHandler(

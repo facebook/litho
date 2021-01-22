@@ -1,0 +1,30 @@
+---
+id: transition-all-layout
+title: Animating All Layout
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+[`Transition.allLayout()`](pathname:///javadoc/com/facebook/litho/Transition.html#allLayout--) allows easily animating all layout changes, without having to assign `transitionKey`s to all `Component`s
+
+```java
+@OnCreateTransition
+static Transition onCreateTransition(ComponentContext c) {
+  return Transition.allLayout().animator(ANIMATOR);
+}
+```
+
+Note, that `Transition.allLayout()`:
+
+1. Targets `AnimatedProperty.X`, `Y`, `HEIGHT` and `WIDTH` of all `Component`s present in layout tree.
+2. Could be used to define transitions of [*change* type](/docs/animations/transition-types#change-transitions) only. For defining [*appearing*](/docs/animations/transition-types#appear-transitions) and [*disappearing*](/docs/animations/transition-types#disappear-transitions) transitions, `transitionKey`s still need to be assigned.
+3. Could be used as a part of more [complex choreography](/docs/animations/transition-choreography).
+
+The following example can be found in `Litho Sample App`->`API Demos`->`Animated Badge`
+
+```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/animatedbadge/AnimatedBadgeSpec.java start=start end=end
+```
+
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/videos/transitions/alllayout.webm")}></source>
+  <p>Your browser does not support the video element.</p>
+</video>

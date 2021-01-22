@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -40,8 +41,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+@LooperMode(LEGACY)
 @RunWith(LithoTestRunner.class)
 public class ComponentWarmerTest {
 

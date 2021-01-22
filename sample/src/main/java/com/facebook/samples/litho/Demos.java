@@ -30,6 +30,15 @@ import com.facebook.samples.litho.animations.animationcomposition.ComposedAnimat
 import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBookActivity;
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
+import com.facebook.samples.litho.animations.docs.AlphaTransitionComponent;
+import com.facebook.samples.litho.animations.docs.AppearTransitionComponent;
+import com.facebook.samples.litho.animations.docs.ParallelTransitionWithAnimatorsComponent;
+import com.facebook.samples.litho.animations.docs.SequenceTransitionLoopComponent;
+import com.facebook.samples.litho.animations.docs.SimpleAllLayoutTransitionComponent;
+import com.facebook.samples.litho.animations.docs.StaggerTransitionComponent;
+import com.facebook.samples.litho.animations.docs.StaggerTransitionSameComponent;
+import com.facebook.samples.litho.animations.docs.StaggerTransitionWithDelayComponent;
+import com.facebook.samples.litho.animations.docs.keyscope.GlobalKeyParentComponent;
 import com.facebook.samples.litho.animations.expandableelement.ExpandableElementActivity;
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.sharedelements.SharedElementsActivity;
@@ -49,6 +58,10 @@ import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomViewContainerActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
+import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity;
+import com.facebook.samples.litho.onboarding.HelloWorldActivity;
+import com.facebook.samples.litho.onboarding.IntroducingLayoutComponent;
+import com.facebook.samples.litho.onboarding.LayoutWithImageComponent;
 import com.facebook.samples.litho.playground.PlaygroundComponent;
 import com.facebook.samples.litho.stateupdates.SectionStateUpdateFromComponentSection;
 import com.facebook.samples.litho.stateupdates.StateUpdateFromOutsideTreeActivity;
@@ -100,7 +113,79 @@ public class Demos {
                           new SingleDemo(
                               "Fragments Transition with Shared elements",
                               SharedElementsFragmentActivity.class),
-                          new SingleDemo("Transitions", TransitionsActivity.class))),
+                          new SingleDemo("Transitions", TransitionsActivity.class),
+                          new SingleDemo(
+                              "All Layout Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return SimpleAllLayoutTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Alpha Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return AlphaTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Appear Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return AppearTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Stagger Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return StaggerTransitionComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Stagger Transition on same Component",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return StaggerTransitionSameComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Stagger Transition with Delay",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return StaggerTransitionWithDelayComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Parallel Transition with Animators",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return ParallelTransitionWithAnimatorsComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Sequence Transition loop",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return SequenceTransitionLoopComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Global key Transition",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return GlobalKeyParentComponent.create(c).build();
+                                }
+                              }))),
                   new DemoGrouping(
                       "Collections",
                       Arrays.asList(
@@ -207,7 +292,32 @@ public class Demos {
                           new SingleDemo("Items re-rendering", ItemsRerenderingActivity.class),
                           new SingleDemo("Not updating with new props", PropUpdatingActivity.class),
                           new SingleDemo(
-                              "List scrolls to bottom", ScrollingToBottomActivity.class))))));
+                              "List scrolls to bottom", ScrollingToBottomActivity.class))))),
+          new DemoList(
+              "Tutorial",
+              Arrays.asList(
+                  new DemoGrouping(
+                      "Onboarding",
+                      Arrays.asList(
+                          new SingleDemo("1. Hello World", HelloWorldActivity.class),
+                          new SingleDemo(
+                              "2. First Litho Component", FirstComponentSpecActivity.class),
+                          new SingleDemo(
+                              "3. Introducing Layout",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return IntroducingLayoutComponent.create(c).name("Linda").build();
+                                }
+                              }),
+                          new SingleDemo(
+                              "3.1. More with Layout",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return LayoutWithImageComponent.create(c).name("Linda").build();
+                                }
+                              }))))));
 
   public interface DemoItem {
     String getName();

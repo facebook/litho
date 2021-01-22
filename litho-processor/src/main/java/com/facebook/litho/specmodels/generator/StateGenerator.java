@@ -144,7 +144,7 @@ public class StateGenerator {
                 stateContainerClassName,
                 STATE_CONTAINER_NAME,
                 stateContainerClassName)
-            .addStatement("transferState(component.getStateContainer(), $L)", STATE_CONTAINER_NAME)
+            .addStatement("transferState(component.getStateContainer(c), $L)", STATE_CONTAINER_NAME)
             .addStatement("c.applyLazyStateUpdatesForContainer($L)", STATE_CONTAINER_NAME)
             .addStatement("return $L", STATE_CONTAINER_NAME)
             .build();

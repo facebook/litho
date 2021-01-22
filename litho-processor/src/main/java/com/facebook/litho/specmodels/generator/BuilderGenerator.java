@@ -725,7 +725,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Res",
                   Arrays.asList(
-                      parameterWithoutNullableAnnotation(
+                      parameter(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "resIds")),
@@ -775,7 +775,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Res",
                   Arrays.asList(
-                      parameterWithoutNullableAnnotation(
+                      parameter(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "resIds",
@@ -844,7 +844,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Attr",
                   Arrays.asList(
-                      parameterWithoutNullableAnnotation(
+                      parameter(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "attrResIds"),
@@ -863,7 +863,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Attr",
                   Arrays.asList(
-                      parameterWithoutNullableAnnotation(
+                      parameter(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "attrResIds")),
@@ -953,7 +953,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Dip",
                   Arrays.asList(
-                      parameterWithoutNullableAnnotation(
+                      parameter(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
                           "dips")),
@@ -998,7 +998,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Sp",
                   Arrays.asList(
-                      parameterWithoutNullableAnnotation(
+                      parameter(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
                           "sips")),

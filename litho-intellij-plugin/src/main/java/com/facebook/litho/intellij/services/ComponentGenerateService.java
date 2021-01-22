@@ -17,7 +17,6 @@
 package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.redsymbols.FileGenerateUtils;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -67,20 +66,6 @@ public class ComponentGenerateService {
     Disposer.register(parent, () -> listeners.remove(listener));
   }
 
-  @Nullable
-  public PsiClass updateComponentSync(PsiClass specCls) {
-    final Pair<String, String> newComponent = createLithoFileContent(specCls);
-    if (newComponent == null) return null;
-
-    return FileGenerateUtils.updateClass(
-        newComponent.first, newComponent.second, specCls.getProject());
-  }
-
-  @Nullable
-  public SpecModel getSpecModel(PsiClass specClass) {
-    return specFqnToModelMap.get(specClass.getQualifiedName());
-  }
-
   /**
    * Creates new Component file text content.
    *
@@ -89,24 +74,47 @@ public class ComponentGenerateService {
    *     valid.
    */
   @Nullable
-  Pair<String, String> createLithoFileContent(PsiClass specCls) {
+  public Pair<String, String> createLithoFileContent(PsiClass specCls) {
     final String componentQN =
         LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
     if (componentQN == null) return null;
 
-    final SpecModel model = createModel(specCls);
+    final SpecModel model = getOrCreateSpecModel(specCls);
     if (model == null) return null;
 
-    // New model might be malformed to generate component, but it's accurate to the Spec
-    specFqnToModelMap.put(specCls.getQualifiedName(), model);
+    final String newContent = createFileContentFromModel(componentQN, model);
+    return Pair.create(componentQN, newContent);
+  }
+
+  @Nullable
+  public SpecModel getOrCreateSpecModel(PsiClass specClass) {
+    return getOrCreateSpecModel(specClass, true);
+  }
+
+  @Nullable
+  public SpecModel getOrCreateSpecModel(PsiClass specClass, boolean useCachedValue) {
+    final SpecModel model;
+    final String specFQN = specClass.getQualifiedName();
+
+    synchronized (specFqnToModelMap) {
+      if (useCachedValue && specFqnToModelMap.containsKey(specFQN)) {
+        return specFqnToModelMap.get(specFQN);
+      }
+
+      model = createModel(specClass);
+      if (model == null) return null;
+
+      // New model might be malformed to generate component, but it's accurate to the Spec
+      specFqnToModelMap.put(specFQN, model);
+    }
+
     Set<SpecUpdateNotifier> copy;
     synchronized (listeners) {
       copy = new HashSet<>(listeners);
     }
-    copy.forEach(listener -> listener.onSpecModelUpdated(specCls));
+    copy.forEach(listener -> listener.onSpecModelUpdated(specClass));
 
-    final String newContent = createFileContentFromModel(componentQN, model);
-    return Pair.create(componentQN, newContent);
+    return model;
   }
 
   /**

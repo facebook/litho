@@ -1,8 +1,52 @@
 ---
 id: api-overview
-title: 'API 📄: annotations and events'
+title: 'API 📄: annotations, events and lifecycles'
 ---
 
 :::danger UNDER CONSTRUCTION
 T79180601
 :::
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+# Annotations and Events
+
+## Sections
+
+### DataDiffSection
+
+`@OnEvent(RenderEvent.class)`
+
+`@OnEvent(OnCheckIsSameItemEvent.class)`
+
+`@OnEvent(OnCheckIsSameContentEvent.class)`
+
+### GroupSection
+
+`@OnCreateChildren`
+
+## Ranges
+
+[`WorkingRange`](pathname:///javadoc/com/facebook/litho/WorkingRange.html)
+
+`@OnRegisterRanges`
+
+`@OnEnteredRange(name = "<name>")`
+
+`@OnExitedRange(name = "<name>")`
+
+## Services
+
+`@OnCreateService`
+
+`@OnBindService`
+
+`@OnUnbindService`
+
+# Lifecycles
+
+## Sections
+
+### GroupSection
+
+<img src={useBaseUrl("/images/flow-chart-v0.24.0-group-section-spec.svg")} alt="GroupSection Spec lifecycle flowchart" className="white-background" />

@@ -23,11 +23,8 @@ import com.facebook.litho.Component
 import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.background
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.padding
-import com.facebook.litho.position
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -36,24 +33,31 @@ import com.facebook.litho.widget.SnapUtil
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
+import com.facebook.yoga.YogaPositionType
 
 class FeedItemComponent(artist: Artist) :
     KComponent({
-      Column {
-        +Column {
-          +imageBlock(artist)
-          +Text(
-              text = artist.name,
-              style =
-                  Style.position(start = 4.dp, bottom = 4.dp)
-                      .padding(horizontal = 6.dp)
-                      .background(drawableColor(0xddffffff)),
-              textSize = 24.sp,
-              textStyle = BOLD)
-          +ActionsComponent(style = position(top = 4.dp, end = 4.dp))
-        }
-        +FooterComponent(text = artist.biography)
-      }
+      Column(
+          children =
+              listOf(
+                  Column(
+                      children =
+                          listOf(
+                              imageBlock(artist),
+                              Text(
+                                  text = artist.name,
+                                  style =
+                                      Style.position(start = 4.dp, bottom = 4.dp)
+                                          .positionType(YogaPositionType.ABSOLUTE)
+                                          .padding(horizontal = 6.dp)
+                                          .background(drawableColor(0xddffffff)),
+                                  textSize = 24.sp,
+                                  textStyle = BOLD),
+                              ActionsComponent(
+                                  style =
+                                      Style.position(top = 4.dp, end = 4.dp)
+                                          .positionType(YogaPositionType.ABSOLUTE)))),
+                  FooterComponent(text = artist.biography)))
     })
 
 private val recyclerConfiguration =

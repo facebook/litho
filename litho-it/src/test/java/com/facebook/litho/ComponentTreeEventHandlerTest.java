@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,8 @@ public class ComponentTreeEventHandlerTest {
         ComponentContext.withComponentScope(mContext, component, componentGlobalKey);
 
     when(component.getScopedContext(any(), eq(componentGlobalKey))).thenReturn(scopedContext);
-    when(component.getGlobalKey()).thenReturn(componentGlobalKey);
+
+    Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
@@ -84,7 +86,7 @@ public class ComponentTreeEventHandlerTest {
     final String componentGlobalKey2 = "component2";
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, component, componentGlobalKey1);
-    when(component.getGlobalKey()).thenReturn(componentGlobalKey1);
+    Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey1);
     when(component.getScopedContext(any(), eq(componentGlobalKey1))).thenReturn(scopedContext);
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
@@ -98,7 +100,7 @@ public class ComponentTreeEventHandlerTest {
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
 
-    when(component.getGlobalKey()).thenReturn(componentGlobalKey2);
+    Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey2);
     ComponentContext scopedContext2 =
         ComponentContext.withComponentScope(mContext, component, componentGlobalKey2);
     when(component.getScopedContext(any(), eq(componentGlobalKey2))).thenReturn(scopedContext2);

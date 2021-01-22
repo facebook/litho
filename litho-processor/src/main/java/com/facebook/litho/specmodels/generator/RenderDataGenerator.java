@@ -64,13 +64,14 @@ public final class RenderDataGenerator {
             .add("($T) $L :\n", renderInfoTypeName, "toRecycle")
             .add("new $T();\n", renderInfoTypeName)
             .unindent()
-            .addStatement("$L.record(this)", "renderInfo")
+            .addStatement("$L.record(c, this)", "renderInfo")
             .addStatement("return $L", "renderInfo")
             .build();
 
     return MethodSpec.methodBuilder("recordRenderData")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
+        .addParameter(specModel.getContextClass(), "c")
         .addParameter(ClassNames.RENDER_DATA, "toRecycle")
         .returns(ClassNames.RENDER_DATA)
         .addCode(code)

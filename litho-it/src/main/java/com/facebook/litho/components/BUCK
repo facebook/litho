@@ -16,6 +16,7 @@ load(
 litho_android_test_library(
     name = "components",
     srcs = glob(["*.java"]),
+    autoglob = False,
     is_androidx = True,
     plugins = [
         LITHO_PROCESSOR_TARGET,

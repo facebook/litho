@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -45,8 +44,9 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
   @After
   @Override
   public void tearDown() throws Exception {
-    super.tearDown();
     PsiSearchUtils.clearMocks();
+    ComponentsCacheService.getInstance(testHelper.getProject()).dispose();
+    super.tearDown();
   }
 
   @Test
@@ -59,7 +59,7 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
             () -> {
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
               // Add file to cache
-              ComponentGenerateService.getInstance().updateComponentSync(cls);
+              FileGenerateUtils.generateClass(cls);
               final ComponentsCacheService service = ComponentsCacheService.getInstance(project);
               final PsiClass component = service.getComponent("Layout");
               assertThat(component).isNotNull();

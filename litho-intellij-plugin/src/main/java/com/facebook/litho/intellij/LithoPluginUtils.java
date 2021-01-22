@@ -27,6 +27,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaResolveResult;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -251,5 +252,12 @@ public class LithoPluginUtils {
         .filter(generics -> generics.length == 1) // <T>
         .map(generics -> generics[0].getCanonicalText())
         .orElse(null);
+  }
+
+  public static VirtualFile getVirtualFile(PsiFile file) {
+    final VirtualFile vf = file.getVirtualFile();
+    if (vf != null) return vf;
+
+    return file.getViewProvider().getVirtualFile();
   }
 }

@@ -18,10 +18,9 @@ package com.facebook.samples.litho.kotlin.playground
 
 import android.graphics.Typeface
 import android.os.Bundle
-import com.facebook.litho.Clickable
 import com.facebook.litho.Column
+import com.facebook.litho.Style
 import com.facebook.litho.dp
-import com.facebook.litho.padding
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
 import com.facebook.litho.updateState
@@ -38,13 +37,14 @@ class PlaygroundActivity : NavigatableDemoActivity() {
     setContent {
       val counter by useState { 1 }
 
-      Clickable(onClick = { updateState { counter.value++ } }) {
-        Column(style = padding(16.dp)) {
-          +Text(text = "Hello, Kotlin World!", textSize = 20.sp)
-          +Text(
-              text = "with ${"❤️".repeat(counter.value)} from London", textStyle = Typeface.ITALIC)
-        }
-      }
+      Column(
+          style = Style.padding(16.dp).onClick { updateState { counter.value++ } },
+          children =
+              listOf(
+                  Text(text = "Hello, Kotlin World!", textSize = 20.sp),
+                  Text(
+                      text = "with ${"❤️".repeat(counter.value)} from London",
+                      textStyle = Typeface.ITALIC)))
     }
   }
 }

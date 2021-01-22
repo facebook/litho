@@ -68,8 +68,10 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
@@ -923,7 +925,7 @@ class MountState
     }
   }
 
-  private static boolean isMountedHostWithChildContent(MountItem mountItem) {
+  private static boolean isMountedHostWithChildContent(@Nullable MountItem mountItem) {
     if (mountItem == null) {
       return false;
     }
@@ -1100,13 +1102,21 @@ class MountState
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
-            && currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
+            && currentComponent.shouldComponentUpdate(
+                currentLayoutOutput.getScopedContext(),
+                currentComponent,
+                nextLayoutOutput.getScopedContext(),
+                nextComponent);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
+    return currentComponent.shouldComponentUpdate(
+        currentLayoutOutput.getScopedContext(),
+        currentComponent,
+        nextLayoutOutput.getScopedContext(),
+        nextComponent);
   }
 
   static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {
@@ -1792,7 +1802,7 @@ class MountState
    * Installs the click listeners that will dispatch the click handler defined in the component's
    * props. Unconditionally set the clickable flag on the view.
    */
-  private static void setClickHandler(EventHandler<ClickEvent> clickHandler, View view) {
+  private static void setClickHandler(@Nullable EventHandler<ClickEvent> clickHandler, View view) {
     if (clickHandler == null) {
       return;
     }
@@ -1816,6 +1826,7 @@ class MountState
     }
   }
 
+  @Nullable
   static ComponentClickListener getComponentClickListener(View v) {
     if (v instanceof ComponentHost) {
       return ((ComponentHost) v).getComponentClickListener();
@@ -1838,7 +1849,7 @@ class MountState
    * component's props. Unconditionally set the clickable flag on the view.
    */
   private static void setLongClickHandler(
-      EventHandler<LongClickEvent> longClickHandler, View view) {
+      @Nullable EventHandler<LongClickEvent> longClickHandler, View view) {
     if (longClickHandler != null) {
       ComponentLongClickListener listener = getComponentLongClickListener(view);
 
@@ -1861,6 +1872,7 @@ class MountState
     }
   }
 
+  @Nullable
   static ComponentLongClickListener getComponentLongClickListener(View v) {
     if (v instanceof ComponentHost) {
       return ((ComponentHost) v).getComponentLongClickListener();
@@ -1883,7 +1895,7 @@ class MountState
    * component's props. Unconditionally set the clickable flag on the view.
    */
   private static void setFocusChangeHandler(
-      EventHandler<FocusChangedEvent> focusChangeHandler, View view) {
+      @Nullable EventHandler<FocusChangedEvent> focusChangeHandler, View view) {
     if (focusChangeHandler == null) {
       return;
     }
@@ -1927,7 +1939,7 @@ class MountState
    * Installs the touch listeners that will dispatch the touch handler defined in the component's
    * props.
    */
-  private static void setTouchHandler(EventHandler<TouchEvent> touchHandler, View view) {
+  private static void setTouchHandler(@Nullable EventHandler<TouchEvent> touchHandler, View view) {
     if (touchHandler != null) {
       ComponentTouchListener listener = getComponentTouchListener(view);
 
@@ -1950,7 +1962,7 @@ class MountState
 
   /** Sets the intercept touch handler defined in the component's props. */
   private static void setInterceptTouchHandler(
-      EventHandler<InterceptTouchEvent> interceptTouchHandler, View view) {
+      @Nullable EventHandler<InterceptTouchEvent> interceptTouchHandler, View view) {
     if (interceptTouchHandler == null) {
       return;
     }
@@ -1966,6 +1978,7 @@ class MountState
     }
   }
 
+  @Nullable
   static ComponentTouchListener getComponentTouchListener(View v) {
     if (v instanceof ComponentHost) {
       return ((ComponentHost) v).getComponentTouchListener();
@@ -1983,11 +1996,11 @@ class MountState
     }
   }
 
-  private static void setViewTag(View view, Object viewTag) {
+  private static void setViewTag(View view, @Nullable Object viewTag) {
     view.setTag(viewTag);
   }
 
-  private static void setViewTags(View view, SparseArray<Object> viewTags) {
+  private static void setViewTags(View view, @Nullable SparseArray<Object> viewTags) {
     if (viewTags == null) {
       return;
     }
@@ -2006,7 +2019,7 @@ class MountState
     view.setTag(null);
   }
 
-  private static void unsetViewTags(View view, SparseArray<Object> viewTags) {
+  private static void unsetViewTags(View view, @Nullable SparseArray<Object> viewTags) {
     if (view instanceof ComponentHost) {
       final ComponentHost host = (ComponentHost) view;
       host.setViewTags(null);
@@ -2031,13 +2044,14 @@ class MountState
     }
   }
 
-  private static void setOutlineProvider(View view, ViewOutlineProvider outlineProvider) {
+  private static void setOutlineProvider(View view, @Nullable ViewOutlineProvider outlineProvider) {
     if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       view.setOutlineProvider(outlineProvider);
     }
   }
 
-  private static void unsetOutlineProvider(View view, ViewOutlineProvider outlineProvider) {
+  private static void unsetOutlineProvider(
+      View view, @Nullable ViewOutlineProvider outlineProvider) {
     if (outlineProvider != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       view.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
     }
@@ -2070,7 +2084,7 @@ class MountState
     }
   }
 
-  private static void setContentDescription(View view, CharSequence contentDescription) {
+  private static void setContentDescription(View view, @Nullable CharSequence contentDescription) {
     if (TextUtils.isEmpty(contentDescription)) {
       return;
     }
@@ -2230,14 +2244,12 @@ class MountState
       view.setPadding(0, 0, 0, 0);
     } catch (NullPointerException e) {
       // T53931759 Gathering extra info around this NPE
-      final String message =
-          "Component: "
-              + output.getComponent().getSimpleName()
-              + ", view: "
-              + view.getClass().getSimpleName()
-              + ", message: "
-              + e.getMessage();
-      throw new NullPointerException(message);
+      ErrorReporter.getInstance()
+          .report(
+              LogLevel.ERROR,
+              "LITHO:NPE:UNSET_PADDING",
+              "From component: " + output.getComponent().getSimpleName(),
+              e);
     }
   }
 
@@ -2742,6 +2754,7 @@ class MountState
     return mIndexToItemMap != null ? mIndexToItemMap.get(ROOT_HOST_ID) : null;
   }
 
+  @Nullable
   MountItem getItemAt(int i) {
     assertMainThread();
 
@@ -2767,6 +2780,7 @@ class MountState
     return mountItem.getContent();
   }
 
+  @Nullable
   @Override
   public Object getContentById(long id) {
     if (mIndexToItemMap == null) {
@@ -3008,7 +3022,7 @@ class MountState
 
   @Override
   public void onAnimationUnitComplete(
-      PropertyHandle propertyHandle, Function transitionEndHandler) {
+      PropertyHandle propertyHandle, @Nullable Function transitionEndHandler) {
     if (transitionEndHandler != null) {
       transitionEndHandler.call(
           new TransitionEndEvent(
@@ -3257,7 +3271,7 @@ class MountState
       if (mTransitionsExtensionState == null) {
         throw new IllegalStateException("Need a state when using the TransitionsExtension.");
       }
-      return mTransitionsExtensionState.ownsReference(renderTreeNode);
+      return mTransitionsExtensionState.ownsReference(renderTreeNode.getRenderUnit().getId());
     }
     return isAnimationLocked(index);
   }

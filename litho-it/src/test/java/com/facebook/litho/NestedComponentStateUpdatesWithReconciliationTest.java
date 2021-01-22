@@ -342,7 +342,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     }
 
     @Override
-    protected StateContainer getStateContainer() {
+    protected StateContainer getStateContainer(ComponentContext scopedContext) {
       return mStateContainer;
     }
   }

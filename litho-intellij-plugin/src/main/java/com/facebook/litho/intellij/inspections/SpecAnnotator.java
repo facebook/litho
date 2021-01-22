@@ -23,6 +23,7 @@ import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -46,21 +47,18 @@ public class SpecAnnotator implements Annotator {
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
+    // Reduce warnings check to Class objects only
     PsiClass spec = null;
-    if (element instanceof PsiClass
-        && (LithoPluginUtils.isLayoutSpec((PsiClass) element)
-            || LithoPluginUtils.isMountSpec((PsiClass) element))) {
+    if (element instanceof PsiClass) {
       spec = (PsiClass) element;
     } else if (element instanceof PsiFile) {
-      spec =
-          LithoPluginUtils.getFirstClass(
-                  (PsiFile) element,
-                  cls -> (LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls)))
-              .orElse(null);
+      spec = LithoPluginUtils.getFirstClass((PsiFile) element, cls -> true).orElse(null);
+    } else {
+      return;
     }
 
+    // Verify Litho classes only
     final String loggingType;
-    // null check performed inside isLayoutSpec() and isMountSpec()
     if (LithoPluginUtils.isLayoutSpec(spec)) {
       loggingType = "layout_spec";
     } else if (LithoPluginUtils.isMountSpec(spec)) {
@@ -69,18 +67,18 @@ public class SpecAnnotator implements Annotator {
       return;
     }
 
+    SpecModel specModel = null;
     try {
       // Assuming that this Annotator is called sequentially and not in parallel, we don't do extra
-      // work by calling update directly.
-      ComponentGenerateService.getInstance().updateComponentSync(spec);
+      // work by calling update directly
+      specModel = ComponentGenerateService.getInstance().getOrCreateSpecModel(spec, false);
     } catch (Exception e) {
       // Model might contain errors. Proceed to surfacing them.
       DEBUG_LOGGER.debug(e);
     }
-    DEBUG_LOGGER.debug(element + " under analysis");
 
     final List<SpecModelValidationError> errors =
-        Optional.ofNullable(ComponentGenerateService.getInstance().getSpecModel(spec))
+        Optional.ofNullable(specModel)
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {

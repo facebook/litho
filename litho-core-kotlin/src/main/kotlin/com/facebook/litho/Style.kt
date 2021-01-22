@@ -21,254 +21,340 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
-// TODO should be `data` if we want to consider it for comparison as a Prop.
+/**
+ * Enums for [DimenStyleItem]. In the longer term, the vision is to have these style items
+ * decentralized, but since we have other blockers to that first, we are using enums to limit the
+ * number of style item types we need to create.
+ */
+private enum class DimenField {
+  WIDTH,
+  HEIGHT,
+  MIN_WIDTH,
+  MAX_WIDTH,
+  MIN_HEIGHT,
+  MAX_HEIGHT,
+  FLEX_BASIS,
+  PADDING_START,
+  PADDING_TOP,
+  PADDING_END,
+  PADDING_BOTTOM,
+  PADDING_HORIZONTAL,
+  PADDING_VERTICAL,
+  PADDING_ALL,
+  MARGIN_START,
+  MARGIN_TOP,
+  MARGIN_END,
+  MARGIN_BOTTOM,
+  MARGIN_HORIZONTAL,
+  MARGIN_VERTICAL,
+  MARGIN_ALL,
+  POSITION_START,
+  POSITION_TOP,
+  POSITION_END,
+  POSITION_BOTTOM,
+}
+
+/** Enums for [FloatStyleItem]. */
+private enum class FloatField {
+  WIDTH_PERCENT,
+  HEIGHT_PERCENT,
+  MIN_WIDTH_PERCENT,
+  MAX_WIDTH_PERCENT,
+  MIN_HEIGHT_PERCENT,
+  MAX_HEIGHT_PERCENT,
+  FLEX,
+  FLEX_GROW,
+  FLEX_SHRINK,
+  ASPECT_RATIO,
+}
+
+/** Enums for [ObjectStyleItem]. */
+private enum class ObjectField {
+  ALIGN_SELF,
+  POSITION_TYPE,
+  BACKGROUND,
+  FOREGROUND,
+  ON_CLICK,
+  ON_LONG_CLICK,
+  ON_VISIBLE,
+  ON_FOCUSED,
+  ON_FULL_IMPRESSION,
+  WRAP_IN_VIEW,
+  VIEW_TAG,
+}
+
+/**
+ * Part of a [Style] that can apply an attribute to an underlying Component, e.g. width or click
+ * handling.
+ */
+interface StyleItem {
+
+  /** Sets this style item value on the given [CommonProps]. */
+  fun DslScope.applyToProps(commonProps: CommonProps)
+}
+
+/** Common style item for all dimen styles. See note on [DimenField] about this pattern. */
+private class DimenStyleItem(val field: DimenField, val value: Dimen) : StyleItem {
+  override fun DslScope.applyToProps(commonProps: CommonProps) {
+    val pixelValue = value.toPixels()
+    when (field) {
+      DimenField.WIDTH -> commonProps.widthPx(if (value == Dimen.Hairline) 1 else pixelValue)
+      DimenField.HEIGHT -> commonProps.heightPx(if (value == Dimen.Hairline) 1 else pixelValue)
+      DimenField.MIN_WIDTH -> commonProps.minWidthPx(pixelValue)
+      DimenField.MAX_WIDTH -> commonProps.maxWidthPx(pixelValue)
+      DimenField.MIN_HEIGHT -> commonProps.minHeightPx(pixelValue)
+      DimenField.MAX_HEIGHT -> commonProps.maxHeightPx(pixelValue)
+      DimenField.FLEX_BASIS -> commonProps.flexBasisPx(pixelValue)
+      DimenField.PADDING_START -> commonProps.paddingPx(YogaEdge.START, pixelValue)
+      DimenField.PADDING_TOP -> commonProps.paddingPx(YogaEdge.TOP, pixelValue)
+      DimenField.PADDING_END -> commonProps.paddingPx(YogaEdge.END, pixelValue)
+      DimenField.PADDING_BOTTOM -> commonProps.paddingPx(YogaEdge.BOTTOM, pixelValue)
+      DimenField.PADDING_HORIZONTAL -> commonProps.paddingPx(YogaEdge.HORIZONTAL, pixelValue)
+      DimenField.PADDING_VERTICAL -> commonProps.paddingPx(YogaEdge.VERTICAL, pixelValue)
+      DimenField.PADDING_ALL -> commonProps.paddingPx(YogaEdge.ALL, pixelValue)
+      DimenField.MARGIN_START -> commonProps.marginPx(YogaEdge.START, pixelValue)
+      DimenField.MARGIN_TOP -> commonProps.marginPx(YogaEdge.TOP, pixelValue)
+      DimenField.MARGIN_END -> commonProps.marginPx(YogaEdge.END, pixelValue)
+      DimenField.MARGIN_BOTTOM -> commonProps.marginPx(YogaEdge.BOTTOM, pixelValue)
+      DimenField.MARGIN_HORIZONTAL -> commonProps.marginPx(YogaEdge.HORIZONTAL, pixelValue)
+      DimenField.MARGIN_VERTICAL -> commonProps.marginPx(YogaEdge.VERTICAL, pixelValue)
+      DimenField.MARGIN_ALL -> commonProps.marginPx(YogaEdge.ALL, pixelValue)
+      DimenField.POSITION_START -> commonProps.positionPx(YogaEdge.START, pixelValue)
+      DimenField.POSITION_END -> commonProps.positionPx(YogaEdge.END, pixelValue)
+      DimenField.POSITION_TOP -> commonProps.positionPx(YogaEdge.TOP, pixelValue)
+      DimenField.POSITION_BOTTOM -> commonProps.positionPx(YogaEdge.BOTTOM, pixelValue)
+    }.exhaustive
+  }
+}
+
+/** Common style item for all float styles. See note on [DimenField] about this pattern. */
+private class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
+  override fun DslScope.applyToProps(commonProps: CommonProps) {
+    when (field) {
+      FloatField.WIDTH_PERCENT -> commonProps.widthPercent(value)
+      FloatField.HEIGHT_PERCENT -> commonProps.heightPercent(value)
+      FloatField.MIN_WIDTH_PERCENT -> commonProps.minWidthPercent(value)
+      FloatField.MAX_WIDTH_PERCENT -> commonProps.maxWidthPercent(value)
+      FloatField.MIN_HEIGHT_PERCENT -> commonProps.minHeightPercent(value)
+      FloatField.MAX_HEIGHT_PERCENT -> commonProps.maxHeightPercent(value)
+      FloatField.FLEX -> commonProps.flex(value)
+      FloatField.FLEX_GROW -> commonProps.flexGrow(value)
+      FloatField.FLEX_SHRINK -> commonProps.flexShrink(value)
+      FloatField.ASPECT_RATIO -> commonProps.aspectRatio(value)
+    }.exhaustive
+  }
+}
+
+/** Common style item for all object styles. See note on [DimenField] about this pattern. */
+private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
+  override fun DslScope.applyToProps(commonProps: CommonProps) {
+    when (field) {
+      ObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
+      ObjectField.POSITION_TYPE -> value?.let { commonProps.positionType(it as YogaPositionType) }
+      ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
+      ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
+      ObjectField.ON_CLICK ->
+          commonProps.clickHandler(eventHandler(value as ((ClickEvent) -> Unit)))
+      ObjectField.ON_LONG_CLICK ->
+          commonProps.longClickHandler(
+              eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
+      ObjectField.ON_VISIBLE ->
+          commonProps.visibleHandler(eventHandler(value as (VisibleEvent) -> Unit))
+      ObjectField.ON_FOCUSED ->
+          commonProps.focusedHandler(eventHandler(value as (FocusedVisibleEvent) -> Unit))
+      ObjectField.ON_FULL_IMPRESSION ->
+          commonProps.fullImpressionHandler(
+              eventHandler(value as (FullImpressionVisibleEvent) -> Unit))
+      ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
+      ObjectField.VIEW_TAG -> commonProps.viewTag(value)
+    }.exhaustive
+  }
+}
+
+/**
+ * Tiny trick to make the compiler think a when result is used and enforce exhaustiveness of cases.
+ */
+private val Any?.exhaustive: Unit
+  get() = Unit
+
+/**
+ * An immutable ordered collection of attributes ( [StyleItem] s) that can be applied to a
+ * component, like width or click handling.
+ *
+ * Adding new attributes to a Style (e.g. by calling `.background`) will return a new Style object.
+ * Ordering matters in that the last definition of an attribute 'wins'.
+ *
+ * Styles can also be added via the `+` operator, with attributes from the right-hand side Style
+ * taking precedence if the two define different values for the same attribute, similar to adding
+ * maps.
+ */
 open class Style(
-    val width: Dp? = null,
-    val height: Dp? = null,
-    val widthPercent: Float? = null,
-    val heightPercent: Float? = null,
-    val minWidth: Dp? = null,
-    val minHeight: Dp? = null,
-    val maxWidth: Dp? = null,
-    val maxHeight: Dp? = null,
-    val minWidthPercent: Float? = null,
-    val minHeightPercent: Float? = null,
-    val maxWidthPercent: Float? = null,
-    val maxHeightPercent: Float? = null,
-    val alignSelf: YogaAlign? = null,
-    val flex: Float? = null,
-    val flexGrow: Float? = null,
-    val flexShrink: Float? = null,
-    val flexBasis: Dp? = null,
-    val aspectRatio: Float? = null,
-    val paddingStart: Dp? = null,
-    val paddingTop: Dp? = null,
-    val paddingEnd: Dp? = null,
-    val paddingBottom: Dp? = null,
-    val paddingHorizontal: Dp? = null,
-    val paddingVertical: Dp? = null,
-    val paddingAll: Dp? = null,
-    val marginStart: Dp? = null,
-    val marginTop: Dp? = null,
-    val marginEnd: Dp? = null,
-    val marginBottom: Dp? = null,
-    val marginHorizontal: Dp? = null,
-    val marginVertical: Dp? = null,
-    val marginAll: Dp? = null,
-    val positionStart: Dp? = null,
-    val positionTop: Dp? = null,
-    val positionEnd: Dp? = null,
-    val positionBottom: Dp? = null,
-    val positionType: YogaPositionType? = null,
-    val background: Drawable? = null,
-    val foreground: Drawable? = null
+    /**
+     * This is the Style we're adding to, e.g. `Style.padding()` when calling `.background()` in
+     * `Style.padding().background()`
+     */
+    private val previousStyle: Style?,
+
+    /**
+     * This is the [StyleItem] we're adding, e.g. the background when calling `.background()` in
+     * `Style.padding().background()`
+     */
+    private val item: StyleItem?,
 ) {
 
-  operator fun plus(other: Style): Style {
-    return Style(
-        width = other.width ?: width,
-        height = other.height ?: height,
-        widthPercent = other.widthPercent ?: widthPercent,
-        heightPercent = other.heightPercent ?: heightPercent,
-        minWidth = other.minWidth ?: minWidth,
-        minHeight = other.minHeight ?: minHeight,
-        maxWidth = other.maxWidth ?: maxWidth,
-        maxHeight = other.maxHeight ?: maxHeight,
-        minWidthPercent = other.minWidthPercent ?: minWidthPercent,
-        minHeightPercent = other.minHeightPercent ?: minHeightPercent,
-        maxWidthPercent = other.maxWidthPercent ?: maxWidthPercent,
-        maxHeightPercent = other.maxHeightPercent ?: maxHeightPercent,
-        alignSelf = other.alignSelf ?: alignSelf,
-        flex = other.flex ?: flex,
-        flexGrow = other.flexGrow ?: flexGrow,
-        flexShrink = other.flexShrink ?: flexShrink,
-        flexBasis = other.flexBasis ?: flexBasis,
-        aspectRatio = other.aspectRatio ?: aspectRatio,
-        paddingStart = paddingStart plusSafe other.paddingStart,
-        paddingTop = paddingTop plusSafe other.paddingTop,
-        paddingEnd = paddingEnd plusSafe other.paddingEnd,
-        paddingBottom = paddingBottom plusSafe other.paddingBottom,
-        paddingHorizontal = paddingHorizontal plusSafe other.paddingHorizontal,
-        paddingVertical = paddingVertical plusSafe other.paddingVertical,
-        paddingAll = paddingAll plusSafe other.paddingAll,
-        marginStart = marginStart plusSafe other.marginStart,
-        marginTop = marginTop plusSafe other.marginTop,
-        marginEnd = marginEnd plusSafe other.marginEnd,
-        marginBottom = marginBottom plusSafe other.marginBottom,
-        marginHorizontal = marginHorizontal plusSafe other.marginHorizontal,
-        marginVertical = marginVertical plusSafe other.marginVertical,
-        marginAll = marginAll plusSafe other.marginAll,
-        positionStart = other.positionStart ?: positionStart,
-        positionTop = other.positionTop ?: positionTop,
-        positionEnd = other.positionEnd ?: positionEnd,
-        positionBottom = other.positionBottom ?: positionBottom,
-        positionType = other.positionType ?: positionType,
-        background = other.background ?: background,
-        foreground = other.foreground ?: foreground)
+  operator fun plus(other: Style?): Style {
+    if (other == null) {
+      return this
+    }
+    return CombinedStyle(if (this == Style) null else this, other)
   }
 
-  companion object : Style()
+  inline operator fun plus(nextItem: StyleItem?): Style {
+    if (nextItem == null) {
+      return this
+    }
+    return Style(if (this == Style) null else this, nextItem)
+  }
+
+  fun size(size: Dimen) =
+      this + DimenStyleItem(DimenField.WIDTH, size) + DimenStyleItem(DimenField.HEIGHT, size)
+
+  fun size(width: Dimen? = null, height: Dimen? = null) =
+      this +
+          width?.let { DimenStyleItem(DimenField.WIDTH, it) } +
+          height?.let { DimenStyleItem(DimenField.HEIGHT, it) }
+
+  fun width(minWidth: Dimen? = null, maxWidth: Dimen? = null) =
+      this +
+          minWidth?.let { DimenStyleItem(DimenField.MIN_WIDTH, it) } +
+          maxWidth?.let { DimenStyleItem(DimenField.MAX_WIDTH, it) }
+
+  fun height(minHeight: Dimen? = null, maxHeight: Dimen? = null) =
+      this +
+          minHeight?.let { DimenStyleItem(DimenField.MIN_HEIGHT, it) } +
+          maxHeight?.let { DimenStyleItem(DimenField.MAX_HEIGHT, it) }
+
+  fun flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null) =
+      this +
+          grow?.let { FloatStyleItem(FloatField.FLEX_GROW, it) } +
+          shrink?.let { FloatStyleItem(FloatField.FLEX_SHRINK, it) } +
+          basis?.let { DimenStyleItem(DimenField.FLEX_BASIS, it) }
+
+  fun alignSelf(align: YogaAlign) = this + ObjectStyleItem(ObjectField.ALIGN_SELF, align)
+
+  fun aspectRatio(aspectRatio: Float) = this + FloatStyleItem(FloatField.ASPECT_RATIO, aspectRatio)
+
+  fun padding(all: Dimen) = this + DimenStyleItem(DimenField.PADDING_ALL, all)
+
+  fun padding(
+      all: Dimen? = null,
+      horizontal: Dimen? = null,
+      vertical: Dimen? = null,
+      start: Dimen? = null,
+      top: Dimen? = null,
+      end: Dimen? = null,
+      bottom: Dimen? = null
+  ) =
+      this +
+          all?.let { DimenStyleItem(DimenField.PADDING_ALL, it) } +
+          horizontal?.let { DimenStyleItem(DimenField.PADDING_HORIZONTAL, it) } +
+          vertical?.let { DimenStyleItem(DimenField.PADDING_VERTICAL, it) } +
+          start?.let { DimenStyleItem(DimenField.PADDING_START, it) } +
+          top?.let { DimenStyleItem(DimenField.PADDING_TOP, it) } +
+          end?.let { DimenStyleItem(DimenField.PADDING_END, it) } +
+          bottom?.let { DimenStyleItem(DimenField.PADDING_BOTTOM, it) }
+
+  fun margin(all: Dimen) = this + DimenStyleItem(DimenField.MARGIN_ALL, all)
+
+  fun margin(
+      all: Dimen? = null,
+      horizontal: Dimen? = null,
+      vertical: Dimen? = null,
+      start: Dimen? = null,
+      top: Dimen? = null,
+      end: Dimen? = null,
+      bottom: Dimen? = null
+  ) =
+      this +
+          all?.let { DimenStyleItem(DimenField.MARGIN_ALL, it) } +
+          horizontal?.let { DimenStyleItem(DimenField.MARGIN_HORIZONTAL, it) } +
+          vertical?.let { DimenStyleItem(DimenField.MARGIN_VERTICAL, it) } +
+          start?.let { DimenStyleItem(DimenField.MARGIN_START, it) } +
+          top?.let { DimenStyleItem(DimenField.MARGIN_TOP, it) } +
+          end?.let { DimenStyleItem(DimenField.MARGIN_END, it) } +
+          bottom?.let { DimenStyleItem(DimenField.MARGIN_BOTTOM, it) }
+
+  fun position(
+      start: Dimen? = null,
+      top: Dimen? = null,
+      end: Dimen? = null,
+      bottom: Dimen? = null
+  ) =
+      this +
+          start?.let { DimenStyleItem(DimenField.POSITION_START, it) } +
+          top?.let { DimenStyleItem(DimenField.POSITION_TOP, it) } +
+          end?.let { DimenStyleItem(DimenField.POSITION_END, it) } +
+          bottom?.let { DimenStyleItem(DimenField.POSITION_BOTTOM, it) }
+
+  fun positionType(positionType: YogaPositionType) =
+      this + ObjectStyleItem(ObjectField.POSITION_TYPE, positionType)
+
+  fun background(background: Drawable?) = this + ObjectStyleItem(ObjectField.BACKGROUND, background)
+
+  fun foreground(foreground: Drawable?) = this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
+
+  fun onClick(onClick: (ClickEvent) -> Unit) = this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
+
+  fun onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
+      this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
+
+  fun onVisible(onVisible: (VisibleEvent) -> Unit) =
+      this + ObjectStyleItem(ObjectField.ON_VISIBLE, onVisible)
+
+  fun onFocusedVisible(onFocused: (FocusedVisibleEvent) -> Unit) =
+      this + ObjectStyleItem(ObjectField.ON_FOCUSED, onFocused)
+
+  fun onFullImpression(onFullImpression: (FullImpressionVisibleEvent) -> Unit) =
+      this + ObjectStyleItem(ObjectField.ON_FULL_IMPRESSION, onFullImpression)
+
+  fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
+
+  fun viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
+
+  open fun forEach(lambda: (StyleItem) -> Unit) {
+    previousStyle?.forEach(lambda)
+    if (item != null) {
+      lambda(item)
+    }
+  }
+
+  /**
+   * An empty Style singleton that can be used to build a chain of style items.
+   *
+   * This is a bit of a trick that lets us make `Style.background()` look like a static call, but
+   * actually be a member call since `Style` is now a singleton object. Otherwise we'd need to
+   * define both a static `Style.background()` and a member function to support
+   * `Style.padding(...).background()`.
+   */
+  companion object : Style(null, null)
 }
 
-infix fun Dp?.plusSafe(other: Dp?) = (this ?: 0.dp) + (other ?: 0.dp)
+/**
+ * A subclass of [Style] which combines two Styles, as opposed to adding a single [StyleItem] to an
+ * existing Style.
+ *
+ * A CombinedStyle is created by combining two Styles with `+`. Attributes from the right-hand side
+ * Style take precedence if the two define different values for the same attribute, similar to
+ * adding maps.
+ */
+private class CombinedStyle(val first: Style?, val second: Style?) : Style(first, null) {
+
+  override fun forEach(lambda: (StyleItem) -> Unit) {
+    first?.forEach(lambda)
+    second?.forEach(lambda)
+  }
+}
 
 internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
-  props.apply {
-    style.width?.let { widthPx(if (it == Dp.Hairline) 1 else it.toPx().value) }
-    style.height?.let { heightPx(if (it == Dp.Hairline) 1 else it.toPx().value) }
-    style.widthPercent?.let { widthPercent(it) }
-    style.heightPercent?.let { heightPercent(it) }
-
-    style.minWidth?.let { minWidthPx(it.toPx().value) }
-    style.minHeight?.let { minHeightPx(it.toPx().value) }
-    style.maxWidth?.let { maxWidthPx(it.toPx().value) }
-    style.maxHeight?.let { maxHeightPx(it.toPx().value) }
-    style.minWidthPercent?.let { minWidthPercent(it) }
-    style.minHeightPercent?.let { minHeightPercent(it) }
-    style.maxWidthPercent?.let { maxWidthPercent(it) }
-    style.maxHeightPercent?.let { maxHeightPercent(it) }
-
-    style.alignSelf?.let { alignSelf(it) }
-
-    style.flex?.let { flex(it) }
-    style.flexGrow?.let { flexGrow(it) }
-    style.flexShrink?.let { flexShrink(it) }
-    style.flexBasis?.let { flexBasisPx(it.toPx().value) }
-
-    style.aspectRatio?.let { aspectRatio(it) }
-
-    style.paddingStart?.let { paddingPx(YogaEdge.START, it.toPx().value) }
-    style.paddingTop?.let { paddingPx(YogaEdge.TOP, it.toPx().value) }
-    style.paddingEnd?.let { paddingPx(YogaEdge.END, it.toPx().value) }
-    style.paddingBottom?.let { paddingPx(YogaEdge.BOTTOM, it.toPx().value) }
-    style.paddingHorizontal?.let { paddingPx(YogaEdge.HORIZONTAL, it.toPx().value) }
-    style.paddingVertical?.let { paddingPx(YogaEdge.VERTICAL, it.toPx().value) }
-    style.paddingAll?.let { paddingPx(YogaEdge.ALL, it.toPx().value) }
-
-    style.marginStart?.let { marginPx(YogaEdge.START, it.toPx().value) }
-    style.marginTop?.let { marginPx(YogaEdge.TOP, it.toPx().value) }
-    style.marginEnd?.let { marginPx(YogaEdge.END, it.toPx().value) }
-    style.marginBottom?.let { marginPx(YogaEdge.BOTTOM, it.toPx().value) }
-    style.marginHorizontal?.let { marginPx(YogaEdge.HORIZONTAL, it.toPx().value) }
-    style.marginVertical?.let { marginPx(YogaEdge.VERTICAL, it.toPx().value) }
-    style.marginAll?.let { marginPx(YogaEdge.ALL, it.toPx().value) }
-
-    style.positionStart?.let { positionPx(YogaEdge.START, it.toPx().value) }
-    style.positionTop?.let { positionPx(YogaEdge.TOP, it.toPx().value) }
-    style.positionEnd?.let { positionPx(YogaEdge.END, it.toPx().value) }
-    style.positionBottom?.let { positionPx(YogaEdge.BOTTOM, it.toPx().value) }
-    style.positionType?.let { positionType(it) }
-
-    style.background?.let { background(it) }
-    style.foreground?.let { foreground(it) }
-  }
+  style.forEach { stylePiece -> with(stylePiece) { applyToProps(props) } }
 }
-
-fun size(size: Dp) = Style(width = size, height = size)
-
-fun Style.size(size: Dp) = this + com.facebook.litho.size(size)
-
-fun size(width: Dp? = null, height: Dp? = null) = Style(width, height)
-
-fun Style.size(width: Dp? = null, height: Dp? = null) =
-    this + com.facebook.litho.size(width, height)
-
-fun width(minWidth: Dp? = null, maxWidth: Dp? = null) =
-    Style(minWidth = minWidth, maxWidth = maxWidth)
-
-fun Style.width(minWidth: Dp? = null, maxWidth: Dp? = null) =
-    this + com.facebook.litho.width(minWidth, maxWidth)
-
-fun height(minHeight: Dp? = null, maxHeight: Dp? = null) =
-    Style(minHeight = minHeight, maxHeight = maxHeight)
-
-fun Style.height(minHeight: Dp? = null, maxHeight: Dp? = null) =
-    this + com.facebook.litho.height(minHeight, maxHeight)
-
-fun flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
-    Style(flexGrow = grow, flexShrink = shrink, flexBasis = basis)
-
-fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dp? = null) =
-    this + com.facebook.litho.flex(grow, shrink, basis)
-
-fun aspectRatio(aspectRatio: Float) = Style(aspectRatio = aspectRatio)
-
-fun Style.aspectRatio(aspectRatio: Float) = this + com.facebook.litho.aspectRatio(aspectRatio)
-
-fun padding(all: Dp) = Style(paddingAll = all)
-
-fun Style.padding(all: Dp) = this + com.facebook.litho.padding(all)
-
-fun padding(horizontal: Dp? = null, vertical: Dp? = null) =
-    Style(
-        paddingStart = horizontal,
-        paddingTop = vertical,
-        paddingEnd = horizontal,
-        paddingBottom = vertical)
-
-fun Style.padding(horizontal: Dp? = null, vertical: Dp? = null) =
-    this + com.facebook.litho.padding(horizontal, vertical)
-
-fun padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    Style(paddingStart = start, paddingTop = top, paddingEnd = end, paddingBottom = bottom)
-
-fun Style.padding(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.padding(start, top, end, bottom)
-
-fun margin(all: Dp) = Style(marginAll = all)
-
-fun Style.margin(all: Dp) = this + com.facebook.litho.margin(all)
-
-fun margin(horizontal: Dp? = null, vertical: Dp? = null) =
-    Style(
-        marginStart = horizontal,
-        marginTop = vertical,
-        marginEnd = horizontal,
-        marginBottom = vertical)
-
-fun Style.margin(horizontal: Dp? = null, vertical: Dp? = null) =
-    this + com.facebook.litho.margin(horizontal, vertical)
-
-fun margin(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    Style(marginStart = start, marginTop = top, marginEnd = end, marginBottom = bottom)
-
-fun Style.margin(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.margin(start, top, end, bottom)
-
-fun position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    Style(
-        positionStart = start,
-        positionTop = top,
-        positionEnd = end,
-        positionBottom = bottom,
-        positionType = YogaPositionType.ABSOLUTE)
-
-fun Style.position(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    this + com.facebook.litho.position(start, top, end, bottom)
-
-fun positionRelative(start: Dp? = null, top: Dp? = null, end: Dp? = null, bottom: Dp? = null) =
-    Style(
-        positionStart = start,
-        positionTop = top,
-        positionEnd = end,
-        positionBottom = bottom,
-        positionType = YogaPositionType.RELATIVE)
-
-fun Style.positionRelative(
-    start: Dp? = null,
-    top: Dp? = null,
-    end: Dp? = null,
-    bottom: Dp? = null
-) = this + com.facebook.litho.positionRelative(start, top, end, bottom)
-
-fun background(background: Drawable) = Style(background = background)
-
-fun Style.background(background: Drawable) = this + com.facebook.litho.background(background)
-
-fun foreground(foreground: Drawable) = Style(foreground = foreground)
-
-fun Style.foreground(foreground: Drawable) = this + com.facebook.litho.foreground(foreground)
-
-fun alignSelf(align: YogaAlign) = Style(alignSelf = align)
-
-fun Style.alignSelf(align: YogaAlign) = this + com.facebook.litho.alignSelf(align)

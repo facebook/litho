@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Facebook, Inc. and its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<idea-plugin>
+    <extensions>
+        <java.elementFinder implementation="com.facebook.litho.intellij.redsymbols.ComponentFinder" id="java" order="last"/>
+        <resolveScopeEnlarger implementation="com.facebook.litho.intellij.redsymbols.ComponentResolveScopeEnlarger"/>
+        <projectService serviceImplementation="com.facebook.litho.intellij.redsymbols.ComponentsCacheService"/>
+        <java.shortNamesCache implementation="com.facebook.litho.intellij.redsymbols.ComponentShortNamesCache"/>
+        <postStartupActivity implementation="com.facebook.litho.intellij.redsymbols.LithoStartupActivity"/>
+        <externalAnnotator order="last" language="JAVA" implementationClass="com.facebook.litho.intellij.redsymbols.FileGeneratingAnnotator"/>
+    </extensions>
+    <actions>
+        <action id="ResolveLithoRedSymbolsAction"
+            class="com.facebook.litho.intellij.redsymbols.ResolveRedSymbolsAction"
+            text="Resolve Litho Red Symbols"
+            icon="LithoPluginIcons.BASE_ACTION"
+        />
+        <action id="GenerateComponentAction"
+            class="com.facebook.litho.intellij.redsymbols.GenerateComponentAction"
+            text="Regenerate Component"
+            icon="LithoPluginIcons.BASE_ACTION"
+        />
+        <separator/>
+    </actions>
+</idea-plugin>

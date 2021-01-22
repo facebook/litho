@@ -392,7 +392,8 @@ class TextInputSpec {
         forMeasure.getMovementMethod(),
         text,
         error,
-        errorDrawable);
+        errorDrawable,
+        true);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
     return forMeasure;
@@ -425,7 +426,8 @@ class TextInputSpec {
       MovementMethod movementMethod,
       @Nullable CharSequence text,
       @Nullable CharSequence error,
-      @Nullable Drawable errorDrawable) {
+      @Nullable Drawable errorDrawable,
+      boolean isForMeasure) {
 
     if (textSize == TextSpec.UNSET) {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP);
@@ -516,6 +518,11 @@ class TextInputSpec {
     }
     if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
+      // Set the selection only when mounting because #setSelection does not affect measurement,
+      // but it can mutate the span during measurement, potentially causing crashes.
+      if (!isForMeasure) {
+        editText.setSelection(editText.getText().toString().length());
+      }
     }
   }
 
@@ -774,7 +781,8 @@ class TextInputSpec {
         // 2. After onUnmount: savedText preserved from underlying editText.
         savedText.get(),
         error,
-        errorDrawable);
+        errorDrawable,
+        false);
     editText.setTextState(savedText);
   }
 
@@ -899,7 +907,7 @@ class TextInputSpec {
   static boolean setTextEditText(
       AtomicReference<EditTextWithEventHandlers> mountedView,
       AtomicReference<CharSequence> savedText,
-      CharSequence text) {
+      @Nullable CharSequence text) {
     ThreadUtils.assertMainThread();
 
     EditTextWithEventHandlers editText = mountedView.get();
@@ -910,6 +918,7 @@ class TextInputSpec {
 
     // If line count changes state update will be triggered by view
     editText.setText(text);
+    editText.setSelection(text != null ? text.length() : 0);
     return false;
   }
 
@@ -1161,6 +1170,14 @@ class TextInputSpec {
     }
   }
 
+  /**
+   * We use this instead of vanilla EditText for measurement as the ConstantState of the EditText
+   * background drawable is not thread-safe and shared across all EditText instances. This is
+   * especially important as we measure this component mostly in background thread and it could lead
+   * to race conditions where different instances are accessing/modifying same ConstantState
+   * concurrently. Mutating background drawable will make sure that ConstantState is not shared
+   * therefore will become thread-safe.
+   */
   static class ForMeasureEditText extends EditText {
 
     public ForMeasureEditText(Context context) {
@@ -1170,5 +1187,13 @@ class TextInputSpec {
     // This view is not intended to be drawn and invalidated
     @Override
     public void invalidate() {}
+
+    @Override
+    public void setBackground(Drawable background) {
+      if (background != null) {
+        background.mutate();
+      }
+      super.setBackground(background);
+    }
   }
 }

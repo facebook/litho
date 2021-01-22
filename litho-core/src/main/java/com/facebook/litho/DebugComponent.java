@@ -122,7 +122,8 @@ public final class DebugComponent {
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
       overrider.applyComponentOverrides(key, component);
-      overrider.applyStateOverrides(key, component.getStateContainer());
+      overrider.applyStateOverrides(
+          key, component.getStateContainer(context.getLayoutStateContext(), componentKey));
     }
   }
 
@@ -195,7 +196,7 @@ public final class DebugComponent {
   @Nullable
   public View getMountedView() {
     final Component component = mNode.getTailComponent();
-    if (component != null && Component.isMountViewSpec(component)) {
+    if (Component.isMountViewSpec(component)) {
       return (View) getMountedContent();
     }
 
@@ -206,7 +207,7 @@ public final class DebugComponent {
   @Nullable
   public Drawable getMountedDrawable() {
     final Component component = mNode.getTailComponent();
-    if (component != null && Component.isMountDrawableSpec(component)) {
+    if (Component.isMountDrawableSpec(component)) {
       return (Drawable) getMountedContent();
     }
 
@@ -258,6 +259,22 @@ public final class DebugComponent {
   @Nullable
   public String getTestKey() {
     return isLayoutNode() ? mNode.getTestKey() : null;
+  }
+
+  /**
+   * Returns this component's testKey or null if none is set.
+   *
+   * <p>Unlike {@link #getTestKey()}, this function can return a test key set on any Component,
+   * including container Components which resolve into LayoutNodes.
+   *
+   * <p>Unlike {@link #getTestKey()}, this function can also return test keys set on individual
+   * Components even when they are all resolved into a single InternalNode.
+   */
+  @Nullable
+  public String getComponentTestKey() {
+    Component component = mNode.getComponents().get(mComponentIndex);
+    CommonProps props = component.getCommonProps();
+    return props == null ? null : props.getTestKey();
   }
 
   /**
@@ -374,6 +391,10 @@ public final class DebugComponent {
     return mNode.getComponents().get(mComponentIndex);
   }
 
+  private @Nullable String getGlobalKeyFromNode() {
+    return mNode.getComponentKeys() == null ? null : mNode.getComponentKeys().get(mComponentIndex);
+  }
+
   /** @return If this debug component represents a layout node, return it. */
   @Nullable
   public DebugLayoutNode getLayoutNode() {
@@ -392,22 +413,27 @@ public final class DebugComponent {
 
   @Nullable
   public StateContainer getStateContainer() {
-    return getComponent().getStateContainer();
+    final LayoutStateContext layoutStateContext = getContext().getLayoutStateContext();
+    final Component component = getComponent();
+    final String globalKey = ComponentUtils.getGlobalKey(component, getGlobalKeyFromNode());
+
+    return getComponent().getStateContainer(layoutStateContext, globalKey);
   }
 
+  @Nullable
   private static InternalNode parent(InternalNode node) {
     final InternalNode parent = node.getParent();
     return parent != null ? parent : node.getNestedTreeHolder();
   }
 
-  private static int getXFromRoot(InternalNode node) {
+  private static int getXFromRoot(@Nullable InternalNode node) {
     if (node == null) {
       return 0;
     }
     return node.getX() + getXFromRoot(parent(node));
   }
 
-  private static int getYFromRoot(InternalNode node) {
+  private static int getYFromRoot(@Nullable InternalNode node) {
     if (node == null) {
       return 0;
     }

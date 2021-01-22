@@ -16,11 +16,12 @@
 
 package com.facebook.litho
 
-inline class Px(val value: Int)
-
-inline class Dp(val value: Float) {
-
-  inline operator fun plus(other: Dp) = Dp(value = this.value + other.value)
+/**
+ * Interface for dimension values in different units ( [Px], [Dp], [Sp]). All can be converted to
+ * pixels with a [ResourceResolver] which wraps a [Resources].
+ */
+interface Dimen {
+  fun toPixels(resourceResolver: ResourceResolver): Int
 
   companion object {
     /**
@@ -31,7 +32,23 @@ inline class Dp(val value: Float) {
   }
 }
 
-inline class Sp(val value: Float)
+/** Unit-type for pixels. */
+inline class Px(val value: Int) : Dimen {
+  override fun toPixels(resourceResolver: ResourceResolver) = value
+  inline operator fun plus(other: Px) = Px(value = this.value + other.value)
+}
+
+/** Unit-type for dips. */
+inline class Dp(val value: Float) : Dimen {
+  override fun toPixels(resourceResolver: ResourceResolver) = resourceResolver.dipsToPixels(value)
+  inline operator fun plus(other: Dp) = Dp(value = this.value + other.value)
+}
+
+/** Unit-type for sips. */
+inline class Sp(val value: Float) : Dimen {
+  override fun toPixels(resourceResolver: ResourceResolver) = resourceResolver.sipsToPixels(value)
+  inline operator fun plus(other: Sp) = Sp(value = this.value + other.value)
+}
 
 inline val Int.dp: Dp
   get() = Dp(this.toFloat())

@@ -125,7 +125,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     this(context, null);
   }
 
-  public ComponentHost(Context context, AttributeSet attrs) {
+  public ComponentHost(Context context, @Nullable AttributeSet attrs) {
     this(new ComponentContext(context), attrs);
   }
 
@@ -138,7 +138,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     this(context, null);
   }
 
-  public ComponentHost(ComponentContext context, AttributeSet attrs) {
+  public ComponentHost(ComponentContext context, @Nullable AttributeSet attrs) {
     super(context.getAndroidContext(), attrs);
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
@@ -433,6 +433,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   /** @return the content descriptons that are set on content mounted on this host */
+  @Nullable
   @Override
   public CharSequence getContentDescription() {
     return mContentDescription;
@@ -446,7 +447,7 @@ public class ComponentHost extends Host implements DisappearingHost {
    * and knows how to update it efficiently.
    */
   @Override
-  public void setContentDescription(CharSequence contentDescription) {
+  public void setContentDescription(@Nullable CharSequence contentDescription) {
     mContentDescription = contentDescription;
 
     if (!TextUtils.isEmpty(contentDescription)
@@ -459,7 +460,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   @Override
-  public void setTag(int key, Object tag) {
+  public void setTag(int key, @Nullable Object tag) {
     super.setTag(key, tag);
     if (key == R.id.component_node_info && tag != null) {
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
@@ -527,7 +528,7 @@ public class ComponentHost extends Host implements DisappearingHost {
    *
    * @param viewTags the map containing the tags by id.
    */
-  public void setViewTags(SparseArray<Object> viewTags) {
+  public void setViewTags(@Nullable SparseArray<Object> viewTags) {
     mViewTags = viewTags;
   }
 
@@ -542,6 +543,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   /** @return The previously set click listener */
+  @Nullable
   ComponentClickListener getComponentClickListener() {
     return mOnClickListener;
   }
@@ -557,6 +559,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   /** @return The previously set long click listener */
+  @Nullable
   ComponentLongClickListener getComponentLongClickListener() {
     return mOnLongClickListener;
   }
@@ -606,6 +609,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   /** @return The previous set touch listener. */
+  @Nullable
   public ComponentTouchListener getComponentTouchListener() {
     return mOnTouchListener;
   }
@@ -925,7 +929,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   @Override
-  public void setAccessibilityDelegate(View.AccessibilityDelegate accessibilityDelegate) {
+  public void setAccessibilityDelegate(@Nullable View.AccessibilityDelegate accessibilityDelegate) {
     super.setAccessibilityDelegate(accessibilityDelegate);
 
     // We cannot compare against mComponentAccessibilityDelegate directly, since it is not the
@@ -1390,7 +1394,10 @@ public class ComponentHost extends Host implements DisappearingHost {
       // means hasOverlappingRendering should always be false.
       return false;
     } else if (getWidth() <= 0 || getHeight() <= 0) {
-      return ComponentsConfiguration.overlappingRenderingForZeroSizedViews;
+      // Views with size zero can't possibly have overlapping rendering.
+      // Returning false here prevents the rendering system from creating
+      // zero-sized layers, which causes crashes.
+      return false;
     } else if (getWidth() > ComponentsConfiguration.overlappingRenderingViewSizeLimit
         || getHeight() > ComponentsConfiguration.overlappingRenderingViewSizeLimit) {
       return false;

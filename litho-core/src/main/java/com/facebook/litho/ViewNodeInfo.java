@@ -145,7 +145,7 @@ class ViewNodeInfo {
     return mStateListAnimator;
   }
 
-  void setStateListAnimator(StateListAnimator stateListAnimator) {
+  void setStateListAnimator(@Nullable StateListAnimator stateListAnimator) {
     mStateListAnimator = stateListAnimator;
   }
 

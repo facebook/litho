@@ -56,7 +56,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String TAG = LithoView.class.getSimpleName();
-  private final boolean mDisableTransitionsExtension;
   private final boolean mAcquireDuringMount;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
@@ -183,7 +182,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     this(context, null);
   }
 
-  public LithoView(Context context, AttributeSet attrs) {
+  public LithoView(Context context, @Nullable AttributeSet attrs) {
     this(new ComponentContext(context), attrs);
   }
 
@@ -195,7 +194,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     this(context, null, useExtensions, delegateToRenderCore);
   }
 
-  public LithoView(ComponentContext context, AttributeSet attrs) {
+  public LithoView(ComponentContext context, @Nullable AttributeSet attrs) {
     this(
         context,
         attrs,
@@ -205,7 +204,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   public LithoView(
       ComponentContext context,
-      AttributeSet attrs,
+      @Nullable AttributeSet attrs,
       final boolean useExtensions,
       final boolean delegateToRenderCore) {
     super(context, attrs);
@@ -230,8 +229,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-    mDisableTransitionsExtension =
-        ComponentsConfiguration.disableTransitionsExtensionForMountDelegate;
   }
 
   boolean shouldAcquireDuringMount() {
@@ -389,6 +386,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.onMeasure");
+      }
+      onMeasureInternal(widthMeasureSpec, heightMeasureSpec);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void onMeasureInternal(int widthMeasureSpec, int heightMeasureSpec) {
     widthMeasureSpec =
         DoubleMeasureFixUtil.correctWidthSpecForAndroidDoubleMeasureBug(
             getResources(), getContext().getPackageManager(), widthMeasureSpec);
@@ -508,6 +519,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.performLayout");
+      }
+      performLayoutInternal(changed, left, top, right, bottom);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void performLayoutInternal(boolean changed, int left, int top, int right, int bottom) {
     if (mComponentTree != null) {
       if (mComponentTree.isReleased()) {
         throw new IllegalStateException(
@@ -707,9 +732,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
       }
 
-      if (!mDisableTransitionsExtension) {
-        mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
-      }
+      mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
 
       if (ComponentsConfiguration.isEndToEndTestRun) {
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing(mMountDelegateTarget);
@@ -947,6 +970,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   @Override
   public void draw(Canvas canvas) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    try {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("LithoView.draw");
+      }
+      drawInternal(canvas);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void drawInternal(Canvas canvas) {
     try {
       canvas.translate(getPaddingLeft(), getPaddingTop());
       super.draw(canvas);

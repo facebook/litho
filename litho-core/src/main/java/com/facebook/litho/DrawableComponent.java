@@ -109,7 +109,11 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  protected boolean shouldUpdate(Component previous, Component next) {
+  protected boolean shouldUpdate(
+      ComponentContext previousScopedContext,
+      Component previous,
+      ComponentContext nextScopedContext,
+      Component next) {
     final Drawable previousDrawable = ((DrawableComponent) previous).getDrawable();
     final Drawable nextDrawable = ((DrawableComponent) next).getDrawable();
 

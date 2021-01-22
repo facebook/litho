@@ -197,6 +197,7 @@ class RecyclerSpec {
       @Nullable @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
       @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler) {
 
     // contentDescription should be set on the recyclerView itself, and not the sectionsRecycler.
@@ -229,6 +230,10 @@ class RecyclerSpec {
       recyclerView.setTouchInterceptor(touchInterceptor);
     }
 
+    if (onItemTouchListener != null) {
+      recyclerView.addOnItemTouchListener(onItemTouchListener);
+    }
+
     // We cannot detach the snap helper in unbind, so it may be possible for it to get
     // attached twice which causes SnapHelper to raise an exception.
     if (snapHelper != null && recyclerView.getOnFlingListener() == null) {
@@ -253,6 +258,7 @@ class RecyclerSpec {
       SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerEventsController recyclerEventsController,
+      @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
       @Prop(optional = true, varArg = "onScrollListener") @Nullable
           List<OnScrollListener> onScrollListeners) {
     final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
@@ -273,6 +279,10 @@ class RecyclerSpec {
       for (OnScrollListener onScrollListener : onScrollListeners) {
         recyclerView.removeOnScrollListener(onScrollListener);
       }
+    }
+
+    if (onItemTouchListener != null) {
+      recyclerView.removeOnItemTouchListener(onItemTouchListener);
     }
 
     recyclerView.setTouchInterceptor(null);

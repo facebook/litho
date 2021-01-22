@@ -19,7 +19,6 @@ package com.facebook.litho.intellij.navigation;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.facebook.litho.intellij.redsymbols.ComponentScope;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesOptions;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -85,7 +84,7 @@ class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
               findUsagesOptions.searchScope =
                   new ExcludingScope(
                       findUsagesOptions.searchScope,
-                      ComponentScope.getVirtualFile(generatedCls.getContainingFile()));
+                      LithoPluginUtils.getVirtualFile(generatedCls.getContainingFile()));
             });
     return findUsagesOptions;
   }

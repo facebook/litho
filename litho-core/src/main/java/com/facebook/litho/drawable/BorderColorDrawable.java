@@ -36,7 +36,6 @@ import javax.annotation.Nullable;
 public class BorderColorDrawable extends Drawable implements ComparableDrawable {
 
   private static final int QUICK_REJECT_COLOR = Color.TRANSPARENT;
-  private static final float CLIP_ANGLE = 45f;
   private static final RectF sClipBounds = new RectF();
   private static final RectF sDrawBounds = new RectF();
   private static final RectF sInnerDrawBounds = new RectF();
@@ -318,6 +317,11 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
     if (mPaint != null) {
       mPaint.setColorFilter(colorFilter);
     }
+  }
+
+  @Override
+  public ColorFilter getColorFilter() {
+    return mPaint != null ? mPaint.getColorFilter() : null;
   }
 
   @Override

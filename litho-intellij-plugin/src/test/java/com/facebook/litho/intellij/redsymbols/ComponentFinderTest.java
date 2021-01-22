@@ -19,7 +19,6 @@ package com.facebook.litho.intellij.redsymbols;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.facebook.litho.intellij.services.ComponentGenerateService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -27,7 +26,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
-import org.junit.Ignore;
+import org.junit.After;
 import org.junit.Test;
 
 public class ComponentFinderTest extends LithoPluginIntellijTest {
@@ -36,7 +35,13 @@ public class ComponentFinderTest extends LithoPluginIntellijTest {
     super("testdata/file");
   }
 
-  @Ignore("T73932936")
+  @After
+  @Override
+  public void tearDown() throws Exception {
+    ComponentsCacheService.getInstance(testHelper.getProject()).dispose();
+    super.tearDown();
+  }
+
   @Test
   public void findClass() throws IOException {
     final Project project = testHelper.getFixture().getProject();
@@ -48,7 +53,7 @@ public class ComponentFinderTest extends LithoPluginIntellijTest {
               final ComponentFinder finder = new ComponentFinder(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
-              ComponentGenerateService.getInstance().updateComponentSync(cls);
+              FileGenerateUtils.generateClass(cls);
 
               // No result with project scope
               final PsiClass result1 =

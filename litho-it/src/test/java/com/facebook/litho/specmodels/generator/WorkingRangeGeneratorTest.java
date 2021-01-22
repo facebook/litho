@@ -129,7 +129,7 @@ public class WorkingRangeGeneratorTest {
                 + "  TestSpec.testEnteredRangeMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) arg0,\n"
-                + "    (int) getStateContainerImpl().arg1);\n"
+                + "    (int) getStateContainerImpl(c).arg1);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -147,7 +147,7 @@ public class WorkingRangeGeneratorTest {
                 + "  TestSpec.testEnteredPrefetchMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) arg0,\n"
-                + "    (int) getStateContainerImpl().arg1);\n"
+                + "    (int) getStateContainerImpl(c).arg1);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(3).toString())

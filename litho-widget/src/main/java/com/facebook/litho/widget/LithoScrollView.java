@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
@@ -24,21 +25,24 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.VerticalScrollSpec.OnInterceptTouchListener;
 import com.facebook.litho.widget.VerticalScrollSpec.ScrollPosition;
+import java.util.List;
 
 /**
  * Extension of {@link NestedScrollView} that allows to add more features needed for @{@link
  * VerticalScrollSpec}.
  */
-public class LithoScrollView extends NestedScrollView {
+public class LithoScrollView extends NestedScrollView implements HasLithoViewChildren {
 
   private final LithoView mLithoView;
 
   @Nullable private ScrollPosition mScrollPosition;
   @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
   @Nullable private OnInterceptTouchListener mOnInterceptTouchListener;
+  @Nullable private ScrollStateDetector mScrollStateDetector;
   private boolean mIsIncrementalMountEnabled;
 
   public LithoScrollView(Context context) {
@@ -68,6 +72,22 @@ public class LithoScrollView extends NestedScrollView {
   }
 
   @Override
+  public void fling(int velocityX) {
+    super.fling(velocityX);
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.fling();
+    }
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+    super.draw(canvas);
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.onDraw();
+    }
+  }
+
+  @Override
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
 
@@ -78,6 +98,21 @@ public class LithoScrollView extends NestedScrollView {
     if (mScrollPosition != null) {
       mScrollPosition.y = getScrollY();
     }
+
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.onScrollChanged();
+    }
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent motionEvent) {
+    boolean isConsumed = super.onTouchEvent(motionEvent);
+
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.onTouchEvent(motionEvent);
+    }
+
+    return isConsumed;
   }
 
   /**
@@ -96,9 +131,15 @@ public class LithoScrollView extends NestedScrollView {
     mOnInterceptTouchListener = onInterceptTouchListener;
   }
 
+  @Override
+  public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+    lithoViews.add(mLithoView);
+  }
+
   void mount(
       ComponentTree contentComponentTree,
       final ScrollPosition scrollPosition,
+      @Nullable ScrollStateListener scrollStateListener,
       boolean isIncrementalMountEnabled) {
     mLithoView.setComponentTree(contentComponentTree);
 
@@ -119,13 +160,23 @@ public class LithoScrollView extends NestedScrollView {
     getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
 
     mOnPreDrawListener = onPreDrawListener;
+    if (scrollStateListener != null) {
+      if (mScrollStateDetector == null) {
+        mScrollStateDetector = new ScrollStateDetector(this);
+      }
+      mScrollStateDetector.setListener(scrollStateListener);
+    }
   }
 
   void unmount() {
+    mLithoView.unbind();
     mLithoView.setComponentTree(null);
 
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     mOnPreDrawListener = null;
+    if (mScrollStateDetector != null) {
+      mScrollStateDetector.setListener(null);
+    }
   }
 }

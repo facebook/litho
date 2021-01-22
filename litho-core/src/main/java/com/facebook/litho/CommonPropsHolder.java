@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -112,6 +113,12 @@ class CommonPropsHolder implements CommonProps {
   public void testKey(String testKey) {
     mPrivateFlags |= PFLAG_TEST_KEY_IS_SET;
     mTestKey = testKey;
+  }
+
+  @Override
+  @Nullable
+  public String getTestKey() {
+    return (mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0 ? mTestKey : null;
   }
 
   @Override
@@ -674,7 +681,35 @@ class CommonPropsHolder implements CommonProps {
     }
   }
 
-  private static class OtherProps {
+  @Override
+  public boolean isEquivalentTo(CommonProps o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null) {
+      return false;
+    }
+
+    if (!(o instanceof CommonPropsHolder)) {
+      return false;
+    }
+
+    CommonPropsHolder other = (CommonPropsHolder) o;
+
+    return mPrivateFlags == other.mPrivateFlags
+        && mWrapInView == other.mWrapInView
+        && mDefStyleAttr == other.mDefStyleAttr
+        && mDefStyleRes == other.mDefStyleRes
+        && DrawableUtils.isEquivalentTo(mBackground, other.mBackground)
+        && CommonUtils.isEquivalentTo(mOtherProps, other.mOtherProps)
+        && CommonUtils.isEquivalentTo(mNodeInfo, other.mNodeInfo)
+        && CommonUtils.isEquivalentTo(mLayoutProps, other.mLayoutProps)
+        && CommonUtils.equals(mTestKey, other.mTestKey)
+        && CommonUtils.equals(mComponentTag, other.mComponentTag);
+  }
+
+  private static class OtherProps implements Equivalence<OtherProps> {
     // Flags used to indicate that a certain attribute was explicitly set on the node.
     private static final int PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1 << 0;
     private static final int PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1 << 1;
@@ -803,12 +838,12 @@ class CommonPropsHolder implements CommonProps {
       mTransitionOwnerKey = ownerKey;
     }
 
-    private void transitionKeyType(Transition.TransitionKeyType type) {
+    private void transitionKeyType(@Nullable Transition.TransitionKeyType type) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
       mTransitionKeyType = type;
     }
 
-    private void stateListAnimator(StateListAnimator stateListAnimator) {
+    private void stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
       mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_IS_SET;
       mStateListAnimator = stateListAnimator;
     }
@@ -887,6 +922,40 @@ class CommonPropsHolder implements CommonProps {
         node.stateListAnimatorRes(mStateListAnimatorRes);
       }
       node.layerType(mLayerType, mLayerPaint);
+    }
+
+    @Override
+    public boolean isEquivalentTo(@Nullable OtherProps other) {
+      if (this == other) {
+        return true;
+      }
+
+      if (other == null) {
+        return false;
+      }
+
+      return mPrivateFlags == other.mPrivateFlags
+          && mImportantForAccessibility == other.mImportantForAccessibility
+          && mDuplicateParentState == other.mDuplicateParentState
+          && mDuplicateChildrenStates == other.mDuplicateChildrenStates
+          && mStateListAnimatorRes == other.mStateListAnimatorRes
+          && mLayerType == other.mLayerType
+          && Float.compare(other.mVisibleHeightRatio, mVisibleHeightRatio) == 0
+          && Float.compare(other.mVisibleWidthRatio, mVisibleWidthRatio) == 0
+          && CommonUtils.equals(mTransitionKeyType, other.mTransitionKeyType)
+          && CommonUtils.equals(mStateListAnimator, other.mStateListAnimator)
+          && CommonUtils.equals(mLayerPaint, other.mLayerPaint)
+          && CommonUtils.isEquivalentTo(mVisibleHandler, other.mVisibleHandler)
+          && CommonUtils.isEquivalentTo(mFocusedHandler, other.mFocusedHandler)
+          && CommonUtils.isEquivalentTo(mUnfocusedHandler, other.mUnfocusedHandler)
+          && CommonUtils.isEquivalentTo(mFullImpressionHandler, other.mFullImpressionHandler)
+          && CommonUtils.isEquivalentTo(mInvisibleHandler, other.mInvisibleHandler)
+          && CommonUtils.isEquivalentTo(mVisibilityChangedHandler, other.mVisibilityChangedHandler)
+          && CommonUtils.isEquivalentTo(mTouchExpansions, other.mTouchExpansions)
+          && CommonUtils.isEquivalentTo(mBorder, other.mBorder)
+          && CommonUtils.equals(mTransitionOwnerKey, other.mTransitionOwnerKey)
+          && CommonUtils.equals(mTransitionKey, other.mTransitionKey)
+          && DrawableUtils.isEquivalentTo(mForeground, other.mForeground);
     }
   }
 
@@ -1282,6 +1351,50 @@ class CommonPropsHolder implements CommonProps {
       if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
         target.useHeightAsBaseline(mUseHeightAsBaseline);
       }
+    }
+
+    @Override
+    public boolean isEquivalentTo(CopyableLayoutProps o) {
+      if (this == o) {
+        return true;
+      }
+
+      if (o == null) {
+        return false;
+      }
+
+      DefaultLayoutProps other = (DefaultLayoutProps) o;
+      return mPrivateFlags == other.mPrivateFlags
+          && mWidthPx == other.mWidthPx
+          && Float.compare(other.mWidthPercent, mWidthPercent) == 0
+          && mMinWidthPx == other.mMinWidthPx
+          && Float.compare(other.mMinWidthPercent, mMinWidthPercent) == 0
+          && mMaxWidthPx == other.mMaxWidthPx
+          && Float.compare(other.mMaxWidthPercent, mMaxWidthPercent) == 0
+          && mHeightPx == other.mHeightPx
+          && Float.compare(other.mHeightPercent, mHeightPercent) == 0
+          && mMinHeightPx == other.mMinHeightPx
+          && Float.compare(other.mMinHeightPercent, mMinHeightPercent) == 0
+          && mMaxHeightPx == other.mMaxHeightPx
+          && Float.compare(other.mMaxHeightPercent, mMaxHeightPercent) == 0
+          && Float.compare(other.mFlex, mFlex) == 0
+          && Float.compare(other.mFlexGrow, mFlexGrow) == 0
+          && Float.compare(other.mFlexShrink, mFlexShrink) == 0
+          && mFlexBasisPx == other.mFlexBasisPx
+          && Float.compare(other.mFlexBasisPercent, mFlexBasisPercent) == 0
+          && Float.compare(other.mAspectRatio, mAspectRatio) == 0
+          && mIsReferenceBaseline == other.mIsReferenceBaseline
+          && mUseHeightAsBaseline == other.mUseHeightAsBaseline
+          && mLayoutDirection == other.mLayoutDirection
+          && mAlignSelf == other.mAlignSelf
+          && mPositionType == other.mPositionType
+          && CommonUtils.isEquivalentTo(mPositions, other.mPositions)
+          && CommonUtils.isEquivalentTo(mMargins, other.mMargins)
+          && CommonUtils.isEquivalentTo(mMarginPercents, other.mMarginPercents)
+          && CommonUtils.isEquivalentTo(mPaddings, other.mPaddings)
+          && CommonUtils.isEquivalentTo(mPaddingPercents, other.mPaddingPercents)
+          && CommonUtils.isEquivalentTo(mPositionPercents, other.mPositionPercents)
+          && CommonUtils.equals(mMarginAutos, other.mMarginAutos);
     }
   }
 }

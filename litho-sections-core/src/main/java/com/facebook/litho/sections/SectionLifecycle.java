@@ -54,7 +54,12 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * This method will delegate to the {@link DiffSectionSpec} method annotated with {@link OnDiff}
    */
   protected void generateChangeSet(
-      SectionContext c, ChangeSet changeSet, Section previous, Section next) {}
+      SectionContext c,
+      ChangeSet changeSet,
+      SectionContext previousContext,
+      Section previous,
+      SectionContext nextContext,
+      Section next) {}
 
   /**
    * This method will delegate to the {@link Section}Spec method annotated with {@link OnDataBound}
@@ -163,11 +168,31 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       dirty |= next.isInvalidated();
     }
 
-    return dirty || shouldUpdate(previous, next);
+    final SectionContext prevScopedContext = previous == null ? null : previous.getScopedContext();
+    final SectionContext nextScopedContext = next == null ? null : next.getScopedContext();
+
+    return dirty || shouldUpdate(prevScopedContext, previous, nextScopedContext, next);
   }
 
-  protected boolean shouldUpdate(Section previous, Section next) {
-    return !(previous == next || (previous != null && previous.isEquivalentTo(next)));
+  protected boolean shouldUpdate(
+      SectionContext previousScopedContext,
+      Section previous,
+      SectionContext nextScopedContext,
+      Section next) {
+
+    if (previous == next) {
+      return false;
+    }
+
+    if (previous != null) {
+      final StateContainer prevStateContainer =
+          previous == null ? null : previous.getStateContainer();
+      final StateContainer nextStateContainer = next == null ? null : next.getStateContainer();
+      return !previous.isEquivalentTo(next)
+          || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
+    }
+
+    return true;
   }
 
   /**

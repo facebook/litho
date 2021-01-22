@@ -383,7 +383,8 @@ class MaterialTextInputSpec {
         // 2. After onUnmount: savedText preserved from underlying editText.
         savedText.get(),
         error,
-        errorDrawable);
+        errorDrawable,
+        false);
     setParams(
         editText,
         textInputLayout,

@@ -87,7 +87,7 @@ public abstract class Component extends ComponentLifecycle
   /** Holds an identifying name of the component, set at construction time. */
   private final String mSimpleName;
 
-  private final boolean mUseStatelessComponent;
+  final boolean mUseStatelessComponent;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
@@ -141,13 +141,17 @@ public abstract class Component extends ComponentLifecycle
   protected Component() {
     mSimpleName = getClass().getSimpleName();
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    mStateContainer = createStateContainer();
+    if (!mUseStatelessComponent) {
+      mStateContainer = createStateContainer();
+    }
   }
 
   protected Component(String simpleName) {
     mSimpleName = simpleName;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    mStateContainer = createStateContainer();
+    if (!mUseStatelessComponent) {
+      mStateContainer = createStateContainer();
+    }
   }
 
   /**
@@ -159,7 +163,9 @@ public abstract class Component extends ComponentLifecycle
     super(identityHashCode);
     mSimpleName = simpleName;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    mStateContainer = createStateContainer();
+    if (!mUseStatelessComponent) {
+      mStateContainer = createStateContainer();
+    }
   }
 
   /**
@@ -367,6 +373,7 @@ public abstract class Component extends ComponentLifecycle
     // Do nothing by default
   }
 
+  @Nullable
   InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
     if (layout != null && ComponentsConfiguration.useStatelessComponent) {
@@ -408,6 +415,7 @@ public abstract class Component extends ComponentLifecycle
    *
    * @return
    */
+  @Nullable
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
     if (component.mUseStatelessComponent) {
       if (scopedContext == null) {
@@ -417,16 +425,7 @@ public abstract class Component extends ComponentLifecycle
       return scopedContext.getGlobalKey();
     }
 
-    return component.getGlobalKey();
-  }
-
-  @VisibleForTesting
-  String getGlobalKey() {
-    if (mUseStatelessComponent) {
-      throw new IllegalStateException("Should not call this method for stateless components");
-    }
-
-    return mGlobalKey;
+    return component.mGlobalKey;
   }
 
   /**
@@ -454,7 +453,7 @@ public abstract class Component extends ComponentLifecycle
    *
    * @param handle handle
    */
-  void setHandle(Handle handle) {
+  void setHandle(@Nullable Handle handle) {
     mHandle = handle;
   }
 
@@ -548,7 +547,7 @@ public abstract class Component extends ComponentLifecycle
 
     // create updated tree props for children.
     final TreeProps treeProps =
-        getTreePropsForChildren(parentContext, parentContext.getTreeProps());
+        getTreePropsForChildren(scopedContext, parentContext.getTreeProps());
 
     // set updated tree props on the component.
     scopedContext.setTreeProps(treeProps);
@@ -598,8 +597,29 @@ public abstract class Component extends ComponentLifecycle
     return null;
   }
 
-  protected @Nullable StateContainer getStateContainer() {
-    return mStateContainer;
+  protected @Nullable StateContainer getStateContainer(ComponentContext scopedContext) {
+    if (mUseStatelessComponent) {
+
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access a state container outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
+    } else {
+      return mStateContainer;
+    }
+  }
+
+  StateContainer getStateContainer(LayoutStateContext layoutStateContext, String globalKey) {
+    if (mUseStatelessComponent) {
+      return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
+    } else {
+      return mStateContainer;
+    }
   }
 
   protected void setStateContainer(StateContainer stateContainer) {
@@ -1287,7 +1307,7 @@ public abstract class Component extends ComponentLifecycle
       return mContext;
     }
 
-    public T handle(Handle handle) {
+    public T handle(@Nullable Handle handle) {
       mComponent.setHandle(handle);
       return getThis();
     }
@@ -2095,7 +2115,7 @@ public abstract class Component extends ComponentLifecycle
       mComponent.setBuilderContext(c.getAndroidContext());
     }
 
-    private Component getOwner() {
+    private @Nullable Component getOwner() {
       return mContext.getComponentScope();
     }
 

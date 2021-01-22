@@ -28,7 +28,7 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.Processor;
 import java.util.Arrays;
 
-public class ComponentShortNamesCache extends PsiShortNamesCache {
+class ComponentShortNamesCache extends PsiShortNamesCache {
   private final Project project;
   private final VirtualFile dummyFile;
 

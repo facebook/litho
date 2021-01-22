@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -67,6 +68,7 @@ public class EventGeneratorTest {
 
     @OnEvent(Object.class)
     public void testEventMethod1(
+        ComponentContext c,
         @Prop boolean arg0,
         @State int arg1,
         @Param Object arg2,
@@ -76,7 +78,10 @@ public class EventGeneratorTest {
 
     @OnEvent(Object.class)
     public void testEventMethod2(
-        @Prop boolean arg0, @State int arg1, @State(canUpdateLazily = true) long arg5) {}
+        ComponentContext c,
+        @Prop boolean arg0,
+        @State int arg1,
+        @State(canUpdateLazily = true) long arg5) {}
   }
 
   @LayoutSpec(events = {CustomEvent.class})
@@ -137,11 +142,13 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "private void testEventMethod1(com.facebook.litho.HasEventDispatcher _abstract,\n"
-                + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
+                + "    com.facebook.litho.ComponentContext c, java.lang.Object arg2, T arg3,\n"
+                + "    @androidx.annotation.Nullable T arg6) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestSpec.testEventMethod1(\n"
+                + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) _ref.getStateContainerImpl().arg1,\n"
+                + "    (int) _ref.getStateContainerImpl(c).arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
                 + "    (long) _ref.arg4,\n"
@@ -150,10 +157,12 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstract) {\n"
+            "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstract,\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);\n"
                 + "  TestSpec.testEventMethod2(\n"
+                + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
                 + "    (int) stateContainer.arg1,\n"
                 + "    (long) stateContainer.arg5);\n"
@@ -200,15 +209,17 @@ public class EventGeneratorTest {
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testEventMethod1(\n"
                 + "            eventHandler.mHasEventDispatcher,\n"
-                + "            (java.lang.Object) eventHandler.params[0],\n"
-                + "            (T) eventHandler.params[1],\n"
-                + "            (T) eventHandler.params[2]);\n"
+                + "            (com.facebook.litho.ComponentContext) eventHandler.params[0],\n"
+                + "            (java.lang.Object) eventHandler.params[1],\n"
+                + "            (T) eventHandler.params[2],\n"
+                + "            (T) eventHandler.params[3]);\n"
                 + "      return null;\n"
                 + "    }\n"
                 + "    case -1400079063: {\n"
                 + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
                 + "      testEventMethod2(\n"
-                + "            eventHandler.mHasEventDispatcher);\n"
+                + "            eventHandler.mHasEventDispatcher,\n"
+                + "            (com.facebook.litho.ComponentContext) eventHandler.params[0]);\n"
                 + "      return null;\n"
                 + "    }\n"
                 + "    case -1048037474: {\n"

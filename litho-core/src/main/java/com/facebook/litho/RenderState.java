@@ -32,13 +32,16 @@ public class RenderState {
   private final Map<String, ComponentLifecycle.RenderData> mRenderData = new HashMap<>();
   private final Set<String> mSeenGlobalKeys = new HashSet<>();
 
-  void recordRenderData(List<Component> components, List<String> componentGlobalKeys) {
+  void recordRenderData(
+      final LayoutStateContext layoutStateContext,
+      final List<Component> components,
+      final List<String> componentGlobalKeys) {
     if (components == null) {
       return;
     }
 
     for (int i = 0, size = components.size(); i < size; i++) {
-      recordRenderData(components.get(i), componentGlobalKeys.get(i));
+      recordRenderData(layoutStateContext, components.get(i), componentGlobalKeys.get(i));
     }
     mSeenGlobalKeys.clear();
   }
@@ -53,7 +56,10 @@ public class RenderState {
     }
   }
 
-  private void recordRenderData(Component component, String globalKey) {
+  private void recordRenderData(
+      final LayoutStateContext layoutStateContext,
+      final Component component,
+      final String globalKey) {
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
@@ -72,8 +78,11 @@ public class RenderState {
     }
     mSeenGlobalKeys.add(key);
 
+    final ComponentContext scopedContext =
+        component.getScopedContext(layoutStateContext, globalKey);
     final ComponentLifecycle.RenderData existingInfo = mRenderData.get(key);
-    final ComponentLifecycle.RenderData newInfo = component.recordRenderData(existingInfo);
+    final ComponentLifecycle.RenderData newInfo =
+        component.recordRenderData(scopedContext, existingInfo);
 
     mRenderData.put(key, newInfo);
   }

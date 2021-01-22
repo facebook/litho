@@ -230,11 +230,12 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateStateContainerImplGetter() {
     assertThat(
-            ComponentBodyGenerator.generateStateContainerImplGetter(ClassNames.STATE_CONTAINER)
+            ComponentBodyGenerator.generateStateContainerImplGetter(
+                    mSpecModelDI, ClassNames.STATE_CONTAINER)
                 .toString())
         .isEqualTo(
-            "private com.facebook.litho.StateContainer getStateContainerImpl() {\n"
-                + "  return (com.facebook.litho.StateContainer) super.getStateContainer();\n"
+            "private com.facebook.litho.StateContainer getStateContainerImpl(com.facebook.litho.ComponentContext c) {\n"
+                + "  return (com.facebook.litho.StateContainer) super.getStateContainer(c);\n"
                 + "}\n");
   }
 
@@ -423,9 +424,6 @@ public class ComponentBodyGeneratorTest {
                 + "  if (arg9 != null ? !arg9.equals(mountTestRef.arg9) : mountTestRef.arg9 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (getStateContainerImpl().arg1 != mountTestRef.getStateContainerImpl().arg1) {\n"
-                + "    return false;\n"
-                + "  }\n"
                 + "  if (arg3 != mountTestRef.arg3) {\n"
                 + "    return false;\n"
                 + "  }\n"
@@ -476,15 +474,17 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateStateParamImplAccessor() {
     StateParamModel stateParamModel = mock(StateParamModel.class);
     when(stateParamModel.getName()).thenReturn("stateParam");
-    assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, stateParamModel, "c"))
-        .isEqualTo("getStateContainerImpl().stateParam");
+    assertThat(
+            ComponentBodyGenerator.getImplAccessor(
+                "testMethod", mSpecModelDI, stateParamModel, "c"))
+        .isEqualTo("getStateContainerImpl(c).stateParam");
   }
 
   @Test
   public void testGeneratePropParamImplAccessor() {
     PropModel propModel = mock(PropModel.class);
     when(propModel.getName()).thenReturn("propParam");
-    assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, propModel, "c"))
+    assertThat(ComponentBodyGenerator.getImplAccessor("testMethod", mSpecModelDI, propModel, "c"))
         .isEqualTo("propParam");
   }
 

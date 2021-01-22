@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,10 +58,6 @@ public class ExtensionState<State> {
     mLayoutOutputMountRefs.clear();
   }
 
-  public void acquireMountReference(final RenderTreeNode node, final boolean isMounting) {
-    acquireMountReference(node.getRenderUnit().getId(), isMounting);
-  }
-
   public void acquireMountReference(final long id, final boolean isMounting) {
     if (ownsReference(id)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
@@ -76,10 +71,6 @@ public class ExtensionState<State> {
     }
   }
 
-  public void releaseMountReference(final RenderTreeNode renderTreeNode, final boolean isMounting) {
-    releaseMountReference(renderTreeNode.getRenderUnit().getId(), isMounting);
-  }
-
   public void releaseMountReference(final long id, final boolean isMounting) {
     if (!ownsReference(id)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
@@ -91,12 +82,6 @@ public class ExtensionState<State> {
     } else {
       mMountDelegate.releaseMountRef(id);
     }
-  }
-
-  // TODO: T68620328 This method should be roll back to being protected once the transition
-  // extension test ends.
-  public boolean ownsReference(final RenderTreeNode renderTreeNode) {
-    return ownsReference(renderTreeNode.getRenderUnit().getId());
   }
 
   public boolean ownsReference(final long id) {

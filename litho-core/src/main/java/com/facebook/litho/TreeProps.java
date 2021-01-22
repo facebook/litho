@@ -34,7 +34,7 @@ public class TreeProps {
 
   private final Map<Class, Object> mMap = Collections.synchronizedMap(new HashMap<Class, Object>());
 
-  public void put(Class key, Object value) {
+  public void put(Class key, @Nullable Object value) {
     mMap.put(key, value);
   }
 
@@ -60,7 +60,7 @@ public class TreeProps {
    * <p>Infer knows that newProps is owned but doesn't know that newProps.mMap is owned.
    */
   @ThreadSafe(enableChecks = false)
-  public static TreeProps acquire(TreeProps source) {
+  public static TreeProps acquire(@Nullable TreeProps source) {
     final TreeProps newProps = new TreeProps();
     if (source != null) {
       synchronized (source.mMap) {

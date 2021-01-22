@@ -31,7 +31,7 @@ import com.facebook.yoga.YogaEdge;
 
 /** Common props that are accessible outside of the framework. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface CommonProps extends CommonPropsCopyable, LayoutProps {
+public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalence<CommonProps> {
 
   @Nullable
   EventHandler<ClickEvent> getClickHandler();
@@ -56,6 +56,14 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
   void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes);
 
   void background(@Nullable Drawable background);
+
+  /**
+   * Returns the test key associated with this Component or null if none is set. Note that this
+   * method will not return the test key for Container Components that resolve into LayoutNodes or
+   * the test keys for Components that are all resolved into a single InternalNode.
+   */
+  @Nullable
+  String getTestKey();
 
   void testKey(String testKey);
 

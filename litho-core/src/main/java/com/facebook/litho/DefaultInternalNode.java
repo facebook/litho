@@ -466,7 +466,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode layerType(final @LayerType int type, final Paint paint) {
+  public InternalNode layerType(final @LayerType int type, @Nullable final Paint paint) {
     if (type != LayerType.LAYER_TYPE_NOT_SET) {
       mLayerType = type;
       mLayerPaint = paint;
@@ -1886,7 +1886,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
   }
 
-  private void setPaddingFromBackground(Drawable drawable) {
+  private void setPaddingFromBackground(@Nullable Drawable drawable) {
     if (drawable != null) {
       final Rect backgroundPadding = new Rect();
       if (getDrawablePadding(drawable, backgroundPadding)) {

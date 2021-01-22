@@ -40,6 +40,8 @@ litho_robolectric4_test(
             "**/*.java",
         ],
         exclude = [
+            "animation/**/*.java",
+            "dataflow/**/*.java",
             "intellij/**/*.java",
             "sections/specmodels/**/*.java",
             "processor/**/*.java",
@@ -55,7 +57,6 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
-    use_binary_resources = False,
     deps = [
         ":testutil",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
@@ -86,6 +87,7 @@ litho_robolectric4_test(
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/error:error"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/treeprop:treeprop"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget"),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/dataflow:nodes"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections:sections"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
@@ -109,6 +111,7 @@ litho_android_library(
         "StateUpdateTestComponent.java",
         "TouchExpansionTestInternalNode.java",
     ],
+    autoglob = False,
     source = "8",
     target = "8",
     visibility = [

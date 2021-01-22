@@ -24,7 +24,6 @@ litho_robolectric4_test(
     fork_mode = "per_test",
     source = "8",
     target = "8",
-    use_binary_resources = False,
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

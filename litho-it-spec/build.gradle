@@ -63,4 +63,3 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.supportTestCore
 }
-

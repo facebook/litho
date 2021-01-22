@@ -199,6 +199,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             context, context.getWidthSpec(), context.getHeightSpec());
   }
 
+  @Nullable
   @ThreadSafe(enableChecks = false)
   Component createComponentLayout(ComponentContext c) {
     Component layoutComponent = null;
@@ -252,9 +253,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  final boolean shouldComponentUpdate(Component previous, Component next) {
+  final boolean shouldComponentUpdate(
+      ComponentContext previousScopedContext,
+      Component previous,
+      ComponentContext nextScopedContext,
+      Component next) {
     if (isPureRender()) {
-      return shouldUpdate(previous, next);
+      return shouldUpdate(previousScopedContext, previous, nextScopedContext, next);
     }
 
     return true;
@@ -575,7 +580,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 
-  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
+  protected @Nullable RenderData recordRenderData(ComponentContext c, RenderData toRecycle) {
     return null;
   }
 
@@ -607,10 +612,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param next the component that is now in use.
    * @return true if the component needs an update, false otherwise.
    */
-  protected boolean shouldUpdate(Component previous, Component next) {
+  protected boolean shouldUpdate(
+      ComponentContext previousScopedContext,
+      Component previous,
+      ComponentContext nextScopedContext,
+      Component next) {
     final StateContainer prevStateContainer =
-        previous == null ? null : previous.getStateContainer();
-    final StateContainer nextStateContainer = next == null ? null : next.getStateContainer();
+        previous == null ? null : previous.getStateContainer(previousScopedContext);
+    final StateContainer nextStateContainer =
+        next == null ? null : next.getStateContainer(nextScopedContext);
     return !previous.isEquivalentTo(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
@@ -698,8 +708,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
+  /* TODO: (T81557408) Fix @Nullable issue. */
   protected static <E> EventTrigger<E> newEventTrigger(
-      ComponentContext c, String childKey, int id, Handle handle) {
+      ComponentContext c, String childKey, int id, @Nullable Handle handle) {
     return c.newEventTrigger(childKey, id, handle);
   }
 

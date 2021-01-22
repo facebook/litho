@@ -50,6 +50,11 @@ public class MatchNode {
     return new MatchNodeList(matchNodes);
   }
 
+  /** A callback that will the executed while matching with the MatchNode. */
+  public interface Check<T> {
+    void check(T current);
+  }
+
   public static class DebugTraceContext {
     private final ArrayList<MatchNode> mNodes = new ArrayList<>();
 
@@ -60,6 +65,7 @@ public class MatchNode {
 
   private final Class mType;
   private final HashMap<String, Object> mExpectedProps = new HashMap<>();
+  private final ArrayList<Check> mChecks = new ArrayList<>();
 
   protected MatchNode(Class type) {
     mType = type;
@@ -74,6 +80,15 @@ public class MatchNode {
    */
   public <T> MatchNode prop(String name, T value) {
     mExpectedProps.put(name, value);
+    return this;
+  }
+
+  /**
+   * Provide a callback that will receive the current object and can perform assertions on it. This
+   * is useful for more complex assertions.
+   */
+  public <T> MatchNode check(Check<T> check) {
+    mChecks.add(check);
     return this;
   }
 
@@ -113,6 +128,10 @@ public class MatchNode {
             .describedAs(getDescription("Comparing field '" + prop.getKey() + "' on " + o))
             .isEqualTo(expected);
       }
+    }
+
+    for (Check check : mChecks) {
+      check.check(o);
     }
 
     assertMatchesImpl(o, debugContext);

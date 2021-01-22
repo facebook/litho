@@ -64,6 +64,7 @@ public class DelegateMethodValidationTest {
   public void setup() {
     when(mLayoutSpecModel.getRepresentedObject()).thenReturn(mModelRepresentedObject);
     when(mMountSpecModel.getRepresentedObject()).thenReturn(mMountSpecObject);
+    when(mMountSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
 
     mOnCreateMountContent =
         SpecMethodModel.<DelegateMethod, Void>builder()

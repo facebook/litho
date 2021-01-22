@@ -22,6 +22,7 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.measureAndLa
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
@@ -46,7 +47,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LEGACY)
 @RunWith(LithoTestRunner.class)
 public class IncrementalVisibilityEventsTest {
   private static final int LEFT = 0;

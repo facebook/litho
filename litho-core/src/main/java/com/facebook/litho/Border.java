@@ -35,11 +35,12 @@ import androidx.annotation.Px;
 import com.facebook.yoga.YogaEdge;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 /**
  * Represents a collection of attributes that describe how a border should be applied to a layout
  */
-public class Border {
+public class Border implements Equivalence<Border> {
   static final int EDGE_LEFT = 0;
   static final int EDGE_TOP = 1;
   static final int EDGE_RIGHT = 2;
@@ -471,5 +472,21 @@ public class Border {
         throw new IllegalArgumentException("You cannot specify more than 2 effects to compose");
       }
     }
+  }
+
+  @Override
+  public boolean isEquivalentTo(@Nullable Border other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
+    return Arrays.equals(mRadius, other.mRadius)
+        && Arrays.equals(mEdgeWidths, other.mEdgeWidths)
+        && Arrays.equals(mEdgeColors, other.mEdgeColors)
+        && mPathEffect == other.mPathEffect;
   }
 }

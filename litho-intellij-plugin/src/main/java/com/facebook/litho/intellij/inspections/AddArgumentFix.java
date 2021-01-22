@@ -49,7 +49,7 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
   @Nls(capitalization = Nls.Capitalization.Sentence)
   @Override
   public String getFamilyName() {
-    return EventHandlerAnnotator.FIX_FAMILY_NAME;
+    return MethodCallAnnotator.FIX_FAMILY_NAME;
   }
 
   @Override

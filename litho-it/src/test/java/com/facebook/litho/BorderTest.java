@@ -237,4 +237,94 @@ public class BorderTest {
         .discreteEffect(1f, 1f)
         .build();
   }
+
+  @Test
+  public void testSameObjectEquivalentTo() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+    final Border border = Border.create(c).build();
+    assertThat(border.isEquivalentTo(border)).isEqualTo(true);
+  }
+
+  @Test
+  public void testNullObjectEquivalentTo() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+    final Border border = Border.create(c).build();
+    assertThat(border.isEquivalentTo(null)).isEqualTo(false);
+  }
+
+  @Test
+  public void testDifferentObjectWithSameContentEquivalentTo() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+    final Border border1 =
+        Border.create(c)
+            .color(YogaEdge.LEFT, 0xFFFF0000)
+            .color(YogaEdge.TOP, 0xFFFFFF00)
+            .color(YogaEdge.RIGHT, 0xFFFFFFFF)
+            .color(YogaEdge.BOTTOM, 0xFFFF00FF)
+            .widthPx(YogaEdge.LEFT, 1)
+            .widthPx(YogaEdge.TOP, 2)
+            .widthPx(YogaEdge.RIGHT, 3)
+            .widthPx(YogaEdge.BOTTOM, 4)
+            .radiusPx(Border.Corner.TOP_LEFT, 1)
+            .radiusPx(Border.Corner.TOP_RIGHT, 2)
+            .radiusPx(Border.Corner.BOTTOM_RIGHT, 3)
+            .radiusPx(Border.Corner.BOTTOM_LEFT, 4)
+            .build();
+
+    final Border border2 =
+        Border.create(c)
+            .color(YogaEdge.LEFT, 0xFFFF0000)
+            .color(YogaEdge.TOP, 0xFFFFFF00)
+            .color(YogaEdge.RIGHT, 0xFFFFFFFF)
+            .color(YogaEdge.BOTTOM, 0xFFFF00FF)
+            .widthPx(YogaEdge.LEFT, 1)
+            .widthPx(YogaEdge.TOP, 2)
+            .widthPx(YogaEdge.RIGHT, 3)
+            .widthPx(YogaEdge.BOTTOM, 4)
+            .radiusPx(Border.Corner.TOP_LEFT, 1)
+            .radiusPx(Border.Corner.TOP_RIGHT, 2)
+            .radiusPx(Border.Corner.BOTTOM_RIGHT, 3)
+            .radiusPx(Border.Corner.BOTTOM_LEFT, 4)
+            .build();
+
+    assertThat(border1.isEquivalentTo(border2)).isEqualTo(true);
+  }
+
+  @Test
+  public void testDifferentObjectWithDifferentContentEquivalentTo() {
+    final ComponentContext c = new ComponentContext(getApplicationContext());
+    final Border border1 =
+        Border.create(c)
+            .color(YogaEdge.LEFT, 0xFFFF0000)
+            .color(YogaEdge.TOP, 0xFF29FF00)
+            .color(YogaEdge.RIGHT, 0xFFFFFFFF)
+            .color(YogaEdge.BOTTOM, 0xFFFF00FF)
+            .widthPx(YogaEdge.LEFT, 1)
+            .widthPx(YogaEdge.TOP, 2)
+            .widthPx(YogaEdge.RIGHT, 3)
+            .widthPx(YogaEdge.BOTTOM, 3)
+            .radiusPx(Border.Corner.TOP_LEFT, 1)
+            .radiusPx(Border.Corner.TOP_RIGHT, 2)
+            .radiusPx(Border.Corner.BOTTOM_RIGHT, 6)
+            .radiusPx(Border.Corner.BOTTOM_LEFT, 4)
+            .build();
+
+    final Border border2 =
+        Border.create(c)
+            .color(YogaEdge.LEFT, 0xFFFF0000)
+            .color(YogaEdge.TOP, 0xFFFFFF00)
+            .color(YogaEdge.RIGHT, 0xFFFFFFFF)
+            .color(YogaEdge.BOTTOM, 0xFFFF00FF)
+            .widthPx(YogaEdge.LEFT, 1)
+            .widthPx(YogaEdge.TOP, 2)
+            .widthPx(YogaEdge.RIGHT, 3)
+            .widthPx(YogaEdge.BOTTOM, 4)
+            .radiusPx(Border.Corner.TOP_LEFT, 1)
+            .radiusPx(Border.Corner.TOP_RIGHT, 2)
+            .radiusPx(Border.Corner.BOTTOM_RIGHT, 3)
+            .radiusPx(Border.Corner.BOTTOM_LEFT, 4)
+            .build();
+
+    assertThat(border1.isEquivalentTo(border2)).isEqualTo(false);
+  }
 }

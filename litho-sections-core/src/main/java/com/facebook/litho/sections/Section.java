@@ -356,8 +356,12 @@ public abstract class Section extends SectionLifecycle
   }
 
   @Nullable
-  protected StateContainer getStateContainer() {
+  protected StateContainer getStateContainer(ComponentContext c) {
     return mStateContainer;
+  }
+
+  protected StateContainer getStateContainer() {
+    return getStateContainer(mScopedContext);
   }
 
   protected void setStateContainer(StateContainer stateContainer) {

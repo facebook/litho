@@ -106,7 +106,7 @@ public class AnimationTest {
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
+          {false, false, false}, {false, false, true}, {true, false, false}, {true, true, false},
         });
   }
 
@@ -547,7 +547,7 @@ public class AnimationTest {
     mActivityController.get().setContentView(mLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
 
     // View should be null as state is null
     assertThat(view).describedAs("view before appearing").isNull();
@@ -631,7 +631,7 @@ public class AnimationTest {
     assertThat(view.getAlpha()).describedAs("view after 10 frames").isEqualTo(0.030153751f);
     mTransitionTestRule.step(1);
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after last re-measure and re-layout").isNull();
   }
 
@@ -1015,7 +1015,7 @@ public class AnimationTest {
     mActivityController.resume().visible();
 
     // The bug only happens if you start the animation in the middle twice.
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    View view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
 
     // View should be null as state is null
     assertThat(view).describedAs("view before appearing").isNull();
@@ -1030,7 +1030,7 @@ public class AnimationTest {
     // Update state again the element should not be there.
     mStateCaller.update();
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view unmount mid animation").isNull();
 
     mTransitionTestRule.step(1);
@@ -1042,7 +1042,7 @@ public class AnimationTest {
     // After state update we should have the view added but with alpha equal to 0
     assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
     mStateCaller.update();
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view unmount mid animation").isNull();
   }
 
@@ -1564,7 +1564,7 @@ public class AnimationTest {
         .describedAs("root host does not have disappearing items after setting tree")
         .isFalse();
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after setting new tree").isNull();
   }
 }

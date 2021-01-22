@@ -138,7 +138,7 @@ public class TriggerGeneratorTest {
                 + "  java.lang.Object _result = (java.lang.Object) TestSpec.testTriggerMethod1(\n"
                 + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) _ref.getStateContainerImpl().arg1,\n"
+                + "    (int) _ref.getStateContainerImpl(c).arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
                 + "    arg4,\n"
@@ -156,7 +156,7 @@ public class TriggerGeneratorTest {
                 + "  TestSpec.testTriggerMethod2(\n"
                 + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) _ref.getStateContainerImpl().arg1);\n"
+                + "    (int) _ref.getStateContainerImpl(c).arg1);\n"
                 + "}\n");
   }
 

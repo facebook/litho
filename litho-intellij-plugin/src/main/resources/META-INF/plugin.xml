@@ -70,9 +70,9 @@
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.SpecAnnotator"/>
+    <annotator order="first" language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.SpecAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
-    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.EventHandlerAnnotator"/>
+    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.MethodCallAnnotator"/>
 
     <applicationService serviceImplementation="com.facebook.litho.intellij.services.ComponentGenerateService" />
 
@@ -85,15 +85,11 @@
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.EventHandlerCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.ParamCompletionContributor" order="first"/>
 
-    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
+    <findUsagesHandlerFactory implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
 
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentsMethodDeclarationHandler"/>
-
-    <java.elementFinder implementation="com.facebook.litho.intellij.redsymbols.ComponentFinder" id="java" order="last"/>
-
-    <java.shortNamesCache implementation="com.facebook.litho.intellij.redsymbols.ComponentShortNamesCache"/>
 
     <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
 
@@ -104,16 +100,11 @@
       enabledByDefault="true"
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
-    <postStartupActivity implementation="com.facebook.litho.intellij.redsymbols.LithoStartupActivity"/>
-
     <projectConfigurable parentId="tools" instance="com.facebook.litho.intellij.settings.AppSettingsController"
       id="com.facebook.litho.intellij.settings.AppSettingsController" nonDefaultProject="false" />
     <projectService serviceImplementation="com.facebook.litho.intellij.settings.AppSettingsState"/>
-    <projectService serviceImplementation="com.facebook.litho.intellij.redsymbols.ComponentsCacheService"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.toolwindows.ComponentStructureView"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
-
-    <resolveScopeEnlarger implementation="com.facebook.litho.intellij.redsymbols.ComponentResolveScopeEnlarger"/>
 
     <toolWindow id="Litho Spec" anchor="left" icon="LithoPluginIcons.TOOLWINDOW"
       factoryClass="com.facebook.litho.intellij.toolwindows.LithoToolWindowFactory"
@@ -123,16 +114,6 @@
   <actions>
     <group id="litho.EditorPopupMenu">
       <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="EditorPopupMenu1"/>
-      <action id="ResolveLithoRedSymbolsAction"
-        class="com.facebook.litho.intellij.actions.ResolveRedSymbolsAction"
-        text="Resolve Litho Red Symbols"
-        icon="LithoPluginIcons.BASE_ACTION"
-      />
-      <action id="GenerateComponentAction"
-          class="com.facebook.litho.intellij.actions.GenerateComponentAction"
-          text="Regenerate Component"
-          icon="LithoPluginIcons.BASE_ACTION"
-      />
       <action id="GoToGeneratedClass"
           class="com.facebook.litho.intellij.actions.GoToGeneratedClassAction"
           text="Go To Component"

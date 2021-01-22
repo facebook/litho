@@ -4,12 +4,9 @@ title: Nested scrolling and measurement
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::danger UNDER CONSTRUCTION
-T79180567
-:::
+Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size. In this guide we'll talk about ways of measuring the height of a horizontal scrolling list (we'll call it h-scroll).
 
-Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size.
-In this guide we'll talk about ways of measuring the height of a horizontal scrolling list (we'll call it h-scroll), which is not as trivial and different height settings have different performance implications.
+Working with h-scroll is not always trivial because **different height settings have different performance implications**.
 
 To see how to create a horizontally scrolling list using a `RecyclerCollectionComponent`, check out [this](recycler-collection-component#horizontal-lists) guide.
 
@@ -28,28 +25,28 @@ In Litho this is the most efficient way to set the height of an h-scroll and it'
 
 To do this, just set the height through the `height` prop on your `RecyclerCollectionComponent`:
 ```java
-   @LayoutSpec
-   object FixedHeightHscrollComponentSpec {
+@LayoutSpec
+object FixedHeightHscrollComponentSpec {
 
-       @OnCreateLayout
-       fun onCreateLayout(c: ComponentContext, @Prop colors: List<Int>): Component {
-           return RecyclerCollectionComponent.create(c)
-             .recyclerConfiguration(ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build())
-             .section(DataDiffSection.create<Int>(SectionContext(c))
-               .data(colors)
-               .renderEventHandler(FixedHeightHscrollComponent.onRender(c))
-               .build())
-             .heightDip(150f)
-             .build()
-       }
+    @OnCreateLayout
+    fun onCreateLayout(c: ComponentContext, @Prop colors: List<Int>): Component {
+        return RecyclerCollectionComponent.create(c)
+          .recyclerConfiguration(ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build())
+          .section(DataDiffSection.create<Int>(SectionContext(c))
+            .data(colors)
+            .renderEventHandler(FixedHeightHscrollComponent.onRender(c))
+            .build())
+          .heightDip(150f)
+          .build()
+    }
 
-       @OnEvent(RenderEvent::class)
-       fun onRender(c: ComponentContext, @FromEvent model: Int): RenderInfo {
-           return ComponentRenderInfo.create()
-             .component(SolidColor.create(c).color(model).heightDip(100f).widthDip(100f))
-             .build()
-       }
-   }
+    @OnEvent(RenderEvent::class)
+    fun onRender(c: ComponentContext, @FromEvent model: Int): RenderInfo {
+        return ComponentRenderInfo.create()
+          .component(SolidColor.create(c).color(model).heightDip(100f).widthDip(100f))
+          .build()
+    }
+}
 ```
 ![fixedheight](/images/fixed-height-hscroll.png)
 
@@ -122,15 +119,15 @@ If you must do this, you can pass your own [RecyclerConfiguration](pathname:///j
 
 ```java
 RecyclerCollectionComponent.create(c)
-          .recyclerConfiguration(ListRecyclerConfiguration.create()
-              .recyclerBinderConfiguration(RecyclerBinderConfiguration.create().hasDynamicItemHeight(true).build())
-              .orientation(OrientationHelper.HORIZONTAL).build())
-          .section(DataDiffSection.create<Int>(SectionContext(c))
-            .data(colors)
-            .renderEventHandler(DynamicHeightHscrollComponent.onRender(c))
-            .build())
-          .canMeasureRecycler(true)
-          .build()
+    .recyclerConfiguration(ListRecyclerConfiguration.create()
+        .recyclerBinderConfiguration(RecyclerBinderConfiguration.create().hasDynamicItemHeight(true).build())
+        .orientation(OrientationHelper.HORIZONTAL).build())
+    .section(DataDiffSection.create<Int>(SectionContext(c))
+      .data(colors)
+      .renderEventHandler(DynamicHeightHscrollComponent.onRender(c))
+      .build())
+    .canMeasureRecycler(true)
+    .build()
 ```
 
 In the video below you can see that the h-scroll will remeasure to always adjust height to accommodate the tallest item, but it won't collapse to fit a smaller maximum height.

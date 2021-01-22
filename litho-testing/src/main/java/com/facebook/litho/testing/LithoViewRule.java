@@ -244,12 +244,24 @@ public class LithoViewRule implements TestRule {
     return mHeightSpec;
   }
 
-  /** Finds the first {@link View} with the specified tag in the rendered hierarchy. */
-  public @Nullable View findViewWithTag(Object tag) {
-    if (tag == null) {
-      return null;
-    }
+  /**
+   * Finds the first {@link View} with the specified tag in the rendered hierarchy, returning null
+   * if is doesn't exist.
+   */
+  public @Nullable View findViewWithTagOrNull(Object tag) {
     return findViewWithTagTransversal(mLithoView, tag);
+  }
+
+  /**
+   * Finds the first {@link View} with the specified tag in the rendered hierarchy, throwing if it
+   * doesn't exist.
+   */
+  public View findViewWithTag(Object tag) {
+    final View view = findViewWithTagOrNull(tag);
+    if (view == null) {
+      throw new RuntimeException("Did not find view with tag '" + tag + "'");
+    }
+    return view;
   }
 
   private @Nullable View findViewWithTagTransversal(View view, Object tag) {

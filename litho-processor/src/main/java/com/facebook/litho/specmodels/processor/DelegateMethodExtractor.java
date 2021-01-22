@@ -54,10 +54,26 @@ public class DelegateMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(CachedValue.class);
   }
 
+  public static ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods(
+      TypeElement typeElement,
+      List<Class<? extends Annotation>> permittedMethodAnnotations,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
+      Messager messager) {
+    return getDelegateMethods(
+        typeElement,
+        permittedMethodAnnotations,
+        new ArrayList<>(),
+        permittedInterStageInputAnnotations,
+        delegateMethodAnnotationsThatSkipDiffModels,
+        messager);
+  }
+
   /** Get the delegate methods from the given {@link TypeElement}. */
   public static ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods(
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedMethodAnnotations,
+      List<Class<? extends Annotation>> permittedMethodParamAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Messager messager) {
@@ -77,7 +93,8 @@ public class DelegateMethodExtractor {
             getMethodParams(
                 executableElement,
                 messager,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                getPermittedMethodParamAnnotations(
+                    permittedMethodParamAnnotations, permittedInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
                 delegateMethodAnnotationsThatSkipDiffModels);
 
@@ -122,5 +139,16 @@ public class DelegateMethodExtractor {
     permittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
 
     return permittedMethodParamAnnotations;
+  }
+
+  static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
+      List<Class<? extends Annotation>> permittedMethodParamAnnotations,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+    final List<Class<? extends Annotation>> allPermittedMethodParamAnnotations =
+        new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
+    allPermittedMethodParamAnnotations.addAll(permittedMethodParamAnnotations);
+    allPermittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+
+    return allPermittedMethodParamAnnotations;
   }
 }

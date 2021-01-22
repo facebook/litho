@@ -91,7 +91,7 @@ public class ComponentStructureViewTest extends LithoPluginIntellijTest {
             () -> {
               final PsiClass psiClass = LithoPluginUtils.getFirstClass(file, cls -> true).get();
               // Tool window subscription to ComponentGenerateService triggers updateView
-              ComponentGenerateService.getInstance().updateComponentSync(psiClass);
+              ComponentGenerateService.getInstance().getOrCreateSpecModel(psiClass);
               assertion.accept(componentStructureView.structureView);
             });
   }

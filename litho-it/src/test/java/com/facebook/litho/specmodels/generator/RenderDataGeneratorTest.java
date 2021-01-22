@@ -47,6 +47,7 @@ public class RenderDataGeneratorTest {
     mSpecModelWithoutDiff = mock(SpecModel.class);
     mRenderDataDiffModel = mock(RenderDataDiffModel.class);
 
+    when(mSpecModelWithDiff.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
     when(mSpecModelWithDiff.getRenderDataDiffs())
         .thenReturn(ImmutableList.of(mRenderDataDiffModel));
     when(mSpecModelWithDiff.getComponentName()).thenReturn("WithDiffSpec");

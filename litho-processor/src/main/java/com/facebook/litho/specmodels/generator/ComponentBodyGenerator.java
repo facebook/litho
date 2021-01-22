@@ -18,7 +18,6 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_ACCESSOR;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_GETTER;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
@@ -86,7 +85,7 @@ public class ComponentBodyGenerator {
     if (hasState) {
       final ClassName stateContainerClass =
           ClassName.bestGuess(getStateContainerClassName(specModel));
-      builder.addMethod(generateStateContainerImplGetter(stateContainerClass));
+      builder.addMethod(generateStateContainerImplGetter(specModel, stateContainerClass));
       builder.addMethod(generateStateContainerCreator(stateContainerClass));
     }
 
@@ -153,6 +152,7 @@ public class ComponentBodyGenerator {
             .addParameter(ClassName.bestGuess(className), copyParamName);
     final MethodSpec.Builder recordBuilder =
         MethodSpec.methodBuilder("record")
+            .addParameter(specModel.getContextClass(), "c")
             .addParameter(specModel.getComponentTypeName(), recordParamName);
 
     for (RenderDataDiffModel diff : specModel.getRenderDataDiffs()) {
@@ -190,7 +190,10 @@ public class ComponentBodyGenerator {
 
       copyBuilder.addStatement("$L = $L.$L", name, copyParamName, name);
       recordBuilder.addStatement(
-          "$L = $L.$L", name, recordParamName, getImplAccessor(specModel, modelToDiff, null));
+          "$L = $L.$L",
+          name,
+          recordParamName,
+          getImplAccessor("record", specModel, modelToDiff, "c"));
     }
 
     return renderInfoClassBuilder
@@ -204,12 +207,14 @@ public class ComponentBodyGenerator {
     return refClassName.substring(0, 1).toLowerCase(Locale.ROOT) + refClassName.substring(1);
   }
 
-  static MethodSpec generateStateContainerImplGetter(TypeName stateContainerImplClassName) {
+  static MethodSpec generateStateContainerImplGetter(
+      SpecModel specModel, TypeName stateContainerImplClassName) {
     return MethodSpec.methodBuilder(STATE_CONTAINER_IMPL_GETTER)
         .addModifiers(Modifier.PRIVATE)
+        .addParameter(specModel.getContextClass(), "c")
         .returns(stateContainerImplClassName)
         .addStatement(
-            "return ($T) super." + STATE_CONTAINER_GETTER + "()", stateContainerImplClassName)
+            "return ($T) super." + STATE_CONTAINER_GETTER + "(c)", stateContainerImplClassName)
         .build();
   }
 
@@ -434,16 +439,13 @@ public class ComponentBodyGenerator {
     }
 
     for (PropModel prop : specModel.getProps()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, prop, runMode));
-    }
-
-    for (StateParamModel state : specModel.getStateValues()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, state, runMode));
+      isEquivalentBuilder.addCode(
+          getCompareStatement("isEquivalentTo", specModel, instanceRefName, prop, runMode));
     }
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       isEquivalentBuilder.addCode(
-          getCompareStatement(specModel, instanceRefName, treeProp, runMode));
+          getCompareStatement("isEquivalentTo", specModel, instanceRefName, treeProp, runMode));
     }
 
     isEquivalentBuilder.addStatement("return true");
@@ -645,16 +647,19 @@ public class ComponentBodyGenerator {
   }
 
   static CodeBlock getCompareStatement(
+      String methodName,
       SpecModel specModel,
       String implInstanceName,
       MethodParamModel field,
       EnumSet<RunMode> runMode) {
-    final String implAccessor = getImplAccessor(specModel, field, null, true);
+    final String implAccessor = getImplAccessor(methodName, specModel, field, null, true);
 
-    return getCompareStatement(field, implAccessor, implInstanceName + "." + implAccessor, runMode);
+    return getCompareStatement(
+        methodName, field, implAccessor, implInstanceName + "." + implAccessor, runMode);
   }
 
   static CodeBlock getCompareStatement(
+      String methodName,
       MethodParamModel field,
       String firstComparator,
       String secondComparator,
@@ -823,18 +828,32 @@ public class ComponentBodyGenerator {
   }
 
   static String getImplAccessor(
-      SpecModel specModel, MethodParamModel methodParamModel, String contextParamName) {
-    return getImplAccessor(specModel, methodParamModel, contextParamName, false);
+      String methodName,
+      SpecModel specModel,
+      MethodParamModel methodParamModel,
+      String contextParamName) {
+    return getImplAccessor(methodName, specModel, methodParamModel, contextParamName, false);
   }
 
   static String getImplAccessor(
+      String methodName,
       SpecModel specModel,
       MethodParamModel methodParamModel,
       String contextParamName,
       boolean shallow) {
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
-      return STATE_CONTAINER_ACCESSOR + "." + methodParamModel.getName();
+      if (contextParamName == null) {
+        throw new IllegalStateException(
+            "Cannot access state with in method "
+                + methodName
+                + " without a scoped component context.");
+      }
+      return STATE_CONTAINER_IMPL_GETTER
+          + "("
+          + contextParamName
+          + ")."
+          + methodParamModel.getName();
     } else if (methodParamModel instanceof CachedValueParamModel) {
       if (contextParamName == null) {
         throw new IllegalStateException("Need a scoped context to access cached values.");

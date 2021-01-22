@@ -28,6 +28,8 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType;
@@ -216,6 +218,12 @@ public class DelegateMethodValidation {
                           + "> "
                           + delegateMethodParam.getName()));
             }
+
+            validateUniqueInterStatePropNames(
+                interStageOutputMethodAnnotation,
+                delegateMethodParam.getName(),
+                specModel,
+                validationErrors);
           }
         } else if (!isOptionalParamValid(
             specModel, delegateMethodDescription.optionalParameterTypes, delegateMethodParam)) {
@@ -228,6 +236,67 @@ public class DelegateMethodValidation {
     }
 
     return validationErrors;
+  }
+
+  static void validateUniqueInterStatePropNames(
+      Class<? extends Annotation> interStageOutputMethodAnnotation,
+      String interStageInputParamName,
+      SpecModel specModel,
+      List<SpecModelValidationError> validationErrors) {
+    validateDuplicateName(
+        interStageInputParamName,
+        specModel.getProps(),
+        interStageOutputMethodAnnotation,
+        Prop.class,
+        validationErrors);
+    validateDuplicateName(
+        interStageInputParamName,
+        specModel.getStateValues(),
+        interStageOutputMethodAnnotation,
+        State.class,
+        validationErrors);
+    validateDuplicateName(
+        interStageInputParamName,
+        specModel.getInjectProps(),
+        interStageOutputMethodAnnotation,
+        InjectProp.class,
+        validationErrors);
+    validateDuplicateName(
+        interStageInputParamName,
+        specModel.getTreeProps(),
+        interStageOutputMethodAnnotation,
+        TreeProp.class,
+        validationErrors);
+  }
+
+  static void validateDuplicateName(
+      String fieldName,
+      List<? extends MethodParamModel> propModelList,
+      Class existingAnnotation,
+      Class expectedAnnotation,
+      List<SpecModelValidationError> validationErrors) {
+    if (propModelList == null) {
+      return;
+    }
+
+    for (int i = 0, size = propModelList.size(); i < size; i++) {
+      final MethodParamModel model = propModelList.get(i);
+      if (fieldName.equals(model.getName())) {
+
+        validationErrors.add(
+            new SpecModelValidationError(
+                model.getRepresentedObject(),
+                "The parameter name of @"
+                    + expectedAnnotation.getSimpleName()
+                    + " \""
+                    + model.getName()
+                    + "\" and @"
+                    + existingAnnotation.getSimpleName()
+                    + " \""
+                    + model.getName()
+                    + "\" collide!"));
+      }
+    }
   }
 
   public static List<SpecModelValidationError> validateDefinedParameterTypes(

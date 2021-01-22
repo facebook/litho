@@ -1,3 +1,5 @@
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
@@ -16,4 +18,10 @@ fb_android_resource(
         make_dep_path("litho-it/src/test/..."),
         make_dep_path("litho-it-powermock/src/test/..."),
     ],
+)
+
+fb_native.android_manifest(
+    name = "manifest",
+    skeleton = "AndroidManifest.xml",
+    visibility = ["PUBLIC"],
 )

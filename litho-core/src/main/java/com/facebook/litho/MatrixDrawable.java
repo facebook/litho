@@ -50,7 +50,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     super();
   }
 
-  public void mount(T drawable, DrawableMatrix matrix) {
+  public void mount(@Nullable T drawable, @Nullable DrawableMatrix matrix) {
     if (mDrawable == drawable) {
       return;
     }
@@ -133,6 +133,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     mWidth = mHeight = 0;
   }
 
+  @Nullable
   public T getMountedDrawable() {
     return mDrawable;
   }

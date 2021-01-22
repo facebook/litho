@@ -3,75 +3,94 @@ id: working-ranges
 title: 'Advanced: Prefetch and pagination'
 ---
 
-:::danger UNDER CONSTRUCTION
-T79180572
-:::
+The Working Ranges API provides the means to perform certain complex operations such as data prefetching or cache warming. It extends Sections with a set of appearance and visibility events when a Section enters and exits a given range of positions inside and outside the screen viewport. For example, you can perform a network request to start prefetching data as the last element of a list approaches the viewport.
 
-The purpose of the working ranges API is to provide flexible appearance events for a component entering and exiting a given range to perform certain custom operations. The common useful case is for data prefetching or cache warming.
+The API is split in two parts: one defines what a range is, and the other are the Events triggered when Sections interact with the defined ranges.
 
-Comparing to the working ranges in [ComponentKit](https://componentkit.org/), the granularity in ComponentKit is pixels whereas in Litho the granularity is positions. This means we can only tell the component if it's in the range instead of how many pixels are in the range.
+## Defining a range
 
-To use the working range API, you first need to define your own working range class like this:
+To use the working range API, you first need to define your own working range class that implements the [`WorkingRange`](pathname:///javadoc/com/facebook/litho/WorkingRange.html) interface. This interface provides two main functions: `shouldEnterRange` and `shouldExitRange`.
 
 ```java
-public class MyWorkingRange implements WorkingRange {
+public class AtLeastPartiallyVisibleRange implements WorkingRange { ... }
+```
 
-  @Override
-  public boolean shouldEnterRange(
-      int position,
-      int firstVisibleIndex,
-      int lastVisibleIndex,
-      int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex) {
-    return position >= firstVisibleIndex
-      && position <= lastVisibleIndex;
-  }
+For both functions the parameter `position` is the position of the item in the list, and the `firstVisibleIndex` / `lastVisibleIndex` / `firstFullyVisibleIndex` / `lastFullyVisibleIndex` parameters are current visible range of the viewport.
 
-  @Override
-  public boolean shouldExitRange(
-      int position,
-      int firstVisibleIndex,
-      int lastVisibleIndex,
-      int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex) {
-    return position < firstVisibleIndex
-      || position > lastVisibleIndex;
-  }
+`shouldEnterRange` is used to check if the **item is within a user-defined range**. In this example we check that means that the position is at least partially visible on screen.
+
+```java
+@Override
+public boolean shouldEnterRange(
+    int position,
+    int firstVisibleIndex,
+    int lastVisibleIndex,
+    int firstFullyVisibleIndex,
+    int lastFullyVisibleIndex) {
+  return position >= firstVisibleIndex
+    && position <= lastVisibleIndex;
 }
 ```
 
-The working range class needs to implement the [WorkingRange](pathname:///javadoc/com/facebook/litho/WorkingRange.html) interface. `shouldEnterRange` is used to check if the item at the given position is within a user-defined the range and `shouldExitRange` is used to check if the item is outside the range. The parameter `position` is the position of the item in the list, and the `firstVisibleIndex` / `lastVisibleIndex` / `firstFullyVisibleIndex` / `lastFullyVisibleIndex` parameters are current visible range of the viewport.
+`shouldExitRange` is used to check if the **item is outside a user-defined the range**. In this example we check that means that the position completely not visible, not even partially.
 
-After defining a working range, now we implement the callback methods inside the components that should receive the exit and enter range events.
+```java
+@Override
+public boolean shouldExitRange(
+    int position,
+    int firstVisibleIndex,
+    int lastVisibleIndex,
+    int firstFullyVisibleIndex,
+    int lastFullyVisibleIndex) {
+  return position < firstVisibleIndex
+    || position > lastVisibleIndex;
+}
+```
+
+:::caution
+Compared to the working ranges in [ComponentKit](https://componentkit.org/), the granularity in ComponentKit is pixels whereas in Litho the granularity is positions. This means we can only tell the component if it's in the range instead of how many pixels are in the range.
+:::
+
+
+## Receiving Range events
+
+After defining a working range, now we implement the callback functions inside the components that should receive the exit and enter range events on the `@LayoutSpec` that contains our `RecyclerComponent`.
 
 ```java
 @LayoutSpec
-class MyComponentSpec {
-  @OnEnteredRange(name = "prefetch")
-  static void onEnteredWorkingRange(
-      ComponentContext c,
-      @Prop Object object) {
-    ...
-  }
-
-  @OnExitedRange(name = "prefetch")
-  static void onExitedWorkingRange(
-      ComponentContext c,
-      @Prop Object object) {
-    ....
-  }
+class ListContainerComponentSpec {
 
   @OnRegisterRanges
   static void registerWorkingRanges(
       ComponentContext c,
-      @Prop WorkingRange myRange) {
-    MyComponent.registerPrefetchWorkingRange(c, myRange);
+      @Prop AtLeastPartiallyVisibleRange myRange) {
+    ListContainerComponent.registerPrefetchWorkingRange(c, myRange);
   }
 }
 ```
 
-The `@OnEnteredRange` method is triggered when the component enters the range, and the `@OnExitedRange` method is triggered when the component exits it.
+The `@OnEnteredRange` event is triggered **when the component enters the range**:
 
-The name field in the annotation is used by the Annotation Processor Tool (APT) to generate register methods. For example, for the name "prefetch", the APT would generate a register method called "registerPrefetchWorkingRange", and in the `@OnRegisterRanges` method, we can register our working range with these register methods. The register method binds the working range and `@OnEnteredRange` / `@OnExitedRange` methods.
+```java
+@OnEnteredRange(name = "prefetch")
+static void onEnteredWorkingRange(
+    ComponentContext c,
+    @Prop MyService service) {
+  service.startPrefetch();
+}
+```
 
-When items in the list are inserted/removed/scrolled, the [RecyclerBinder](/docs/recycler-component#recyclerbinder) would take care of checking if the its working range state changed (in range → out of range and vice versa) and trigger the corresponding `@OnEnteredRange` / `@OnExitedRange` methods on the components that registered the callbacks.
+And the `@OnExitedRange` event is triggered **when the component exits the range**:
+
+```java
+@OnExitedRange(name = "prefetch")
+static void onExitedWorkingRange(
+    ComponentContext c,
+    @Prop MyService service) {
+  service.cancelAllPrefetches();
+}
+```
+
+:::tip
+The name field in the annotation is used to allow multiple range events for a single layout. For example "paginate" becomes `registerPaginateWorkingRange`.
+:::

@@ -53,7 +53,7 @@ module.exports = {
         },
         {
           label: 'Tutorial',
-          to: 'docs/tutorial',
+          to: 'docs/tutorial/overview',
           position: 'right',
         },
         {
@@ -132,10 +132,13 @@ module.exports = {
       defaultMode: 'light',
       disableSwitch: true,
     },
-    algolia: {
-      apiKey: '6502239eccd45af18518695c2b743307',
-      indexName: 'fblitho',
-    },
+    algolia: fbContent({
+      internal: undefined,
+      external: {
+        apiKey: '6502239eccd45af18518695c2b743307',
+        indexName: 'fblitho',
+      }
+    }),
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),

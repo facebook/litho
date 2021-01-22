@@ -24,11 +24,10 @@ inline class DslScope(val context: ComponentContext) {
   val resourceResolver: ResourceResolver
     get() = context.resourceResolver
 
-  /*inline*/ fun Dp.toPx(): Px = Px(resourceResolver.dipsToPixels(value))
-  /*inline*/ fun Sp.toPx(): Px = Px(resourceResolver.sipsToPixels(value))
+  inline fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
 
   /*inline*/ fun Component.applyStyle(style: Style?) {
     style ?: return
-    copyStyleToProps(style, getOrCreateCommonProps)
+    copyStyleToProps(style, getOrCreateCommonProps())
   }
 }

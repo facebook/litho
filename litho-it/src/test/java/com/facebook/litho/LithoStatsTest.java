@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -27,8 +28,10 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+@LooperMode(LEGACY)
 @RunWith(LithoTestRunner.class)
 public class LithoStatsTest {
 

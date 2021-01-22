@@ -42,4 +42,11 @@ public class MountableTextInputLayout extends TextInputLayout {
   public View.OnFocusChangeListener getOnFocusChangeListener() {
     return onFocusChangeListener;
   }
+
+  @Override
+  public void setOnClickListener(View.OnClickListener l) {
+    if (editText != null) {
+      editText.setOnClickListener(l);
+    }
+  }
 }

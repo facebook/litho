@@ -19,17 +19,19 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.Function;
 
-public class EventHandler<E> implements Function<Void> {
+public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler<E>> {
 
   public HasEventDispatcher mHasEventDispatcher;
   public final int id;
   public final @Nullable Object[] params;
 
-  protected EventHandler(HasEventDispatcher hasEventDispatcher, int id) {
+  /* TODO: (T81557408) Fix @Nullable issue */
+  protected EventHandler(@Nullable HasEventDispatcher hasEventDispatcher, int id) {
     this(hasEventDispatcher, id, null);
   }
 
-  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
+  public EventHandler(
+      @Nullable HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
     this.mHasEventDispatcher = hasEventDispatcher;
     this.id = id;
     this.params = params;
@@ -45,6 +47,7 @@ public class EventHandler<E> implements Function<Void> {
     mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
   }
 
+  @Override
   public boolean isEquivalentTo(@Nullable EventHandler other) {
     if (this == other) {
       return true;

@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class WorkingRangeStatusHandlerTest {
   public void setup() {
     mWorkingRangeStateHandler = new WorkingRangeStatusHandler();
     mComponent = mock(Component.class);
-    when(mComponent.getGlobalKey()).thenReturn(GLOBAL_KEY);
+    Whitebox.setInternalState(mComponent, "mGlobalKey", GLOBAL_KEY);
   }
 
   @Test

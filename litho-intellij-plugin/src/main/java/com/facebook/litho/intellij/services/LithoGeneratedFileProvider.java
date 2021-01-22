@@ -32,19 +32,23 @@ import org.jetbrains.annotations.Nullable;
 
 /** Provider of generated Litho files information. */
 public class LithoGeneratedFileProvider {
-  private final String shortName;
   private final Map<String, PsiClass> componentFQNToSpec = new HashMap<>();
 
-  public LithoGeneratedFileProvider(String shortName) {
-    this.shortName = shortName;
+  public static LithoGeneratedFileProvider INSTANCE() {
+    return Holder.INSTANCE;
   }
+
+  private LithoGeneratedFileProvider() {}
 
   /**
    * Guesses class fully qualified names for the given short name. This method should be called
    * before {@link #createFileContent(String)}
    */
   public List<String> guessQualifiedNames(
-      Project project, GlobalSearchScope searchScope, Map<String, String> eventMetadata) {
+      Project project,
+      GlobalSearchScope searchScope,
+      String shortName,
+      Map<String, String> eventMetadata) {
     return Arrays.stream(
             PsiSearchUtils.findClassesByShortName(
                 project,
@@ -76,7 +80,7 @@ public class LithoGeneratedFileProvider {
    * Creates new file text content for the given fully qualified name.
    *
    * @param fqn should be one of the names provided by {@link #guessQualifiedNames(Project,
-   *     GlobalSearchScope, Map)}.
+   *     GlobalSearchScope, String, Map)}.
    * @return file text content.
    */
   @Nullable
@@ -86,5 +90,13 @@ public class LithoGeneratedFileProvider {
     if (content == null) return null;
 
     return content.second;
+  }
+
+  public void clear() {
+    componentFQNToSpec.clear();
+  }
+
+  private static class Holder {
+    static final LithoGeneratedFileProvider INSTANCE = new LithoGeneratedFileProvider();
   }
 }

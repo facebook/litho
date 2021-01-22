@@ -49,7 +49,11 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  public boolean shouldUpdate(Component previous, Component next) {
+  public boolean shouldUpdate(
+      ComponentContext previousScopedContext,
+      Component previous,
+      ComponentContext nextScopedContext,
+      Component next) {
     return !next.equals(previous);
   }
 

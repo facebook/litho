@@ -29,8 +29,9 @@ inline fun DslScope.Column(
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
     style: Style? = null,
-    content: DslContainerScope.() -> Unit = {}
+    children: List<Component?>? = null
 ): Column =
+    // TODO(t81718888): Bypass builder for Row and Column since they are so common
     Column.create(context)
         .apply {
           alignContent?.let { alignContent(it) }
@@ -40,7 +41,7 @@ inline fun DslScope.Column(
           if (reverse) {
             reverse(reverse)
           }
-          DslContainerScope(this).content()
+          children?.forEach { child(it) }
         }
         .build()
         .apply { applyStyle(style) }
@@ -52,7 +53,7 @@ inline fun DslScope.Row(
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
     style: Style? = null,
-    content: DslContainerScope.() -> Unit = {}
+    children: List<Component?>? = null
 ): Row =
     Row.create(context)
         .apply {
@@ -63,21 +64,7 @@ inline fun DslScope.Row(
           if (reverse) {
             reverse(reverse)
           }
-          DslContainerScope(this).content()
+          children?.forEach { child(it) }
         }
         .build()
         .apply { applyStyle(style) }
-
-/**
- * A scope that exposes only [unaryPlus] operator in the context of [Component.ContainerBuilder]
- * containers for adding children.
- */
-inline class DslContainerScope(private val container: Component.ContainerBuilder<*>) {
-  operator fun Component.Builder<*>?.unaryPlus() {
-    container.child(this)
-  }
-
-  operator fun Component?.unaryPlus() {
-    container.child(this)
-  }
-}

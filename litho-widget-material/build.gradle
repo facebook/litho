@@ -29,9 +29,9 @@ android {
 dependencies {
     implementation project(':litho-core')
     implementation project(':litho-widget')
-    
+
     implementation deps.supportMaterial
-    
+
     annotationProcessor project(':litho-processor')
 
     // Annotations

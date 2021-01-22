@@ -26,6 +26,9 @@ public class AtomicReferenceEditorInstance implements Editor {
   @Override
   public EditorValue read(Field f, Object node) {
     AtomicReference<Object> reference = EditorUtils.getNodeUNSAFE(f, node);
+    if (reference == null) {
+      return EditorValue.string("null");
+    }
     final Object o = reference.get();
     if (o == null) {
       return EditorValue.string("null");

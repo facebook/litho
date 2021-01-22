@@ -21,6 +21,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
@@ -29,6 +31,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
@@ -50,6 +53,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaDirection;
+import java.util.List;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
@@ -175,6 +179,7 @@ class HorizontalScrollSpec {
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
@@ -186,6 +191,7 @@ class HorizontalScrollSpec {
         childComponentTree,
         lastScrollPosition,
         onScrollChangeListener,
+        scrollStateListener,
         componentWidth,
         componentHeight);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
@@ -241,7 +247,8 @@ class HorizontalScrollSpec {
             .build());
   }
 
-  static class HorizontalScrollLithoView extends HorizontalScrollView {
+  static class HorizontalScrollLithoView extends HorizontalScrollView
+      implements HasLithoViewChildren {
     private final LithoView mLithoView;
 
     private int mComponentWidth;
@@ -249,11 +256,28 @@ class HorizontalScrollSpec {
 
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private HorizontalScrollSpec.OnScrollChangeListener mOnScrollChangeListener;
+    @Nullable private ScrollStateDetector mScrollStateDetector;
 
     public HorizontalScrollLithoView(Context context) {
       super(context);
       mLithoView = new LithoView(context);
       addView(mLithoView);
+    }
+
+    @Override
+    public void fling(int velocityX) {
+      super.fling(velocityX);
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.fling();
+      }
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+      super.draw(canvas);
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onDraw();
+      }
     }
 
     @Override
@@ -266,6 +290,21 @@ class HorizontalScrollSpec {
         }
         mScrollPosition.x = getScrollX();
       }
+
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onScrollChanged();
+      }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+      boolean isConsumed = super.onTouchEvent(motionEvent);
+
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onTouchEvent(motionEvent);
+      }
+
+      return isConsumed;
     }
 
     @Override
@@ -283,10 +322,16 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
 
+    @Override
+    public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+      lithoViews.add(mLithoView);
+    }
+
     void mount(
         ComponentTree componentTree,
         ScrollPosition scrollPosition,
         @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
+        ScrollStateListener scrollStateListener,
         int width,
         int height) {
       mLithoView.setComponentTree(componentTree);
@@ -294,15 +339,27 @@ class HorizontalScrollSpec {
       mOnScrollChangeListener = onScrollChangeListener;
       mComponentWidth = width;
       mComponentHeight = height;
+
+      if (scrollStateListener != null) {
+        if (mScrollStateDetector == null) {
+          mScrollStateDetector = new ScrollStateDetector(this);
+        }
+        mScrollStateDetector.setListener(scrollStateListener);
+      }
     }
 
     void unmount() {
-      // Clear all component-related state from the view.
       mLithoView.unbind();
+      mLithoView.setComponentTree(null);
+
       mComponentWidth = 0;
       mComponentHeight = 0;
       mScrollPosition = null;
       mOnScrollChangeListener = null;
+      setScrollX(0);
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.setListener(null);
+      }
     }
   }
 

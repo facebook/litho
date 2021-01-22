@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.redsymbols;
 
+import static com.facebook.litho.intellij.LithoPluginUtils.getVirtualFile;
+
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
@@ -31,11 +33,11 @@ import com.intellij.psi.search.GlobalSearchScope;
  *
  * @see ComponentResolveScopeEnlarger
  */
-public class ComponentScope extends GlobalSearchScope {
+class ComponentScope extends GlobalSearchScope {
   private static final Key<Boolean> KEY = Key.create("com.facebook.litho.intellij.file.Component");
   private static final Logger LOG = Logger.getInstance(ComponentScope.class);
 
-  public static ComponentScope getInstance() {
+  static ComponentScope getInstance() {
     return Holder.INSTANCE;
   }
 
@@ -51,25 +53,18 @@ public class ComponentScope extends GlobalSearchScope {
    * Includes {@link VirtualFile} of the given {@link PsiFile} in the scope and returns included
    * file.
    */
-  public static VirtualFile include(PsiFile file) {
+  static VirtualFile include(PsiFile file) {
     final VirtualFile vf = getVirtualFile(file);
     vf.putUserData(KEY, true);
     return vf;
   }
 
-  public static boolean contains(PsiFile file) {
+  static boolean contains(PsiFile file) {
     return containsInternal(getVirtualFile(file));
   }
 
   private static boolean containsInternal(VirtualFile file) {
     return StdFileTypes.JAVA.equals(file.getFileType()) && file.getUserData(KEY) != null;
-  }
-
-  public static VirtualFile getVirtualFile(PsiFile file) {
-    final VirtualFile vf = file.getVirtualFile();
-    if (vf != null) return vf;
-
-    return file.getViewProvider().getVirtualFile();
   }
 
   @Override

@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore.transitions;
 
+import android.graphics.Rect;
+
 /**
  * A root {@link com.facebook.rendercore.Host} using the transition extension would need to
  * implement this interface to be able to receive size updates when animating. The size information
@@ -38,4 +40,10 @@ public interface AnimatedRootHost {
    * each frame to animate the size of the root {@link com.facebook.rendercore.Host}.
    */
   void setAnimatedHeight(int height);
+
+  /**
+   * This allows inner RootHosts to trigger a mount on a custom visibleRect. We need this to force
+   * animated inner root hosts to be mounted for animation.
+   */
+  void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs);
 }

@@ -45,7 +45,7 @@ public class ViewAssertions {
       final MatchNode.DebugTraceContext debugTraceContext = new MatchNode.DebugTraceContext();
       try {
         root.assertMatches(mView, debugTraceContext);
-      } catch (AssertionError e) {
+      } catch (Throwable e) {
         String viewHierarchy = getHierarchyAsString(mView);
         String matchNodeList = getDebugMatchNodeString(debugTraceContext);
         String context =
@@ -56,6 +56,10 @@ public class ViewAssertions {
                   "\n" + context + "\n" + e.getMessage(),
                   ((ComparisonFailure) e).getExpected(),
                   ((ComparisonFailure) e).getActual());
+          withContext.setStackTrace(e.getStackTrace());
+          throw withContext;
+        } else if (e instanceof AssertionError) {
+          AssertionError withContext = new AssertionError("\n" + context + "\n" + e.getMessage());
           withContext.setStackTrace(e.getStackTrace());
           throw withContext;
         } else {
