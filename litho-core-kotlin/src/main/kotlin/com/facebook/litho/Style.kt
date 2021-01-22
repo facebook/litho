@@ -90,13 +90,13 @@ private enum class ObjectField {
 interface StyleItem {
 
   /** Sets this style item value on the given [CommonProps]. */
-  fun DslScope.applyToProps(commonProps: CommonProps)
+  fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps)
 }
 
 /** Common style item for all dimen styles. See note on [DimenField] about this pattern. */
 private class DimenStyleItem(val field: DimenField, val value: Dimen) : StyleItem {
-  override fun DslScope.applyToProps(commonProps: CommonProps) {
-    val pixelValue = value.toPixels()
+  override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) {
+    val pixelValue = value.toPixels(resourceResolver)
     when (field) {
       DimenField.WIDTH -> commonProps.widthPx(if (value == Dimen.Hairline) 1 else pixelValue)
       DimenField.HEIGHT -> commonProps.heightPx(if (value == Dimen.Hairline) 1 else pixelValue)
@@ -129,7 +129,7 @@ private class DimenStyleItem(val field: DimenField, val value: Dimen) : StyleIte
 
 /** Common style item for all float styles. See note on [DimenField] about this pattern. */
 private class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
-  override fun DslScope.applyToProps(commonProps: CommonProps) {
+  override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) {
     when (field) {
       FloatField.WIDTH_PERCENT -> commonProps.widthPercent(value)
       FloatField.HEIGHT_PERCENT -> commonProps.heightPercent(value)
@@ -147,7 +147,7 @@ private class FloatStyleItem(val field: FloatField, val value: Float) : StyleIte
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
 private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
-  override fun DslScope.applyToProps(commonProps: CommonProps) {
+  override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) {
     when (field) {
       ObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
       ObjectField.POSITION_TYPE -> value?.let { commonProps.positionType(it as YogaPositionType) }
@@ -328,6 +328,10 @@ open class Style(
     }
   }
 
+  internal fun applyToProps(resourceResolver: ResourceResolver, props: CommonProps) {
+    forEach { it.applyToProps(resourceResolver, props) }
+  }
+
   /**
    * An empty Style singleton that can be used to build a chain of style items.
    *
@@ -353,8 +357,4 @@ private class CombinedStyle(val first: Style?, val second: Style?) : Style(first
     first?.forEach(lambda)
     second?.forEach(lambda)
   }
-}
-
-internal fun DslScope.copyStyleToProps(style: Style, props: CommonProps) {
-  style.forEach { stylePiece -> with(stylePiece) { applyToProps(props) } }
 }

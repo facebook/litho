@@ -27,7 +27,6 @@ inline class DslScope(val context: ComponentContext) {
   inline fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
 
   /*inline*/ fun Component.applyStyle(style: Style?) {
-    style ?: return
-    copyStyleToProps(style, getOrCreateCommonProps())
+    style?.applyToProps(resourceResolver, getOrCreateCommonProps())
   }
 }
