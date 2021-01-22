@@ -50,26 +50,87 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     return sInstance;
   }
 
-  static class VisibilityMountExtensionState {
+  @Override
+  public VisibilityMountExtensionState createState() {
+    return new VisibilityMountExtensionState();
+  }
 
-    // Holds a list with information about the components linked to the VisibilityOutputs that are
-    // stored in LayoutState. An item is inserted in this map if its corresponding component is
-    // visible. When the component exits the viewport, the item associated with it is removed from
-    // the map.
-    private final Map<String, VisibilityItem> mVisibilityIdToItemMap = new HashMap<>();
-    private final Rect mPreviousLocalVisibleRect = new Rect();
+  @Override
+  public void beforeMount(
+      ExtensionState<VisibilityMountExtensionState> extensionState,
+      Input input,
+      @Nullable Rect localVisibleRect) {
+    final VisibilityMountExtensionState state = extensionState.getState();
 
-    private boolean mIncrementalVisibilityEnabled;
-    private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
-    private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
-    private @Nullable VisibilityModule mVisibilityModule;
-    private @Nullable VisibilityModuleInput mVisibilityModuleInput;
-    private @Nullable Rect mCurrentLocalVisibleRect;
+    state.mVisibilityOutputs = input.getVisibilityOutputs();
+    state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
+    state.mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
+    state.mVisibilityModuleInput = input.getVisibilityModuleInput();
+    state.mPreviousLocalVisibleRect.setEmpty();
+    state.mCurrentLocalVisibleRect = localVisibleRect;
+  }
 
-    /** @deprecated Only used for Litho's integration. Marked for removal. */
-    @Deprecated private @Nullable Host mRootHost;
+  @Override
+  public void afterMount(ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
 
-    private VisibilityMountExtensionState() {}
+    if (processVisibilityOutputs) {
+      final VisibilityMountExtensionState state = extensionState.getState();
+      processVisibilityOutputs(extensionState, state.mCurrentLocalVisibleRect, true);
+    }
+  }
+
+  @Override
+  public void onVisibleBoundsChanged(
+      ExtensionState<VisibilityMountExtensionState> extensionState,
+      @Nullable Rect localVisibleRect) {
+    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
+
+    if (processVisibilityOutputs) {
+      processVisibilityOutputs(extensionState, localVisibleRect, false);
+    }
+  }
+
+  @Override
+  public void onUnbind(ExtensionState<VisibilityMountExtensionState> extensionState) {
+    clearVisibilityItems(extensionState);
+  }
+
+  @Override
+  public void onUnmount(ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final VisibilityMountExtensionState state = extensionState.getState();
+    state.mPreviousLocalVisibleRect.setEmpty();
+  }
+
+  @VisibleForTesting
+  public static Map<String, VisibilityItem> getVisibilityIdToItemMap(
+      ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final VisibilityMountExtensionState state = extensionState.getState();
+    return state.mVisibilityIdToItemMap;
+  }
+
+  @UiThread
+  public static void clearVisibilityItems(
+      final ExtensionState<VisibilityMountExtensionState> extensionState) {
+    final VisibilityMountExtensionState state = extensionState.getState();
+    if (state.mVisibilityModule != null) {
+      clearVisibilityItemsIncremental(state);
+    } else {
+      clearVisibilityItemsNonincremental(state);
+    }
+    state.mPreviousLocalVisibleRect.setEmpty();
+  }
+
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
+  public static void setRootHost(
+      ExtensionState<VisibilityMountExtensionState> extensionState, Host root) {
+    final VisibilityMountExtensionState state = extensionState.getState();
+    state.mRootHost = root;
+  }
+
+  public static void notifyOnUnbind(ExtensionState<VisibilityMountExtensionState> extensionState) {
+    clearVisibilityItems(extensionState);
   }
 
   @UiThread
@@ -304,18 +365,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @UiThread
-  public static void clearVisibilityItems(
-      final ExtensionState<VisibilityMountExtensionState> extensionState) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-    if (state.mVisibilityModule != null) {
-      clearVisibilityItemsIncremental(state);
-    } else {
-      clearVisibilityItemsNonincremental(state);
-    }
-    state.mPreviousLocalVisibleRect.setEmpty();
-  }
-
-  @UiThread
   private static void clearVisibilityItemsIncremental(final VisibilityMountExtensionState state) {
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
 
@@ -377,61 +426,9 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     RenderCoreSystrace.endSection();
   }
 
-  @Override
-  public void onUnmount(ExtensionState<VisibilityMountExtensionState> extensionState) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-    state.mPreviousLocalVisibleRect.setEmpty();
-  }
-
-  @Override
-  public VisibilityMountExtensionState createState() {
-    return new VisibilityMountExtensionState();
-  }
-
-  @Override
-  public void beforeMount(
-      ExtensionState<VisibilityMountExtensionState> extensionState,
-      Input input,
-      @Nullable Rect localVisibleRect) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-
-    state.mVisibilityOutputs = input.getVisibilityOutputs();
-    state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
-    state.mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
-    state.mVisibilityModuleInput = input.getVisibilityModuleInput();
-    state.mPreviousLocalVisibleRect.setEmpty();
-    state.mCurrentLocalVisibleRect = localVisibleRect;
-  }
-
-  @Override
-  public void afterMount(ExtensionState<VisibilityMountExtensionState> extensionState) {
-    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
-
-    if (processVisibilityOutputs) {
-      final VisibilityMountExtensionState state = extensionState.getState();
-      processVisibilityOutputs(extensionState, state.mCurrentLocalVisibleRect, true);
-    }
-  }
-
-  @Override
-  public void onVisibleBoundsChanged(
-      ExtensionState<VisibilityMountExtensionState> extensionState,
-      @Nullable Rect localVisibleRect) {
-    final boolean processVisibilityOutputs = !hasTransientState(extensionState);
-
-    if (processVisibilityOutputs) {
-      processVisibilityOutputs(extensionState, localVisibleRect, false);
-    }
-  }
-
   private static boolean hasTransientState(ExtensionState<VisibilityMountExtensionState> state) {
     final Host host = getRootHost(state);
     return IS_JELLYBEAN_OR_HIGHER && (host != null && host.hasTransientState());
-  }
-
-  @Override
-  public void onUnbind(ExtensionState<VisibilityMountExtensionState> extensionState) {
-    clearVisibilityItems(extensionState);
   }
 
   private static @Nullable Host getRootHost(
@@ -445,18 +442,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     }
   }
 
-  /** @deprecated Only used for Litho's integration. Marked for removal. */
-  @Deprecated
-  public static void setRootHost(
-      ExtensionState<VisibilityMountExtensionState> extensionState, Host root) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-    state.mRootHost = root;
-  }
-
-  public static void notifyOnUnbind(ExtensionState<VisibilityMountExtensionState> extensionState) {
-    clearVisibilityItems(extensionState);
-  }
-
   private static boolean isInRatioRange(float ratio, int length, int visibleLength) {
     return visibleLength >= ratio * length;
   }
@@ -465,16 +450,25 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     return rect.isEmpty() ? 0 : (rect.width() * rect.height());
   }
 
-  @VisibleForTesting
-  public static Map<String, VisibilityItem> getVisibilityIdToItemMap(
-      ExtensionState<VisibilityMountExtensionState> extensionState) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-    return state.mVisibilityIdToItemMap;
-  }
+  static class VisibilityMountExtensionState {
 
-  @VisibleForTesting
-  static int getInputCount(ExtensionState<VisibilityMountExtensionState> extensionState) {
-    final VisibilityMountExtensionState state = extensionState.getState();
-    return state.mVisibilityOutputs.size();
+    // Holds a list with information about the components linked to the VisibilityOutputs that are
+    // stored in LayoutState. An item is inserted in this map if its corresponding component is
+    // visible. When the component exits the viewport, the item associated with it is removed from
+    // the map.
+    private final Map<String, VisibilityItem> mVisibilityIdToItemMap = new HashMap<>();
+    private final Rect mPreviousLocalVisibleRect = new Rect();
+
+    private boolean mIncrementalVisibilityEnabled;
+    private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
+    private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
+    private @Nullable VisibilityModule mVisibilityModule;
+    private @Nullable VisibilityModuleInput mVisibilityModuleInput;
+    private @Nullable Rect mCurrentLocalVisibleRect;
+
+    /** @deprecated Only used for Litho's integration. Marked for removal. */
+    @Deprecated private @Nullable Host mRootHost;
+
+    private VisibilityMountExtensionState() {}
   }
 }
