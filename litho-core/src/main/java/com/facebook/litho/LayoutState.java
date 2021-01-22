@@ -1496,8 +1496,15 @@ public class LayoutState
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c, currentLayoutState);
+
+      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
+
       layoutStateContext =
           new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
+      if (isReconcilable && currentLayoutState != null) {
+        layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
+      }
+
       layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);
 
@@ -1515,8 +1522,6 @@ public class LayoutState
       layoutState.mIsCreateLayoutInProgress = true;
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
-
-      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
       // Release the current InternalNode tree if it is not reconcilable.
       if (!isReconcilable && currentLayoutState != null) {
