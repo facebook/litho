@@ -34,11 +34,11 @@ public final class Row extends Component {
 
   @Nullable
   @Prop(optional = true)
-  private YogaAlign alignItems;
+  private YogaAlign alignContent;
 
   @Nullable
   @Prop(optional = true)
-  private YogaAlign alignContent;
+  private YogaAlign alignItems;
 
   @Nullable
   @Prop(optional = true)
@@ -53,6 +53,30 @@ public final class Row extends Component {
 
   Row(String simpleName) {
     super(simpleName);
+  }
+
+  Row(
+      @Nullable YogaAlign alignContent,
+      @Nullable YogaAlign alignItems,
+      @Nullable YogaJustify justifyContent,
+      @Nullable YogaWrap wrap,
+      boolean reverse) {
+    this(alignContent, alignItems, justifyContent, wrap, reverse, null);
+  }
+
+  Row(
+      @Nullable YogaAlign alignContent,
+      @Nullable YogaAlign alignItems,
+      @Nullable YogaJustify justifyContent,
+      @Nullable YogaWrap wrap,
+      boolean reverse,
+      @Nullable List<Component> children) {
+    this.alignContent = alignContent;
+    this.alignItems = alignItems;
+    this.justifyContent = justifyContent;
+    this.wrap = wrap;
+    this.reverse = reverse;
+    this.children = children;
   }
 
   @Override
