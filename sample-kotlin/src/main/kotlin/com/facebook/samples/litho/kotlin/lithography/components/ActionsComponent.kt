@@ -27,8 +27,8 @@ import com.facebook.litho.drawableColor
 class ActionsComponent(val style: Style? = null) : KComponent() {
 
   override fun DslScope.render(): Component? {
-    return Row(
-        style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style,
-        children = listOf(FavouriteButton()))
+    return Row(style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style)[
+        FavouriteButton(),
+    ]
   }
 }

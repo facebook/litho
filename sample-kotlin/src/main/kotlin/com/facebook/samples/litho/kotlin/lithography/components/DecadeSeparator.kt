@@ -29,24 +29,21 @@ import com.facebook.yoga.YogaAlign.CENTER
 
 class DecadeSeparator(decade: Decade) :
     KComponent({
-      Row(
-          alignItems = CENTER,
-          style = Style.padding(16.dp).background(drawableColor(0xFFFAFAFA)),
-          children =
-              listOf(
-                  Row(
-                      style =
-                          Style.size(height = Dimen.Hairline)
-                              .flex(grow = 1f)
-                              .background(drawableColor(0xFFAAAAAA))),
-                  Text(
-                      text = "${decade.year}",
-                      textSize = 14.sp,
-                      textColor = 0xFFAAAAAA.toInt(),
-                      style = Style.margin(horizontal = 10.dp).flex(shrink = 0f)),
-                  Row(
-                      style =
-                          Style.size(height = Dimen.Hairline)
-                              .flex(grow = 1f)
-                              .background(drawableColor(0xFFAAAAAA)))))
+      Row(alignItems = CENTER, style = Style.padding(16.dp).background(drawableColor(0xFFFAFAFA)))[
+          Row(
+              style =
+                  Style.size(height = Dimen.Hairline)
+                      .flex(grow = 1f)
+                      .background(drawableColor(0xFFAAAAAA))),
+          Text(
+              text = "${decade.year}",
+              textSize = 14.sp,
+              textColor = 0xFFAAAAAA.toInt(),
+              style = Style.margin(horizontal = 10.dp).flex(shrink = 0f)),
+          Row(
+              style =
+                  Style.size(height = Dimen.Hairline)
+                      .flex(grow = 1f)
+                      .background(drawableColor(0xFFAAAAAA))),
+      ]
     })
