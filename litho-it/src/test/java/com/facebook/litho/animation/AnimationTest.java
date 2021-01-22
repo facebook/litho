@@ -106,7 +106,7 @@ public class AnimationTest {
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
+          {false, false, false}, {false, false, true}, {true, false, false}, {true, true, false},
         });
   }
 
