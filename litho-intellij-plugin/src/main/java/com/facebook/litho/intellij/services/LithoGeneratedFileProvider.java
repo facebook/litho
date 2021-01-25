@@ -83,13 +83,16 @@ public class LithoGeneratedFileProvider {
    *     GlobalSearchScope, String, Map)}.
    * @return file text content.
    */
-  @Nullable
-  public String createFileContent(String fqn) {
-    final Pair<String, String> content =
-        ComponentGenerateService.getInstance().createLithoFileContent(componentFQNToSpec.get(fqn));
+  public @Nullable String createFileContent(String fqn) {
+    final PsiClass specCls = componentFQNToSpec.get(fqn);
+    final Pair<String, String> content = createFileContent(specCls);
     if (content == null) return null;
 
     return content.second;
+  }
+
+  public static @Nullable Pair<String, String> createFileContent(PsiClass specCls) {
+    return ComponentGenerateService.getInstance().createLithoFileContent(specCls);
   }
 
   public void clear() {
