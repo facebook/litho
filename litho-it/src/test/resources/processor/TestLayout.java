@@ -464,8 +464,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected ComponentLifecycle.RenderData recordRenderData(
-      ComponentContext c,
-      ComponentLifecycle.RenderData toRecycle) {
+      ComponentContext c, ComponentLifecycle.RenderData toRecycle) {
     TestLayoutRenderData renderInfo =
         toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
     renderInfo.record(c, this);

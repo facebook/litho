@@ -16,12 +16,10 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-import static com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.DEBUG_TAG;
 import static com.facebook.rendercore.incrementalmount.IncrementalMountUtils.log;
 import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.ErrorReporter;

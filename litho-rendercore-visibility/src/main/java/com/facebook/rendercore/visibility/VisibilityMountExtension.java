@@ -17,12 +17,10 @@
 package com.facebook.rendercore.visibility;
 
 import static com.facebook.rendercore.extensions.RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged;
-import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
 import static com.facebook.rendercore.visibility.VisibilityUtils.log;
 
 import android.graphics.Rect;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
