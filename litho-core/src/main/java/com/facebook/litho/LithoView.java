@@ -853,7 +853,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * @param isVisible if true, this will find the current visible rect and process visibility
    *     outputs using it. If false, any invisible and unfocused events will be called.
    */
-  public void setVisibilityHint(boolean isVisible) {
+  public void setVisibilityHint(boolean isVisible, boolean skipMountingIfNotVisible) {
     assertMainThread();
 
     if (mComponentTree == null) {
@@ -907,7 +907,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     final List<LithoView> childLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
     for (int i = childLithoViews.size() - 1; i >= 0; i--) {
       final LithoView lithoView = childLithoViews.get(i);
-      lithoView.setVisibilityHint(isVisible);
+      lithoView.setVisibilityHint(isVisible, false);
     }
   }
 

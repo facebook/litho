@@ -1154,7 +1154,7 @@ public class MountStateIncrementalMountTest {
     child1.getDispatchedEventHandlers().clear();
     child1.resetInteractions();
 
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, false);
 
     assertThat(child1.wasOnMountCalled()).isFalse();
     assertThat(child1.wasOnUnmountCalled()).isFalse();
@@ -1203,7 +1203,7 @@ public class MountStateIncrementalMountTest {
 
     assertThat(child1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
 
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, false);
 
     final TestComponent child2 = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(child2, 3);
@@ -1230,7 +1230,7 @@ public class MountStateIncrementalMountTest {
     assertThat(child2.wasOnMountCalled()).isFalse();
     assertThat(child2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
 
-    lithoView.setVisibilityHint(true);
+    lithoView.setVisibilityHint(true, false);
     assertThat(child2.wasOnMountCalled()).isTrue();
     assertThat(child2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
     ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
