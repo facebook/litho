@@ -62,6 +62,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
   private boolean mHasVisibilityHint;
+  private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
   private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
 
@@ -850,10 +851,31 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * of the one hosting this view, the LithoView remains in the backstack but receives no callback
    * to indicate that it is no longer visible.
    *
+   * <p>While the LithoView has the visibility hint set to false, it will be treated by the
+   * framework as not in the viewport, so no new mounting events will be processed until the
+   * visibility hint is set back to true.
+   *
    * @param isVisible if true, this will find the current visible rect and process visibility
    *     outputs using it. If false, any invisible and unfocused events will be called.
    */
+  public void setVisibilityHint(boolean isVisible) {
+    setVisibilityHintInternal(isVisible, true);
+  }
+
+  /**
+   * Marked as @Deprecated. {@link #setVisibilityHint(boolean)} should be used instead, which by
+   * default does not process new mount events while the visibility hint is set to false
+   * (skipMountingIfNotVisible should be set to true). This method should only be used to maintain
+   * the contract with the usages of setVisibilityHint before `skipMountingIfNotVisible` was made to
+   * default to true. All usages should be audited and migrated to {@link
+   * #setVisibilityHint(boolean)}.
+   */
+  @Deprecated
   public void setVisibilityHint(boolean isVisible, boolean skipMountingIfNotVisible) {
+    setVisibilityHintInternal(isVisible, skipMountingIfNotVisible);
+  }
+
+  private void setVisibilityHintInternal(boolean isVisible, boolean skipMountingIfNotVisible) {
     assertMainThread();
 
     if (mComponentTree == null) {
@@ -863,8 +885,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     // If the LithoView previously had the visibility hint set to false, then when it's set back
     // to true we should trigger a mount, in case the visible bounds changed while mounting was
     // paused.
-    final boolean forceMount = shouldPauseMountingWithVisibilityHintFalse();
     mHasVisibilityHint = true;
+    mPauseMountingWhileVisibilityHintFalse = skipMountingIfNotVisible;
+
+    final boolean forceMount = shouldPauseMountingWithVisibilityHintFalse();
     mVisibilityHintIsVisible = isVisible;
 
     if (isVisible) {
@@ -1097,7 +1121,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   // We pause mounting while the visibility hint is set to false, because the visible rect of
   // the LithoView is not consistent with what's currently on screen.
   private boolean shouldPauseMountingWithVisibilityHintFalse() {
-    return (mComponentTree != null && mComponentTree.skipIncrementalMountOnSetVisibilityHintFalse())
+    return mPauseMountingWhileVisibilityHintFalse
         && mHasVisibilityHint
         && !mVisibilityHintIsVisible;
   }

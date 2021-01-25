@@ -242,7 +242,6 @@ public class ComponentTree {
 
   private volatile boolean mHasMounted;
   private volatile boolean mIsFirstMount;
-  private volatile boolean mSkipIncrementalMountOnSetVisibilityHintFalse;
 
   /** Transition that animates width of root component (LithoView). */
   @ThreadConfined(ThreadConfined.UI)
@@ -344,8 +343,6 @@ public class ComponentTree {
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
     mIsFirstMount = builder.isFirstMount;
-    mSkipIncrementalMountOnSetVisibilityHintFalse =
-        builder.skipIncrementalMountOnSetVisibilityHintFalse;
     addMeasureListener(builder.mMeasureListener);
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
@@ -487,19 +484,6 @@ public class ComponentTree {
 
   public void setIsFirstMount(boolean isFirstMount) {
     mIsFirstMount = isFirstMount;
-  }
-
-  boolean skipIncrementalMountOnSetVisibilityHintFalse() {
-    return mSkipIncrementalMountOnSetVisibilityHintFalse;
-  }
-
-  /**
-   * If set to true, pause mounting while the visibility hint is set to false, because the visible
-   * rect of the LithoView is not consistent with what's currently on screen. Override for the
-   * global ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse
-   */
-  public void setSkipIncrementalMountOnSetVisibilityHintFalse(boolean skipIncrementalMount) {
-    mSkipIncrementalMountOnSetVisibilityHintFalse = skipIncrementalMount;
   }
 
   public void setNewLayoutStateReadyListener(NewLayoutStateReadyListener listener) {
@@ -3144,8 +3128,6 @@ public class ComponentTree {
     private int overrideComponentTreeId = -1;
     private boolean hasMounted = false;
     private boolean isFirstMount = false;
-    private boolean skipIncrementalMountOnSetVisibilityHintFalse =
-        ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
@@ -3306,11 +3288,6 @@ public class ComponentTree {
 
     public Builder isFirstMount(boolean isFirstMount) {
       this.isFirstMount = isFirstMount;
-      return this;
-    }
-
-    public Builder skipIncrementalMountOnSetVisibilityHintFalse(boolean skipIncrementalMount) {
-      this.skipIncrementalMountOnSetVisibilityHintFalse = skipIncrementalMount;
       return this;
     }
 

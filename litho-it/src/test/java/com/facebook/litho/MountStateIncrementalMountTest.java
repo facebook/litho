@@ -1113,7 +1113,6 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void incrementalMount_setVisibilityHintFalse_preventMount() {
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = true;
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
 
@@ -1154,7 +1153,7 @@ public class MountStateIncrementalMountTest {
     child1.getDispatchedEventHandlers().clear();
     child1.resetInteractions();
 
-    lithoView.setVisibilityHint(false, false);
+    lithoView.setVisibilityHint(false, true);
 
     assertThat(child1.wasOnMountCalled()).isFalse();
     assertThat(child1.wasOnUnmountCalled()).isFalse();
@@ -1170,12 +1169,10 @@ public class MountStateIncrementalMountTest {
     assertThat(child2.wasOnMountCalled()).isFalse();
     assertThat(child1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
     assertThat(child1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
   }
 
   @Test
   public void incrementalMount_setVisibilityHintTrue_mountIfNeeded() {
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = true;
     final TestComponent child1 = create(mContext).build();
 
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(child1, 1);
@@ -1203,7 +1200,7 @@ public class MountStateIncrementalMountTest {
 
     assertThat(child1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
 
-    lithoView.setVisibilityHint(false, false);
+    lithoView.setVisibilityHint(false, true);
 
     final TestComponent child2 = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(child2, 3);
@@ -1230,10 +1227,9 @@ public class MountStateIncrementalMountTest {
     assertThat(child2.wasOnMountCalled()).isFalse();
     assertThat(child2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
 
-    lithoView.setVisibilityHint(true, false);
+    lithoView.setVisibilityHint(true, true);
     assertThat(child2.wasOnMountCalled()).isTrue();
     assertThat(child2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
   }
 
   @Test

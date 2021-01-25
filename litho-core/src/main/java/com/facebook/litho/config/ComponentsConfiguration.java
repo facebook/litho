@@ -250,8 +250,6 @@ public class ComponentsConfiguration {
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
 
-  public static boolean skipIncrementalMountOnSetVisibilityHintFalse = false;
-
   /** Keeps the internal nodes used for layout. This will increase memory use. */
   public static boolean keepInternalNodes = false;
 
