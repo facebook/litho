@@ -51,6 +51,11 @@ android {
             // This test requires some resources configuration with Gradle and Robolectric
             // that we haven't had time to figure out
             exclude '/com/facebook/litho/ApplyStylesTest.class'
+
+            // When using Gradle sometimes resources needed for this test are not copied into the
+            // proper folder (see block around line 120). So, skip them for Gradle as they still
+            // will be run for BUCK.
+            exclude '/com/facebook/litho/processor/integration/ProcessorIntegrationTest.class'
         }
     }
 
