@@ -32,8 +32,10 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 /** Tests {@link ViewCompatComponent} */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class ViewCompatComponentTest {
 

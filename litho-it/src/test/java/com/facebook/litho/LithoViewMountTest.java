@@ -35,11 +35,13 @@ import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 /**
  * Tests for {@link LithoView} and {@link MountState} to make sure mount only happens once when
  * attaching the view and setting the component.
  */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class LithoViewMountTest {
   private ComponentContext mContext;

@@ -51,7 +51,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class CommonPropsTest {
 
