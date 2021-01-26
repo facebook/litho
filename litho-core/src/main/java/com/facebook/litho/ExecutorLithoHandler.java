@@ -1,7 +1,7 @@
 package com.facebook.litho;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -13,7 +13,7 @@ import javax.annotation.concurrent.GuardedBy;
 public final class ExecutorLithoHandler implements LithoHandler {
 
   @GuardedBy("pendingTasks")
-  private final Multiset<Runnable> pendingTasks = HashMultiset.create();
+  private final Map<Runnable, Integer> pendingTasks = new HashMap<>();
   private final Executor executor;
 
   /**
@@ -27,15 +27,25 @@ public final class ExecutorLithoHandler implements LithoHandler {
   @Override
   public void post(final Runnable runnable, String tag) {
     synchronized (pendingTasks) {
-      pendingTasks.add(runnable);
+      Integer runCount = pendingTasks.get(runnable);
+      pendingTasks.put(runnable, runCount != null ? runCount + 1 : 1);
     }
 
     executor.execute(new Runnable() {
       @Override
       public void run() {
-        boolean canRun;
+        boolean canRun = false;
         synchronized (pendingTasks) {
-          canRun = pendingTasks.remove(runnable);
+          Integer runCount = pendingTasks.get(runnable);
+          if (runCount != null) {
+            canRun = runCount > 0;
+            runCount--;
+            if (runCount > 0) {
+              pendingTasks.put(runnable, runCount);
+            } else {
+              pendingTasks.remove(runnable);
+            }
+          }
         }
         if (canRun) {
           runnable.run();
@@ -63,7 +73,7 @@ public final class ExecutorLithoHandler implements LithoHandler {
   @Override
   public void remove(Runnable runnable) {
     synchronized (pendingTasks) {
-      pendingTasks.setCount(runnable, 0);
+      pendingTasks.remove(runnable);
     }
   }
 
