@@ -37,7 +37,7 @@ android {
                 maxParallelForks = 2
 
                 testLogging {
-                    events 'failed', 'standardError'
+                    events 'skipped', 'failed', 'standardOut', 'standardError'
                     showCauses = true
                     showExceptions = true
                     showStackTraces = true
