@@ -37,6 +37,7 @@ import com.facebook.yoga.YogaAlign;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 /**
  * We test the different kind of Transitions and how they compose different animations.
@@ -47,6 +48,7 @@ import org.junit.runner.RunWith;
  * is 16ms per frame.
  */
 @SuppressLint("ColorConstantUsageIssue")
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TransitionsTest {
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();

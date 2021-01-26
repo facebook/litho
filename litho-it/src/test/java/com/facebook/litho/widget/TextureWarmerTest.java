@@ -32,11 +32,13 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests {@link TextureWarmer}. */
-@RunWith(LithoTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 @Config(shadows = TextureWarmerTest.ShadowPicture.class)
+@RunWith(LithoTestRunner.class)
 public class TextureWarmerTest {
   private ShadowLooper mShadowLooper;
   private TextureWarmer mTextureWarmer;

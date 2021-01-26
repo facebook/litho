@@ -56,6 +56,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.LooperMode;
 
 /**
  * This tests validate how different kind of animations modify the view. The values asserted here
@@ -84,6 +85,7 @@ import org.robolectric.android.controller.ActivityController;
  * <p>Final position: 160 + 0.4131759 * (-160) = 93.891856
  */
 @SuppressLint("ColorConstantUsageIssue")
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class AnimationTest {
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
