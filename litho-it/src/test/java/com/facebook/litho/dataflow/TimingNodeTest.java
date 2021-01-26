@@ -24,9 +24,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.LooperMode;
 
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TimingNodeTest {
 
