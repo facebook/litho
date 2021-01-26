@@ -42,6 +42,11 @@ android {
 
     testOptions {
         unitTests.all {
+            // Because of native libraries loading (Yoga), we can never reuse a class loader and
+            // need to fork a new process per class.
+            forkEvery = 1
+            maxParallelForks = 2
+
             jvmArgs '-Dcom.facebook.litho.is_oss=true', '-Dlitho.animation.disabled=true'
             testLogging {
                 events 'skipped', 'failed', 'standardOut', 'standardError'
