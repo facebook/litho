@@ -247,7 +247,7 @@ def litho_robolectric4_test(
         **kwargs):
     """Tests that can successfully run from the library root folder."""
     extra_vm_args = [
-        "-Drobolectric.dependency.dir=lib/android-all",
+        "-Drobolectric.dependency.dir=lib/fb/android-all",
         "-Drobolectric.require.all.resources=true",
         "-Dcom.facebook.litho.is_oss=true",
         "-Dlitho.animation.disabled=true",
