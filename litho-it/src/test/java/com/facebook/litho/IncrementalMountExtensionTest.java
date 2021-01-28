@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateTarget;
@@ -46,34 +47,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class IncrementalMountExtensionTest {
-
-  private boolean mExtensionAcquireDuringMountDefault;
-  private final boolean mExtensionAcquireDuringMount;
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "extensionAcquireDuringMount={0}")
-  public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
-  }
-
-  public IncrementalMountExtensionTest(boolean extensionAcquireDuringMount) {
-    mExtensionAcquireDuringMount = extensionAcquireDuringMount;
-  }
-
-  @Before
-  public void setup() {
-    mExtensionAcquireDuringMountDefault = ComponentsConfiguration.extensionAcquireDuringMount;
-    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMount;
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
-  }
 
   @Test
   public void onIteratingOnIncrementMountOutputs_shouldIterateByInsertionOrder() {
@@ -92,8 +67,7 @@ public class IncrementalMountExtensionTest {
     final MountDelegate mountDelegate = mock(MountDelegate.class);
     final MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
     when(mountDelegate.getMountDelegateTarget()).thenReturn(mountDelegateTarget);
-    final IncrementalMountExtension extension =
-        IncrementalMountExtension.getInstance(mExtensionAcquireDuringMount);
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final ExtensionState<IncrementalMountExtensionState> extensionState =
         extension.createExtensionState(mountDelegate);
@@ -162,12 +136,12 @@ public class IncrementalMountExtensionTest {
     assertThat(extension.getPreviousBottomsIndex(state)).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex(state)).isEqualTo(5);
 
-    final IncrementalMountExtensionInput incrementalMountExtensionInput2 = new TestInput(3);
+    final TestInput incrementalMountExtensionInput2 = new TestInput(3);
     extension.beforeMount(extensionState, incrementalMountExtensionInput2, new Rect(0, 0, 10, 0));
-    for (int i = 0, size = incrementalMountExtensionInput.getMountableOutputCount();
+    for (int i = 0, size = incrementalMountExtensionInput2.getMountableOutputCount();
         i < size;
         i++) {
-      final RenderTreeNode node = incrementalMountExtensionInput.getMountableOutputAt(i);
+      final RenderTreeNode node = incrementalMountExtensionInput2.getMountableOutputAt(i);
       extension.beforeMountItem(extensionState, node, i);
     }
     extension.afterMount(extensionState);

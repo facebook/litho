@@ -127,7 +127,6 @@ class MountState
   // A map from test key to a list of one or more `TestItem`s which is only allocated
   // and populated during test runs.
   private final Map<String, Deque<TestItem>> mTestItemMap;
-  private final boolean mAcquireReferencesDuringMount;
 
   // Both these arrays are updated in prepareMount(), thus during mounting they hold the information
   // about the LayoutState that is being mounted, not mLastMountedLayoutState
@@ -195,7 +194,6 @@ class MountState
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
-    mAcquireReferencesDuringMount = view.shouldAcquireDuringMount();
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
     mVisibilityExtensionState = mVisibilityExtension.createExtensionState(new MountDelegate(this));
@@ -687,11 +685,7 @@ class MountState
       return true;
     }
 
-    final boolean isLockedForMount =
-        mAcquireReferencesDuringMount
-            ? mMountDelegate.maybeLockForMount(renderTreeNode, position)
-            : mMountDelegate.isLockedForMount(renderTreeNode);
-
+    final boolean isLockedForMount = mMountDelegate.maybeLockForMount(renderTreeNode, position);
     if (mTransitionsExtension == null) {
       return isLockedForMount || isAnimationLocked(position);
     }

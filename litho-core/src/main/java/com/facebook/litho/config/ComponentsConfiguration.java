@@ -232,8 +232,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldDisableDrawableOutputs = false;
 
-  public static boolean extensionAcquireDuringMount = false;
-
   public static boolean useVisibilityExtension = false;
 
   public static boolean useTransitionsExtension = false;

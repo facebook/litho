@@ -81,55 +81,42 @@ import org.robolectric.shadows.ShadowLooper;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateIncrementalMountTest {
 
-  private final boolean mExtensionAcquireDuringMount;
   private ComponentContext mContext;
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-  private boolean mExtensionAcquireDuringMountDefault;
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, extensionAcquireDuringMount={3}")
+      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {true, true, false},
-          {false, false, false},
-          {true, false, true},
-          {true, true, true},
-          {false, false, true},
+          {false, false},
+          {true, false},
+          {true, true},
+          {false, false},
+          {true, false},
+          {true, true},
+          {false, false},
         });
   }
 
   public MountStateIncrementalMountTest(
-      boolean useMountDelegateTarget,
-      boolean delegateToRenderCoreMount,
-      boolean extensionAcquireDuringMount) {
+      boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-    mExtensionAcquireDuringMount = extensionAcquireDuringMount;
   }
 
   @Before
   public void setup() {
-    mExtensionAcquireDuringMountDefault = ComponentsConfiguration.extensionAcquireDuringMount;
-    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMount;
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */

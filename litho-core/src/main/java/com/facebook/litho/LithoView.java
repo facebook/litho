@@ -56,7 +56,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String TAG = LithoView.class.getSimpleName();
-  private final boolean mAcquireDuringMount;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
   private final boolean mDelegateToRenderCore;
@@ -213,8 +212,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mUseExtensions = useExtensions;
     mDelegateToRenderCore = delegateToRenderCore;
-    mAcquireDuringMount =
-        ComponentsConfiguration.extensionAcquireDuringMount || delegateToRenderCore;
 
     if (mUseExtensions) {
       if (mDelegateToRenderCore) {
@@ -230,10 +227,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-  }
-
-  boolean shouldAcquireDuringMount() {
-    return mAcquireDuringMount;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
