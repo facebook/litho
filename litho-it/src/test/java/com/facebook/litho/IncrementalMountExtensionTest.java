@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateInput;
@@ -36,16 +35,12 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.Increm
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
 @RunWith(LithoTestRunner.class)
 public class IncrementalMountExtensionTest {
