@@ -32,7 +32,7 @@ class DecadeSeparator(decade: Decade) :
       Row(alignItems = CENTER, style = Style.padding(16.dp).background(drawableColor(0xFFFAFAFA)))[
           Row(
               style =
-                  Style.size(height = Dimen.Hairline)
+                  Style.height(Dimen.Hairline)
                       .flex(grow = 1f)
                       .background(drawableColor(0xFFAAAAAA))),
           Text(
@@ -42,7 +42,7 @@ class DecadeSeparator(decade: Decade) :
               style = Style.margin(horizontal = 10.dp).flex(shrink = 0f)),
           Row(
               style =
-                  Style.size(height = Dimen.Hairline)
+                  Style.height(Dimen.Hairline)
                       .flex(grow = 1f)
                       .background(drawableColor(0xFFAAAAAA))),
       ]

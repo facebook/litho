@@ -216,23 +216,17 @@ open class Style(
     return Style(if (this == Style) null else this, nextItem)
   }
 
-  fun size(size: Dimen) =
-      this + DimenStyleItem(DimenField.WIDTH, size) + DimenStyleItem(DimenField.HEIGHT, size)
+  fun width(width: Dimen) = this + DimenStyleItem(DimenField.WIDTH, width)
 
-  fun size(width: Dimen? = null, height: Dimen? = null) =
-      this +
-          width?.let { DimenStyleItem(DimenField.WIDTH, it) } +
-          height?.let { DimenStyleItem(DimenField.HEIGHT, it) }
+  fun height(height: Dimen) = this + DimenStyleItem(DimenField.HEIGHT, height)
 
-  fun width(minWidth: Dimen? = null, maxWidth: Dimen? = null) =
-      this +
-          minWidth?.let { DimenStyleItem(DimenField.MIN_WIDTH, it) } +
-          maxWidth?.let { DimenStyleItem(DimenField.MAX_WIDTH, it) }
+  fun minWidth(minWidth: Dimen) = this + DimenStyleItem(DimenField.MIN_WIDTH, minWidth)
 
-  fun height(minHeight: Dimen? = null, maxHeight: Dimen? = null) =
-      this +
-          minHeight?.let { DimenStyleItem(DimenField.MIN_HEIGHT, it) } +
-          maxHeight?.let { DimenStyleItem(DimenField.MAX_HEIGHT, it) }
+  fun maxWidth(maxWidth: Dimen) = this + DimenStyleItem(DimenField.MAX_WIDTH, maxWidth)
+
+  fun minHeight(minHeight: Dimen) = this + DimenStyleItem(DimenField.MIN_HEIGHT, minHeight)
+
+  fun maxHeight(maxHeight: Dimen) = this + DimenStyleItem(DimenField.MAX_HEIGHT, maxHeight)
 
   fun flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null) =
       this +

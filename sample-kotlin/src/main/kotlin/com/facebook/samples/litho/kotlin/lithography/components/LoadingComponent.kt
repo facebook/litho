@@ -27,6 +27,6 @@ import com.facebook.yoga.YogaJustify.CENTER
 class LoadingComponent :
     KComponent({
       Row(justifyContent = CENTER)[
-          Progress(color = Color.DKGRAY, style = Style.size(50.dp)),
+          Progress(color = Color.DKGRAY, style = Style.width(50.dp).height(50.dp)),
       ]
     })

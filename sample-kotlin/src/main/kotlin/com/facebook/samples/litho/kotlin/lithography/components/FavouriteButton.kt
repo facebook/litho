@@ -34,7 +34,7 @@ class FavouriteButton :
 
       Row(
           style =
-              Style.size(32.dp).background(star).onClick {
+              Style.width(32.dp).height(32.dp).background(star).onClick {
                 updateState { isFavourite.value = !isFavourite.value }
               })
     })
