@@ -20,6 +20,7 @@ import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.rt.execution.junit.FileComparisonFailure;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DefaultPropertyFoldingBuilderTest extends LithoPluginIntellijTest {
@@ -28,6 +29,7 @@ public class DefaultPropertyFoldingBuilderTest extends LithoPluginIntellijTest {
     super("testdata/foldings");
   }
 
+  @Ignore("T73932936")
   @Test
   public void testFolding() {
     String clsName = "DefaultPropertyFoldingTest.java";
