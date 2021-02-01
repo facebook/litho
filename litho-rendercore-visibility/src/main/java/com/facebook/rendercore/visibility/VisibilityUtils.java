@@ -38,12 +38,14 @@ public class VisibilityUtils {
   private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
   private static VisibilityChangedEvent sVisibleRectChangedEvent;
 
-  public static void dispatchOnVisible(Function<Void> visibleHandler) {
+  public static void dispatchOnVisible(Function<Void> visibleHandler, @Nullable Object content) {
     RenderCoreSystrace.beginSection("VisibilityUtils.dispatchOnVisible");
 
     if (sVisibleEvent == null) {
       sVisibleEvent = new VisibleEvent();
     }
+
+    sVisibleEvent.content = content;
 
     log("Dispatch:VisibleEvent to: " + visibleHandler.toString());
     visibleHandler.call(sVisibleEvent);

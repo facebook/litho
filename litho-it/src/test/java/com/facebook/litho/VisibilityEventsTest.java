@@ -35,6 +35,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
+import com.facebook.litho.widget.TextDrawable;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -1781,14 +1782,17 @@ public class VisibilityEventsTest {
 
   @Test
   public void processVisibility_componentIsMounted() {
-    final Output<View> foundView = new Output<>();
+    final Output<Object> textDrawableOutput = new Output<>();
+    final Output<Object> viewOutput = new Output<>();
+    final Output<Object> nullOutput = new Output<>();
 
     final Component root =
         Column.create(mContext)
             .child(
                 LayoutSpecVisibilityEventTester.create(mContext)
-                    .foundView(foundView)
-                    .rootView(mLithoViewRule.getLithoView()))
+                    .textOutput(textDrawableOutput)
+                    .viewOutput(viewOutput)
+                    .nullOutput(nullOutput))
             .build();
 
     mLithoViewRule
@@ -1798,7 +1802,13 @@ public class VisibilityEventsTest {
         .measure()
         .layout();
 
-    assertThat(foundView.get()).isNotNull();
+    assertThat(textDrawableOutput.get()).isNotNull();
+    assertThat(textDrawableOutput.get()).isInstanceOf(TextDrawable.class);
+
+    assertThat(viewOutput.get()).isNotNull();
+    assertThat(viewOutput.get()).isInstanceOf(ComponentHost.class);
+
+    assertThat(nullOutput.get()).isNull();
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {

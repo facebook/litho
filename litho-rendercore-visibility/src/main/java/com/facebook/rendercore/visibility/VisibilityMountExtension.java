@@ -69,8 +69,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
     state.mVisibilityOutputs = input.getVisibilityOutputs();
     state.mRenderUnitIdsWhichHostRenderTrees = input.getRenderUnitIdsWhichHostRenderTrees();
-    state.mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
-    state.mVisibilityModuleInput = input.getVisibilityModuleInput();
     state.mPreviousLocalVisibleRect.setEmpty();
     state.mCurrentLocalVisibleRect = localVisibleRect;
 
@@ -131,11 +129,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   public static void clearVisibilityItems(
       final ExtensionState<VisibilityMountExtensionState> extensionState) {
     final VisibilityMountExtensionState state = extensionState.getState();
-    if (state.mVisibilityModule != null) {
-      clearVisibilityItemsIncremental(state);
-    } else {
-      clearVisibilityItemsNonincremental(state);
-    }
+    clearVisibilityItemsNonincremental(state);
     state.mPreviousLocalVisibleRect.setEmpty();
   }
 
@@ -162,24 +156,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       log("processVisibilityOutputs");
       RenderCoreSystrace.beginSection("VisibilityExtension.processVisibilityOutputs");
 
-      if (state.mIncrementalVisibilityEnabled) {
-        if (state.mVisibilityModule == null) {
-          Host host = getRootHost(extensionState);
-          if (host == null) {
-            return;
-          }
-
-          state.mVisibilityModule = new VisibilityModule(host);
-        }
-
-        state.mVisibilityModule.processVisibilityOutputs(
-            isDirty,
-            state.mVisibilityModuleInput,
-            localVisibleRect,
-            state.mPreviousLocalVisibleRect);
-      } else {
-        processVisibilityOutputsNonInc(extensionState, localVisibleRect, isDirty);
-      }
+      processVisibilityOutputsNonInc(extensionState, localVisibleRect, isDirty);
 
     } finally {
       RenderCoreSystrace.endSection();
@@ -302,7 +279,11 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           state.mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
-            VisibilityUtils.dispatchOnVisible(visibleHandler);
+            final Object content =
+                visibilityOutput.hasMountableContent
+                    ? getContentById(extensionState, visibilityOutput.mRenderUnitId)
+                    : null;
+            VisibilityUtils.dispatchOnVisible(visibleHandler, content);
           }
         }
 
@@ -399,17 +380,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   }
 
   @UiThread
-  private static void clearVisibilityItemsIncremental(final VisibilityMountExtensionState state) {
-    RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
-
-    if (state.mVisibilityModule != null) {
-      state.mVisibilityModule.clearIncrementalItems();
-    }
-
-    RenderCoreSystrace.endSection();
-  }
-
-  @UiThread
   private static void clearVisibilityItemsNonincremental(
       final VisibilityMountExtensionState state) {
     RenderCoreSystrace.beginSection("VisibilityExtension.clearIncrementalItems");
@@ -493,11 +463,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     private final Map<String, VisibilityItem> mVisibilityIdToItemMap = new HashMap<>();
     private final Rect mPreviousLocalVisibleRect = new Rect();
 
-    private boolean mIncrementalVisibilityEnabled;
     private List<VisibilityOutput> mVisibilityOutputs = Collections.emptyList();
     private Set<Long> mRenderUnitIdsWhichHostRenderTrees = Collections.emptySet();
-    private @Nullable VisibilityModule mVisibilityModule;
-    private @Nullable VisibilityModuleInput mVisibilityModuleInput;
     private @Nullable Rect mCurrentLocalVisibleRect;
 
     /** @deprecated Only used for Litho's integration. Marked for removal. */

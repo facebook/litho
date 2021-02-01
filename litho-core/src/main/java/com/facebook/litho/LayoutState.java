@@ -71,7 +71,6 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtens
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
-import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -159,7 +158,6 @@ public class LayoutState
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final boolean mIncrementalVisibility;
   private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private @Nullable LayoutStateContext mLayoutStateContext;
 
@@ -170,7 +168,6 @@ public class LayoutState
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
-  private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
@@ -261,23 +258,15 @@ public class LayoutState
     }
 
     if (context.getComponentTree() != null) {
-      mIncrementalVisibility = context.getComponentTree().hasIncrementalVisibility();
       mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
     } else {
-      mIncrementalVisibility = false;
       mLithoRenderUnitFactory = null;
     }
 
-    mVisibilityModuleInput = mIncrementalVisibility ? new VisibilityModuleInput() : null;
     mVisibilityOutputs = new ArrayList<>(8);
 
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
-  }
-
-  @Override
-  public boolean isIncrementalVisibilityEnabled() {
-    return mIncrementalVisibility;
   }
 
   @VisibleForTesting
@@ -552,7 +541,9 @@ public class LayoutState
    * stored in the {@link InternalNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
-      InternalNode node, LayoutState layoutState) {
+      final InternalNode node,
+      final LayoutState layoutState,
+      final @Nullable RenderTreeNode renderTreeNode) {
 
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
@@ -575,6 +566,8 @@ public class LayoutState
         component != null ? componentGlobalKey : "null",
         component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
+        renderTreeNode != null,
+        renderTreeNode != null ? renderTreeNode.getRenderUnit().getId() : 0,
         node.getVisibleHeightRatio(),
         node.getVisibleWidthRatio(),
         visibleHandler,
@@ -897,6 +890,7 @@ public class LayoutState
     }
 
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
+    final RenderTreeNode renderTreeNode;
     if (isMountSpec(component)) {
       // Notify component about its final size.
       if (isTracing) {
@@ -909,7 +903,7 @@ public class LayoutState
         ComponentsSystrace.endSection();
       }
 
-      addMountableOutput(layoutState, layoutOutput, parent);
+      renderTreeNode = addMountableOutput(layoutState, layoutOutput, parent);
       addLayoutOutputIdToPositionsMap(
           layoutState.mOutputsIdToPositionMap,
           layoutOutput,
@@ -920,6 +914,8 @@ public class LayoutState
       if (diffNode != null) {
         diffNode.setContentOutput(layoutOutput);
       }
+    } else {
+      renderTreeNode = needsHostView ? parent : null;
     }
 
     // 4. Extract the Transitions.
@@ -1023,7 +1019,8 @@ public class LayoutState
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
     if (node.hasVisibilityHandlers()) {
-      final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
+      final VisibilityOutput visibilityOutput =
+          createVisibilityOutput(node, layoutState, renderTreeNode);
 
       layoutState.mVisibilityOutputs.add(visibilityOutput);
 
@@ -1764,11 +1761,6 @@ public class LayoutState
     sortTops(layoutState);
     sortBottoms(layoutState);
 
-    if (layoutState.mIncrementalVisibility) {
-      layoutState.mVisibilityModuleInput.setIncrementalModuleItems(layoutState.mVisibilityOutputs);
-      layoutState.mVisibilityOutputs.clear();
-    }
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -2151,12 +2143,6 @@ public class LayoutState
     return mVisibilityOutputs;
   }
 
-  @Nullable
-  @Override
-  public VisibilityModuleInput getVisibilityModuleInput() {
-    return mVisibilityModuleInput;
-  }
-
   @Override
   public int getTestOutputCount() {
     return mTestOutputs == null ? 0 : mTestOutputs.size();
@@ -2359,7 +2345,7 @@ public class LayoutState
     return mTransitionIdMapping.get(transitionId);
   }
 
-  private static void addMountableOutput(
+  private static RenderTreeNode addMountableOutput(
       final LayoutState layoutState,
       final LayoutOutput layoutOutput,
       final @Nullable RenderTreeNode parent) {
@@ -2397,6 +2383,8 @@ public class LayoutState
     if (layoutOutput.getComponent().hasChildLithoViews()) {
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(layoutOutput.getId());
     }
+
+    return node;
   }
 
   /**

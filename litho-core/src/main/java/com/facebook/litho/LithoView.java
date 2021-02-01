@@ -1245,9 +1245,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void dispatchVisibilityEvent(
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
+    final MountDelegateTarget target =
+        mMountDelegateTarget != null ? mMountDelegateTarget : mMountState;
+    final Object content =
+        visibilityOutput.hasMountableContent
+            ? target.getContentById(visibilityOutput.mRenderUnitId)
+            : null;
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {
-        VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
+        VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler(), content);
       }
     } else if (visibilityEventType == InvisibleEvent.class) {
       if (visibilityOutput.getInvisibleEventHandler() != null) {
