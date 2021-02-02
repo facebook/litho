@@ -23,18 +23,16 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
-import com.facebook.litho.updateState
 import com.facebook.litho.useState
-import com.facebook.litho.value
 
 class FavouriteButton :
     KComponent({
-      val isFavourite by useState { false }
+      val isFavourite = useState { false }
       val star = drawableRes(if (isFavourite.value) star_on else star_off)
 
       Row(
           style =
               Style.width(32.dp).height(32.dp).background(star).onClick {
-                updateState { isFavourite.value = !isFavourite.value }
+                isFavourite.update { isFavourite -> !isFavourite }
               })
     })

@@ -23,9 +23,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
-import com.facebook.litho.updateState
 import com.facebook.litho.useState
-import com.facebook.litho.value
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
@@ -35,9 +33,9 @@ class PlaygroundActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     setContent {
-      val counter by useState { 1 }
+      val counter = useState { 1 }
 
-      Column(style = Style.padding(16.dp).onClick { updateState { counter.value++ } })[
+      Column(style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } })[
           Text(text = "Hello, Kotlin World!", textSize = 20.sp),
           Text(
               text = "with ${"❤️".repeat(counter.value)} from London", textStyle = Typeface.ITALIC),
