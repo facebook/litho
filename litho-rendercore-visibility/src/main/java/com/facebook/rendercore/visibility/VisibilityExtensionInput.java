@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.visibility;
 
-import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
