@@ -2210,11 +2210,6 @@ public class LayoutState
   }
 
   @Nullable
-  HooksHandler getHooksHandler() {
-    return mContext.getHooksHandler();
-  }
-
-  @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public InternalNode getLayoutRoot() {
     return mLayoutRoot;

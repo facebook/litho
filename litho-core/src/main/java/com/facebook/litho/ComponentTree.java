@@ -124,9 +124,6 @@ public class ComponentTree {
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
 
-  @GuardedBy("this")
-  private @Nullable HooksHandler mHooksHandler;
-
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
   public interface MeasureListener {
@@ -360,9 +357,6 @@ public class ComponentTree {
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
         builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
-    if (ComponentsConfiguration.isHooksImplEnabled) {
-      mHooksHandler = builder.hooksHandler == null ? new HooksHandler() : builder.hooksHandler;
-    }
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -1397,11 +1391,7 @@ public class ComponentTree {
         return;
       }
 
-      if (mHooksHandler != null) {
-        mHooksHandler.queueHookStateUpdate(updater);
-      } else {
-        mStateHandler.queueHookStateUpdate(updater);
-      }
+      mStateHandler.queueHookStateUpdate(updater);
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
@@ -1741,11 +1731,6 @@ public class ComponentTree {
     return StateHandler.createNewInstance(mStateHandler);
   }
 
-  @Nullable
-  public synchronized HooksHandler acquireHooksHandlerIfNecessary() {
-    return mHooksHandler != null ? new HooksHandler(mHooksHandler) : null;
-  }
-
   synchronized void consumeStateUpdateTransitions(
       List<Transition> outList, @Nullable String logContext) {
     if (mStateHandler != null) {
@@ -1966,8 +1951,7 @@ public class ComponentTree {
       }
 
       if (root != null) {
-        if (mStateHandler.hasPendingUpdates()
-            || (mHooksHandler != null && mHooksHandler.hasPendingUpdates())) {
+        if (mStateHandler.hasPendingUpdates()) {
           root = root.makeShallowCopyWithNewId();
         }
       }
@@ -2181,7 +2165,6 @@ public class ComponentTree {
       }
 
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
-      final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
 
         components = localLayoutState.consumeComponents();
@@ -2204,11 +2187,6 @@ public class ComponentTree {
           }
         }
 
-        if (layoutStateHooksHandler != null
-            && mHooksHandler != null) { // we could have been released
-          mHooksHandler.commit(layoutStateHooksHandler);
-        }
-
         if (mMeasureListeners != null) {
           rootWidth = localLayoutState.getWidth();
           rootHeight = localLayoutState.getHeight();
@@ -2221,9 +2199,7 @@ public class ComponentTree {
       if (layoutStateStateHandler != null) {
         mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
       }
-      if (layoutStateHooksHandler != null) {
-        mInitialStateContainer.unregisterHooksHandler(layoutStateHooksHandler);
-      }
+
       // Resetting the count after layout calculation is complete and it was triggered from within
       // layout creation
       if (!isCreateLayoutInProgress) {
@@ -2395,7 +2371,6 @@ public class ComponentTree {
       mMainThreadLayoutState = null;
       mCommittedLayoutState = null;
       mStateHandler = null;
-      mHooksHandler = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
     }
@@ -2769,18 +2744,9 @@ public class ComponentTree {
         final StateHandler stateHandler =
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
-        final HooksHandler hooksHandler =
-            (ComponentTree.this.mHooksHandler != null)
-                ? new HooksHandler(ComponentTree.this.mHooksHandler)
-                : null;
-
         previousLayoutState = mCommittedLayoutState;
-        contextWithStateHandler =
-            new ComponentContext(context, stateHandler, hooksHandler, treeProps, null);
+        contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
         mInitialStateContainer.registerStateHandler(stateHandler);
-        if (hooksHandler != null) {
-          mInitialStateContainer.registerHooksHandler(hooksHandler);
-        }
       }
 
       return LayoutState.calculate(
@@ -3122,7 +3088,6 @@ public class ComponentTree {
     private LithoHandler layoutThreadHandler;
     private LithoHandler preAllocateMountContentHandler;
     private StateHandler stateHandler;
-    private @Nullable HooksHandler hooksHandler;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
@@ -3244,11 +3209,6 @@ public class ComponentTree {
      */
     public Builder stateHandler(@Nullable StateHandler stateHandler) {
       this.stateHandler = stateHandler;
-      return this;
-    }
-
-    public Builder hooksHandler(@Nullable HooksHandler hooksHandler) {
-      this.hooksHandler = hooksHandler;
       return this;
     }
 

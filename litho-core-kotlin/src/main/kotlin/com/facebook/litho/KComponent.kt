@@ -49,16 +49,6 @@ open class KComponent(private val content: (DslScope.() -> Component?)? = null) 
       return false
     }
 
-    if (!isStateless) { // Check hooks
-      val hooksHandler = getScopedContext(null, null)?.hooksHandler
-      val otherHooksHandler = other.getScopedContext(null, null)?.hooksHandler
-      if (hooksHandler !== otherHooksHandler) {
-        if (hooksHandler == null || !hooksHandler.isEquivalentTo(otherHooksHandler)) {
-          return false
-        }
-      }
-    }
-
     return true
   }
 

@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.os.Looper.getMainLooper
 import android.view.View.MeasureSpec.EXACTLY
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
@@ -152,47 +151,6 @@ class KStateTest {
     assertThat(componentTree.initialStateContainer.mPendingStateHandlers)
         .describedAs("No pending StateHandlers")
         .isEmpty()
-  }
-
-  @Test
-  fun useStateOnHooks_calculateComponentInTwoThreadsConcurrently_stateIsInitializedOnlyOnce() {
-    ComponentsConfiguration.isHooksImplEnabled = true
-
-    val initCounter = AtomicInteger(0)
-    val countDownLatch = CountDownLatch(2)
-    val firstCountDownLatch = CountDownLatch(1)
-    val secondCountDownLatch = CountDownLatch(1)
-
-    val thread1 = Thread {
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
-          SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
-      countDownLatch.countDown()
-    }
-    val thread2 = Thread {
-      firstCountDownLatch.await()
-
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(secondCountDownLatch, null, initCounter),
-          SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
-      countDownLatch.countDown()
-    }
-    thread1.start()
-    thread2.start()
-    countDownLatch.await()
-
-    assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
-    val componentTree = lithoViewRule.componentTree
-    assertThat(componentTree.initialStateContainer.mInitialHookStates)
-        .describedAs("Initial hook state container is empty")
-        .isEmpty()
-    assertThat(componentTree.initialStateContainer.mPendingHooksHandlers)
-        .describedAs("No pending HooksHandlers")
-        .isEmpty()
-
-    ComponentsConfiguration.isHooksImplEnabled = false
   }
 
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied() {

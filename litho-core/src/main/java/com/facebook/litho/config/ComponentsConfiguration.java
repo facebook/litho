@@ -242,9 +242,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldForceComponentUpdateOnOrientationChange = true;
 
-  /** When {@code true} internal hooks implementation is applied. */
-  public static boolean isHooksImplEnabled = false;
-
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
 
