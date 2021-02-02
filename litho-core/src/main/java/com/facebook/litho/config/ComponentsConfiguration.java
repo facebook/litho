@@ -271,4 +271,10 @@ public class ComponentsConfiguration {
   public static boolean isTimelineEnabled = isDebugModeEnabled;
 
   public static @Nullable String timelineDocsLink = null;
+
+  /**
+   * If true, when a LithoView with nested LithoView children gets released, the children will get
+   * released too.
+   */
+  public static boolean releaseNestedLithoViews = false;
 }
