@@ -22,6 +22,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -38,12 +40,14 @@ import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
@@ -52,6 +56,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
 
@@ -65,6 +70,7 @@ import java.util.List;
 class HorizontalScrollSpec {
 
   private static final int LAST_SCROLL_POSITION_UNSET = -1;
+  private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @PropDefault static final boolean scrollbarEnabled = true;
   @PropDefault static final int initialScrollPosition = LAST_SCROLL_POSITION_UNSET;
@@ -245,6 +251,25 @@ class HorizontalScrollSpec {
         ComponentTree.create(ComponentContext.makeCopyForNestedTree(c), contentProps)
             .incrementalMount(false)
             .build());
+  }
+
+  @OnDetached
+  static void onDetached(ComponentContext c, @State final ComponentTree childComponentTree) {
+    if (ComponentsConfiguration.releaseNestedLithoViews) {
+      return;
+    }
+
+    if (ThreadUtils.isMainThread()) {
+      childComponentTree.release();
+    } else {
+      sMainThreadHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              childComponentTree.release();
+            }
+          });
+    }
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView

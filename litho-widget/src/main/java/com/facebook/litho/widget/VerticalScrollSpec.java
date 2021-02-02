@@ -22,6 +22,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
@@ -36,12 +38,14 @@ import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnmount;
@@ -50,6 +54,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Component that wraps another component, allowing it to be vertically scrollable. It's analogous
@@ -72,6 +77,7 @@ import com.facebook.litho.annotations.State;
 public class VerticalScrollSpec {
 
   @PropDefault static final boolean scrollbarFadingEnabled = true;
+  private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -239,6 +245,25 @@ public class VerticalScrollSpec {
         || !fillViewport.getPrevious().equals(fillViewport.getNext())
         || !nestedScrollingEnabled.getPrevious().equals(nestedScrollingEnabled.getNext())
         || !incrementalMountEnabled.getPrevious().equals(incrementalMountEnabled.getNext());
+  }
+
+  @OnDetached
+  static void onDetached(ComponentContext c, @State final ComponentTree childComponentTree) {
+    if (ComponentsConfiguration.releaseNestedLithoViews) {
+      return;
+    }
+
+    if (ThreadUtils.isMainThread()) {
+      childComponentTree.release();
+    } else {
+      sMainThreadHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              childComponentTree.release();
+            }
+          });
+    }
   }
 
   static class ScrollPosition {
