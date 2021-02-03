@@ -233,9 +233,7 @@ public class IncrementalMountExtension
     // If id is ROOT_HOST_ID then already at root host.
     if (needsHostMount) {
 
-      // Make sure the host is mounted before the child.
-      final IncrementalMountExtensionState state = extensionState.getState();
-
+      
       if (recursionSource == null) {
         recursionSource = new ArrayList<>();
       }
