@@ -233,7 +233,6 @@ public class IncrementalMountExtension
     // If id is ROOT_HOST_ID then already at root host.
     if (needsHostMount) {
 
-      
       if (recursionSource == null) {
         recursionSource = new ArrayList<>();
       }
