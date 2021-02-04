@@ -106,12 +106,12 @@ public class DelegateMethodGenerator {
     String contextParamName = null;
 
     for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
-      if (methodDescription.definedParameterTypes.get(i) == specModel.getContextClass()) {
+      if (methodDescription.definedParameterTypes.get(i).type == specModel.getContextClass()) {
         contextParamName = delegateMethod.methodParams.get(i).getName();
       }
 
       methodSpec.addParameter(
-          methodDescription.definedParameterTypes.get(i),
+          methodDescription.definedParameterTypes.get(i).type,
           delegateMethod.methodParams.get(i).getName());
     }
 
@@ -181,7 +181,7 @@ public class DelegateMethodGenerator {
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription) {
     for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
-      if (methodDescription.definedParameterTypes.get(i) == specModel.getContextClass()) {
+      if (methodDescription.definedParameterTypes.get(i).type == specModel.getContextClass()) {
         return delegateMethod.methodParams.get(i).getName();
       }
     }

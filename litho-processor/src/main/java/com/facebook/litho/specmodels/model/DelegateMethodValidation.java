@@ -142,7 +142,7 @@ public class DelegateMethodValidation {
       if (delegateMethod == null) {
         continue;
       }
-      final ImmutableList<TypeName> definedParameterTypes =
+      final ImmutableList<LifecycleMethodArgumentType> definedParameterTypes =
           delegateMethodDescription.definedParameterTypes;
 
       validationErrors.addAll(
@@ -302,13 +302,13 @@ public class DelegateMethodValidation {
   public static List<SpecModelValidationError> validateDefinedParameterTypes(
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       Class<? extends Annotation> delegateMethodAnnotation,
-      ImmutableList<TypeName> definedParameterTypes) {
+      ImmutableList<LifecycleMethodArgumentType> definedParameterTypes) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     if (delegateMethod.methodParams.size() < definedParameterTypes.size()) {
       StringBuilder stringBuilder = new StringBuilder();
       for (int i = 0, size = definedParameterTypes.size(); i < size; i++) {
-        stringBuilder.append(definedParameterTypes.get(i));
+        stringBuilder.append(definedParameterTypes.get(i).type);
         if (i < size - 1) {
           stringBuilder.append(", ");
         }
@@ -329,8 +329,8 @@ public class DelegateMethodValidation {
       final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
 
       if (i < definedParameterTypes.size()) {
-        if (!definedParameterTypes.get(i).equals(ClassNames.OBJECT)
-            && !delegateMethodParam.getTypeName().equals(definedParameterTypes.get(i))) {
+        if (!definedParameterTypes.get(i).type.equals(ClassNames.OBJECT)
+            && !delegateMethodParam.getTypeName().equals(definedParameterTypes.get(i).type)) {
           validationErrors.add(
               new SpecModelValidationError(
                   delegateMethodParam.getRepresentedObject(),
@@ -339,7 +339,7 @@ public class DelegateMethodValidation {
                       + " of a method annotated with "
                       + delegateMethodAnnotation
                       + " should be of type "
-                      + definedParameterTypes.get(i)
+                      + definedParameterTypes.get(i).type
                       + "."));
         }
       }

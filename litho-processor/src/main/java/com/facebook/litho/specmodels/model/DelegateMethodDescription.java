@@ -21,6 +21,8 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
@@ -55,7 +57,7 @@ public final class DelegateMethodDescription {
   public final Modifier accessType;
   public final TypeName returnType;
   public final String name;
-  public final ImmutableList<TypeName> definedParameterTypes;
+  public final ImmutableList<LifecycleMethodArgumentType> definedParameterTypes;
   public final ImmutableList<MethodParamModel> optionalParameters;
   public final ImmutableList<OptionalParameterType> optionalParameterTypes;
   public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
@@ -85,7 +87,7 @@ public final class DelegateMethodDescription {
         .accessType(methodDescription.accessType)
         .returnType(methodDescription.returnType)
         .name(methodDescription.name)
-        .definedParameterTypes(methodDescription.definedParameterTypes)
+        .lifecycleMethodArguments(methodDescription.definedParameterTypes)
         .optionalParameters(methodDescription.optionalParameters)
         .optionalParameterTypes(methodDescription.optionalParameterTypes)
         .interStageInputAnnotations(methodDescription.interStageInputAnnotations)
@@ -98,7 +100,7 @@ public final class DelegateMethodDescription {
     private Modifier accessType;
     private TypeName returnType;
     private String name;
-    private ImmutableList<TypeName> definedParameterTypes;
+    private ImmutableList<LifecycleMethodArgumentType> definedParameterTypes;
     private ImmutableList<OptionalParameterType> optionalParameterTypes;
     private ImmutableList<MethodParamModel> optionalParameters;
     private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
@@ -127,9 +129,26 @@ public final class DelegateMethodDescription {
       return this;
     }
 
-    public Builder definedParameterTypes(ImmutableList<TypeName> parameterTypes) {
-      this.definedParameterTypes = parameterTypes;
+    public Builder lifecycleMethodArguments(ImmutableList<LifecycleMethodArgumentType> args) {
+      this.definedParameterTypes = args;
       return this;
+    }
+
+    /**
+     * List of required arguments for both the lifecycle and delegate method.
+     *
+     * @param parameterTypes list of argument types.
+     * @return the current {@link Builder}.
+     * @deprecated Use {@link #lifecycleMethodArguments(ImmutableList)}
+     */
+    @Deprecated
+    public Builder definedParameterTypes(ImmutableList<TypeName> parameterTypes) {
+      final List<LifecycleMethodArgumentType> args = new ArrayList<>(parameterTypes.size());
+      for (TypeName arg : parameterTypes) {
+        args.add(new LifecycleMethodArgumentType(arg));
+      }
+
+      return lifecycleMethodArguments(ImmutableList.copyOf(args));
     }
 
     /**
