@@ -25,7 +25,6 @@ import static com.facebook.litho.specmodels.generator.StateContainerGenerator.ge
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -62,7 +61,6 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -591,8 +589,6 @@ public class ComponentBodyGenerator {
     final boolean hasInterStageProps =
         specModel.getInterStageInputs() != null && !specModel.getInterStageInputs().isEmpty();
     if (hasInterStageProps) {
-      final String interStagePropsContainerClassName =
-          getInterStagePropsContainerClassName(specModel);
       builder.addStatement(
           "component.setInterStagePropsContainer(createInterStagePropsContainer())");
     }
@@ -684,21 +680,6 @@ public class ComponentBodyGenerator {
     }
 
     return componentsInImpl;
-  }
-
-  private static List<MethodParamModel> getParams(
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
-    final List<MethodParamModel> params = new ArrayList<>();
-    for (MethodParamModel methodParamModel : updateStateMethodModel.methodParams) {
-      for (Annotation annotation : methodParamModel.getAnnotations()) {
-        if (annotation.annotationType().equals(Param.class)) {
-          params.add(methodParamModel);
-          break;
-        }
-      }
-    }
-
-    return params;
   }
 
   static CodeBlock getCompareStatement(
