@@ -57,7 +57,7 @@ public final class DelegateMethodDescription {
   public final Modifier accessType;
   public final TypeName returnType;
   public final String name;
-  public final ImmutableList<LifecycleMethodArgumentType> definedParameterTypes;
+  public final ImmutableList<LifecycleMethodArgumentType> lifecycleMethodArgumentTypes;
   public final ImmutableList<MethodParamModel> optionalParameters;
   public final ImmutableList<OptionalParameterType> optionalParameterTypes;
   public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
@@ -69,7 +69,7 @@ public final class DelegateMethodDescription {
     accessType = builder.accessType;
     returnType = builder.returnType;
     name = builder.name;
-    definedParameterTypes = builder.definedParameterTypes;
+    lifecycleMethodArgumentTypes = builder.lifecycleMethodArgumentTypes;
     optionalParameters = builder.optionalParameters;
     optionalParameterTypes = builder.optionalParameterTypes;
     interStageInputAnnotations = builder.interStageInputAnnotations;
@@ -87,7 +87,7 @@ public final class DelegateMethodDescription {
         .accessType(methodDescription.accessType)
         .returnType(methodDescription.returnType)
         .name(methodDescription.name)
-        .lifecycleMethodArguments(methodDescription.definedParameterTypes)
+        .lifecycleMethodArguments(methodDescription.lifecycleMethodArgumentTypes)
         .optionalParameters(methodDescription.optionalParameters)
         .optionalParameterTypes(methodDescription.optionalParameterTypes)
         .interStageInputAnnotations(methodDescription.interStageInputAnnotations)
@@ -100,7 +100,7 @@ public final class DelegateMethodDescription {
     private Modifier accessType;
     private TypeName returnType;
     private String name;
-    private ImmutableList<LifecycleMethodArgumentType> definedParameterTypes;
+    private ImmutableList<LifecycleMethodArgumentType> lifecycleMethodArgumentTypes;
     private ImmutableList<OptionalParameterType> optionalParameterTypes;
     private ImmutableList<MethodParamModel> optionalParameters;
     private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
@@ -130,7 +130,7 @@ public final class DelegateMethodDescription {
     }
 
     public Builder lifecycleMethodArguments(ImmutableList<LifecycleMethodArgumentType> args) {
-      this.definedParameterTypes = args;
+      this.lifecycleMethodArgumentTypes = args;
       return this;
     }
 
@@ -212,8 +212,8 @@ public final class DelegateMethodDescription {
         annotations = ImmutableList.of();
       }
 
-      if (definedParameterTypes == null) {
-        definedParameterTypes = ImmutableList.of();
+      if (lifecycleMethodArgumentTypes == null) {
+        lifecycleMethodArgumentTypes = ImmutableList.of();
       }
 
       if (optionalParameters == null) {

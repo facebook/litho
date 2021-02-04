@@ -143,7 +143,7 @@ public class DelegateMethodValidation {
         continue;
       }
       final ImmutableList<LifecycleMethodArgumentType> definedParameterTypes =
-          delegateMethodDescription.definedParameterTypes;
+          delegateMethodDescription.lifecycleMethodArgumentTypes;
 
       validationErrors.addAll(
           validateDefinedParameterTypes(

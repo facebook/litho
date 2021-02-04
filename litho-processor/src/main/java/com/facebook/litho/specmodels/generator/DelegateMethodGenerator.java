@@ -105,13 +105,14 @@ public class DelegateMethodGenerator {
 
     String contextParamName = null;
 
-    for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
-      if (methodDescription.definedParameterTypes.get(i).type == specModel.getContextClass()) {
+    for (int i = 0, size = methodDescription.lifecycleMethodArgumentTypes.size(); i < size; i++) {
+      if (methodDescription.lifecycleMethodArgumentTypes.get(i).type
+          == specModel.getContextClass()) {
         contextParamName = delegateMethod.methodParams.get(i).getName();
       }
 
       methodSpec.addParameter(
-          methodDescription.definedParameterTypes.get(i).type,
+          methodDescription.lifecycleMethodArgumentTypes.get(i).type,
           delegateMethod.methodParams.get(i).getName());
     }
 
@@ -180,8 +181,9 @@ public class DelegateMethodGenerator {
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription) {
-    for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
-      if (methodDescription.definedParameterTypes.get(i).type == specModel.getContextClass()) {
+    for (int i = 0, size = methodDescription.lifecycleMethodArgumentTypes.size(); i < size; i++) {
+      if (methodDescription.lifecycleMethodArgumentTypes.get(i).type
+          == specModel.getContextClass()) {
         return delegateMethod.methodParams.get(i).getName();
       }
     }
@@ -205,7 +207,7 @@ public class DelegateMethodGenerator {
 
     for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
-      final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
+      final int definedParameterTypesSize = methodDescription.lifecycleMethodArgumentTypes.size();
       if (i < definedParameterTypesSize) {
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));

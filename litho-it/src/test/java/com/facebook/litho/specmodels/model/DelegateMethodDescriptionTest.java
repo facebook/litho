@@ -62,7 +62,7 @@ public class DelegateMethodDescriptionTest {
     assertThat(delegateMethodDescription.returnType).isEqualTo(returnType);
     assertThat(delegateMethodDescription.name).isEqualTo(name);
     assertThat(delegateMethodDescription.annotations).isSameAs(annotations);
-    assertThat(delegateMethodDescription.definedParameterTypes).isSameAs(parameterTypes);
+    assertThat(delegateMethodDescription.lifecycleMethodArgumentTypes).isSameAs(parameterTypes);
     assertThat(delegateMethodDescription.optionalParameterTypes).isSameAs(optionalParameterTypes);
     assertThat(delegateMethodDescription.exceptions).isSameAs(exceptions);
   }
