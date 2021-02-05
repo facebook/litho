@@ -22,6 +22,7 @@ import com.facebook.litho.Column
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
+import com.facebook.litho.flexbox.padding
 import com.facebook.litho.widget.Text
 
 class FooterComponent(text: String) :

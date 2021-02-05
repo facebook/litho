@@ -21,6 +21,8 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
+import com.facebook.litho.flexbox.height
+import com.facebook.litho.flexbox.width
 import com.facebook.litho.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 

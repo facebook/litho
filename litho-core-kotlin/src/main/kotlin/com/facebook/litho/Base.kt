@@ -28,3 +28,9 @@ fun Activity.setContent(component: Component) {
 fun Activity.setContent(content: DslScope.() -> Component) {
   setContent(KComponent(content))
 }
+
+/**
+ * Tiny trick to make the compiler think a when result is used and enforce exhaustiveness of cases.
+ */
+internal val Any?.exhaustive: Unit
+  get() = Unit

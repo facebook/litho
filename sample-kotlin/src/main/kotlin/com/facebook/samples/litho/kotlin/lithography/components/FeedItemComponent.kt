@@ -25,6 +25,10 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
+import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.padding
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
