@@ -13,8 +13,6 @@ load(
 
 litho_android_library(
     name = "logging",
-    srcs = glob(["*.java"]),
-    autoglob = False,
     visibility = [
         "PUBLIC",
     ],

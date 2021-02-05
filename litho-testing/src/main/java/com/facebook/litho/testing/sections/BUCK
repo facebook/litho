@@ -18,8 +18,6 @@ load(
 
 litho_android_test_library(
     name = "sections",
-    srcs = glob(["*.java"]),
-    autoglob = False,
     is_androidx = True,
     plugins = [
         LITHO_SECTIONS_PROCESSOR_TARGET,

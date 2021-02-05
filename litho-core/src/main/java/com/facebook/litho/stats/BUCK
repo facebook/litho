@@ -12,10 +12,6 @@ load(
 
 litho_android_library(
     name = "stats",
-    srcs = glob([
-        "*.java",
-    ]),
-    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [LITHO_ANDROIDSUPPORT_TARGET],

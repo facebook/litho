@@ -22,8 +22,6 @@ load(
 
 litho_android_library(
     name = "widget-kotlin",
-    srcs = glob(["*.kt"]),
-    autoglob = False,
     is_androidx = True,
     language = "KOTLIN",
     provided_deps = [
