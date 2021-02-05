@@ -137,7 +137,6 @@ public abstract class Component extends ComponentLifecycle
   private @Nullable Context mBuilderContext;
 
   private @Nullable StateContainer mStateContainer;
-  private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
   protected Component() {
     mSimpleName = getClass().getSimpleName();
@@ -145,7 +144,6 @@ public abstract class Component extends ComponentLifecycle
     if (!mUseStatelessComponent) {
       mStateContainer = createStateContainer();
     }
-    mInterStagePropsContainer = createInterStagePropsContainer();
   }
 
   protected Component(String simpleName) {
@@ -154,7 +152,6 @@ public abstract class Component extends ComponentLifecycle
     if (!mUseStatelessComponent) {
       mStateContainer = createStateContainer();
     }
-    mInterStagePropsContainer = createInterStagePropsContainer();
   }
 
   /**
@@ -169,7 +166,6 @@ public abstract class Component extends ComponentLifecycle
     if (!mUseStatelessComponent) {
       mStateContainer = createStateContainer();
     }
-    mInterStagePropsContainer = createInterStagePropsContainer();
   }
 
   /**
@@ -630,10 +626,6 @@ public abstract class Component extends ComponentLifecycle
     mStateContainer = stateContainer;
   }
 
-  protected void setInterStagePropsContainer(InterStagePropsContainer interStagePropsContainer) {
-    mInterStagePropsContainer = interStagePropsContainer;
-  }
-
   protected @Nullable StateContainer createStateContainer() {
     return null;
   }
@@ -641,14 +633,6 @@ public abstract class Component extends ComponentLifecycle
   @Override
   public String toString() {
     return getSimpleName();
-  }
-
-  protected @Nullable InterStagePropsContainer getInterStagePropsContainer() {
-    return mInterStagePropsContainer;
-  }
-
-  protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {
-    return null;
   }
 
   /** Called to install internal state based on a component's parent context. */

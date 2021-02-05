@@ -98,8 +98,6 @@ public interface ClassNames {
   ClassName COMPONENT_STATE_UPDATE =
       ClassName.bestGuess("com.facebook.litho.StateContainer.StateUpdate");
   ClassName STATE_CONTAINER = ClassName.bestGuess("com.facebook.litho.StateContainer");
-  ClassName INTER_STAGE_PROPS_CONTAINER =
-      ClassName.bestGuess("com.facebook.litho.InterStagePropsContainer");
   ClassName RENDER_DATA = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.RenderData");
 
   ClassName EVENT_DISPATCHER = ClassName.bestGuess("com.facebook.litho.EventDispatcher");

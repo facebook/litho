@@ -161,7 +161,8 @@ public class DelegateMethodGenerator {
           registerDelegation.add(
               "($T) $L",
               methodParamModel.getTypeName(),
-              getImplAccessor(specModel, methodDescription, methodParamModel, contextParamName));
+              getImplAccessor(
+                  methodDescription.name, specModel, methodParamModel, contextParamName));
           registerDelegation.add(
               (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
         }
@@ -247,7 +248,7 @@ public class DelegateMethodGenerator {
         }
         releaseStatements.addStatement(
             "$L = $L.get()",
-            getImplAccessor(specModel, methodDescription, methodParamModel, contextParamName),
+            getImplAccessor(methodDescription.name, specModel, methodParamModel, contextParamName),
             localOutputName);
         if (isPropOutput) {
           releaseStatements.endControlFlow();
@@ -369,7 +370,7 @@ public class DelegateMethodGenerator {
         && methodParamModel.getAnnotations().isEmpty();
   }
 
-  public static boolean isOutputType(TypeName type) {
+  private static boolean isOutputType(TypeName type) {
     return type.equals(OUTPUT)
         || (type instanceof ParameterizedTypeName
             && ((ParameterizedTypeName) type).rawType.equals(OUTPUT));

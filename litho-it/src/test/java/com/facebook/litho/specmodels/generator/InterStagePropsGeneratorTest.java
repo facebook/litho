@@ -31,11 +31,7 @@ import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -74,67 +70,25 @@ public class InterStagePropsGeneratorTest {
   }
 
   @Test
-  public void test_interStageProps_containerClassName() {
-    assertThat(
-            InterStagePropsContainerGenerator.getInterStagePropsContainerClassName(
-                mInterstagePropsMountSpecModel))
-        .isEqualTo("MountTestInterStagePropsContainer");
-  }
-
-  @Test
-  public void test_generate_container_impl() {
-    final TypeSpec container =
-        InterStagePropsContainerGenerator.generate(mInterstagePropsMountSpecModel);
-
-    assertThat(container.toString())
-        .isEqualTo(
-            "static class MountTestInterStagePropsContainer implements com.facebook.litho.InterStagePropsContainer {\n"
-                + "  java.lang.Integer color;\n"
-                + "}\n");
-  }
-
-  @Test
-  public void test_generate_getAndCreate_container() {
+  public void test_generate_field() {
     final TypeSpecDataHolder holder =
         ComponentBodyGenerator.generate(mInterstagePropsMountSpecModel, null, RunMode.testing());
-    final List<String> methodNames = new ArrayList<>();
-    for (MethodSpec methodSpec : holder.getMethodSpecs()) {
-      methodNames.add(methodSpec.name);
-    }
 
-    assertThat(methodNames.contains("createInterStagePropsContainer")).isTrue();
-    assertThat(methodNames.contains("getInterStagePropsContainerImpl")).isTrue();
+    assertThat(holder.getFieldSpecs()).hasSize(1);
+    assertThat(holder.getFieldSpecs().get(0).toString()).isEqualTo("java.lang.Integer color;\n");
   }
 
   @Test
-  public void test_create_container() {
-    MethodSpec methodSpec =
-        ComponentBodyGenerator.generateInterStagePropsContainerCreator(
-            ClassName.bestGuess(
-                InterStagePropsContainerGenerator.getInterStagePropsContainerClassName(
-                    mInterstagePropsMountSpecModel)));
-
-    assertThat(methodSpec.toString())
+  public void test_generate_copyInterstageImpl() {
+    final TypeSpecDataHolder holder =
+        ComponentBodyGenerator.generateCopyInterStageImpl(mInterstagePropsMountSpecModel);
+    assertThat(holder.getMethodSpecs()).hasSize(1);
+    assertThat(holder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected MountTestInterStagePropsContainer createInterStagePropsContainer() {\n"
-                + "  return new MountTestInterStagePropsContainer();\n"
-                + "}\n");
-  }
-
-  @Test
-  public void test_get_container_impl() {
-    MethodSpec methodSpec =
-        ComponentBodyGenerator.generateInterstagePropsContainerImplGetter(
-            mInterstagePropsMountSpecModel,
-            ClassName.bestGuess(
-                InterStagePropsContainerGenerator.getInterStagePropsContainerClassName(
-                    mInterstagePropsMountSpecModel)));
-
-    assertThat(methodSpec.toString())
-        .isEqualTo(
-            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl() {\n"
-                + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer();\n"
+                + "protected void copyInterStageImpl(com.facebook.litho.Component component) {\n"
+                + "  MountTest mountTestRef = (MountTest) component;\n"
+                + "  color = mountTestRef.color;\n"
                 + "}\n");
   }
 
@@ -147,7 +101,7 @@ public class InterStagePropsGeneratorTest {
             "@java.lang.Override\n"
                 + "public MountTest makeShallowCopy() {\n"
                 + "  MountTest component = (MountTest) super.makeShallowCopy();\n"
-                + "  component.setInterStagePropsContainer(createInterStagePropsContainer());\n"
+                + "  component.color = null;\n"
                 + "  return component;\n"
                 + "}\n");
   }
@@ -187,7 +141,7 @@ public class InterStagePropsGeneratorTest {
                 + "  MountTestSpec.onPrepare(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.Output<java.lang.Integer>) colorTmp);\n"
-                + "  getInterStagePropsContainerImpl().color = colorTmp.get();\n"
+                + "  color = colorTmp.get();\n"
                 + "}\n");
 
     assertThat(onBindMethod.toString())
@@ -197,7 +151,7 @@ public class InterStagePropsGeneratorTest {
                 + "  MountTestSpec.onBind(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.LithoView) lithoView,\n"
-                + "    (java.lang.Integer) getInterStagePropsContainerImpl().color);\n"
+                + "    (java.lang.Integer) color);\n"
                 + "}\n");
   }
 
