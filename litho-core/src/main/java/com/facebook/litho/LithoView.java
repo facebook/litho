@@ -64,6 +64,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
   private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
+  private boolean mSkipMountingIfNotVisible;
 
   public interface OnDirtyMountListener {
     /**
@@ -839,6 +840,17 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   /**
+   * If true, calling {@link #setVisibilityHint(boolean, boolean)} will delegate to {@link
+   * #setVisibilityHint(boolean)} and skip mounting if the visibility hint was set to false. You
+   * should not need this unless you don't have control over calling setVisibilityHint on the
+   * LithoView you own.
+   */
+  public void setSkipMountingIfNotVisible(boolean skipMountingIfNotVisible) {
+    assertMainThread();
+    mSkipMountingIfNotVisible = skipMountingIfNotVisible;
+  }
+
+  /**
    * Call this to tell the LithoView whether it is visible or not. In general, you shouldn't require
    * this as the system will do this for you. However, when a new activity/fragment is added on top
    * of the one hosting this view, the LithoView remains in the backstack but receives no callback
@@ -865,6 +877,12 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    */
   @Deprecated
   public void setVisibilityHint(boolean isVisible, boolean skipMountingIfNotVisible) {
+    if (mSkipMountingIfNotVisible) {
+      setVisibilityHint(isVisible);
+
+      return;
+    }
+
     setVisibilityHintInternal(isVisible, skipMountingIfNotVisible);
   }
 
