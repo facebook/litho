@@ -174,17 +174,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void copyInterStageImpl(
-      InterStagePropsContainer copyIntoInterStagePropsContainer,
-      InterStagePropsContainer copyFromInterStagePropsContainer) {
-    TestMountInterStagePropsContainer copyIntoInterStagePropsContainer_ref =
-        (TestMountInterStagePropsContainer) copyIntoInterStagePropsContainer;
-    TestMountInterStagePropsContainer copyFromInterStagePropsContainer_ref =
-        (TestMountInterStagePropsContainer) copyFromInterStagePropsContainer;
-    copyIntoInterStagePropsContainer_ref.boundsDefinedOutput =
-        copyFromInterStagePropsContainer_ref.boundsDefinedOutput;
-    copyIntoInterStagePropsContainer_ref.measureOutput =
-        copyFromInterStagePropsContainer_ref.measureOutput;
+  protected void copyInterStageImpl(Component component) {
+    TestMount testMountRef = (TestMount) component;
+    TestMountInterStagePropsContainer interStagePropsContainer = getInterStagePropsContainerImpl();
+    interStagePropsContainer.boundsDefinedOutput =
+        testMountRef.getInterStagePropsContainerImpl().boundsDefinedOutput;
+    interStagePropsContainer.measureOutput =
+        testMountRef.getInterStagePropsContainerImpl().measureOutput;
   }
 
   @Override

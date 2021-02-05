@@ -495,30 +495,23 @@ public class ComponentBodyGenerator {
         specModel.getInterStageInputs();
 
     if (specModel.shouldGenerateCopyMethod() && !interStageInputs.isEmpty()) {
-      final String className =
-          InterStagePropsContainerGenerator.getInterStagePropsContainerClassName(specModel);
-      final String copyIntoParam = "copyIntoInterStagePropsContainer";
-      final String copyFromParam = "copyFromInterStagePropsContainer";
-      final String copyIntoInstanceName = copyIntoParam + "_ref";
-      final String copyFromInstanceName = copyFromParam + "_ref";
+      final String className = specModel.getComponentName();
+      final String instanceName = getInstanceRefName(specModel);
       final MethodSpec.Builder copyInterStageComponentBuilder =
           MethodSpec.methodBuilder("copyInterStageImpl")
               .addAnnotation(Override.class)
               .addModifiers(Modifier.PROTECTED)
               .returns(TypeName.VOID)
-              .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, copyIntoParam)
-              .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, copyFromParam)
+              .addParameter(specModel.getComponentClass(), "component")
+              .addStatement("$N $N = ($N) component", className, instanceName, className)
               .addStatement(
-                  "$N $N = ($N) $N", className, copyIntoInstanceName, className, copyIntoParam)
-              .addStatement(
-                  "$N $N = ($N) $N", className, copyFromInstanceName, className, copyFromParam);
+                  "$T interStagePropsContainer = getInterStagePropsContainerImpl()", implClassName);
 
       for (InterStageInputParamModel interStageInput : interStageInputs) {
         copyInterStageComponentBuilder.addStatement(
-            "$N.$N = $N.$N",
-            copyIntoInstanceName,
+            "interStagePropsContainer.$N = $N.getInterStagePropsContainerImpl().$N",
             interStageInput.getName(),
-            copyFromInstanceName,
+            instanceName,
             interStageInput.getName());
       }
 
