@@ -41,25 +41,29 @@ import com.facebook.yoga.YogaPositionType
 
 class FeedItemComponent(artist: Artist) :
     KComponent({
-      Column()[
-          Column()[
-              imageBlock(artist),
-              Text(
-                  text = artist.name,
-                  style =
-                      Style.position(start = 4.dp, bottom = 4.dp)
-                          .positionType(YogaPositionType.ABSOLUTE)
-                          .padding(horizontal = 6.dp)
-                          .background(drawableColor(0xddffffff)),
-                  textSize = 24.sp,
-                  textStyle = BOLD),
-              ActionsComponent(
-                  style =
-                      Style.position(top = 4.dp, end = 4.dp)
-                          .positionType(YogaPositionType.ABSOLUTE)),
-          ],
-          FooterComponent(text = artist.biography),
-      ]
+      Column(
+          children =
+              listOf(
+                  Column(
+                      children =
+                          listOf(
+                              imageBlock(artist),
+                              Text(
+                                  text = artist.name,
+                                  style =
+                                      Style.position(start = 4.dp, bottom = 4.dp)
+                                          .positionType(YogaPositionType.ABSOLUTE)
+                                          .padding(horizontal = 6.dp)
+                                          .background(drawableColor(0xddffffff)),
+                                  textSize = 24.sp,
+                                  textStyle = BOLD),
+                              ActionsComponent(
+                                  style =
+                                      Style.position(top = 4.dp, end = 4.dp)
+                                          .positionType(YogaPositionType.ABSOLUTE)),
+                          )),
+                  FooterComponent(text = artist.biography),
+              ))
     })
 
 private val recyclerConfiguration =

@@ -36,11 +36,15 @@ class PlaygroundActivity : NavigatableDemoActivity() {
     setContent {
       val counter = useState { 1 }
 
-      Column(style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } })[
-          Text(text = "Hello, Kotlin World!", textSize = 20.sp),
-          Text(
-              text = "with ${"❤️".repeat(counter.value)} from London", textStyle = Typeface.ITALIC),
-      ]
+      Column(
+          style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } },
+          children =
+              listOf(
+                  Text(text = "Hello, Kotlin World!", textSize = 20.sp),
+                  Text(
+                      text = "with ${"❤️".repeat(counter.value)} from London",
+                      textStyle = Typeface.ITALIC),
+              ))
     }
   }
 }

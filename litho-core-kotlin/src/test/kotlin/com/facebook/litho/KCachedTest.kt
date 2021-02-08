@@ -208,12 +208,16 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val root = KComponent {
-      Row()[
-          Leaf1("hello", 100, initCounter),
-          Column()[
-              Leaf1("hello", 100, initCounter),
-          ],
-      ]
+      Row(
+          children =
+              listOf(
+                  Leaf1("hello", 100, initCounter),
+                  Column(
+                      children =
+                          listOf(
+                              Leaf1("hello", 100, initCounter),
+                          )),
+              ))
     }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
@@ -229,11 +233,13 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val root = KComponent {
-      Row()[
-          Leaf1("hello", 100, initCounter),
-          Leaf1("hello", 100, initCounter),
-          Leaf2("hello", 100, initCounter),
-      ]
+      Row(
+          children =
+              listOf(
+                  Leaf1("hello", 100, initCounter),
+                  Leaf1("hello", 100, initCounter),
+                  Leaf2("hello", 100, initCounter),
+              ))
     }
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, root)
@@ -295,10 +301,12 @@ class KCachedTest {
           expensiveRepeatFunc(str, repeatNum)
         }
 
-        Row()[
-            Text(text = expensiveString1),
-            Text(text = expensiveString2),
-        ]
+        Row(
+            children =
+                listOf(
+                    Text(text = expensiveString1),
+                    Text(text = expensiveString2),
+                ))
       })
 
   companion object {
