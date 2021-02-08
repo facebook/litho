@@ -31,7 +31,7 @@ public class EventHandlersController {
   private final Map<String, EventHandlersWrapper> mEventHandlers = new HashMap<>();
 
   /**
-   * Update all the known event handlers for a dispatcher with the given key with the new dispacher
+   * Update all the known event handlers for a dispatcher with the given key with the new dispatcher
    * instance.
    */
   public synchronized void bindEventHandlers(
@@ -53,7 +53,7 @@ public class EventHandlersController {
 
   /** Remove entries for dispatchers that are no longer present in the tree. */
   public synchronized void clearUnusedEventHandlers() {
-    final Iterator iterator = mEventHandlers.keySet().iterator();
+    final Iterator<String> iterator = mEventHandlers.keySet().iterator();
     while (iterator.hasNext()) {
       final EventHandlersWrapper eventHandlersWrapper = mEventHandlers.get(iterator.next());
 
@@ -66,7 +66,7 @@ public class EventHandlersController {
   }
 
   /** Map the given event handler to a dispatcher with the given global key. */
-  public synchronized void recordEventHandler(String globalKey, EventHandler eventHandler) {
+  public synchronized void recordEventHandler(String globalKey, EventHandler<?> eventHandler) {
     if (globalKey == null) {
       return;
     }
@@ -108,23 +108,23 @@ public class EventHandlersController {
   @VisibleForTesting
   public static class EventHandlersWrapper {
 
-    private final SparseArrayCompat<EventHandler> mEventHandlers = new SparseArrayCompat<>();
+    private final SparseArrayCompat<EventHandler<?>> mEventHandlers = new SparseArrayCompat<>();
 
     boolean mUsedInCurrentTree;
 
-    void addEventHandler(EventHandler eventHandler) {
+    void addEventHandler(EventHandler<?> eventHandler) {
       mEventHandlers.put(eventHandler.id, eventHandler);
     }
 
     void bindAllToDispatcher(HasEventDispatcher dispatcher, ComponentContext c) {
       for (int i = 0, size = mEventHandlers.size(); i < size; i++) {
-        final EventHandler eventHandler = mEventHandlers.valueAt(i);
+        final EventHandler<?> eventHandler = mEventHandlers.valueAt(i);
         bindEventHandlerToDispatcher(eventHandler, dispatcher, c);
       }
     }
 
     @VisibleForTesting
-    public SparseArrayCompat<EventHandler> getEventHandlers() {
+    public SparseArrayCompat<EventHandler<?>> getEventHandlers() {
       return mEventHandlers;
     }
   }
