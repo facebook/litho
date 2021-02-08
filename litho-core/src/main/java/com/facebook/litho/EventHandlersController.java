@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -47,7 +48,7 @@ public class EventHandlersController {
 
     // Mark that the list of event handlers for this component is still needed.
     eventHandlers.mUsedInCurrentTree = true;
-    eventHandlers.bindToDispatcher(c, dispatcher);
+    eventHandlers.bindAllToDispatcher(dispatcher, c);
   }
 
   /** Remove entries for dispatchers that are no longer present in the tree. */
@@ -70,14 +71,32 @@ public class EventHandlersController {
       return;
     }
 
-    EventHandlersWrapper eventHandlers = mEventHandlers.get(globalKey);
+    EventHandlersWrapper eventHandlersForKey = mEventHandlers.get(globalKey);
+    EventHandler<?> prevEventHandler = null;
 
-    if (eventHandlers == null) {
-      eventHandlers = new EventHandlersWrapper();
-      mEventHandlers.put(globalKey, eventHandlers);
+    if (eventHandlersForKey == null) {
+      eventHandlersForKey = new EventHandlersWrapper();
+      mEventHandlers.put(globalKey, eventHandlersForKey);
+    } else {
+      prevEventHandler = eventHandlersForKey.getEventHandlers().get(eventHandler.id);
     }
 
-    eventHandlers.addEventHandler(eventHandler);
+    if (eventHandler.isEquivalentTo(prevEventHandler)) {
+      final ComponentContext c =
+          eventHandler.params == null ? null : (ComponentContext) eventHandler.params[0];
+      bindEventHandlerToDispatcher(prevEventHandler, eventHandler.mHasEventDispatcher, c);
+    } else {
+      eventHandlersForKey.addEventHandler(eventHandler);
+    }
+  }
+
+  private static void bindEventHandlerToDispatcher(
+      EventHandler<?> eventHandler, HasEventDispatcher dispatcher, @Nullable ComponentContext c) {
+    eventHandler.mHasEventDispatcher = dispatcher;
+
+    if (eventHandler.params != null) {
+      eventHandler.params[0] = c;
+    }
   }
 
   @VisibleForTesting
@@ -97,15 +116,10 @@ public class EventHandlersController {
       mEventHandlers.put(eventHandler.id, eventHandler);
     }
 
-    void bindToDispatcher(ComponentContext c, HasEventDispatcher dispatcher) {
+    void bindAllToDispatcher(HasEventDispatcher dispatcher, ComponentContext c) {
       for (int i = 0, size = mEventHandlers.size(); i < size; i++) {
         final EventHandler eventHandler = mEventHandlers.valueAt(i);
-        eventHandler.mHasEventDispatcher = dispatcher;
-
-        // Params should only be null for tests
-        if (eventHandler.params != null) {
-          eventHandler.params[0] = c;
-        }
+        bindEventHandlerToDispatcher(eventHandler, dispatcher, c);
       }
     }
 
