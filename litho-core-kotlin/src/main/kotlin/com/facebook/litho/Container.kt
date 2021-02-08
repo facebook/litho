@@ -21,61 +21,12 @@ import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
 
 /**
- * [ColumnWithoutChildren] and [RowWithoutChildren] support the "bracket children" API. As one might
- * expect, they render to an immutable Row/Column without any children. However their main purpose
- * is to expose the `operator fun get()` override that allows adding children in the Litho kotlin
- * DSL without adding it to all Rows/Columns (i.e. ones that may already have children) and without
- * needing to import an extension function.
- *
- * The operator returns a new Row/Column with these children so that everything stays immutable.
- */
-class ColumnWithoutChildren
-internal constructor(
-    private val resourceResolver: ResourceResolver,
-    private val alignContent: YogaAlign? = null,
-    private val alignItems: YogaAlign? = null,
-    private val justifyContent: YogaJustify? = null,
-    private val wrap: YogaWrap? = null,
-    private val isReversed: Boolean = false,
-    private val style: Style? = null,
-) :
-    KComponent({
-      com.facebook.litho.Column(alignContent, alignItems, justifyContent, wrap, isReversed).apply {
-        applyStyle(style)
-      }
-    }) {
-
-  /** Returns a new Column with the same props and the given children. */
-  operator fun get(vararg children: Component?): Column =
-      Column(
-              alignContent,
-              alignItems,
-              justifyContent,
-              wrap,
-              isReversed,
-              toNonNullComponentList(children))
-          .apply { style?.applyToProps(resourceResolver, getOrCreateCommonProps()) }
-
-  /**
-   * Returns a new Column with the same props and the given children, but as a pre-constructed list.
-   */
-  operator fun get(children: List<out Component?>): Column =
-      Column(
-              alignContent,
-              alignItems,
-              justifyContent,
-              wrap,
-              isReversed,
-              toNonNullComponentList(children))
-          .apply { style?.applyToProps(resourceResolver, getOrCreateCommonProps()) }
-}
-
-/**
- * Constructs a new [com.facebook.litho.Column]. Add children via trailing `[]`, e.g.
+ * Constructs a new [com.facebook.litho.Column]. Add children by passing an immutable list as the
+ * children prop e.g.
  * ```
- * Column(...) [
+ * Column(..., children = listOf(
  *   Text(text = "Foo"),
- * ]
+ * ))
  * ```
  */
 @Suppress("FunctionName")
@@ -86,58 +37,19 @@ fun DslScope.Column(
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
     style: Style? = null,
-): ColumnWithoutChildren =
-    ColumnWithoutChildren(
-        resourceResolver, alignContent, alignItems, justifyContent, wrap, isReversed, style)
-
-/** See docs on [ColumnWithoutChildren]. */
-class RowWithoutChildren
-internal constructor(
-    private val resourceResolver: ResourceResolver,
-    private val alignContent: YogaAlign? = null,
-    private val alignItems: YogaAlign? = null,
-    private val justifyContent: YogaJustify? = null,
-    private val wrap: YogaWrap? = null,
-    private val isReversed: Boolean = false,
-    private val style: Style? = null,
-) :
-    KComponent({
-      com.facebook.litho.Row(alignContent, alignItems, justifyContent, wrap, isReversed).apply {
-        applyStyle(style)
-      }
-    }) {
-
-  /** Returns a new Column with the same props and the given children. */
-  operator fun get(vararg children: Component?): Row =
-      Row(
-              alignContent,
-              alignItems,
-              justifyContent,
-              wrap,
-              isReversed,
-              toNonNullComponentList(children))
-          .apply { style?.applyToProps(resourceResolver, getOrCreateCommonProps()) }
-
-  /**
-   * Returns a new Column with the same props and the given children, but as a pre-constructed list.
-   */
-  operator fun get(children: List<Component?>): Row =
-      Row(
-              alignContent,
-              alignItems,
-              justifyContent,
-              wrap,
-              isReversed,
-              toNonNullComponentList(children))
-          .apply { style?.applyToProps(resourceResolver, getOrCreateCommonProps()) }
-}
+    children: List<Component?>? = null
+): Column =
+    Column(alignContent, alignItems, justifyContent, wrap, isReversed, children).apply {
+      style?.applyToProps(resourceResolver, getOrCreateCommonProps())
+    }
 
 /**
- * Constructs a new [com.facebook.litho.Row]. Add children via trailing `[]`, e.g.
+ * Constructs a new [com.facebook.litho.Row]. Add children by passing an immutable list as the
+ * children prop e.g.
  * ```
- * Row(...) [
+ * Row(..., children = listOf(
  *   Text(text = "Foo"),
- * ]
+ * ))
  * ```
  */
 @Suppress("FunctionName")
@@ -148,25 +60,8 @@ fun DslScope.Row(
     wrap: YogaWrap? = null,
     isReversed: Boolean = false,
     style: Style? = null,
-): RowWithoutChildren =
-    RowWithoutChildren(
-        resourceResolver, alignContent, alignItems, justifyContent, wrap, isReversed, style)
-
-/**
- * These functions are the functional equivalent of `filterNotNull`. They exist since we know
- * exactly the number of children we have and in lower-end phones have seen OOM impact in reducing
- * over-allocation of long-lived ArrayLists.
- */
-private inline fun toNonNullComponentList(children: Array<out Component?>): List<Component> {
-  val size = children.count { it != null }
-  val out = ArrayList<Component>(size)
-  children.forEach { child -> child?.let { out.add(it) } }
-  return out
-}
-
-private inline fun toNonNullComponentList(children: List<out Component?>): List<Component> {
-  val size = children.count { it != null }
-  val out = ArrayList<Component>(size)
-  children.forEach { child -> child?.let { out.add(it) } }
-  return out
-}
+    children: List<Component?>? = null
+): Row =
+    Row(alignContent, alignItems, justifyContent, wrap, isReversed, children).apply {
+      style?.applyToProps(resourceResolver, getOrCreateCommonProps())
+    }
