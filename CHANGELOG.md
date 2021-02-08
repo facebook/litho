@@ -5,6 +5,7 @@
 _release-date_
 
 * **Breaking:** Calling `setVisibilityHint(false)` on a LithoView will ignore mounting calls until `setVisibilityHint(true)` is called.
+* **New**: Adds visible top and visible left to the VisibilityChangedEvent.
 
 * TBA
 

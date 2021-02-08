@@ -70,6 +70,8 @@ class MyLayoutSpec {
   @OnEvent(VisibilityChangedEvent.class)
   static void onComponentVisibilityChanged(
       ComponentContext c,
+      @FromEvent int visibleTop,
+      @FromEvent int visibleLeft,
       @FromEvent int visibleHeight,
       @FromEvent int visibleWidth,
       @FromEvent float percentVisibleHeight,

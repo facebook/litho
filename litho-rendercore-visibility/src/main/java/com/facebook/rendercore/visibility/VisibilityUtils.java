@@ -91,6 +91,8 @@ public class VisibilityUtils {
 
   public static void dispatchOnVisibilityChanged(
       @Nullable Function<Void> visibilityChangedHandler,
+      int visibleTop,
+      int visibleLeft,
       int visibleWidth,
       int visibleHeight,
       float percentVisibleWidth,
@@ -104,6 +106,8 @@ public class VisibilityUtils {
       sVisibleRectChangedEvent = new VisibilityChangedEvent();
     }
 
+    sVisibleRectChangedEvent.visibleTop = visibleTop;
+    sVisibleRectChangedEvent.visibleLeft = visibleLeft;
     sVisibleRectChangedEvent.visibleHeight = visibleHeight;
     sVisibleRectChangedEvent.visibleWidth = visibleWidth;
     sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;

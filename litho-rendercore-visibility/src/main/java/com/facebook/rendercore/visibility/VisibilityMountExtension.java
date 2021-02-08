@@ -43,7 +43,6 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
   private static final VisibilityMountExtension sInstance = new VisibilityMountExtension();
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-  private static final Rect sTempRect = new Rect();
 
   private VisibilityMountExtension() {}
 
@@ -190,6 +189,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
     log("Visibility Outputs to process: " + size);
 
+    final Rect intersection = new Rect();
     for (int j = 0; j < size; j++) {
       final VisibilityOutput visibilityOutput = state.mVisibilityOutputs.get(j);
       final String componentName = visibilityOutput.getKey();
@@ -198,9 +198,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       RenderCoreSystrace.beginSection("visibilityHandlers:" + componentName);
 
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
+
       final boolean boundsIntersect =
-          sTempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
-      final boolean isFullyVisible = boundsIntersect && sTempRect.equals(visibilityOutputBounds);
+          intersection.setIntersect(visibilityOutputBounds, localVisibleRect);
+      final boolean isFullyVisible = boundsIntersect && intersection.equals(visibilityOutputBounds);
       final String visibilityOutputId = visibilityOutput.getId();
       VisibilityItem visibilityItem = state.mVisibilityIdToItemMap.get(visibilityOutputId);
 
@@ -231,7 +232,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           visibilityOutput.getVisibilityChangedEventHandler();
 
       final boolean isCurrentlyVisible =
-          boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
+          boundsIntersect
+              && isInVisibleRange(visibilityOutput, visibilityOutputBounds, intersection);
 
       if (visibilityItem != null) {
 
@@ -249,7 +251,8 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
           }
 
           if (visibilityChangedHandler != null) {
-            VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
+            VisibilityUtils.dispatchOnVisibilityChanged(
+                visibilityChangedHandler, 0, 0, 0, 0, 0f, 0f);
           }
 
           if (visibilityItem.isInFocusedRange()) {
@@ -289,7 +292,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
 
         // Check if the component has entered or exited the focused range.
         if (focusedHandler != null || unfocusedHandler != null) {
-          if (isInFocusedRange(extensionState, visibilityOutputBounds, sTempRect)) {
+          if (isInFocusedRange(extensionState, visibilityOutputBounds, intersection)) {
             if (!visibilityItem.isInFocusedRange()) {
               visibilityItem.setFocusedRange(true);
               if (focusedHandler != null) {
@@ -308,7 +311,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         // If the component has not entered the full impression range yet, make sure to update the
         // information about the visible edges.
         if (fullImpressionHandler != null && !visibilityItem.isInFullImpressionRange()) {
-          visibilityItem.setVisibleEdges(visibilityOutputBounds, sTempRect);
+          visibilityItem.setVisibleEdges(visibilityOutputBounds, intersection);
 
           if (visibilityItem.isInFullImpressionRange()) {
             VisibilityUtils.dispatchOnFullImpression(fullImpressionHandler);
@@ -316,10 +319,12 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         }
 
         if (visibilityChangedHandler != null) {
-          final int visibleWidth = sTempRect.right - sTempRect.left;
-          final int visibleHeight = sTempRect.bottom - sTempRect.top;
+          final int visibleWidth = intersection.right - intersection.left;
+          final int visibleHeight = intersection.bottom - intersection.top;
           VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
+              intersection.top,
+              intersection.left,
               visibleWidth,
               visibleHeight,
               100f * visibleWidth / visibilityOutputBounds.width(),
@@ -418,7 +423,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         }
 
         if (visibilityChangedHandler != null) {
-          VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
+          VisibilityUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0, 0, 0f, 0f);
         }
 
         visibilityItem.setWasFullyVisible(false);

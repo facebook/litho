@@ -565,6 +565,8 @@ public class VisibilityEventsTest {
 
     VisibilityChangedEvent visibilityChangedEvent =
         (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+    assertThat(visibilityChangedEvent.visibleTop).isEqualTo(0);
+    assertThat(visibilityChangedEvent.visibleLeft).isEqualTo(0);
     assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(10);
     assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
     assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(100f);
@@ -593,6 +595,19 @@ public class VisibilityEventsTest {
     assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
     assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
     assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    mLithoView.notifyVisibleBoundsChanged(new Rect(5, 5, 10, 10), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleTop).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleLeft).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(5);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(50f);
   }
 
   @Test
