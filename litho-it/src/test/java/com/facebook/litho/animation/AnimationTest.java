@@ -96,29 +96,22 @@ public class AnimationTest {
 
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
-  final boolean mUseTransitionExtension;
 
   boolean mConfigUseMountDelegateTarget;
   boolean mConfigDelegateToRenderCoreMount;
-  boolean mConfigUseTransitionExtension;
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useTransitionExtension={2}")
+      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false}, {false, false, true}, {true, false, false}, {true, true, false},
+          {false, false}, {true, false}, {true, true},
         });
   }
 
-  public AnimationTest(
-      boolean useMountDelegateTarget,
-      boolean delegateToRenderCoreMount,
-      boolean useTransitionExtension) {
+  public AnimationTest(boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-    mUseTransitionExtension = useTransitionExtension;
   }
 
   @Before
@@ -126,18 +119,15 @@ public class AnimationTest {
     mActivityController = Robolectric.buildActivity(Activity.class, new Intent());
     mConfigUseMountDelegateTarget = ComponentsConfiguration.useExtensionsWithMountDelegate;
     mConfigDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-    mConfigUseTransitionExtension = ComponentsConfiguration.useTransitionsExtension;
 
     ComponentsConfiguration.useExtensionsWithMountDelegate = mUseMountDelegateTarget;
     ComponentsConfiguration.delegateToRenderCoreMount = mDelegateToRenderCoreMount;
-    ComponentsConfiguration.useTransitionsExtension = mUseTransitionExtension;
   }
 
   @After
   public void cleanup() {
     ComponentsConfiguration.useExtensionsWithMountDelegate = mConfigUseMountDelegateTarget;
     ComponentsConfiguration.delegateToRenderCoreMount = mConfigDelegateToRenderCoreMount;
-    ComponentsConfiguration.useTransitionsExtension = mConfigUseTransitionExtension;
   }
 
   @Test
