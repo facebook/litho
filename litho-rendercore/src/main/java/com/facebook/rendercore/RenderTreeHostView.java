@@ -19,6 +19,7 @@ import static com.facebook.rendercore.RootHostDelegate.MAX_REMOUNT_RETRIES;
 import android.content.Context;
 import android.util.AttributeSet;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 
 public class RenderTreeHostView extends HostView implements RenderTreeHost {
@@ -86,6 +87,20 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
 
     mCurrentRenderTree = tree;
     this.requestLayout();
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    mMountState.detach();
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  @Override
+  public void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mMountState.attach();
   }
 
   @Override

@@ -143,4 +143,12 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
   public @Nullable Object findMountContentById(long id) {
     return mMountState.getContentById(id);
   }
+
+  public void detach() {
+    mMountState.detach();
+  }
+
+  public void attach() {
+    mMountState.attach();
+  }
 }
