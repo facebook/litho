@@ -16,10 +16,19 @@
 
 package com.facebook.litho;
 
+import android.util.SparseIntArray;
+import javax.annotation.Nullable;
+
 final class ScopedComponentInfo {
 
   // Can be final if Component is stateless and cloning is not needed anymore.
   private StateContainer mStateContainer;
+
+  /**
+   * Holds onto how many direct component children of each type this Component has. Used for
+   * automatically generating unique global keys for all sibling components of the same type.
+   */
+  @Nullable private SparseIntArray mChildCounters;
 
   ScopedComponentInfo(Component component) {
     mStateContainer = component.createStateContainer();
@@ -31,5 +40,22 @@ final class ScopedComponentInfo {
 
   void setStateContainer(StateContainer stateContainer) {
     mStateContainer = stateContainer;
+  }
+
+  /**
+   * Returns the number of children of a given type {@param component} component has and then
+   * increments it by 1.
+   *
+   * @param component the child component
+   * @return the number of children components of type {@param component}
+   */
+  int getChildCountAndIncrement(final Component component) {
+    if (mChildCounters == null) {
+      mChildCounters = new SparseIntArray();
+    }
+    final int count = mChildCounters.get(component.getTypeId(), 0);
+    mChildCounters.put(component.getTypeId(), count + 1);
+
+    return count;
   }
 }

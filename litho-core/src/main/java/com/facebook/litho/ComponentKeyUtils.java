@@ -99,7 +99,8 @@ public class ComponentKeyUtils {
           }
 
         } else {
-          index = parentComponent.getChildCountAndIncrement(childComponent);
+          index =
+              Component.getChildCountAndIncrement(parentContext, parentComponent, childComponent);
         }
 
         globalKey = getKeyForChildPosition(childKey, index);

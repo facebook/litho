@@ -275,7 +275,9 @@ public abstract class Component extends ComponentLifecycle
       component.mIsLayoutStarted = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
-      component.mChildCounters = null;
+      if (!mUseStatelessComponent) {
+        component.mChildCounters = null;
+      }
       component.mManualKeysCounter = null;
 
       return component;
@@ -705,7 +707,7 @@ public abstract class Component extends ComponentLifecycle
    * @param component the child component
    * @return the number of children of {@param component} type
    */
-  synchronized int getChildCountAndIncrement(Component component) {
+  private synchronized int getChildCountAndIncrement(Component component) {
     if (mChildCounters == null) {
       mChildCounters = new SparseIntArray();
     }
@@ -715,6 +717,36 @@ public abstract class Component extends ComponentLifecycle
     mChildCounters.put(typeId, count + 1);
 
     return count;
+  }
+
+  /**
+   * Returns the number of children of a given type {@param childComponent} component has and then
+   * increments it by 1.
+   *
+   * @param parentContext
+   * @param parentComponent
+   * @param childComponent
+   * @return the number of children of {@param childComponent} type
+   */
+  static int getChildCountAndIncrement(
+      final @Nullable ComponentContext parentContext,
+      final Component parentComponent,
+      final Component childComponent) {
+    if (parentComponent.mUseStatelessComponent) {
+      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access and increment child counter outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+      final String globalKey = parentContext.getGlobalKey();
+
+      return layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .getChildCountAndIncrement(childComponent);
+    } else {
+      return parentComponent.getChildCountAndIncrement(childComponent);
+    }
   }
 
   synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
