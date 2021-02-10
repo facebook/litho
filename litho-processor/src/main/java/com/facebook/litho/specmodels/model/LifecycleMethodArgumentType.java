@@ -23,7 +23,7 @@ public class LifecycleMethodArgumentType {
 
   public final TypeName type;
 
-  public LifecycleMethodArgumentType(final TypeName typeName) {
-    this.type = typeName;
+  public LifecycleMethodArgumentType(final TypeName type) {
+    this.type = type;
   }
 }

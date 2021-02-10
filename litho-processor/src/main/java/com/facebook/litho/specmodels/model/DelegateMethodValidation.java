@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.isAllowedTypeAndConsume;
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodName;
 
@@ -37,8 +38,11 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.StringJoiner;
 import javax.annotation.Nullable;
 
 /**
@@ -142,23 +146,26 @@ public class DelegateMethodValidation {
       if (delegateMethod == null) {
         continue;
       }
-      final ImmutableList<LifecycleMethodArgumentType> definedParameterTypes =
-          delegateMethodDescription.lifecycleMethodArgumentTypes;
+      final ImmutableList<TypeName> allowedDelegateMethodArgs =
+          delegateMethodDescription.allowedDelegateMethodArguments();
 
       validationErrors.addAll(
           validateDefinedParameterTypes(
-              delegateMethod, delegateMethodAnnotation, definedParameterTypes));
+              delegateMethod, delegateMethodAnnotation, allowedDelegateMethodArgs));
 
       validationErrors.addAll(
           validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
 
-      for (int i = definedParameterTypes.size(), size = delegateMethod.methodParams.size();
+      int numberOfAllowedMethodArgsUsed =
+          getNumberOfAllowedMethodArgsUsed(delegateMethod.methodParams, allowedDelegateMethodArgs);
+
+      for (int i = numberOfAllowedMethodArgsUsed, size = delegateMethod.methodParams.size();
           i < size;
           i++) {
         final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
         if (isOptionalParameter(delegateMethodParam, delegateMethodDescription.optionalParameters)
             && i
-                < definedParameterTypes.size()
+                < numberOfAllowedMethodArgsUsed
                     + delegateMethodDescription.optionalParameters.size()) {
           continue;
         }
@@ -230,12 +237,28 @@ public class DelegateMethodValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   delegateMethodParam.getRepresentedObject(),
-                  getOptionalParamsError(delegateMethodDescription)));
+                  "Argument at index "
+                      + i
+                      + " is "
+                      + getOptionalParamsError(delegateMethodDescription)));
         }
       }
     }
 
     return validationErrors;
+  }
+
+  private static int getNumberOfAllowedMethodArgsUsed(
+      ImmutableList<MethodParamModel> params, ImmutableList<TypeName> types) {
+    int count = 0;
+
+    for (MethodParamModel param : params) {
+      if (DelegateMethodDescription.isArgumentTypeAllowed(param, types)) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   static void validateUniqueInterStatePropNames(
@@ -302,50 +325,63 @@ public class DelegateMethodValidation {
   public static List<SpecModelValidationError> validateDefinedParameterTypes(
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       Class<? extends Annotation> delegateMethodAnnotation,
-      ImmutableList<LifecycleMethodArgumentType> definedParameterTypes) {
+      ImmutableList<TypeName> allowedArgTypes) {
+
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    if (delegateMethod.methodParams.size() < definedParameterTypes.size()) {
-      StringBuilder stringBuilder = new StringBuilder();
-      for (int i = 0, size = definedParameterTypes.size(); i < size; i++) {
-        stringBuilder.append(definedParameterTypes.get(i).type);
-        if (i < size - 1) {
-          stringBuilder.append(", ");
-        }
-      }
-      validationErrors.add(
-          new SpecModelValidationError(
-              delegateMethod.representedObject,
-              "Methods annotated with "
-                  + delegateMethodAnnotation
-                  + " must have at least "
-                  + definedParameterTypes.size()
-                  + " parameters, and they should be of type "
-                  + stringBuilder.toString()
-                  + "."));
+    ImmutableList<MethodParamModel> delegateArgs = delegateMethod.methodParams;
+
+    if (allowedArgTypes.size() == 0 || delegateArgs.size() == 0) {
+      return validationErrors;
     }
 
-    for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
-      final MethodParamModel delegateMethodParam = delegateMethod.methodParams.get(i);
+    final Queue<TypeName> remainingAllowedTypes = new LinkedList<>(allowedArgTypes);
 
-      if (i < definedParameterTypes.size()) {
-        if (!definedParameterTypes.get(i).type.equals(ClassNames.OBJECT)
-            && !delegateMethodParam.getTypeName().equals(definedParameterTypes.get(i).type)) {
-          validationErrors.add(
-              new SpecModelValidationError(
-                  delegateMethodParam.getRepresentedObject(),
-                  "Parameter in position "
-                      + i
-                      + " of a method annotated with "
-                      + delegateMethodAnnotation
-                      + " should be of type "
-                      + definedParameterTypes.get(i).type
-                      + "."));
-        }
+    int index = 0;
+    boolean canUseAllowedTypes = true;
+
+    for (MethodParamModel delegateArg : delegateArgs) {
+
+      // Check if the param is an allowed type
+      final boolean usesAllowedType = isAllowedTypeAndConsume(delegateArg, remainingAllowedTypes);
+
+      // Check if optional arguments can be used anymore.
+      if (usesAllowedType && !canUseAllowedTypes) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                delegateArg.getRepresentedObject(),
+                "Parameter at position "
+                    + index
+                    + " of a method annotated with "
+                    + delegateMethodAnnotation
+                    + " is an optional arg and should be used in the beginning. "
+                    + " Allowed optional args are ["
+                    + argsToString(allowedArgTypes)
+                    + "]"));
+        break;
       }
+
+      if (!usesAllowedType) {
+        canUseAllowedTypes = false;
+      }
+
+      if (remainingAllowedTypes.isEmpty()) {
+        break;
+      }
+
+      index++;
     }
 
     return validationErrors;
+  }
+
+  /** Serialises a list of arguments to a comma separated string. Useful for logging. */
+  private static String argsToString(ImmutableList<TypeName> args) {
+    StringJoiner joiner = new StringJoiner(", ");
+    for (TypeName arg : args) {
+      joiner.add(arg.toString());
+    }
+    return joiner.toString();
   }
 
   private static List<SpecModelValidationError> validateReturnType(
@@ -476,7 +512,7 @@ public class DelegateMethodValidation {
   public static String getOptionalParamsError(DelegateMethodDescription delegateMethodDescription) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder
-        .append("Not a valid parameter, should be one of the following: ")
+        .append("not a valid parameter, should be one of the following: ")
         .append(
             getStringRepresentationOfParamTypes(delegateMethodDescription.optionalParameterTypes));
 

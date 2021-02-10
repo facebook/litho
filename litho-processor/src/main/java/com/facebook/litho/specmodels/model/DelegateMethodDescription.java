@@ -23,6 +23,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
@@ -75,6 +76,12 @@ public final class DelegateMethodDescription {
     interStageInputAnnotations = builder.interStageInputAnnotations;
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
+  }
+
+  public ImmutableList<TypeName> allowedDelegateMethodArguments() {
+    List<TypeName> types = new ArrayList<>();
+    lifecycleMethodArgumentTypes.forEach(arg -> types.add(arg.type));
+    return ImmutableList.copyOf(types);
   }
 
   public static Builder newBuilder() {
@@ -232,5 +239,40 @@ public final class DelegateMethodDescription {
         exceptions = ImmutableList.of();
       }
     }
+  }
+
+  /**
+   * This utility searches for the first lifecycle argument used by the delegate method, and
+   * consumes it. Every unmatched type encountered before that is removed from the queue since the
+   * order of arguments needs to be maintained.
+   */
+  public static boolean isAllowedTypeAndConsume(MethodParamModel arg, Queue<TypeName> types) {
+    while (!types.isEmpty()) {
+      TypeName type = types.poll();
+      if (isArgumentTypeAllowed(arg, type)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /** Checks if any allowed argument type matches the delegate method param. */
+  public static boolean isArgumentTypeAllowed(MethodParamModel arg, ImmutableList<TypeName> types) {
+    for (TypeName type : types) {
+      if (DelegateMethodDescription.isArgumentTypeAllowed(arg, type)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /** Checks if the argument type matches the delegate method param. */
+  public static boolean isArgumentTypeAllowed(MethodParamModel arg, TypeName expected) {
+    TypeName actual = arg.getTypeName();
+    return arg instanceof SimpleMethodParamModel
+        && (expected.equals(ClassNames.OBJECT) || expected.equals(actual))
+        && arg.getAnnotations().isEmpty();
   }
 }
