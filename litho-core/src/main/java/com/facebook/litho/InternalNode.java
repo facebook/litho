@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
 public interface InternalNode
-    extends Node, Node.LayoutResult<Object>, ComponentLayout, LayoutProps, Copyable<InternalNode> {
+    extends Node.LayoutResult<Object>, ComponentLayout, LayoutProps, Copyable<InternalNode> {
 
   void addChildAt(InternalNode child, int index);
 

@@ -22,8 +22,6 @@ import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Copyable;
-import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -948,20 +946,5 @@ class NoOpInternalNode implements InternalNode {
       Component next,
       @Nullable String nextKey) {
     return this;
-  }
-
-  @Override
-  public LayoutResult calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
-    return null;
-  }
-
-  @Override
-  public Copyable getLayoutParams() {
-    return null;
-  }
-
-  @Override
-  public Copyable makeCopy() {
-    throw new UnsupportedOperationException("NoOpInternalNode.makeCopy not implemented.");
   }
 }

@@ -53,8 +53,6 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.rendercore.Copyable;
-import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -187,7 +185,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   private long mPrivateFlags;
   private RenderUnit mRenderUnit;
-  private @Nullable Copyable mLayoutParams;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
     this(componentContext, NodeConfig.createYogaNode());
@@ -538,19 +535,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public Object getLayoutData() {
     return mYogaNode;
-  }
-
-  @Override
-  public LayoutResult calculateLayout(
-      RenderState.LayoutContext context, int widthSpec, int heightSpec) {
-    Layout.measure(getContext(), this, widthSpec, heightSpec, null);
-
-    return this;
-  }
-
-  @Override
-  public @Nullable Copyable getLayoutParams() {
-    return mLayoutParams;
   }
 
   @Override
@@ -1808,8 +1792,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       throw new RuntimeException(e);
     }
 
-    node.mLayoutParams = mLayoutParams != null ? mLayoutParams.makeCopy() : null;
-
     return node;
   }
 
@@ -2249,11 +2231,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   public void setRenderUnit(RenderUnit renderUnit) {
     mRenderUnit = renderUnit;
-  }
-
-  @Override
-  public Copyable makeCopy() {
-    return clone();
   }
 
   @IntDef({ReconciliationMode.COPY, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
