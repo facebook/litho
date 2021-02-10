@@ -2126,7 +2126,11 @@ public class ComponentTree {
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
                 + ", current thread: "
-                + Thread.currentThread().getName());
+                + Thread.currentThread().getName()
+                + ". Root: "
+                + (mRoot == null ? "null" : mRoot.getSimpleName())
+                + ". Interruptible layouts: "
+                + mMoveLayoutsBetweenThreads);
       }
 
       return;
