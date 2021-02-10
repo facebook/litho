@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.flexbox.alignSelf
@@ -548,6 +549,47 @@ class CommonStylesTest {
         .attachToWindow()
 
     assertThat(eventFired.get()).isTrue()
+  }
+
+  @Test
+  fun alpha_whenSet_isRespected() {
+    val alpha = 0.5f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).alpha(alpha)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(alpha)
+  }
+
+  /**
+   * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so
+   * already loaded in another classloader exception' caused by multiple ClassLoaders trying to load
+   * Yoga when using @Config to specify a different target sdk. See:
+   * https://www.internalfb.com/intern/staticdocs/litho/docs/testing/unit-testing/
+   */
+  @Test
+  fun shadowElevation_whenSet_isRespected() {
+    val elevation = 0.5f
+    val component = KComponent { Row(style = Style.shadowElevation(elevation)) }
+
+    val node = Layout.create(lithoViewRule.context, component)
+    val nodeInfo = node.orCreateNodeInfo
+    assertThat(nodeInfo.shadowElevation).isEqualTo(elevation)
+  }
+
+  /** See comment on [shadowElevation_whenSet_isRespected] above. */
+  @Test
+  fun outlineProvider_whenSet_isRespected() {
+    val outlineProvider = ViewOutlineProvider.BOUNDS
+    val component = KComponent { Row(style = Style.outlineProvider(outlineProvider)) }
+
+    val node = Layout.create(lithoViewRule.context, component)
+    val nodeInfo = node.orCreateNodeInfo
+    assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {

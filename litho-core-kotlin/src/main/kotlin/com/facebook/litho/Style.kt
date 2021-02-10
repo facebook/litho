@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
+import android.view.ViewOutlineProvider
 
 /** Enums for [ObjectStyleItem]. */
 private enum class ObjectField {
@@ -29,6 +30,13 @@ private enum class ObjectField {
   ON_FULL_IMPRESSION,
   WRAP_IN_VIEW,
   VIEW_TAG,
+  OUTLINE_PROVIDER,
+}
+
+/** Enums for [FloatStyleItem]. */
+private enum class FloatField {
+  ALPHA,
+  SHADOW_ELEVATION,
 }
 
 /**
@@ -61,6 +69,17 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
               eventHandler(value as (FullImpressionVisibleEvent) -> Unit))
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
+      ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
+    }.exhaustive
+  }
+}
+
+/** Common style item for all float styles. See note on [FloatField] about this pattern. */
+private class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
+  override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) {
+    when (field) {
+      FloatField.ALPHA -> commonProps.alpha(value)
+      FloatField.SHADOW_ELEVATION -> commonProps.shadowElevationPx(value)
     }.exhaustive
   }
 }
@@ -125,6 +144,14 @@ open class Style(
   fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
 
   fun viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
+
+  fun alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
+
+  fun shadowElevation(shadowElevation: Float) =
+      this + FloatStyleItem(FloatField.SHADOW_ELEVATION, shadowElevation)
+
+  fun outlineProvider(outlineProvider: ViewOutlineProvider?) =
+      this + ObjectStyleItem(ObjectField.OUTLINE_PROVIDER, outlineProvider)
 
   open fun forEach(lambda: (StyleItem) -> Unit) {
     previousStyle?.forEach(lambda)
