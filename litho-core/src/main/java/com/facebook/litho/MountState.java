@@ -202,7 +202,9 @@ class MountState
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
     if (!mLithoView.usingExtensionsWithMountDelegate()
         && ComponentsConfiguration.useTransitionsExtension) {
-      registerMountDelegateExtension(TransitionsExtension.getInstance());
+      mTransitionsExtension = TransitionsExtension.getInstance();
+      registerMountDelegateExtension(mTransitionsExtension);
+      mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
     }
   }
 
@@ -212,12 +214,6 @@ class MountState
       mMountDelegate = new MountDelegate(this);
     }
     mMountDelegate.addExtension(mountExtension);
-
-    // Used for testing incremental mount extension until TransitionsExtension is testable.
-    if (mountExtension instanceof TransitionsExtension) {
-      mTransitionsExtension = (TransitionsExtension) mountExtension;
-      mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
-    }
   }
 
   /**
@@ -630,26 +626,17 @@ class MountState
   }
 
   private void applyMountBinders(LayoutOutput layoutOutput, MountItem mountItem, int position) {
-    if (mMountDelegate == null) {
-      return;
-    }
-
     if (mTransitionsExtension != null) {
       mTransitionsExtension.onMountItem(
           mTransitionsExtensionState,
           mountItem.getRenderTreeNode().getRenderUnit(),
           mountItem.getContent(),
           mountItem.getRenderTreeNode().getLayoutData());
-    } else {
-      // This is the case where we test IncrementalMountExtension without TransitionsExtension.
-      if (isAnimationLocked(position) && layoutOutput.getComponent().hasChildLithoViews()) {
-        // If the component is locked for animation then we need to make sure that all the
-        // children are also mounted.
-        final View view = (View) getItemAt(position).getContent();
-        // We're mounting everything, don't process visibility outputs as they will not be
-        // accurate.
-        mountViewIncrementally(view, false);
-      }
+    } else if (mMountDelegate != null) {
+      mMountDelegate.onMountItem(
+          mountItem.getRenderTreeNode().getRenderUnit(),
+          mountItem.getContent(),
+          mountItem.getRenderTreeNode().getLayoutData());
     }
   }
 
@@ -660,23 +647,15 @@ class MountState
   }
 
   private void applyUnbindBinders(LayoutOutput output, MountItem mountItem) {
-    if (mMountDelegate == null) {
-      return;
-    }
-
     if (mTransitionsExtension != null) {
       mTransitionsExtension.onUnbindItem(
           mTransitionsExtensionState,
           mountItem.getRenderTreeNode().getRenderUnit(),
           output,
           mountItem.getContent());
-    } else {
-      // This is the case where we test IncrementalMountExtension without other extensions.
-      if (getLayoutOutput(mountItem).getTransitionId() != null) {
-        final @OutputUnitType int type =
-            LayoutStateOutputIdCalculator.getTypeFromId(output.getId());
-        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
-      }
+    } else if (mMountDelegate != null) {
+      mMountDelegate.onUnmountItem(
+          mountItem.getRenderTreeNode().getRenderUnit(), output, mountItem.getContent());
     }
   }
 
