@@ -205,12 +205,14 @@ class RecyclerSpec {
 
     sectionsRecycler.setEnabled(pullToRefresh && refreshHandler != null);
     sectionsRecycler.setOnRefreshListener(
-        new OnRefreshListener() {
-          @Override
-          public void onRefresh() {
-            Recycler.dispatchPTRRefreshEvent(refreshHandler);
-          }
-        });
+        refreshHandler != null
+            ? new OnRefreshListener() {
+              @Override
+              public void onRefresh() {
+                Recycler.dispatchPTRRefreshEvent(refreshHandler);
+              }
+            }
+            : null);
 
     final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
 
