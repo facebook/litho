@@ -1387,14 +1387,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return mUseExtensions ? mMountDelegateTarget : mMountState;
   }
 
-  // Used for Transitions - When using extensions, TransitionsExtension gets this information
-  // from the LayoutState directly.
-  void setIsFirstMountOfComponentTree() {
-    if (!mUseExtensions) {
-      mMountState.setIsFirstMountOfComponentTree();
-    }
-  }
-
   public void setMountStartupLoggingInfo(
       LithoStartupLogger startupLogger,
       String startupLoggerAttribution,
