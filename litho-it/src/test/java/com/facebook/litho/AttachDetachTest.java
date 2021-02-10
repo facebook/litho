@@ -39,10 +39,7 @@ public class AttachDetachTest {
 
   @ParameterizedRobolectricTestRunner.Parameters(name = "releaseNestedLithoViews={0}")
   public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {true}, {false},
-        });
+    return Arrays.asList(new Object[][] {{true}});
   }
 
   public AttachDetachTest(boolean releaseNestedLithoViews) {
