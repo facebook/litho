@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
+import com.facebook.rendercore.RenderCoreConfig;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -44,6 +45,9 @@ public final class ThreadUtils {
   }
 
   public static void assertMainThread(String message) {
+    if (RenderCoreConfig.isEndToEndTestRun) {
+      return;
+    }
     if (!isMainThread()) {
       throw new IllegalStateException(message);
     }
