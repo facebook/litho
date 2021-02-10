@@ -92,7 +92,9 @@ public class ComponentKeyUtils {
         final int index;
 
         if (childComponent.hasManualKey()) {
-          index = parentComponent.getManualKeyUsagesCountAndIncrement(childKey);
+          index =
+              Component.getManualKeyUsagesCountAndIncrement(
+                  parentContext, parentComponent, childKey);
 
           if (index != 0) {
             logDuplicateManualKeyWarning(childComponent, key);

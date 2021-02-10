@@ -277,9 +277,8 @@ public abstract class Component extends ComponentLifecycle
       component.mScopedContext = null;
       if (!mUseStatelessComponent) {
         component.mChildCounters = null;
+        component.mManualKeysCounter = null;
       }
-      component.mManualKeysCounter = null;
-
       return component;
     } catch (CloneNotSupportedException e) {
       // This class implements Cloneable, so this is impossible
@@ -749,7 +748,7 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
+  private synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
     if (mManualKeysCounter == null) {
       mManualKeysCounter = new HashMap<>();
     }
@@ -759,6 +758,36 @@ public abstract class Component extends ComponentLifecycle
 
     mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
     return manualKeyIndex;
+  }
+
+  /**
+   * Returns the number of children with same {@param manualKey} component has and then increments
+   * it by 1.
+   *
+   * @param parentContext
+   * @param parentComponent
+   * @param manualKey
+   * @return
+   */
+  static int getManualKeyUsagesCountAndIncrement(
+      final @Nullable ComponentContext parentContext,
+      final Component parentComponent,
+      final String manualKey) {
+    if (parentComponent.mUseStatelessComponent) {
+      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access and increment manual key usages counter outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+      final String globalKey = parentContext.getGlobalKey();
+
+      return layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .getManualKeyUsagesCountAndIncrement(manualKey);
+    } else {
+      return parentComponent.getManualKeyUsagesCountAndIncrement(manualKey);
+    }
   }
 
   /**

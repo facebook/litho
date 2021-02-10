@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import android.util.SparseIntArray;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 final class ScopedComponentInfo {
@@ -29,6 +31,9 @@ final class ScopedComponentInfo {
    * automatically generating unique global keys for all sibling components of the same type.
    */
   @Nullable private SparseIntArray mChildCounters;
+
+  /** Count the times a manual key is used so that clashes can be resolved. */
+  @Nullable private Map<String, Integer> mManualKeysCounter;
 
   ScopedComponentInfo(Component component) {
     mStateContainer = component.createStateContainer();
@@ -57,5 +62,23 @@ final class ScopedComponentInfo {
     mChildCounters.put(component.getTypeId(), count + 1);
 
     return count;
+  }
+
+  /**
+   * Returns the number of children with same {@param manualKey} component has and then increments
+   * it by 1.
+   *
+   * @param manualKey
+   * @return
+   */
+  int getManualKeyUsagesCountAndIncrement(String manualKey) {
+    if (mManualKeysCounter == null) {
+      mManualKeysCounter = new HashMap<>();
+    }
+    int manualKeyIndex =
+        mManualKeysCounter.containsKey(manualKey) ? mManualKeysCounter.get(manualKey) : 0;
+    mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
+
+    return manualKeyIndex;
   }
 }
