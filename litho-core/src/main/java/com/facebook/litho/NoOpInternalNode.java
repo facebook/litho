@@ -22,7 +22,6 @@ import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -202,44 +201,9 @@ class NoOpInternalNode implements InternalNode {
     return new float[0];
   }
 
-  @Override
-  public RenderUnit getRenderUnit() {
-    return null;
-  }
-
-  @Override
-  public int getChildrenCount() {
-    return 0;
-  }
-
   @Nullable
   @Override
   public InternalNode getChildAt(int index) {
-    return null;
-  }
-
-  @Override
-  public int getXForChildAtIndex(int index) {
-    return 0;
-  }
-
-  @Override
-  public int getYForChildAtIndex(int index) {
-    return 0;
-  }
-
-  @Override
-  public int getHeightSpec() {
-    return 0;
-  }
-
-  @Override
-  public int getWidthSpec() {
-    return 0;
-  }
-
-  @Override
-  public Object getLayoutData() {
     return null;
   }
 

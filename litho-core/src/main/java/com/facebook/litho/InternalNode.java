@@ -25,7 +25,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.rendercore.Node;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -41,8 +40,7 @@ import javax.annotation.Nullable;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode
-    extends Node.LayoutResult<Object>, ComponentLayout, LayoutProps, Copyable<InternalNode> {
+public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<InternalNode> {
 
   void addChildAt(InternalNode child, int index);
 
