@@ -26,7 +26,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.Node;
-import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -43,12 +42,7 @@ import javax.annotation.Nullable;
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
 public interface InternalNode
-    extends Node,
-        Node.LayoutResult<Object>,
-        ComponentLayout,
-        LayoutProps,
-        DiffNode,
-        Copyable<InternalNode> {
+    extends Node, Node.LayoutResult<Object>, ComponentLayout, LayoutProps, Copyable<InternalNode> {
 
   void addChildAt(InternalNode child, int index);
 
@@ -354,7 +348,7 @@ public interface InternalNode
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link LayoutState#createLayout(ComponentContext, Component, boolean)}.
+   *     creation {@link Layout#create(ComponentContext, Component, boolean)}.
    */
   boolean isNestedTreeHolder();
 
@@ -447,14 +441,5 @@ public interface InternalNode
     @Nullable Edges mNestedTreePadding;
     @Nullable Edges mNestedTreeBorderWidth;
     @Nullable TreeProps mPendingTreeProps;
-  }
-
-  class Outputs {
-    @Nullable LayoutOutput contentOutput;
-    @Nullable LayoutOutput hostOutput;
-    @Nullable LayoutOutput backgroundOutput;
-    @Nullable LayoutOutput foregroundOutput;
-    @Nullable LayoutOutput borderOutput;
-    @Nullable VisibilityOutput visibilityOutput;
   }
 }

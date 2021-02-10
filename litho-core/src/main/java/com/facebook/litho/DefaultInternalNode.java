@@ -56,7 +56,6 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderUnit;
-import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -84,11 +83,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
-
-  private static final String ERROR_UNSUPPORTED_OPERATION_IN_DIFFING =
-      "DefaultInternalNode does not support this method. This is a bug. "
-          + "The InternalNode hierarchy is created during layout creation. If Litho is using the "
-          + "InternalNode tree for layout diffing then DiffNode tree creation should be skipped.";
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
@@ -145,7 +139,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable DiffNode mDiffNode;
   private @Nullable NodeInfo mNodeInfo;
   private @Nullable NestedTreeProps mNestedTreeProps;
-  private @Nullable Outputs mOutputs;
   private @Nullable EventHandler<VisibleEvent> mVisibleHandler;
   private @Nullable EventHandler<FocusedVisibleEvent> mFocusedHandler;
   private @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
@@ -613,11 +606,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   @Override
   public void setDiffNode(@Nullable DiffNode diffNode) {
-    if (diffNode instanceof InternalNode && ((InternalNode) diffNode).isNestedTreeHolder()) {
-      mDiffNode = ((InternalNode) diffNode).getNestedTree();
-    } else {
-      mDiffNode = diffNode;
-    }
+    mDiffNode = diffNode;
   }
 
   @Override
@@ -652,9 +641,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return mImportantForAccessibility;
   }
 
-  @Nullable
   @Override
-  public EventHandler<InvisibleEvent> getInvisibleHandler() {
+  public @Nullable EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
 
@@ -2008,105 +1996,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
 
     return new Pair(updated, updatedKeys);
-  }
-
-  private Outputs getOrCreateOutputs() {
-    if (mOutputs == null) {
-      mOutputs = new Outputs();
-    }
-
-    return mOutputs;
-  }
-
-  @Override
-  public @Nullable Component getComponent() {
-    return getTailComponent();
-  }
-
-  @Override
-  public void setComponent(@Nullable Component component, @Nullable String globalKey) {
-    throw new UnsupportedOperationException(ERROR_UNSUPPORTED_OPERATION_IN_DIFFING);
-  }
-
-  @Override
-  public @Nullable String getComponentGlobalKey() {
-    throw new UnsupportedOperationException(ERROR_UNSUPPORTED_OPERATION_IN_DIFFING);
-  }
-
-  @Override
-  public List<DiffNode> getChildren() {
-    int count = getChildCount();
-    List<DiffNode> children = new ArrayList<>(count);
-    for (int i = 0; i < count; i++) {
-      children.add(getChildAt(i));
-    }
-
-    return children;
-  }
-
-  @Override
-  public void addChild(DiffNode node) {
-    throw new UnsupportedOperationException(ERROR_UNSUPPORTED_OPERATION_IN_DIFFING);
-  }
-
-  @Override
-  public @Nullable LayoutOutput getContentOutput() {
-    return mOutputs != null ? mOutputs.contentOutput : null;
-  }
-
-  @Override
-  public void setContentOutput(@Nullable LayoutOutput content) {
-    getOrCreateOutputs().contentOutput = content;
-  }
-
-  @Override
-  public @Nullable VisibilityOutput getVisibilityOutput() {
-    return mOutputs != null ? mOutputs.visibilityOutput : null;
-  }
-
-  @Override
-  public void setVisibilityOutput(@Nullable VisibilityOutput visibilityOutput) {
-    getOrCreateOutputs().visibilityOutput = visibilityOutput;
-  }
-
-  @Override
-  public @Nullable LayoutOutput getBackgroundOutput() {
-    return mOutputs != null ? mOutputs.backgroundOutput : null;
-  }
-
-  @Override
-  public void setBackgroundOutput(@Nullable LayoutOutput background) {
-    getOrCreateOutputs().backgroundOutput = background;
-  }
-
-  @Override
-  public @Nullable LayoutOutput getForegroundOutput() {
-    return mOutputs != null ? mOutputs.foregroundOutput : null;
-  }
-
-  @Override
-  public void setForegroundOutput(@Nullable LayoutOutput foreground) {
-    getOrCreateOutputs().foregroundOutput = foreground;
-  }
-
-  @Override
-  public @Nullable LayoutOutput getBorderOutput() {
-    return mOutputs != null ? mOutputs.borderOutput : null;
-  }
-
-  @Override
-  public void setBorderOutput(@Nullable LayoutOutput border) {
-    getOrCreateOutputs().borderOutput = border;
-  }
-
-  @Override
-  public @Nullable LayoutOutput getHostOutput() {
-    return mOutputs != null ? mOutputs.hostOutput : null;
-  }
-
-  @Override
-  public void setHostOutput(@Nullable LayoutOutput host) {
-    getOrCreateOutputs().hostOutput = host;
   }
 
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(
