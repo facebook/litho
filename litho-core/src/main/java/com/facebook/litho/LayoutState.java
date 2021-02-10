@@ -89,9 +89,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(RenderTreeNode, ComponentContext, DebugHierarchy.Node, InternalNode, LayoutState,
- * DiffNode)} which prepares the before-mentioned outputs based on the provided {@link InternalNode}
- * for later use in {@link MountState}.
+ * #collectResults(ComponentContext, InternalNode, LayoutState, RenderTreeNode, DiffNode,
+ * DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided {@link
+ * InternalNode} for later use in {@link MountState}.
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
@@ -699,20 +699,20 @@ public class LayoutState
    *
    * <p>
    *
-   * @param parent
    * @param parentContext the parent component context
-   * @param parentHierarchy The parent hierarchy linked list or null.
    * @param node InternalNode to process.
    * @param layoutState the LayoutState currently operating.
+   * @param parent
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
+   * @param parentHierarchy The parent hierarchy linked list or null.
    */
   private static void collectResults(
-      @Nullable RenderTreeNode parent,
       ComponentContext parentContext,
-      @Nullable DebugHierarchy.Node parentHierarchy,
       InternalNode node,
       LayoutState layoutState,
-      @Nullable DiffNode parentDiffNode) {
+      @Nullable RenderTreeNode parent,
+      @Nullable DiffNode parentDiffNode,
+      @Nullable DebugHierarchy.Node parentHierarchy) {
     if (parentContext.wasLayoutCanceled()) {
       return;
     }
@@ -762,7 +762,7 @@ public class LayoutState
       layoutState.mCurrentX += node.getX();
       layoutState.mCurrentY += node.getY();
 
-      collectResults(parent, parentContext, hierarchy, nestedTree, layoutState, parentDiffNode);
+      collectResults(parentContext, nestedTree, layoutState, parent, parentDiffNode, hierarchy);
 
       layoutState.mCurrentX -= node.getX();
       layoutState.mCurrentY -= node.getY();
@@ -959,7 +959,7 @@ public class LayoutState
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
       collectResults(
-          parent, node.getContext(), hierarchy, node.getChildAt(i), layoutState, diffNode);
+          node.getContext(), node.getChildAt(i), layoutState, parent, diffNode, hierarchy);
     }
 
     layoutState.mParentEnabledState = parentEnabledState;
@@ -1745,7 +1745,7 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(null, c, null, root, layoutState, null);
+    collectResults(c, root, layoutState, null, null, null);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
