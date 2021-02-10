@@ -111,12 +111,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /**
-   * If true, global keys will be generated in Layout, otherwise a component itself responsible for
-   * the global key generation.
-   */
-  public static boolean useNewGenerateMechanismForGlobalKeys = false;
-
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 

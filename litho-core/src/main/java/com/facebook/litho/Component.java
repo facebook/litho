@@ -645,13 +645,9 @@ public abstract class Component extends ComponentLifecycle
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (globalKey == null) {
-        if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
-          globalKey = LayoutState.generateGlobalKey(parentContext, this);
-        } else {
-          globalKey =
-              ComponentKeyUtils.generateGlobalKey(
-                  parentContext, parentContext.getComponentScope(), this);
-        }
+        globalKey =
+            ComponentKeyUtils.generateGlobalKey(
+                parentContext, parentContext.getComponentScope(), this);
         setGlobalKey(globalKey);
       }
     }

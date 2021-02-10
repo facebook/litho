@@ -143,14 +143,6 @@ public class LayoutState
   private @Nullable List<Component> mComponents;
   private @Nullable List<String> mComponentKeys;
 
-  /**
-   * Holds onto how many clashed global keys exist in the tree. Used for automatically generating
-   * unique global keys for all sibling components of the same type.
-   */
-  private @Nullable Map<String, Integer> mGlobalKeysCounter;
-
-  private @Nullable Map<String, Integer> mGlobalManualKeysCounter;
-
   private final ComponentContext mContext;
 
   private Component mComponent;
@@ -1943,83 +1935,6 @@ public class LayoutState
         layoutOutput, level, type, previousId, isCachedOutputUpdated, hierarchy);
   }
 
-  /**
-   * Generate a global key for the given components that is unique among all of the components in
-   * the layout.
-   */
-  static String generateGlobalKey(ComponentContext parentContext, Component component) {
-    final LayoutState layoutState = parentContext.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          component.getSimpleName()
-              + ": Trying to generate global key of component outside of a LayoutState calculation.");
-    }
-
-    final Component parentScope = parentContext.getComponentScope();
-    final String globalKey;
-
-    if (parentScope == null) {
-      globalKey = component.getKey();
-    } else {
-      if (Component.getGlobalKey(parentContext, parentScope) == null) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            NULL_PARENT_KEY,
-            "Trying to generate parent-based key for component "
-                + component.getSimpleName()
-                + " , but parent "
-                + parentScope.getSimpleName()
-                + " has a null global key \"."
-                + " This is most likely a configuration mistake,"
-                + " check the value of ComponentsConfiguration.useGlobalKeys.");
-      }
-      globalKey =
-          generateUniqueGlobalKeyForChild(
-              layoutState, Component.getGlobalKey(parentContext, parentScope), component);
-    }
-
-    return globalKey;
-  }
-
-  /**
-   * Generate a global key for the given components that is unique among all of the components in
-   * the layout.
-   *
-   * @param layoutState the LayoutState currently operating
-   * @param parentGlobalKey the global key of the parent component
-   * @param component the child component for which the unique global key will be generated
-   * @return a unique global key for given component
-   */
-  private static String generateUniqueGlobalKeyForChild(
-      LayoutState layoutState, @Nullable String parentGlobalKey, Component component) {
-
-    if (parentGlobalKey == null) {
-      parentGlobalKey = "null";
-    }
-
-    final String childKey =
-        ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey());
-
-    if (component.hasManualKey()) {
-      final int manualKeyIndex = layoutState.getGlobalManualKeyCountAndIncrement(childKey);
-      if (manualKeyIndex != 0) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.WARNING,
-            DUPLICATE_MANUAL_KEY,
-            "The manual key "
-                + component.getKey()
-                + " you are setting on this "
-                + component.getSimpleName()
-                + " is a duplicate and will be changed into a unique one. "
-                + "This will result in unexpected behavior if you don't change it.");
-      }
-      return ComponentKeyUtils.getKeyForChildPosition(childKey, manualKeyIndex);
-    }
-
-    final int childIndex = layoutState.getGlobalKeyCountAndIncrement(childKey);
-    return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
-  }
-
   @Nullable
   InternalNode getCachedLayout(Component component) {
     return mLastMeasuredLayouts.get(component.getId());
@@ -2443,34 +2358,6 @@ public class LayoutState
   @Nullable
   public TransitionId getRootTransitionId() {
     return mRootTransitionId;
-  }
-
-  private int getGlobalKeyCountAndIncrement(String key) {
-    if (mGlobalKeysCounter == null) {
-      mGlobalKeysCounter = new HashMap<>();
-    }
-
-    Integer count = mGlobalKeysCounter.get(key);
-    if (count == null) {
-      count = 0;
-    }
-
-    mGlobalKeysCounter.put(key, count + 1);
-    return count;
-  }
-
-  private int getGlobalManualKeyCountAndIncrement(String manualKey) {
-    if (mGlobalManualKeysCounter == null) {
-      mGlobalManualKeysCounter = new HashMap<>();
-    }
-
-    Integer count = mGlobalManualKeysCounter.get(manualKey);
-    if (count == null) {
-      count = 0;
-    }
-
-    mGlobalManualKeysCounter.put(manualKey, count + 1);
-    return count;
   }
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
