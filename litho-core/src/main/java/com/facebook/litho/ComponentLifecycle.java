@@ -585,7 +585,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected ComponentLayout resolve(ComponentContext c) {
+  protected InternalNode resolve(ComponentContext c) {
     return Layout.create(c, (Component) this, false);
   }
 
