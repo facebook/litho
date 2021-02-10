@@ -21,6 +21,9 @@ import com.squareup.javapoet.TypeName;
 /** Describes the type required by the lifecycle method being overridden. */
 public class LifecycleMethodArgumentType {
 
+  public static final LifecycleMethodArgumentType COMPONENT_CONTEXT =
+      new LifecycleMethodArgumentType(ClassNames.COMPONENT_CONTEXT);
+
   public final TypeName type;
 
   public LifecycleMethodArgumentType(final TypeName type) {

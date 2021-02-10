@@ -225,7 +225,6 @@ class TextInputSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
-      final ComponentContext c,
       StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
       StateValue<AtomicReference<CharSequence>> savedText,
       StateValue<Integer> measureSeqNumber,

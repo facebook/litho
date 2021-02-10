@@ -437,8 +437,7 @@ class RecyclerSpec {
   }
 
   @OnCreateInitialState
-  protected static void onCreateInitialState(
-      ComponentContext c, StateValue<Integer> measureVersion) {
+  protected static void onCreateInitialState(StateValue<Integer> measureVersion) {
     measureVersion.set(0);
   }
 
