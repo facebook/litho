@@ -17,14 +17,17 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import com.facebook.litho.KComponent
-import com.facebook.litho.createTreeProp
+import com.facebook.litho.TreePropProvider
+import com.facebook.litho.treeProp
 import com.facebook.litho.useTreeProp
 import com.facebook.litho.widget.Text
 
 class LoggingChildComponent :
     KComponent({
       val parent = useTreeProp<LogContext>()
-      createTreeProp { parent.append("child") }
 
-      Text(text = "Hello, Logger.")
+      TreePropProvider(
+          treeProp(type = LogContext::class, parent.append("child")),
+          child = Text(text = "Hello, Logger."),
+      )
     })
