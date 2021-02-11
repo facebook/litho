@@ -54,16 +54,18 @@ class KStateTest {
   fun useState_updateState_stateIsUpdated() {
     lateinit var stateRef: AtomicReference<State<String>>
 
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val state = useState { "hello" }
+        stateRef = AtomicReference(state)
+
+        return Row(style = Style.viewTag("test_view").onClick { state.update("world") })
+      }
+    }
+
     lithoViewRule
         .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
-          KComponent {
-            val state = useState { "hello" }
-            stateRef = AtomicReference(state)
-
-            Row(style = Style.viewTag("test_view").onClick { state.update("world") })
-          }
-        }
+        .setRoot { TestComponent() }
         .attachToWindow()
         .measure()
         .layout()
@@ -81,27 +83,29 @@ class KStateTest {
     lateinit var state1Ref: AtomicReference<State<String>>
     lateinit var state2Ref: AtomicReference<State<Int>>
 
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val state1 = useCustomState("hello")
+        val state2 = useCustomState(20)
+
+        state1Ref = AtomicReference(state1)
+        state2Ref = AtomicReference(state2)
+
+        return Row(
+            style =
+                Style.viewTag("test_view").onClick {
+                  // The correct way to do this (at least until we have automatic batching)
+                  // would be to store these states in the same obj to trigger only one state
+                  // update
+                  state1.update("world")
+                  state2.update { value -> value + 1 }
+                })
+      }
+    }
+
     lithoViewRule
         .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
-          KComponent {
-            val state1 = useCustomState("hello")
-            val state2 = useCustomState(20)
-
-            state1Ref = AtomicReference(state1)
-            state2Ref = AtomicReference(state2)
-
-            Row(
-                style =
-                    Style.viewTag("test_view").onClick {
-                      // The correct way to do this (at least until we have automatic batching)
-                      // would be to store these states in the same obj to trigger only one state
-                      // update
-                      state1.update("world")
-                      state2.update { value -> value + 1 }
-                    })
-          }
-        }
+        .setRoot { TestComponent() }
         .attachToWindow()
         .measure()
         .layout()
@@ -154,23 +158,24 @@ class KStateTest {
   }
 
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied() {
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val counter = useState { 0 }
+
+        return Row(
+            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } },
+            children =
+                listOf(
+                    Text(
+                        style = Style.viewTag("Counter: ${counter.value}"),
+                        text = "Counter: ${counter.value}"),
+                ))
+      }
+    }
+
     lithoViewRule
         .setSizeSpecs(exactly(100), exactly(100))
-        .setRoot {
-          KComponent {
-            val counter = useState { 0 }
-
-            Row(
-                style =
-                    Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } },
-                children =
-                    listOf(
-                        Text(
-                            style = Style.viewTag("Counter: ${counter.value}"),
-                            text = "Counter: ${counter.value}"),
-                    ))
-          }
-        }
+        .setRoot { TestComponent() }
         .attachToWindow()
         .measure()
         .layout()
@@ -186,15 +191,16 @@ class KStateTest {
   }
 
   private class CountDownLatchComponent(
-      countDownLatch: CountDownLatch,
-      awaitable: CountDownLatch?,
-      initCounter: AtomicInteger
-  ) :
-      KComponent({
-        countDownLatch.countDown()
-        awaitable?.await()
+      val countDownLatch: CountDownLatch,
+      val awaitable: CountDownLatch?,
+      val initCounter: AtomicInteger
+  ) : KComponent() {
+    override fun DslScope.render(): Component? {
+      countDownLatch.countDown()
+      awaitable?.await()
 
-        val state = useState { initCounter.incrementAndGet() }
-        Text("stateValue is ${state.value}")
-      })
+      val state = useState { initCounter.incrementAndGet() }
+      return Text("stateValue is ${state.value}")
+    }
+  }
 }

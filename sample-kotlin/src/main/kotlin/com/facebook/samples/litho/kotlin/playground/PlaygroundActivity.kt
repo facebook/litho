@@ -19,6 +19,9 @@ package com.facebook.samples.litho.kotlin.playground
 import android.graphics.Typeface
 import android.os.Bundle
 import com.facebook.litho.Column
+import com.facebook.litho.Component
+import com.facebook.litho.DslScope
+import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.padding
@@ -30,13 +33,11 @@ import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
 class PlaygroundActivity : NavigatableDemoActivity() {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    setContent {
+  class PlaygroundComponent : KComponent() {
+    override fun DslScope.render(): Component? {
       val counter = useState { 1 }
 
-      Column(
+      return Column(
           style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } },
           children =
               listOf(
@@ -46,5 +47,11 @@ class PlaygroundActivity : NavigatableDemoActivity() {
                       textStyle = Typeface.ITALIC),
               ))
     }
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    setContent(PlaygroundComponent())
   }
 }

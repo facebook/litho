@@ -39,8 +39,8 @@ import com.facebook.samples.litho.kotlin.lithography.data.Artist
 import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 import com.facebook.yoga.YogaPositionType
 
-class FeedItemComponent(artist: Artist) :
-    KComponent({
+class FeedItemComponent(val artist: Artist) : KComponent() {
+  override fun DslScope.render() =
       Column(
           children =
               listOf(
@@ -64,7 +64,7 @@ class FeedItemComponent(artist: Artist) :
                           )),
                   FooterComponent(text = artist.biography),
               ))
-    })
+}
 
 private val recyclerConfiguration =
     ListRecyclerConfiguration.create()

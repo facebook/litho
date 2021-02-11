@@ -574,9 +574,14 @@ class CommonStylesTest {
   @Test
   fun shadowElevation_whenSet_isRespected() {
     val elevation = 0.5f
-    val component = KComponent { Row(style = Style.shadowElevation(elevation)) }
 
-    val node = Layout.create(lithoViewRule.context, component)
+    class ElevationComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        return Row(style = Style.shadowElevation(elevation))
+      }
+    }
+
+    val node = Layout.create(lithoViewRule.context, ElevationComponent())
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.shadowElevation).isEqualTo(elevation)
   }
@@ -585,9 +590,13 @@ class CommonStylesTest {
   @Test
   fun outlineProvider_whenSet_isRespected() {
     val outlineProvider = ViewOutlineProvider.BOUNDS
-    val component = KComponent { Row(style = Style.outlineProvider(outlineProvider)) }
+    class OutlineProviderComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        return Row(style = Style.outlineProvider(outlineProvider))
+      }
+    }
 
-    val node = Layout.create(lithoViewRule.context, component)
+    val node = Layout.create(lithoViewRule.context, OutlineProviderComponent())
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
   }

@@ -16,14 +16,17 @@
 
 package com.facebook.samples.litho.kotlin.logging
 
+import com.facebook.litho.Component
+import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.treeProp
 
-class LoggingRootComponent :
-    KComponent({
-      TreePropProvider(
-          treeProp(type = LogContext::class, value = LogContext("root")),
-          child = LoggingChildComponent(),
-      )
-    })
+class LoggingRootComponent : KComponent() {
+  override fun DslScope.render(): Component {
+    return TreePropProvider(
+        treeProp(type = LogContext::class, value = LogContext("root")),
+        child = LoggingChildComponent(),
+    )
+  }
+}
