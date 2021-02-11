@@ -50,6 +50,8 @@ public class VisibilityUtils {
     log("Dispatch:VisibleEvent to: " + visibleHandler.toString());
     visibleHandler.call(sVisibleEvent);
 
+    sVisibleEvent.content = null;
+
     RenderCoreSystrace.endSection();
   }
 
