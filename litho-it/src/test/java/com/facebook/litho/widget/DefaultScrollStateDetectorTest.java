@@ -45,7 +45,7 @@ public class DefaultScrollStateDetectorTest {
   // For scroll driven by non-fling gesture, the first onScrollChange callback triggers start event
   // and the action_up event indicates scroll's stopping.
   @Test
-  public void testSlowScroll() {
+  public void onScrollChanged_whenSlowScroll_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);
@@ -58,7 +58,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testSlowScrollWithCancel() {
+  public void onScrollChanged_whenSlowScrollWithCancel_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);
@@ -71,7 +71,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testSlowScrollWithDownMoveAndCancel() {
+  public void onScrollChanged_whenSlowScrollWithDownMoveAndCancel_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_MOVE));
     detector.onScrollChanged(hostView);
@@ -85,7 +85,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testSlowScrollWithRandomOnDraw() {
+  public void onScrollChanged_whenSlowScrollWithRandomOnDraw_detectsScrollStartAndStop() {
     detector.onDraw(hostView);
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
@@ -102,7 +102,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testSlowScrollWithRandomOnDrawAndCancel() {
+  public void onScrollChanged_whenSlowScrollWithRandomOnDrawAndCancel_detectsScrollStartAndStop() {
     detector.onDraw(hostView);
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
@@ -119,7 +119,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testSlowScrollWithMoveRandomOnDrawAndCancel() {
+  public void onScrollChanged_whenSlowScrollWithMoveRandomOnDrawAndCancel_detectsScrollStartAndStop() {
     detector.onDraw(hostView);
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_MOVE));
     detector.onScrollChanged(hostView);
@@ -135,11 +135,11 @@ public class DefaultScrollStateDetectorTest {
     assertThat(scrollStateListener.stopCount).isEqualTo(1);
   }
 
-  // For scroll driven by fling gesture, the first onScrollChange callback triggers start event
+  // For scroll driven by fling gesture, the first onScrollChanged callback triggers start event
   // and then detector checks if there's an onScrollChanged() callback between onDraw() to determine
   // if scroll stops.
   @Test
-  public void testFling() {
+  public void onScrollChanged_whenFling_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);
@@ -162,7 +162,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testFlingWithCancel() {
+  public void onScrollChanged_whenFlingWithCancel_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);
@@ -185,7 +185,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testFlingWithMoveAndCancel() {
+  public void onScrollChanged_whenFlingWithMoveAndCancel_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_MOVE));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);
@@ -208,7 +208,7 @@ public class DefaultScrollStateDetectorTest {
   }
 
   @Test
-  public void testFlingWithDownMoveAndCancel() {
+  public void onScrollChanged_whenFlingWithDownMoveAndCancel_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_MOVE));
     detector.onScrollChanged(hostView);
@@ -233,7 +233,7 @@ public class DefaultScrollStateDetectorTest {
 
   // After the 1st fling, user fling the list again before its stopping scroll.
   @Test
-  public void testDoubleFling() {
+  public void onScrollChanged_whenDoubleFling_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);
@@ -274,7 +274,7 @@ public class DefaultScrollStateDetectorTest {
 
   // After the 1st fling, user pauses the the scrolling by touch the list and then release.
   @Test
-  public void testFlingHoldAndRelease() {
+  public void onScrollChanged_whenFlingHoldAndRelease_detectsScrollStartAndStop() {
     detector.onTouchEvent(hostView, createFakeEvent(MotionEvent.ACTION_DOWN));
     detector.onScrollChanged(hostView);
     assertThat(scrollStateListener.startCount).isEqualTo(1);

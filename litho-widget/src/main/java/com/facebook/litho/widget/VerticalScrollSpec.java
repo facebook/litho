@@ -194,8 +194,8 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
-      @Prop(optional = true) ScrollStateDetector scrollStateDetector,
-      @Prop(optional = true) ScrollStateListener scrollStateListener,
+      @Prop(optional = true) @Nullable ScrollStateDetector scrollStateDetector,
+      @Prop(optional = true) @Nullable ScrollStateListener scrollStateListener,
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
       @Prop(optional = true) @Nullable OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
