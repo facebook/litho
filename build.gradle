@@ -82,6 +82,7 @@ ext.deps = [
         supportTestCore    : 'androidx.test:core:1.2.0',
         supportTestRunner  : 'androidx.test:runner:1.1.1',
         supportTestRules   : 'androidx.test:rules:1.1.1',
+        supportTestJunit   : 'androidx.test.ext:junit:1.1.2',
         supportMultidex    : 'androidx.multidex:multidex:2.0.0',
         supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
         supportMaterial    : 'com.google.android.material:material:1.2.0',

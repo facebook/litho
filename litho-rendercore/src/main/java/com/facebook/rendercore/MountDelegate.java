@@ -94,7 +94,8 @@ public class MountDelegate {
     }
   }
 
-  void onMountItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+  public void onMountItem(
+      final RenderUnit renderUnit, final Object content, final Object layoutData) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       extension.onMountItem(getExtensionState(extension), renderUnit, content, layoutData);

@@ -1,0 +1,142 @@
+name: General CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  get-buck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - name: Fetch buck
+        run: |
+          (test -d buck && echo "Buck retrived from cache. Skipping download") || \
+          (mkdir buck && \
+          wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex > buck/buck && \
+          chmod +x buck/buck)
+
+  build:
+    needs: [get-buck]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Build everything
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew assemble --stacktrace --no-daemon
+
+  tests:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Run all library tests
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test --stacktrace --no-daemon --max-workers 2
+
+  plugin-tests:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Run IntelliJ Plugin tests
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew :litho-intellij-plugin:test --stacktrace --no-daemon --max-workers 2
+
+  deploy-check:
+    name: Skip deploy if PR or Fork or not a SNAPSHOT version
+    needs: [tests]
+    if: ${{ github.event_name != 'pull_request' && github.repository == 'facebook/litho' }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      is-snapshot: ${{ steps.check_snapshot.outputs.IS_SNAPSHOT != '' }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check if SNAPSHOT version
+        id: check_snapshot
+        run: |
+          echo ::set-output name=IS_SNAPSHOT::`grep 'VERSION_NAME=[0-9\.]\+-SNAPSHOT' gradle.properties)`
+
+  deploy:
+    needs: [deploy-check]
+    if: ${{ needs.deploy-check.outputs.is-snapshot == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Publish Snapshots
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew uploadArchives --stacktrace

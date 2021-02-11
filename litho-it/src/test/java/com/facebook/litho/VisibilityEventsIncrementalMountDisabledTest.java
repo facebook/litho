@@ -1404,13 +1404,13 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(invisibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(unfocusedEventHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(true);
+    lithoView.setVisibilityHint(true, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);
@@ -1458,14 +1458,14 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     final LithoView parentView =
         mountComponent(
             mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), false, true);
-    parentView.setVisibilityHint(false);
+    parentView.setVisibilityHint(false, false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner))
         .isTrue();
     testComponentInner.getDispatchedEventHandlers().clear();
 
-    parentView.setVisibilityHint(true);
+    parentView.setVisibilityHint(true, false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
@@ -1579,13 +1579,13 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(invisibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(unfocusedEventHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(true);
+    lithoView.setVisibilityHint(true, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);

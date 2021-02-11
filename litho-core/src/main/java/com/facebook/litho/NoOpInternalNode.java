@@ -22,10 +22,6 @@ import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Copyable;
-import com.facebook.rendercore.RenderState.LayoutContext;
-import com.facebook.rendercore.RenderUnit;
-import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -36,7 +32,6 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -206,61 +201,11 @@ class NoOpInternalNode implements InternalNode {
     return new float[0];
   }
 
-  @Override
-  public RenderUnit getRenderUnit() {
-    return null;
-  }
-
-  @Override
-  public int getChildrenCount() {
-    return 0;
-  }
-
   @Nullable
   @Override
   public InternalNode getChildAt(int index) {
     return null;
   }
-
-  @Override
-  public int getXForChildAtIndex(int index) {
-    return 0;
-  }
-
-  @Override
-  public int getYForChildAtIndex(int index) {
-    return 0;
-  }
-
-  @Override
-  public int getHeightSpec() {
-    return 0;
-  }
-
-  @Override
-  public int getWidthSpec() {
-    return 0;
-  }
-
-  @Override
-  public Object getLayoutData() {
-    return null;
-  }
-
-  @Nullable
-  @Override
-  public Component getComponent() {
-    return null;
-  }
-
-  @Nullable
-  @Override
-  public String getComponentGlobalKey() {
-    return null;
-  }
-
-  @Override
-  public void setComponent(@Nullable Component component, @Nullable String globalKey) {}
 
   @Override
   public int getChildCount() {
@@ -412,68 +357,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void setLastHeightSpec(int heightSpec) {}
-
-  @Override
-  public List<DiffNode> getChildren() {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public void addChild(DiffNode node) {}
-
-  @Nullable
-  @Override
-  public LayoutOutput getContentOutput() {
-    return null;
-  }
-
-  @Override
-  public void setContentOutput(@Nullable LayoutOutput content) {}
-
-  @Nullable
-  @Override
-  public VisibilityOutput getVisibilityOutput() {
-    return null;
-  }
-
-  @Override
-  public void setVisibilityOutput(@Nullable VisibilityOutput visibilityOutput) {}
-
-  @Nullable
-  @Override
-  public LayoutOutput getBackgroundOutput() {
-    return null;
-  }
-
-  @Override
-  public void setBackgroundOutput(@Nullable LayoutOutput background) {}
-
-  @Nullable
-  @Override
-  public LayoutOutput getForegroundOutput() {
-    return null;
-  }
-
-  @Override
-  public void setForegroundOutput(@Nullable LayoutOutput foreground) {}
-
-  @Nullable
-  @Override
-  public LayoutOutput getBorderOutput() {
-    return null;
-  }
-
-  @Override
-  public void setBorderOutput(@Nullable LayoutOutput border) {}
-
-  @Nullable
-  @Override
-  public LayoutOutput getHostOutput() {
-    return null;
-  }
-
-  @Override
-  public void setHostOutput(@Nullable LayoutOutput host) {}
 
   @Override
   public float getLastMeasuredHeight() {
@@ -1027,20 +910,5 @@ class NoOpInternalNode implements InternalNode {
       Component next,
       @Nullable String nextKey) {
     return this;
-  }
-
-  @Override
-  public LayoutResult calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
-    return null;
-  }
-
-  @Override
-  public Copyable getLayoutParams() {
-    return null;
-  }
-
-  @Override
-  public Copyable makeCopy() {
-    throw new UnsupportedOperationException("NoOpInternalNode.makeCopy not implemented.");
   }
 }

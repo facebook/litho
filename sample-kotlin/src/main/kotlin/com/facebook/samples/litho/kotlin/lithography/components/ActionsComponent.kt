@@ -23,12 +23,16 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
+import com.facebook.litho.flexbox.padding
 
 class ActionsComponent(val style: Style? = null) : KComponent() {
 
   override fun DslScope.render(): Component? {
     return Row(
         style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style,
-        children = listOf(FavouriteButton()))
+        children =
+            listOf(
+                FavouriteButton(),
+            ))
   }
 }

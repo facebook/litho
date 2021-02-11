@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import java.util.WeakHashMap;
+import javax.annotation.Nullable;
 
 /**
  * Callbacks that must be invoked to avoid leaking memory if using Components below ICS (API level
@@ -61,7 +62,7 @@ public class ComponentsLifecycles {
 
   private static WeakHashMap<Context, LeakDetector> mTrackedContexts;
 
-  public static void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+  public static void onActivityCreated(Activity activity, @Nullable Bundle savedInstanceState) {
     onContextCreated(activity);
   }
 

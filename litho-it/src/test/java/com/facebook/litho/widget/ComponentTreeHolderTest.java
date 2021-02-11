@@ -29,7 +29,6 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -38,9 +37,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests for {@link ComponentTreeHolder} */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class ComponentTreeHolderTest {
 
@@ -135,36 +136,6 @@ public class ComponentTreeHolderTest {
     holder.acquireStateAndReleaseTree(false);
     assertThat(holder.getComponentTree()).isNull();
     assertThat(holder.getStateHandler()).isNotNull();
-  }
-
-  @Test
-  public void acquireStateAndReleaseTree_exitRangeWithAcquiringStates_hookHandlerIsRetained() {
-    ComponentsConfiguration.isHooksImplEnabled = true;
-
-    final ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
-    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
-
-    // component goes out of range
-    holder.acquireStateAndReleaseTree(true);
-    assertThat(holder.getComponentTree()).isNull();
-    assertThat(holder.getHooksHandler()).isNotNull();
-
-    ComponentsConfiguration.isHooksImplEnabled = false;
-  }
-
-  @Test
-  public void acquireStateAndReleaseTree_exitRangeWithoutAcquiringStates_hookHandlerIsDropped() {
-    ComponentsConfiguration.isHooksImplEnabled = true;
-
-    final ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
-    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
-
-    // component goes out of range
-    holder.acquireStateAndReleaseTree(false);
-    assertThat(holder.getComponentTree()).isNull();
-    assertThat(holder.getHooksHandler()).isNull();
-
-    ComponentsConfiguration.isHooksImplEnabled = false;
   }
 
   @Test

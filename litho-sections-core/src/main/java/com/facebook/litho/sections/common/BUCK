@@ -20,8 +20,6 @@ load(
 
 litho_android_library(
     name = "common",
-    srcs = glob(["*.java"]),
-    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     plugins = [

@@ -16,6 +16,7 @@
 
 package com.facebook.rendercore.incrementalmount;
 
+import static com.facebook.rendercore.incrementalmount.IncrementalMountUtils.log;
 import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
@@ -25,6 +26,7 @@ import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.HostNotMountedException;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -41,27 +43,17 @@ import java.util.Set;
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
-  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
-  private static final IncrementalMountExtension sInstanceAcquireDuringMount =
-      new IncrementalMountExtension(true);
+  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension();
 
-  private final boolean mAcquireReferencesDuringMount;
-
-  private IncrementalMountExtension(final boolean acquireReferencesDuringMount) {
-    mAcquireReferencesDuringMount = acquireReferencesDuringMount;
-  }
+  private IncrementalMountExtension() {}
 
   public static IncrementalMountExtension getInstance() {
     return sInstance;
   }
 
-  public static IncrementalMountExtension getInstance(final boolean acquireReferencesDuringMount) {
-    return acquireReferencesDuringMount ? sInstanceAcquireDuringMount : sInstance;
-  }
-
   @Override
   public IncrementalMountExtensionState createState() {
-    return new IncrementalMountExtensionState(mAcquireReferencesDuringMount);
+    return new IncrementalMountExtensionState();
   }
 
   @Override
@@ -69,26 +61,32 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final IncrementalMountExtensionInput input,
       final Rect localVisibleRect) {
+
+    log("beforeMount");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMount");
+
     final IncrementalMountExtensionState state = extensionState.getState();
 
     releaseAcquiredReferencesForRemovedItems(extensionState, input);
     state.mInput = input;
     state.mPreviousLocalVisibleRect.setEmpty();
 
-    if (!mAcquireReferencesDuringMount) {
-      initIncrementalMount(extensionState, localVisibleRect, false);
-    }
-
     setVisibleRect(state, localVisibleRect);
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
   public void afterMount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
+
+    log("afterMount");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.afterMount");
+
     final IncrementalMountExtensionState state = extensionState.getState();
 
-    if (mAcquireReferencesDuringMount) {
-      setupPreviousMountableOutputData(state, state.mPreviousLocalVisibleRect);
-    }
+    setupPreviousMountableOutputData(state, state.mPreviousLocalVisibleRect);
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -96,9 +94,8 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final RenderTreeNode renderTreeNode,
       final int index) {
-    if (!mAcquireReferencesDuringMount) {
-      return;
-    }
+    log("beforeMountItem [id=" + renderTreeNode.getRenderUnit().getId() + "]");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.beforeMountItem");
 
     final long id = renderTreeNode.getRenderUnit().getId();
     final IncrementalMountExtensionState state = extensionState.getState();
@@ -108,6 +105,8 @@ public class IncrementalMountExtension
     }
 
     maybeAcquireReference(extensionState, state.mPreviousLocalVisibleRect, output, false);
+
+    RenderCoreSystrace.endSection();
   }
 
   /**
@@ -122,14 +121,21 @@ public class IncrementalMountExtension
       final Rect localVisibleRect) {
     assertMainThread();
 
+    log("onVisibleBoundsChanged [visibleBounds=" + localVisibleRect + "]");
+    RenderCoreSystrace.beginSection("IncrementalMountExtension.onVisibleBoundsChanged");
+
     final IncrementalMountExtensionState state = extensionState.getState();
     if (state.mInput == null) {
       // Something notified the host that the visible bounds changed, but nothing was mounted yet.
       // Nothing to do.
+      log("Skipping: Input is empty.");
+      RenderCoreSystrace.endSection();
       return;
     }
 
     if (localVisibleRect.isEmpty() && state.mPreviousLocalVisibleRect.isEmpty()) {
+      log("Skipping: Visible area is 0");
+      RenderCoreSystrace.endSection();
       return;
     }
 
@@ -144,6 +150,8 @@ public class IncrementalMountExtension
     }
 
     setVisibleRect(state, localVisibleRect);
+
+    RenderCoreSystrace.endSection();
   }
 
   @Override
@@ -225,9 +233,6 @@ public class IncrementalMountExtension
     // If id is ROOT_HOST_ID then already at root host.
     if (needsHostMount) {
 
-      // Make sure the host is mounted before the child.
-      final IncrementalMountExtensionState state = extensionState.getState();
-
       if (recursionSource == null) {
         recursionSource = new ArrayList<>();
       }
@@ -245,12 +250,7 @@ public class IncrementalMountExtension
 
       // If not root host or if no reference was acquired, acquire it.
       acquireMountReferenceEnsureHostIsMounted(
-          localVisibleRect,
-          extensionState,
-          host,
-          isMounting || state.mAcquireReferencesDuringMount,
-          ownsHostRef,
-          recursionSource);
+          localVisibleRect, extensionState, host, true, ownsHostRef, recursionSource);
     }
 
     try {
@@ -341,7 +341,10 @@ public class IncrementalMountExtension
       final IncrementalMountExtensionInput input, final long id, final Object content) {
     assertMainThread();
     if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
+      log("RecursivelyNotify [RenderUnit=" + id + "]");
+      RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
       RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(content);
+      RenderCoreSystrace.endSection();
     }
   }
 
@@ -425,6 +428,9 @@ public class IncrementalMountExtension
         state.mInput.getOutputsOrderedByBottomBounds();
     final int count = state.mInput.getIncrementalMountOutputCount();
 
+    int itemsMounted = 0;
+    int itemsUnmounted = 0;
+
     if (localVisibleRect.top >= 0 || state.mPreviousLocalVisibleRect.top >= 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
       // that has moved on/off the top of the screen.
@@ -435,6 +441,9 @@ public class IncrementalMountExtension
         final long id = node.getId();
         if (extensionState.ownsReference(id)) {
           extensionState.releaseMountReference(id, true);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsUnmounted++;
+          }
         }
         state.mPreviousBottomsIndex++;
       }
@@ -450,6 +459,9 @@ public class IncrementalMountExtension
         if (!extensionState.ownsReference(id)) {
           acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
           state.mComponentIdsMountedInThisFrame.add(id);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsMounted++;
+          }
         }
       }
     }
@@ -467,6 +479,9 @@ public class IncrementalMountExtension
         if (!extensionState.ownsReference(id)) {
           acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
           state.mComponentIdsMountedInThisFrame.add(id);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsMounted++;
+          }
         }
         state.mPreviousTopsIndex++;
       }
@@ -479,9 +494,14 @@ public class IncrementalMountExtension
         final long id = node.getId();
         if (extensionState.ownsReference(id)) {
           extensionState.releaseMountReference(id, true);
+          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+            itemsUnmounted++;
+          }
         }
       }
     }
+
+    log("Updates: [Items Mounted=" + itemsMounted + ", Items Unmounted=" + itemsUnmounted + "]");
 
     final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
     for (IncrementalMountOutput output : outputs) {
@@ -550,7 +570,6 @@ public class IncrementalMountExtension
 
   @VisibleForTesting
   public static class IncrementalMountExtensionState {
-    private final boolean mAcquireReferencesDuringMount;
     private final Rect mPreviousLocalVisibleRect = new Rect();
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
@@ -558,9 +577,5 @@ public class IncrementalMountExtension
     private IncrementalMountExtensionInput mInput;
     private int mPreviousTopsIndex;
     private int mPreviousBottomsIndex;
-
-    private IncrementalMountExtensionState(boolean acquireReferencesDuringMount) {
-      mAcquireReferencesDuringMount = acquireReferencesDuringMount;
-    }
   }
 }

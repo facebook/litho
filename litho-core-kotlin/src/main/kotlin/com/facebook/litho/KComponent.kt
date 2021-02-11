@@ -19,17 +19,11 @@ package com.facebook.litho
 import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
-open class KComponent(private val content: (DslScope.() -> Component?)? = null) : Component() {
+abstract class KComponent : Component() {
 
-  override fun onCreateLayout(c: ComponentContext): Component? = DslScope(c).render()
+  final override fun onCreateLayout(c: ComponentContext): Component? = DslScope(c).render()
 
-  open fun DslScope.render(): Component? {
-    val render =
-        requireNotNull(content) {
-          "You should override `render()` method or provide `content` lambda via constructor."
-        }
-    return render()
-  }
+  abstract fun DslScope.render(): Component?
 
   /**
    * Compare this component to a different one to check if they are equivalent. This is used to be
@@ -47,16 +41,6 @@ open class KComponent(private val content: (DslScope.() -> Component?)? = null) 
     }
     if (!hasEquivalentFields(other as KComponent)) {
       return false
-    }
-
-    if (!isStateless) { // Check hooks
-      val hooksHandler = getScopedContext(null, null)?.hooksHandler
-      val otherHooksHandler = other.getScopedContext(null, null)?.hooksHandler
-      if (hooksHandler !== otherHooksHandler) {
-        if (hooksHandler == null || !hooksHandler.isEquivalentTo(otherHooksHandler)) {
-          return false
-        }
-      }
     }
 
     return true

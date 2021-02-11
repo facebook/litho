@@ -24,6 +24,11 @@ package com.facebook.rendercore.visibility;
  */
 public class VisibilityExtensionConfigs {
 
+  public static final String DEBUG_TAG = "VisibilityExtension";
+
   /** Skips visibility checks for fully visible items */
   public static boolean skipVisChecksForFullyVisible = false;
+
+  /** Set this to true to enable debug logs for the visibility extension. */
+  public static boolean isDebugLoggingEnabled = false;
 }

@@ -168,7 +168,7 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PROTECTED)
           .returnType(TypeName.VOID)
           .name("createInitialState")
-          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
+          .lifecycleMethodArguments(ImmutableList.of(LifecycleMethodArgumentType.COMPONENT_CONTEXT))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE, INJECT_PROP))
           .build();
 

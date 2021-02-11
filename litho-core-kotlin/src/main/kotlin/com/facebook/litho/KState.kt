@@ -16,9 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.config.ComponentsConfiguration
-import kotlin.reflect.KProperty
-
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
  * it hasn't already been initialized in a previous lifecycle of the Component.
@@ -26,91 +23,32 @@ import kotlin.reflect.KProperty
  * Assignments to the state variables are allowed only in [updateState] block to batch updates and
  * trigger a UI layout only once per batch.
  */
-fun <T> DslScope.useState(initializer: () -> T): StateDelegate<T> =
-    StateDelegate(context, initializer)
+fun <T> DslScope.useState(initializer: () -> T): State<T> {
+  val globalKey = context.globalKey
+  val hookIndex = useStateIndex++
+  val hookKey = "$globalKey:$hookIndex"
 
-/** Delegate to access and initialize a state variable. */
-class StateDelegate<T>(private val c: ComponentContext, private val initializer: () -> T) {
-
-  // TODO: remove lateinit after Hooks experiment(with ComponentsConfiguration.isHooksImplEnabled
-  // config) is complete.
-  private lateinit var hooks: Hooks
-  private lateinit var hookStateKey: String
-  private var hookIndex: Int = 0
-
-  init {
-    c.hooksHandler?.let {
-      hooks = it.getOrCreate(c.getGlobalKey())
-      hookIndex = hooks.getAndIncrementHookIndex()
-      hookStateKey = "${c.getGlobalKey()}:$hookIndex"
-    }
-  }
-
-  operator fun getValue(nothing: Nothing?, property: KProperty<*>): State<T> {
-    val hooksHandler = c.hooksHandler
-    @Suppress("UNCHECKED_CAST")
-    return if (hooksHandler != null) {
-      val value = hooksHandler.getOrPut(c.getGlobalKey(), hookIndex) { getInitialState() }
-      State(c.getGlobalKey(), value, hookIndex)
-    } else {
-      hookStateKey = "${c.getGlobalKey()}:${property.name}"
-      val value = c.stateHandler!!.hookState.getOrPut(hookStateKey) { getInitialState() } as T
-      State(hookStateKey, value)
-    }
-  }
-
-  private fun getInitialState(): T =
-      c.componentTree.initialStateContainer.createOrGetInitialHookState(hookStateKey) {
-        initializer()
-      }
+  val value =
+      context.stateHandler!!.hookState.getOrPut(hookKey) {
+        context.componentTree.initialStateContainer.createOrGetInitialHookState(
+            hookKey, initializer)
+      } as
+          T
+  return State(context, hookKey, value)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
-class State<T>(internal val key: String, private val value: T, internal val hookIndex: Int = -1) {
+class State<T>(private val context: ComponentContext, private val hookKey: String, val value: T) {
 
-  fun get() = value
-}
-
-/** Allow reading value property of a state with simpler syntax */
-val <T> State<T>.value: T
-  get() = this.get()
-
-/** Common interface for [StateUpdater] and [HookStateUpdater]. */
-interface Updater {
-  var <T> State<T>.value: T
-}
-
-/** Scope object for updating state - while in a StateUpdater block, State.value may be set. */
-class StateUpdater(private val stateHandler: StateHandler) : Updater {
-
-  override var <T> State<T>.value: T
-    @Suppress("UNCHECKED_CAST") get() = stateHandler.hookState[key] as T
-    set(value) {
-      stateHandler.hookState[key] = value
-    }
-}
-
-class HookStateUpdater(private val hooksHandler: HooksHandler) : Updater {
-
-  override var <T> State<T>.value: T
-    get() = hooksHandler.getOrCreate(key).get(hookIndex)
-    set(value) {
-      hooksHandler.getOrCreate(key).set(hookIndex, value)
-    }
-}
-
-/**
- * Enqueues a state update block to be run before the next layout in order to update hook state.
- * Assignments to the state variables, created by [useState], are only allowed inside this block.
- */
-fun DslScope.updateState(block: Updater.() -> Unit) {
-  if (ComponentsConfiguration.isHooksImplEnabled) {
-    context.updateHookStateAsync<HooksHandler> { hooksHandler ->
-      HookStateUpdater(hooksHandler).block()
-    }
-  } else {
+  fun update(newValue: T) {
     context.updateHookStateAsync<StateHandler> { stateHandler ->
-      StateUpdater(stateHandler).block()
+      stateHandler.hookState[hookKey] = newValue
+    }
+  }
+
+  fun update(newValueFunction: (T) -> T) {
+    context.updateHookStateAsync<StateHandler> { stateHandler ->
+      stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
     }
   }
 }

@@ -78,7 +78,8 @@ public class StateValidation {
     validateDuplicateName(stateNameSet, specModel.getProps(), validationErrors);
     validateDuplicateName(stateNameSet, specModel.getInjectProps(), validationErrors);
     validateDuplicateName(stateNameSet, specModel.getTreeProps(), validationErrors);
-
+    validateInterStagePropsDuplicateName(
+        stateNameSet, specModel.getInterStageInputs(), validationErrors);
     return validationErrors;
   }
 
@@ -211,6 +212,23 @@ public class StateValidation {
                     + "\" and @State \""
                     + model.getName()
                     + "\" collide!"));
+      }
+    }
+  }
+
+  private static void validateInterStagePropsDuplicateName(
+      Set<String> stateNameSet,
+      List<InterStageInputParamModel> interStageInputParamModels,
+      List<SpecModelValidationError> validationErrors) {
+    for (int i = 0, size = interStageInputParamModels.size(); i < size; i++) {
+      final MethodParamModel model = interStageInputParamModels.get(i);
+      if (stateNameSet.contains(model.getName())) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                model.getRepresentedObject(),
+                "The parameter with name "
+                    + model.getName()
+                    + " annotated with @State is colliding with another inter-stage prop param with the same name."));
       }
     }
   }

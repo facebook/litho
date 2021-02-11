@@ -32,6 +32,9 @@ public class VisibilityOutput {
   private final String mKey;
   private final Rect mBounds;
 
+  public final boolean hasMountableContent;
+  public final long mRenderUnitId;
+
   private final float mVisibleHeightRatio;
   private final float mVisibleWidthRatio;
 
@@ -56,9 +59,41 @@ public class VisibilityOutput {
       final @Nullable Function<Void> unfocusedEventHandler,
       final @Nullable Function<Void> fullImpressionEventHandler,
       final @Nullable Function<Void> visibilityChangedEventHandler) {
+    this(
+        id,
+        key,
+        bounds,
+        false,
+        0L,
+        visibleHeightRatio,
+        visibleWidthRatio,
+        visibleEventHandler,
+        invisibleEventHandler,
+        focusedEventHandler,
+        unfocusedEventHandler,
+        fullImpressionEventHandler,
+        visibilityChangedEventHandler);
+  }
+
+  public VisibilityOutput(
+      final String id,
+      final String key,
+      final Rect bounds,
+      final boolean hasMountableContent,
+      final long renderUnitId,
+      final float visibleHeightRatio,
+      final float visibleWidthRatio,
+      final @Nullable Function<Void> visibleEventHandler,
+      final @Nullable Function<Void> invisibleEventHandler,
+      final @Nullable Function<Void> focusedEventHandler,
+      final @Nullable Function<Void> unfocusedEventHandler,
+      final @Nullable Function<Void> fullImpressionEventHandler,
+      final @Nullable Function<Void> visibilityChangedEventHandler) {
     mId = id;
     mKey = key;
     mBounds = bounds;
+    this.hasMountableContent = hasMountableContent;
+    mRenderUnitId = renderUnitId;
     mVisibleHeightRatio = visibleHeightRatio;
     mVisibleWidthRatio = visibleWidthRatio;
     mVisibleEventHandler = visibleEventHandler;

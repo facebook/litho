@@ -111,7 +111,6 @@ class HorizontalScrollSpec {
     // hscroll have unlimited horizontal space.
     childComponentTree.setRootAndSizeSpec(
         contentProps, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
-    contentProps.measure(context, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
 
     measuredWidth = contentSize.width;
     measuredHeight = contentSize.height;

@@ -25,6 +25,7 @@ import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -68,7 +69,7 @@ public class LayoutSpecLifecycleTesterSpec {
     if (caller != null) {
       caller.set(c, steps);
     }
-    return Column.create(c).build();
+    return Column.create(c).visibleHandler(LayoutSpecLifecycleTester.onVisible(c)).build();
   }
 
   @OnCalculateCachedValue(name = "expensiveValue")
@@ -121,6 +122,11 @@ public class LayoutSpecLifecycleTesterSpec {
     if (caller != null) {
       caller.eventWithoutAnnotation = new EventWithoutAnnotation(count, isDirty, message);
     }
+  }
+
+  @OnEvent(VisibleEvent.class)
+  static void onVisible(final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_EVENT_VISIBLE));
   }
 
   public static class Caller {

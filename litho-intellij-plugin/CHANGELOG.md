@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Version 1.7.0
+
+_2021-01-22_
+
+* New: Buck excludes redsymbols package.
+* New: Bold formatting for Required Prop Setter.
+* New: Toolwindow stub text.
+* New: Since build is 193.
+* Fix: Event handler argument completion includes "handler" lookup.
+
 ## Version 1.6.2
 
 _2020-12-16_
@@ -16,7 +26,7 @@ _2020-11-19_
 
 ## Version 1.6.0
 
-_2020-11-4_
+_2020-11-04_
 
 * New: "Resolve Litho Red Symbols" for `MountSpec`.
 * New: Warning Annotations for `MountSpec`.

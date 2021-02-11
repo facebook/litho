@@ -16,6 +16,9 @@
 
 package com.facebook.rendercore.visibility;
 
+import static com.facebook.rendercore.visibility.VisibilityExtensionConfigs.DEBUG_TAG;
+
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
@@ -35,13 +38,19 @@ public class VisibilityUtils {
   private static FullImpressionVisibleEvent sFullImpressionVisibleEvent;
   private static VisibilityChangedEvent sVisibleRectChangedEvent;
 
-  public static void dispatchOnVisible(Function<Void> visibleHandler) {
+  public static void dispatchOnVisible(Function<Void> visibleHandler, @Nullable Object content) {
     RenderCoreSystrace.beginSection("VisibilityUtils.dispatchOnVisible");
 
     if (sVisibleEvent == null) {
       sVisibleEvent = new VisibleEvent();
     }
+
+    sVisibleEvent.content = content;
+
+    log("Dispatch:VisibleEvent to: " + visibleHandler.toString());
     visibleHandler.call(sVisibleEvent);
+
+    sVisibleEvent.content = null;
 
     RenderCoreSystrace.endSection();
   }
@@ -50,6 +59,8 @@ public class VisibilityUtils {
     if (sFocusedVisibleEvent == null) {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
+
+    log("Dispatch:FocusedVisibleEvent to: " + focusedHandler.toString());
     focusedHandler.call(sFocusedVisibleEvent);
   }
 
@@ -57,6 +68,8 @@ public class VisibilityUtils {
     if (sUnfocusedVisibleEvent == null) {
       sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
     }
+
+    log("Dispatch:UnfocusedVisibleEvent to: " + unfocusedHandler.toString());
     unfocusedHandler.call(sUnfocusedVisibleEvent);
   }
 
@@ -64,6 +77,8 @@ public class VisibilityUtils {
     if (sFullImpressionVisibleEvent == null) {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
+
+    log("Dispatch:FullImpressionVisibleEvent to: " + fullImpressionHandler.toString());
     fullImpressionHandler.call(sFullImpressionVisibleEvent);
   }
 
@@ -71,11 +86,15 @@ public class VisibilityUtils {
     if (sInvisibleEvent == null) {
       sInvisibleEvent = new InvisibleEvent();
     }
+
+    log("Dispatch:InvisibleEvent to: " + invisibleHandler.toString());
     invisibleHandler.call(sInvisibleEvent);
   }
 
   public static void dispatchOnVisibilityChanged(
       @Nullable Function<Void> visibilityChangedHandler,
+      int visibleTop,
+      int visibleLeft,
       int visibleWidth,
       int visibleHeight,
       float percentVisibleWidth,
@@ -89,11 +108,21 @@ public class VisibilityUtils {
       sVisibleRectChangedEvent = new VisibilityChangedEvent();
     }
 
+    sVisibleRectChangedEvent.visibleTop = visibleTop;
+    sVisibleRectChangedEvent.visibleLeft = visibleLeft;
     sVisibleRectChangedEvent.visibleHeight = visibleHeight;
     sVisibleRectChangedEvent.visibleWidth = visibleWidth;
     sVisibleRectChangedEvent.percentVisibleHeight = percentVisibleHeight;
     sVisibleRectChangedEvent.percentVisibleWidth = percentVisibleWidth;
 
+    log("Dispatch:VisibilityChangedEvent to: " + visibilityChangedHandler.toString());
+
     visibilityChangedHandler.call(sVisibleRectChangedEvent);
+  }
+
+  public static void log(final String log) {
+    if (VisibilityExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, log);
+    }
   }
 }

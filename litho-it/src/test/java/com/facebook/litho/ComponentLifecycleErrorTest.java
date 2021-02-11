@@ -44,12 +44,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 /**
  * Tests error handling in {@link ComponentLifecycle} using the {@link
  * com.facebook.litho.testing.error.TestErrorBoundarySpec} against components crashing in various
  * different lifecycle methods.
  */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class ComponentLifecycleErrorTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();

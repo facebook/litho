@@ -41,7 +41,7 @@ android {
         }
 
         release {
-            buildConfigField 'boolean', internalBuildField, 'false';
+            buildConfigField 'boolean', internalBuildField, 'false'
             buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
     }

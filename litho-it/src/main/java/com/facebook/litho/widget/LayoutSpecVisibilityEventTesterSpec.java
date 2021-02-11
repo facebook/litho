@@ -16,12 +16,14 @@
 
 package com.facebook.litho.widget;
 
-import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Output;
+import com.facebook.litho.Row;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
@@ -33,18 +35,40 @@ public class LayoutSpecVisibilityEventTesterSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
     return Column.create(c)
+        .wrapInView()
+        .visibleHandler(LayoutSpecVisibilityEventTester.onViewVisible(c))
         .child(
-            Text.create(c)
-                .text("test1")
-                .visibleHandler(LayoutSpecVisibilityEventTester.onVisible(c))
-                .textSizeDip(30))
-        .child(Text.create(c).text("test2").viewTag("test_vt").textSizeDip(30))
+            Row.create(c)
+                .visibleHandler(LayoutSpecVisibilityEventTester.onNotAViewVisible(c))
+                .child(
+                    Text.create(c)
+                        .text("test1")
+                        .visibleHandler(LayoutSpecVisibilityEventTester.onTextVisible(c))
+                        .textSizeDip(30)))
         .build();
   }
 
   @OnEvent(VisibleEvent.class)
-  static void onVisible(ComponentContext c, @Prop View rootView, @Prop Output<View> foundView) {
-    final View view = rootView.findViewWithTag("test_vt");
-    foundView.set(view);
+  static void onTextVisible(
+      final ComponentContext c,
+      final @Prop Output<Object> textOutput,
+      final @FromEvent @Nullable Object content) {
+    textOutput.set(content);
+  }
+
+  @OnEvent(VisibleEvent.class)
+  static void onViewVisible(
+      final ComponentContext c,
+      final @Prop Output<Object> viewOutput,
+      final @FromEvent @Nullable Object content) {
+    viewOutput.set(content);
+  }
+
+  @OnEvent(VisibleEvent.class)
+  static void onNotAViewVisible(
+      final ComponentContext c,
+      final @Prop Output<Object> nullOutput,
+      final @FromEvent @Nullable Object content) {
+    nullOutput.set(content);
   }
 }

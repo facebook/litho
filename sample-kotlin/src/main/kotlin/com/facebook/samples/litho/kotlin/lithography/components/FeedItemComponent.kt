@@ -25,6 +25,10 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
+import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.padding
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -35,8 +39,8 @@ import com.facebook.samples.litho.kotlin.lithography.data.Artist
 import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 import com.facebook.yoga.YogaPositionType
 
-class FeedItemComponent(artist: Artist) :
-    KComponent({
+class FeedItemComponent(val artist: Artist) : KComponent() {
+  override fun DslScope.render() =
       Column(
           children =
               listOf(
@@ -56,9 +60,11 @@ class FeedItemComponent(artist: Artist) :
                               ActionsComponent(
                                   style =
                                       Style.position(top = 4.dp, end = 4.dp)
-                                          .positionType(YogaPositionType.ABSOLUTE)))),
-                  FooterComponent(text = artist.biography)))
-    })
+                                          .positionType(YogaPositionType.ABSOLUTE)),
+                          )),
+                  FooterComponent(text = artist.biography),
+              ))
+}
 
 private val recyclerConfiguration =
     ListRecyclerConfiguration.create()

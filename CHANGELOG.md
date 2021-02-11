@@ -4,6 +4,10 @@
 
 _release-date_
 
+* **Breaking:** Calling `setVisibilityHint(false)` on a LithoView will ignore mounting calls until `setVisibilityHint(true)` is called.
+* **New**: Adds visible top and visible left to the VisibilityChangedEvent.
+* **Breaking:** Changes the return type of `ComponentLifecycle#resolve()` from `ComponentLayout` to `InternalNode`.
+
 * TBA
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.39.0...master).
