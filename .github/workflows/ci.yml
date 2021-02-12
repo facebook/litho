@@ -30,6 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
       - uses: actions/cache@v2
         with:
           path: buck
@@ -55,6 +60,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
       - uses: actions/cache@v2
         with:
           path: buck
@@ -79,6 +89,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
 
       - uses: actions/cache@v2
         with:
@@ -122,6 +137,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
 
       - uses: actions/cache@v2
         with:
