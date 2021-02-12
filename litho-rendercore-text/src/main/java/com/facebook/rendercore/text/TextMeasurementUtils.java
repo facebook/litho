@@ -28,7 +28,8 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
-import android.util.SparseArray;
+import android.text.style.MetricAffectingSpan;
+import android.util.SparseIntArray;
 import android.view.View;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Size;
@@ -46,12 +47,13 @@ public class TextMeasurementUtils {
 
   @GuardedBy("self")
   // Map from hash(textSize, typeface) -> cap heights array for text
-  private static final SparseArray<int[]> sCapHeightsCache = new SparseArray<>();
+  private static final SparseIntArray sCapHeightsCache = new SparseIntArray();
+
+  private static final SparseIntArray sBaselineCache = new SparseIntArray();
 
   // The offsets of the returned values within the int array.
-  private static final int CAP_HEIGHT_INDEX = 0;
-  private static final int CAP_HEIGHT_OFFSET_INDEX = 1;
-  private static final int BASELINE_OFFSET_INDEX = 2;
+  private static final int CAP_HEIGHT_OFFSET_INDEX = 0;
+  private static final int BASELINE_OFFSET_INDEX = 1;
 
   @VisibleForTesting
   public interface DebugMeasureListener {
@@ -120,7 +122,7 @@ public class TextMeasurementUtils {
     final int capHeightOffset;
 
     if (hasManualSpacing(textStyle)) {
-      final int[] capHeights = getCapHeightBaselineSpacing(layout.getPaint());
+      final int[] capHeights = getCapHeightBaselineSpacing(layout.getPaint(), text);
 
       final int baselineOffset = capHeights[BASELINE_OFFSET_INDEX];
       capHeightOffset = capHeights[CAP_HEIGHT_OFFSET_INDEX] - textStyle.manualCapSpacing;
@@ -393,35 +395,64 @@ public class TextMeasurementUtils {
    * Return the cap height values array {cap_height, cap_height_offset, baseline_offset} for the
    * given text size and typeface.
    */
-  private static @Size(3) int[] getCapHeightBaselineSpacing(Paint paint) {
-    int hashCode = getKey(paint.getTextSize(), paint.getTypeface());
+  private static @Size(2) int[] getCapHeightBaselineSpacing(Paint paint, CharSequence text) {
+    final TextPaint capTextPaint = new TextPaint(paint);
+    Paint.FontMetricsInt fontMetricsInt = null;
 
-    int[] capHeights;
+    if (text instanceof Spanned && text.length() > 0) {
+      MetricAffectingSpan[] spans = ((Spanned) text).getSpans(0, 0, MetricAffectingSpan.class);
+      for (int i = 0; i < spans.length; i++) {
+        spans[i].updateMeasureState(capTextPaint);
+      }
+    }
+
+    final int hashCode = getKey(capTextPaint.getTextSize(), capTextPaint.getTypeface());
+
+    int capHeight;
     synchronized (sCapHeightsCache) {
-      capHeights = sCapHeightsCache.get(hashCode);
-    }
-    if (capHeights != null) {
-      return capHeights;
+      capHeight = sCapHeightsCache.get(hashCode, Integer.MIN_VALUE);
     }
 
-    final Rect rect = new Rect();
-    final Paint.FontMetricsInt fontMetricsInt = new Paint.FontMetricsInt();
-    paint.getFontMetricsInt(fontMetricsInt);
-    paint.getTextBounds(CAP_MEASUREMENT_TEXT, 0, CAP_MEASUREMENT_TEXT.length(), rect);
+    if (capHeight == Integer.MIN_VALUE) {
+      final Rect rect = new Rect();
+      fontMetricsInt = new Paint.FontMetricsInt();
+      capTextPaint.getFontMetricsInt(fontMetricsInt);
+      capTextPaint.getTextBounds(CAP_MEASUREMENT_TEXT, 0, CAP_MEASUREMENT_TEXT.length(), rect);
+      capHeight = (-1 * fontMetricsInt.ascent) - rect.height();
+      synchronized (sCapHeightsCache) {
+        sCapHeightsCache.put(hashCode, capHeight);
+      }
+    }
+    final TextPaint baselineTextPaint = new TextPaint(paint);
+    if (text instanceof Spanned && text.length() > 0) {
+      MetricAffectingSpan[] spans =
+          ((Spanned) text)
+              .getSpans(text.length() - 1, text.length() - 1, MetricAffectingSpan.class);
+      for (int i = 0; i < spans.length; i++) {
+        spans[i].updateMeasureState(baselineTextPaint);
+      }
+    }
+    final int baselineHashCode =
+        getKey(baselineTextPaint.getTextSize(), baselineTextPaint.getTypeface());
+    int baseline;
+    synchronized (sBaselineCache) {
+      baseline = sBaselineCache.get(baselineHashCode, Integer.MIN_VALUE);
+    }
+    if (baseline == Integer.MIN_VALUE) {
+      if (fontMetricsInt == null
+          || capTextPaint.getTextSize() != baselineTextPaint.getTextSize()
+          || capTextPaint.getTypeface() != baselineTextPaint.getTypeface()) {
+        fontMetricsInt = new Paint.FontMetricsInt();
+        baselineTextPaint.getFontMetricsInt(fontMetricsInt);
+      }
 
-    final int capHeight = rect.height();
-    final int capHeightOffset = (-1 * fontMetricsInt.ascent) - capHeight;
-    final int baselineOffset = fontMetricsInt.descent;
-    capHeights = new int[3];
-    capHeights[CAP_HEIGHT_INDEX] = capHeight;
-    capHeights[CAP_HEIGHT_OFFSET_INDEX] = capHeightOffset;
-    capHeights[BASELINE_OFFSET_INDEX] = baselineOffset;
-
-    synchronized (sCapHeightsCache) {
-      sCapHeightsCache.put(hashCode, capHeights);
+      baseline = fontMetricsInt.descent;
+      synchronized (sBaselineCache) {
+        sBaselineCache.put(baselineHashCode, baseline);
+      }
     }
 
-    return capHeights;
+    return new int[] {capHeight, baseline};
   }
 
   /**
