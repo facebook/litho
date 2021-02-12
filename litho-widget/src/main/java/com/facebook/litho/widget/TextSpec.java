@@ -700,9 +700,45 @@ class TextSpec {
     if (customEllipsisText != null && !customEllipsisText.equals("")) {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
+        Layout customEllipsisLayout =
+            createTextLayout(
+                c,
+                SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
+                ellipsize,
+                shouldIncludeFontPadding,
+                maxLines,
+                shadowRadius,
+                shadowDx,
+                shadowDy,
+                shadowColor,
+                isSingleLine,
+                customEllipsisText,
+                textColor,
+                textColorStateList,
+                linkColor,
+                textSize,
+                extraSpacing,
+                spacingMultiplier,
+                letterSpacing,
+                textStyle,
+                typeface,
+                getTextAlignment(textAlignment, alignment),
+                glyphWarming,
+                layout.getResolvedLayoutDirection(),
+                minEms,
+                maxEms,
+                minTextWidth,
+                maxTextWidth,
+                c.getAndroidContext().getResources().getDisplayMetrics().density,
+                breakStrategy,
+                hyphenationFrequency,
+                justificationMode,
+                textDirection,
+                lineHeight);
+
         final CharSequence truncated =
             truncateText(
-                text, customEllipsisText, textLayout.get(), ellipsizedLineNumber, layoutWidth);
+                text, customEllipsisText, textLayout.get(), customEllipsisLayout, ellipsizedLineNumber, layoutWidth);
 
         Layout newLayout =
             createTextLayout(
@@ -760,6 +796,8 @@ class TextSpec {
    * @param text Text to truncate
    * @param customEllipsisText Text to append to the end to indicate truncation happened
    * @param newLayout A Layout object populated with measurement information for this text
+   * @param ellipsisTextLayout A Layout object populated with measurement information for the
+   *     ellipsis text.
    * @param ellipsizedLineNumber The line number within the text at which truncation occurs (i.e.
    *     the last visible line).
    * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
@@ -769,16 +807,14 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
+      Layout ellipsisTextLayout,
       int ellipsizedLineNumber,
       float layoutWidth) {
-    Rect bounds = new Rect();
-    newLayout
-        .getPaint()
-        .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
+    float customEllipsisTextWidth = ellipsisTextLayout.getLineWidth(0);
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
     final float ellipsisTarget =
-        layoutWidth - bounds.width() + newLayout.getLineLeft(ellipsizedLineNumber);
+        layoutWidth - customEllipsisTextWidth + newLayout.getLineLeft(ellipsizedLineNumber);
     // Get character offset number corresponding to that X position:
     int ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
