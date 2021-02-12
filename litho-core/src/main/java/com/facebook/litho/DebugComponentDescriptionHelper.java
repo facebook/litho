@@ -148,6 +148,13 @@ public class DebugComponentDescriptionHelper {
   }
 
   private static void addExtraProps(Object node, StringBuilder sb) {
+    JSONObject props = getExtraProps(node);
+    if (props.length() > 0) {
+      sb.append(" props=\"").append(props.toString()).append("\"");
+    }
+  }
+
+  public static JSONObject getExtraProps(Object node) {
     JSONObject props = new JSONObject();
     for (Field field : node.getClass().getDeclaredFields()) {
       try {
@@ -187,9 +194,7 @@ public class DebugComponentDescriptionHelper {
         }
       }
     }
-    if (props.length() > 0) {
-      sb.append(" props=\"").append(props.toString()).append("\"");
-    }
+    return props;
   }
 
   private static String fixString(@Nullable Object str, int maxLength) {

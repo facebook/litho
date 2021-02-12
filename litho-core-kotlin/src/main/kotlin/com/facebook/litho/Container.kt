@@ -14,57 +14,54 @@
  * limitations under the License.
  */
 
-@file:Suppress("NOTHING_TO_INLINE", "FunctionName")
-
 package com.facebook.litho
 
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
 
-inline fun DslScope.Column(
+/**
+ * Constructs a new [com.facebook.litho.Column]. Add children by passing an immutable list as the
+ * children prop e.g.
+ * ```
+ * Column(..., children = listOf(
+ *   Text(text = "Foo"),
+ * ))
+ * ```
+ */
+@Suppress("FunctionName")
+fun DslScope.Column(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
-    reverse: Boolean = false,
+    isReversed: Boolean = false,
     style: Style? = null,
     children: List<Component?>? = null
 ): Column =
-    // TODO(t81718888): Bypass builder for Row and Column since they are so common
-    Column.create(context)
-        .apply {
-          alignContent?.let { alignContent(it) }
-          alignItems?.let { alignItems(it) }
-          justifyContent?.let { justifyContent(it) }
-          wrap?.let { wrap(it) }
-          if (reverse) {
-            reverse(reverse)
-          }
-          children?.forEach { child(it) }
-        }
-        .build()
-        .apply { applyStyle(style) }
+    Column(alignContent, alignItems, justifyContent, wrap, isReversed, children).apply {
+      style?.applyToProps(resourceResolver, getOrCreateCommonProps())
+    }
 
-inline fun DslScope.Row(
+/**
+ * Constructs a new [com.facebook.litho.Row]. Add children by passing an immutable list as the
+ * children prop e.g.
+ * ```
+ * Row(..., children = listOf(
+ *   Text(text = "Foo"),
+ * ))
+ * ```
+ */
+@Suppress("FunctionName")
+fun DslScope.Row(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
-    reverse: Boolean = false,
+    isReversed: Boolean = false,
     style: Style? = null,
     children: List<Component?>? = null
 ): Row =
-    Row.create(context)
-        .apply {
-          alignContent?.let { alignContent(it) }
-          alignItems?.let { alignItems(it) }
-          justifyContent?.let { justifyContent(it) }
-          wrap?.let { wrap(it) }
-          if (reverse) {
-            reverse(reverse)
-          }
-          children?.forEach { child(it) }
-        }
-        .build()
-        .apply { applyStyle(style) }
+    Row(alignContent, alignItems, justifyContent, wrap, isReversed, children).apply {
+      style?.applyToProps(resourceResolver, getOrCreateCommonProps())
+    }

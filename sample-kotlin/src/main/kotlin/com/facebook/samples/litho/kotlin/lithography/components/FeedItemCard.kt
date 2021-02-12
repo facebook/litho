@@ -17,15 +17,20 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Column
+import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
+import com.facebook.litho.flexbox.padding
 import com.facebook.litho.widget.Card
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
-class FeedItemCard(artist: Artist) :
-    KComponent({
+class FeedItemCard(val artist: Artist) : KComponent() {
+  override fun DslScope.render() =
       Column(
           style = Style.padding(horizontal = 16.dp, vertical = 8.dp),
-          children = listOf(Card { FeedItemComponent(artist = artist) }))
-    })
+          children =
+              listOf(
+                  Card { FeedItemComponent(artist = artist) },
+              ))
+}

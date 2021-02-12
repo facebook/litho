@@ -22,7 +22,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.HooksHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
@@ -93,9 +92,6 @@ public class ComponentTreeHolder {
 
   @GuardedBy("this")
   private StateHandler mStateHandler;
-
-  @GuardedBy("this")
-  private @Nullable HooksHandler mHooksHandler;
 
   @GuardedBy("this")
   private RenderInfo mRenderInfo;
@@ -240,7 +236,6 @@ public class ComponentTreeHolder {
   public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
     if (acquireStateHandlerOnRelease || shouldAcquireStateHandlerOnRelease()) {
       acquireStateHandler();
-      acquireHooksHandlerIfNecessary();
     }
 
     acquireAnimationState();
@@ -385,12 +380,6 @@ public class ComponentTreeHolder {
     return mStateHandler;
   }
 
-  @VisibleForTesting
-  @Nullable
-  HooksHandler getHooksHandler() {
-    return mHooksHandler;
-  }
-
   public synchronized void setRenderInfo(RenderInfo renderInfo) {
     invalidateTree();
     mRenderInfo = renderInfo;
@@ -483,7 +472,6 @@ public class ComponentTreeHolder {
           builder
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
-              .hooksHandler(mHooksHandler)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
@@ -540,15 +528,6 @@ public class ComponentTreeHolder {
     }
 
     mStateHandler = mComponentTree.acquireStateHandler();
-  }
-
-  @GuardedBy("this")
-  private void acquireHooksHandlerIfNecessary() {
-    if (mComponentTree == null) {
-      return;
-    }
-
-    mHooksHandler = mComponentTree.acquireHooksHandlerIfNecessary();
   }
 
   @GuardedBy("this")

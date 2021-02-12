@@ -43,7 +43,6 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
@@ -65,7 +64,6 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,60 +72,49 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateIncrementalMountTest {
 
-  private final boolean mExtensionAcquireDuringMount;
   private ComponentContext mContext;
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
   private ShadowLooper mLayoutThreadShadowLooper;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-  private boolean mExtensionAcquireDuringMountDefault;
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, extensionAcquireDuringMount={3}")
+      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {true, true, false},
-          {false, false, false},
-          {true, false, true},
-          {true, true, true},
-          {false, false, true},
+          {false, false},
+          {true, false},
+          {true, true},
+          {false, false},
+          {true, false},
+          {true, true},
+          {false, false},
         });
   }
 
   public MountStateIncrementalMountTest(
-      boolean useMountDelegateTarget,
-      boolean delegateToRenderCoreMount,
-      boolean extensionAcquireDuringMount) {
+      boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-    mExtensionAcquireDuringMount = extensionAcquireDuringMount;
   }
 
   @Before
   public void setup() {
-    mExtensionAcquireDuringMountDefault = ComponentsConfiguration.extensionAcquireDuringMount;
-    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMount;
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.extensionAcquireDuringMount = mExtensionAcquireDuringMountDefault;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -1113,7 +1100,6 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void incrementalMount_setVisibilityHintFalse_preventMount() {
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = true;
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
 
@@ -1154,7 +1140,7 @@ public class MountStateIncrementalMountTest {
     child1.getDispatchedEventHandlers().clear();
     child1.resetInteractions();
 
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, true);
 
     assertThat(child1.wasOnMountCalled()).isFalse();
     assertThat(child1.wasOnUnmountCalled()).isFalse();
@@ -1170,12 +1156,10 @@ public class MountStateIncrementalMountTest {
     assertThat(child2.wasOnMountCalled()).isFalse();
     assertThat(child1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
     assertThat(child1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
   }
 
   @Test
   public void incrementalMount_setVisibilityHintTrue_mountIfNeeded() {
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = true;
     final TestComponent child1 = create(mContext).build();
 
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(child1, 1);
@@ -1203,7 +1187,7 @@ public class MountStateIncrementalMountTest {
 
     assertThat(child1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
 
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, true);
 
     final TestComponent child2 = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(child2, 3);
@@ -1230,10 +1214,9 @@ public class MountStateIncrementalMountTest {
     assertThat(child2.wasOnMountCalled()).isFalse();
     assertThat(child2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
 
-    lithoView.setVisibilityHint(true);
+    lithoView.setVisibilityHint(true, true);
     assertThat(child2.wasOnMountCalled()).isTrue();
     assertThat(child2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse = false;
   }
 
   @Test

@@ -41,8 +41,8 @@ public class DelegateMethodDescriptionTest {
     Modifier accessType = Modifier.PRIVATE;
     TypeName returnType = ClassName.bestGuess("ClassName");
     String name = "test";
-    ImmutableList<TypeName> parameterTypes =
-        ImmutableList.<TypeName>of(ClassName.bestGuess("ParameterType"));
+    ImmutableList<LifecycleMethodArgumentType> parameterTypes =
+        ImmutableList.of(new LifecycleMethodArgumentType(ClassName.bestGuess("ParameterType")));
     ImmutableList<TypeName> exceptions =
         ImmutableList.<TypeName>of(ClassName.bestGuess("ExceptionType"));
     ImmutableList<OptionalParameterType> optionalParameterTypes = ImmutableList.of(PROP, STATE);
@@ -53,7 +53,7 @@ public class DelegateMethodDescriptionTest {
             .accessType(accessType)
             .returnType(returnType)
             .name(name)
-            .definedParameterTypes(parameterTypes)
+            .lifecycleMethodArguments(parameterTypes)
             .optionalParameterTypes(optionalParameterTypes)
             .exceptions(exceptions)
             .build();
@@ -62,7 +62,7 @@ public class DelegateMethodDescriptionTest {
     assertThat(delegateMethodDescription.returnType).isEqualTo(returnType);
     assertThat(delegateMethodDescription.name).isEqualTo(name);
     assertThat(delegateMethodDescription.annotations).isSameAs(annotations);
-    assertThat(delegateMethodDescription.definedParameterTypes).isSameAs(parameterTypes);
+    assertThat(delegateMethodDescription.lifecycleMethodArgumentTypes).isSameAs(parameterTypes);
     assertThat(delegateMethodDescription.optionalParameterTypes).isSameAs(optionalParameterTypes);
     assertThat(delegateMethodDescription.exceptions).isSameAs(exceptions);
   }

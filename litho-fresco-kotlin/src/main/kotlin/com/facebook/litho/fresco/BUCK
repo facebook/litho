@@ -22,8 +22,6 @@ load(
 
 litho_android_library(
     name = "fresco-kotlin",
-    srcs = glob(["*.kt"]),
-    autoglob = False,
     language = "KOTLIN",
     provided_deps = LITHO_FRESCO_TARGETS,
     required_for_source_only_abi = True,

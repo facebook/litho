@@ -275,9 +275,10 @@ public abstract class Component extends ComponentLifecycle
       component.mIsLayoutStarted = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
-      component.mChildCounters = null;
-      component.mManualKeysCounter = null;
-
+      if (!mUseStatelessComponent) {
+        component.mChildCounters = null;
+        component.mManualKeysCounter = null;
+      }
       return component;
     } catch (CloneNotSupportedException e) {
       // This class implements Cloneable, so this is impossible
@@ -630,6 +631,11 @@ public abstract class Component extends ComponentLifecycle
     return null;
   }
 
+  @Override
+  public String toString() {
+    return getSimpleName();
+  }
+
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected ComponentContext updateInternalChildState(
@@ -639,13 +645,9 @@ public abstract class Component extends ComponentLifecycle
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (globalKey == null) {
-        if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
-          globalKey = LayoutState.generateGlobalKey(parentContext, this);
-        } else {
-          globalKey =
-              ComponentKeyUtils.generateGlobalKey(
-                  parentContext, parentContext.getComponentScope(), this);
-        }
+        globalKey =
+            ComponentKeyUtils.generateGlobalKey(
+                parentContext, parentContext.getComponentScope(), this);
         setGlobalKey(globalKey);
       }
     }
@@ -700,7 +702,7 @@ public abstract class Component extends ComponentLifecycle
    * @param component the child component
    * @return the number of children of {@param component} type
    */
-  synchronized int getChildCountAndIncrement(Component component) {
+  private synchronized int getChildCountAndIncrement(Component component) {
     if (mChildCounters == null) {
       mChildCounters = new SparseIntArray();
     }
@@ -712,7 +714,37 @@ public abstract class Component extends ComponentLifecycle
     return count;
   }
 
-  synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
+  /**
+   * Returns the number of children of a given type {@param childComponent} component has and then
+   * increments it by 1.
+   *
+   * @param parentContext
+   * @param parentComponent
+   * @param childComponent
+   * @return the number of children of {@param childComponent} type
+   */
+  static int getChildCountAndIncrement(
+      final @Nullable ComponentContext parentContext,
+      final Component parentComponent,
+      final Component childComponent) {
+    if (parentComponent.mUseStatelessComponent) {
+      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access and increment child counter outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+      final String globalKey = parentContext.getGlobalKey();
+
+      return layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .getChildCountAndIncrement(childComponent);
+    } else {
+      return parentComponent.getChildCountAndIncrement(childComponent);
+    }
+  }
+
+  private synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
     if (mManualKeysCounter == null) {
       mManualKeysCounter = new HashMap<>();
     }
@@ -722,6 +754,36 @@ public abstract class Component extends ComponentLifecycle
 
     mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
     return manualKeyIndex;
+  }
+
+  /**
+   * Returns the number of children with same {@param manualKey} component has and then increments
+   * it by 1.
+   *
+   * @param parentContext
+   * @param parentComponent
+   * @param manualKey
+   * @return
+   */
+  static int getManualKeyUsagesCountAndIncrement(
+      final @Nullable ComponentContext parentContext,
+      final Component parentComponent,
+      final String manualKey) {
+    if (parentComponent.mUseStatelessComponent) {
+      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access and increment manual key usages counter outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+      final String globalKey = parentContext.getGlobalKey();
+
+      return layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .getManualKeyUsagesCountAndIncrement(manualKey);
+    } else {
+      return parentComponent.getManualKeyUsagesCountAndIncrement(manualKey);
+    }
   }
 
   /**

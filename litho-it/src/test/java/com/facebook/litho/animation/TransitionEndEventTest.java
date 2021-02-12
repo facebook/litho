@@ -26,7 +26,9 @@ import com.facebook.litho.widget.TransitionEndCallbackTestComponentSpec;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TransitionEndEventTest {
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();

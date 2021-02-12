@@ -55,10 +55,12 @@ public class AttachDetachHandler {
       LayoutStateContext layoutStateContext, @Nullable Map<String, Component> attachable) {
     @Nullable final Map<String, Component> toAttach;
     @Nullable final Map<String, Component> toDetach;
+    final LayoutStateContext previousLayoutStateContext;
+
     synchronized (this) {
       toAttach = composeAttach(attachable, mAttached);
       toDetach = composeDetach(attachable, mAttached);
-
+      previousLayoutStateContext = mLayoutStateContext;
       if (attachable != null) {
         mAttached = new LinkedHashMap<>(attachable);
         mLayoutStateContext = layoutStateContext;
@@ -72,7 +74,7 @@ public class AttachDetachHandler {
         final Component component = entry.getValue();
         final String key = entry.getKey();
 
-        component.onDetached(component.getScopedContext(layoutStateContext, key));
+        component.onDetached(component.getScopedContext(previousLayoutStateContext, key));
       }
     }
 

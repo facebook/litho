@@ -19,32 +19,39 @@ package com.facebook.samples.litho.kotlin.playground
 import android.graphics.Typeface
 import android.os.Bundle
 import com.facebook.litho.Column
+import com.facebook.litho.Component
+import com.facebook.litho.DslScope
+import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
+import com.facebook.litho.flexbox.padding
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
-import com.facebook.litho.updateState
 import com.facebook.litho.useState
-import com.facebook.litho.value
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
 class PlaygroundActivity : NavigatableDemoActivity() {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+  class PlaygroundComponent : KComponent() {
+    override fun DslScope.render(): Component? {
+      val counter = useState { 1 }
 
-    setContent {
-      val counter by useState { 1 }
-
-      Column(
-          style = Style.padding(16.dp).onClick { updateState { counter.value++ } },
+      return Column(
+          style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } },
           children =
               listOf(
                   Text(text = "Hello, Kotlin World!", textSize = 20.sp),
                   Text(
                       text = "with ${"❤️".repeat(counter.value)} from London",
-                      textStyle = Typeface.ITALIC)))
+                      textStyle = Typeface.ITALIC),
+              ))
     }
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    setContent(PlaygroundComponent())
   }
 }

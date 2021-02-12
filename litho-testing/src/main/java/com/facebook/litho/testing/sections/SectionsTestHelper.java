@@ -121,6 +121,21 @@ public class SectionsTestHelper extends Section {
               }
             })
         .when(spyContext)
+        .updateStateAsync(any(StateContainer.StateUpdate.class), any(String.class));
+
+    doAnswer(
+            new Answer() {
+              @Override
+              @Nullable
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
+                final StateContainer.StateUpdate stateUpdate =
+                    (StateContainer.StateUpdate) invocation.getArguments()[0];
+                SectionLifecycleTestUtil.getStateContainer(scope).applyStateUpdate(stateUpdate);
+                return null;
+              }
+            })
+        .when(spyContext)
         .updateStateLazy(any(StateContainer.StateUpdate.class));
 
     doReturn(mSectionContext.getResourceCache()).when(spyContext).getResourceCache();

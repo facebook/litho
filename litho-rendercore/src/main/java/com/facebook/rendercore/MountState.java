@@ -109,15 +109,15 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("Mount");
+    RenderCoreSystrace.beginSection("MountState.mount");
 
     mIsMounting = true;
 
-    RenderCoreSystrace.beginSection("RenderCoreExtension#beforeMount");
+    RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
     RenderCoreExtension.beforeMount(this, mRootHost, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
 
-    RenderCoreSystrace.beginSection("PrepareMount");
+    RenderCoreSystrace.beginSection("MountState.prepareMount");
     prepareMount();
     RenderCoreSystrace.endSection();
 
@@ -147,7 +147,7 @@ public class MountState implements MountDelegateTarget {
     mIsMounting = false;
     RenderCoreSystrace.endSection();
 
-    RenderCoreSystrace.beginSection("RenderCoreExtension#afterMount");
+    RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
     RenderCoreExtension.afterMount(this, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
   }

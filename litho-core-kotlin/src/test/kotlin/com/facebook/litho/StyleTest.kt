@@ -16,17 +16,17 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /** Unit tests [Style]. */
-@RunWith(LithoTestRunner::class)
+@RunWith(JUnit4::class)
 class StyleTest {
 
   private class TestStyleItem(val name: String) : StyleItem {
-    override fun DslScope.applyToProps(commonProps: CommonProps) = Unit
+    override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) = Unit
   }
 
   @Test

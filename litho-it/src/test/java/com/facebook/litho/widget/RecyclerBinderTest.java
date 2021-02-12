@@ -95,9 +95,11 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests for {@link RecyclerBinder} */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class RecyclerBinderTest {
 
@@ -2383,6 +2385,7 @@ public class RecyclerBinderTest {
             .build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     verify(recyclerBinder).applyReadyBatches();
   }
 

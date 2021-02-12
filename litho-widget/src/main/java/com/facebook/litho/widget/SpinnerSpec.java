@@ -94,8 +94,7 @@ public class SpinnerSpec {
   @PropDefault static final int selectedTextColor = 0xDE000000; // 87% Black
 
   @OnCreateInitialState
-  static void onCreateInitialState(
-      ComponentContext c, @Prop String selectedOption, StateValue<String> selection) {
+  static void onCreateInitialState(StateValue<String> selection, @Prop String selectedOption) {
     selection.set(selectedOption);
   }
 

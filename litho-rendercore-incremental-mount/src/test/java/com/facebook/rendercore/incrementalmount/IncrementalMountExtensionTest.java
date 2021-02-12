@@ -400,7 +400,7 @@ public class IncrementalMountExtensionTest {
   @Test
   public void testNegativeMarginChild_forcesHostMount() {
     final Context c = RuntimeEnvironment.application;
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance(true);
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
     mountState.registerMountDelegateExtension(extension);
@@ -462,7 +462,7 @@ public class IncrementalMountExtensionTest {
   @Test
   public void testNegativeMarginChild_hostMovedAndUnmounted_forcesHostMount() {
     final Context c = RuntimeEnvironment.application;
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance(true);
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
     mountState.registerMountDelegateExtension(extension);

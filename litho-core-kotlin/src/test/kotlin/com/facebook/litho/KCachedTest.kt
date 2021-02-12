@@ -18,8 +18,8 @@ package com.facebook.litho
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.helper.ComponentTestHelper
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 
 /** Unit tests for [useCached]. */
 @Suppress("MagicNumber")
-@RunWith(LithoTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class KCachedTest {
 
   private lateinit var context: ComponentContext
@@ -48,22 +48,24 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      val expensiveString by useCached("hello") {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("hello")
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val expensiveString by useCached("hello") {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc("hello")
+        }
+        return Text(text = expensiveString)
       }
-      Text(text = expensiveString)
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
 
     // Clear root component from ComponentTree.
     ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
 
     // Re-set root component and verify expensive function isn't called.
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
   }
 
@@ -73,22 +75,24 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      val expensiveString by useCached("hello", 100) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("hello", 100)
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val expensiveString by useCached("hello", 100) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc("hello", 100)
+        }
+        return Text(text = expensiveString)
       }
-      Text(text = expensiveString)
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
 
     // Clear root component from ComponentTree.
     ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
 
     // Re-set root component and verify expensive function isn't called.
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
   }
 
@@ -98,22 +102,24 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      val expensiveString by useCached("hello", 100, "litho") {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("hello", 100, "litho")
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val expensiveString by useCached("hello", 100, "litho") {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc("hello", 100, "litho")
+        }
+        return Text(text = expensiveString)
       }
-      Text(text = expensiveString)
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
 
     // Clear root component from ComponentTree.
     ComponentTestHelper.mountComponent(lithoView, componentTree, emptyComponent)
 
     // Re-set root component and verify expensive function isn't called.
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
   }
 
@@ -124,15 +130,17 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val repeatNum = AtomicInteger(100)
-    val root = KComponent {
-      val expensiveString by useCached("count" + repeatNum.get()) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("count" + repeatNum.get())
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val expensiveString by useCached("count" + repeatNum.get()) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc("count" + repeatNum.get())
+        }
+        return Text(text = expensiveString)
       }
-      Text(text = expensiveString)
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
 
     // Clear root component from ComponentTree.
@@ -141,7 +149,7 @@ class KCachedTest {
     // Increase repeat number.
     repeatNum.incrementAndGet()
     // Re-set root component and cache value is re-created.
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(2)
   }
 
@@ -152,15 +160,17 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val repeatNum = AtomicInteger(100)
-    val root = KComponent {
-      val expensiveString by useCached("world", repeatNum.get()) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("world", repeatNum.get())
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val expensiveString by useCached("world", repeatNum.get()) {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc("world", repeatNum.get())
+        }
+        return Text(text = expensiveString)
       }
-      Text(text = expensiveString)
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
 
     // Clear root component from ComponentTree.
@@ -169,7 +179,7 @@ class KCachedTest {
     // Increase repeat number.
     repeatNum.incrementAndGet()
     // Re-set root component and cache value is re-created.
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(2)
   }
 
@@ -180,15 +190,17 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     val repeatNum = AtomicInteger(100)
-    val root = KComponent {
-      val expensiveString by useCached("world", repeatNum.get(), "litho") {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc("world", repeatNum.get(), "litho")
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val expensiveString by useCached("world", repeatNum.get(), "litho") {
+          initCounter.incrementAndGet()
+          expensiveRepeatFunc("world", repeatNum.get(), "litho")
+        }
+        return Text(text = expensiveString)
       }
-      Text(text = expensiveString)
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(1)
 
     // Clear root component from ComponentTree.
@@ -197,7 +209,7 @@ class KCachedTest {
     // Increase repeat number.
     repeatNum.incrementAndGet()
     // Re-set root component and cache value is re-created.
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
     assertThat(initCounter.get()).isEqualTo(2)
   }
 
@@ -207,15 +219,22 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      Row(
-          children =
-              listOf(
-                  Leaf1("hello", 100, initCounter),
-                  Column(children = listOf(Leaf1("hello", 100, initCounter)))))
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        return Row(
+            children =
+                listOf(
+                    Leaf1("hello", 100, initCounter),
+                    Column(
+                        children =
+                            listOf(
+                                Leaf1("hello", 100, initCounter),
+                            )),
+                ))
+      }
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
 
     // CacheValue is shared between two `Leaf1` components.
     assertThat(initCounter.get()).isEqualTo(1)
@@ -227,16 +246,19 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    val root = KComponent {
-      Row(
-          children =
-              listOf(
-                  Leaf1("hello", 100, initCounter),
-                  Leaf1("hello", 100, initCounter),
-                  Leaf2("hello", 100, initCounter)))
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        return Row(
+            children =
+                listOf(
+                    Leaf1("hello", 100, initCounter),
+                    Leaf1("hello", 100, initCounter),
+                    Leaf2("hello", 100, initCounter),
+                ))
+      }
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, root)
+    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
 
     // CacheValue is shared between two `Leaf1` components, but not shared with `Leaf2`, thus
     // initCounter is 2.
@@ -261,42 +283,52 @@ class KCachedTest {
     assertThat(initCounter.get()).isEqualTo(2)
   }
 
-  private class Leaf1(str: String, repeatNum: Int, initCounter: AtomicInteger) :
-      KComponent({
-        val expensiveString by useCached(str, repeatNum) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc(str, repeatNum)
-        }
-        Text(text = expensiveString)
-      })
+  private class Leaf1(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
+      KComponent() {
+    override fun DslScope.render(): Component? {
+      val expensiveString by useCached(str, repeatNum) {
+        initCounter.incrementAndGet()
+        expensiveRepeatFunc(str, repeatNum)
+      }
+      return Text(text = expensiveString)
+    }
+  }
 
-  private class Leaf2(str: String, repeatNum: Int, initCounter: AtomicInteger) :
-      KComponent({
-        val expensiveString by useCached(str, repeatNum) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc(str, repeatNum)
-        }
-        Text(text = expensiveString)
-      })
+  private class Leaf2(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
+      KComponent() {
+    override fun DslScope.render(): Component? {
+      val expensiveString by useCached(str, repeatNum) {
+        initCounter.incrementAndGet()
+        expensiveRepeatFunc(str, repeatNum)
+      }
+      return Text(text = expensiveString)
+    }
+  }
 
   private class ComponentWithTwoCachedValuesWithSameInputs(
-      str: String,
-      repeatNum: Int,
-      initCounter: AtomicInteger
-  ) :
-      KComponent({
-        val expensiveString1 by useCached(str, repeatNum) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc(str, repeatNum)
-        }
+      val str: String,
+      val repeatNum: Int,
+      val initCounter: AtomicInteger
+  ) : KComponent() {
+    override fun DslScope.render(): Component? {
+      val expensiveString1 by useCached(str, repeatNum) {
+        initCounter.incrementAndGet()
+        expensiveRepeatFunc(str, repeatNum)
+      }
 
-        val expensiveString2 by useCached(str, repeatNum) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc(str, repeatNum)
-        }
+      val expensiveString2 by useCached(str, repeatNum) {
+        initCounter.incrementAndGet()
+        expensiveRepeatFunc(str, repeatNum)
+      }
 
-        Row(children = listOf(Text(text = expensiveString1), Text(text = expensiveString2)))
-      })
+      return Row(
+          children =
+              listOf(
+                  Text(text = expensiveString1),
+                  Text(text = expensiveString2),
+              ))
+    }
+  }
 
   companion object {
     private fun expensiveRepeatFunc(prefix: String, num: Int = 20, suffix: String? = null): String {

@@ -38,8 +38,6 @@ litho_android_library(
 
 litho_android_library(
     name = "widget-bare",
-    srcs = glob(["*.java"]),
-    autoglob = False,
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     plugins = [

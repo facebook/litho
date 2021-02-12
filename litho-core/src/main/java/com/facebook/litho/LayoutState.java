@@ -71,7 +71,6 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtens
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
-import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -90,9 +89,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(RenderTreeNode, ComponentContext, DebugHierarchy.Node, InternalNode, LayoutState,
- * DiffNode)} which prepares the before-mentioned outputs based on the provided {@link InternalNode}
- * for later use in {@link MountState}.
+ * #collectResults(ComponentContext, InternalNode, LayoutState, RenderTreeNode, DiffNode,
+ * DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided {@link
+ * InternalNode} for later use in {@link MountState}.
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
@@ -144,14 +143,6 @@ public class LayoutState
   private @Nullable List<Component> mComponents;
   private @Nullable List<String> mComponentKeys;
 
-  /**
-   * Holds onto how many clashed global keys exist in the tree. Used for automatically generating
-   * unique global keys for all sibling components of the same type.
-   */
-  private @Nullable Map<String, Integer> mGlobalKeysCounter;
-
-  private @Nullable Map<String, Integer> mGlobalManualKeysCounter;
-
   private final ComponentContext mContext;
 
   private Component mComponent;
@@ -159,7 +150,6 @@ public class LayoutState
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final boolean mIncrementalVisibility;
   private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private @Nullable LayoutStateContext mLayoutStateContext;
 
@@ -170,7 +160,6 @@ public class LayoutState
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
-  private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
@@ -261,23 +250,15 @@ public class LayoutState
     }
 
     if (context.getComponentTree() != null) {
-      mIncrementalVisibility = context.getComponentTree().hasIncrementalVisibility();
       mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
     } else {
-      mIncrementalVisibility = false;
       mLithoRenderUnitFactory = null;
     }
 
-    mVisibilityModuleInput = mIncrementalVisibility ? new VisibilityModuleInput() : null;
     mVisibilityOutputs = new ArrayList<>(8);
 
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
-  }
-
-  @Override
-  public boolean isIncrementalVisibilityEnabled() {
-    return mIncrementalVisibility;
   }
 
   @VisibleForTesting
@@ -552,7 +533,9 @@ public class LayoutState
    * stored in the {@link InternalNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
-      InternalNode node, LayoutState layoutState) {
+      final InternalNode node,
+      final LayoutState layoutState,
+      final @Nullable RenderTreeNode renderTreeNode) {
 
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
@@ -575,6 +558,8 @@ public class LayoutState
         component != null ? componentGlobalKey : "null",
         component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
+        renderTreeNode != null,
+        renderTreeNode != null ? renderTreeNode.getRenderUnit().getId() : 0,
         node.getVisibleHeightRatio(),
         node.getVisibleWidthRatio(),
         visibleHandler,
@@ -706,20 +691,20 @@ public class LayoutState
    *
    * <p>
    *
-   * @param parent
    * @param parentContext the parent component context
-   * @param parentHierarchy The parent hierarchy linked list or null.
    * @param node InternalNode to process.
    * @param layoutState the LayoutState currently operating.
+   * @param parent
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
+   * @param parentHierarchy The parent hierarchy linked list or null.
    */
   private static void collectResults(
-      @Nullable RenderTreeNode parent,
       ComponentContext parentContext,
-      @Nullable DebugHierarchy.Node parentHierarchy,
       InternalNode node,
       LayoutState layoutState,
-      @Nullable DiffNode parentDiffNode) {
+      @Nullable RenderTreeNode parent,
+      @Nullable DiffNode parentDiffNode,
+      @Nullable DebugHierarchy.Node parentHierarchy) {
     if (parentContext.wasLayoutCanceled()) {
       return;
     }
@@ -769,7 +754,7 @@ public class LayoutState
       layoutState.mCurrentX += node.getX();
       layoutState.mCurrentY += node.getY();
 
-      collectResults(parent, parentContext, hierarchy, nestedTree, layoutState, parentDiffNode);
+      collectResults(parentContext, nestedTree, layoutState, parent, parentDiffNode, hierarchy);
 
       layoutState.mCurrentX -= node.getX();
       layoutState.mCurrentY -= node.getY();
@@ -796,11 +781,7 @@ public class LayoutState
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
-      if (ComponentsConfiguration.useInternalNodesForLayoutDiffing) {
-        diffNode = node;
-      } else {
-        diffNode = createDiffNode(node, parentDiffNode);
-      }
+      diffNode = createDiffNode(node, parentDiffNode);
       if (parentDiffNode == null) {
         layoutState.mDiffTreeRoot = diffNode;
       }
@@ -897,6 +878,7 @@ public class LayoutState
     }
 
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
+    final RenderTreeNode renderTreeNode;
     if (isMountSpec(component)) {
       // Notify component about its final size.
       if (isTracing) {
@@ -909,7 +891,7 @@ public class LayoutState
         ComponentsSystrace.endSection();
       }
 
-      addMountableOutput(layoutState, layoutOutput, parent);
+      renderTreeNode = addMountableOutput(layoutState, layoutOutput, parent);
       addLayoutOutputIdToPositionsMap(
           layoutState.mOutputsIdToPositionMap,
           layoutOutput,
@@ -920,6 +902,8 @@ public class LayoutState
       if (diffNode != null) {
         diffNode.setContentOutput(layoutOutput);
       }
+    } else {
+      renderTreeNode = needsHostView ? parent : null;
     }
 
     // 4. Extract the Transitions.
@@ -967,7 +951,7 @@ public class LayoutState
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
       collectResults(
-          parent, node.getContext(), hierarchy, node.getChildAt(i), layoutState, diffNode);
+          node.getContext(), node.getChildAt(i), layoutState, parent, diffNode, hierarchy);
     }
 
     layoutState.mParentEnabledState = parentEnabledState;
@@ -1023,7 +1007,8 @@ public class LayoutState
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
     if (node.hasVisibilityHandlers()) {
-      final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
+      final VisibilityOutput visibilityOutput =
+          createVisibilityOutput(node, layoutState, renderTreeNode);
 
       layoutState.mVisibilityOutputs.add(visibilityOutput);
 
@@ -1496,8 +1481,15 @@ public class LayoutState
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c, currentLayoutState);
+
+      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
+
       layoutStateContext =
           new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
+      if (isReconcilable && currentLayoutState != null) {
+        layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
+      }
+
       layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);
 
@@ -1515,8 +1507,6 @@ public class LayoutState
       layoutState.mIsCreateLayoutInProgress = true;
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
-
-      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
       // Release the current InternalNode tree if it is not reconcilable.
       if (!isReconcilable && currentLayoutState != null) {
@@ -1747,7 +1737,7 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(null, c, null, root, layoutState, null);
+    collectResults(c, root, layoutState, null, null, null);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1759,17 +1749,11 @@ public class LayoutState
     sortTops(layoutState);
     sortBottoms(layoutState);
 
-    if (layoutState.mIncrementalVisibility) {
-      layoutState.mVisibilityModuleInput.setIncrementalModuleItems(layoutState.mVisibilityOutputs);
-      layoutState.mVisibilityOutputs.clear();
-    }
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
     if (!c.isReconciliationEnabled()
-        && !ComponentsConfiguration.useInternalNodesForLayoutDiffing
         && !ComponentsConfiguration.isDebugModeEnabled
         && !ComponentsConfiguration.isEndToEndTestRun
         && !ComponentsConfiguration.keepInternalNodes) {
@@ -1951,83 +1935,6 @@ public class LayoutState
         layoutOutput, level, type, previousId, isCachedOutputUpdated, hierarchy);
   }
 
-  /**
-   * Generate a global key for the given components that is unique among all of the components in
-   * the layout.
-   */
-  static String generateGlobalKey(ComponentContext parentContext, Component component) {
-    final LayoutState layoutState = parentContext.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          component.getSimpleName()
-              + ": Trying to generate global key of component outside of a LayoutState calculation.");
-    }
-
-    final Component parentScope = parentContext.getComponentScope();
-    final String globalKey;
-
-    if (parentScope == null) {
-      globalKey = component.getKey();
-    } else {
-      if (Component.getGlobalKey(parentContext, parentScope) == null) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            NULL_PARENT_KEY,
-            "Trying to generate parent-based key for component "
-                + component.getSimpleName()
-                + " , but parent "
-                + parentScope.getSimpleName()
-                + " has a null global key \"."
-                + " This is most likely a configuration mistake,"
-                + " check the value of ComponentsConfiguration.useGlobalKeys.");
-      }
-      globalKey =
-          generateUniqueGlobalKeyForChild(
-              layoutState, Component.getGlobalKey(parentContext, parentScope), component);
-    }
-
-    return globalKey;
-  }
-
-  /**
-   * Generate a global key for the given components that is unique among all of the components in
-   * the layout.
-   *
-   * @param layoutState the LayoutState currently operating
-   * @param parentGlobalKey the global key of the parent component
-   * @param component the child component for which the unique global key will be generated
-   * @return a unique global key for given component
-   */
-  private static String generateUniqueGlobalKeyForChild(
-      LayoutState layoutState, @Nullable String parentGlobalKey, Component component) {
-
-    if (parentGlobalKey == null) {
-      parentGlobalKey = "null";
-    }
-
-    final String childKey =
-        ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey());
-
-    if (component.hasManualKey()) {
-      final int manualKeyIndex = layoutState.getGlobalManualKeyCountAndIncrement(childKey);
-      if (manualKeyIndex != 0) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.WARNING,
-            DUPLICATE_MANUAL_KEY,
-            "The manual key "
-                + component.getKey()
-                + " you are setting on this "
-                + component.getSimpleName()
-                + " is a duplicate and will be changed into a unique one. "
-                + "This will result in unexpected behavior if you don't change it.");
-      }
-      return ComponentKeyUtils.getKeyForChildPosition(childKey, manualKeyIndex);
-    }
-
-    final int childIndex = layoutState.getGlobalKeyCountAndIncrement(childKey);
-    return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
-  }
-
   @Nullable
   InternalNode getCachedLayout(Component component) {
     return mLastMeasuredLayouts.get(component.getId());
@@ -2146,12 +2053,6 @@ public class LayoutState
     return mVisibilityOutputs;
   }
 
-  @Nullable
-  @Override
-  public VisibilityModuleInput getVisibilityModuleInput() {
-    return mVisibilityModuleInput;
-  }
-
   @Override
   public int getTestOutputCount() {
     return mTestOutputs == null ? 0 : mTestOutputs.size();
@@ -2216,11 +2117,6 @@ public class LayoutState
     final StateHandler stateHandler = mStateHandler;
     mStateHandler = null;
     return stateHandler;
-  }
-
-  @Nullable
-  HooksHandler getHooksHandler() {
-    return mContext.getHooksHandler();
   }
 
   @Nullable
@@ -2354,7 +2250,7 @@ public class LayoutState
     return mTransitionIdMapping.get(transitionId);
   }
 
-  private static void addMountableOutput(
+  private static RenderTreeNode addMountableOutput(
       final LayoutState layoutState,
       final LayoutOutput layoutOutput,
       final @Nullable RenderTreeNode parent) {
@@ -2392,6 +2288,8 @@ public class LayoutState
     if (layoutOutput.getComponent().hasChildLithoViews()) {
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(layoutOutput.getId());
     }
+
+    return node;
   }
 
   /**
@@ -2460,34 +2358,6 @@ public class LayoutState
   @Nullable
   public TransitionId getRootTransitionId() {
     return mRootTransitionId;
-  }
-
-  private int getGlobalKeyCountAndIncrement(String key) {
-    if (mGlobalKeysCounter == null) {
-      mGlobalKeysCounter = new HashMap<>();
-    }
-
-    Integer count = mGlobalKeysCounter.get(key);
-    if (count == null) {
-      count = 0;
-    }
-
-    mGlobalKeysCounter.put(key, count + 1);
-    return count;
-  }
-
-  private int getGlobalManualKeyCountAndIncrement(String manualKey) {
-    if (mGlobalManualKeysCounter == null) {
-      mGlobalManualKeysCounter = new HashMap<>();
-    }
-
-    Integer count = mGlobalManualKeysCounter.get(manualKey);
-    if (count == null) {
-      count = 0;
-    }
-
-    mGlobalManualKeysCounter.put(manualKey, count + 1);
-    return count;
   }
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */

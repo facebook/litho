@@ -29,7 +29,8 @@ android {
         unitTests.all {
             jvmArgs '-Dcom.facebook.litho.is_oss=true'
             testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
+                events 'skipped', 'failed', 'standardOut', 'standardError'
+                exceptionFormat = 'full'
             }
         }
     }

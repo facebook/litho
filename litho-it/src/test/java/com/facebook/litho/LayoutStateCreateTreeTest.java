@@ -602,7 +602,7 @@ public class LayoutStateCreateTreeTest {
       return true;
     }
 
-    protected ComponentLayout resolve(ComponentContext c) {
+    protected InternalNode resolve(ComponentContext c) {
       InternalNode node = mock(InternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);

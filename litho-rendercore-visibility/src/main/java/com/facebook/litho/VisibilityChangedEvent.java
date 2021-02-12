@@ -18,6 +18,22 @@ package com.facebook.litho;
 
 /** Event triggered when the visible rect of a Component changes. */
 public class VisibilityChangedEvent {
+  /**
+   * the visible top presents the top edge of the visible rect of the content. If the value is
+   * {@code 0} then the item is fully visible from the top; if the value is {@code > 0} then some
+   * part of the content is hidden from the top. Consequently if the value is {@code 0} and {@link
+   * #percentVisibleHeight} < 100, then the content is hidden from the bottom edge.
+   */
+  public int visibleTop;
+
+  /**
+   * the visible left presents the left edge of the visible rect of the content. If the value is
+   * {@code 0} then the item is fully visible from the left; if the value is {@code > 0} then some
+   * part of the content is hidden from the left. Consequently if the value is {@code 0} and {@link
+   * #percentVisibleWidth} < 100, then the content is hidden from the right edge.
+   */
+  public int visibleLeft;
+
   public int visibleHeight;
   public int visibleWidth;
   /** Between 0 and 100, indicates percentage of item width that is visible on screen. */

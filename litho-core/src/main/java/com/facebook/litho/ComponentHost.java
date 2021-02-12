@@ -1433,6 +1433,20 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
     metadata.put("mountItems", mountItems);
 
+    ViewParent parent = this;
+    StringBuilder ancestorString = new StringBuilder();
+    while (parent != null) {
+      ancestorString.append(parent.getClass().getName());
+      ancestorString.append(',');
+      if (parent instanceof LithoView && !metadata.containsKey("lithoViewDimens")) {
+        LithoView lithoView = (LithoView) parent;
+        metadata.put(
+            "lithoViewDimens", "(" + lithoView.getWidth() + ", " + lithoView.getHeight() + ")");
+      }
+      parent = parent.getParent();
+    }
+    metadata.put("ancestors", ancestorString.toString());
+
     return metadata;
   }
 

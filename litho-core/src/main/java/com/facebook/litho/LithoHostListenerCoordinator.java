@@ -108,8 +108,7 @@ public class LithoHostListenerCoordinator {
           "Incremental mount has already been enabled on this coordinator.");
     }
 
-    mIncrementalMountExtension =
-        IncrementalMountExtension.getInstance(lithoView.shouldAcquireDuringMount());
+    mIncrementalMountExtension = IncrementalMountExtension.getInstance();
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
