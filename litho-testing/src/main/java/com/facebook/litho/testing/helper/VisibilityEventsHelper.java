@@ -23,6 +23,8 @@ import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.rendercore.Function;
+import com.facebook.rendercore.visibility.VisibilityUtils;
 
 /**
  * Allows calling visibility events manually which is useful in automated tests
@@ -48,7 +50,7 @@ public class VisibilityEventsHelper {
         final Object visibilityOutput = getVisibilityOutputAt(layoutState, i);
         if (visibilityEventType == VisibleEvent.class
             && getEventHandler(visibilityOutput, "Visible") != null) {
-          dispatch(getEventHandler(visibilityOutput, "Visible"), "Visible");
+          VisibilityUtils.dispatchOnVisible(getEventHandler(visibilityOutput, "Visible"), null);
           return true;
         } else if (visibilityEventType == InvisibleEvent.class
             && getEventHandler(visibilityOutput, "Invisible") != null) {
@@ -86,7 +88,7 @@ public class VisibilityEventsHelper {
     return Whitebox.invokeMethod(layoutState, "getVisibilityOutputAt", i);
   }
 
-  private static Object getEventHandler(Object layoutState, String name) {
+  private static Function<Void> getEventHandler(Object layoutState, String name) {
     return Whitebox.invokeMethod(layoutState, "get" + name + "EventHandler");
   }
 

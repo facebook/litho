@@ -17,16 +17,22 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import android.graphics.Color
+import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
+import com.facebook.litho.flexbox.height
+import com.facebook.litho.flexbox.width
 import com.facebook.litho.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 
-class LoadingComponent :
-    KComponent({
+class LoadingComponent : KComponent() {
+  override fun DslScope.render() =
       Row(
           justifyContent = CENTER,
-          children = listOf(Progress(color = Color.DKGRAY, style = Style.size(50.dp))))
-    })
+          children =
+              listOf(
+                  Progress(color = Color.DKGRAY, style = Style.width(50.dp).height(50.dp)),
+              ))
+}

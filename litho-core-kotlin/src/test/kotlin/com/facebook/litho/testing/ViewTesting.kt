@@ -36,7 +36,7 @@ fun LithoViewRule.setRoot(componentFunction: DslScope.() -> Component) =
     setRoot(with(DslScope(context)) { componentFunction() })
 
 /**
- * Measures/lays out/attaches to window if not already done, than matches the hierarchy against the
+ * Measures/lays out/attaches to window if not already done, then matches the hierarchy against the
  * provided [ViewMatchNode].
  */
 fun LithoViewRule.assertMatches(matchNode: ViewMatchNode) {

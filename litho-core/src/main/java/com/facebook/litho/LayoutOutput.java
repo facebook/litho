@@ -21,7 +21,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
@@ -89,7 +88,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
     mKey = key;
-    if (ComponentsConfiguration.useStatelessComponent && layoutStateContext == null) {
+    if (mComponent.mUseStatelessComponent && layoutStateContext == null) {
       // The LayoutOutput for the root host is created by MountState before a LayoutState is
       // calculated.
       mScopedContext = null;

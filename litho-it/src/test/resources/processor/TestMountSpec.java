@@ -147,7 +147,7 @@ public class TestMountSpec<S extends View> implements TestTag {
       int componentBoundsTop,
       @Prop Object prop3,
       @Prop(resType = STRING) @Nullable CharSequence prop7,
-      @CachedValue int cached,
+      // @CachedValue int cached, // It seems the A11Y APIs does not accept ComponentContext
       @FromBoundsDefined Integer boundsDefinedOutput) {}
 
   @GetExtraAccessibilityNodeAt

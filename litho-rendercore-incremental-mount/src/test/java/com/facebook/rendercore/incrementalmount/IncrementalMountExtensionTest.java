@@ -356,9 +356,51 @@ public class IncrementalMountExtensionTest {
   }
 
   @Test
+  public void whenItemBoundsAreOutsideHostBounds_shouldMountHostBeforeItem() {
+    final Context c = mRenderCoreTestRule.getContext();
+
+    final FrameLayout parent = new FrameLayout(c);
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 100, 100);
+
+    final RootHostView host = new RootHostView(c);
+    parent.addView(host);
+
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new HostView(c), 1))
+            .width(100)
+            .height(100)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .y(110)
+                    .width(100)
+                    .height(100))
+            .build();
+
+    host.setTranslationY(-105);
+
+    mRenderCoreTestRule
+        .useRootHost(host)
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(100, 210)
+        .render();
+
+    assertThat(host.getChildCount()).isEqualTo(1);
+    assertThat(((HostView) host.getChildAt(0)).getChildCount()).isEqualTo(1);
+  }
+
+  @Test
   public void testNegativeMarginChild_forcesHostMount() {
     final Context c = RuntimeEnvironment.application;
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance(true);
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
     mountState.registerMountDelegateExtension(extension);
@@ -420,7 +462,7 @@ public class IncrementalMountExtensionTest {
   @Test
   public void testNegativeMarginChild_hostMovedAndUnmounted_forcesHostMount() {
     final Context c = RuntimeEnvironment.application;
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance(true);
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
     mountState.registerMountDelegateExtension(extension);

@@ -95,10 +95,10 @@ public class ComponentUtils {
   }
 
   /**
-   * Given two object instances of the same type, this method accesses all their internal fields,
-   * including the fields of StateContainer if the class type is Component, to check if they are
-   * equivalent. There's special equality code to handle special class types e.g. Components,
-   * EventHandlers, etc.
+   * Given two object instances of the same type, this method accesses all their internal fields, to
+   * check if they are equivalent. There's special equality code to handle special class types e.g.
+   * Components, EventHandlers, etc. Components are considered equivalent if they have the same
+   * props.
    *
    * @param obj1
    * @param obj2

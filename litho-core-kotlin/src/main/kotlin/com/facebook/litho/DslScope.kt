@@ -18,16 +18,18 @@ package com.facebook.litho
 
 import android.content.Context
 
-inline class DslScope(val context: ComponentContext) {
+class DslScope(val context: ComponentContext) {
   val androidContext: Context
     get() = context.androidContext
   val resourceResolver: ResourceResolver
     get() = context.resourceResolver
 
+  // TODO: Extract into more generic container to track hooks when needed
+  internal var useStateIndex = 0
+
   inline fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
 
   /*inline*/ fun Component.applyStyle(style: Style?) {
-    style ?: return
-    copyStyleToProps(style, getOrCreateCommonProps)
+    style?.applyToProps(resourceResolver, getOrCreateCommonProps())
   }
 }

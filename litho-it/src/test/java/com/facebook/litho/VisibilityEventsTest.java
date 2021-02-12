@@ -34,13 +34,16 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
+import com.facebook.litho.widget.TextDrawable;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.visibility.VisibilityItem;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
 import com.facebook.yoga.YogaEdge;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -97,153 +100,169 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEvent() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleHandler(visibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
 
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 10), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 20, 20), true);
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
   public void testVisibleEventWithHeightRatio() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleHeightRatio(0.4f)
-                    .visibleHandler(visibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .visibleHeightRatio(0.4f)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
 
     mLithoViewRule
-        .setRoot(root)
-        .attachToWindow()
-        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
-        .measure()
-        .layout();
-
-    content.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 1), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 2), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 4), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 6), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 7), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-  }
-
-  @Test
-  public void testVisibleEventWithWidthRatio() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleWidthRatio(0.4f)
-                    .visibleHandler(visibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
-            .build();
-
-    mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 1), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, 3, 10), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 2), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, 5, 10), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 3), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 4), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 5), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 6), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 7), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+  }
+
+  @Test
+  public void testVisibleEventWithWidthRatio() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .visibleWidthRatio(0.4f)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
+            .build();
+
+    mLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
+        .measure()
+        .layout();
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 10), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 10), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
   public void testVisibleEventWithHeightAndWidthRatio() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleWidthRatio(0.4f)
-                    .visibleHeightRatio(0.4f)
-                    .visibleHandler(visibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .visibleWidthRatio(0.4f)
+            .visibleHeightRatio(0.4f)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
 
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
-        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY))
         .measure()
         .layout();
 
-    content.getDispatchedEventHandlers().clear();
-
     // Neither width or height are in visible range
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, 3, 6), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 6), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     // Width but not height are in visible range
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, 5, 6), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 6), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     // Height but not width are in visible range
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, 3, 8), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 3, 8), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
     // Height and width are both in visible range
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, 5, 8), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 5, 8), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
@@ -564,6 +583,8 @@ public class VisibilityEventsTest {
 
     VisibilityChangedEvent visibilityChangedEvent =
         (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+    assertThat(visibilityChangedEvent.visibleTop).isEqualTo(0);
+    assertThat(visibilityChangedEvent.visibleLeft).isEqualTo(0);
     assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(10);
     assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
     assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(100f);
@@ -592,6 +613,19 @@ public class VisibilityEventsTest {
     assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
     assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
     assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    mLithoView.notifyVisibleBoundsChanged(new Rect(5, 5, 10, 10), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleTop).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleLeft).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(5);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(50f);
   }
 
   @Test
@@ -1520,13 +1554,13 @@ public class VisibilityEventsTest {
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
 
     component.getDispatchedEventHandlers().clear();
-    mLithoView.setVisibilityHint(false);
+    mLithoView.setVisibilityHint(false, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(invisibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(unfocusedEventHandler);
 
     component.getDispatchedEventHandlers().clear();
-    mLithoView.setVisibilityHint(true);
+    mLithoView.setVisibilityHint(true, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);
@@ -1578,14 +1612,14 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true, true);
 
-    parentView.setVisibilityHint(false);
+    parentView.setVisibilityHint(false, false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(
         testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner));
     testComponentInner.getDispatchedEventHandlers().clear();
 
-    parentView.setVisibilityHint(true);
+    parentView.setVisibilityHint(true, false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
@@ -1703,13 +1737,13 @@ public class VisibilityEventsTest {
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
 
     component.getDispatchedEventHandlers().clear();
-    mLithoView.setVisibilityHint(false);
+    mLithoView.setVisibilityHint(false, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(invisibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(unfocusedEventHandler);
 
     component.getDispatchedEventHandlers().clear();
-    mLithoView.setVisibilityHint(true);
+    mLithoView.setVisibilityHint(true, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);
@@ -1781,14 +1815,17 @@ public class VisibilityEventsTest {
 
   @Test
   public void processVisibility_componentIsMounted() {
-    final Output<View> foundView = new Output<>();
+    final Output<Object> textDrawableOutput = new Output<>();
+    final Output<Object> viewOutput = new Output<>();
+    final Output<Object> nullOutput = new Output<>();
 
     final Component root =
         Column.create(mContext)
             .child(
                 LayoutSpecVisibilityEventTester.create(mContext)
-                    .foundView(foundView)
-                    .rootView(mLithoViewRule.getLithoView()))
+                    .textOutput(textDrawableOutput)
+                    .viewOutput(viewOutput)
+                    .nullOutput(nullOutput))
             .build();
 
     mLithoViewRule
@@ -1798,7 +1835,13 @@ public class VisibilityEventsTest {
         .measure()
         .layout();
 
-    assertThat(foundView.get()).isNotNull();
+    assertThat(textDrawableOutput.get()).isNotNull();
+    assertThat(textDrawableOutput.get()).isInstanceOf(TextDrawable.class);
+
+    assertThat(viewOutput.get()).isNotNull();
+    assertThat(viewOutput.get()).isInstanceOf(ComponentHost.class);
+
+    assertThat(nullOutput.get()).isNull();
   }
 
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {

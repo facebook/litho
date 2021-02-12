@@ -16,4 +16,15 @@
 
 package com.facebook.rendercore.incrementalmount;
 
-public class IncrementalMountUtils {}
+import static com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs.DEBUG_TAG;
+
+import android.util.Log;
+
+public class IncrementalMountUtils {
+
+  public static void log(final String log) {
+    if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+      Log.d(DEBUG_TAG, log);
+    }
+  }
+}

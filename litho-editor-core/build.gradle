@@ -14,14 +14,33 @@
  * limitations under the License.
  */
 
-apply plugin: 'java-library'
+apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-dependencies {
-    implementation deps.jsr305
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+
+    // TODO(#62): Re-enable abort on error.
+    lintOptions {
+        abortOnError false
+    }
+
+    dependencies {
+        compileOnly deps.jsr305
+        compileOnly deps.proguardAnnotations
+    }
 }
 
-// This task installed by java-library is incompatible with the one we add for releases
-tasks.remove(install)
-
 apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+artifacts.add('archives', sourcesJar)

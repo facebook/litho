@@ -23,6 +23,8 @@ import com.facebook.rendercore.extensions.RenderCoreExtension;
 
 public class RootHostDelegate implements RenderState.HostListener, RootHost {
 
+  static final int MAX_REMOUNT_RETRIES = 4;
+  private static final String TAG = "RootHostDelegate";
   private final Host mHost;
   private final MountState mMountState;
   private @Nullable RenderState mRenderState;
@@ -114,11 +116,39 @@ public class RootHostDelegate implements RenderState.HostListener, RootHost {
     }
 
     if (mCurrentRenderTree != null) {
-      mMountState.mount(mCurrentRenderTree);
+      RenderTree renderTree = mCurrentRenderTree;
+      mMountState.mount(renderTree);
+      // We could run into the case that mounting a tree ends up requesting another mount.
+      // We need to keep re-mounting untile the mounted renderTree matches the mCurrentRenderTree.
+      int retries = 0;
+      while (renderTree != mCurrentRenderTree) {
+        if (retries > MAX_REMOUNT_RETRIES) {
+          ErrorReporter.report(
+              LogLevel.ERROR,
+              TAG,
+              "More than "
+                  + MAX_REMOUNT_RETRIES
+                  + " recursive mount attempts. Skipping mounting the latest version.");
+
+          return;
+        }
+
+        renderTree = mCurrentRenderTree;
+        mMountState.mount(renderTree);
+        retries++;
+      }
     }
   }
 
   public @Nullable Object findMountContentById(long id) {
     return mMountState.getContentById(id);
+  }
+
+  public void detach() {
+    mMountState.detach();
+  }
+
+  public void attach() {
+    mMountState.attach();
   }
 }

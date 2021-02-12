@@ -177,7 +177,7 @@ class Layout {
       else if (component.canResolve()) {
 
         // Resolve the component into an InternalNode.
-        node = (InternalNode) component.resolve(c);
+        node = component.resolve(c);
       }
 
       // If the component is a MountSpec.
@@ -195,7 +195,7 @@ class Layout {
 
         // TODO: (T57741374) this step is required because of a bug in redex.
         if (root == component) {
-          node = (InternalNode) root.resolve(c);
+          node = root.resolve(c);
         } else if (root != null) {
           node = create(c, root, false);
         } else {

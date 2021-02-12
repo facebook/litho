@@ -24,7 +24,6 @@ import static com.facebook.litho.specmodels.generator.StateContainerGenerator.ge
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -60,7 +59,6 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -152,6 +150,7 @@ public class ComponentBodyGenerator {
             .addParameter(ClassName.bestGuess(className), copyParamName);
     final MethodSpec.Builder recordBuilder =
         MethodSpec.methodBuilder("record")
+            .addParameter(specModel.getContextClass(), "c")
             .addParameter(specModel.getComponentTypeName(), recordParamName);
 
     for (RenderDataDiffModel diff : specModel.getRenderDataDiffs()) {
@@ -189,7 +188,10 @@ public class ComponentBodyGenerator {
 
       copyBuilder.addStatement("$L = $L.$L", name, copyParamName, name);
       recordBuilder.addStatement(
-          "$L = $L.$L", name, recordParamName, getImplAccessor(specModel, modelToDiff, null));
+          "$L = $L.$L",
+          name,
+          recordParamName,
+          getImplAccessor("record", specModel, modelToDiff, "c"));
     }
 
     return renderInfoClassBuilder
@@ -435,12 +437,13 @@ public class ComponentBodyGenerator {
     }
 
     for (PropModel prop : specModel.getProps()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, prop, runMode));
+      isEquivalentBuilder.addCode(
+          getCompareStatement("isEquivalentTo", specModel, instanceRefName, prop, runMode));
     }
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       isEquivalentBuilder.addCode(
-          getCompareStatement(specModel, instanceRefName, treeProp, runMode));
+          getCompareStatement("isEquivalentTo", specModel, instanceRefName, treeProp, runMode));
     }
 
     isEquivalentBuilder.addStatement("return true");
@@ -626,32 +629,20 @@ public class ComponentBodyGenerator {
     return componentsInImpl;
   }
 
-  private static List<MethodParamModel> getParams(
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
-    final List<MethodParamModel> params = new ArrayList<>();
-    for (MethodParamModel methodParamModel : updateStateMethodModel.methodParams) {
-      for (Annotation annotation : methodParamModel.getAnnotations()) {
-        if (annotation.annotationType().equals(Param.class)) {
-          params.add(methodParamModel);
-          break;
-        }
-      }
-    }
-
-    return params;
-  }
-
   static CodeBlock getCompareStatement(
+      String methodName,
       SpecModel specModel,
       String implInstanceName,
       MethodParamModel field,
       EnumSet<RunMode> runMode) {
-    final String implAccessor = getImplAccessor(specModel, field, null, true);
+    final String implAccessor = getImplAccessor(methodName, specModel, field, null, true);
 
-    return getCompareStatement(field, implAccessor, implInstanceName + "." + implAccessor, runMode);
+    return getCompareStatement(
+        methodName, field, implAccessor, implInstanceName + "." + implAccessor, runMode);
   }
 
   static CodeBlock getCompareStatement(
+      String methodName,
       MethodParamModel field,
       String firstComparator,
       String secondComparator,
@@ -820,17 +811,27 @@ public class ComponentBodyGenerator {
   }
 
   static String getImplAccessor(
-      SpecModel specModel, MethodParamModel methodParamModel, String contextParamName) {
-    return getImplAccessor(specModel, methodParamModel, contextParamName, false);
+      String methodName,
+      SpecModel specModel,
+      MethodParamModel methodParamModel,
+      String contextParamName) {
+    return getImplAccessor(methodName, specModel, methodParamModel, contextParamName, false);
   }
 
   static String getImplAccessor(
+      String methodName,
       SpecModel specModel,
       MethodParamModel methodParamModel,
       String contextParamName,
       boolean shallow) {
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
+      if (contextParamName == null) {
+        throw new IllegalStateException(
+            "Cannot access state with in method "
+                + methodName
+                + " without a scoped component context.");
+      }
       return STATE_CONTAINER_IMPL_GETTER
           + "("
           + contextParamName

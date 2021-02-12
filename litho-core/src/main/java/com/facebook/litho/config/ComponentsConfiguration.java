@@ -111,12 +111,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /**
-   * If true, global keys will be generated in Layout, otherwise a component itself responsible for
-   * the global key generation.
-   */
-  public static boolean useNewGenerateMechanismForGlobalKeys = false;
-
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 
@@ -230,15 +224,9 @@ public class ComponentsConfiguration {
 
   public static boolean delegateToRenderCoreMount = false;
 
-  public static boolean disableTransitionsExtensionForMountDelegate = false;
-
   public static boolean shouldDisableDrawableOutputs = false;
 
-  public static boolean extensionAcquireDuringMount = false;
-
   public static boolean useVisibilityExtension = false;
-
-  public static boolean useTransitionsExtension = false;
 
   /**
    * If {@code false} we won't force Component to update when Device Orientation change, and rely on
@@ -246,13 +234,8 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldForceComponentUpdateOnOrientationChange = true;
 
-  /** When {@code true} internal hooks implementation is applied. */
-  public static boolean isHooksImplEnabled = false;
-
   /** When {@code true}, disables incremental mount globally. */
   public static boolean isIncrementalMountGloballyDisabled = false;
-
-  public static boolean skipIncrementalMountOnSetVisibilityHintFalse = false;
 
   /** Keeps the internal nodes used for layout. This will increase memory use. */
   public static boolean keepInternalNodes = false;
@@ -280,4 +263,10 @@ public class ComponentsConfiguration {
   public static boolean isTimelineEnabled = isDebugModeEnabled;
 
   public static @Nullable String timelineDocsLink = null;
+
+  /**
+   * If true, when a LithoView with nested LithoView children gets released, the children will get
+   * released too.
+   */
+  public static boolean releaseNestedLithoViews = false;
 }

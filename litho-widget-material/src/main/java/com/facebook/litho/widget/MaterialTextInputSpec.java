@@ -117,7 +117,7 @@ class MaterialTextInputSpec {
       StateValue<Integer> measureSeqNumber,
       @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
     TextInputSpec.onCreateInitialState(
-        c, mountedEditTextRef, savedText, measureSeqNumber, initialText);
+        mountedEditTextRef, savedText, measureSeqNumber, initialText);
   }
 
   @OnLoadStyle
@@ -383,7 +383,8 @@ class MaterialTextInputSpec {
         // 2. After onUnmount: savedText preserved from underlying editText.
         savedText.get(),
         error,
-        errorDrawable);
+        errorDrawable,
+        false);
     setParams(
         editText,
         textInputLayout,

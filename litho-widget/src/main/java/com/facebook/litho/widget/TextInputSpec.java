@@ -225,7 +225,6 @@ class TextInputSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
-      final ComponentContext c,
       StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
       StateValue<AtomicReference<CharSequence>> savedText,
       StateValue<Integer> measureSeqNumber,
@@ -392,7 +391,8 @@ class TextInputSpec {
         forMeasure.getMovementMethod(),
         text,
         error,
-        errorDrawable);
+        errorDrawable,
+        true);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
     return forMeasure;
@@ -425,7 +425,8 @@ class TextInputSpec {
       MovementMethod movementMethod,
       @Nullable CharSequence text,
       @Nullable CharSequence error,
-      @Nullable Drawable errorDrawable) {
+      @Nullable Drawable errorDrawable,
+      boolean isForMeasure) {
 
     if (textSize == TextSpec.UNSET) {
       editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP);
@@ -516,7 +517,11 @@ class TextInputSpec {
     }
     if (text != null && !ObjectsCompat.equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
-      editText.setSelection(text.length());
+      // Set the selection only when mounting because #setSelection does not affect measurement,
+      // but it can mutate the span during measurement, potentially causing crashes.
+      if (!isForMeasure) {
+        editText.setSelection(editText.getText().toString().length());
+      }
     }
   }
 
@@ -775,7 +780,8 @@ class TextInputSpec {
         // 2. After onUnmount: savedText preserved from underlying editText.
         savedText.get(),
         error,
-        errorDrawable);
+        errorDrawable,
+        false);
     editText.setTextState(savedText);
   }
 

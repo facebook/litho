@@ -14,8 +14,6 @@ load(
 
 litho_android_library(
     name = "shadows",
-    srcs = glob(["*.java"]),
-    autoglob = False,
     visibility = [
         make_dep_path("litho-it/src/test/..."),
         make_dep_path("litho-it-powermock/src/test/..."),

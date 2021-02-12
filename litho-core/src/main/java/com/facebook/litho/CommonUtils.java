@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -57,5 +58,42 @@ public class CommonUtils {
   /** Polyfill of Objects.hash that can be used on API<19. */
   public static int hash(Object... values) {
     return Arrays.hashCode(values);
+  }
+
+  public static <T extends Equivalence<T>> boolean isEquivalentTo(@Nullable T a, @Nullable T b) {
+    if (a == b) {
+      return true;
+    }
+
+    if (a == null || b == null) {
+      return false;
+    }
+
+    return a.isEquivalentTo(b);
+  }
+
+  public static boolean equals(@Nullable SparseArray<?> a, @Nullable SparseArray<?> b) {
+    if (a == b) {
+      return true;
+    }
+
+    if (a == null || b == null) {
+      return false;
+    }
+
+    if (a.size() != b.size()) {
+      return false;
+    }
+
+    int size = a.size();
+
+    for (int i = 0; i < size; i++) {
+
+      if (a.keyAt(i) != b.keyAt(i) || !a.valueAt(i).equals(b.valueAt(i))) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

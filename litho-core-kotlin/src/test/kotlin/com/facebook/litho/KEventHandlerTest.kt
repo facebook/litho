@@ -27,8 +27,8 @@ class KEventHandlerTest {
 
   @Test
   fun isEquivalentTo_handlersWithDifferentLambdas_returnsFalse() {
-    val eh1 = KEventHandler<Any> { println("A") }
-    val eh2 = KEventHandler<Any> { println("B") }
+    val eh1 = eventHandler<Any> { println("A") }
+    val eh2 = eventHandler<Any> { println("B") }
 
     assertThat(eh1.isEquivalentTo(eh2)).isFalse()
   }
@@ -37,8 +37,8 @@ class KEventHandlerTest {
   fun isEquivalentTo_handlersWithSameLambda_returnsTrue() {
     val onEvent: (Any) -> Unit = { println("A") }
 
-    val eh1 = KEventHandler(onEvent)
-    val eh2 = KEventHandler(onEvent)
+    val eh1 = eventHandler(onEvent)
+    val eh2 = eventHandler(onEvent)
 
     assertThat(eh1.isEquivalentTo(eh2)).isTrue()
   }
@@ -49,8 +49,8 @@ class KEventHandlerTest {
 
   @Test
   fun isEquivalentTo_handlersWithSameMethod_returnsTrue() {
-    val eh1 = KEventHandler(::onEventMethod)
-    val eh2 = KEventHandler(::onEventMethod)
+    val eh1 = eventHandler(::onEventMethod)
+    val eh2 = eventHandler(::onEventMethod)
 
     assertThat(eh1.isEquivalentTo(eh2)).isTrue()
   }

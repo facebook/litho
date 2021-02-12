@@ -30,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  * mounting a {@link MountItem} in {@link MountState}.
  */
 @ThreadConfined(ThreadConfined.ANY)
-public interface NodeInfo {
+public interface NodeInfo extends Equivalence<NodeInfo> {
 
   int FOCUS_UNSET = 0;
   int FOCUS_SET_TRUE = 1;
@@ -271,14 +271,6 @@ public interface NodeInfo {
   void setRotationY(float rotationY);
 
   boolean isRotationYSet();
-
-  /**
-   * Checks if this NodeInfo is equal to the {@param other}
-   *
-   * @param other the other NodeInfo
-   * @return {@code true} iff this NodeInfo is equal to the {@param other}.
-   */
-  boolean isEquivalentTo(@Nullable NodeInfo other);
 
   void copyInto(NodeInfo target);
 

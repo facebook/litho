@@ -54,7 +54,7 @@ public final class Wrapper extends Component {
   }
 
   @Override
-  protected ComponentLayout resolve(ComponentContext c) {
+  protected InternalNode resolve(ComponentContext c) {
     if (delegate == null) {
       return ComponentContext.NULL_LAYOUT;
     }

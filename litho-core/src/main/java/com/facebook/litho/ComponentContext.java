@@ -88,9 +88,6 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LayoutStateContext mLayoutStateContext;
 
-  @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable HooksHandler mHooksHandler;
-
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
@@ -127,26 +124,12 @@ public class ComponentContext {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(
-        context,
-        context.mStateHandler,
-        context.mHooksHandler,
-        context.mTreeProps,
-        context.mLayoutStateContext);
+    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateContext);
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
-      @Nullable TreeProps treeProps,
-      @Nullable LayoutStateContext layoutStateContext) {
-    this(context, stateHandler, null, treeProps, layoutStateContext);
-  }
-
-  public ComponentContext(
-      ComponentContext context,
-      @Nullable StateHandler stateHandler,
-      @Nullable HooksHandler hooksHandler,
       @Nullable TreeProps treeProps,
       @Nullable LayoutStateContext layoutStateContext) {
 
@@ -165,7 +148,6 @@ public class ComponentContext {
             : mComponentTree.getSimpleName();
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
-    mHooksHandler = hooksHandler != null ? hooksHandler : context.mHooksHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
   }
 
@@ -206,7 +188,7 @@ public class ComponentContext {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = context.mComponentTree;
 
-    if (ComponentsConfiguration.useStatelessComponent
+    if (scope.mUseStatelessComponent
         && globalKey != null
         && componentContext.getLayoutStateContext() != null) {
       componentContext.mGlobalKey = globalKey;
@@ -556,11 +538,6 @@ public class ComponentContext {
   @Nullable
   StateHandler getStateHandler() {
     return mStateHandler;
-  }
-
-  @Nullable
-  HooksHandler getHooksHandler() {
-    return mHooksHandler;
   }
 
   /**

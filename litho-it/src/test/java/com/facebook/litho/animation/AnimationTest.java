@@ -56,6 +56,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.LooperMode;
 
 /**
  * This tests validate how different kind of animations modify the view. The values asserted here
@@ -84,6 +85,7 @@ import org.robolectric.android.controller.ActivityController;
  * <p>Final position: 160 + 0.4131759 * (-160) = 93.891856
  */
 @SuppressLint("ColorConstantUsageIssue")
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class AnimationTest {
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
@@ -94,29 +96,22 @@ public class AnimationTest {
 
   final boolean mUseMountDelegateTarget;
   final boolean mDelegateToRenderCoreMount;
-  final boolean mUseTransitionExtension;
 
   boolean mConfigUseMountDelegateTarget;
   boolean mConfigDelegateToRenderCoreMount;
-  boolean mConfigUseTransitionExtension;
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useTransitionExtension={2}")
+      name = "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
+          {false, false}, {true, false}, {true, true},
         });
   }
 
-  public AnimationTest(
-      boolean useMountDelegateTarget,
-      boolean delegateToRenderCoreMount,
-      boolean useTransitionExtension) {
+  public AnimationTest(boolean useMountDelegateTarget, boolean delegateToRenderCoreMount) {
     mUseMountDelegateTarget = useMountDelegateTarget;
     mDelegateToRenderCoreMount = delegateToRenderCoreMount;
-    mUseTransitionExtension = useTransitionExtension;
   }
 
   @Before
@@ -124,18 +119,15 @@ public class AnimationTest {
     mActivityController = Robolectric.buildActivity(Activity.class, new Intent());
     mConfigUseMountDelegateTarget = ComponentsConfiguration.useExtensionsWithMountDelegate;
     mConfigDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
-    mConfigUseTransitionExtension = ComponentsConfiguration.useTransitionsExtension;
 
     ComponentsConfiguration.useExtensionsWithMountDelegate = mUseMountDelegateTarget;
     ComponentsConfiguration.delegateToRenderCoreMount = mDelegateToRenderCoreMount;
-    ComponentsConfiguration.useTransitionsExtension = mUseTransitionExtension;
   }
 
   @After
   public void cleanup() {
     ComponentsConfiguration.useExtensionsWithMountDelegate = mConfigUseMountDelegateTarget;
     ComponentsConfiguration.delegateToRenderCoreMount = mConfigDelegateToRenderCoreMount;
-    ComponentsConfiguration.useTransitionsExtension = mConfigUseTransitionExtension;
   }
 
   @Test
@@ -547,7 +539,7 @@ public class AnimationTest {
     mActivityController.get().setContentView(mLithoViewRule.getLithoView());
     mActivityController.resume().visible();
 
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    View view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
 
     // View should be null as state is null
     assertThat(view).describedAs("view before appearing").isNull();
@@ -631,7 +623,7 @@ public class AnimationTest {
     assertThat(view.getAlpha()).describedAs("view after 10 frames").isEqualTo(0.030153751f);
     mTransitionTestRule.step(1);
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after last re-measure and re-layout").isNull();
   }
 
@@ -1014,7 +1006,7 @@ public class AnimationTest {
     mActivityController.resume().visible();
 
     // The bug only happens if you start the animation in the middle twice.
-    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    View view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
 
     // View should be null as state is null
     assertThat(view).describedAs("view before appearing").isNull();
@@ -1029,7 +1021,7 @@ public class AnimationTest {
     // Update state again the element should not be there.
     mStateCaller.update();
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view unmount mid animation").isNull();
 
     mTransitionTestRule.step(1);
@@ -1041,7 +1033,7 @@ public class AnimationTest {
     // After state update we should have the view added but with alpha equal to 0
     assertThat(view.getAlpha()).describedAs("view after toggle").isEqualTo(0);
     mStateCaller.update();
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY + 1);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY + 1);
     assertThat(view).describedAs("view unmount mid animation").isNull();
   }
 
@@ -1563,7 +1555,7 @@ public class AnimationTest {
         .describedAs("root host does not have disappearing items after setting tree")
         .isFalse();
 
-    view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+    view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after setting new tree").isNull();
   }
 }

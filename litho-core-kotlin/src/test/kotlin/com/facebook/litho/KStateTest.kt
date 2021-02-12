@@ -16,11 +16,16 @@
 
 package com.facebook.litho
 
+import android.os.Looper.getMainLooper
 import android.view.View.MeasureSpec.EXACTLY
-import com.facebook.litho.config.ComponentsConfiguration
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
-import com.facebook.litho.testing.testrunner.LithoTestRunner
+import com.facebook.litho.testing.assertMatches
+import com.facebook.litho.testing.child
+import com.facebook.litho.testing.exactly
+import com.facebook.litho.testing.match
+import com.facebook.litho.testing.setRoot
 import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
@@ -29,94 +34,90 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.LooperMode
 
 /** Unit tests for [useState]. */
-@RunWith(LithoTestRunner::class)
+@LooperMode(LooperMode.Mode.LEGACY)
+@RunWith(AndroidJUnit4::class)
 class KStateTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
   private fun <T> DslScope.useCustomState(value: T): State<T> {
-    val state by useState { value }
+    val state = useState { value }
     return state
   }
 
   @Test
   fun useState_updateState_stateIsUpdated() {
     lateinit var stateRef: AtomicReference<State<String>>
-    lateinit var row: Row
 
-    val root = KComponent {
-      val state by useState { "hello" }
-      stateRef = AtomicReference(state)
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val state = useState { "hello" }
+        stateRef = AtomicReference(state)
 
-      Clickable(onClick = { updateState { state.value = "world" } }) {
-        row = Row()
-        row
+        return Row(style = Style.viewTag("test_view").onClick { state.update("world") })
       }
     }
-    lithoViewRule.setRoot(root)
-    lithoViewRule.attachToWindow().measure().layout()
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot { TestComponent() }
+        .attachToWindow()
+        .measure()
+        .layout()
 
     assertThat(stateRef.get().value).isEqualTo("hello")
 
-    // Simulate clicking by dispatching a click event.
-    EventDispatcherUtils.dispatchOnClick(row.commonProps!!.clickHandler, lithoViewRule.lithoView)
+    lithoViewRule.findViewWithTag("test_view").performClick()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     assertThat(stateRef.get().value).describedAs("String state is updated").isEqualTo("world")
   }
 
   @Test
-  fun useStateOnHooks_updateState_stateIsUpdated() {
-    ComponentsConfiguration.isHooksImplEnabled = true
-
-    useState_updateState_stateIsUpdated()
-
-    ComponentsConfiguration.isHooksImplEnabled = false
-  }
-
-  @Test
   fun useStateOnHooks_updateTwoStatesWithSamePropertyName_bothStatesAreUpdatedIndependently() {
-    ComponentsConfiguration.isHooksImplEnabled = true
-
     lateinit var state1Ref: AtomicReference<State<String>>
     lateinit var state2Ref: AtomicReference<State<Int>>
-    lateinit var row: Row
 
-    val root = KComponent {
-      val state1 = useCustomState("hello")
-      val state2 = useCustomState(20)
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val state1 = useCustomState("hello")
+        val state2 = useCustomState(20)
 
-      state1Ref = AtomicReference(state1)
-      state2Ref = AtomicReference(state2)
+        state1Ref = AtomicReference(state1)
+        state2Ref = AtomicReference(state2)
 
-      Clickable(
-          onClick = {
-            updateState {
-              state1.value = "world"
-              state2.value++
-            }
-          }) {
-        row = Row()
-        row
+        return Row(
+            style =
+                Style.viewTag("test_view").onClick {
+                  // The correct way to do this (at least until we have automatic batching)
+                  // would be to store these states in the same obj to trigger only one state
+                  // update
+                  state1.update("world")
+                  state2.update { value -> value + 1 }
+                })
       }
     }
-    lithoViewRule.setRoot(root)
-    lithoViewRule.attachToWindow().measure().layout()
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot { TestComponent() }
+        .attachToWindow()
+        .measure()
+        .layout()
 
     assertThat(state1Ref.get().value).isEqualTo("hello")
     assertThat(state2Ref.get().value).isEqualTo(20)
 
-    // Simulate clicking by dispatching a click event.
-    EventDispatcherUtils.dispatchOnClick(row.commonProps!!.clickHandler, lithoViewRule.lithoView)
+    lithoViewRule.findViewWithTag("test_view").performClick()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
     assertThat(state1Ref.get().value).describedAs("String state is updated").isEqualTo("world")
     assertThat(state2Ref.get().value).describedAs("Int state is updated").isEqualTo(21)
-
-    ComponentsConfiguration.isHooksImplEnabled = false
   }
 
   @Test
@@ -156,57 +157,50 @@ class KStateTest {
         .isEmpty()
   }
 
-  @Test
-  fun useStateOnHooks_calculateComponentInTwoThreadsConcurrently_stateIsInitializedOnlyOnce() {
-    ComponentsConfiguration.isHooksImplEnabled = true
+  fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied() {
+    class TestComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        val counter = useState { 0 }
 
-    val initCounter = AtomicInteger(0)
-    val countDownLatch = CountDownLatch(2)
-    val firstCountDownLatch = CountDownLatch(1)
-    val secondCountDownLatch = CountDownLatch(1)
-
-    val thread1 = Thread {
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(firstCountDownLatch, secondCountDownLatch, initCounter),
-          SizeSpec.makeSizeSpec(100, EXACTLY),
-          SizeSpec.makeSizeSpec(100, EXACTLY))
-      countDownLatch.countDown()
+        return Row(
+            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } },
+            children =
+                listOf(
+                    Text(
+                        style = Style.viewTag("Counter: ${counter.value}"),
+                        text = "Counter: ${counter.value}"),
+                ))
+      }
     }
-    val thread2 = Thread {
-      firstCountDownLatch.await()
 
-      lithoViewRule.setRootAndSizeSpec(
-          CountDownLatchComponent(secondCountDownLatch, null, initCounter),
-          SizeSpec.makeSizeSpec(200, EXACTLY),
-          SizeSpec.makeSizeSpec(200, EXACTLY))
-      countDownLatch.countDown()
-    }
-    thread1.start()
-    thread2.start()
-    countDownLatch.await()
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot { TestComponent() }
+        .attachToWindow()
+        .measure()
+        .layout()
 
-    assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
-    val componentTree = lithoViewRule.componentTree
-    assertThat(componentTree.initialStateContainer.mInitialHookStates)
-        .describedAs("Initial hook state container is empty")
-        .isEmpty()
-    assertThat(componentTree.initialStateContainer.mPendingHooksHandlers)
-        .describedAs("No pending HooksHandlers")
-        .isEmpty()
+    lithoViewRule.findViewWithTag("test_view").performClick()
+    lithoViewRule.findViewWithTag("test_view").performClick()
+    backgroundLayoutLooperRule.runToEndOfTasksSync()
+    shadowOf(getMainLooper()).idle()
 
-    ComponentsConfiguration.isHooksImplEnabled = false
+    // Using viewTag because Text is currently a drawable and harder to access directly
+    lithoViewRule.assertMatches(
+        match<LithoView> { child<ComponentHost> { prop("tag", "Counter: 2") } })
   }
 
   private class CountDownLatchComponent(
-      countDownLatch: CountDownLatch,
-      awaitable: CountDownLatch?,
-      initCounter: AtomicInteger
-  ) :
-      KComponent({
-        countDownLatch.countDown()
-        awaitable?.await()
+      val countDownLatch: CountDownLatch,
+      val awaitable: CountDownLatch?,
+      val initCounter: AtomicInteger
+  ) : KComponent() {
+    override fun DslScope.render(): Component? {
+      countDownLatch.countDown()
+      awaitable?.await()
 
-        val state by useState { initCounter.incrementAndGet() }
-        Text("stateValue is ${state.value}")
-      })
+      val state = useState { initCounter.incrementAndGet() }
+      return Text("stateValue is ${state.value}")
+    }
+  }
 }

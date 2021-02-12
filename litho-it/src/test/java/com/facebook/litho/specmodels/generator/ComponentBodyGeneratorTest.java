@@ -474,7 +474,9 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateStateParamImplAccessor() {
     StateParamModel stateParamModel = mock(StateParamModel.class);
     when(stateParamModel.getName()).thenReturn("stateParam");
-    assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, stateParamModel, "c"))
+    assertThat(
+            ComponentBodyGenerator.getImplAccessor(
+                "testMethod", mSpecModelDI, stateParamModel, "c"))
         .isEqualTo("getStateContainerImpl(c).stateParam");
   }
 
@@ -482,7 +484,7 @@ public class ComponentBodyGeneratorTest {
   public void testGeneratePropParamImplAccessor() {
     PropModel propModel = mock(PropModel.class);
     when(propModel.getName()).thenReturn("propParam");
-    assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, propModel, "c"))
+    assertThat(ComponentBodyGenerator.getImplAccessor("testMethod", mSpecModelDI, propModel, "c"))
         .isEqualTo("propParam");
   }
 

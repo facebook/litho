@@ -580,12 +580,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 
-  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
+  protected @Nullable RenderData recordRenderData(ComponentContext c, RenderData toRecycle) {
     return null;
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected ComponentLayout resolve(ComponentContext c) {
+  protected InternalNode resolve(ComponentContext c) {
     return Layout.create(c, (Component) this, false);
   }
 

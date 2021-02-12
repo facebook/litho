@@ -18,22 +18,26 @@ package com.facebook.samples.litho.kotlin.lithography.components
 
 import android.R.drawable.star_off
 import android.R.drawable.star_on
-import com.facebook.litho.Clickable
+import com.facebook.litho.Component
+import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
-import com.facebook.litho.updateState
+import com.facebook.litho.flexbox.height
+import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
-import com.facebook.litho.value
 
-class FavouriteButton :
-    KComponent({
-      val isFavourite by useState { false }
-      val star = drawableRes(if (isFavourite.value) star_on else star_off)
+class FavouriteButton : KComponent() {
+  override fun DslScope.render(): Component {
+    val isFavourite = useState { false }
+    val star = drawableRes(if (isFavourite.value) star_on else star_off)
 
-      Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
-        Row(style = Style.size(32.dp).background(star))
-      }
-    })
+    return Row(
+        style =
+            Style.width(32.dp).height(32.dp).background(star).onClick {
+              isFavourite.update { isFavourite -> !isFavourite }
+            })
+  }
+}

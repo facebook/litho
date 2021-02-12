@@ -67,16 +67,6 @@ public class VisibilityExtension
     }
 
     @Override
-    public boolean isIncrementalVisibilityEnabled() {
-      return false;
-    }
-
-    @Override
-    public @Nullable VisibilityModuleInput getVisibilityModuleInput() {
-      return null;
-    }
-
-    @Override
     public Set<Long> getRenderUnitIdsWhichHostRenderTrees() {
       return renderUnitIdsWhichHostRenderTrees;
     }

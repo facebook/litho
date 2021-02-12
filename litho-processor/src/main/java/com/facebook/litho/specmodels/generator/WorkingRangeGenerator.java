@@ -138,7 +138,7 @@ public class WorkingRangeGenerator {
       delegation.add(
           "($T) $L",
           methodParamModel.getTypeName(),
-          getImplAccessor(specModel, methodParamModel, "c"));
+          getImplAccessor(methodModel.name.toString(), specModel, methodParamModel, "c"));
       delegation.add((i < methodModel.methodParams.size() - 1) ? ",\n" : ");\n");
     }
     delegation.unindent();

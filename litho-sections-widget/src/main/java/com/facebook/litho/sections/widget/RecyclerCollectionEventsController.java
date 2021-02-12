@@ -173,6 +173,11 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       return;
     }
 
+    if (!animated && mSnapMode == SNAP_TO_START) {
+      requestScrollToPositionWithOffset(snapTarget, /* offset */ 0);
+      return;
+    }
+
     if (!animated) {
       requestScrollToPosition(defaultTarget, false);
       return;

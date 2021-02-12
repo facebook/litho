@@ -36,6 +36,7 @@ import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.transitions.DisappearingHost;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
@@ -871,8 +872,9 @@ public class TransitionsExtension
 
   private static void recursivelyNotifyVisibleBoundsChanged(View view) {
     assertMainThread();
-    if (view instanceof RootHost) {
-      view.setHasTransientState(true);
+    if (view instanceof AnimatedRootHost) {
+      ((AnimatedRootHost) view)
+          .notifyVisibleBoundsChanged(new Rect(0, 0, view.getWidth(), view.getHeight()), false);
     } else if (view instanceof ViewGroup) {
       final ViewGroup parent = (ViewGroup) view;
       for (int i = 0; i < parent.getChildCount(); i++) {
