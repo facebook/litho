@@ -556,7 +556,7 @@ class Layout {
       final LayoutStateContext layoutStateContext,
       final InternalNode layoutNode,
       final @Nullable LayoutStateContext prevLayoutStateContext,
-      final DiffNode diffNode) {
+      final @Nullable DiffNode diffNode) {
     try {
       // Root of the main tree or of a nested tree.
       final boolean isTreeRoot = layoutNode.getParent() == null;
@@ -703,7 +703,8 @@ class Layout {
    * Returns true either if the two nodes have the same Component type or if both don't have a
    * Component.
    */
-  private static boolean hostIsCompatible(final InternalNode node, final DiffNode diffNode) {
+  private static boolean hostIsCompatible(
+      final InternalNode node, final @Nullable DiffNode diffNode) {
     if (diffNode == null) {
       return false;
     }
