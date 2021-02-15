@@ -275,11 +275,11 @@ public abstract class Component extends ComponentLifecycle
     try {
       final Component component = (Component) super.clone();
 
-      component.mGlobalKey = null;
       component.mIsLayoutStarted = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
       if (!mUseStatelessComponent) {
+        component.mGlobalKey = null;
         component.mChildCounters = null;
         component.mManualKeysCounter = null;
       }
