@@ -737,22 +737,28 @@ class Layout {
       LayoutStateContext currentLayoutStateContext,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       DiffNode diffNode) {
-    if (currentLayoutStateContext == null) {
-      return null;
-    }
-
-    final ComponentTree componentTree = currentLayoutStateContext.getComponentTree();
-    if (componentTree == null) {
-      return null;
-    }
-
-    final LayoutStateContext committedContext = componentTree.getLayoutStateContext();
-    if (committedContext == null) {
-      return null;
-    }
-
     final Component diffNodeComponent = diffNode.getComponent();
     if (diffNodeComponent == null) {
+      return null;
+    }
+
+    final LayoutStateContext committedContext;
+    if (diffNodeComponent.isStateless()) {
+      committedContext = prevLayoutStateContext;
+    } else {
+      if (currentLayoutStateContext == null) {
+        return null;
+      }
+
+      final ComponentTree componentTree = currentLayoutStateContext.getComponentTree();
+      if (componentTree == null) {
+        return null;
+      }
+
+      committedContext = componentTree.getLayoutStateContext();
+    }
+
+    if (committedContext == null) {
       return null;
     }
 
