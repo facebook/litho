@@ -52,7 +52,7 @@ public class TestLayoutState {
       root.layoutDirection(YogaDirection.RTL);
     }
 
-    Layout.measure(c, root, widthSpec, heightSpec, null);
+    Layout.measure(c, root, widthSpec, heightSpec, null, null);
 
     return root;
   }

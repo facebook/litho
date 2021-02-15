@@ -152,6 +152,7 @@ public class LayoutState
 
   private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private @Nullable LayoutStateContext mLayoutStateContext;
+  private @Nullable LayoutStateContext mPrevLayoutStateContext;
 
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
@@ -285,6 +286,11 @@ public class LayoutState
   @Nullable
   LayoutStateContext getLayoutStateContext() {
     return mLayoutStateContext;
+  }
+
+  @Nullable
+  LayoutStateContext getPrevLayoutStateContext() {
+    return mPrevLayoutStateContext;
   }
 
   /**
@@ -741,7 +747,8 @@ public class LayoutState
               parentContext,
               node,
               SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
-              SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
+              SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY),
+              layoutState.mPrevLayoutStateContext);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -1482,6 +1489,9 @@ public class LayoutState
 
       layoutState = new LayoutState(c, currentLayoutState);
 
+      layoutState.mPrevLayoutStateContext =
+          currentLayoutState != null ? currentLayoutState.getLayoutStateContext() : null;
+
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
       layoutStateContext =
@@ -1523,6 +1533,7 @@ public class LayoutState
                   widthSpec,
                   heightSpec,
                   isReconcilable ? currentLayoutState.mLayoutRoot : null,
+                  layoutState.mPrevLayoutStateContext,
                   diffTreeRoot,
                   logLayoutState)
               : layoutCreatedInWillRender;
@@ -1629,6 +1640,7 @@ public class LayoutState
           layoutState.mLayoutRoot,
           widthSpec,
           heightSpec,
+          layoutState.mPrevLayoutStateContext,
           layoutState.mDiffTreeRoot,
           logLayoutState);
 

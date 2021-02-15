@@ -28,16 +28,21 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
   private final @Nullable LayoutStateContext mLayoutStateContext;
 
+  private final @Nullable LayoutStateContext mPrevLayoutStateContext;
+
   private Size acquireSize(int initialValue) {
     return new Size(initialValue, initialValue);
   }
 
-  public LithoYogaMeasureFunction(@Nullable LayoutStateContext layoutStateContext) {
+  public LithoYogaMeasureFunction(
+      @Nullable LayoutStateContext layoutStateContext,
+      @Nullable LayoutStateContext prevLayoutStateContext) {
     if (ComponentsConfiguration.useStatelessComponent && layoutStateContext == null) {
       throw new IllegalStateException("You must pass a non-null LayoutStateContext instance");
     }
 
     mLayoutStateContext = layoutStateContext;
+    mPrevLayoutStateContext = prevLayoutStateContext;
   }
 
   @Override
@@ -108,7 +113,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           context = parent.getScopedContext(mLayoutStateContext, parentKey);
         }
 
-        final InternalNode nestedTree = Layout.create(context, node, widthSpec, heightSpec);
+        final InternalNode nestedTree =
+            Layout.create(context, node, widthSpec, heightSpec, mPrevLayoutStateContext);
 
         outputWidth = nestedTree.getWidth();
         outputHeight = nestedTree.getHeight();

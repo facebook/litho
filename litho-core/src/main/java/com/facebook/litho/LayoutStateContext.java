@@ -36,8 +36,7 @@ public class LayoutStateContext {
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
   private final @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
-  private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction =
-      ComponentsConfiguration.useStatelessComponent ? new LithoYogaMeasureFunction(this) : null;
+  private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction;
 
   private static @Nullable LayoutState sTestLayoutState;
 
@@ -75,9 +74,12 @@ public class LayoutStateContext {
     if (ComponentsConfiguration.useStatelessComponent) {
       mGlobalKeyToScopedContext = new HashMap<>();
       mGlobalKeyToScopedInfo = new HashMap<>();
+      mLithoYogaMeasureFunction =
+          new LithoYogaMeasureFunction(this, layoutState.getPrevLayoutStateContext());
     } else {
       mGlobalKeyToScopedContext = null;
       mGlobalKeyToScopedInfo = null;
+      mLithoYogaMeasureFunction = null;
     }
   }
 

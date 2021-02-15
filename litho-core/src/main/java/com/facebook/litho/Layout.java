@@ -53,7 +53,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null);
+        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null, null);
   }
 
   /* TODO: (T81557408) Fix @Nullable issue */
@@ -65,6 +65,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec,
       final @Nullable InternalNode current,
+      final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
 
@@ -112,7 +113,7 @@ class Layout {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    measure(c, layout, widthSpec, heightSpec, diff);
+    measure(c, layout, widthSpec, heightSpec, prevLayoutStateContext, diff);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -287,7 +288,8 @@ class Layout {
       ComponentContext parentContext,
       final InternalNode holder,
       final int widthSpec,
-      final int heightSpec) {
+      final int heightSpec,
+      final @Nullable LayoutStateContext prevLayoutStateContext) {
 
     final Component component = holder.getTailComponent();
     final String componentGlobalKey = holder.getTailComponentKey();
@@ -335,7 +337,7 @@ class Layout {
 
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null && component.canUsePreviousLayout(parentContext)) {
-          remeasure(currentLayout, widthSpec, heightSpec);
+          remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;
         } else {
 
@@ -365,7 +367,13 @@ class Layout {
 
           holder.copyInto(layout);
 
-          measure(parentContext, layout, widthSpec, heightSpec, holder.getDiffNode());
+          measure(
+              parentContext,
+              layout,
+              widthSpec,
+              heightSpec,
+              prevLayoutStateContext,
+              holder.getDiffNode());
         }
 
         layout.setLastWidthSpec(widthSpec);
@@ -433,6 +441,7 @@ class Layout {
       final InternalNode root,
       final int widthSpec,
       final int heightSpec,
+      final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -454,7 +463,7 @@ class Layout {
 
     if (diff != null) {
       ComponentsSystrace.beginSection("applyDiffNode");
-      applyDiffNodeToUnchangedNodes(c.getLayoutStateContext(), root, diff);
+      applyDiffNodeToUnchangedNodes(c.getLayoutStateContext(), root, prevLayoutStateContext, diff);
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
@@ -476,6 +485,7 @@ class Layout {
       final InternalNode root,
       final int widthSpec,
       final int heightSpec,
+      final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent logLayoutState) {
 
@@ -489,7 +499,7 @@ class Layout {
       logLayoutState.markerPoint("start_measure");
     }
 
-    measure(c, root, widthSpec, heightSpec, diff);
+    measure(c, root, widthSpec, heightSpec, prevLayoutStateContext, diff);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
@@ -512,13 +522,23 @@ class Layout {
   }
 
   @VisibleForTesting
-  static void remeasure(final InternalNode layout, final int widthSpec, final int heightSpec) {
+  static void remeasure(
+      final InternalNode layout,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable LayoutStateContext prevLayoutStateContext) {
     if (layout == NULL_LAYOUT) { // If NULL LAYOUT return immediately.
       return;
     }
 
     layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
-    measure(layout.getContext(), layout, widthSpec, heightSpec, layout.getDiffNode());
+    measure(
+        layout.getContext(),
+        layout,
+        widthSpec,
+        heightSpec,
+        prevLayoutStateContext,
+        layout.getDiffNode());
   }
 
   /**
@@ -535,6 +555,7 @@ class Layout {
   static void applyDiffNodeToUnchangedNodes(
       final LayoutStateContext layoutStateContext,
       final InternalNode layoutNode,
+      final @Nullable LayoutStateContext prevLayoutStateContext,
       final DiffNode diffNode) {
     try {
       // Root of the main tree or of a nested tree.
@@ -556,11 +577,15 @@ class Layout {
       if (layoutCount != 0 && diffCount != 0) {
         for (int i = 0; i < layoutCount && i < diffCount; i++) {
           applyDiffNodeToUnchangedNodes(
-              layoutStateContext, layoutNode.getChildAt(i), diffNode.getChildAt(i));
+              layoutStateContext,
+              layoutNode.getChildAt(i),
+              prevLayoutStateContext,
+              diffNode.getChildAt(i));
         }
 
         // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
-      } else if (!shouldComponentUpdate(layoutStateContext, layoutNode, diffNode)) {
+      } else if (!shouldComponentUpdate(
+          layoutStateContext, layoutNode, prevLayoutStateContext, diffNode)) {
         applyDiffNodeToLayoutNode(layoutNode, diffNode);
       }
     } catch (Throwable t) {
@@ -687,7 +712,8 @@ class Layout {
   private static boolean shouldComponentUpdate(
       final LayoutStateContext layoutStateContext,
       final InternalNode layoutNode,
-      final DiffNode diffNode) {
+      final @Nullable LayoutStateContext prevLayoutStateContext,
+      final @Nullable DiffNode diffNode) {
     if (diffNode == null) {
       return true;
     }
@@ -697,7 +723,7 @@ class Layout {
         ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
     if (component != null) {
       return component.shouldComponentUpdate(
-          getDiffNodeScopedContext(layoutStateContext, diffNode),
+          getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
           diffNode.getComponent(),
           component.getScopedContext(layoutStateContext, globalKey),
           component);
@@ -708,7 +734,9 @@ class Layout {
 
   /** DiffNode state should be retrieved from the committed LayoutState. */
   private static ComponentContext getDiffNodeScopedContext(
-      LayoutStateContext currentLayoutStateContext, DiffNode diffNode) {
+      LayoutStateContext currentLayoutStateContext,
+      final @Nullable LayoutStateContext prevLayoutStateContext,
+      DiffNode diffNode) {
     if (currentLayoutStateContext == null) {
       return null;
     }

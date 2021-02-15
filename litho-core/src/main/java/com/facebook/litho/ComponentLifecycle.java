@@ -55,7 +55,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
       "ComponentLifecycle:WrongContextForEventHandler";
   private static final @Nullable YogaMeasureFunction sMeasureFunction =
-      ComponentsConfiguration.useStatelessComponent ? null : new LithoYogaMeasureFunction(null);
+      ComponentsConfiguration.useStatelessComponent
+          ? null
+          : new LithoYogaMeasureFunction(null, null);
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
