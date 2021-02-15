@@ -608,7 +608,9 @@ class Layout {
       final InternalNode layoutNode, final DiffNode diffNode) {
     final Component component = layoutNode.getTailComponent();
     if (component != null) {
-      component.copyInterStageImpl(diffNode.getComponent());
+      component.copyInterStageImpl(
+          component.getInterStagePropsContainer(),
+          diffNode.getComponent().getInterStagePropsContainer());
     }
 
     layoutNode.setCachedMeasuresValid(true);

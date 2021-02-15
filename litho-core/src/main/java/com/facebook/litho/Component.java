@@ -544,7 +544,7 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    clone.copyInterStageImpl(this);
+    clone.copyInterStageImpl(clone.getInterStagePropsContainer(), getInterStagePropsContainer());
 
     // update the cloned component with the new context.
     final ComponentContext scopedContext =
@@ -583,7 +583,9 @@ public abstract class Component extends ComponentLifecycle
     return false;
   }
 
-  protected void copyInterStageImpl(Component component) {}
+  protected void copyInterStageImpl(
+      final InterStagePropsContainer copyIntoInterStagePropsContainer,
+      final InterStagePropsContainer copyFromInterStagePropsContainer) {}
 
   protected DynamicValue[] getDynamicProps() {
     return sEmptyArray;
