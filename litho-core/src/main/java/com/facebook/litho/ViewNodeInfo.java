@@ -102,15 +102,15 @@ class ViewNodeInfo {
     return mLayoutDirection;
   }
 
-  void setExpandedTouchBounds(LithoLayoutResult node, int l, int t, int r, int b) {
-    if (!node.hasTouchExpansion()) {
+  void setExpandedTouchBounds(LithoLayoutResult result, int l, int t, int r, int b) {
+    if (!result.hasTouchExpansion()) {
       return;
     }
 
-    final int touchExpansionLeft = node.getTouchExpansionLeft();
-    final int touchExpansionTop = node.getTouchExpansionTop();
-    final int touchExpansionRight = node.getTouchExpansionRight();
-    final int touchExpansionBottom = node.getTouchExpansionBottom();
+    final int touchExpansionLeft = result.getTouchExpansionLeft();
+    final int touchExpansionTop = result.getTouchExpansionTop();
+    final int touchExpansionRight = result.getTouchExpansionRight();
+    final int touchExpansionBottom = result.getTouchExpansionBottom();
     if (touchExpansionLeft == 0
         && touchExpansionTop == 0
         && touchExpansionRight == 0
