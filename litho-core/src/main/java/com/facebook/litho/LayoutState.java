@@ -87,7 +87,7 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(ComponentContext, InternalNode, LayoutState, RenderTreeNode, DiffNode,
+ * #collectResults(ComponentContext, LithoLayoutResult, LayoutState, RenderTreeNode, DiffNode,
  * DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided {@link
  * InternalNode} for later use in {@link MountState}.
  */
@@ -297,7 +297,7 @@ public class LayoutState
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
-      InternalNode node,
+      LithoLayoutResult node,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
       boolean hasHostView) {
@@ -345,7 +345,8 @@ public class LayoutState
     return mergedDynamicProps;
   }
 
-  private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
+  private static LayoutOutput createHostLayoutOutput(
+      LayoutState layoutState, LithoLayoutResult node) {
 
     final HostComponent hostComponent = HostComponent.create();
 
@@ -388,7 +389,7 @@ public class LayoutState
       Component component,
       @Nullable String componentKey,
       LayoutState layoutState,
-      InternalNode node,
+      LithoLayoutResult node,
       boolean hasHostView) {
     // The mount operation will need both the marker for the target host and its matching
     // parent host to ensure the correct hierarchy when nesting the host views.
@@ -412,7 +413,7 @@ public class LayoutState
       @Nullable String componentKey,
       long hostMarker,
       LayoutState layoutState,
-      InternalNode node,
+      LithoLayoutResult node,
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
@@ -536,7 +537,7 @@ public class LayoutState
    * stored in the {@link InternalNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
-      final InternalNode node,
+      final LithoLayoutResult node,
       final LayoutState layoutState,
       final @Nullable RenderTreeNode renderTreeNode) {
 
@@ -574,7 +575,7 @@ public class LayoutState
   }
 
   private static TestOutput createTestOutput(
-      InternalNode node, LayoutState layoutState, @Nullable LayoutOutput layoutOutput) {
+      LithoLayoutResult node, LayoutState layoutState, @Nullable LayoutOutput layoutOutput) {
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
     final int r = l + node.getWidth();
@@ -595,9 +596,9 @@ public class LayoutState
    * Determine if a given {@link InternalNode} within the context of a given {@link LayoutState}
    * requires to be wrapped inside a view.
    *
-   * @see #needsHostView(InternalNode, LayoutState)
+   * @see #needsHostView(LithoLayoutResult, LayoutState)
    */
-  private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
+  private static boolean hasViewContent(LithoLayoutResult node, LayoutState layoutState) {
     final Component component = node.getTailComponent();
     final NodeInfo nodeInfo = node.getNodeInfo();
 
@@ -703,7 +704,7 @@ public class LayoutState
    */
   private static void collectResults(
       ComponentContext parentContext,
-      InternalNode node,
+      LithoLayoutResult node,
       LayoutState layoutState,
       @Nullable RenderTreeNode parent,
       @Nullable DiffNode parentDiffNode,
@@ -739,7 +740,7 @@ public class LayoutState
       InternalNode nestedTree =
           Layout.create(
               parentContext,
-              node,
+              (InternalNode) node,
               SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY),
               layoutState.mPrevLayoutStateContext);
@@ -1155,7 +1156,7 @@ public class LayoutState
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
-      InternalNode node,
+      LithoLayoutResult node,
       LayoutOutput hostOutput,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy) {
@@ -1176,7 +1177,7 @@ public class LayoutState
 
   private static LayoutOutput addDrawableComponent(
       final @Nullable RenderTreeNode parent,
-      InternalNode node,
+      LithoLayoutResult node,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
       @Nullable DebugHierarchy.Node hierarchy,
@@ -1215,7 +1216,7 @@ public class LayoutState
     return output;
   }
 
-  private static Drawable getBorderColorDrawable(InternalNode node) {
+  private static Drawable getBorderColorDrawable(LithoLayoutResult node) {
     if (!node.shouldDrawBorders()) {
       throw new RuntimeException("This node does not support drawing border color");
     }
@@ -1303,7 +1304,7 @@ public class LayoutState
       @Nullable String drawableComponentKey,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
-      InternalNode node,
+      LithoLayoutResult node,
       @OutputUnitType int outputType,
       long previousId,
       boolean isCachedOutputUpdated,
@@ -1348,7 +1349,7 @@ public class LayoutState
    */
   private static int addHostLayoutOutput(
       final @Nullable RenderTreeNode parent,
-      InternalNode node,
+      LithoLayoutResult node,
       LayoutState layoutState,
       DiffNode diffNode,
       @Nullable DebugHierarchy.Node hierarchy) {
@@ -1938,7 +1939,7 @@ public class LayoutState
     mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 
-  static DiffNode createDiffNode(InternalNode node, @Nullable DiffNode parent) {
+  static DiffNode createDiffNode(LithoLayoutResult node, @Nullable DiffNode parent) {
     DiffNode diffNode = new DefaultDiffNode();
 
     diffNode.setLastWidthSpec(node.getLastWidthSpec());
@@ -2113,7 +2114,7 @@ public class LayoutState
   // If the layout root is a nested tree holder node, it gets skipped immediately while
   // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
   // root in this case.
-  private boolean isLayoutRoot(InternalNode node) {
+  private boolean isLayoutRoot(LithoLayoutResult node) {
     return mLayoutRoot.isNestedTreeHolder()
         ? node == mLayoutRoot.getNestedTree()
         : node == mLayoutRoot;
@@ -2124,7 +2125,7 @@ public class LayoutState
    * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
    * been forced to be wrapped in a view.
    */
-  private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
+  private static boolean needsHostView(LithoLayoutResult node, LayoutState layoutState) {
     if (layoutState.isLayoutRoot(node)) {
       // Need a View for the Root component.
       return true;
@@ -2158,7 +2159,7 @@ public class LayoutState
     return false;
   }
 
-  private static boolean needsHostViewForCommonDynamicProps(InternalNode node) {
+  private static boolean needsHostViewForCommonDynamicProps(LithoLayoutResult node) {
     final List<Component> components = node.getComponents();
     for (Component comp : components) {
       if (comp != null && comp.hasCommonDynamicProps()) {
@@ -2169,16 +2170,16 @@ public class LayoutState
     return false;
   }
 
-  private static boolean needsHostViewForTransition(InternalNode node) {
+  private static boolean needsHostViewForTransition(LithoLayoutResult node) {
     return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getTailComponent());
   }
 
   /**
-   * Similar to {@link #needsHostView(InternalNode, LayoutState)} but without dependency to {@link
-   * LayoutState} instance. This will be used for debugging tools to indicate whether the mountable
-   * output is a wrapped View or View MountSpec. Unlike {@link #needsHostView(InternalNode,
-   * LayoutState)} this does not consider accessibility also does not consider root component, but
-   * this approximation is good enough for debugging purposes.
+   * Similar to {@link #needsHostView(LithoLayoutResult, LayoutState)} but without dependency to
+   * {@link LayoutState} instance. This will be used for debugging tools to indicate whether the
+   * mountable output is a wrapped View or View MountSpec. Unlike {@link
+   * #needsHostView(LithoLayoutResult, LayoutState)} this does not consider accessibility also does
+   * not consider root component, but this approximation is good enough for debugging purposes.
    */
   static boolean hasViewOutput(InternalNode node) {
     return node.isForceViewWrapping()
@@ -2405,7 +2406,7 @@ public class LayoutState
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(getLayoutStateContext(), stateHandler);
   }
 
-  private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
+  private static @Nullable TransitionId getTransitionIdForNode(LithoLayoutResult node) {
     return TransitionUtils.createTransitionId(
         node.getTransitionKey(),
         node.getTransitionKeyType(),

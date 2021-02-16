@@ -102,7 +102,7 @@ class ViewNodeInfo {
     return mLayoutDirection;
   }
 
-  void setExpandedTouchBounds(InternalNode node, int l, int t, int r, int b) {
+  void setExpandedTouchBounds(LithoLayoutResult node, int l, int t, int r, int b) {
     if (!node.hasTouchExpansion()) {
       return;
     }
