@@ -57,8 +57,6 @@ public interface LithoLayoutResult extends ComponentLayout {
    */
   boolean isInitialized();
 
-  boolean hasNewLayout();
-
   /* Component related APIs */
 
   /**

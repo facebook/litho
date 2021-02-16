@@ -40,7 +40,6 @@ import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
-import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
@@ -58,7 +57,6 @@ import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
-import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
@@ -187,7 +185,6 @@ public class LayoutState
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
-  @NodeInfo.EnabledState private int mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
@@ -715,9 +712,6 @@ public class LayoutState
       return;
     }
 
-    if (node.hasNewLayout()) {
-      node.markLayoutSeen();
-    }
     final Component component = node.getTailComponent();
     final String componentGlobalKey =
         ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
@@ -769,18 +763,6 @@ public class LayoutState
       return;
     }
 
-    // IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS sets node to YES and children to
-    // NO_HIDE_DESCENDANTS
-    if (node.getImportantForAccessibility()
-        == ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
-      node.importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES);
-      for (int i = 0, size = node.getChildCount(); i < size; i++) {
-        node.getChildAt(i)
-            .importantForAccessibility(
-                ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-      }
-    }
-
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
     final DiffNode currentDiffNode = node.getDiffNode();
     final boolean shouldUseCachedOutputs = isMountSpec(component) && currentDiffNode != null;
@@ -794,11 +776,6 @@ public class LayoutState
       }
     } else {
       diffNode = null;
-    }
-
-    // If the parent of this node is disabled, this node has to be disabled too.
-    if (layoutState.mParentEnabledState == ENABLED_SET_FALSE) {
-      node.getOrCreateNodeInfo().setEnabled(false);
     }
 
     final boolean needsHostView = needsHostView(node, layoutState);
@@ -951,9 +928,6 @@ public class LayoutState
 
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
-    @NodeInfo.EnabledState final int parentEnabledState = layoutState.mParentEnabledState;
-    layoutState.mParentEnabledState =
-        (node.getNodeInfo() != null) ? node.getNodeInfo().getEnabledState() : ENABLED_UNSET;
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
@@ -961,7 +935,6 @@ public class LayoutState
           node.getContext(), node.getChildAt(i), layoutState, parent, diffNode, hierarchy);
     }
 
-    layoutState.mParentEnabledState = parentEnabledState;
     layoutState.mCurrentX -= node.getX();
     layoutState.mCurrentY -= node.getY();
 

@@ -22,6 +22,10 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
+import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
@@ -332,7 +336,31 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void freeze() {}
+  public void freeze() {
+
+    // If parents important for A11Y is YES_HIDE_DESCENDANTS then
+    // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
+    final InternalNode parent = getParent();
+
+    if (parent != null
+        && parent.getImportantForAccessibility()
+            == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+      importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    }
+
+    // If the parent of this node is disabled, this node has to be disabled too.
+    final @NodeInfo.EnabledState int parentEnabledState;
+    if (parent != null && parent.getNodeInfo() != null) {
+      parentEnabledState = parent.getNodeInfo().getEnabledState();
+    } else {
+      parentEnabledState = ENABLED_UNSET;
+    }
+
+    // If the parent of this node is disabled, this node has to be disabled too.
+    if (parentEnabledState == ENABLED_SET_FALSE) {
+      getOrCreateNodeInfo().setEnabled(false);
+    }
+  }
 
   @Override
   public void calculateLayout(float width, float height) {
@@ -918,11 +946,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public boolean hasNewLayout() {
-    return mYogaNode.hasNewLayout();
-  }
-
-  @Override
   public boolean hasStateListAnimatorResSet() {
     return (mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0;
   }
@@ -1065,11 +1088,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {
     getOrCreateNestedTreeProps().mIsNestedTreeHolder = true;
     getOrCreateNestedTreeProps().mPendingTreeProps = TreeProps.copy(currentTreeProps);
-  }
-
-  @Override
-  public void markLayoutSeen() {
-    mYogaNode.markLayoutSeen();
   }
 
   @Override

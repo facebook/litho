@@ -57,6 +57,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
+import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.testing.LithoViewRule;
@@ -70,8 +71,11 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ItemCardComponent;
+import com.facebook.litho.widget.ItemCardComponentSpec;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.Function;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import org.junit.After;
@@ -2676,6 +2680,50 @@ public class LayoutStateCalculateTest {
     assertThat(host.implementsVirtualViews())
         .describedAs("The parent output of the Text must implement virtual views")
         .isTrue();
+  }
+
+  @Test
+  public void onMountHierarchyWithParentDisabled_shouldDisableDescendants() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final ItemCardComponentSpec.TreeProps props = new ItemCardComponentSpec.TreeProps();
+    final Output<View> view = new Output<>();
+    final Output<Boolean> clicked = new Output<>();
+    clicked.set(false);
+    props.onCardActionViewVisible =
+        new Function<Void>() {
+
+          @Override
+          public @Nullable Void call(@Nullable Object... arguments) {
+            assertThat(arguments).isNotNull();
+            assertThat(arguments).isNotEmpty();
+            view.set((View) arguments[0]);
+            return null;
+          }
+        };
+
+    props.onCardActionsTouched =
+        new Function<Void>() {
+          @Override
+          public @Nullable Void call(@Nullable Object... arguments) {
+            clicked.set(true);
+            return null;
+          }
+        };
+
+    props.areCardToolsDisabled = true;
+
+    final Component root =
+        ItemCardComponent.create(c).body(Text.create(c).text("hello").build()).id(1).build();
+
+    mLithoViewRule
+        .setTreeProp(ItemCardComponentSpec.TreeProps.class, props)
+        .setRoot(root)
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    assertThat(view.get()).isNotNull();
+    assertThat(view.get().isEnabled()).isFalse();
   }
 
   private void enableAccessibility() {

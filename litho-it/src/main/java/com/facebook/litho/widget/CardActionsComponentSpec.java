@@ -17,15 +17,21 @@
 package com.facebook.litho.widget;
 
 import android.graphics.Color;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.widget.ItemCardComponentSpec.TreeProps;
 
 @LayoutSpec
 class CardActionsComponentSpec {
@@ -36,16 +42,32 @@ class CardActionsComponentSpec {
   }
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State boolean isEnabled) {
+  static Component onCreateLayout(
+      ComponentContext c,
+      @State boolean isEnabled,
+      @TreeProp ItemCardComponentSpec.TreeProps props) {
     return Column.create(c)
         .child(Text.create(c).text("controls"))
         .backgroundColor(Color.GRAY)
+        .enabled(props == null || !props.areCardToolsDisabled)
         .child(
             Row.create(c)
                 .enabled(isEnabled)
+                .wrapInView()
+                .visibleHandler(CardActionsComponent.onVisible(c))
                 .child(SolidColor.create(c).color(Color.RED).widthDip(25).heightDip(25))
                 .child(SolidColor.create(c).color(Color.GREEN).widthDip(25).heightDip(25))
                 .child(SolidColor.create(c).color(Color.BLUE).widthDip(25).heightDip(25)))
         .build();
+  }
+
+  @OnEvent(VisibleEvent.class)
+  static void onVisible(
+      ComponentContext c,
+      @Nullable @FromEvent Object content,
+      @Nullable @TreeProp TreeProps props) {
+    if (props != null && props.onCardActionViewVisible != null) {
+      props.onCardActionViewVisible.call(content);
+    }
   }
 }

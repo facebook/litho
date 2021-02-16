@@ -139,8 +139,6 @@ public interface InternalNode
   /** Mark this node as a nested tree root holder. */
   void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps);
 
-  void markLayoutSeen();
-
   void registerDebugComponent(DebugComponent debugComponent);
 
   InternalNode removeChildAt(int index);
