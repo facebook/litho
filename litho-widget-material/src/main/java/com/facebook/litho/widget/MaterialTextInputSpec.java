@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.MovementMethod;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.view.ViewCompat;
@@ -307,7 +308,7 @@ class MaterialTextInputSpec {
   protected static MountableTextInputLayout onCreateMountContent(Context c) {
     MountableTextInputLayout mountableTextInputLayout = new MountableTextInputLayout(c);
     EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
-    mountableTextInputLayout.addView(editText);
+    mountableTextInputLayout.addView(editText, -1, ViewGroup.LayoutParams.MATCH_PARENT);
     return mountableTextInputLayout;
   }
 
