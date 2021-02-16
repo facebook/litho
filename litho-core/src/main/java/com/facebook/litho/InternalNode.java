@@ -29,13 +29,15 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNode.Inputs;
 import com.facebook.yoga.YogaWrap;
 import java.util.List;
 import javax.annotation.Nullable;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode extends LithoLayoutResult, LayoutProps, Copyable<InternalNode> {
+public interface InternalNode
+    extends Inputs, LithoLayoutResult, LayoutProps, Copyable<InternalNode> {
 
   void addChildAt(InternalNode child, int index);
 

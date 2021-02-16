@@ -911,4 +911,7 @@ class NoOpInternalNode implements InternalNode {
       @Nullable String nextKey) {
     return this;
   }
+
+  @Override
+  public void freeze() {}
 }
