@@ -188,8 +188,6 @@ public interface InternalNode
 
   void applyAttributes(TypedArray a);
 
-  void assertContextSpecificStyleNotSet();
-
   InternalNode deepClone();
 
   /**

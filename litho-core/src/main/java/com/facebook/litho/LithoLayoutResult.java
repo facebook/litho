@@ -240,6 +240,8 @@ public interface LithoLayoutResult extends ComponentLayout {
   @Nullable
   DiffNode getDiffNode();
 
+  void assertContextSpecificStyleNotSet();
+
   /* Nested tree related APIs */
 
   boolean hasNestedTree();
