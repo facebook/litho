@@ -1205,7 +1205,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (mLithoHostListenerCoordinator != null) {
         mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       }
-      mMountDelegateTarget.mount(layoutState.toRenderTree());
+      if (mDelegateToRenderCore) {
+        mMountDelegateTarget.mount(layoutState.toRenderTree());
+      } else {
+        ((MountState) mMountDelegateTarget).mount(layoutState, true);
+      }
       if (mLithoHostListenerCoordinator != null) {
         mLithoHostListenerCoordinator.afterMount();
       }
