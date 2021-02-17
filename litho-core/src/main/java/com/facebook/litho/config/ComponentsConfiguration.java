@@ -269,4 +269,10 @@ public class ComponentsConfiguration {
    * released too.
    */
   public static boolean releaseNestedLithoViews = false;
+
+  /**
+   * Only used for testing. If true, the framework will not throw an error if a null LayoutState is
+   * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
+   */
+  @Deprecated public static boolean ignoreNullLayoutStateError = false;
 }

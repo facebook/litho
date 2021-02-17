@@ -2121,7 +2121,7 @@ public class ComponentTree {
 
     if (localLayoutState == null) {
       if (!isReleased() && isFromSyncLayout(source) && !mUseCancelableLayoutFutures) {
-        throw new IllegalStateException(
+        final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
                 + ", current thread: "
@@ -2129,7 +2129,14 @@ public class ComponentTree {
                 + ". Root: "
                 + (mRoot == null ? "null" : mRoot.getSimpleName())
                 + ". Interruptible layouts: "
-                + mMoveLayoutsBetweenThreads);
+                + mMoveLayoutsBetweenThreads;
+
+        if (ComponentsConfiguration.ignoreNullLayoutStateError) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR, "ComponentTree:LayoutStateNull", errorMessage);
+        } else {
+          throw new IllegalStateException(errorMessage);
+        }
       }
 
       return;
