@@ -44,10 +44,7 @@ public class MountDelegate {
   }
 
   public void addExtension(MountExtension mountExtension) {
-    mMountExtensions.add(mountExtension);
-
     final ExtensionState extensionState = mountExtension.createExtensionState(this);
-    mExtensionStates.put(mountExtension, extensionState);
 
     if (mountExtension instanceof UnmountDelegateExtension) {
       mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) mountExtension);
@@ -55,14 +52,14 @@ public class MountDelegate {
     }
 
     mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
+
+    mExtensionStates.put(mountExtension, extensionState);
+    mMountExtensions.add(mountExtension);
   }
 
   void unregisterAllExtensions() {
-    for (MountExtension mountExtension : mMountExtensions) {
-      mExtensionStates.remove(mountExtension);
-    }
-
     mMountExtensions.clear();
+    mExtensionStates.clear();
     mReferenceCountingEnabled = false;
   }
 
