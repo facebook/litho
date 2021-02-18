@@ -459,7 +459,7 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     return rect.isEmpty() ? 0 : (rect.width() * rect.height());
   }
 
-  static class VisibilityMountExtensionState {
+  public static class VisibilityMountExtensionState {
 
     // Holds a list with information about the components linked to the VisibilityOutputs that are
     // stored in LayoutState. An item is inserted in this map if its corresponding component is

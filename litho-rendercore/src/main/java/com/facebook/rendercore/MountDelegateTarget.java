@@ -67,5 +67,6 @@ public interface MountDelegateTarget {
 
   void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension);
 
+  @Nullable
   ExtensionState getExtensionState(MountExtension mountExtension);
 }

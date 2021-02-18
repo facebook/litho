@@ -271,8 +271,8 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public ExtensionState getExtensionState(MountExtension mountExtension) {
-    return mMountDelegate.getExtensionState(mountExtension);
+  public @Nullable ExtensionState getExtensionState(MountExtension mountExtension) {
+    return mMountDelegate != null ? mMountDelegate.getExtensionState(mountExtension) : null;
   }
 
   /**

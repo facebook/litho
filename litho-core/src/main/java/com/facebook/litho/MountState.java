@@ -735,7 +735,7 @@ class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public ExtensionState getExtensionState(MountExtension mountExtension) {
+  public @Nullable ExtensionState getExtensionState(MountExtension mountExtension) {
     if (mountExtension == mVisibilityExtension) {
       return mVisibilityExtensionState;
     }
