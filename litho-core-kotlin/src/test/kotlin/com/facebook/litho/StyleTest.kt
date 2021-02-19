@@ -26,7 +26,7 @@ import org.junit.runners.JUnit4
 class StyleTest {
 
   private class TestStyleItem(val name: String) : StyleItem {
-    override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) = Unit
+    override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) = Unit
   }
 
   @Test

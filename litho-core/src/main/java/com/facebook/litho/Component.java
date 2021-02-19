@@ -809,7 +809,7 @@ public abstract class Component extends ComponentLifecycle
    *     needed
    * @see DynamicPropsManager
    */
-  private SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+  SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
     if (mCommonDynamicProps == null) {
       mCommonDynamicProps = new SparseArray<>();
     }

@@ -19,6 +19,7 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
+import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR
 import com.facebook.litho.drawable.ComparableColorDrawable
 
 /** Enums for [ObjectStyleItem]. */
@@ -41,19 +42,25 @@ private enum class FloatField {
   SHADOW_ELEVATION,
 }
 
+/** Enums for [DynamicStyleItem]. */
+private enum class DynamicField {
+  BACKGROUND,
+}
+
 /**
  * Part of a [Style] that can apply an attribute to an underlying Component, e.g. width or click
  * handling.
  */
 interface StyleItem {
 
-  /** Sets this style item value on the given [CommonProps]. */
-  fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps)
+  /** Sets this style item value on the given [Component]. */
+  fun applyToComponent(resourceResolver: ResourceResolver, component: Component)
 }
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
 private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
-  override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) {
+  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    val commonProps = component.getOrCreateCommonProps()
     when (field) {
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
@@ -78,13 +85,29 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 private class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
-  override fun applyToProps(resourceResolver: ResourceResolver, commonProps: CommonProps) {
+  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    val commonProps = component.getOrCreateCommonProps()
     when (field) {
       FloatField.ALPHA -> commonProps.alpha(value)
       FloatField.SHADOW_ELEVATION -> commonProps.shadowElevationPx(value)
     }.exhaustive
   }
 }
+
+/**
+ * Common style item for all dynamic value styles. See note on [DynamicField] about this pattern.
+ */
+private class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) : StyleItem {
+  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    val dynamicProps = component.getOrCreateCommonDynamicProps()
+    when (field) {
+      DynamicField.BACKGROUND -> dynamicProps.put(KEY_BACKGROUND_COLOR, value)
+    }.exhaustive
+  }
+}
+
+/** exposed to avoid package-private error on [Component] */
+internal fun Component.getCommonPropsHolder() = getOrCreateCommonProps()
 
 /**
  * An immutable ordered collection of attributes ( [StyleItem] s) that can be applied to a
@@ -131,6 +154,9 @@ open class Style(
       this +
           ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
 
+  fun backgroundColor(background: DynamicValue<Int>) =
+      this + DynamicStyleItem(DynamicField.BACKGROUND, background)
+
   fun foreground(foreground: Drawable?) = this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
 
   fun onClick(onClick: (ClickEvent) -> Unit) = this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
@@ -166,8 +192,8 @@ open class Style(
     }
   }
 
-  internal fun applyToProps(resourceResolver: ResourceResolver, props: CommonProps) {
-    forEach { it.applyToProps(resourceResolver, props) }
+  internal fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    forEach { it.applyToComponent(resourceResolver, component) }
   }
 
   /**

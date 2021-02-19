@@ -40,7 +40,7 @@ fun DslScope.Column(
     children: List<Component?>? = null
 ): Column =
     Column(alignContent, alignItems, justifyContent, wrap, isReversed, children).apply {
-      style?.applyToProps(resourceResolver, getOrCreateCommonProps())
+      style?.applyToComponent(resourceResolver, this)
     }
 
 /**
@@ -63,5 +63,5 @@ fun DslScope.Row(
     children: List<Component?>? = null
 ): Row =
     Row(alignContent, alignItems, justifyContent, wrap, isReversed, children).apply {
-      style?.applyToProps(resourceResolver, getOrCreateCommonProps())
+      style?.applyToComponent(resourceResolver, this)
     }

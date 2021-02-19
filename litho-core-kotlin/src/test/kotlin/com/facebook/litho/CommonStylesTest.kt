@@ -409,6 +409,31 @@ class CommonStylesTest {
   }
 
   @Test
+  fun dynamic_backgroundColor_whenSet_isRespected() {
+    val startValue: Int = Color.RED
+    val backgroundColorDV: DynamicValue<Int> = DynamicValue<Int>(startValue)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px).backgroundColor(backgroundColorDV))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.background).isInstanceOf(ColorDrawable::class.java)
+    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color).isEqualTo(Color.RED)
+
+    backgroundColorDV.set(Color.WHITE)
+    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color).isEqualTo(Color.WHITE)
+
+    backgroundColorDV.set(Color.TRANSPARENT)
+    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color)
+        .isEqualTo(Color.TRANSPARENT)
+  }
+
+  @Test
   fun foreground_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
