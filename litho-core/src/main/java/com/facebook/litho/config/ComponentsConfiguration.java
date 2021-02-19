@@ -275,4 +275,6 @@ public class ComponentsConfiguration {
    * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
    */
   @Deprecated public static boolean ignoreNullLayoutStateError = false;
+
+  public static boolean interruptUseCurrentLayoutSource = false;
 }

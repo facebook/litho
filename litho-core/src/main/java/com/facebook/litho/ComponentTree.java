@@ -309,6 +309,8 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
+  private final boolean mInterruptUseCurrentLayoutSource;
+
   private final boolean mForceAsyncStateUpdate;
 
   private final @Nullable String mLogTag;
@@ -343,6 +345,7 @@ public class ComponentTree {
     addMeasureListener(builder.mMeasureListener);
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
+    mInterruptUseCurrentLayoutSource = ComponentsConfiguration.interruptUseCurrentLayoutSource;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
@@ -2549,6 +2552,7 @@ public class ComponentTree {
             treeProps,
             source,
             extraAttribution);
+    final boolean waitingFromSyncLayout = localLayoutStateFuture.isFromSyncLayout;
 
     synchronized (mLayoutStateFutureLock) {
       boolean canReuse = false;
@@ -2565,7 +2569,7 @@ public class ComponentTree {
         mLayoutStateFutures.add(localLayoutStateFuture);
       }
 
-      localLayoutStateFuture.registerForResponse();
+      localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
     }
 
     final LayoutState layoutState = localLayoutStateFuture.runAndGet(source);
@@ -2680,8 +2684,10 @@ public class ComponentTree {
     @Nullable private final TreeProps treeProps;
     private final RunnableFuture<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
+    private final boolean isFromSyncLayout;
     private final int layoutVersion;
     private volatile boolean interruptRequested;
+    @CalculateLayoutSource private final int source;
     private final String extraAttribution;
 
     @Nullable private volatile Object interruptToken;
@@ -2689,6 +2695,8 @@ public class ComponentTree {
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
+
+    private boolean isBlockingSyncLayout;
 
     private LayoutStateFuture(
         final ComponentContext context,
@@ -2706,6 +2714,8 @@ public class ComponentTree {
       this.heightSpec = heightSpec;
       this.diffingEnabled = diffingEnabled;
       this.treeProps = treeProps;
+      this.isFromSyncLayout = isFromSyncLayout(source);
+      this.source = source;
       this.extraAttribution = extraAttribution;
       this.layoutVersion = layoutVersion;
 
@@ -2720,7 +2730,7 @@ public class ComponentTree {
                           return null;
                         }
                       }
-                      final LayoutState result = calculateLayoutStateInternal(source);
+                      final LayoutState result = calculateLayoutStateInternal();
                       synchronized (LayoutStateFuture.this) {
                         if (released) {
                           return null;
@@ -2733,7 +2743,7 @@ public class ComponentTree {
               "LayoutStateFuture_calculateLayout");
     }
 
-    private LayoutState calculateLayoutStateInternal(@CalculateLayoutSource final int source) {
+    private LayoutState calculateLayoutStateInternal() {
       @Nullable
       LayoutStateFuture layoutStateFuture =
           ComponentTree.this.mMoveLayoutsBetweenThreads
@@ -2795,12 +2805,19 @@ public class ComponentTree {
       }
     }
 
-    void registerForResponse() {
+    void registerForResponse(boolean waitingFromSyncLayout) {
       refCount.incrementAndGet();
+      if (waitingFromSyncLayout) {
+        this.isBlockingSyncLayout = true;
+      }
     }
 
     public int getWaitingCount() {
       return refCount.get();
+    }
+
+    boolean canBeCancelled() {
+      return !isBlockingSyncLayout && !isFromSyncLayout;
     }
 
     @VisibleForTesting
@@ -2816,9 +2833,10 @@ public class ComponentTree {
       final boolean didRaiseThreadPriority;
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
-      final boolean isSyncLayout = isFromSyncLayout(source);
+      final boolean isSyncLayout =
+          mInterruptUseCurrentLayoutSource ? isFromSyncLayout(source) : isFromSyncLayout;
 
-      if (shouldWaitForResult && !isMainThread() && !isSyncLayout) {
+      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
         return null;
       }
 
@@ -2891,7 +2909,7 @@ public class ComponentTree {
                 onBeginWorkContinuation("continuePartialLayoutState", continuationToken);
             continuationToken = null;
             try {
-              result = resolvePartialInternalNodeAndCalculateLayout(result, source);
+              result = resolvePartialInternalNodeAndCalculateLayout(result);
             } catch (Throwable th) {
               markFailure(token, th);
               throw th;
@@ -2944,7 +2962,7 @@ public class ComponentTree {
     }
 
     private LayoutState resolvePartialInternalNodeAndCalculateLayout(
-        final LayoutState partialLayoutState, @CalculateLayoutSource final int source) {
+        final LayoutState partialLayoutState) {
       if (released) {
         return null;
       }
