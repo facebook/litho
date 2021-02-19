@@ -397,6 +397,18 @@ class CommonStylesTest {
   }
 
   @Test
+  fun backgroundColor_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).backgroundColor(Color.WHITE)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+  }
+
+  @Test
   fun foreground_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())

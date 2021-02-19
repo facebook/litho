@@ -18,6 +18,8 @@ package com.facebook.litho
 
 import android.graphics.drawable.Drawable
 import android.view.ViewOutlineProvider
+import androidx.annotation.ColorInt
+import com.facebook.litho.drawable.ComparableColorDrawable
 
 /** Enums for [ObjectStyleItem]. */
 private enum class ObjectField {
@@ -124,6 +126,10 @@ open class Style(
   }
 
   fun background(background: Drawable?) = this + ObjectStyleItem(ObjectField.BACKGROUND, background)
+
+  fun backgroundColor(@ColorInt backgroundColor: Int) =
+      this +
+          ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
 
   fun foreground(foreground: Drawable?) = this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
 
