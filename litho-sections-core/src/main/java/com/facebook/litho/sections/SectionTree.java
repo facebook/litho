@@ -602,7 +602,12 @@ public class SectionTree {
     final SectionLocationInfo sectionLocationInfo =
         findSectionForKeyRecursive(mBoundSection, key, 0);
     if (sectionLocationInfo == null) {
-      throw new SectionKeyNotFoundException("Did not find section with key '" + key + "'!");
+      throw new SectionKeyNotFoundException(
+          "Did not find section with key '"
+              + key
+              + "'! Currently bound section's global key is '"
+              + mBoundSection.getGlobalKey()
+              + "'");
     }
 
     return sectionLocationInfo;
