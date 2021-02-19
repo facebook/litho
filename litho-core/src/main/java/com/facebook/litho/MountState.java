@@ -194,6 +194,15 @@ class MountState implements MountDelegateTarget {
     mMountDelegate.addExtension(mountExtension);
   }
 
+  @Override
+  public void unregisterMountDelegateExtension(MountExtension mountExtension) {
+    if (mMountDelegate == null) {
+      return;
+    }
+
+    mMountDelegate.removeExtension(mountExtension);
+  }
+
   /**
    * To be called whenever the components needs to start the mount process from scratch e.g. when
    * the component's props or layout change or when the components gets attached to a host.
@@ -732,6 +741,11 @@ class MountState implements MountDelegateTarget {
   @Override
   public void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension) {
     mUnmountDelegateExtension = unmountDelegateExtension;
+  }
+
+  @Override
+  public void removeUnmountDelegateExtension() {
+    mUnmountDelegateExtension = null;
   }
 
   @Override

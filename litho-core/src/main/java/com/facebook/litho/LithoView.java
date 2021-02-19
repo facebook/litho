@@ -723,10 +723,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
             "Cannot enable transitions extension or incremental mount extension without a MountDelegateTarget.");
       }
 
-      if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
-        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
-      }
-
       mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
 
       if (ComponentsConfiguration.isEndToEndTestRun) {
@@ -738,6 +734,14 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
 
       mLithoHostListenerCoordinator.enableDynamicProps();
+    }
+
+    if (componentTree != null) {
+      if (componentTree.isIncrementalMountEnabled()) {
+        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
+      } else {
+        mLithoHostListenerCoordinator.disableIncrementalMount();
+      }
     }
   }
 

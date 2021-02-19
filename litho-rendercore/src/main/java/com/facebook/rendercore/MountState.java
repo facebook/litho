@@ -236,6 +236,17 @@ public class MountState implements MountDelegateTarget {
     mMountDelegate.addExtension(mountExtension);
   }
 
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
+  @Override
+  public void unregisterMountDelegateExtension(MountExtension mountExtension) {
+    if (mMountDelegate == null) {
+      return;
+    }
+
+    mMountDelegate.removeExtension(mountExtension);
+  }
+
   @Override
   public ArrayList<Host> getHosts() {
     final ArrayList<Host> hosts = new ArrayList<>();
@@ -268,6 +279,11 @@ public class MountState implements MountDelegateTarget {
   @Override
   public void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension) {
     mUnmountDelegateExtension = unmountDelegateExtension;
+  }
+
+  @Override
+  public void removeUnmountDelegateExtension() {
+    mUnmountDelegateExtension = null;
   }
 
   @Override

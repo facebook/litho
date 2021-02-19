@@ -57,10 +57,30 @@ public class MountDelegate {
     mMountExtensions.add(mountExtension);
   }
 
+  public void removeExtension(MountExtension mountExtension) {
+    mMountExtensions.remove(mountExtension);
+    mExtensionStates.remove(mountExtension);
+
+    if (mountExtension instanceof UnmountDelegateExtension) {
+      mMountDelegateTarget.removeUnmountDelegateExtension();
+      mUnmountDelegateExtensionState = null;
+    }
+
+    updateRefCountEnabled();
+  }
+
   void unregisterAllExtensions() {
     mMountExtensions.clear();
     mExtensionStates.clear();
     mReferenceCountingEnabled = false;
+  }
+
+  private void updateRefCountEnabled() {
+    mReferenceCountingEnabled = false;
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      mReferenceCountingEnabled =
+          mReferenceCountingEnabled || mMountExtensions.get(i).canPreventMount();
+    }
   }
 
   void unBind() {

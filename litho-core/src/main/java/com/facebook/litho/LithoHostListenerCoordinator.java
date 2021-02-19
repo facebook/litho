@@ -124,14 +124,22 @@ public class LithoHostListenerCoordinator {
 
   void enableIncrementalMount(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mIncrementalMountExtension != null) {
-      throw new IllegalStateException(
-          "Incremental mount has already been enabled on this coordinator.");
+      return;
     }
 
     mIncrementalMountExtension = IncrementalMountExtension.getInstance();
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
+  }
+
+  void disableIncrementalMount() {
+    if (mIncrementalMountExtension == null) {
+      return;
+    }
+    mMountDelegateTarget.unregisterMountDelegateExtension(mIncrementalMountExtension);
+    removeListener(mIncrementalMountExtension);
+    mIncrementalMountExtension = null;
   }
 
   void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
@@ -175,11 +183,6 @@ public class LithoHostListenerCoordinator {
     return mVisibilityExtension;
   }
 
-  @Nullable
-  TransitionsExtension getTransitionsExtension() {
-    return mTransitionsExtension;
-  }
-
   void clearLastMountedTreeId() {
     if (mTransitionsExtension != null) {
       ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
@@ -218,6 +221,10 @@ public class LithoHostListenerCoordinator {
 
   private void registerListener(MountExtension mountListenerExtension) {
     mMountExtensions.add(mountListenerExtension);
+  }
+
+  private void removeListener(MountExtension mountExtension) {
+    mMountExtensions.remove(mountExtension);
   }
 
   @VisibleForTesting
