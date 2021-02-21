@@ -49,8 +49,7 @@ internal constructor(
     val result =
         c.getCachedValue(cacheInputs) ?: calculator().also { c.putCachedValue(cacheInputs, it) }
 
-    @Suppress("UNCHECKED_CAST")
-    return result as T
+    @Suppress("UNCHECKED_CAST") return result as T
   }
 }
 
