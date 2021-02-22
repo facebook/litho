@@ -26,6 +26,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -46,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class VisibilityEventsIncrementalMountDisabledTest {
@@ -81,7 +81,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   @Before
   public void setup() {
 
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(ApplicationProvider.getApplicationContext());
 
     mLithoView = new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore);
     mParent = new FrameLayout(mContext.getAndroidContext());

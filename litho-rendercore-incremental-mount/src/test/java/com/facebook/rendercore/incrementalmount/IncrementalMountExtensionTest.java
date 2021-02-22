@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.rendercore.HostView;
 import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.Node.LayoutResult;
@@ -43,7 +44,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
@@ -399,7 +399,7 @@ public class IncrementalMountExtensionTest {
 
   @Test
   public void testNegativeMarginChild_forcesHostMount() {
-    final Context c = RuntimeEnvironment.application;
+    final Context c = ApplicationProvider.getApplicationContext();
     final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);
@@ -461,7 +461,7 @@ public class IncrementalMountExtensionTest {
 
   @Test
   public void testNegativeMarginChild_hostMovedAndUnmounted_forcesHostMount() {
-    final Context c = RuntimeEnvironment.application;
+    final Context c = ApplicationProvider.getApplicationContext();
     final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
 
     final MountState mountState = createMountState(c);

@@ -21,6 +21,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
 import android.view.View;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
@@ -42,7 +43,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.LooperMode;
 
 /** Tests to make sure we wrap exceptions from common apis with the right metadata. */
@@ -137,7 +137,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expectMessage("log_tag: myLogTag");
 
     final ComponentContext c =
-        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+        new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
 
     mLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
@@ -153,7 +153,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expectMessage("log_tag: myLogTag");
 
     final ComponentContext c =
-        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+        new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
     mLithoViewRule
         .useComponentTree(ComponentTree.create(c).build())
         .setSizePx(100, 100)
@@ -170,7 +170,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expectMessage("component_scope: OnClickCallbackComponent");
 
     final ComponentContext c =
-        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+        new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
     final Component component =
         Column.create(c)
             .child(
@@ -203,7 +203,7 @@ public class LithoMetadataExceptionWrapperTest {
     mExpectedException.expectMessage("component_scope: TriggerCallbackComponent");
 
     final ComponentContext c =
-        new ComponentContext(RuntimeEnvironment.application, "myLogTag", null);
+        new ComponentContext(ApplicationProvider.getApplicationContext(), "myLogTag", null);
     final Handle handle = new Handle();
     final Component component =
         Column.create(c)

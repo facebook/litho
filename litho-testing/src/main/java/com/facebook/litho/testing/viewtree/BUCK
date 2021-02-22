@@ -5,6 +5,7 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_DIFFUTILS_TARGET",
     "LITHO_GUAVA_TARGET",
@@ -29,6 +30,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_DIFFUTILS_TARGET,
         LITHO_GUAVA_TARGET,
         LITHO_JAVA_TARGET,

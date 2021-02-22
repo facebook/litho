@@ -24,6 +24,7 @@ import static com.facebook.litho.testing.viewtree.ViewPredicates.isVisible;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
+import androidx.test.core.app.ApplicationProvider;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -31,7 +32,6 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
-import org.robolectric.RuntimeEnvironment;
 
 /**
  * Assertions which require checking an entire view tree
@@ -115,7 +115,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @return the assertions object
    */
   public ViewTreeAssert hasVisibleText(final int resourceId) {
-    return hasVisibleText(RuntimeEnvironment.application.getResources().getString(resourceId));
+    return hasVisibleText(
+        ApplicationProvider.getApplicationContext().getResources().getString(resourceId));
   }
 
   /**
@@ -182,7 +183,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleText(final int resourceId) {
     return doesNotHaveVisibleText(
-        RuntimeEnvironment.application.getResources().getString(resourceId));
+        ApplicationProvider.getApplicationContext().getResources().getString(resourceId));
   }
 
   /**
@@ -193,7 +194,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert hasContentDescription(final int resourceId) {
     return hasContentDescription(
-        RuntimeEnvironment.application.getResources().getString(resourceId));
+        ApplicationProvider.getApplicationContext().getResources().getString(resourceId));
   }
 
   private ImmutableList<View> getPathToVisibleSimilarText(final String text) {
@@ -317,7 +318,8 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @return the assertions object
    */
   public ViewTreeAssert hasVisibleDrawable(final int resourceId) {
-    hasVisibleDrawable(RuntimeEnvironment.application.getResources().getDrawable(resourceId));
+    hasVisibleDrawable(
+        ApplicationProvider.getApplicationContext().getResources().getDrawable(resourceId));
     return this;
   }
 
@@ -350,7 +352,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleDrawable(final int resourceId) {
     doesNotHaveVisibleDrawable(
-        RuntimeEnvironment.application.getResources().getDrawable(resourceId));
+        ApplicationProvider.getApplicationContext().getResources().getDrawable(resourceId));
     return this;
   }
 

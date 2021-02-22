@@ -67,6 +67,7 @@ dependencies {
     implementation deps.supportAppCompat
     implementation deps.textlayoutbuilder
     implementation deps.supportRecyclerView
+    implementation deps.supportTestCore
     implementation deps.supportTestRunner
     compileOnly deps.supportAnnotations
 }
