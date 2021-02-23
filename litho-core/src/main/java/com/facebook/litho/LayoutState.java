@@ -1462,9 +1462,6 @@ public class LayoutState
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
       }
 
-      // Detect errors internal to components
-      component.markLayoutStarted();
-
       layoutState = new LayoutState(c, currentLayoutState);
 
       layoutState.mPrevLayoutStateContext =
@@ -1474,6 +1471,10 @@ public class LayoutState
 
       layoutStateContext =
           new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
+
+      // Detect errors internal to components
+      Component.markLayoutStarted(component, layoutStateContext);
+
       if (isReconcilable && currentLayoutState != null) {
         layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
       }

@@ -275,11 +275,11 @@ public abstract class Component extends ComponentLifecycle
     try {
       final Component component = (Component) super.clone();
 
-      component.mIsLayoutStarted = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
-      component.mScopedContext = null;
       if (!mUseStatelessComponent) {
         component.mGlobalKey = null;
+        component.mIsLayoutStarted = false;
+        component.mScopedContext = null;
         component.mChildCounters = null;
         component.mManualKeysCounter = null;
       }
@@ -560,15 +560,23 @@ public abstract class Component extends ComponentLifecycle
     return clone;
   }
 
-  synchronized void markLayoutStarted() {
+  static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
+    if (component.mUseStatelessComponent) {
+      layoutStateContext.markLayoutStarted();
+    } else {
+      component.markLayoutStarted();
+    }
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  protected synchronized void markLayoutStarted() {
+    if (mUseStatelessComponent) {
+      return;
+    }
     if (mIsLayoutStarted) {
       throw new IllegalStateException("Duplicate layout of a component: " + this);
     }
     mIsLayoutStarted = true;
-  }
-
-  void reset() {
-    mIsLayoutStarted = false;
   }
 
   protected void bindDynamicProp(int dynamicPropIndex, Object value, Object content) {

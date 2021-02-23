@@ -86,7 +86,7 @@ class StateUpdateTestComponent extends Component {
   }
 
   @Override
-  synchronized void markLayoutStarted() {
+  protected synchronized void markLayoutStarted() {
     // No-op because we override makeShallowCopy below :(
   }
 

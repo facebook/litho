@@ -40,6 +40,8 @@ public class LayoutStateContext {
 
   private static @Nullable LayoutState sTestLayoutState;
 
+  private boolean mIsLayoutStarted = false;
+
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     if (sTestLayoutState == null) {
       sTestLayoutState = new LayoutState(c);
@@ -141,5 +143,14 @@ public class LayoutStateContext {
     if (mLayoutStateRef != null) {
       mLayoutStateRef.setInterruptible(false);
     }
+  }
+
+  void markLayoutStarted() {
+    if (mIsLayoutStarted) {
+      throw new IllegalStateException(
+          "Duplicate layout of a component: "
+              + (mComponentTree != null ? mComponentTree.getRoot() : null));
+    }
+    mIsLayoutStarted = true;
   }
 }
