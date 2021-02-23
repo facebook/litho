@@ -24,6 +24,9 @@ public class LifecycleMethodArgumentType {
   public static final LifecycleMethodArgumentType COMPONENT_CONTEXT =
       new LifecycleMethodArgumentType(ClassNames.COMPONENT_CONTEXT);
 
+  public static final LifecycleMethodArgumentType INT =
+      new LifecycleMethodArgumentType(TypeName.INT);
+
   public final TypeName type;
 
   public LifecycleMethodArgumentType(final TypeName type) {

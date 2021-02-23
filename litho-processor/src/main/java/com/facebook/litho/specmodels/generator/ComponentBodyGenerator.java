@@ -913,6 +913,13 @@ public class ComponentBodyGenerator {
         return dependencyInjectionHelper.generateImplAccessor(specModel, methodParamModel);
       }
     } else if (methodParamModel instanceof InterStageInputParamModel) {
+      if (contextParamName == null) {
+        throw new IllegalStateException(
+            "Cannot access param of type inter-stage prop in method "
+                + methodName
+                + " because it doesn't have a scoped ComponentContext as defined parameter.");
+      }
+
       return "getInterStagePropsContainerImpl()." + methodParamModel.getName();
     }
 
@@ -927,6 +934,13 @@ public class ComponentBodyGenerator {
     if (DelegateMethodGenerator.isOutputType(methodParamModel.getTypeName())) {
       if (methodDescription.optionalParameterTypes.contains(
           DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT)) {
+        if (contextParamName == null) {
+          throw new IllegalStateException(
+              "Cannot access param of type inter-stage prop in method "
+                  + methodDescription.name
+                  + " because it doesn't have a scoped ComponentContext as defined parameter.");
+        }
+
         return "getInterStagePropsContainerImpl()." + methodParamModel.getName();
       }
     }

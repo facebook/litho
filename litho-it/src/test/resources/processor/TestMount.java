@@ -293,9 +293,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void onPopulateAccessibilityNode(View host, AccessibilityNodeInfoCompat node) {
+  protected void onPopulateAccessibilityNode(
+      ComponentContext c, View host, AccessibilityNodeInfoCompat node) {
     TestMountSpec.onPopulateAccessibilityNode(
-        (View) host, (AccessibilityNodeInfoCompat) node, (CharSequence) prop7);
+        (ComponentContext) c,
+        (View) host,
+        (AccessibilityNodeInfoCompat) node,
+        (CharSequence) prop7);
   }
 
   @Override
@@ -304,11 +308,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected int getExtraAccessibilityNodesCount() {
+  protected int getExtraAccessibilityNodesCount(ComponentContext c) {
     int _result;
     _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodesCount(
+                (ComponentContext) c,
                 (int) prop1,
                 (CharSequence) prop7,
                 (Integer) getInterStagePropsContainerImpl().boundsDefinedOutput);
@@ -317,11 +322,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected void onPopulateExtraAccessibilityNode(
+      ComponentContext c,
       AccessibilityNodeInfoCompat node,
       int extraNodeIndex,
       int componentBoundsLeft,
       int componentBoundsTop) {
     TestMountSpec.onPopulateExtraAccessibilityNode(
+        (ComponentContext) c,
         (AccessibilityNodeInfoCompat) node,
         (int) extraNodeIndex,
         (int) componentBoundsLeft,
@@ -337,11 +344,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected int getExtraAccessibilityNodeAt(int x, int y) {
+  protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y) {
     int _result;
     _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodeAt(
+                (ComponentContext) c,
                 (int) x,
                 (int) y,
                 (Object) prop3,

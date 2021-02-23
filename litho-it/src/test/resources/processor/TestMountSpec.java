@@ -127,12 +127,14 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
+      ComponentContext c,
       View host,
       AccessibilityNodeInfoCompat node,
       @Prop(resType = STRING) @Nullable CharSequence prop7) {}
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
+      ComponentContext c,
       @Prop int prop1,
       @Prop(resType = STRING) @Nullable CharSequence prop7,
       @FromBoundsDefined Integer boundsDefinedOutput) {
@@ -141,6 +143,7 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @OnPopulateExtraAccessibilityNode
   static void onPopulateExtraAccessibilityNode(
+      ComponentContext c,
       AccessibilityNodeInfoCompat node,
       int extraNodeIndex,
       int componentBoundsLeft,
@@ -152,6 +155,7 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @GetExtraAccessibilityNodeAt
   static int getExtraAccessibilityNodeAt(
+      ComponentContext c,
       int x,
       int y,
       @Prop Object prop3,

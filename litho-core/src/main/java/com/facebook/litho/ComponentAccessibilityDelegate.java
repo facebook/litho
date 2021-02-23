@@ -76,6 +76,13 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     mNodeInfo = nodeInfo;
   }
 
+  private static ComponentContext getScopedContext(
+      final Component component, final LayoutOutput layoutOutput) {
+    return component.isStateless()
+        ? layoutOutput.getScopedContext()
+        : component.getScopedContext(null, null);
+  }
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat node) {
     final MountItem mountItem = getAccessibleMountItem(mView);
@@ -88,8 +95,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // Coalesce the accessible mount item's information with the
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
-      final Component component = getLayoutOutput(mountItem).getComponent();
-      component.onPopulateAccessibilityNode(host, node);
+      final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+      final Component component = layoutOutput.getComponent();
+      final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
+      component.onPopulateAccessibilityNode(scopedContext, host, node);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
     }
@@ -125,9 +134,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final Component component = getLayoutOutput(mountItem).getComponent();
+    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+    final Component component = layoutOutput.getComponent();
+    final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
 
-    final int extraAccessibilityNodesCount = component.getExtraAccessibilityNodesCount();
+    final int extraAccessibilityNodesCount =
+        component.getExtraAccessibilityNodesCount(scopedContext);
 
     // Expose extra accessibility nodes declared by the component to the
     // accessibility framework. The actual nodes will be populated in
@@ -152,12 +164,14 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
-    final Component component = getLayoutOutput(mountItem).getComponent();
+    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+    final Component component = layoutOutput.getComponent();
     final ComponentLifecycle lifecycle = component;
+    final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
 
     node.setClassName(lifecycle.getClass().getName());
 
-    if (virtualViewId >= lifecycle.getExtraAccessibilityNodesCount()) {
+    if (virtualViewId >= lifecycle.getExtraAccessibilityNodesCount(scopedContext)) {
       Log.e(TAG, "Received unrecognized virtual view id: " + virtualViewId);
 
       // ExploreByTouchHelper insists that we set something.
@@ -166,7 +180,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    lifecycle.onPopulateExtraAccessibilityNode(node, virtualViewId, bounds.left, bounds.top);
+    lifecycle.onPopulateExtraAccessibilityNode(
+        scopedContext, node, virtualViewId, bounds.left, bounds.top);
   }
 
   /**
@@ -180,10 +195,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final Component component = getLayoutOutput(mountItem).getComponent();
+    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+    final Component component = layoutOutput.getComponent();
     final ComponentLifecycle lifecycle = component;
+    final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
 
-    if (lifecycle.getExtraAccessibilityNodesCount() == 0) {
+    if (lifecycle.getExtraAccessibilityNodesCount(scopedContext) == 0) {
       return INVALID_ID;
     }
 
@@ -193,7 +210,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     // Try to find an extra accessibility node that intersects with
     // the given coordinates.
     final int virtualViewId =
-        lifecycle.getExtraAccessibilityNodeAt((int) x - bounds.left, (int) y - bounds.top);
+        lifecycle.getExtraAccessibilityNodeAt(
+            scopedContext, (int) x - bounds.left, (int) y - bounds.top);
 
     return (virtualViewId >= 0 ? virtualViewId : INVALID_ID);
   }
