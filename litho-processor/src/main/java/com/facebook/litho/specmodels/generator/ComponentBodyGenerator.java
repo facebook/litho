@@ -374,9 +374,10 @@ public class ComponentBodyGenerator {
       SpecModel specModel, TypeName interstagePropsContainerImplClassName) {
     return MethodSpec.methodBuilder("getInterStagePropsContainerImpl")
         .addModifiers(Modifier.PRIVATE)
+        .addParameter(specModel.getContextClass(), "c")
         .returns(interstagePropsContainerImplClassName)
         .addStatement(
-            "return ($T) super.getInterStagePropsContainer()",
+            "return ($T) super.getInterStagePropsContainer(c)",
             interstagePropsContainerImplClassName)
         .build();
   }
@@ -882,9 +883,7 @@ public class ComponentBodyGenerator {
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       if (contextParamName == null) {
         throw new IllegalStateException(
-            "Cannot access state with in method "
-                + methodName
-                + " without a scoped component context.");
+            "Cannot access state in method " + methodName + " without a scoped component context.");
       }
       return STATE_CONTAINER_IMPL_GETTER
           + "("
@@ -920,7 +919,10 @@ public class ComponentBodyGenerator {
                 + " because it doesn't have a scoped ComponentContext as defined parameter.");
       }
 
-      return "getInterStagePropsContainerImpl()." + methodParamModel.getName();
+      return "getInterStagePropsContainerImpl("
+          + contextParamName
+          + ")."
+          + methodParamModel.getName();
     }
 
     return methodParamModel.getName();
@@ -940,8 +942,10 @@ public class ComponentBodyGenerator {
                   + methodDescription.name
                   + " because it doesn't have a scoped ComponentContext as defined parameter.");
         }
-
-        return "getInterStagePropsContainerImpl()." + methodParamModel.getName();
+        return "getInterStagePropsContainerImpl("
+            + contextParamName
+            + ")."
+            + methodParamModel.getName();
       }
     }
 

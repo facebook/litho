@@ -128,8 +128,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     return new TestMountInterStagePropsContainer();
   }
 
-  private TestMountInterStagePropsContainer getInterStagePropsContainerImpl() {
-    return (TestMountInterStagePropsContainer) super.getInterStagePropsContainer();
+  private TestMountInterStagePropsContainer getInterStagePropsContainerImpl(ComponentContext c) {
+    return (TestMountInterStagePropsContainer) super.getInterStagePropsContainer(c);
   }
 
   @Override
@@ -247,7 +247,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (int) heightSpec,
         (Size) size,
         (Output<Long>) measureOutputTmp);
-    getInterStagePropsContainerImpl().measureOutput = measureOutputTmp.get();
+    getInterStagePropsContainerImpl(context).measureOutput = measureOutputTmp.get();
   }
 
   @Override
@@ -263,9 +263,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (ComponentLayout) layout,
         (Object) prop3,
         (char[]) prop4,
-        (Long) getInterStagePropsContainerImpl().measureOutput,
+        (Long) getInterStagePropsContainerImpl(c).measureOutput,
         (Output<Integer>) boundsDefinedOutputTmp);
-    getInterStagePropsContainerImpl().boundsDefinedOutput = boundsDefinedOutputTmp.get();
+    getInterStagePropsContainerImpl(c).boundsDefinedOutput = boundsDefinedOutputTmp.get();
   }
 
   @Override
@@ -283,7 +283,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (boolean) prop2,
         (long) getStateContainerImpl(c).state1,
         (S) getStateContainerImpl(c).state2,
-        (Long) getInterStagePropsContainerImpl().measureOutput,
+        (Long) getInterStagePropsContainerImpl(c).measureOutput,
         (TestTreeProp) treeProp);
   }
 
@@ -316,7 +316,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
                 (ComponentContext) c,
                 (int) prop1,
                 (CharSequence) prop7,
-                (Integer) getInterStagePropsContainerImpl().boundsDefinedOutput);
+                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
     return _result;
   }
 
@@ -335,7 +335,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (int) componentBoundsTop,
         (Object) prop3,
         (CharSequence) prop7,
-        (Integer) getInterStagePropsContainerImpl().boundsDefinedOutput);
+        (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
   }
 
   @Override
@@ -354,7 +354,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
                 (int) y,
                 (Object) prop3,
                 (CharSequence) prop7,
-                (Integer) getInterStagePropsContainerImpl().boundsDefinedOutput);
+                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
     return _result;
   }
 

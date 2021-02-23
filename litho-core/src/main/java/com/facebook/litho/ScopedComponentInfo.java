@@ -25,6 +25,7 @@ final class ScopedComponentInfo {
 
   // Can be final if Component is stateless and cloning is not needed anymore.
   private StateContainer mStateContainer;
+  private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
@@ -37,6 +38,7 @@ final class ScopedComponentInfo {
 
   ScopedComponentInfo(Component component) {
     mStateContainer = component.createStateContainer();
+    mInterStagePropsContainer = component.createInterStagePropsContainer();
   }
 
   StateContainer getStateContainer() {
@@ -80,5 +82,10 @@ final class ScopedComponentInfo {
     mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
 
     return manualKeyIndex;
+  }
+
+  @Nullable
+  InterStagePropsContainer getInterStagePropsContainer() {
+    return mInterStagePropsContainer;
   }
 }

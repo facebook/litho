@@ -586,7 +586,7 @@ class Layout {
         // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
       } else if (!shouldComponentUpdate(
           layoutStateContext, layoutNode, prevLayoutStateContext, diffNode)) {
-        applyDiffNodeToLayoutNode(layoutNode, diffNode);
+        applyDiffNodeToLayoutNode(layoutStateContext, layoutNode, prevLayoutStateContext, diffNode);
       }
     } catch (Throwable t) {
       final LithoMetadataExceptionWrapper e =
@@ -605,12 +605,20 @@ class Layout {
    * node.
    */
   private static void applyDiffNodeToLayoutNode(
-      final InternalNode layoutNode, final DiffNode diffNode) {
+      final LayoutStateContext nextLayoutStateContext,
+      final InternalNode layoutNode,
+      final LayoutStateContext diffNodeLayoutStateContext,
+      final DiffNode diffNode) {
     final Component component = layoutNode.getTailComponent();
+    final String componentKey =
+        ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
     if (component != null) {
       component.copyInterStageImpl(
-          component.getInterStagePropsContainer(),
-          diffNode.getComponent().getInterStagePropsContainer());
+          component.getInterStagePropsContainer(nextLayoutStateContext, componentKey),
+          diffNode
+              .getComponent()
+              .getInterStagePropsContainer(
+                  diffNodeLayoutStateContext, diffNode.getComponentGlobalKey()));
     }
 
     layoutNode.setCachedMeasuresValid(true);

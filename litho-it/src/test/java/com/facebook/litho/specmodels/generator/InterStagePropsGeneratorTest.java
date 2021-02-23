@@ -133,8 +133,8 @@ public class InterStagePropsGeneratorTest {
 
     assertThat(methodSpec.toString())
         .isEqualTo(
-            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl() {\n"
-                + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer();\n"
+            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl(com.facebook.litho.ComponentContext c) {\n"
+                + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer(c);\n"
                 + "}\n");
   }
 
@@ -187,7 +187,7 @@ public class InterStagePropsGeneratorTest {
                 + "  MountTestSpec.onPrepare(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.Output<java.lang.Integer>) colorTmp);\n"
-                + "  getInterStagePropsContainerImpl().color = colorTmp.get();\n"
+                + "  getInterStagePropsContainerImpl(c).color = colorTmp.get();\n"
                 + "}\n");
 
     assertThat(onBindMethod.toString())
@@ -197,7 +197,7 @@ public class InterStagePropsGeneratorTest {
                 + "  MountTestSpec.onBind(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.LithoView) lithoView,\n"
-                + "    (java.lang.Integer) getInterStagePropsContainerImpl().color);\n"
+                + "    (java.lang.Integer) getInterStagePropsContainerImpl(c).color);\n"
                 + "}\n");
   }
 
