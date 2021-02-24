@@ -938,13 +938,56 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */
-  protected static void registerWorkingRange(
+  private static void registerWorkingRange(
       String name, WorkingRange workingRange, Component component, String globalKey) {
     if (component.mWorkingRangeRegistrations == null) {
       component.mWorkingRangeRegistrations = new ArrayList<>();
     }
     component.mWorkingRangeRegistrations.add(
         new WorkingRangeContainer.Registration(name, workingRange, component, globalKey));
+  }
+
+  /** Store a working range information into a list for later use by {@link LayoutState}. */
+  protected static void registerWorkingRange(
+      ComponentContext scopedContext,
+      String name,
+      WorkingRange workingRange,
+      Component component,
+      String globalKey) {
+    if (component.mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot register WorkingRange outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+
+      layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .registerWorkingRange(name, workingRange, component, globalKey);
+    } else {
+      registerWorkingRange(name, workingRange, component, globalKey);
+    }
+  }
+
+  static void addWorkingRangeToNode(
+      InternalNode node, ComponentContext scopedContext, Component component) {
+    if (component.mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot add working ranges to InternalNode outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      layoutStateContext.getScopedComponentInfo(globalKey).addWorkingRangeToNode(node);
+    } else {
+      if (component.mWorkingRangeRegistrations != null
+          && !component.mWorkingRangeRegistrations.isEmpty()) {
+        node.addWorkingRanges(component.mWorkingRangeRegistrations);
+      }
+    }
   }
 
   protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {

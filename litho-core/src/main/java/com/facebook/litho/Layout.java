@@ -271,11 +271,7 @@ class Layout {
     }
 
     // 13. Add working ranges to the InternalNode.
-    // TODO: (T56146478) Create getters for working ranges.
-    if (component.mWorkingRangeRegistrations != null
-        && !component.mWorkingRangeRegistrations.isEmpty()) {
-      node.addWorkingRanges(component.mWorkingRangeRegistrations);
-    }
+    Component.addWorkingRangeToNode(node, c, component);
 
     if (isTracing) {
       ComponentsSystrace.endSection();

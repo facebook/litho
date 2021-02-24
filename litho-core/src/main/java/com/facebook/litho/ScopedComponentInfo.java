@@ -17,7 +17,9 @@
 package com.facebook.litho;
 
 import android.util.SparseIntArray;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -35,6 +37,12 @@ final class ScopedComponentInfo {
 
   /** Count the times a manual key is used so that clashes can be resolved. */
   @Nullable private Map<String, Integer> mManualKeysCounter;
+
+  /**
+   * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
+   * LayoutState#mWorkingRangeContainer} when calculate method is finished.
+   */
+  private @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
   ScopedComponentInfo(Component component) {
     mStateContainer = component.createStateContainer();
@@ -87,5 +95,21 @@ final class ScopedComponentInfo {
   @Nullable
   InterStagePropsContainer getInterStagePropsContainer() {
     return mInterStagePropsContainer;
+  }
+
+  /** Store a working range information into a list for later use by {@link LayoutState}. */
+  void registerWorkingRange(
+      String name, WorkingRange workingRange, Component component, String globalKey) {
+    if (mWorkingRangeRegistrations == null) {
+      mWorkingRangeRegistrations = new ArrayList<>();
+    }
+    mWorkingRangeRegistrations.add(
+        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey));
+  }
+
+  void addWorkingRangeToNode(InternalNode node) {
+    if (mWorkingRangeRegistrations != null && !mWorkingRangeRegistrations.isEmpty()) {
+      node.addWorkingRanges(mWorkingRangeRegistrations);
+    }
   }
 }
