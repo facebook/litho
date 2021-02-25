@@ -20,11 +20,11 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_GETTER;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
+import static com.facebook.litho.specmodels.generator.InterStagePropsContainerGenerator.getInterStagePropsContainerClassName;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -34,6 +34,7 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -60,7 +61,6 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -89,6 +89,18 @@ public class ComponentBodyGenerator {
       builder.addMethod(generateStateContainerCreator(stateContainerClass));
     }
 
+    boolean hasInterstageProps =
+        specModel.getInterStageInputs() != null && !specModel.getInterStageInputs().isEmpty();
+
+    final ClassName interstagepropsContainerClass =
+        ClassName.bestGuess(getInterStagePropsContainerClassName(specModel));
+    if (hasInterstageProps) {
+      builder.addType(InterStagePropsContainerGenerator.generate(specModel));
+      builder.addMethod(generateInterStagePropsContainerCreator(interstagepropsContainerClass));
+      builder.addMethod(
+          generateInterstagePropsContainerImplGetter(specModel, interstagepropsContainerClass));
+    }
+
     final boolean needsRenderDataInfra = !specModel.getRenderDataDiffs().isEmpty();
     if (needsRenderDataInfra) {
       final ClassName previousRenderDataClass =
@@ -100,7 +112,6 @@ public class ComponentBodyGenerator {
         .addTypeSpecDataHolder(generateInjectedFields(specModel))
         .addTypeSpecDataHolder(generateProps(specModel, runMode))
         .addTypeSpecDataHolder(generateTreeProps(specModel, runMode))
-        .addTypeSpecDataHolder(generateInterStageInputs(specModel))
         .addTypeSpecDataHolder(generateOptionalField(optionalField))
         .addTypeSpecDataHolder(generateEventHandlers(specModel))
         .addTypeSpecDataHolder(generateEventTriggers(specModel));
@@ -109,7 +120,10 @@ public class ComponentBodyGenerator {
       builder.addMethod(generateIsEquivalentMethod(specModel, runMode));
     }
 
-    builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
+    if (hasInterstageProps) {
+      builder.addTypeSpecDataHolder(
+          generateCopyInterStageImpl(specModel, interstagepropsContainerClass));
+    }
     builder.addTypeSpecDataHolder(generateMakeShallowCopy(specModel, hasState));
     builder.addTypeSpecDataHolder(generateGetDynamicProps(specModel));
     builder.addTypeSpecDataHolder(generateBindDynamicProp(specModel));
@@ -356,6 +370,28 @@ public class ComponentBodyGenerator {
     return typeSpecDataHolder.build();
   }
 
+  static MethodSpec generateInterstagePropsContainerImplGetter(
+      SpecModel specModel, TypeName interstagePropsContainerImplClassName) {
+    return MethodSpec.methodBuilder("getInterStagePropsContainerImpl")
+        .addModifiers(Modifier.PRIVATE)
+        .addParameter(specModel.getContextClass(), "c")
+        .returns(interstagePropsContainerImplClassName)
+        .addStatement(
+            "return ($T) super.getInterStagePropsContainer(c)",
+            interstagePropsContainerImplClassName)
+        .build();
+  }
+
+  static MethodSpec generateInterStagePropsContainerCreator(
+      ClassName interStagePropsContainerImplClassName) {
+    return MethodSpec.methodBuilder("createInterStagePropsContainer")
+        .addModifiers(Modifier.PROTECTED)
+        .addAnnotation(Override.class)
+        .returns(interStagePropsContainerImplClassName)
+        .addStatement("return new $T()", interStagePropsContainerImplClassName)
+        .build();
+  }
+
   static TypeSpecDataHolder generateInterStageInputs(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<InterStageInputParamModel> interStageInputs =
@@ -453,25 +489,38 @@ public class ComponentBodyGenerator {
     return isEquivalentBuilder.build();
   }
 
-  static TypeSpecDataHolder generateCopyInterStageImpl(SpecModel specModel) {
+  static TypeSpecDataHolder generateCopyInterStageImpl(
+      SpecModel specModel, ClassName implClassName) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<InterStageInputParamModel> interStageInputs =
         specModel.getInterStageInputs();
 
     if (specModel.shouldGenerateCopyMethod() && !interStageInputs.isEmpty()) {
-      final String className = specModel.getComponentName();
-      final String instanceName = getInstanceRefName(specModel);
+      final String className =
+          InterStagePropsContainerGenerator.getInterStagePropsContainerClassName(specModel);
+      final String copyIntoParam = "copyIntoInterStagePropsContainer";
+      final String copyFromParam = "copyFromInterStagePropsContainer";
+      final String copyIntoInstanceName = copyIntoParam + "_ref";
+      final String copyFromInstanceName = copyFromParam + "_ref";
       final MethodSpec.Builder copyInterStageComponentBuilder =
           MethodSpec.methodBuilder("copyInterStageImpl")
               .addAnnotation(Override.class)
               .addModifiers(Modifier.PROTECTED)
               .returns(TypeName.VOID)
-              .addParameter(specModel.getComponentClass(), "component")
-              .addStatement("$N $N = ($N) component", className, instanceName, className);
+              .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, copyIntoParam)
+              .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, copyFromParam)
+              .addStatement(
+                  "$N $N = ($N) $N", className, copyIntoInstanceName, className, copyIntoParam)
+              .addStatement(
+                  "$N $N = ($N) $N", className, copyFromInstanceName, className, copyFromParam);
 
       for (InterStageInputParamModel interStageInput : interStageInputs) {
         copyInterStageComponentBuilder.addStatement(
-            "$N = $N.$N", interStageInput.getName(), instanceName, interStageInput.getName());
+            "$N.$N = $N.$N",
+            copyIntoInstanceName,
+            interStageInput.getName(),
+            copyFromInstanceName,
+            interStageInput.getName());
       }
 
       typeSpecDataHolder.addMethod(copyInterStageComponentBuilder.build());
@@ -532,14 +581,17 @@ public class ComponentBodyGenerator {
       builder.beginControlFlow("if (!deepCopy)");
     }
 
-    for (InterStageInputParamModel interStageInput : specModel.getInterStageInputs()) {
-      builder.addStatement("component.$L = null", interStageInput.getName());
-    }
-
     final String stateContainerClassName = getStateContainerClassName(specModel);
     if (hasState) {
       builder.addStatement(
           "component.setStateContainer(new $T())", ClassName.bestGuess(stateContainerClassName));
+    }
+
+    final boolean hasInterStageProps =
+        specModel.getInterStageInputs() != null && !specModel.getInterStageInputs().isEmpty();
+    if (hasInterStageProps) {
+      builder.addStatement(
+          "component.setInterStagePropsContainer(createInterStagePropsContainer())");
     }
 
     if (hasDeepCopy) {
@@ -629,21 +681,6 @@ public class ComponentBodyGenerator {
     }
 
     return componentsInImpl;
-  }
-
-  private static List<MethodParamModel> getParams(
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
-    final List<MethodParamModel> params = new ArrayList<>();
-    for (MethodParamModel methodParamModel : updateStateMethodModel.methodParams) {
-      for (Annotation annotation : methodParamModel.getAnnotations()) {
-        if (annotation.annotationType().equals(Param.class)) {
-          params.add(methodParamModel);
-          break;
-        }
-      }
-    }
-
-    return params;
   }
 
   static CodeBlock getCompareStatement(
@@ -841,13 +878,12 @@ public class ComponentBodyGenerator {
       MethodParamModel methodParamModel,
       String contextParamName,
       boolean shallow) {
+
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       if (contextParamName == null) {
         throw new IllegalStateException(
-            "Cannot access state with in method "
-                + methodName
-                + " without a scoped component context.");
+            "Cannot access state in method " + methodName + " without a scoped component context.");
       }
       return STATE_CONTAINER_IMPL_GETTER
           + "("
@@ -875,9 +911,46 @@ public class ComponentBodyGenerator {
       if (dependencyInjectionHelper != null) {
         return dependencyInjectionHelper.generateImplAccessor(specModel, methodParamModel);
       }
+    } else if (methodParamModel instanceof InterStageInputParamModel) {
+      if (contextParamName == null) {
+        throw new IllegalStateException(
+            "Cannot access param of type inter-stage prop in method "
+                + methodName
+                + " because it doesn't have a scoped ComponentContext as defined parameter.");
+      }
+
+      return "getInterStagePropsContainerImpl("
+          + contextParamName
+          + ")."
+          + methodParamModel.getName();
     }
 
     return methodParamModel.getName();
+  }
+
+  static String getImplAccessor(
+      SpecModel specModel,
+      DelegateMethodDescription methodDescription,
+      MethodParamModel methodParamModel,
+      String contextParamName) {
+    if (DelegateMethodGenerator.isOutputType(methodParamModel.getTypeName())) {
+      if (methodDescription.optionalParameterTypes.contains(
+          DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT)) {
+        if (contextParamName == null) {
+          throw new IllegalStateException(
+              "Cannot access param of type inter-stage prop in method "
+                  + methodDescription.name
+                  + " because it doesn't have a scoped ComponentContext as defined parameter.");
+        }
+        return "getInterStagePropsContainerImpl("
+            + contextParamName
+            + ")."
+            + methodParamModel.getName();
+      }
+    }
+
+    return getImplAccessor(
+        methodDescription.name, specModel, methodParamModel, contextParamName, false);
   }
 
   /**

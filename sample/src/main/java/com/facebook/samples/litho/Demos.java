@@ -54,6 +54,7 @@ import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.editor.SimpleEditorExampleActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
+import com.facebook.samples.litho.hscroll.HorizontalScrollWithDynamicItemHeight;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomViewContainerActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
@@ -192,7 +193,15 @@ public class Demos {
                           new SingleDemo(
                               "HorizontalScroll (non-recycling)", HorizontalScrollActivity.class),
                           new SingleDemo("Sections Demo: Lithography", LithographyActivity.class),
-                          new SingleDemo("Snapping", HorizontalScrollWithSnapActivity.class))),
+                          new SingleDemo("Snapping", HorizontalScrollWithSnapActivity.class),
+                          new SingleDemo(
+                              "Dynamic Item Height",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return HorizontalScrollWithDynamicItemHeight.create(c).build();
+                                }
+                              }))),
                   new DemoGrouping(
                       "Common Props",
                       Arrays.asList(

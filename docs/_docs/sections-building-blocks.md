@@ -44,7 +44,7 @@ class MyGroupSection {
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
-          .child(DataDiffSection.create(c)
+          .child(DataDiffSection.<MyModel>create(c)
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEdge(c)))
           .build();

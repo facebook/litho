@@ -42,9 +42,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests for manually specifying estimatedViewportCount to {@link RecyclerBinder} */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class RecyclerBinderManualRangeTest {
 

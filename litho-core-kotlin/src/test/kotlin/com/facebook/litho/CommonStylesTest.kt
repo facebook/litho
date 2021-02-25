@@ -18,13 +18,26 @@ package com.facebook.litho
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.flexbox.alignSelf
+import com.facebook.litho.flexbox.flex
+import com.facebook.litho.flexbox.height
+import com.facebook.litho.flexbox.margin
+import com.facebook.litho.flexbox.maxHeight
+import com.facebook.litho.flexbox.maxWidth
+import com.facebook.litho.flexbox.minHeight
+import com.facebook.litho.flexbox.minWidth
+import com.facebook.litho.flexbox.padding
+import com.facebook.litho.flexbox.position
+import com.facebook.litho.flexbox.positionType
+import com.facebook.litho.flexbox.width
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
-import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType
@@ -35,7 +48,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for common styles defined in [Style]. */
-@RunWith(LithoTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class CommonStylesTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
@@ -44,7 +57,7 @@ class CommonStylesTest {
   fun widthAndHeight_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.size(width = 100.px, height = 100.px)) }
+        .setRoot { Row(style = Style.width(100.px).height(100.px)) }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 100) })
   }
 
@@ -54,8 +67,11 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(height = 100.px).width(maxWidth = 200.px),
-              children = listOf(Row(style = Style.size(width = 500.px))))
+              style = Style.height(100.px).maxWidth(200.px),
+              children =
+                  listOf(
+                      Row(style = Style.width(500.px)),
+                  ))
         }
         .assertMatches(match<LithoView> { bounds(0, 0, 200, 100) })
   }
@@ -64,7 +80,7 @@ class CommonStylesTest {
   fun minWidth_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.size(height = 100.px).width(minWidth = 200.px)) }
+        .setRoot { Row(style = Style.height(100.px).minWidth(200.px)) }
         .assertMatches(match<LithoView> { bounds(0, 0, 200, 100) })
   }
 
@@ -74,8 +90,11 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 100.px).height(maxHeight = 200.px),
-              children = listOf(Row(style = Style.size(height = 500.px))))
+              style = Style.width(100.px).maxHeight(200.px),
+              children =
+                  listOf(
+                      Row(style = Style.height(500.px)),
+                  ))
         }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
   }
@@ -84,7 +103,7 @@ class CommonStylesTest {
   fun minHeight_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.size(width = 100.px).height(minHeight = 200.px)) }
+        .setRoot { Row(style = Style.width(100.px).minHeight(200.px)) }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
   }
 
@@ -94,8 +113,11 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 100.px, height = 100.px),
-              children = listOf(Row(style = Style.flex(basis = 50.px).wrapInView())))
+              style = Style.width(100.px).height(100.px),
+              children =
+                  listOf(
+                      Row(style = Style.flex(basis = 50.px).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -110,8 +132,11 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 100.px, height = 100.px),
-              children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
+              style = Style.width(100.px).height(100.px),
+              children =
+                  listOf(
+                      Row(style = Style.flex(grow = 1f).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -127,15 +152,13 @@ class CommonStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.size(width = 100.px, height = 100.px),
+              style = Style.width(100.px).height(100.px),
               children =
                   listOf(
                       Row(
                           style =
-                              Style.size(height = 100.px)
-                                  .width(minWidth = 50.px)
-                                  .flex(shrink = 1f)
-                                  .wrapInView())))
+                              Style.height(100.px).minWidth(50.px).flex(shrink = 1f).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -150,14 +173,11 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 100.px, height = 100.px),
+              style = Style.width(100.px).height(100.px),
               children =
                   listOf(
-                      Row(
-                          style =
-                              Style.size(width = 100.px)
-                                  .alignSelf(YogaAlign.STRETCH)
-                                  .wrapInView())))
+                      Row(style = Style.width(100.px).alignSelf(YogaAlign.STRETCH).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -179,9 +199,13 @@ class CommonStylesTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
-                  Style.size(width = 100.px, height = 100.px)
+                  Style.width(100.px)
+                      .height(100.px)
                       .padding(start = left.px, top = top.px, end = right.px, bottom = bottom.px),
-              children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
+              children =
+                  listOf(
+                      Row(style = Style.flex(grow = 1f).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -201,9 +225,13 @@ class CommonStylesTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style =
-                  Style.size(width = 100.px, height = 100.px)
+                  Style.width(100.px)
+                      .height(100.px)
                       .padding(horizontal = horizontal.px, vertical = vertical.px),
-              children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
+              children =
+                  listOf(
+                      Row(style = Style.flex(grow = 1f).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -223,8 +251,11 @@ class CommonStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.size(width = 100.px, height = 100.px).padding(padding.px),
-              children = listOf(Row(style = Style.flex(grow = 1f).wrapInView())))
+              style = Style.width(100.px).height(100.px).padding(padding.px),
+              children =
+                  listOf(
+                      Row(style = Style.flex(grow = 1f).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -247,7 +278,7 @@ class CommonStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.size(width = 100.px, height = 100.px),
+              style = Style.width(100.px).height(100.px),
               children =
                   listOf(
                       Row(
@@ -258,7 +289,8 @@ class CommonStylesTest {
                                       end = right.px,
                                       bottom = bottom.px)
                                   .flex(grow = 1f)
-                                  .wrapInView())))
+                                  .wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -277,14 +309,15 @@ class CommonStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.size(width = 100.px, height = 100.px),
+              style = Style.width(100.px).height(100.px),
               children =
                   listOf(
                       Row(
                           style =
                               Style.margin(horizontal = horizontal.px, vertical = vertical.px)
                                   .flex(grow = 1f)
-                                  .wrapInView())))
+                                  .wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -304,8 +337,11 @@ class CommonStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.size(width = 100.px, height = 100.px),
-              children = listOf(Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView())))
+              style = Style.width(100.px).height(100.px),
+              children =
+                  listOf(
+                      Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -325,7 +361,7 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 100.px, height = 100.px),
+              style = Style.width(100.px).height(100.px),
               children =
                   listOf(
                       Row(
@@ -336,7 +372,8 @@ class CommonStylesTest {
                                       top = top.px,
                                       end = right.px,
                                       bottom = bottom.px)
-                                  .wrapInView())))
+                                  .wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -350,10 +387,7 @@ class CommonStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style =
-                  Style.size(width = 100.px, height = 100.px)
-                      .background(ColorDrawable(Color.WHITE)))
+          Row(style = Style.width(100.px).height(100.px).background(ColorDrawable(Color.WHITE)))
         }
         .measure()
         .layout()
@@ -363,14 +397,48 @@ class CommonStylesTest {
   }
 
   @Test
+  fun backgroundColor_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).backgroundColor(Color.WHITE)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+  }
+
+  @Test
+  fun dynamic_backgroundColor_whenSet_isRespected() {
+    val startValue: Int = Color.RED
+    val backgroundColorDV: DynamicValue<Int> = DynamicValue<Int>(startValue)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px).backgroundColor(backgroundColorDV))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.background).isInstanceOf(ColorDrawable::class.java)
+    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color).isEqualTo(Color.RED)
+
+    backgroundColorDV.set(Color.WHITE)
+    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color).isEqualTo(Color.WHITE)
+
+    backgroundColorDV.set(Color.TRANSPARENT)
+    assertThat((lithoViewRule.lithoView.background as ColorDrawable).color)
+        .isEqualTo(Color.TRANSPARENT)
+  }
+
+  @Test
   fun foreground_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style =
-                  Style.size(width = 100.px, height = 100.px)
-                      .foreground(ColorDrawable(Color.WHITE)))
+          Row(style = Style.width(100.px).height(100.px).foreground(ColorDrawable(Color.WHITE)))
         }
         .measure()
         .layout()
@@ -387,14 +455,15 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 200.px, height = 200.px),
+              style = Style.width(200.px).height(200.px),
               children =
                   listOf(
                       Row(
                           style =
-                              Style.size(width = 100.px, height = 100.px)
-                                  .viewTag("click_me")
-                                  .onClick { wasClicked.set(true) })))
+                              Style.width(100.px).height(100.px).viewTag("click_me").onClick {
+                                wasClicked.set(true)
+                              }),
+                  ))
         }
         .measure()
         .layout()
@@ -414,7 +483,7 @@ class CommonStylesTest {
         .setRoot {
           Row(
               style =
-                  Style.size(width = 100.px, height = 100.px).viewTag("click_me").onLongClick {
+                  Style.width(100.px).height(100.px).viewTag("click_me").onLongClick {
                     wasLongClicked.set(true)
                     true
                   })
@@ -434,8 +503,11 @@ class CommonStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(
-              style = Style.size(width = 100.px, height = 100.px),
-              children = listOf(Row(style = Style.size(width = 1.px, height = 1.px).wrapInView())))
+              style = Style.width(100.px).height(100.px),
+              children =
+                  listOf(
+                      Row(style = Style.width(1.px).height(1.px).wrapInView()),
+                  ))
         }
         .assertMatches(
             match<LithoView> {
@@ -451,13 +523,11 @@ class CommonStylesTest {
                 .setSizeSpecs(unspecified(), unspecified())
                 .setRoot {
                   Row(
-                      style = Style.size(width = 200.px, height = 200.px),
+                      style = Style.width(200.px).height(200.px),
                       children =
                           listOf(
-                              Row(
-                                  style =
-                                      Style.size(width = 100.px, height = 100.px)
-                                          .viewTag("view_tag"))))
+                              Row(style = Style.width(100.px).height(100.px).viewTag("view_tag")),
+                          ))
                 }
                 .measure()
                 .layout()
@@ -473,9 +543,7 @@ class CommonStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style =
-                  Style.size(width = 200.px, height = 200.px).onVisible { eventFired.set(true) })
+          Row(style = Style.width(200.px).height(200.px).onVisible { eventFired.set(true) })
         }
         .measure()
         .layout()
@@ -491,11 +559,7 @@ class CommonStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style =
-                  Style.size(width = 200.px, height = 200.px).onFocusedVisible {
-                    eventFired.set(true)
-                  })
+          Row(style = Style.width(200.px).height(200.px).onFocusedVisible { eventFired.set(true) })
         }
         .attachToWindow()
 
@@ -515,17 +579,63 @@ class CommonStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style =
-                  Style.size(width = 200.px, height = 200.px).onFullImpression {
-                    eventFired.set(true)
-                  })
+          Row(style = Style.width(200.px).height(200.px).onFullImpression { eventFired.set(true) })
         }
         .measure()
         .layout()
         .attachToWindow()
 
     assertThat(eventFired.get()).isTrue()
+  }
+
+  @Test
+  fun alpha_whenSet_isRespected() {
+    val alpha = 0.5f
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).alpha(alpha)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(alpha)
+  }
+
+  /**
+   * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so
+   * already loaded in another classloader exception' caused by multiple ClassLoaders trying to load
+   * Yoga when using @Config to specify a different target sdk. See:
+   * https://www.internalfb.com/intern/staticdocs/litho/docs/testing/unit-testing/
+   */
+  @Test
+  fun shadowElevation_whenSet_isRespected() {
+    val elevation = 0.5f
+
+    class ElevationComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        return Row(style = Style.shadowElevation(elevation))
+      }
+    }
+
+    val node = Layout.create(lithoViewRule.context, ElevationComponent())
+    val nodeInfo = node.orCreateNodeInfo
+    assertThat(nodeInfo.shadowElevation).isEqualTo(elevation)
+  }
+
+  /** See comment on [shadowElevation_whenSet_isRespected] above. */
+  @Test
+  fun outlineProvider_whenSet_isRespected() {
+    val outlineProvider = ViewOutlineProvider.BOUNDS
+    class OutlineProviderComponent : KComponent() {
+      override fun DslScope.render(): Component? {
+        return Row(style = Style.outlineProvider(outlineProvider))
+      }
+    }
+
+    val node = Layout.create(lithoViewRule.context, OutlineProviderComponent())
+    val nodeInfo = node.orCreateNodeInfo
+    assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {

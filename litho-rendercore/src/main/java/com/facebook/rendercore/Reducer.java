@@ -165,6 +165,8 @@ public class Reducer {
       final int heightSpec,
       final @Nullable RenderCoreExtension<?, ?>[] extensions) {
 
+    RenderCoreSystrace.beginSection("Reducer.reduceTree");
+
     final Map<RenderCoreExtension<?, ?>, Object> results = populate(extensions);
     final ArrayList<RenderTreeNode> nodes = new ArrayList<>();
     final Rect bounds = new Rect(0, 0, layoutResult.getWidth(), layoutResult.getHeight());
@@ -178,6 +180,8 @@ public class Reducer {
     reduceTree(context, layoutResult, root, 0, 0, nodes, results);
 
     RenderTreeNode[] nodesArray = nodes.toArray(new RenderTreeNode[nodes.size()]);
+
+    RenderCoreSystrace.endSection();
 
     return new RenderTree(root, nodesArray, widthSpec, heightSpec, results);
   }

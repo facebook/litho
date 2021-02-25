@@ -17,9 +17,11 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.RunMode;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /** Class for validating that a {@link SpecModel} is well-formed. */
 public class SpecModelValidation {
@@ -28,6 +30,15 @@ public class SpecModelValidation {
       SpecModel specModel,
       List<String> reservedPropNames,
       List<PropValidation.CommonPropModel> permittedCommonProps,
+      EnumSet<RunMode> runMode) {
+    return validateSpecModel(specModel, reservedPropNames, permittedCommonProps, null, runMode);
+  }
+
+  public static List<SpecModelValidationError> validateSpecModel(
+      SpecModel specModel,
+      List<String> reservedPropNames,
+      List<PropValidation.CommonPropModel> permittedCommonProps,
+      @Nullable List<Class<? extends Annotation>> extraPermittedEventParamAnnotations,
       EnumSet<RunMode> runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
     final DependencyInjectionHelper dependencyInjectionHelper =
@@ -39,7 +50,8 @@ public class SpecModelValidation {
     validationErrors.addAll(
         PropValidation.validate(specModel, reservedPropNames, permittedCommonProps, runMode));
     validationErrors.addAll(StateValidation.validate(specModel));
-    validationErrors.addAll(EventValidation.validate(specModel, runMode));
+    validationErrors.addAll(
+        EventValidation.validate(specModel, runMode, extraPermittedEventParamAnnotations));
     validationErrors.addAll(TriggerValidation.validate(specModel, runMode));
     validationErrors.addAll(TreePropValidation.validate(specModel));
     validationErrors.addAll(DiffValidation.validate(specModel));

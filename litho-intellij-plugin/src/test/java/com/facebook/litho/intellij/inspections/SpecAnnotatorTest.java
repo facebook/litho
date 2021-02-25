@@ -46,16 +46,8 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
   @Test
   public void annotate_forFileWithLayoutSpec_showsErrorMessages() throws IOException {
     final PsiFile file = testHelper.configure("LayoutSpecAnnotatorSpec.java");
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              specAnnotator.annotate(file, holder);
-            });
-    assertThat(holder.errorMessages).hasSize(2);
-    assertThat(holder.errorMessages)
-        .containsExactly(
-            "Methods annotated with interface com.facebook.litho.annotations.OnCreateInitialState must have at least 1 parameters, and they should be of type com.facebook.litho.ComponentContext.",
-            "You need to have a method annotated with either @OnCreateLayout or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout is what you want.");
+    ApplicationManager.getApplication().invokeAndWait(() -> specAnnotator.annotate(file, holder));
+    assertForLayoutSpecShowsErrorMessages(holder);
   }
 
   @Test
@@ -67,27 +59,21 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
               final PsiClass cls = LithoPluginUtils.getFirstLayoutSpec(file).get();
               specAnnotator.annotate(cls, holder);
             });
-    assertThat(holder.errorMessages).hasSize(2);
+    assertForLayoutSpecShowsErrorMessages(holder);
+  }
+
+  private static void assertForLayoutSpecShowsErrorMessages(TestHolder holder) {
+    assertThat(holder.errorMessages).hasSize(1);
     assertThat(holder.errorMessages)
         .containsExactly(
-            "Methods annotated with interface com.facebook.litho.annotations.OnCreateInitialState must have at least 1 parameters, and they should be of type com.facebook.litho.ComponentContext.",
             "You need to have a method annotated with either @OnCreateLayout or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout is what you want.");
   }
 
   @Test
   public void annotate_forFileWithMountSpec_showsErrorMessages() throws IOException {
     final PsiFile file = testHelper.configure("MountSpecAnnotatorSpec.java");
-    ApplicationManager.getApplication()
-        .invokeAndWait(
-            () -> {
-              specAnnotator.annotate(file, holder);
-            });
-    assertThat(holder.errorMessages).hasSize(3);
-    assertThat(holder.errorMessages)
-        .containsExactly(
-            "All MountSpecs need to have a method annotated with @OnCreateMountContent.",
-            "onCreateMountContent's return type should be either a View or a Drawable subclass.",
-            "MountSpecAnnotatorSpec does not define @OnCreateMountContent method which is required for all @MountSpecs.");
+    ApplicationManager.getApplication().invokeAndWait(() -> specAnnotator.annotate(file, holder));
+    assertForMountSpecShowsErrorMessages(holder);
   }
 
   @Test
@@ -100,6 +86,10 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
                   LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isMountSpec).get();
               specAnnotator.annotate(cls, holder);
             });
+    assertForMountSpecShowsErrorMessages(holder);
+  }
+
+  private static void assertForMountSpecShowsErrorMessages(TestHolder holder) {
     assertThat(holder.errorMessages).hasSize(3);
     assertThat(holder.errorMessages)
         .containsExactly(

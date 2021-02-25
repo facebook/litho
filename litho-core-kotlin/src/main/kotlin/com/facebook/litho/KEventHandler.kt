@@ -41,8 +41,7 @@ class KEventHandler<E : Any, R>(private val onEvent: (event: E) -> R) :
   }
 
   override fun dispatchOnEvent(eventHandler: EventHandler<*>, eventState: Any): R {
-    @Suppress("UNCHECKED_CAST")
-    return onEvent(eventState as E)
+    @Suppress("UNCHECKED_CAST") return onEvent(eventState as E)
   }
 
   override fun getEventDispatcher(): EventDispatcher {

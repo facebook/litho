@@ -56,8 +56,6 @@ litho_android_library(
 
 litho_android_library(
     name = "widget_conditions",
-    srcs = glob(["**/*.java"]),
-    autoglob = False,
     is_androidx = True,
     visibility = [
         "PUBLIC",

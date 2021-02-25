@@ -22,16 +22,19 @@ import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.isAllowedTypeAndConsume;
 
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DiffPropModel;
 import com.facebook.litho.specmodels.model.DiffStateParamModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.LifecycleMethodArgumentType;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SimpleMethodParamModel;
@@ -46,8 +49,11 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates delegate methods for a component. */
@@ -103,16 +109,31 @@ public class DelegateMethodGenerator {
       methodSpec.addAnnotation(annotation);
     }
 
+    final ImmutableList<LifecycleMethodArgumentType> lifecycleArgs =
+        methodDescription.lifecycleMethodArgumentTypes;
+    final ImmutableList<MethodParamModel> delegateArgs = delegateMethod.methodParams;
+
     String contextParamName = null;
 
-    for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
-      if (methodDescription.definedParameterTypes.get(i) == specModel.getContextClass()) {
-        contextParamName = delegateMethod.methodParams.get(i).getName();
+    for (int i = 0, size = lifecycleArgs.size(); i < size; i++) {
+
+      final TypeName lifecycleArg = lifecycleArgs.get(i).type;
+      final TypeName delegateArg = delegateArgs.get(i).getTypeName();
+
+      final String name;
+
+      if (!lifecycleArg.equals(ClassNames.OBJECT) && !lifecycleArg.equals(delegateArg)) {
+        name = "_" + i; // Use the counter to generate a placeholder name.
+      } else {
+        name = delegateArgs.get(i).getName(); // Use the name from the delegate method if its used.
       }
 
-      methodSpec.addParameter(
-          methodDescription.definedParameterTypes.get(i),
-          delegateMethod.methodParams.get(i).getName());
+      // Cache the name of spec context argument.
+      if (lifecycleArgs.get(i).type == specModel.getContextClass() && contextParamName == null) {
+        contextParamName = name;
+      }
+
+      methodSpec.addParameter(lifecycleArgs.get(i).type, name);
     }
 
     final boolean methodUsesDiffs =
@@ -139,7 +160,8 @@ public class DelegateMethodGenerator {
       methodSpec.addStatement("$T _result", methodDescription.returnType);
     }
 
-    methodSpec.addCode(getDelegationCode(specModel, delegateMethod, methodDescription, runMode));
+    methodSpec.addCode(
+        getDelegationCode(specModel, delegateMethod, methodDescription, contextParamName, runMode));
 
     if (delegateMethod.name.toString().equals("onCreateLayout")
         || delegateMethod.name.toString().equals("onPrepare")) {
@@ -160,8 +182,7 @@ public class DelegateMethodGenerator {
           registerDelegation.add(
               "($T) $L",
               methodParamModel.getTypeName(),
-              getImplAccessor(
-                  methodDescription.name, specModel, methodParamModel, contextParamName));
+              getImplAccessor(specModel, methodDescription, methodParamModel, contextParamName));
           registerDelegation.add(
               (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
         }
@@ -181,8 +202,9 @@ public class DelegateMethodGenerator {
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription) {
-    for (int i = 0, size = methodDescription.definedParameterTypes.size(); i < size; i++) {
-      if (methodDescription.definedParameterTypes.get(i) == specModel.getContextClass()) {
+    for (int i = 0, size = methodDescription.lifecycleMethodArgumentTypes.size(); i < size; i++) {
+      if (methodDescription.lifecycleMethodArgumentTypes.get(i).type
+          == specModel.getContextClass()) {
         return delegateMethod.methodParams.get(i).getName();
       }
     }
@@ -194,6 +216,7 @@ public class DelegateMethodGenerator {
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription,
+      @Nullable String contextParamName,
       EnumSet<RunMode> runMode) {
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
     final CodeBlock.Builder releaseStatements = CodeBlock.builder();
@@ -201,21 +224,34 @@ public class DelegateMethodGenerator {
     final List<ParamTypeAndName> delegationParams =
         new ArrayList<>(delegateMethod.methodParams.size());
 
-    final String contextParamName =
-        getContextParamName(specModel, delegateMethod, methodDescription);
+    final ImmutableList<TypeName> allowedParamTypes =
+        methodDescription.allowedDelegateMethodArguments();
+
+    // If null, find the first spec context from the delegate methods arguments.
+    if (contextParamName == null) {
+      contextParamName = getContextParamName(specModel, delegateMethod, methodDescription);
+    }
+
+    final Queue<TypeName> remainingAllowedTypes = new LinkedList<>(allowedParamTypes);
+    int numberOfAllowedArgsUsed = 0;
 
     for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
-      final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
-      if (i < definedParameterTypesSize) {
+
+      final boolean usesAllowedType =
+          isAllowedTypeAndConsume(methodParamModel, remainingAllowedTypes);
+
+      // Add delegate param if param type is allowed
+      if (usesAllowedType) {
+        numberOfAllowedArgsUsed++;
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
-      } else if (i < definedParameterTypesSize + methodDescription.optionalParameters.size()
+      } else if (i < numberOfAllowedArgsUsed + methodDescription.optionalParameters.size()
           && shouldIncludeOptionalParameter(
               methodParamModel,
-              methodDescription.optionalParameters.get(i - definedParameterTypesSize))) {
+              methodDescription.optionalParameters.get(i - numberOfAllowedArgsUsed))) {
         final MethodParamModel extraDefinedParam =
-            methodDescription.optionalParameters.get(i - definedParameterTypesSize);
+            methodDescription.optionalParameters.get(i - numberOfAllowedArgsUsed);
         delegationParams.add(
             ParamTypeAndName.create(extraDefinedParam.getTypeName(), extraDefinedParam.getName()));
       } else if (methodParamModel instanceof DiffPropModel
@@ -246,7 +282,7 @@ public class DelegateMethodGenerator {
         }
         releaseStatements.addStatement(
             "$L = $L.get()",
-            getImplAccessor(methodDescription.name, specModel, methodParamModel, contextParamName),
+            getImplAccessor(specModel, methodDescription, methodParamModel, contextParamName),
             localOutputName);
         if (isPropOutput) {
           releaseStatements.endControlFlow();
@@ -357,18 +393,19 @@ public class DelegateMethodGenerator {
   }
 
   /**
-   * We consider an optional parameter as something that comes immediately after defined parameters
-   * and is not a special litho parameter (like a prop, state, etc...). This method verifies that
-   * optional parameters are the right type and have no additional annotations.
+   * We consider an optional parameter as something that comes immediately after the allowed
+   * parameters and are not a special litho parameter (like a prop, state, etc...). This method
+   * verifies that optional parameters are the right type and have no additional annotations.
    */
-  private static boolean shouldIncludeOptionalParameter(
+  public static boolean shouldIncludeOptionalParameter(
       MethodParamModel methodParamModel, MethodParamModel extraOptionalParameter) {
     return methodParamModel instanceof SimpleMethodParamModel
-        && methodParamModel.getTypeName().equals(extraOptionalParameter.getTypeName())
+        && (extraOptionalParameter.getTypeName().equals(ClassNames.OBJECT)
+            || extraOptionalParameter.getTypeName().equals(methodParamModel.getTypeName()))
         && methodParamModel.getAnnotations().isEmpty();
   }
 
-  private static boolean isOutputType(TypeName type) {
+  public static boolean isOutputType(TypeName type) {
     return type.equals(OUTPUT)
         || (type instanceof ParameterizedTypeName
             && ((ParameterizedTypeName) type).rawType.equals(OUTPUT));

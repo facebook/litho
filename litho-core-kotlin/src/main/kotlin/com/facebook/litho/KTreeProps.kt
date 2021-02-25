@@ -16,17 +16,39 @@
 
 package com.facebook.litho
 
+import kotlin.reflect.KClass
+
+class ClassValuePair<T>(internal val cls: Class<T>, internal val value: T)
+
 /**
- * Create a TreeProp variable within a Component. The TreeProp variable is shared with its
- * descendant components. However, descendant components can override the value of the TreeProp for
- * all its children.
+ * A component which provides one or more tree props to the given child hierarchy. A tree prop is a
+ * mapping from a type to an instance of that type which is accessible throughout the entire subtree
+ * where it's defined.
+ *
+ * Tree props are useful for providing theme info, logging tags, or other things that generally need
+ * to be available throughout a hierarchy, without having to manual thread them through as
+ * individual props. Tree props can be accessed in children via [useTreeProp].
  */
-inline fun <reified T> DslScope.createTreeProp(initializer: () -> T) {
-  createTreeProp(T::class.java, initializer())
+class TreePropProvider(private vararg val props: ClassValuePair<*>, private val child: Component?) :
+    KComponent() {
+  override fun DslScope.render(): Component? {
+    props.forEach { createTreeProp(it.cls, it.value) }
+    return child
+  }
 }
 
-@PublishedApi
-internal fun <T> DslScope.createTreeProp(clazz: Class<T>, value: T) {
+/**
+ * Creates a tree prop, i.e. a mapping from type to concrete instance of that type that is visible
+ * to the subtree, to be used with [TreePropProvider].
+ *
+ * Note: The reason this isn't using a reified T is because we want to make sure devs are explicit
+ * about the type they are providing a tree prop for. For instance if type B extends type A, then we
+ * want the dev to choose whether an instance of B is providing A::class or B::class
+ */
+inline fun <reified T : Any> treeProp(type: KClass<T>, value: T) =
+    ClassValuePair(type.javaObjectType, value)
+
+private fun <T> DslScope.createTreeProp(clazz: Class<out T>, value: T) {
   if (!context.isParentTreePropsCloned) {
     context.treeProps = TreeProps.acquire(context.treeProps)
     context.isParentTreePropsCloned = true
@@ -34,5 +56,10 @@ internal fun <T> DslScope.createTreeProp(clazz: Class<T>, value: T) {
   context.treeProps?.put(clazz, value)
 }
 
+/**
+ * Returns the instance registered for this type in this hierarchy. Tree props are registered for a
+ * sub-hierarchy via [TreePropProvider] or [com.facebook.litho.annotations.OnCreateTreeProp] in the
+ * specs API.
+ */
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T : Any> DslScope.useTreeProp(): T? = context.getTreeProp(T::class.java)

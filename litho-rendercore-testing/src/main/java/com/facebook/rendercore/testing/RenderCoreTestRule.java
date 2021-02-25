@@ -24,6 +24,7 @@ import android.content.Context;
 import android.util.Pair;
 import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderResult;
@@ -37,7 +38,6 @@ import com.facebook.rendercore.extensions.RenderCoreExtension;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.robolectric.RuntimeEnvironment;
 
 /**
  * This test utility allows clients to test assertion on the rendered view hierarchy; for example by
@@ -78,7 +78,7 @@ public class RenderCoreTestRule implements TestRule {
       @Override
       public void evaluate() throws Throwable {
         try {
-          context = RuntimeEnvironment.application;
+          context = ApplicationProvider.getApplicationContext();
           base.evaluate();
         } finally {
           widthSpec = DEFAULT_WIDTH_SPEC;

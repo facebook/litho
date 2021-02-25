@@ -44,10 +44,7 @@ public class MountDelegate {
   }
 
   public void addExtension(MountExtension mountExtension) {
-    mMountExtensions.add(mountExtension);
-
     final ExtensionState extensionState = mountExtension.createExtensionState(this);
-    mExtensionStates.put(mountExtension, extensionState);
 
     if (mountExtension instanceof UnmountDelegateExtension) {
       mMountDelegateTarget.setUnmountDelegateExtension((UnmountDelegateExtension) mountExtension);
@@ -55,15 +52,35 @@ public class MountDelegate {
     }
 
     mReferenceCountingEnabled = mReferenceCountingEnabled || mountExtension.canPreventMount();
+
+    mExtensionStates.put(mountExtension, extensionState);
+    mMountExtensions.add(mountExtension);
+  }
+
+  public void removeExtension(MountExtension mountExtension) {
+    mMountExtensions.remove(mountExtension);
+    mExtensionStates.remove(mountExtension);
+
+    if (mountExtension instanceof UnmountDelegateExtension) {
+      mMountDelegateTarget.removeUnmountDelegateExtension();
+      mUnmountDelegateExtensionState = null;
+    }
+
+    updateRefCountEnabled();
   }
 
   void unregisterAllExtensions() {
-    for (MountExtension mountExtension : mMountExtensions) {
-      mExtensionStates.remove(mountExtension);
-    }
-
     mMountExtensions.clear();
+    mExtensionStates.clear();
     mReferenceCountingEnabled = false;
+  }
+
+  private void updateRefCountEnabled() {
+    mReferenceCountingEnabled = false;
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      mReferenceCountingEnabled =
+          mReferenceCountingEnabled || mMountExtensions.get(i).canPreventMount();
+    }
   }
 
   void unBind() {
@@ -94,7 +111,8 @@ public class MountDelegate {
     }
   }
 
-  void onMountItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+  public void onMountItem(
+      final RenderUnit renderUnit, final Object content, final Object layoutData) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       extension.onMountItem(getExtensionState(extension), renderUnit, content, layoutData);

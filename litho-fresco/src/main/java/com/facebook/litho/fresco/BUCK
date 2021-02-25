@@ -14,11 +14,6 @@ load(
 
 litho_android_library(
     name = "fresco",
-    srcs = glob(
-        ["*.java"],
-        exclude = ["common/**/*"],
-    ),
-    autoglob = False,
     labels = ["supermodule:android/default/litho.core"],
     plugins = [
         LITHO_PROCESSOR_TARGET,

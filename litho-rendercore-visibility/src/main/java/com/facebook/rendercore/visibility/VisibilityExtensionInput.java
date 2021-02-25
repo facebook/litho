@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.visibility;
 
-import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
@@ -27,17 +26,6 @@ public interface VisibilityExtensionInput {
 
   /** returns a list of items for which visibility events will be processed */
   List<VisibilityOutput> getVisibilityOutputs();
-
-  /**
-   * <b>Experimental</b> Specifies if visibility event are processed incrementally.
-   *
-   * @return {@code true} only if visibility events should be processed incrementally.
-   */
-  boolean isIncrementalVisibilityEnabled();
-
-  /** returns the meta data required to process visibility events. */
-  @Nullable
-  VisibilityModuleInput getVisibilityModuleInput();
 
   /** Returns the set of ids of {@link RenderUnit}s which host {@link RenderTreeHost} */
   Set<Long> getRenderUnitIdsWhichHostRenderTrees();

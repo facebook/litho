@@ -140,7 +140,6 @@ public class ListSectionSpec {
     for (int i = 0; i < 32; i++) {
       builder.child(
           SingleComponentSection.create(c)
-              .key(String.valueOf(i))
               .component(ListItem.create(c).build()));
     }
     return builder.build();
@@ -212,7 +211,6 @@ static Children onCreateChildren(final SectionContext c) {
   for (int i = 0; i < 32; i++) {
     builder.child(
         SingleComponentSection.create(c)
-            .key(String.valueOf(i))
             .component(ListItem.create(c)
                .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
                .title(i + ". Hello, world!")

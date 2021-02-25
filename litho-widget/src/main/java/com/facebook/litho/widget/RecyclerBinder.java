@@ -2499,7 +2499,6 @@ public class RecyclerBinder
             componentTree.getNewLayoutStateReadyListener();
         if (listener != null) {
           componentTree.setNewLayoutStateReadyListener(null);
-          ensureApplyReadyBatches();
         }
       }
 

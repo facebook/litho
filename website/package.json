@@ -14,7 +14,7 @@
     "@docusaurus/core": "^2.0.0-alpha.63",
     "@docusaurus/preset-classic": "^2.0.0-alpha.63",
     "clsx": "^1.1.1",
-    "docusaurus-plugin-internaldocs-fb": "^0.5.6",
+    "docusaurus-plugin-internaldocs-fb": "^0.7.0",
     "docusaurus-plugin-sass": "^0.1.10",
     "internaldocs-fb-helpers": "^1.1.0",
     "react": "^16.8.4",

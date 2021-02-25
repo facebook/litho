@@ -40,7 +40,6 @@ import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
-import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
@@ -58,7 +57,6 @@ import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
-import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
@@ -71,7 +69,6 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtens
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import com.facebook.rendercore.visibility.VisibilityExtensionInput;
-import com.facebook.rendercore.visibility.VisibilityModuleInput;
 import com.facebook.rendercore.visibility.VisibilityOutput;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -90,9 +87,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(RenderTreeNode, ComponentContext, DebugHierarchy.Node, InternalNode, LayoutState,
- * DiffNode)} which prepares the before-mentioned outputs based on the provided {@link InternalNode}
- * for later use in {@link MountState}.
+ * #collectResults(ComponentContext, LithoLayoutResult, LayoutState, RenderTreeNode, DiffNode,
+ * DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided {@link
+ * InternalNode} for later use in {@link MountState}.
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
@@ -144,14 +141,6 @@ public class LayoutState
   private @Nullable List<Component> mComponents;
   private @Nullable List<String> mComponentKeys;
 
-  /**
-   * Holds onto how many clashed global keys exist in the tree. Used for automatically generating
-   * unique global keys for all sibling components of the same type.
-   */
-  private @Nullable Map<String, Integer> mGlobalKeysCounter;
-
-  private @Nullable Map<String, Integer> mGlobalManualKeysCounter;
-
   private final ComponentContext mContext;
 
   private Component mComponent;
@@ -159,9 +148,9 @@ public class LayoutState
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final boolean mIncrementalVisibility;
   private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private @Nullable LayoutStateContext mLayoutStateContext;
+  private @Nullable LayoutStateContext mPrevLayoutStateContext;
 
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
@@ -170,7 +159,6 @@ public class LayoutState
   private final ArrayList<IncrementalMountOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
-  private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
@@ -197,7 +185,6 @@ public class LayoutState
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
-  @NodeInfo.EnabledState private int mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
@@ -261,23 +248,15 @@ public class LayoutState
     }
 
     if (context.getComponentTree() != null) {
-      mIncrementalVisibility = context.getComponentTree().hasIncrementalVisibility();
       mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
     } else {
-      mIncrementalVisibility = false;
       mLithoRenderUnitFactory = null;
     }
 
-    mVisibilityModuleInput = mIncrementalVisibility ? new VisibilityModuleInput() : null;
     mVisibilityOutputs = new ArrayList<>(8);
 
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
-  }
-
-  @Override
-  public boolean isIncrementalVisibilityEnabled() {
-    return mIncrementalVisibility;
   }
 
   @VisibleForTesting
@@ -306,6 +285,11 @@ public class LayoutState
     return mLayoutStateContext;
   }
 
+  @Nullable
+  LayoutStateContext getPrevLayoutStateContext() {
+    return mPrevLayoutStateContext;
+  }
+
   /**
    * Acquires a new layout output for the internal node and its associated component. It returns
    * null if there's no component associated with the node as the mount pass only cares about nodes
@@ -313,12 +297,12 @@ public class LayoutState
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
-      InternalNode node,
+      LithoLayoutResult result,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
       boolean hasHostView) {
-    final Component component = node.getTailComponent();
-    final String componentKey = node.getTailComponentKey();
+    final Component component = result.getTailComponent();
+    final String componentKey = result.getTailComponentKey();
 
     // Skip empty nodes and layout specs because they don't mount anything.
     if (component == null || component.getMountType() == NONE) {
@@ -334,9 +318,9 @@ public class LayoutState
         componentKey,
         hostMarker,
         layoutState,
-        node,
+        result,
         true /* useNodePadding */,
-        node.getImportantForAccessibility(),
+        result.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
         false,
         hasHostView);
@@ -361,7 +345,8 @@ public class LayoutState
     return mergedDynamicProps;
   }
 
-  private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
+  private static LayoutOutput createHostLayoutOutput(
+      LayoutState layoutState, LithoLayoutResult result) {
 
     final HostComponent hostComponent = HostComponent.create();
 
@@ -369,10 +354,10 @@ public class LayoutState
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getComponents()));
+    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(result.getComponents()));
 
     long hostMarker =
-        layoutState.isLayoutRoot(node) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
+        layoutState.isLayoutRoot(result) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
 
     final LayoutOutput hostOutput =
         createLayoutOutput(
@@ -380,19 +365,19 @@ public class LayoutState
             null,
             hostMarker,
             layoutState,
-            node,
+            result,
             false /* useNodePadding */,
-            node.getImportantForAccessibility(),
-            node.isDuplicateParentStateEnabled(),
-            node.isDuplicateChildrenStatesEnabled(),
+            result.getImportantForAccessibility(),
+            result.isDuplicateParentStateEnabled(),
+            result.isDuplicateChildrenStatesEnabled(),
             false);
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
     if (viewNodeInfo != null) {
-      if (node.hasStateListAnimatorResSet()) {
-        viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
+      if (result.hasStateListAnimatorResSet()) {
+        viewNodeInfo.setStateListAnimatorRes(result.getStateListAnimatorRes());
       } else {
-        viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
+        viewNodeInfo.setStateListAnimator(result.getStateListAnimator());
       }
     }
 
@@ -404,7 +389,7 @@ public class LayoutState
       Component component,
       @Nullable String componentKey,
       LayoutState layoutState,
-      InternalNode node,
+      LithoLayoutResult result,
       boolean hasHostView) {
     // The mount operation will need both the marker for the target host and its matching
     // parent host to ensure the correct hierarchy when nesting the host views.
@@ -415,7 +400,7 @@ public class LayoutState
         componentKey,
         hostMarker,
         layoutState,
-        node,
+        result,
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
@@ -428,7 +413,7 @@ public class LayoutState
       @Nullable String componentKey,
       long hostMarker,
       LayoutState layoutState,
-      InternalNode node,
+      LithoLayoutResult result,
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
@@ -452,15 +437,15 @@ public class LayoutState
 
     int flags = 0;
 
-    int l = layoutState.mCurrentX + node.getX();
-    int t = layoutState.mCurrentY + node.getY();
-    int r = l + node.getWidth();
-    int b = t + node.getHeight();
+    int l = layoutState.mCurrentX + result.getX();
+    int t = layoutState.mCurrentY + result.getY();
+    int r = l + result.getWidth();
+    int b = t + result.getHeight();
 
-    final int paddingLeft = useNodePadding ? node.getPaddingLeft() : 0;
-    final int paddingTop = useNodePadding ? node.getPaddingTop() : 0;
-    final int paddingRight = useNodePadding ? node.getPaddingRight() : 0;
-    final int paddingBottom = useNodePadding ? node.getPaddingBottom() : 0;
+    final int paddingLeft = useNodePadding ? result.getPaddingLeft() : 0;
+    final int paddingTop = useNodePadding ? result.getPaddingTop() : 0;
+    final int paddingRight = useNodePadding ? result.getPaddingRight() : 0;
+    final int paddingBottom = useNodePadding ? result.getPaddingBottom() : 0;
 
     // View mount specs are able to set their own attributes when they're mounted.
     // Non-view specs (drawable and layout) always transfer their view attributes
@@ -471,29 +456,29 @@ public class LayoutState
     final NodeInfo layoutOutputNodeInfo;
     final ViewNodeInfo layoutOutputViewNodeInfo;
 
-    final NodeInfo nodeInfo = node.getNodeInfo();
+    final NodeInfo nodeInfo = result.getNodeInfo();
 
     if (isMountViewSpec) {
       layoutOutputNodeInfo = nodeInfo;
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
       if (layoutState.mShouldDisableDrawableOutputs) {
-        viewNodeInfo.setBackground(node.getBackground());
+        viewNodeInfo.setBackground(result.getBackground());
         if (SDK_INT >= M) {
-          viewNodeInfo.setForeground(node.getForeground());
+          viewNodeInfo.setForeground(result.getForeground());
         }
       }
-      if (useNodePadding && node.isPaddingSet()) {
+      if (useNodePadding && result.isPaddingSet()) {
         viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       }
-      viewNodeInfo.setLayoutDirection(node.getResolvedLayoutDirection());
+      viewNodeInfo.setLayoutDirection(result.getResolvedLayoutDirection());
       viewNodeInfo.setExpandedTouchBounds(
-          node,
+          result,
           l - hostTranslationX,
           t - hostTranslationY,
           r - hostTranslationX,
           b - hostTranslationY);
-      viewNodeInfo.setLayerType(node.getLayerType(), node.getLayerPaint());
+      viewNodeInfo.setLayerType(result.getLayerType(), result.getLayerPaint());
       layoutOutputViewNodeInfo = viewNodeInfo;
     } else {
       l += paddingLeft;
@@ -552,31 +537,35 @@ public class LayoutState
    * stored in the {@link InternalNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
-      InternalNode node, LayoutState layoutState) {
+      final LithoLayoutResult result,
+      final LayoutState layoutState,
+      final @Nullable RenderTreeNode renderTreeNode) {
 
-    final int l = layoutState.mCurrentX + node.getX();
-    final int t = layoutState.mCurrentY + node.getY();
-    final int r = l + node.getWidth();
-    final int b = t + node.getHeight();
+    final int l = layoutState.mCurrentX + result.getX();
+    final int t = layoutState.mCurrentY + result.getY();
+    final int r = l + result.getWidth();
+    final int b = t + result.getHeight();
 
-    final EventHandler<VisibleEvent> visibleHandler = node.getVisibleHandler();
-    final EventHandler<FocusedVisibleEvent> focusedHandler = node.getFocusedHandler();
-    final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = node.getUnfocusedHandler();
+    final EventHandler<VisibleEvent> visibleHandler = result.getVisibleHandler();
+    final EventHandler<FocusedVisibleEvent> focusedHandler = result.getFocusedHandler();
+    final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = result.getUnfocusedHandler();
     final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
-        node.getFullImpressionHandler();
-    final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
+        result.getFullImpressionHandler();
+    final EventHandler<InvisibleEvent> invisibleHandler = result.getInvisibleHandler();
     final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
-        node.getVisibilityChangedHandler();
-    final Component component = node.getTailComponent();
+        result.getVisibilityChangedHandler();
+    final Component component = result.getTailComponent();
     final String componentGlobalKey =
-        ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
+        ComponentUtils.getGlobalKey(component, result.getTailComponentKey());
 
     return new VisibilityOutput(
         component != null ? componentGlobalKey : "null",
         component != null ? component.getSimpleName() : "Unknown",
         new Rect(l, t, r, b),
-        node.getVisibleHeightRatio(),
-        node.getVisibleWidthRatio(),
+        renderTreeNode != null,
+        renderTreeNode != null ? renderTreeNode.getRenderUnit().getId() : 0,
+        result.getVisibleHeightRatio(),
+        result.getVisibleWidthRatio(),
         visibleHandler,
         invisibleHandler,
         focusedHandler,
@@ -586,14 +575,14 @@ public class LayoutState
   }
 
   private static TestOutput createTestOutput(
-      InternalNode node, LayoutState layoutState, @Nullable LayoutOutput layoutOutput) {
-    final int l = layoutState.mCurrentX + node.getX();
-    final int t = layoutState.mCurrentY + node.getY();
-    final int r = l + node.getWidth();
-    final int b = t + node.getHeight();
+      LithoLayoutResult result, LayoutState layoutState, @Nullable LayoutOutput layoutOutput) {
+    final int l = layoutState.mCurrentX + result.getX();
+    final int t = layoutState.mCurrentY + result.getY();
+    final int r = l + result.getWidth();
+    final int b = t + result.getHeight();
 
     final TestOutput output = new TestOutput();
-    output.setTestKey(node.getTestKey());
+    output.setTestKey(result.getTestKey());
     output.setBounds(l, t, r, b);
     output.setHostMarker(layoutState.mCurrentHostMarker);
     if (layoutOutput != null) {
@@ -607,17 +596,17 @@ public class LayoutState
    * Determine if a given {@link InternalNode} within the context of a given {@link LayoutState}
    * requires to be wrapped inside a view.
    *
-   * @see #needsHostView(InternalNode, LayoutState)
+   * @see #needsHostView(LithoLayoutResult, LayoutState)
    */
-  private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
-    final Component component = node.getTailComponent();
-    final NodeInfo nodeInfo = node.getNodeInfo();
+  private static boolean hasViewContent(LithoLayoutResult result, LayoutState layoutState) {
+    final Component component = result.getTailComponent();
+    final NodeInfo nodeInfo = result.getNodeInfo();
 
     final boolean implementsAccessibility =
         (nodeInfo != null && nodeInfo.needsAccessibilityDelegate())
             || (component != null && component.implementsAccessibility());
 
-    final int importantForAccessibility = node.getImportantForAccessibility();
+    final int importantForAccessibility = result.getImportantForAccessibility();
 
     // A component has accessibility content if:
     //   1. Accessibility is currently enabled.
@@ -634,7 +623,7 @@ public class LayoutState
     // this is already covered separately i.e. click handler is not null.
     final boolean hasBackgroundOrForeground =
         layoutState.mShouldDisableDrawableOutputs
-            && (node.getBackground() != null || node.getForeground() != null);
+            && (result.getBackground() != null || result.getForeground() != null);
     final boolean hasAccessibilityContent =
         layoutState.mAccessibilityEnabled
             && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
@@ -644,9 +633,9 @@ public class LayoutState
 
     return hasBackgroundOrForeground
         || hasAccessibilityContent
-        || node.isDuplicateChildrenStatesEnabled()
+        || result.isDuplicateChildrenStatesEnabled()
         || hasViewAttributes(nodeInfo)
-        || node.getLayerType() != LayerType.LAYER_TYPE_NOT_SET;
+        || result.getLayerType() != LayerType.LAYER_TYPE_NOT_SET;
   }
 
   private static boolean hasViewAttributes(@Nullable NodeInfo nodeInfo) {
@@ -706,57 +695,55 @@ public class LayoutState
    *
    * <p>
    *
-   * @param parent
    * @param parentContext the parent component context
-   * @param parentHierarchy The parent hierarchy linked list or null.
-   * @param node InternalNode to process.
+   * @param result InternalNode to process.
    * @param layoutState the LayoutState currently operating.
+   * @param parent
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
+   * @param parentHierarchy The parent hierarchy linked list or null.
    */
   private static void collectResults(
-      @Nullable RenderTreeNode parent,
       ComponentContext parentContext,
-      @Nullable DebugHierarchy.Node parentHierarchy,
-      InternalNode node,
+      LithoLayoutResult result,
       LayoutState layoutState,
-      @Nullable DiffNode parentDiffNode) {
+      @Nullable RenderTreeNode parent,
+      @Nullable DiffNode parentDiffNode,
+      @Nullable DebugHierarchy.Node parentHierarchy) {
     if (parentContext.wasLayoutCanceled()) {
       return;
     }
 
-    if (node.hasNewLayout()) {
-      node.markLayoutSeen();
-    }
-    final Component component = node.getTailComponent();
+    final Component component = result.getTailComponent();
     final String componentGlobalKey =
-        ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
+        ComponentUtils.getGlobalKey(component, result.getTailComponentKey());
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy;
     // Update the hierarchy if we are tracking it.
     if (ComponentsConfiguration.isDebugHierarchyEnabled) {
-      hierarchy = DebugHierarchy.newNode(parentHierarchy, component, node.getComponents());
+      hierarchy = DebugHierarchy.newNode(parentHierarchy, component, result.getComponents());
     } else {
       hierarchy = null;
     }
 
     // Early return if collecting results of a node holding a nested tree.
-    if (node.isNestedTreeHolder()) {
+    if (result.isNestedTreeHolder()) {
       // If the nested tree is defined, it has been resolved during a measure call during
       // layout calculation.
       if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + node.getSimpleName())
-            .arg("widthSpec", "EXACTLY " + node.getWidth())
-            .arg("heightSpec", "EXACTLY " + node.getHeight())
-            .arg("rootComponentId", node.getTailComponent().getId())
+        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + result.getSimpleName())
+            .arg("widthSpec", "EXACTLY " + result.getWidth())
+            .arg("heightSpec", "EXACTLY " + result.getHeight())
+            .arg("rootComponentId", result.getTailComponent().getId())
             .flush();
       }
       InternalNode nestedTree =
           Layout.create(
               parentContext,
-              node,
-              SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
-              SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
+              (InternalNode) result,
+              SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
+              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
+              layoutState.mPrevLayoutStateContext);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -766,41 +753,25 @@ public class LayoutState
       }
 
       // Account for position of the holder node.
-      layoutState.mCurrentX += node.getX();
-      layoutState.mCurrentY += node.getY();
+      layoutState.mCurrentX += result.getX();
+      layoutState.mCurrentY += result.getY();
 
-      collectResults(parent, parentContext, hierarchy, nestedTree, layoutState, parentDiffNode);
+      collectResults(parentContext, nestedTree, layoutState, parent, parentDiffNode, hierarchy);
 
-      layoutState.mCurrentX -= node.getX();
-      layoutState.mCurrentY -= node.getY();
+      layoutState.mCurrentX -= result.getX();
+      layoutState.mCurrentY -= result.getY();
 
       return;
     }
 
-    // IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS sets node to YES and children to
-    // NO_HIDE_DESCENDANTS
-    if (node.getImportantForAccessibility()
-        == ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
-      node.importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES);
-      for (int i = 0, size = node.getChildCount(); i < size; i++) {
-        node.getChildAt(i)
-            .importantForAccessibility(
-                ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-      }
-    }
-
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
-    final DiffNode currentDiffNode = node.getDiffNode();
+    final DiffNode currentDiffNode = result.getDiffNode();
     final boolean shouldUseCachedOutputs = isMountSpec(component) && currentDiffNode != null;
-    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
+    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && result.areCachedMeasuresValid();
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
-      if (ComponentsConfiguration.useInternalNodesForLayoutDiffing) {
-        diffNode = node;
-      } else {
-        diffNode = createDiffNode(node, parentDiffNode);
-      }
+      diffNode = createDiffNode(result, parentDiffNode);
       if (parentDiffNode == null) {
         layoutState.mDiffTreeRoot = diffNode;
       }
@@ -808,12 +779,7 @@ public class LayoutState
       diffNode = null;
     }
 
-    // If the parent of this node is disabled, this node has to be disabled too.
-    if (layoutState.mParentEnabledState == ENABLED_SET_FALSE) {
-      node.getOrCreateNodeInfo().setEnabled(false);
-    }
-
-    final boolean needsHostView = needsHostView(node, layoutState);
+    final boolean needsHostView = needsHostView(result, layoutState);
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
@@ -822,7 +788,7 @@ public class LayoutState
     final OutputUnitsAffinityGroup<AnimatableItem> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
 
-    layoutState.mCurrentTransitionId = getTransitionIdForNode(node);
+    layoutState.mCurrentTransitionId = getTransitionIdForNode(result);
     layoutState.mCurrentLayoutOutputAffinityGroup =
         layoutState.mCurrentTransitionId != null
             ? new OutputUnitsAffinityGroup<AnimatableItem>()
@@ -831,7 +797,7 @@ public class LayoutState
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
       final int hostLayoutPosition =
-          addHostLayoutOutput(parent, node, layoutState, diffNode, hierarchy);
+          addHostLayoutOutput(parent, result, layoutState, diffNode, hierarchy);
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
       parent = layoutState.mMountableOutputs.get(hostLayoutPosition);
@@ -848,11 +814,11 @@ public class LayoutState
     // duplicate parent state.
     final boolean shouldDuplicateParentState = layoutState.mShouldDuplicateParentState;
     layoutState.mShouldDuplicateParentState =
-        needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
+        needsHostView || (shouldDuplicateParentState && result.isDuplicateParentStateEnabled());
 
     // Generate the layoutOutput for the given node.
     final LayoutOutput layoutOutput =
-        createGenericLayoutOutput(node, layoutState, hierarchy, needsHostView);
+        createGenericLayoutOutput(result, layoutState, hierarchy, needsHostView);
 
     if (layoutOutput != null) {
       final long previousId =
@@ -870,7 +836,7 @@ public class LayoutState
 
     // 2. Add background if defined.
     if (!layoutState.mShouldDisableDrawableOutputs) {
-      final Drawable background = node.getBackground();
+      final Drawable background = result.getBackground();
       if (background != null) {
         if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
           layoutOutput.getViewNodeInfo().setBackground(background);
@@ -881,7 +847,7 @@ public class LayoutState
           final LayoutOutput backgroundOutput =
               addDrawableComponent(
                   parent,
-                  node,
+                  result,
                   layoutState,
                   convertBackground,
                   hierarchy,
@@ -897,19 +863,20 @@ public class LayoutState
     }
 
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
+    final RenderTreeNode renderTreeNode;
     if (isMountSpec(component)) {
       // Notify component about its final size.
       if (isTracing) {
-        ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
+        ComponentsSystrace.beginSection("onBoundsDefined:" + result.getSimpleName());
       }
       component.onBoundsDefined(
           component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey),
-          node);
+          result);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
 
-      addMountableOutput(layoutState, layoutOutput, parent);
+      renderTreeNode = addMountableOutput(layoutState, layoutOutput, parent);
       addLayoutOutputIdToPositionsMap(
           layoutState.mOutputsIdToPositionMap,
           layoutOutput,
@@ -920,6 +887,8 @@ public class LayoutState
       if (diffNode != null) {
         diffNode.setContentOutput(layoutOutput);
       }
+    } else {
+      renderTreeNode = needsHostView ? parent : null;
     }
 
     // 4. Extract the Transitions.
@@ -927,7 +896,7 @@ public class LayoutState
         component != null
             ? component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey)
             : null)) {
-      final ArrayList<Transition> transitions = node.getTransitions();
+      final ArrayList<Transition> transitions = result.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
           final Transition transition = transitions.get(i);
@@ -940,7 +909,7 @@ public class LayoutState
       }
 
       final Map<String, Component> componentsNeedingPreviousRenderData =
-          node.getComponentsNeedingPreviousRenderData();
+          result.getComponentsNeedingPreviousRenderData();
       if (componentsNeedingPreviousRenderData != null) {
         if (layoutState.mComponentsNeedingPreviousRenderData == null) {
           layoutState.mComponentsNeedingPreviousRenderData = new ArrayList<>();
@@ -958,34 +927,30 @@ public class LayoutState
       }
     }
 
-    layoutState.mCurrentX += node.getX();
-    layoutState.mCurrentY += node.getY();
-    @NodeInfo.EnabledState final int parentEnabledState = layoutState.mParentEnabledState;
-    layoutState.mParentEnabledState =
-        (node.getNodeInfo() != null) ? node.getNodeInfo().getEnabledState() : ENABLED_UNSET;
+    layoutState.mCurrentX += result.getX();
+    layoutState.mCurrentY += result.getY();
 
     // We must process the nodes in order so that the layout state output order is correct.
-    for (int i = 0, size = node.getChildCount(); i < size; i++) {
+    for (int i = 0, size = result.getChildCount(); i < size; i++) {
       collectResults(
-          parent, node.getContext(), hierarchy, node.getChildAt(i), layoutState, diffNode);
+          result.getContext(), result.getChildAt(i), layoutState, parent, diffNode, hierarchy);
     }
 
-    layoutState.mParentEnabledState = parentEnabledState;
-    layoutState.mCurrentX -= node.getX();
-    layoutState.mCurrentY -= node.getY();
+    layoutState.mCurrentX -= result.getX();
+    layoutState.mCurrentY -= result.getY();
 
     // 5. Add border color if defined.
-    if (node.shouldDrawBorders()) {
+    if (result.shouldDrawBorders()) {
       final LayoutOutput convertBorder =
           (currentDiffNode != null) ? currentDiffNode.getBorderOutput() : null;
       final LayoutOutput borderOutput =
           addDrawableComponent(
               parent,
-              node,
+              result,
               layoutState,
               convertBorder,
               hierarchy,
-              getBorderColorDrawable(node),
+              getBorderColorDrawable(result),
               OutputUnitType.BORDER,
               needsHostView);
       if (diffNode != null) {
@@ -995,7 +960,7 @@ public class LayoutState
 
     // 6. Add foreground if defined.
     if (!layoutState.mShouldDisableDrawableOutputs) {
-      final Drawable foreground = node.getForeground();
+      final Drawable foreground = result.getForeground();
       if (foreground != null) {
         if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
           layoutOutput.getViewNodeInfo().setForeground(foreground);
@@ -1006,7 +971,7 @@ public class LayoutState
           final LayoutOutput foregroundOutput =
               addDrawableComponent(
                   parent,
-                  node,
+                  result,
                   layoutState,
                   convertForeground,
                   hierarchy,
@@ -1022,8 +987,9 @@ public class LayoutState
     }
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
-    if (node.hasVisibilityHandlers()) {
-      final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
+    if (result.hasVisibilityHandlers()) {
+      final VisibilityOutput visibilityOutput =
+          createVisibilityOutput(result, layoutState, renderTreeNode);
 
       layoutState.mVisibilityOutputs.add(visibilityOutput);
 
@@ -1034,13 +1000,13 @@ public class LayoutState
 
     // 8. If we're in a testing environment, maintain an additional data structure with
     // information about nodes that we can query later.
-    if (layoutState.mTestOutputs != null && !TextUtils.isEmpty(node.getTestKey())) {
-      final TestOutput testOutput = createTestOutput(node, layoutState, layoutOutput);
+    if (layoutState.mTestOutputs != null && !TextUtils.isEmpty(result.getTestKey())) {
+      final TestOutput testOutput = createTestOutput(result, layoutState, layoutOutput);
       layoutState.mTestOutputs.add(testOutput);
     }
 
     // 9. Extract the Working Range registrations.
-    List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
+    List<WorkingRangeContainer.Registration> registrations = result.getWorkingRangeRegistrations();
     if (registrations != null && !registrations.isEmpty()) {
       if (layoutState.mWorkingRangeContainer == null) {
         layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
@@ -1060,16 +1026,16 @@ public class LayoutState
       if (layoutOutput != null) {
         rect.set(layoutOutput.getBounds());
       } else {
-        rect.left = layoutState.mCurrentX + node.getX();
-        rect.top = layoutState.mCurrentY + node.getY();
-        rect.right = rect.left + node.getWidth();
-        rect.bottom = rect.top + node.getHeight();
+        rect.left = layoutState.mCurrentX + result.getX();
+        rect.top = layoutState.mCurrentY + result.getY();
+        rect.right = rect.left + result.getWidth();
+        rect.bottom = rect.top + result.getHeight();
       }
 
-      final List<String> componentKeys = node.getComponentKeys();
+      final List<String> componentKeys = result.getComponentKeys();
       final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
-      for (int i = 0, size = node.getComponents().size(); i < size; i++) {
-        final Component delegate = node.getComponents().get(i);
+      for (int i = 0, size = result.getComponents().size(); i < size; i++) {
+        final Component delegate = result.getComponents().get(i);
         final String delegateKey =
             ComponentUtils.getGlobalKey(
                 delegate, componentKeys == null ? null : componentKeys.get(i));
@@ -1111,7 +1077,7 @@ public class LayoutState
     // 10. If enabled, show a debug foreground layer covering the whole LithoView showing which
     // thread the LayoutState was calculated into and number of calculations for given node.
     if (ComponentsConfiguration.enableLithoViewDebugOverlay) {
-      if (layoutState.isLayoutRoot(node)) {
+      if (layoutState.isLayoutRoot(result)) {
         ArrayList<Boolean> mainThreadCalculations;
         int layoutId = layoutState.getTreeId();
 
@@ -1130,7 +1096,7 @@ public class LayoutState
 
         addDrawableComponent(
             parent,
-            node,
+            result,
             layoutState,
             null,
             hierarchy,
@@ -1190,11 +1156,11 @@ public class LayoutState
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
-      InternalNode node,
+      LithoLayoutResult result,
       LayoutOutput hostOutput,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy) {
-    if (layoutState.isLayoutRoot(node)) {
+    if (layoutState.isLayoutRoot(result)) {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       hostOutput.setId(ROOT_HOST_ID);
@@ -1211,7 +1177,7 @@ public class LayoutState
 
   private static LayoutOutput addDrawableComponent(
       final @Nullable RenderTreeNode parent,
-      InternalNode node,
+      LithoLayoutResult result,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
       @Nullable DebugHierarchy.Node hierarchy,
@@ -1238,7 +1204,7 @@ public class LayoutState
             null,
             layoutState,
             hierarchy,
-            node,
+            result,
             type,
             previousId,
             isOutputUpdated,
@@ -1250,27 +1216,27 @@ public class LayoutState
     return output;
   }
 
-  private static Drawable getBorderColorDrawable(InternalNode node) {
-    if (!node.shouldDrawBorders()) {
-      throw new RuntimeException("This node does not support drawing border color");
+  private static Drawable getBorderColorDrawable(LithoLayoutResult result) {
+    if (!result.shouldDrawBorders()) {
+      throw new RuntimeException("This result does not support drawing border color");
     }
 
-    final boolean isRtl = node.recursivelyResolveLayoutDirection() == YogaDirection.RTL;
-    final float[] borderRadius = node.getBorderRadius();
-    final int[] borderColors = node.getBorderColors();
+    final boolean isRtl = result.recursivelyResolveLayoutDirection() == YogaDirection.RTL;
+    final float[] borderRadius = result.getBorderRadius();
+    final int[] borderColors = result.getBorderColors();
     final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
     final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
 
     return new BorderColorDrawable.Builder()
-        .pathEffect(node.getBorderPathEffect())
+        .pathEffect(result.getBorderPathEffect())
         .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
         .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
         .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
         .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
-        .borderLeftWidth(node.getLayoutBorder(leftEdge))
-        .borderTopWidth(node.getLayoutBorder(YogaEdge.TOP))
-        .borderRightWidth(node.getLayoutBorder(rightEdge))
-        .borderBottomWidth(node.getLayoutBorder(YogaEdge.BOTTOM))
+        .borderLeftWidth(result.getLayoutBorder(leftEdge))
+        .borderTopWidth(result.getLayoutBorder(YogaEdge.TOP))
+        .borderRightWidth(result.getLayoutBorder(rightEdge))
+        .borderBottomWidth(result.getLayoutBorder(YogaEdge.BOTTOM))
         .borderRadius(borderRadius)
         .build();
   }
@@ -1338,7 +1304,7 @@ public class LayoutState
       @Nullable String drawableComponentKey,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
-      InternalNode node,
+      LithoLayoutResult result,
       @OutputUnitType int outputType,
       long previousId,
       boolean isCachedOutputUpdated,
@@ -1346,16 +1312,20 @@ public class LayoutState
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
+      ComponentsSystrace.beginSection("onBoundsDefined:" + result.getSimpleName());
     }
-    drawableComponent.onBoundsDefined(layoutState.mContext, node);
+    drawableComponent.onBoundsDefined(layoutState.mContext, result);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
-            drawableComponent, drawableComponentKey, layoutState, node, matchHostBoundsTransitions);
+            drawableComponent,
+            drawableComponentKey,
+            layoutState,
+            result,
+            matchHostBoundsTransitions);
 
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
@@ -1383,25 +1353,25 @@ public class LayoutState
    */
   private static int addHostLayoutOutput(
       final @Nullable RenderTreeNode parent,
-      InternalNode node,
+      LithoLayoutResult result,
       LayoutState layoutState,
       DiffNode diffNode,
       @Nullable DebugHierarchy.Node hierarchy) {
-    final Component component = node.getTailComponent();
+    final Component component = result.getTailComponent();
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
-    if (isMountViewSpec(component) && !layoutState.isLayoutRoot(node)) {
+    if (isMountViewSpec(component) && !layoutState.isLayoutRoot(result)) {
       throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
     }
 
-    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
+    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, result);
 
     if (diffNode != null) {
       diffNode.setHostOutput(hostLayoutOutput);
     }
 
-    calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState, hierarchy);
+    calculateAndSetHostOutputIdAndUpdateState(result, hostLayoutOutput, layoutState, hierarchy);
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
@@ -1492,12 +1462,23 @@ public class LayoutState
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
       }
 
-      // Detect errors internal to components
-      component.markLayoutStarted();
-
       layoutState = new LayoutState(c, currentLayoutState);
+
+      layoutState.mPrevLayoutStateContext =
+          currentLayoutState != null ? currentLayoutState.getLayoutStateContext() : null;
+
+      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
+
       layoutStateContext =
           new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
+
+      // Detect errors internal to components
+      Component.markLayoutStarted(component, layoutStateContext);
+
+      if (isReconcilable && currentLayoutState != null) {
+        layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
+      }
+
       layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);
 
@@ -1516,8 +1497,6 @@ public class LayoutState
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
 
-      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
-
       // Release the current InternalNode tree if it is not reconcilable.
       if (!isReconcilable && currentLayoutState != null) {
         currentLayoutState.mLayoutRoot = null;
@@ -1533,6 +1512,7 @@ public class LayoutState
                   widthSpec,
                   heightSpec,
                   isReconcilable ? currentLayoutState.mLayoutRoot : null,
+                  layoutState.mPrevLayoutStateContext,
                   diffTreeRoot,
                   logLayoutState)
               : layoutCreatedInWillRender;
@@ -1639,6 +1619,7 @@ public class LayoutState
           layoutState.mLayoutRoot,
           widthSpec,
           heightSpec,
+          layoutState.mPrevLayoutStateContext,
           layoutState.mDiffTreeRoot,
           logLayoutState);
 
@@ -1747,7 +1728,7 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(null, c, null, root, layoutState, null);
+    collectResults(c, root, layoutState, null, null, null);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1759,17 +1740,11 @@ public class LayoutState
     sortTops(layoutState);
     sortBottoms(layoutState);
 
-    if (layoutState.mIncrementalVisibility) {
-      layoutState.mVisibilityModuleInput.setIncrementalModuleItems(layoutState.mVisibilityOutputs);
-      layoutState.mVisibilityOutputs.clear();
-    }
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
     if (!c.isReconciliationEnabled()
-        && !ComponentsConfiguration.useInternalNodesForLayoutDiffing
         && !ComponentsConfiguration.isDebugModeEnabled
         && !ComponentsConfiguration.isEndToEndTestRun
         && !ComponentsConfiguration.keepInternalNodes) {
@@ -1951,83 +1926,6 @@ public class LayoutState
         layoutOutput, level, type, previousId, isCachedOutputUpdated, hierarchy);
   }
 
-  /**
-   * Generate a global key for the given components that is unique among all of the components in
-   * the layout.
-   */
-  static String generateGlobalKey(ComponentContext parentContext, Component component) {
-    final LayoutState layoutState = parentContext.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          component.getSimpleName()
-              + ": Trying to generate global key of component outside of a LayoutState calculation.");
-    }
-
-    final Component parentScope = parentContext.getComponentScope();
-    final String globalKey;
-
-    if (parentScope == null) {
-      globalKey = component.getKey();
-    } else {
-      if (Component.getGlobalKey(parentContext, parentScope) == null) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            NULL_PARENT_KEY,
-            "Trying to generate parent-based key for component "
-                + component.getSimpleName()
-                + " , but parent "
-                + parentScope.getSimpleName()
-                + " has a null global key \"."
-                + " This is most likely a configuration mistake,"
-                + " check the value of ComponentsConfiguration.useGlobalKeys.");
-      }
-      globalKey =
-          generateUniqueGlobalKeyForChild(
-              layoutState, Component.getGlobalKey(parentContext, parentScope), component);
-    }
-
-    return globalKey;
-  }
-
-  /**
-   * Generate a global key for the given components that is unique among all of the components in
-   * the layout.
-   *
-   * @param layoutState the LayoutState currently operating
-   * @param parentGlobalKey the global key of the parent component
-   * @param component the child component for which the unique global key will be generated
-   * @return a unique global key for given component
-   */
-  private static String generateUniqueGlobalKeyForChild(
-      LayoutState layoutState, @Nullable String parentGlobalKey, Component component) {
-
-    if (parentGlobalKey == null) {
-      parentGlobalKey = "null";
-    }
-
-    final String childKey =
-        ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey());
-
-    if (component.hasManualKey()) {
-      final int manualKeyIndex = layoutState.getGlobalManualKeyCountAndIncrement(childKey);
-      if (manualKeyIndex != 0) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.WARNING,
-            DUPLICATE_MANUAL_KEY,
-            "The manual key "
-                + component.getKey()
-                + " you are setting on this "
-                + component.getSimpleName()
-                + " is a duplicate and will be changed into a unique one. "
-                + "This will result in unexpected behavior if you don't change it.");
-      }
-      return ComponentKeyUtils.getKeyForChildPosition(childKey, manualKeyIndex);
-    }
-
-    final int childIndex = layoutState.getGlobalKeyCountAndIncrement(childKey);
-    return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
-  }
-
   @Nullable
   InternalNode getCachedLayout(Component component) {
     return mLastMeasuredLayouts.get(component.getId());
@@ -2046,16 +1944,16 @@ public class LayoutState
     mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 
-  static DiffNode createDiffNode(InternalNode node, @Nullable DiffNode parent) {
+  static DiffNode createDiffNode(LithoLayoutResult result, @Nullable DiffNode parent) {
     DiffNode diffNode = new DefaultDiffNode();
 
-    diffNode.setLastWidthSpec(node.getLastWidthSpec());
-    diffNode.setLastHeightSpec(node.getLastHeightSpec());
-    diffNode.setLastMeasuredWidth(node.getLastMeasuredWidth());
-    diffNode.setLastMeasuredHeight(node.getLastMeasuredHeight());
+    diffNode.setLastWidthSpec(result.getLastWidthSpec());
+    diffNode.setLastHeightSpec(result.getLastHeightSpec());
+    diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
+    diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
     diffNode.setComponent(
-        node.getTailComponent(),
-        ComponentUtils.getGlobalKey(node.getTailComponent(), node.getTailComponentKey()));
+        result.getTailComponent(),
+        ComponentUtils.getGlobalKey(result.getTailComponent(), result.getTailComponentKey()));
     if (parent != null) {
       parent.addChild(diffNode);
     }
@@ -2146,12 +2044,6 @@ public class LayoutState
     return mVisibilityOutputs;
   }
 
-  @Nullable
-  @Override
-  public VisibilityModuleInput getVisibilityModuleInput() {
-    return mVisibilityModuleInput;
-  }
-
   @Override
   public int getTestOutputCount() {
     return mTestOutputs == null ? 0 : mTestOutputs.size();
@@ -2219,11 +2111,6 @@ public class LayoutState
   }
 
   @Nullable
-  HooksHandler getHooksHandler() {
-    return mContext.getHooksHandler();
-  }
-
-  @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public InternalNode getLayoutRoot() {
     return mLayoutRoot;
@@ -2232,10 +2119,10 @@ public class LayoutState
   // If the layout root is a nested tree holder node, it gets skipped immediately while
   // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
   // root in this case.
-  private boolean isLayoutRoot(InternalNode node) {
+  private boolean isLayoutRoot(LithoLayoutResult result) {
     return mLayoutRoot.isNestedTreeHolder()
-        ? node == mLayoutRoot.getNestedTree()
-        : node == mLayoutRoot;
+        ? result == mLayoutRoot.getNestedTree()
+        : result == mLayoutRoot;
   }
 
   /**
@@ -2243,42 +2130,42 @@ public class LayoutState
    * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
    * been forced to be wrapped in a view.
    */
-  private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
-    if (layoutState.isLayoutRoot(node)) {
+  private static boolean needsHostView(LithoLayoutResult result, LayoutState layoutState) {
+    if (layoutState.isLayoutRoot(result)) {
       // Need a View for the Root component.
       return true;
     }
 
-    final Component component = node.getTailComponent();
+    final Component component = result.getTailComponent();
     if (isMountViewSpec(component)) {
       // Component already represents a View.
       return false;
     }
 
-    if (node.isForceViewWrapping()) {
+    if (result.isForceViewWrapping()) {
       // Wrapping into a View requested.
       return true;
     }
 
-    if (hasViewContent(node, layoutState)) {
+    if (hasViewContent(result, layoutState)) {
       // Has View content (e.g. Accessibility content, Focus change listener, shadow, view tag etc)
       // thus needs a host View.
       return true;
     }
 
-    if (needsHostViewForCommonDynamicProps(node)) {
+    if (needsHostViewForCommonDynamicProps(result)) {
       return true;
     }
 
-    if (needsHostViewForTransition(node)) {
+    if (needsHostViewForTransition(result)) {
       return true;
     }
 
     return false;
   }
 
-  private static boolean needsHostViewForCommonDynamicProps(InternalNode node) {
-    final List<Component> components = node.getComponents();
+  private static boolean needsHostViewForCommonDynamicProps(LithoLayoutResult result) {
+    final List<Component> components = result.getComponents();
     for (Component comp : components) {
       if (comp != null && comp.hasCommonDynamicProps()) {
         // Need a host View to apply the dynamic props to
@@ -2288,16 +2175,17 @@ public class LayoutState
     return false;
   }
 
-  private static boolean needsHostViewForTransition(InternalNode node) {
-    return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getTailComponent());
+  private static boolean needsHostViewForTransition(LithoLayoutResult result) {
+    return !TextUtils.isEmpty(result.getTransitionKey())
+        && !isMountViewSpec(result.getTailComponent());
   }
 
   /**
-   * Similar to {@link #needsHostView(InternalNode, LayoutState)} but without dependency to {@link
-   * LayoutState} instance. This will be used for debugging tools to indicate whether the mountable
-   * output is a wrapped View or View MountSpec. Unlike {@link #needsHostView(InternalNode,
-   * LayoutState)} this does not consider accessibility also does not consider root component, but
-   * this approximation is good enough for debugging purposes.
+   * Similar to {@link #needsHostView(LithoLayoutResult, LayoutState)} but without dependency to
+   * {@link LayoutState} instance. This will be used for debugging tools to indicate whether the
+   * mountable output is a wrapped View or View MountSpec. Unlike {@link
+   * #needsHostView(LithoLayoutResult, LayoutState)} this does not consider accessibility also does
+   * not consider root component, but this approximation is good enough for debugging purposes.
    */
   static boolean hasViewOutput(InternalNode node) {
     return node.isForceViewWrapping()
@@ -2354,7 +2242,7 @@ public class LayoutState
     return mTransitionIdMapping.get(transitionId);
   }
 
-  private static void addMountableOutput(
+  private static RenderTreeNode addMountableOutput(
       final LayoutState layoutState,
       final LayoutOutput layoutOutput,
       final @Nullable RenderTreeNode parent) {
@@ -2392,6 +2280,8 @@ public class LayoutState
     if (layoutOutput.getComponent().hasChildLithoViews()) {
       layoutState.mRenderUnitIdsWhichHostRenderTrees.add(layoutOutput.getId());
     }
+
+    return node;
   }
 
   /**
@@ -2462,34 +2352,6 @@ public class LayoutState
     return mRootTransitionId;
   }
 
-  private int getGlobalKeyCountAndIncrement(String key) {
-    if (mGlobalKeysCounter == null) {
-      mGlobalKeysCounter = new HashMap<>();
-    }
-
-    Integer count = mGlobalKeysCounter.get(key);
-    if (count == null) {
-      count = 0;
-    }
-
-    mGlobalKeysCounter.put(key, count + 1);
-    return count;
-  }
-
-  private int getGlobalManualKeyCountAndIncrement(String manualKey) {
-    if (mGlobalManualKeysCounter == null) {
-      mGlobalManualKeysCounter = new HashMap<>();
-    }
-
-    Integer count = mGlobalManualKeysCounter.get(manualKey);
-    if (count == null) {
-      count = 0;
-    }
-
-    mGlobalManualKeysCounter.put(manualKey, count + 1);
-    return count;
-  }
-
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
   String dumpAsString() {
     if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
@@ -2550,12 +2412,12 @@ public class LayoutState
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(getLayoutStateContext(), stateHandler);
   }
 
-  private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
+  private static @Nullable TransitionId getTransitionIdForNode(LithoLayoutResult result) {
     return TransitionUtils.createTransitionId(
-        node.getTransitionKey(),
-        node.getTransitionKeyType(),
-        node.getTransitionOwnerKey(),
-        node.getTransitionGlobalKey());
+        result.getTransitionKey(),
+        result.getTransitionKeyType(),
+        result.getTransitionOwnerKey(),
+        result.getTransitionGlobalKey());
   }
 
   @Override

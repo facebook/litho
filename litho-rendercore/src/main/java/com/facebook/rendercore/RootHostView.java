@@ -1,4 +1,6 @@
 /*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.util.AttributeSet;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 public class RootHostView extends HostView implements RootHost {
 
@@ -56,6 +59,20 @@ public class RootHostView extends HostView implements RootHost {
   void performLayout(boolean changed, int l, int t, int r, int b) {
     mRootHostDelegate.onLayout(changed, l, t, r, b);
     performLayoutOnChildrenIfNecessary(this);
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    mRootHostDelegate.detach();
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  @Override
+  public void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mRootHostDelegate.attach();
   }
 
   @Override

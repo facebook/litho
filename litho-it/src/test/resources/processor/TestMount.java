@@ -38,6 +38,7 @@ import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.InterStagePropsContainer;
 import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
@@ -105,10 +106,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Comparable(type = 13)
   TestTreeProp treeProp;
 
-  Integer boundsDefinedOutput;
-
-  Long measureOutput;
-
   @androidx.annotation.Nullable EventHandler testEventHandler;
 
   EventTrigger onClickEventTriggerTrigger;
@@ -124,6 +121,15 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Override
   protected TestMountStateContainer createStateContainer() {
     return new TestMountStateContainer();
+  }
+
+  @Override
+  protected TestMountInterStagePropsContainer createInterStagePropsContainer() {
+    return new TestMountInterStagePropsContainer();
+  }
+
+  private TestMountInterStagePropsContainer getInterStagePropsContainerImpl(ComponentContext c) {
+    return (TestMountInterStagePropsContainer) super.getInterStagePropsContainer(c);
   }
 
   @Override
@@ -168,18 +174,24 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void copyInterStageImpl(Component component) {
-    TestMount testMountRef = (TestMount) component;
-    boundsDefinedOutput = testMountRef.boundsDefinedOutput;
-    measureOutput = testMountRef.measureOutput;
+  protected void copyInterStageImpl(
+      InterStagePropsContainer copyIntoInterStagePropsContainer,
+      InterStagePropsContainer copyFromInterStagePropsContainer) {
+    TestMountInterStagePropsContainer copyIntoInterStagePropsContainer_ref =
+        (TestMountInterStagePropsContainer) copyIntoInterStagePropsContainer;
+    TestMountInterStagePropsContainer copyFromInterStagePropsContainer_ref =
+        (TestMountInterStagePropsContainer) copyFromInterStagePropsContainer;
+    copyIntoInterStagePropsContainer_ref.boundsDefinedOutput =
+        copyFromInterStagePropsContainer_ref.boundsDefinedOutput;
+    copyIntoInterStagePropsContainer_ref.measureOutput =
+        copyFromInterStagePropsContainer_ref.measureOutput;
   }
 
   @Override
   public TestMount makeShallowCopy() {
     TestMount component = (TestMount) super.makeShallowCopy();
-    component.boundsDefinedOutput = null;
-    component.measureOutput = null;
     component.setStateContainer(new TestMountStateContainer());
+    component.setInterStagePropsContainer(createInterStagePropsContainer());
     return component;
   }
 
@@ -235,7 +247,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (int) heightSpec,
         (Size) size,
         (Output<Long>) measureOutputTmp);
-    measureOutput = measureOutputTmp.get();
+    getInterStagePropsContainerImpl(context).measureOutput = measureOutputTmp.get();
   }
 
   @Override
@@ -251,9 +263,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (ComponentLayout) layout,
         (Object) prop3,
         (char[]) prop4,
-        (Long) measureOutput,
+        (Long) getInterStagePropsContainerImpl(c).measureOutput,
         (Output<Integer>) boundsDefinedOutputTmp);
-    boundsDefinedOutput = boundsDefinedOutputTmp.get();
+    getInterStagePropsContainerImpl(c).boundsDefinedOutput = boundsDefinedOutputTmp.get();
   }
 
   @Override
@@ -271,7 +283,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (boolean) prop2,
         (long) getStateContainerImpl(c).state1,
         (S) getStateContainerImpl(c).state2,
-        (Long) measureOutput,
+        (Long) getInterStagePropsContainerImpl(c).measureOutput,
         (TestTreeProp) treeProp);
   }
 
@@ -281,9 +293,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void onPopulateAccessibilityNode(View host, AccessibilityNodeInfoCompat node) {
+  protected void onPopulateAccessibilityNode(
+      ComponentContext c, View host, AccessibilityNodeInfoCompat node) {
     TestMountSpec.onPopulateAccessibilityNode(
-        (View) host, (AccessibilityNodeInfoCompat) node, (CharSequence) prop7);
+        (ComponentContext) c,
+        (View) host,
+        (AccessibilityNodeInfoCompat) node,
+        (CharSequence) prop7);
   }
 
   @Override
@@ -292,29 +308,34 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected int getExtraAccessibilityNodesCount() {
+  protected int getExtraAccessibilityNodesCount(ComponentContext c) {
     int _result;
     _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodesCount(
-                (int) prop1, (CharSequence) prop7, (Integer) boundsDefinedOutput);
+                (ComponentContext) c,
+                (int) prop1,
+                (CharSequence) prop7,
+                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
     return _result;
   }
 
   @Override
   protected void onPopulateExtraAccessibilityNode(
+      ComponentContext c,
       AccessibilityNodeInfoCompat node,
       int extraNodeIndex,
       int componentBoundsLeft,
       int componentBoundsTop) {
     TestMountSpec.onPopulateExtraAccessibilityNode(
+        (ComponentContext) c,
         (AccessibilityNodeInfoCompat) node,
         (int) extraNodeIndex,
         (int) componentBoundsLeft,
         (int) componentBoundsTop,
         (Object) prop3,
         (CharSequence) prop7,
-        (Integer) boundsDefinedOutput);
+        (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
   }
 
   @Override
@@ -323,16 +344,17 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected int getExtraAccessibilityNodeAt(int x, int y) {
+  protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y) {
     int _result;
     _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodeAt(
+                (ComponentContext) c,
                 (int) x,
                 (int) y,
                 (Object) prop3,
                 (CharSequence) prop7,
-                (Integer) boundsDefinedOutput);
+                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
     return _result;
   }
 
@@ -635,6 +657,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
       c.putCachedValue(inputs, cached);
     }
     return cached;
+  }
+
+  static class TestMountInterStagePropsContainer implements InterStagePropsContainer {
+    Integer boundsDefinedOutput;
+
+    Long measureOutput;
   }
 
   @VisibleForTesting(otherwise = 2)

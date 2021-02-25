@@ -14,12 +14,16 @@
 
 package com.facebook.rendercore;
 
+import static com.facebook.rendercore.RootHostDelegate.MAX_REMOUNT_RETRIES;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 
 public class RenderTreeHostView extends HostView implements RenderTreeHost {
+  private static final String TAG = "RenderTreeHostView";
 
   private final MountState mMountState;
   private @Nullable RenderTree mCurrentRenderTree;
@@ -45,7 +49,27 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
   @Override
   void performLayout(boolean changed, int l, int t, int r, int b) {
     if (mCurrentRenderTree != null) {
-      mMountState.mount(mCurrentRenderTree);
+      RenderTree renderTree = mCurrentRenderTree;
+      mMountState.mount(renderTree);
+      // We could run into the case that mounting a tree ends up requesting another mount.
+      // We need to keep re-mounting untile the mounted renderTree matches the mCurrentRenderTree.
+      int retries = 0;
+      while (renderTree != mCurrentRenderTree) {
+        if (retries > MAX_REMOUNT_RETRIES) {
+          ErrorReporter.report(
+              LogLevel.ERROR,
+              TAG,
+              "More than "
+                  + MAX_REMOUNT_RETRIES
+                  + " recursive mount attempts. Skipping mounting the latest version.");
+
+          return;
+        }
+
+        renderTree = mCurrentRenderTree;
+        mMountState.mount(renderTree);
+        retries++;
+      }
     }
 
     performLayoutOnChildrenIfNecessary(this);
@@ -63,6 +87,20 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
 
     mCurrentRenderTree = tree;
     this.requestLayout();
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    mMountState.detach();
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+  @Override
+  public void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mMountState.attach();
   }
 
   @Override

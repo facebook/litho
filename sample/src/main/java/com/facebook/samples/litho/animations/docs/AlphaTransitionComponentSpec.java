@@ -23,6 +23,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -33,7 +34,6 @@ import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.widget.SolidColor;
 
 // start
 @LayoutSpec
@@ -46,8 +46,8 @@ public class AlphaTransitionComponentSpec {
     return Column.create(c)
         .clickHandler(AlphaTransitionComponent.onClickEvent(c))
         .child(
-            SolidColor.create(c)
-                .color(YELLOW)
+            Row.create(c)
+                .backgroundColor(YELLOW)
                 .widthDip(80)
                 .heightDip(80)
                 .alpha(isHalfAlpha ? 0.5f : 1.0f)

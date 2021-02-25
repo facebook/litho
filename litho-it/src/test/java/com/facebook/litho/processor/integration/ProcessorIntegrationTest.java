@@ -48,9 +48,10 @@ public class ProcessorIntegrationTest {
         .failsToCompile()
         .withErrorCount(1)
         .withErrorContaining(
-            "Parameter in position 0 of a method annotated with interface "
-                + "com.facebook.litho.annotations.OnCreateLayout should be of type "
-                + "com.facebook.litho.ComponentContext")
+            "Argument at index 0 is not a valid parameter, should be one of the "
+                + "following: @Prop T somePropName. @TreeProp T someTreePropName. "
+                + "@State T someStateName. @InjectProp T someInjectPropName. @CachedValue T value, "
+                + "where the cached value has a corresponding @OnCalculateCachedValue method.")
         .in(javaFileObject)
         .onLine(28);
   }

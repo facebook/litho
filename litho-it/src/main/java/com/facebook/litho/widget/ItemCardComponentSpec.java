@@ -16,15 +16,17 @@
 
 package com.facebook.litho.widget;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.rendercore.Function;
 
 @LayoutSpec
-class ItemCardComponentSpec {
+public class ItemCardComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @Prop int id, @Prop Component body) {
@@ -32,5 +34,11 @@ class ItemCardComponentSpec {
         .child(CardHeaderComponent.create(c).title("Some title #" + id))
         .child(CardBodyComponent.create(c).content(body))
         .build();
+  }
+
+  public static class TreeProps {
+    public @Nullable Function<Void> onCardActionsTouched;
+    public @Nullable Function<Void> onCardActionViewVisible;
+    public boolean areCardToolsDisabled;
   }
 }

@@ -124,7 +124,10 @@ public class RenderCoreExtension<Input, State> {
       for (Map.Entry<RenderCoreExtension<?, ?>, Object> e : results.entrySet()) {
         final MountExtension<?, ?> extension = e.getKey().getMountExtension();
         if (extension != null) {
-          extension.onVisibleBoundsChanged(mountDelegateTarget.getExtensionState(extension), rect);
+          final ExtensionState state = mountDelegateTarget.getExtensionState(extension);
+          if (state != null) {
+            extension.onVisibleBoundsChanged(state, rect);
+          }
         }
       }
     }

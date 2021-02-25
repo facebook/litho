@@ -11,13 +11,12 @@ load(
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "LITHO_TESTING_SUBCOMPONENTS_TARGET",
     "LITHO_TESTING_WHITEBOX_TARGET",
+    "LITHO_YOGA_TARGET",
     "litho_android_library",
 )
 
 litho_android_library(
     name = "helper",
-    srcs = glob(["*.java"]),
-    autoglob = False,
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
@@ -25,10 +24,11 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
+        LITHO_JSR_TARGET,
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         LITHO_TESTING_WHITEBOX_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_JSR_TARGET,
+        LITHO_YOGA_TARGET,
     ],
 )

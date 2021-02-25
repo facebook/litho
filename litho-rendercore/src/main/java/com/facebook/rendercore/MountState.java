@@ -109,15 +109,15 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    RenderCoreSystrace.beginSection("Mount");
+    RenderCoreSystrace.beginSection("MountState.mount");
 
     mIsMounting = true;
 
-    RenderCoreSystrace.beginSection("RenderCoreExtension#beforeMount");
+    RenderCoreSystrace.beginSection("RenderCoreExtension.beforeMount");
     RenderCoreExtension.beforeMount(this, mRootHost, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
 
-    RenderCoreSystrace.beginSection("PrepareMount");
+    RenderCoreSystrace.beginSection("MountState.prepareMount");
     prepareMount();
     RenderCoreSystrace.endSection();
 
@@ -147,7 +147,7 @@ public class MountState implements MountDelegateTarget {
     mIsMounting = false;
     RenderCoreSystrace.endSection();
 
-    RenderCoreSystrace.beginSection("RenderCoreExtension#afterMount");
+    RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
     RenderCoreExtension.afterMount(this, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
   }
@@ -236,6 +236,17 @@ public class MountState implements MountDelegateTarget {
     mMountDelegate.addExtension(mountExtension);
   }
 
+  /** @deprecated Only used for Litho's integration. Marked for removal. */
+  @Deprecated
+  @Override
+  public void unregisterMountDelegateExtension(MountExtension mountExtension) {
+    if (mMountDelegate == null) {
+      return;
+    }
+
+    mMountDelegate.removeExtension(mountExtension);
+  }
+
   @Override
   public ArrayList<Host> getHosts() {
     final ArrayList<Host> hosts = new ArrayList<>();
@@ -271,8 +282,13 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public ExtensionState getExtensionState(MountExtension mountExtension) {
-    return mMountDelegate.getExtensionState(mountExtension);
+  public void removeUnmountDelegateExtension() {
+    mUnmountDelegateExtension = null;
+  }
+
+  @Override
+  public @Nullable ExtensionState getExtensionState(MountExtension mountExtension) {
+    return mMountDelegate != null ? mMountDelegate.getExtensionState(mountExtension) : null;
   }
 
   /**

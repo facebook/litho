@@ -17,6 +17,9 @@
 package com.facebook.rendercore.text;
 
 import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -25,7 +28,11 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
+import android.text.style.MetricAffectingSpan;
+import android.util.SparseIntArray;
 import android.view.View;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Size;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
@@ -35,6 +42,18 @@ import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.utils.LayoutUtils;
 
 public class TextMeasurementUtils {
+
+  private static final String CAP_MEASUREMENT_TEXT = "T";
+
+  @GuardedBy("self")
+  // Map from hash(textSize, typeface) -> cap heights array for text
+  private static final SparseIntArray sCapHeightsCache = new SparseIntArray();
+
+  private static final SparseIntArray sBaselineCache = new SparseIntArray();
+
+  // The offsets of the returned values within the int array.
+  private static final int CAP_HEIGHT_OFFSET_INDEX = 0;
+  private static final int BASELINE_OFFSET_INDEX = 1;
 
   @VisibleForTesting
   public interface DebugMeasureListener {
@@ -99,21 +118,35 @@ public class TextMeasurementUtils {
       preferredHeight += layoutLineHeight * (textStyle.minLines - lineCount);
     }
 
-    final int layoutHeight = View.resolveSize(preferredHeight, heightSpec);
     final float textHeight = LayoutMeasureUtil.getHeight(layout);
+    final int capHeightOffset;
 
-    final float textLayoutTranslationY;
+    if (hasManualSpacing(textStyle)) {
+      final int[] capHeights = getCapHeightBaselineSpacing(layout.getPaint(), text);
+
+      final int baselineOffset = capHeights[BASELINE_OFFSET_INDEX];
+      capHeightOffset = capHeights[CAP_HEIGHT_OFFSET_INDEX] - textStyle.manualCapSpacing;
+      preferredHeight -= (capHeightOffset + baselineOffset);
+      preferredHeight += textStyle.manualBaselineSpacing;
+    } else {
+      capHeightOffset = 0;
+    }
+
+    final int layoutHeight = View.resolveSize(preferredHeight, heightSpec);
+
+    float textLayoutTranslationY;
     switch (textStyle.verticalGravity) {
       case CENTER:
-        textLayoutTranslationY = (layoutHeight - textHeight) / 2 + extraSpacingHeight;
+        textLayoutTranslationY =
+            (layoutHeight - textHeight) / 2 + extraSpacingHeight - capHeightOffset;
         break;
 
       case BOTTOM:
-        textLayoutTranslationY = layoutHeight - textHeight + extraSpacingHeight;
+        textLayoutTranslationY = layoutHeight - textHeight + extraSpacingHeight - capHeightOffset;
         break;
 
       default:
-        textLayoutTranslationY = extraSpacingHeight;
+        textLayoutTranslationY = extraSpacingHeight - capHeightOffset;
         break;
     }
 
@@ -184,6 +217,8 @@ public class TextMeasurementUtils {
       actualEllipsize = textStyle.ellipsize;
     }
 
+    final boolean includeFontPadding = textStyle.includeFontPadding && !hasManualSpacing(textStyle);
+
     layoutBuilder
         .setDensity(context.getResources().getDisplayMetrics().density)
         .setEllipsize(actualEllipsize)
@@ -194,7 +229,7 @@ public class TextMeasurementUtils {
         .setText(text)
         .setTextSize(textStyle.textSize)
         .setWidth(View.MeasureSpec.getSize(widthSpec), textMeasureMode)
-        .setIncludeFontPadding(textStyle.includeFontPadding)
+        .setIncludeFontPadding(includeFontPadding)
         .setTextSpacingExtra(textStyle.extraSpacing)
         .setTextSpacingMultiplier(textStyle.spacingMultiplier)
         .setLinkColor(textStyle.linkColor)
@@ -286,6 +321,11 @@ public class TextMeasurementUtils {
     return layoutBuilder.build();
   }
 
+  private static boolean hasManualSpacing(TextStyle textStyle) {
+    return textStyle.manualCapSpacing != Integer.MIN_VALUE
+        && textStyle.manualBaselineSpacing != Integer.MIN_VALUE;
+  }
+
   /**
    * Truncates text which is too long and appends the given custom ellipsis CharSequence to the end
    * of the visible text.
@@ -349,5 +389,80 @@ public class TextMeasurementUtils {
       }
     }
     return -1;
+  }
+
+  /**
+   * Return the cap height values array {cap_height, cap_height_offset, baseline_offset} for the
+   * given text size and typeface.
+   */
+  private static @Size(2) int[] getCapHeightBaselineSpacing(Paint paint, CharSequence text) {
+    final TextPaint capTextPaint = new TextPaint(paint);
+    Paint.FontMetricsInt fontMetricsInt = null;
+
+    if (text instanceof Spanned && text.length() > 0) {
+      MetricAffectingSpan[] spans = ((Spanned) text).getSpans(0, 0, MetricAffectingSpan.class);
+      for (int i = 0; i < spans.length; i++) {
+        spans[i].updateMeasureState(capTextPaint);
+      }
+    }
+
+    final int hashCode = getKey(capTextPaint.getTextSize(), capTextPaint.getTypeface());
+
+    int capHeight;
+    synchronized (sCapHeightsCache) {
+      capHeight = sCapHeightsCache.get(hashCode, Integer.MIN_VALUE);
+    }
+
+    if (capHeight == Integer.MIN_VALUE) {
+      final Rect rect = new Rect();
+      fontMetricsInt = new Paint.FontMetricsInt();
+      capTextPaint.getFontMetricsInt(fontMetricsInt);
+      capTextPaint.getTextBounds(CAP_MEASUREMENT_TEXT, 0, CAP_MEASUREMENT_TEXT.length(), rect);
+      capHeight = (-1 * fontMetricsInt.ascent) - rect.height();
+      synchronized (sCapHeightsCache) {
+        sCapHeightsCache.put(hashCode, capHeight);
+      }
+    }
+    final TextPaint baselineTextPaint = new TextPaint(paint);
+    if (text instanceof Spanned && text.length() > 0) {
+      MetricAffectingSpan[] spans =
+          ((Spanned) text)
+              .getSpans(text.length() - 1, text.length() - 1, MetricAffectingSpan.class);
+      for (int i = 0; i < spans.length; i++) {
+        spans[i].updateMeasureState(baselineTextPaint);
+      }
+    }
+    final int baselineHashCode =
+        getKey(baselineTextPaint.getTextSize(), baselineTextPaint.getTypeface());
+    int baseline;
+    synchronized (sBaselineCache) {
+      baseline = sBaselineCache.get(baselineHashCode, Integer.MIN_VALUE);
+    }
+    if (baseline == Integer.MIN_VALUE) {
+      if (fontMetricsInt == null
+          || capTextPaint.getTextSize() != baselineTextPaint.getTextSize()
+          || capTextPaint.getTypeface() != baselineTextPaint.getTypeface()) {
+        fontMetricsInt = new Paint.FontMetricsInt();
+        baselineTextPaint.getFontMetricsInt(fontMetricsInt);
+      }
+
+      baseline = fontMetricsInt.descent;
+      synchronized (sBaselineCache) {
+        sBaselineCache.put(baselineHashCode, baseline);
+      }
+    }
+
+    return new int[] {capHeight, baseline};
+  }
+
+  /**
+   * Get the key for a given size + typeface.
+   *
+   * <p>We use the size + typeface as a key without checking for collisions. In theory this could
+   * collide, in which case we will return incorrect values.
+   */
+  private static int getKey(float textSizePx, Typeface typeface) {
+    // Hash code implementation, see https://stackoverflow.com/questions/113511/
+    return 31 * (int) textSizePx + typeface.hashCode();
   }
 }

@@ -464,10 +464,10 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected ComponentLifecycle.RenderData recordRenderData(
-      ComponentLifecycle.RenderData toRecycle) {
+      ComponentContext c, ComponentLifecycle.RenderData toRecycle) {
     TestLayoutRenderData renderInfo =
         toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
-    renderInfo.record(this);
+    renderInfo.record(c, this);
     return renderInfo;
   }
 
@@ -557,8 +557,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
       state3 = info.state3;
     }
 
-    void record(TestLayout component) {
-      state3 = component.getStateContainerImpl(null).state3;
+    void record(ComponentContext c, TestLayout component) {
+      state3 = component.getStateContainerImpl(c).state3;
     }
   }
 

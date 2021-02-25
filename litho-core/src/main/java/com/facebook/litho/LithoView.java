@@ -56,14 +56,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final String TAG = LithoView.class.getSimpleName();
-  private final boolean mAcquireDuringMount;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
   private boolean mHasVisibilityHint;
+  private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
   private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
+  private boolean mSkipMountingIfNotVisible;
 
   public interface OnDirtyMountListener {
     /**
@@ -212,8 +213,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mUseExtensions = useExtensions;
     mDelegateToRenderCore = delegateToRenderCore;
-    mAcquireDuringMount =
-        ComponentsConfiguration.extensionAcquireDuringMount || delegateToRenderCore;
 
     if (mUseExtensions) {
       if (mDelegateToRenderCore) {
@@ -229,10 +228,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-  }
-
-  boolean shouldAcquireDuringMount() {
-    return mAcquireDuringMount;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -728,10 +723,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
             "Cannot enable transitions extension or incremental mount extension without a MountDelegateTarget.");
       }
 
-      if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
-        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
-      }
-
       mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
 
       if (ComponentsConfiguration.isEndToEndTestRun) {
@@ -743,6 +734,14 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       }
 
       mLithoHostListenerCoordinator.enableDynamicProps();
+    }
+
+    if (componentTree != null) {
+      if (componentTree.isIncrementalMountEnabled()) {
+        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
+      } else {
+        mLithoHostListenerCoordinator.disableIncrementalMount();
+      }
     }
   }
 
@@ -845,15 +844,53 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   /**
+   * If true, calling {@link #setVisibilityHint(boolean, boolean)} will delegate to {@link
+   * #setVisibilityHint(boolean)} and skip mounting if the visibility hint was set to false. You
+   * should not need this unless you don't have control over calling setVisibilityHint on the
+   * LithoView you own.
+   */
+  public void setSkipMountingIfNotVisible(boolean skipMountingIfNotVisible) {
+    assertMainThread();
+    mSkipMountingIfNotVisible = skipMountingIfNotVisible;
+  }
+
+  /**
    * Call this to tell the LithoView whether it is visible or not. In general, you shouldn't require
    * this as the system will do this for you. However, when a new activity/fragment is added on top
    * of the one hosting this view, the LithoView remains in the backstack but receives no callback
    * to indicate that it is no longer visible.
    *
+   * <p>While the LithoView has the visibility hint set to false, it will be treated by the
+   * framework as not in the viewport, so no new mounting events will be processed until the
+   * visibility hint is set back to true.
+   *
    * @param isVisible if true, this will find the current visible rect and process visibility
    *     outputs using it. If false, any invisible and unfocused events will be called.
    */
   public void setVisibilityHint(boolean isVisible) {
+    setVisibilityHintInternal(isVisible, true);
+  }
+
+  /**
+   * Marked as @Deprecated. {@link #setVisibilityHint(boolean)} should be used instead, which by
+   * default does not process new mount events while the visibility hint is set to false
+   * (skipMountingIfNotVisible should be set to true). This method should only be used to maintain
+   * the contract with the usages of setVisibilityHint before `skipMountingIfNotVisible` was made to
+   * default to true. All usages should be audited and migrated to {@link
+   * #setVisibilityHint(boolean)}.
+   */
+  @Deprecated
+  public void setVisibilityHint(boolean isVisible, boolean skipMountingIfNotVisible) {
+    if (mSkipMountingIfNotVisible) {
+      setVisibilityHint(isVisible);
+
+      return;
+    }
+
+    setVisibilityHintInternal(isVisible, skipMountingIfNotVisible);
+  }
+
+  private void setVisibilityHintInternal(boolean isVisible, boolean skipMountingIfNotVisible) {
     assertMainThread();
 
     if (mComponentTree == null) {
@@ -863,8 +900,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     // If the LithoView previously had the visibility hint set to false, then when it's set back
     // to true we should trigger a mount, in case the visible bounds changed while mounting was
     // paused.
-    final boolean forceMount = shouldPauseMountingWithVisibilityHintFalse();
     mHasVisibilityHint = true;
+    mPauseMountingWhileVisibilityHintFalse = skipMountingIfNotVisible;
+
+    final boolean forceMount = shouldPauseMountingWithVisibilityHintFalse();
     mVisibilityHintIsVisible = isVisible;
 
     if (isVisible) {
@@ -873,10 +912,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       } else if (getLocalVisibleRect(mRect)) {
         processVisibilityOutputs(mRect);
       }
-      recursivelySetVisibleHint(true);
+      recursivelySetVisibleHint(true, skipMountingIfNotVisible);
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
-      recursivelySetVisibleHint(false);
+      recursivelySetVisibleHint(false, skipMountingIfNotVisible);
       clearVisibilityItems();
     }
   }
@@ -903,11 +942,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
   }
 
-  private void recursivelySetVisibleHint(boolean isVisible) {
+  private void recursivelySetVisibleHint(boolean isVisible, boolean skipMountingIfNotVisible) {
     final List<LithoView> childLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
     for (int i = childLithoViews.size() - 1; i >= 0; i--) {
       final LithoView lithoView = childLithoViews.get(i);
-      lithoView.setVisibilityHint(isVisible);
+      lithoView.setVisibilityHint(isVisible, skipMountingIfNotVisible);
     }
   }
 
@@ -1087,6 +1126,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public void release() {
     assertMainThread();
 
+    if (ComponentsConfiguration.releaseNestedLithoViews) {
+      final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
+      if (childrenLithoViews != null) {
+        for (LithoView child : childrenLithoViews) {
+          child.release();
+        }
+      }
+    }
+
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
@@ -1097,7 +1145,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   // We pause mounting while the visibility hint is set to false, because the visible rect of
   // the LithoView is not consistent with what's currently on screen.
   private boolean shouldPauseMountingWithVisibilityHintFalse() {
-    return (mComponentTree != null && mComponentTree.skipIncrementalMountOnSetVisibilityHintFalse())
+    return mPauseMountingWhileVisibilityHintFalse
         && mHasVisibilityHint
         && !mVisibilityHintIsVisible;
   }
@@ -1161,7 +1209,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (mLithoHostListenerCoordinator != null) {
         mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       }
-      mMountDelegateTarget.mount(layoutState.toRenderTree());
+      if (mDelegateToRenderCore) {
+        mMountDelegateTarget.mount(layoutState.toRenderTree());
+      } else {
+        ((MountState) mMountDelegateTarget).mount(layoutState, true);
+      }
       if (mLithoHostListenerCoordinator != null) {
         mLithoHostListenerCoordinator.afterMount();
       }
@@ -1228,9 +1280,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void dispatchVisibilityEvent(
       VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
+    final MountDelegateTarget target =
+        mMountDelegateTarget != null ? mMountDelegateTarget : mMountState;
+    final Object content =
+        visibilityOutput.hasMountableContent
+            ? target.getContentById(visibilityOutput.mRenderUnitId)
+            : null;
     if (visibilityEventType == VisibleEvent.class) {
       if (visibilityOutput.getVisibleEventHandler() != null) {
-        VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
+        VisibilityUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler(), content);
       }
     } else if (visibilityEventType == InvisibleEvent.class) {
       if (visibilityOutput.getInvisibleEventHandler() != null) {
@@ -1335,14 +1393,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   @Nullable
   MountDelegateTarget getMountDelegateTarget() {
     return mUseExtensions ? mMountDelegateTarget : mMountState;
-  }
-
-  // Used for Transitions - When using extensions, TransitionsExtension gets this information
-  // from the LayoutState directly.
-  void setIsFirstMountOfComponentTree() {
-    if (!mUseExtensions) {
-      mMountState.setIsFirstMountOfComponentTree();
-    }
   }
 
   public void setMountStartupLoggingInfo(

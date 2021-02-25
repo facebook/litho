@@ -58,11 +58,6 @@ public class InitialStateContainer {
   @VisibleForTesting
   Set<StateHandler> mPendingStateHandlers = new HashSet<>();
 
-  @GuardedBy("this")
-  @Nullable
-  @VisibleForTesting
-  Set<HooksHandler> mPendingHooksHandlers;
-
   /**
    * Called when the ComponentTree creates a new StateHandler for a new layout computation. We keep
    * track of this new StateHandler so that we know that we need to wait for this layout computation
@@ -70,18 +65,6 @@ public class InitialStateContainer {
    */
   synchronized void registerStateHandler(StateHandler stateHandler) {
     mPendingStateHandlers.add(stateHandler);
-  }
-
-  /**
-   * Called when the ComponentTree creates a new HooksHandler for a new layout computation. We keep
-   * track of this new HooksHandler so that we know that we need to wait for this layout computation
-   * to finish before we can clear the initial states map.
-   */
-  synchronized void registerHooksHandler(HooksHandler hooksHandler) {
-    if (mPendingHooksHandlers == null) {
-      mPendingHooksHandlers = new HashSet<>();
-    }
-    mPendingHooksHandlers.add(hooksHandler);
   }
 
   /**
@@ -157,26 +140,6 @@ public class InitialStateContainer {
       // createOrGetInitialHookState from any thread.
       mInitialStates.clear();
 
-      if (mInitialHookStates != null) {
-        mInitialHookStates.clear();
-      }
-    }
-  }
-
-  /**
-   * Called when the ComponentTree commits a new HooksHandler or discards one for a discarded layout
-   * computation.
-   */
-  @SuppressWarnings("ConstantConditions")
-  synchronized void unregisterHooksHandler(HooksHandler hooksHandler) {
-    mPendingHooksHandlers.remove(hooksHandler);
-    if (mPendingHooksHandlers.isEmpty()) {
-      if (mCreateInitialHookStateLocks != null) {
-        mCreateInitialHookStateLocks.clear();
-      }
-
-      // This is safe as we have a guarantee that by this point there is no layout happening
-      // and therefore we can not be executing createOrGetInitialHookState from any thread.
       if (mInitialHookStates != null) {
         mInitialHookStates.clear();
       }

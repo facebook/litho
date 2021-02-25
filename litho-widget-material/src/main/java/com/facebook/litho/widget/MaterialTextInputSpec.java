@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.MovementMethod;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.core.util.ObjectsCompat;
 import androidx.core.view.ViewCompat;
@@ -117,7 +118,7 @@ class MaterialTextInputSpec {
       StateValue<Integer> measureSeqNumber,
       @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
     TextInputSpec.onCreateInitialState(
-        c, mountedEditTextRef, savedText, measureSeqNumber, initialText);
+        mountedEditTextRef, savedText, measureSeqNumber, initialText);
   }
 
   @OnLoadStyle
@@ -307,7 +308,7 @@ class MaterialTextInputSpec {
   protected static MountableTextInputLayout onCreateMountContent(Context c) {
     MountableTextInputLayout mountableTextInputLayout = new MountableTextInputLayout(c);
     EditTextWithEventHandlers editText = new EditTextWithEventHandlers(c);
-    mountableTextInputLayout.addView(editText);
+    mountableTextInputLayout.addView(editText, -1, ViewGroup.LayoutParams.MATCH_PARENT);
     return mountableTextInputLayout;
   }
 

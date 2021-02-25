@@ -78,6 +78,7 @@ dependencies {
     implementation(deps.robolectric) {
         exclude group: "com.google.guava", module: "guava"
     }
+    implementation deps.supportTestCore
 }
 
 apply from: rootProject.file('gradle/release.gradle')

@@ -34,13 +34,13 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private final @Nullable Map<String, Component> mGlobalKeyToComponent;
   private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
   private final @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
-  private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction =
-      ComponentsConfiguration.useStatelessComponent ? new LithoYogaMeasureFunction(this) : null;
+  private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction;
 
   private static @Nullable LayoutState sTestLayoutState;
+
+  private boolean mIsLayoutStarted = false;
 
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     if (sTestLayoutState == null) {
@@ -48,6 +48,16 @@ public class LayoutStateContext {
     }
 
     return new LayoutStateContext(sTestLayoutState, c.getComponentTree(), null);
+  }
+
+  void copyScopedInfoFrom(LayoutStateContext layoutStateContext) {
+    if (mGlobalKeyToScopedContext != null && layoutStateContext.mGlobalKeyToScopedContext != null) {
+      mGlobalKeyToScopedContext.putAll(layoutStateContext.mGlobalKeyToScopedContext);
+    }
+
+    if (mGlobalKeyToScopedInfo != null && layoutStateContext.mGlobalKeyToScopedInfo != null) {
+      mGlobalKeyToScopedInfo.putAll(layoutStateContext.mGlobalKeyToScopedInfo);
+    }
   }
 
   @VisibleForTesting
@@ -64,19 +74,19 @@ public class LayoutStateContext {
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
     if (ComponentsConfiguration.useStatelessComponent) {
-      mGlobalKeyToComponent = new HashMap<>();
       mGlobalKeyToScopedContext = new HashMap<>();
       mGlobalKeyToScopedInfo = new HashMap<>();
+      mLithoYogaMeasureFunction =
+          new LithoYogaMeasureFunction(this, layoutState.getPrevLayoutStateContext());
     } else {
       mGlobalKeyToScopedContext = null;
-      mGlobalKeyToComponent = null;
       mGlobalKeyToScopedInfo = null;
+      mLithoYogaMeasureFunction = null;
     }
   }
 
   void addScopedComponentInfo(
       String globalKey, Component component, ComponentContext scopedContext) {
-    mGlobalKeyToComponent.put(globalKey, component);
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
     mGlobalKeyToScopedInfo.put(globalKey, new ScopedComponentInfo(component));
   }
@@ -133,5 +143,14 @@ public class LayoutStateContext {
     if (mLayoutStateRef != null) {
       mLayoutStateRef.setInterruptible(false);
     }
+  }
+
+  void markLayoutStarted() {
+    if (mIsLayoutStarted) {
+      throw new IllegalStateException(
+          "Duplicate layout of a component: "
+              + (mComponentTree != null ? mComponentTree.getRoot() : null));
+    }
+    mIsLayoutStarted = true;
   }
 }

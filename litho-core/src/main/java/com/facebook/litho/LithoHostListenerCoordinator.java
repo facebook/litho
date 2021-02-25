@@ -22,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
@@ -50,69 +51,95 @@ public class LithoHostListenerCoordinator {
   public void beforeMount(Object input, Rect localVisibleRect) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       MountExtension hostListenerExtension = mMountExtensions.get(i);
-      hostListenerExtension.beforeMount(
-          mMountDelegateTarget.getExtensionState(hostListenerExtension), input, localVisibleRect);
+      ExtensionState state = mMountDelegateTarget.getExtensionState(hostListenerExtension);
+      if (state != null) {
+        hostListenerExtension.beforeMount(state, input, localVisibleRect);
+      }
     }
   }
 
   public void afterMount() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
-      mountExtension.afterMount(mMountDelegateTarget.getExtensionState(mountExtension));
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
+      if (state != null) {
+        mountExtension.afterMount(state);
+      }
     }
   }
 
   public void processVisibilityOutputs(Rect localVisibleRect) {
     if (mVisibilityExtension != null) {
-      mVisibilityExtension.onVisibleBoundsChanged(
-          mMountDelegateTarget.getExtensionState(mVisibilityExtension), localVisibleRect);
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
+      if (state != null) {
+        mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
+      }
     }
   }
 
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
     // We first mount and then we process visibility outputs.
     if (mIncrementalMountExtension != null) {
-      mIncrementalMountExtension.onVisibleBoundsChanged(
-          mMountDelegateTarget.getExtensionState(mIncrementalMountExtension), localVisibleRect);
-      LithoStats.incrementComponentMountCount();
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mIncrementalMountExtension);
+      if (state != null) {
+        mIncrementalMountExtension.onVisibleBoundsChanged(state, localVisibleRect);
+        LithoStats.incrementComponentMountCount();
+      }
     }
 
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.onVisibleBoundsChanged(
-          mMountDelegateTarget.getExtensionState(mTransitionsExtension), localVisibleRect);
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
+      if (state != null) {
+        mTransitionsExtension.onVisibleBoundsChanged(state, localVisibleRect);
+      }
     }
 
     if (mVisibilityExtension != null) {
-      mVisibilityExtension.onVisibleBoundsChanged(
-          mMountDelegateTarget.getExtensionState(mVisibilityExtension), localVisibleRect);
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
+      if (state != null) {
+        mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
+      }
     }
   }
 
   public void onUnmount() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
-      mountExtension.onUnmount(mMountDelegateTarget.getExtensionState(mountExtension));
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
+      if (state != null) {
+        mountExtension.onUnmount(state);
+      }
     }
   }
 
   public void onUnbind() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
-      mountExtension.onUnbind(mMountDelegateTarget.getExtensionState(mountExtension));
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
+      if (state != null) {
+        mountExtension.onUnbind(state);
+      }
     }
   }
 
   void enableIncrementalMount(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mIncrementalMountExtension != null) {
-      throw new IllegalStateException(
-          "Incremental mount has already been enabled on this coordinator.");
+      return;
     }
 
-    mIncrementalMountExtension =
-        IncrementalMountExtension.getInstance(lithoView.shouldAcquireDuringMount());
+    mIncrementalMountExtension = IncrementalMountExtension.getInstance();
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
+  }
+
+  void disableIncrementalMount() {
+    if (mIncrementalMountExtension == null) {
+      return;
+    }
+    mMountDelegateTarget.unregisterMountDelegateExtension(mIncrementalMountExtension);
+    removeListener(mIncrementalMountExtension);
+    mIncrementalMountExtension = null;
   }
 
   void enableVisibilityProcessing(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
@@ -123,8 +150,10 @@ public class LithoHostListenerCoordinator {
 
     mVisibilityExtension = VisibilityMountExtension.getInstance();
     mountDelegateTarget.registerMountDelegateExtension(mVisibilityExtension);
-    VisibilityMountExtension.setRootHost(
-        mMountDelegateTarget.getExtensionState(mVisibilityExtension), lithoView);
+    ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
+    if (state != null) {
+      VisibilityMountExtension.setRootHost(state, lithoView);
+    }
     registerListener(mVisibilityExtension);
   }
 
@@ -154,15 +183,12 @@ public class LithoHostListenerCoordinator {
     return mVisibilityExtension;
   }
 
-  @Nullable
-  TransitionsExtension getTransitionsExtension() {
-    return mTransitionsExtension;
-  }
-
   void clearLastMountedTreeId() {
     if (mTransitionsExtension != null) {
-      mTransitionsExtension.clearLastMountedTreeId(
-          mMountDelegateTarget.getExtensionState(mTransitionsExtension));
+      ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
+      if (state != null) {
+        mTransitionsExtension.clearLastMountedTreeId(state);
+      }
     }
   }
 
@@ -187,12 +213,18 @@ public class LithoHostListenerCoordinator {
       return;
     }
 
-    mTransitionsExtension.collectAllTransitions(
-        mMountDelegateTarget.getExtensionState(mTransitionsExtension), layoutState);
+    ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
+    if (state != null) {
+      mTransitionsExtension.collectAllTransitions(state, layoutState);
+    }
   }
 
   private void registerListener(MountExtension mountListenerExtension) {
     mMountExtensions.add(mountListenerExtension);
+  }
+
+  private void removeListener(MountExtension mountExtension) {
+    mMountExtensions.remove(mountExtension);
   }
 
   @VisibleForTesting

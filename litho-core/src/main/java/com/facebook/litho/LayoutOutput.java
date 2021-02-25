@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
 
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
@@ -100,7 +102,10 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mHostTranslationY = hostTranslationY;
     mFlags = flags;
     mHostMarker = hostMarker;
-    mImportantForAccessibility = importantForAccessibility;
+    mImportantForAccessibility =
+        importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
+            ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
+            : importantForAccessibility;
     mOrientation = orientation;
     mTransitionId = transitionId;
   }

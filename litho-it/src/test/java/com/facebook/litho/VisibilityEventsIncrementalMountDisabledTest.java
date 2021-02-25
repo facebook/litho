@@ -26,6 +26,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -46,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class VisibilityEventsIncrementalMountDisabledTest {
@@ -81,7 +81,7 @@ public class VisibilityEventsIncrementalMountDisabledTest {
   @Before
   public void setup() {
 
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(ApplicationProvider.getApplicationContext());
 
     mLithoView = new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCore);
     mParent = new FrameLayout(mContext.getAndroidContext());
@@ -1404,13 +1404,13 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(invisibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(unfocusedEventHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(true);
+    lithoView.setVisibilityHint(true, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);
@@ -1458,14 +1458,14 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     final LithoView parentView =
         mountComponent(
             mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), false, true);
-    parentView.setVisibilityHint(false);
+    parentView.setVisibilityHint(false, false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner))
         .isTrue();
     testComponentInner.getDispatchedEventHandlers().clear();
 
-    parentView.setVisibilityHint(true);
+    parentView.setVisibilityHint(true, false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
@@ -1579,13 +1579,13 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(false);
+    lithoView.setVisibilityHint(false, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(invisibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(unfocusedEventHandler);
 
     component.getDispatchedEventHandlers().clear();
-    lithoView.setVisibilityHint(true);
+    lithoView.setVisibilityHint(true, false);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);

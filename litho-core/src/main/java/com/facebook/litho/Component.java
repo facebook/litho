@@ -137,12 +137,14 @@ public abstract class Component extends ComponentLifecycle
   private @Nullable Context mBuilderContext;
 
   private @Nullable StateContainer mStateContainer;
+  private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
   protected Component() {
     mSimpleName = getClass().getSimpleName();
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     if (!mUseStatelessComponent) {
       mStateContainer = createStateContainer();
+      mInterStagePropsContainer = createInterStagePropsContainer();
     }
   }
 
@@ -151,6 +153,7 @@ public abstract class Component extends ComponentLifecycle
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     if (!mUseStatelessComponent) {
       mStateContainer = createStateContainer();
+      mInterStagePropsContainer = createInterStagePropsContainer();
     }
   }
 
@@ -165,6 +168,7 @@ public abstract class Component extends ComponentLifecycle
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     if (!mUseStatelessComponent) {
       mStateContainer = createStateContainer();
+      mInterStagePropsContainer = createInterStagePropsContainer();
     }
   }
 
@@ -271,13 +275,14 @@ public abstract class Component extends ComponentLifecycle
     try {
       final Component component = (Component) super.clone();
 
-      component.mGlobalKey = null;
-      component.mIsLayoutStarted = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
-      component.mScopedContext = null;
-      component.mChildCounters = null;
-      component.mManualKeysCounter = null;
-
+      if (!mUseStatelessComponent) {
+        component.mGlobalKey = null;
+        component.mIsLayoutStarted = false;
+        component.mScopedContext = null;
+        component.mChildCounters = null;
+        component.mManualKeysCounter = null;
+      }
       return component;
     } catch (CloneNotSupportedException e) {
       // This class implements Cloneable, so this is impossible
@@ -539,7 +544,9 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    clone.copyInterStageImpl(this);
+    clone.copyInterStageImpl(
+        clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
+        getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
 
     // update the cloned component with the new context.
     final ComponentContext scopedContext =
@@ -555,15 +562,23 @@ public abstract class Component extends ComponentLifecycle
     return clone;
   }
 
-  synchronized void markLayoutStarted() {
+  static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
+    if (component.mUseStatelessComponent) {
+      layoutStateContext.markLayoutStarted();
+    } else {
+      component.markLayoutStarted();
+    }
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  protected synchronized void markLayoutStarted() {
+    if (mUseStatelessComponent) {
+      return;
+    }
     if (mIsLayoutStarted) {
       throw new IllegalStateException("Duplicate layout of a component: " + this);
     }
     mIsLayoutStarted = true;
-  }
-
-  void reset() {
-    mIsLayoutStarted = false;
   }
 
   protected void bindDynamicProp(int dynamicPropIndex, Object value, Object content) {
@@ -578,7 +593,10 @@ public abstract class Component extends ComponentLifecycle
     return false;
   }
 
-  protected void copyInterStageImpl(Component component) {}
+  // This will not be needed anymore for stateless components.
+  protected void copyInterStageImpl(
+      final InterStagePropsContainer copyIntoInterStagePropsContainer,
+      final InterStagePropsContainer copyFromInterStagePropsContainer) {}
 
   protected DynamicValue[] getDynamicProps() {
     return sEmptyArray;
@@ -626,7 +644,50 @@ public abstract class Component extends ComponentLifecycle
     mStateContainer = stateContainer;
   }
 
+  protected void setInterStagePropsContainer(InterStagePropsContainer interStagePropsContainer) {
+    mInterStagePropsContainer = interStagePropsContainer;
+  }
+
   protected @Nullable StateContainer createStateContainer() {
+    return null;
+  }
+
+  @Override
+  public String toString() {
+    return getSimpleName();
+  }
+
+  protected @Nullable InterStagePropsContainer getInterStagePropsContainer(
+      ComponentContext scopedContext) {
+    if (mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access a inter-stage props outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      return layoutStateContext.getScopedComponentInfo(globalKey).getInterStagePropsContainer();
+    }
+
+    return mInterStagePropsContainer;
+  }
+
+  @Nullable
+  InterStagePropsContainer getInterStagePropsContainer(
+      LayoutStateContext layoutStateContext, String globalKey) {
+    if (mUseStatelessComponent) {
+      if (layoutStateContext.getScopedComponentInfo(globalKey) == null) {
+        return null;
+      }
+      return layoutStateContext.getScopedComponentInfo(globalKey).getInterStagePropsContainer();
+    } else {
+      return mInterStagePropsContainer;
+    }
+  }
+
+  protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {
     return null;
   }
 
@@ -639,13 +700,9 @@ public abstract class Component extends ComponentLifecycle
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (globalKey == null) {
-        if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
-          globalKey = LayoutState.generateGlobalKey(parentContext, this);
-        } else {
-          globalKey =
-              ComponentKeyUtils.generateGlobalKey(
-                  parentContext, parentContext.getComponentScope(), this);
-        }
+        globalKey =
+            ComponentKeyUtils.generateGlobalKey(
+                parentContext, parentContext.getComponentScope(), this);
         setGlobalKey(globalKey);
       }
     }
@@ -700,7 +757,7 @@ public abstract class Component extends ComponentLifecycle
    * @param component the child component
    * @return the number of children of {@param component} type
    */
-  synchronized int getChildCountAndIncrement(Component component) {
+  private synchronized int getChildCountAndIncrement(Component component) {
     if (mChildCounters == null) {
       mChildCounters = new SparseIntArray();
     }
@@ -712,7 +769,37 @@ public abstract class Component extends ComponentLifecycle
     return count;
   }
 
-  synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
+  /**
+   * Returns the number of children of a given type {@param childComponent} component has and then
+   * increments it by 1.
+   *
+   * @param parentContext
+   * @param parentComponent
+   * @param childComponent
+   * @return the number of children of {@param childComponent} type
+   */
+  static int getChildCountAndIncrement(
+      final @Nullable ComponentContext parentContext,
+      final Component parentComponent,
+      final Component childComponent) {
+    if (parentComponent.mUseStatelessComponent) {
+      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access and increment child counter outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+      final String globalKey = parentContext.getGlobalKey();
+
+      return layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .getChildCountAndIncrement(childComponent);
+    } else {
+      return parentComponent.getChildCountAndIncrement(childComponent);
+    }
+  }
+
+  private synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
     if (mManualKeysCounter == null) {
       mManualKeysCounter = new HashMap<>();
     }
@@ -725,11 +812,41 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /**
+   * Returns the number of children with same {@param manualKey} component has and then increments
+   * it by 1.
+   *
+   * @param parentContext
+   * @param parentComponent
+   * @param manualKey
+   * @return
+   */
+  static int getManualKeyUsagesCountAndIncrement(
+      final @Nullable ComponentContext parentContext,
+      final Component parentComponent,
+      final String manualKey) {
+    if (parentComponent.mUseStatelessComponent) {
+      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access and increment manual key usages counter outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
+      final String globalKey = parentContext.getGlobalKey();
+
+      return layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .getManualKeyUsagesCountAndIncrement(manualKey);
+    } else {
+      return parentComponent.getManualKeyUsagesCountAndIncrement(manualKey);
+    }
+  }
+
+  /**
    * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
    *     needed
    * @see DynamicPropsManager
    */
-  private SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+  SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
     if (mCommonDynamicProps == null) {
       mCommonDynamicProps = new SparseArray<>();
     }
@@ -821,13 +938,56 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */
-  protected static void registerWorkingRange(
+  private static void registerWorkingRange(
       String name, WorkingRange workingRange, Component component, String globalKey) {
     if (component.mWorkingRangeRegistrations == null) {
       component.mWorkingRangeRegistrations = new ArrayList<>();
     }
     component.mWorkingRangeRegistrations.add(
         new WorkingRangeContainer.Registration(name, workingRange, component, globalKey));
+  }
+
+  /** Store a working range information into a list for later use by {@link LayoutState}. */
+  protected static void registerWorkingRange(
+      ComponentContext scopedContext,
+      String name,
+      WorkingRange workingRange,
+      Component component,
+      String globalKey) {
+    if (component.mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot register WorkingRange outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+
+      layoutStateContext
+          .getScopedComponentInfo(globalKey)
+          .registerWorkingRange(name, workingRange, component, globalKey);
+    } else {
+      registerWorkingRange(name, workingRange, component, globalKey);
+    }
+  }
+
+  static void addWorkingRangeToNode(
+      InternalNode node, ComponentContext scopedContext, Component component) {
+    if (component.mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot add working ranges to InternalNode outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      layoutStateContext.getScopedComponentInfo(globalKey).addWorkingRangeToNode(node);
+    } else {
+      if (component.mWorkingRangeRegistrations != null
+          && !component.mWorkingRangeRegistrations.isEmpty()) {
+        node.addWorkingRanges(component.mWorkingRangeRegistrations);
+      }
+    }
   }
 
   protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {

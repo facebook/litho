@@ -25,6 +25,7 @@
 
   <application
       android:allowBackup="false"
+      android:debuggable="true"
       android:label="Kotlin Litho Sample"
       android:name=".LithoApplication"
       android:theme="@style/Theme.AppCompat.Light.DarkActionBar"

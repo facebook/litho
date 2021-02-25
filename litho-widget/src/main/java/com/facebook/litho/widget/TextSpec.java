@@ -896,6 +896,7 @@ class TextSpec {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
+      ComponentContext c,
       View host,
       AccessibilityNodeInfoCompat node,
       @Prop(resType = ResType.STRING) CharSequence text,
@@ -922,6 +923,7 @@ class TextSpec {
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
+      ComponentContext c,
       @Prop(optional = true, resType = ResType.BOOL) boolean accessibleClickableSpans,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     return (accessibleClickableSpans && clickableSpans != null) ? clickableSpans.length : 0;
@@ -929,6 +931,7 @@ class TextSpec {
 
   @OnPopulateExtraAccessibilityNode
   static void onPopulateExtraAccessibilityNode(
+      ComponentContext c,
       AccessibilityNodeInfoCompat node,
       int extraNodeIndex,
       int componentBoundsLeft,
@@ -1000,6 +1003,7 @@ class TextSpec {
 
   @GetExtraAccessibilityNodeAt
   static int getExtraAccessibilityNodeAt(
+      ComponentContext c,
       int x,
       int y,
       @Prop(resType = ResType.STRING) CharSequence text,

@@ -20,6 +20,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -105,19 +106,18 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     mLithoViewRule.getLithoView().setMountStateDirty();
 
-    final VisibilityMountExtension visibilityOutputsExtension =
-        mock(VisibilityMountExtension.class);
+    VisibilityMountExtension visibilityExtension = spy(VisibilityMountExtension.getInstance());
 
-    useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityOutputsExtension);
+    useVisibilityOutputsExtension(mLithoViewRule.getLithoView(), visibilityExtension);
 
     final ExtensionState state =
-        mLithoView.getMountDelegateTarget().getExtensionState(visibilityOutputsExtension);
+        mLithoView.getMountDelegateTarget().getExtensionState(visibilityExtension);
 
     final Rect rect = new Rect(0, 0, RIGHT, 10);
 
     mLithoViewRule.getLithoView().mount(layoutState, new Rect(0, 0, RIGHT, 10), false);
 
-    verify(visibilityOutputsExtension).beforeMount(state, layoutState, rect);
+    verify(visibilityExtension).beforeMount(state, layoutState, rect);
   }
 
   private void useVisibilityOutputsExtension(

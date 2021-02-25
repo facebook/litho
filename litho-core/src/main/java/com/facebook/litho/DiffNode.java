@@ -41,12 +41,30 @@ public interface DiffNode extends Cloneable {
 
   void setComponent(@Nullable Component component, @Nullable String globalKey);
 
+  /**
+   * The last value the measure funcion associated with this node {@link Component} returned for the
+   * width. This is used together with {@link InternalNode#getLastWidthSpec()} to implement measure
+   * caching.
+   */
   float getLastMeasuredWidth();
 
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the width.
+   */
   void setLastMeasuredWidth(float lastMeasuredWidth);
 
+  /**
+   * The last value the measure funcion associated with this node {@link Component} returned for the
+   * height. This is used together with {@link InternalNode#getLastHeightSpec()} to implement
+   * measure caching.
+   */
   float getLastMeasuredHeight();
 
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the height.
+   */
   void setLastMeasuredHeight(float lastMeasuredHeight);
 
   int getLastWidthSpec();

@@ -1,13 +1,16 @@
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_JSR_TARGET", "fb_java_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JSR_TARGET", "fb_android_library")
 
-fb_java_library(
+fb_android_library(
     name = "editor",
     srcs = glob(["**/*.java"]),
+    autoglob = False,
+    is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     visibility = [
         "PUBLIC",
     ],
     deps = [
         LITHO_JSR_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
     ],
 )

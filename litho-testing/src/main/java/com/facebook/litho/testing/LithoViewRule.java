@@ -23,6 +23,7 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -35,7 +36,6 @@ import com.facebook.litho.annotations.TreeProp;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.robolectric.RuntimeEnvironment;
 
 /**
  * This test utility allows clients to test assertion on the view hierarchy rendered by a Litho
@@ -83,7 +83,7 @@ public class LithoViewRule implements TestRule {
       @Override
       public void evaluate() throws Throwable {
         try {
-          mContext = new ComponentContext(RuntimeEnvironment.application);
+          mContext = new ComponentContext(ApplicationProvider.getApplicationContext());
           base.evaluate();
         } finally {
           ComponentsPools.clearMountContentPools();

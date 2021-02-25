@@ -345,7 +345,7 @@ public class SectionTree {
     mFocusDispatcher = new FocusDispatcher(mTarget);
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
-    mPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
+    mPendingStateUpdates = new StateUpdatesHolder();
     LithoHandler changeSetThreadHandler =
         builder.mChangeSetThreadHandler != null
             ? builder.mChangeSetThreadHandler
@@ -602,7 +602,12 @@ public class SectionTree {
     final SectionLocationInfo sectionLocationInfo =
         findSectionForKeyRecursive(mBoundSection, key, 0);
     if (sectionLocationInfo == null) {
-      throw new SectionKeyNotFoundException("Did not find section with key '" + key + "'!");
+      throw new SectionKeyNotFoundException(
+          "Did not find section with key '"
+              + key
+              + "'! Currently bound section's global key is '"
+              + mBoundSection.getGlobalKey()
+              + "'");
     }
 
     return sectionLocationInfo;
@@ -1193,7 +1198,7 @@ public class SectionTree {
         }
 
         synchronized (this) {
-          SectionsPools.release(pendingStateUpdates);
+          pendingStateUpdates.release();
 
           if (mReleased) {
             return;
@@ -1931,7 +1936,7 @@ public class SectionTree {
     }
 
     private StateUpdatesHolder copy() {
-      StateUpdatesHolder clonedPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
+      StateUpdatesHolder clonedPendingStateUpdates = new StateUpdatesHolder();
 
       if (mAllStateUpdates.isEmpty()) {
         return clonedPendingStateUpdates;

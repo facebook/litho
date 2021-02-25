@@ -124,9 +124,6 @@ public class ComponentTree {
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
 
-  @GuardedBy("this")
-  private @Nullable HooksHandler mHooksHandler;
-
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
   public interface MeasureListener {
@@ -242,7 +239,6 @@ public class ComponentTree {
 
   private volatile boolean mHasMounted;
   private volatile boolean mIsFirstMount;
-  private volatile boolean mSkipIncrementalMountOnSetVisibilityHintFalse;
 
   /** Transition that animates width of root component (LithoView). */
   @ThreadConfined(ThreadConfined.UI)
@@ -313,6 +309,8 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
+  private final boolean mInterruptUseCurrentLayoutSource;
+
   private final boolean mForceAsyncStateUpdate;
 
   private final @Nullable String mLogTag;
@@ -344,11 +342,10 @@ public class ComponentTree {
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
     mIsFirstMount = builder.isFirstMount;
-    mSkipIncrementalMountOnSetVisibilityHintFalse =
-        builder.skipIncrementalMountOnSetVisibilityHintFalse;
     addMeasureListener(builder.mMeasureListener);
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
+    mInterruptUseCurrentLayoutSource = ComponentsConfiguration.interruptUseCurrentLayoutSource;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
@@ -363,9 +360,6 @@ public class ComponentTree {
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
         builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
-    if (ComponentsConfiguration.isHooksImplEnabled) {
-      mHooksHandler = builder.hooksHandler == null ? new HooksHandler() : builder.hooksHandler;
-    }
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -487,19 +481,6 @@ public class ComponentTree {
 
   public void setIsFirstMount(boolean isFirstMount) {
     mIsFirstMount = isFirstMount;
-  }
-
-  boolean skipIncrementalMountOnSetVisibilityHintFalse() {
-    return mSkipIncrementalMountOnSetVisibilityHintFalse;
-  }
-
-  /**
-   * If set to true, pause mounting while the visibility hint is set to false, because the visible
-   * rect of the LithoView is not consistent with what's currently on screen. Override for the
-   * global ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse
-   */
-  public void setSkipIncrementalMountOnSetVisibilityHintFalse(boolean skipIncrementalMount) {
-    mSkipIncrementalMountOnSetVisibilityHintFalse = skipIncrementalMount;
   }
 
   public void setNewLayoutStateReadyListener(NewLayoutStateReadyListener listener) {
@@ -836,7 +817,6 @@ public class ComponentTree {
     mIsMounting = true;
 
     if (!mHasMounted) {
-      mLithoView.setIsFirstMountOfComponentTree();
       mIsFirstMount = true;
       mHasMounted = true;
     }
@@ -1413,11 +1393,7 @@ public class ComponentTree {
         return;
       }
 
-      if (mHooksHandler != null) {
-        mHooksHandler.queueHookStateUpdate(updater);
-      } else {
-        mStateHandler.queueHookStateUpdate(updater);
-      }
+      mStateHandler.queueHookStateUpdate(updater);
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
@@ -1757,11 +1733,6 @@ public class ComponentTree {
     return StateHandler.createNewInstance(mStateHandler);
   }
 
-  @Nullable
-  public synchronized HooksHandler acquireHooksHandlerIfNecessary() {
-    return mHooksHandler != null ? new HooksHandler(mHooksHandler) : null;
-  }
-
   synchronized void consumeStateUpdateTransitions(
       List<Transition> outList, @Nullable String logContext) {
     if (mStateHandler != null) {
@@ -1982,8 +1953,7 @@ public class ComponentTree {
       }
 
       if (root != null) {
-        if (mStateHandler.hasPendingUpdates()
-            || (mHooksHandler != null && mHooksHandler.hasPendingUpdates())) {
+        if (mStateHandler.hasPendingUpdates()) {
           root = root.makeShallowCopyWithNewId();
         }
       }
@@ -2154,11 +2124,22 @@ public class ComponentTree {
 
     if (localLayoutState == null) {
       if (!isReleased() && isFromSyncLayout(source) && !mUseCancelableLayoutFutures) {
-        throw new IllegalStateException(
+        final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
                 + ", current thread: "
-                + Thread.currentThread().getName());
+                + Thread.currentThread().getName()
+                + ". Root: "
+                + (mRoot == null ? "null" : mRoot.getSimpleName())
+                + ". Interruptible layouts: "
+                + mMoveLayoutsBetweenThreads;
+
+        if (ComponentsConfiguration.ignoreNullLayoutStateError) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR, "ComponentTree:LayoutStateNull", errorMessage);
+        } else {
+          throw new IllegalStateException(errorMessage);
+        }
       }
 
       return;
@@ -2197,7 +2178,6 @@ public class ComponentTree {
       }
 
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
-      final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
       if (committedNewLayout) {
 
         components = localLayoutState.consumeComponents();
@@ -2220,11 +2200,6 @@ public class ComponentTree {
           }
         }
 
-        if (layoutStateHooksHandler != null
-            && mHooksHandler != null) { // we could have been released
-          mHooksHandler.commit(layoutStateHooksHandler);
-        }
-
         if (mMeasureListeners != null) {
           rootWidth = localLayoutState.getWidth();
           rootHeight = localLayoutState.getHeight();
@@ -2237,9 +2212,7 @@ public class ComponentTree {
       if (layoutStateStateHandler != null) {
         mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
       }
-      if (layoutStateHooksHandler != null) {
-        mInitialStateContainer.unregisterHooksHandler(layoutStateHooksHandler);
-      }
+
       // Resetting the count after layout calculation is complete and it was triggered from within
       // layout creation
       if (!isCreateLayoutInProgress) {
@@ -2411,7 +2384,6 @@ public class ComponentTree {
       mMainThreadLayoutState = null;
       mCommittedLayoutState = null;
       mStateHandler = null;
-      mHooksHandler = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
     }
@@ -2715,7 +2687,7 @@ public class ComponentTree {
     private final boolean isFromSyncLayout;
     private final int layoutVersion;
     private volatile boolean interruptRequested;
-    private final int source;
+    @CalculateLayoutSource private final int source;
     private final String extraAttribution;
 
     @Nullable private volatile Object interruptToken;
@@ -2785,18 +2757,9 @@ public class ComponentTree {
         final StateHandler stateHandler =
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
-        final HooksHandler hooksHandler =
-            (ComponentTree.this.mHooksHandler != null)
-                ? new HooksHandler(ComponentTree.this.mHooksHandler)
-                : null;
-
         previousLayoutState = mCommittedLayoutState;
-        contextWithStateHandler =
-            new ComponentContext(context, stateHandler, hooksHandler, treeProps, null);
+        contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
         mInitialStateContainer.registerStateHandler(stateHandler);
-        if (hooksHandler != null) {
-          mInitialStateContainer.registerHooksHandler(hooksHandler);
-        }
       }
 
       return LayoutState.calculate(
@@ -2859,7 +2822,7 @@ public class ComponentTree {
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGet(int source) {
+    LayoutState runAndGet(@CalculateLayoutSource final int source) {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
@@ -2870,6 +2833,8 @@ public class ComponentTree {
       final boolean didRaiseThreadPriority;
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
+      final boolean isSyncLayout =
+          mInterruptUseCurrentLayoutSource ? isFromSyncLayout(source) : isFromSyncLayout;
 
       if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
         return null;
@@ -2878,7 +2843,7 @@ public class ComponentTree {
       if (isMainThread() && shouldWaitForResult) {
         // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
         // the bg task is interrupted.
-        if (mMoveLayoutsBetweenThreads && !isFromSyncLayout) {
+        if (mMoveLayoutsBetweenThreads && !isSyncLayout) {
           interrupt();
           interruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
@@ -3138,14 +3103,11 @@ public class ComponentTree {
     private LithoHandler layoutThreadHandler;
     private LithoHandler preAllocateMountContentHandler;
     private StateHandler stateHandler;
-    private @Nullable HooksHandler hooksHandler;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
     private boolean hasMounted = false;
     private boolean isFirstMount = false;
-    private boolean skipIncrementalMountOnSetVisibilityHintFalse =
-        ComponentsConfiguration.skipIncrementalMountOnSetVisibilityHintFalse;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
@@ -3265,11 +3227,6 @@ public class ComponentTree {
       return this;
     }
 
-    public Builder hooksHandler(@Nullable HooksHandler hooksHandler) {
-      this.hooksHandler = hooksHandler;
-      return this;
-    }
-
     /**
      * Specify an existing previous render state that the ComponentTree can use to set the current
      * values for providing previous versions of @Prop/@State variables.
@@ -3306,11 +3263,6 @@ public class ComponentTree {
 
     public Builder isFirstMount(boolean isFirstMount) {
       this.isFirstMount = isFirstMount;
-      return this;
-    }
-
-    public Builder skipIncrementalMountOnSetVisibilityHintFalse(boolean skipIncrementalMount) {
-      this.skipIncrementalMountOnSetVisibilityHintFalse = skipIncrementalMount;
       return this;
     }
 

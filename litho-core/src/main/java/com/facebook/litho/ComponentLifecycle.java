@@ -55,7 +55,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
       "ComponentLifecycle:WrongContextForEventHandler";
   private static final @Nullable YogaMeasureFunction sMeasureFunction =
-      ComponentsConfiguration.useStatelessComponent ? null : new LithoYogaMeasureFunction(null);
+      ComponentsConfiguration.useStatelessComponent
+          ? null
+          : new LithoYogaMeasureFunction(null, null);
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
@@ -318,7 +320,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return the extra virtual view id if one is found, otherwise {@code
    *     ExploreByTouchHelper#INVALID_ID}
    */
-  protected int getExtraAccessibilityNodeAt(int x, int y) {
+  protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y) {
     return ExploreByTouchHelper.INVALID_ID;
   }
 
@@ -328,7 +330,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    *
    * @return the number of extra nodes
    */
-  protected int getExtraAccessibilityNodesCount() {
+  protected int getExtraAccessibilityNodesCount(ComponentContext c) {
     return 0;
   }
 
@@ -530,7 +532,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param accessibilityNode node to populate
    */
   protected void onPopulateAccessibilityNode(
-      View host, AccessibilityNodeInfoCompat accessibilityNode) {}
+      ComponentContext c, View host, AccessibilityNodeInfoCompat accessibilityNode) {}
 
   /**
    * Populate an extra accessibility node.
@@ -541,6 +543,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param componentBoundsY top bound of the mounted component
    */
   protected void onPopulateExtraAccessibilityNode(
+      ComponentContext c,
       AccessibilityNodeInfoCompat accessibilityNode,
       int extraNodeIndex,
       int componentBoundsX,
@@ -585,7 +588,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected ComponentLayout resolve(ComponentContext c) {
+  protected InternalNode resolve(ComponentContext c) {
     return Layout.create(c, (Component) this, false);
   }
 
