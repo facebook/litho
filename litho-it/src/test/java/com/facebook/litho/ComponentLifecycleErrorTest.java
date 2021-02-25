@@ -36,6 +36,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
+import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod;
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,5 +206,102 @@ public class ComponentLifecycleErrorTest {
     mLithoViewRule.attachToWindow().measure().layout();
 
     verify(errorEventHandler).onError(any());
+  }
+
+  @Test
+  public void testOnCreateLayoutCrashWithTestErrorBoundary() {
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+
+    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_LAYOUT, "onCreateLayout crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+  }
+
+  @Test
+  public void testOnCreateTreePropCrashWithTestErrorBoundary() {
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+
+    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TREE_PROP, "onCreateTreeProp crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+  }
+
+  @Test
+  public void testOnCreateInitialStateCrashWithTestErrorBoundary() {
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+
+    crashingScenarioLayoutHelper(
+        LifecycleStep.ON_CREATE_INITIAL_STATE, "onCreateInitialState crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+  }
+
+  @Test
+  public void testOnAttachedCrashWithTestErrorBoundary() {
+    // TODO(T85584869): add onError coverage and remove expected exception
+    mExpectedException.expect(RuntimeException.class);
+    mExpectedException.expectMessage(is("onAttached crash"));
+
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+
+    crashingScenarioLayoutHelper(LifecycleStep.ON_ATTACHED, "onAttached crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+  }
+
+  @Test
+  public void testOnDetachedCrashWithTestErrorBoundary() {
+    // TODO(T85584749): add onError coverage and remove expected exception
+    mExpectedException.expect(RuntimeException.class);
+    mExpectedException.expectMessage(is("onDetached crash"));
+
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context)
+            .crashFromStep(LifecycleStep.ON_DETACHED)
+            .build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLithoViewRule.release();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onDetached crash");
+  }
+
+  private void crashingScenarioLayoutHelper(LifecycleStep crashFromStep, String expectedMessage) {
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context).crashFromStep(crashFromStep).build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage(expectedMessage);
   }
 }

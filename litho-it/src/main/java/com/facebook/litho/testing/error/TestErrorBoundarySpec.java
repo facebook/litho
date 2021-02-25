@@ -29,6 +29,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
+import java.util.List;
 import java.util.Optional;
 
 @LayoutSpec
@@ -37,7 +38,6 @@ public class TestErrorBoundarySpec {
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext c, @Prop Component child, @State Optional<String> error) {
-
     if (error.isPresent()) {
       return Text.create(c)
           .marginDip(YogaEdge.ALL, 8)
@@ -51,7 +51,6 @@ public class TestErrorBoundarySpec {
 
   @OnCreateInitialState
   static void createInitialState(ComponentContext c, StateValue<Optional<String>> error) {
-
     error.set(Optional.<String>empty());
   }
 
@@ -61,8 +60,13 @@ public class TestErrorBoundarySpec {
   }
 
   @OnError
-  static void onError(ComponentContext c, Exception e) {
-    TestErrorBoundary.updateErrorAsync(
-        c, String.format("Error caught from boundary: %s", e.getMessage()));
+  static void onError(
+      ComponentContext c, Exception e, @Prop(optional = true) List<Exception> errorOutput) {
+    if (errorOutput != null) {
+      errorOutput.add(e);
+    } else {
+      TestErrorBoundary.updateErrorAsync(
+          c, String.format("Error caught from boundary: %s", e.getMessage()));
+    }
   }
 }
