@@ -46,6 +46,7 @@
     <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
     <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
     <activity android:name=".animations.bounds.BoundsAnimationActivity" />
+    <activity android:name=".animations.transitions.TransitionsActivity" />
     <activity android:name=".logging.LoggingActivity" />
   </application>
 </manifest>
