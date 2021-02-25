@@ -9,6 +9,7 @@ _release-date_
 * **New**: Adds mounted content to the VisibleEvent.
 * **New**: Lifecycle arguments are now optional in the spec. (e.g. `ComponentContext` is now optional in `@OnCreateInitialState`)
 * **Breaking:** Changes the return type of `ComponentLifecycle#resolve()` from `ComponentLayout` to `InternalNode`.
+* **New**: Support for custom ScrollStateDetectors in HorizontalScrollSpec and VerticalScrollSpec.
 
 * TBA
 
