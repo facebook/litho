@@ -77,7 +77,8 @@ public class LayoutStateContext {
       mGlobalKeyToScopedContext = new HashMap<>();
       mGlobalKeyToScopedInfo = new HashMap<>();
       mLithoYogaMeasureFunction =
-          new LithoYogaMeasureFunction(this, layoutState.getPrevLayoutStateContext());
+          new LithoYogaMeasureFunction(
+              this, layoutState == null ? null : layoutState.getPrevLayoutStateContext());
     } else {
       mGlobalKeyToScopedContext = null;
       mGlobalKeyToScopedInfo = null;
