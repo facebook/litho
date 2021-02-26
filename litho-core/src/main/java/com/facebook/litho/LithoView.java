@@ -708,6 +708,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mNullComponentCause = mComponentTree == null ? "set_CT" : null;
   }
 
+  boolean delegateToRenderCore() {
+    return mDelegateToRenderCore;
+  }
+
   private void setupMountExtensions(ComponentTree componentTree) {
     if (!mUseExtensions) {
       throw new IllegalStateException("Using mount extensions is disabled on this LithoView.");

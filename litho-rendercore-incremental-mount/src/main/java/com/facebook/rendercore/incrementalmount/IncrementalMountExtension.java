@@ -43,17 +43,22 @@ import java.util.Set;
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
-  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension();
+  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
+  private static final IncrementalMountExtension sInstanceDisableForceAcquireMount =
+      new IncrementalMountExtension(true);
+  private final boolean mDisableForceAcquireHostMount;
 
-  private IncrementalMountExtension() {}
+  private IncrementalMountExtension(boolean disableForceAcquireHostMount) {
+    mDisableForceAcquireHostMount = disableForceAcquireHostMount;
+  }
 
-  public static IncrementalMountExtension getInstance() {
-    return sInstance;
+  public static IncrementalMountExtension getInstance(boolean disableForceAcquireMount) {
+    return disableForceAcquireMount ? sInstanceDisableForceAcquireMount : sInstance;
   }
 
   @Override
   public IncrementalMountExtensionState createState() {
-    return new IncrementalMountExtensionState();
+    return new IncrementalMountExtensionState(mDisableForceAcquireHostMount);
   }
 
   @Override
@@ -213,8 +218,12 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final IncrementalMountOutput output,
       final boolean isMounting) {
-    acquireMountReferenceEnsureHostIsMounted(
-        localVisibleRect, extensionState, output, isMounting, false, null);
+    if (extensionState.getState().mDisableForceAcquireHostMount) {
+      extensionState.acquireMountReference(output.getId(), isMounting);
+    } else {
+      acquireMountReferenceEnsureHostIsMounted(
+          localVisibleRect, extensionState, output, isMounting, false, null);
+    }
   }
 
   private static void acquireMountReferenceEnsureHostIsMounted(
@@ -573,9 +582,14 @@ public class IncrementalMountExtension
     private final Rect mPreviousLocalVisibleRect = new Rect();
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
+    private final boolean mDisableForceAcquireHostMount;
 
     private IncrementalMountExtensionInput mInput;
     private int mPreviousTopsIndex;
     private int mPreviousBottomsIndex;
+
+    private IncrementalMountExtensionState(boolean disableForceAcquireHostMount) {
+      mDisableForceAcquireHostMount = disableForceAcquireHostMount;
+    }
   }
 }

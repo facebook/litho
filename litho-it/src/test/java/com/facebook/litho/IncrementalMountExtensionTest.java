@@ -62,7 +62,7 @@ public class IncrementalMountExtensionTest {
     final MountDelegate mountDelegate = mock(MountDelegate.class);
     final MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
     when(mountDelegate.getMountDelegateTarget()).thenReturn(mountDelegateTarget);
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance(true);
 
     final ExtensionState<IncrementalMountExtensionState> extensionState =
         extension.createExtensionState(mountDelegate);
@@ -108,7 +108,7 @@ public class IncrementalMountExtensionTest {
     final MountDelegate mountDelegate = mock(MountDelegate.class);
     final MountDelegateTarget mountDelegateTarget = mock(MountDelegateTarget.class);
     when(mountDelegate.getMountDelegateTarget()).thenReturn(mountDelegateTarget);
-    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance();
+    final IncrementalMountExtension extension = IncrementalMountExtension.getInstance(true);
     mountDelegate.addExtension(extension);
 
     final ExtensionState<IncrementalMountExtensionState> extensionState =
