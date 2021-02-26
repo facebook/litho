@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -24,6 +25,7 @@ import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
@@ -45,7 +47,7 @@ import com.facebook.litho.widget.events.EventWithoutAnnotation;
  * prop.
  */
 @LayoutSpec(events = EventWithoutAnnotation.class)
-class TestCrashFromEachLayoutLifecycleMethodSpec {
+public class TestCrashFromEachLayoutLifecycleMethodSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -74,9 +76,16 @@ class TestCrashFromEachLayoutLifecycleMethodSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      ComponentContext c, @Prop LifecycleStep crashFromStep, @State String state) {
+      ComponentContext c,
+      @Prop LifecycleStep crashFromStep,
+      @Prop(optional = true) @Nullable Caller caller,
+      @State String state,
+      @CachedValue int expensiveValue) {
     if (state == null) {
       throw new IllegalStateException("OnCreateLayout called without initialised state.");
+    }
+    if (caller != null) {
+      caller.set(c, crashFromStep);
     }
     if (crashFromStep == LifecycleStep.ON_CREATE_LAYOUT) {
       throw new RuntimeException("onCreateLayout crash");
@@ -127,6 +136,26 @@ class TestCrashFromEachLayoutLifecycleMethodSpec {
   static void onVisible(final ComponentContext c, @Prop LifecycleStep crashFromStep) {
     if (crashFromStep == LifecycleStep.ON_EVENT_VISIBLE) {
       throw new RuntimeException("onEventVisible crash");
+    }
+  }
+
+  public static class Caller {
+
+    ComponentContext c;
+    LifecycleStep crashFromStep;
+
+    void set(ComponentContext c, LifecycleStep crashFromStep) {
+      this.c = c;
+      this.crashFromStep = crashFromStep;
+    }
+
+    public void updateStateSync() {
+      TestCrashFromEachLayoutLifecycleMethod.updateStateSync(c, crashFromStep);
+    }
+
+    public void updateStateWithTransition() {
+      TestCrashFromEachLayoutLifecycleMethod.updateStateWithTransitionWithTransition(
+          c, crashFromStep);
     }
   }
 }

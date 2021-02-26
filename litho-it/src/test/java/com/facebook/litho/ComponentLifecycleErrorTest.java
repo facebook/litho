@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
@@ -37,6 +38,7 @@ import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod;
+import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec;
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,8 @@ public class ComponentLifecycleErrorTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
 
   @Before
   public void assumeDebug() {
@@ -249,6 +253,42 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
+  public void testOnCalculateCachedValueCrashWithTestErrorBoundary() {
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+    ComponentsConfiguration.isAnimationDisabled = false;
+
+    crashingScenarioLayoutHelper(
+        LifecycleStep.ON_CALCULATE_CACHED_VALUE, "onCalculateCachedValue crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+    ComponentsConfiguration.isAnimationDisabled = true;
+  }
+
+  @Test
+  public void testOnCreateTransitionCrashWithTestErrorBoundary() {
+    // TODO(T85657700): add onError coverage and remove expected exception
+    // RuntimeException we throw is wrapped, so we need to expect that one
+    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("onCreateTransition crash");
+
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+    ComponentsConfiguration.isAnimationDisabled = false;
+
+    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+    ComponentsConfiguration.isAnimationDisabled = true;
+  }
+
+  @Test
   public void testOnAttachedCrashWithTestErrorBoundary() {
     // TODO(T85584869): add onError coverage and remove expected exception
     mExpectedException.expect(RuntimeException.class);
@@ -260,6 +300,69 @@ public class ComponentLifecycleErrorTest {
     ComponentsConfiguration.isReconciliationEnabled = false;
 
     crashingScenarioLayoutHelper(LifecycleStep.ON_ATTACHED, "onAttached crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+  }
+
+  @Test
+  public void testOnUpdateStateCrashWithTestErrorBoundary() {
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    TestCrashFromEachLayoutLifecycleMethodSpec.Caller caller =
+        new TestCrashFromEachLayoutLifecycleMethodSpec.Caller();
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context)
+            .crashFromStep(LifecycleStep.ON_UPDATE_STATE)
+            .caller(caller)
+            .build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    caller.updateStateSync();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onUpdateState crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
+  }
+
+  @Test
+  public void testOnUpdateStateWithTransitionCrashWithTestErrorBoundary() {
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is called for layout.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    TestCrashFromEachLayoutLifecycleMethodSpec.Caller caller =
+        new TestCrashFromEachLayoutLifecycleMethodSpec.Caller();
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context)
+            .crashFromStep(LifecycleStep.ON_UPDATE_STATE_WITH_TRANSITION)
+            .caller(caller)
+            .build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    caller.updateStateWithTransition();
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onUpdateStateWithTransition crash");
 
     // Reset the the value of the config.
     ComponentsConfiguration.isReconciliationEnabled = currentValue;
