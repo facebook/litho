@@ -4,13 +4,10 @@
 
 _release-date_
 
-* **Breaking:** Calling `setVisibilityHint(false)` on a LithoView will ignore mounting calls until `setVisibilityHint(true)` is called.
-* **New**: Adds visible top and visible left to the VisibilityChangedEvent.
-* **New**: Adds mounted content to the VisibleEvent.
-* **New**: Lifecycle arguments are now optional in the spec. (e.g. `ComponentContext` is now optional in `@OnCreateInitialState`)
-* **Breaking:** Changes the return type of `ComponentLifecycle#resolve()` from `ComponentLayout` to `InternalNode`.
-
-* TBA
+* **Breaking:** Change the return type of `ComponentLifecycle.resolve()` from `ComponentLayout` to `InternalNode`.
+* New: Expose `visibleTop` and `visibleLeft` fields from the `VisibilityChangedEvent` to better understand which side of the component is hidden. Check out `VisibilityChangedEvent`'s javadoc for more info.
+* New: Expose mounted content from the `VisibleEvent`.
+* New: Lifecycle arguments are now optional in the spec. (e.g. `ComponentContext` is now optional in `@OnCreateInitialState`)
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.39.0...master).
 
@@ -19,7 +16,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 
 _2020-10-07_
 
-* **Breaking:** Component.getScopedContext() access changed from public to package-private.
+* **Breaking:** `Component.getScopedContext()` access changed from public to package-private.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.38.0...v.39.0).
 
@@ -37,7 +34,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 
 _2020-07-24_
 
-* **Breaking:** Ignore mount calls after `setVisibilityHint(false)` was called on a LithoView until `setVisibilityHint(true)` is called. For more details see the docs about [changing LithoView visibility](https://fblitho.com/docs/visibility-handling).
+* **Breaking:** Ignore mount calls after `setVisibilityHint(false)` was called on a LithoView until `setVisibilityHint(true)` is called. For more details see the docs about [changing LithoView visibility](https://fblitho.com/docs/visibility-handling#changing-lithoview-visibility).
 * New: Add `LithoGestureDetector` wrapper class that ensures gestures are processed on UI thread.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.37.0...v0.37.1).
