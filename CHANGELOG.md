@@ -1,15 +1,15 @@
 # Changelog
 
-## Version 0.39.1-SNAPSHOT
+## Version 0.40.0
 
-_release-date_
+_2021-02-26_
 
 * **Breaking:** Change the return type of `ComponentLifecycle.resolve()` from `ComponentLayout` to `InternalNode`.
 * New: Expose `visibleTop` and `visibleLeft` fields from the `VisibilityChangedEvent` to better understand which side of the component is hidden. Check out `VisibilityChangedEvent`'s javadoc for more info.
 * New: Expose mounted content from the `VisibleEvent`.
 * New: Lifecycle arguments are now optional in the spec. (e.g. `ComponentContext` is now optional in `@OnCreateInitialState`)
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.39.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.39.0...v0.40.0).
 
 
 ## Version 0.39.0
