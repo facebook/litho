@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
@@ -69,7 +70,10 @@ public class LayoutSpecLifecycleTesterSpec {
     if (caller != null) {
       caller.set(c, steps);
     }
-    return Column.create(c).visibleHandler(LayoutSpecLifecycleTester.onVisible(c)).build();
+    return Column.create(c)
+        .visibleHandler(LayoutSpecLifecycleTester.onVisible(c))
+        .focusedHandler(LayoutSpecLifecycleTester.onFocusedVisible(c))
+        .build();
   }
 
   @OnCalculateCachedValue(name = "expensiveValue")
@@ -127,6 +131,12 @@ public class LayoutSpecLifecycleTesterSpec {
   @OnEvent(VisibleEvent.class)
   static void onVisible(final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_EVENT_VISIBLE));
+  }
+
+  @OnEvent(FocusedVisibleEvent.class)
+  static void onFocusedVisible(
+      final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE));
   }
 
   public static class Caller {

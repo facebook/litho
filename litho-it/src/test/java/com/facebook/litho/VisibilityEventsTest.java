@@ -35,6 +35,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
+import com.facebook.litho.widget.LayoutSpecLifecycleTesterSpec;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
 import com.facebook.litho.widget.TextDrawable;
 import com.facebook.rendercore.MountDelegateTarget;
@@ -267,60 +268,40 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFocusedOccupiesHalfViewport() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .focusedHandler(focusedEventHandler)
-                    .widthPx(10)
-                    .heightPx(10))
-            .build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10).build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    content.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 4), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
   }
 
   @Test
   public void testFocusedOccupiesLessThanHalfViewport() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .focusedHandler(focusedEventHandler)
-                    .widthPx(10)
-                    .heightPx(3))
-            .build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(3).build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    content.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 2), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
   }
 
   @Test
