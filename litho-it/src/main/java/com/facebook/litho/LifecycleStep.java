@@ -53,7 +53,9 @@ public enum LifecycleStep {
   ON_TRIGGER,
   ON_UPDATE_STATE,
   ON_UPDATE_STATE_WITH_TRANSITION,
-  ON_DETACHED;
+  ON_DETACHED,
+  ON_UNFOCUSED_EVENT_VISIBLE,
+  ON_EVENT_INVISIBLE;
 
   public static class StepInfo {
     public final LifecycleStep step;

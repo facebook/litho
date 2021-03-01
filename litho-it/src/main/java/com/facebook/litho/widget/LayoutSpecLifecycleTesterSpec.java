@@ -22,10 +22,12 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.FocusedVisibleEvent;
+import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
@@ -73,6 +75,8 @@ public class LayoutSpecLifecycleTesterSpec {
     return Column.create(c)
         .visibleHandler(LayoutSpecLifecycleTester.onVisible(c))
         .focusedHandler(LayoutSpecLifecycleTester.onFocusedVisible(c))
+        .invisibleHandler(LayoutSpecLifecycleTester.onInvisible(c))
+        .unfocusedHandler(LayoutSpecLifecycleTester.onUnfocusedVisibleEvent(c))
         .build();
   }
 
@@ -137,6 +141,18 @@ public class LayoutSpecLifecycleTesterSpec {
   static void onFocusedVisible(
       final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE));
+  }
+
+  @OnEvent(InvisibleEvent.class)
+  static void onInvisible(
+      final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_EVENT_INVISIBLE));
+  }
+
+  @OnEvent(UnfocusedVisibleEvent.class)
+  static void onUnfocusedVisibleEvent(
+      final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE));
   }
 
   public static class Caller {
