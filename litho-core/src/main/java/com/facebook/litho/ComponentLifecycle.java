@@ -160,7 +160,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      getErrorHandler().dispatchEvent((ErrorEvent) eventState);
+      getErrorHandler((ComponentContext) eventHandler.params[0])
+          .dispatchEvent((ErrorEvent) eventState);
     }
 
     // Don't do anything by default, unless we're handling an error.
@@ -648,7 +649,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     ComponentUtils.dispatchErrorEvent(c, e);
   }
 
-  protected abstract @Nullable EventHandler<ErrorEvent> getErrorHandler();
+  protected abstract @Nullable EventHandler<ErrorEvent> getErrorHandler(ComponentContext c);
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {

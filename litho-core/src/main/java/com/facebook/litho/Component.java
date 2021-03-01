@@ -407,6 +407,22 @@ public abstract class Component extends ComponentLifecycle
    *     the exception. Null if the component isn't initialized.
    */
   @Override
+  protected @Nullable EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
+    if (mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access error event handler outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      return layoutStateContext.getScopedComponentInfo(globalKey).getErrorEventHandler();
+    }
+
+    return mErrorEventHandler;
+  }
+
   protected @Nullable EventHandler<ErrorEvent> getErrorHandler() {
     return mErrorEventHandler;
   }
@@ -711,7 +727,9 @@ public abstract class Component extends ComponentLifecycle
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext, globalKey);
-    generateErrorEventHandler(parentContext, scopedContext);
+    if (!mUseStatelessComponent) {
+      generateErrorEventHandler(parentContext, scopedContext);
+    }
 
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {

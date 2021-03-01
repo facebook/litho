@@ -44,9 +44,16 @@ final class ScopedComponentInfo {
    */
   private @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
-  ScopedComponentInfo(Component component) {
+  /**
+   * Holds an event handler with its dispatcher set to the parent component, or - in case that this
+   * is a root component - a default handler that reraises the exception.
+   */
+  private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
+
+  ScopedComponentInfo(Component component, EventHandler<ErrorEvent> errorEventHandler) {
     mStateContainer = component.createStateContainer();
     mInterStagePropsContainer = component.createInterStagePropsContainer();
+    mErrorEventHandler = errorEventHandler;
   }
 
   StateContainer getStateContainer() {
@@ -111,5 +118,14 @@ final class ScopedComponentInfo {
     if (mWorkingRangeRegistrations != null && !mWorkingRangeRegistrations.isEmpty()) {
       node.addWorkingRanges(mWorkingRangeRegistrations);
     }
+  }
+
+  /**
+   * @return The error handler dispatching to either the parent component if available, or reraising
+   *     the exception. Null if the component isn't initialized.
+   */
+  @Nullable
+  EventHandler<ErrorEvent> getErrorEventHandler() {
+    return mErrorEventHandler;
   }
 }

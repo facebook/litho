@@ -87,9 +87,16 @@ public class LayoutStateContext {
   }
 
   void addScopedComponentInfo(
-      String globalKey, Component component, ComponentContext scopedContext) {
+      String globalKey,
+      Component component,
+      ComponentContext scopedContext,
+      ComponentContext parentContext) {
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
-    mGlobalKeyToScopedInfo.put(globalKey, new ScopedComponentInfo(component));
+    mGlobalKeyToScopedInfo.put(
+        globalKey,
+        new ScopedComponentInfo(
+            component,
+            ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext)));
   }
 
   @Nullable

@@ -33,7 +33,10 @@ public class LayoutStateTest {
 
   @Test
   public void toRenderTree_emptyMountableOutputs_hasPositionForRoot() {
-    final LayoutState layoutState = new LayoutState(mLithoViewRule.getContext());
+    ComponentContext context = mLithoViewRule.getContext();
+    context.setLayoutStateContext(LayoutStateContext.getTestInstance(context));
+
+    final LayoutState layoutState = new LayoutState(context);
     final RenderTree renderTree = layoutState.toRenderTree();
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(1);

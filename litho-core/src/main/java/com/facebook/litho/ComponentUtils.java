@@ -546,4 +546,14 @@ public class ComponentUtils {
     }
     return new LithoMetadataExceptionWrapper(c, e);
   }
+
+  public static EventHandler<ErrorEvent> createOrGetErrorEventHandler(
+      Component component, ComponentContext parentContext, ComponentContext scopedContext) {
+    if (component.hasOwnErrorHandler()) {
+      return new EventHandler<>(
+          component, ComponentLifecycle.ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
+    } else {
+      return parentContext.getErrorEventHandler();
+    }
+  }
 }

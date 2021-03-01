@@ -149,6 +149,7 @@ public class ComponentContext {
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+    mGlobalKey = context.mGlobalKey;
   }
 
   ComponentContext makeNewCopy() {
@@ -177,16 +178,16 @@ public class ComponentContext {
    * Creates a new ComponentContext instance scoped to the given component and sets it on the
    * component.
    *
-   * @param context context scoped to the parent component
+   * @param parentContext context scoped to the parent component
    * @param scope component associated with the newly created scoped context
    * @return a new ComponentContext instance scoped to the given component
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      ComponentContext context, Component scope, @Nullable String globalKey) {
-    ComponentContext componentContext = context.makeNewCopy();
+      ComponentContext parentContext, Component scope, @Nullable String globalKey) {
+    ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mComponentScope = scope;
-    componentContext.mComponentTree = context.mComponentTree;
+    componentContext.mComponentTree = parentContext.mComponentTree;
 
     if (scope.mUseStatelessComponent
         && globalKey != null
@@ -194,7 +195,7 @@ public class ComponentContext {
       componentContext.mGlobalKey = globalKey;
       componentContext
           .getLayoutStateContext()
-          .addScopedComponentInfo(globalKey, scope, componentContext);
+          .addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
     }
 
     return componentContext;
@@ -296,9 +297,19 @@ public class ComponentContext {
   }
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
-    if (mComponentScope != null && mComponentScope.getErrorHandler() != null) {
-      return mComponentScope.getErrorHandler();
+    if (mComponentScope != null) {
+      if (mComponentScope.mUseStatelessComponent) {
+        EventHandler<ErrorEvent> errorEventHandler =
+            getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
+
+        if (errorEventHandler != null) {
+          return errorEventHandler;
+        }
+      } else if (mComponentScope.getErrorHandler() != null) {
+        return mComponentScope.getErrorHandler();
+      }
     }
+
     if (mComponentTree != null) {
       return mComponentTree.getErrorEventHandler();
     }
