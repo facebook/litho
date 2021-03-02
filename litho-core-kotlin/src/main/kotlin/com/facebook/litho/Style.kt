@@ -28,9 +28,6 @@ private enum class ObjectField {
   FOREGROUND,
   ON_CLICK,
   ON_LONG_CLICK,
-  ON_VISIBLE,
-  ON_FOCUSED,
-  ON_FULL_IMPRESSION,
   WRAP_IN_VIEW,
   VIEW_TAG,
   OUTLINE_PROVIDER,
@@ -69,13 +66,6 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
       ObjectField.ON_LONG_CLICK ->
           commonProps.longClickHandler(
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
-      ObjectField.ON_VISIBLE ->
-          commonProps.visibleHandler(eventHandler(value as (VisibleEvent) -> Unit))
-      ObjectField.ON_FOCUSED ->
-          commonProps.focusedHandler(eventHandler(value as (FocusedVisibleEvent) -> Unit))
-      ObjectField.ON_FULL_IMPRESSION ->
-          commonProps.fullImpressionHandler(
-              eventHandler(value as (FullImpressionVisibleEvent) -> Unit))
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
       ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
@@ -163,15 +153,6 @@ open class Style(
 
   fun onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
       this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
-
-  fun onVisible(onVisible: (VisibleEvent) -> Unit) =
-      this + ObjectStyleItem(ObjectField.ON_VISIBLE, onVisible)
-
-  fun onFocusedVisible(onFocused: (FocusedVisibleEvent) -> Unit) =
-      this + ObjectStyleItem(ObjectField.ON_FOCUSED, onFocused)
-
-  fun onFullImpression(onFullImpression: (FullImpressionVisibleEvent) -> Unit) =
-      this + ObjectStyleItem(ObjectField.ON_FULL_IMPRESSION, onFullImpression)
 
   fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
 
