@@ -55,13 +55,39 @@ class VisibilityStylesTest {
   }
 
   @Test
-  fun onFocusedVisible_whenSet_firesWhenVisible() {
+  fun onInvisible_whenSet_firesWhenVisibleThenInvisible() {
     val eventFired = AtomicBoolean(false)
 
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(style = Style.width(200.px).height(200.px).onFocusedVisible { eventFired.set(true) })
+          Row(style = Style.width(200.px).height(200.px).onInvisible { eventFired.set(true) })
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(eventFired.get()).isFalse()
+
+    lithoViewRule.lithoView.setVisibilityHint(false)
+
+    assertThat(eventFired.get()).isTrue()
+  }
+
+  @Test
+  fun onFocusedVisibleAndUnfocusedVisible_whenSet_firesWhenFocusedAndUnfocusedVisible() {
+    val focusFired = AtomicBoolean(false)
+    val unfocusFired = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.width(200.px)
+                      .height(200.px)
+                      .onFocusedVisible { focusFired.set(true) }
+                      .onUnfocusedVisible { unfocusFired.set(true) })
         }
         .attachToWindow()
 
@@ -71,7 +97,11 @@ class VisibilityStylesTest {
     frameLayout.measure(unspecified(), unspecified())
     frameLayout.layout(0, 0, frameLayout.measuredWidth, frameLayout.measuredHeight)
 
-    assertThat(eventFired.get()).isTrue()
+    assertThat(focusFired.get()).isTrue()
+
+    lithoViewRule.lithoView.setVisibilityHint(false)
+
+    assertThat(unfocusFired.get()).isTrue()
   }
 
   @Test
