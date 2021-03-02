@@ -21,6 +21,12 @@ import android.animation.ValueAnimator
 
 class Animated {
   companion object {
+    /**
+     * Returns an [Animator] ready for running timing animation that calculate animated values and
+     * set them on target param.
+     *
+     * By default it uses [AccelerateDecelerateInterpolator] and duration of 300 milliseconds.
+     */
     fun timing(
         target: DynamicValue<Float>,
         to: Float,

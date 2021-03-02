@@ -16,8 +16,27 @@
 
 package com.facebook.litho
 
+/**
+ * Creates a [DynamicValue] with a static initial value. This DynamicValue can be passed to the
+ * variants of [Style] properties that take DynamicValue, like [Style.backgroundColor] or
+ * [Style.translationY]. You can then imperatively set a new value on the main thread to update that
+ * property without a state update, or use the collection of [Animated] APIs to drive animations on
+ * this DynamicValue, which will in turn animate the property.
+ *
+ * Note: You can only change or animate a DynamicValue on the main thread.
+ */
 fun <T> DslScope.useBinding(initialValue: T) = useState { DynamicValue(initialValue) }.value
 
+/**
+ * Creates a [DynamicValue] deriving from an existing binding param, with modifications applied by
+ * transform function.
+ *
+ * For example:
+ * ```
+ * val bgColor = useBinding(colorProgress) { progress -> Color.HSVToColor(floatArrayOf(100f *
+ * progress, 100f, 255f)) }
+ * ```
+ */
 fun <T, S> DslScope.useBinding(binding: DynamicValue<T>, transform: (T) -> S): DynamicValue<S> {
   return DerivedDynamicValue(binding, transform)
 }
