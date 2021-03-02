@@ -22,7 +22,7 @@ import android.graphics.Typeface.DEFAULT
 import android.graphics.Typeface.NORMAL
 import android.text.TextUtils
 import androidx.annotation.ColorInt
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Sp
 import com.facebook.litho.Style
 import com.facebook.litho.sp
@@ -32,7 +32,7 @@ import com.facebook.litho.sp
  * auto-generated or modified to have the final set of parameters.
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun DslScope.Text(
+inline fun ComponentScope.Text(
     text: CharSequence,
     style: Style? = null,
     @ColorInt textColor: Int = Color.BLACK,

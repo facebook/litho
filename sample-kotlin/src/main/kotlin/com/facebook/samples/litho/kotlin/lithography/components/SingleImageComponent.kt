@@ -17,12 +17,12 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.fresco.FrescoImage
 
 class SingleImageComponent(val imageUri: String, val imageAspectRatio: Float = 1f) : KComponent() {
-  override fun DslScope.render() =
+  override fun ComponentScope.render() =
       FrescoImage(
           controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
           imageAspectRatio = imageAspectRatio)

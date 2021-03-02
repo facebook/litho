@@ -560,7 +560,7 @@ class CommonStylesTest {
     val elevation = 0.5f
 
     class ElevationComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         return Row(style = Style.shadowElevation(elevation))
       }
     }
@@ -575,7 +575,7 @@ class CommonStylesTest {
   fun outlineProvider_whenSet_isRespected() {
     val outlineProvider = ViewOutlineProvider.BOUNDS
     class OutlineProviderComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         return Row(style = Style.outlineProvider(outlineProvider))
       }
     }

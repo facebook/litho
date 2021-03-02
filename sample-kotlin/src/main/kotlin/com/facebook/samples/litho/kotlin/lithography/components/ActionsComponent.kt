@@ -17,7 +17,7 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -27,7 +27,7 @@ import com.facebook.litho.flexbox.padding
 
 class ActionsComponent(val style: Style? = null) : KComponent() {
 
-  override fun DslScope.render(): Component? {
+  override fun ComponentScope.render(): Component? {
     return Row(
         style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style,
         children =

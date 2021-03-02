@@ -49,7 +49,7 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val expensiveString by useCached("hello") {
           initCounter.incrementAndGet()
           expensiveRepeatFunc("hello")
@@ -76,7 +76,7 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val expensiveString by useCached("hello", 100) {
           initCounter.incrementAndGet()
           expensiveRepeatFunc("hello", 100)
@@ -103,7 +103,7 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val expensiveString by useCached("hello", 100, "litho") {
           initCounter.incrementAndGet()
           expensiveRepeatFunc("hello", 100, "litho")
@@ -131,7 +131,7 @@ class KCachedTest {
 
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val expensiveString by useCached("count" + repeatNum.get()) {
           initCounter.incrementAndGet()
           expensiveRepeatFunc("count" + repeatNum.get())
@@ -161,7 +161,7 @@ class KCachedTest {
 
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val expensiveString by useCached("world", repeatNum.get()) {
           initCounter.incrementAndGet()
           expensiveRepeatFunc("world", repeatNum.get())
@@ -191,7 +191,7 @@ class KCachedTest {
 
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val expensiveString by useCached("world", repeatNum.get(), "litho") {
           initCounter.incrementAndGet()
           expensiveRepeatFunc("world", repeatNum.get(), "litho")
@@ -220,7 +220,7 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         return Row(
             children =
                 listOf(
@@ -247,7 +247,7 @@ class KCachedTest {
     val componentTree = ComponentTree.create(context).build()
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         return Row(
             children =
                 listOf(
@@ -285,7 +285,7 @@ class KCachedTest {
 
   private class Leaf1(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
       KComponent() {
-    override fun DslScope.render(): Component? {
+    override fun ComponentScope.render(): Component? {
       val expensiveString by useCached(str, repeatNum) {
         initCounter.incrementAndGet()
         expensiveRepeatFunc(str, repeatNum)
@@ -296,7 +296,7 @@ class KCachedTest {
 
   private class Leaf2(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
       KComponent() {
-    override fun DslScope.render(): Component? {
+    override fun ComponentScope.render(): Component? {
       val expensiveString by useCached(str, repeatNum) {
         initCounter.incrementAndGet()
         expensiveRepeatFunc(str, repeatNum)
@@ -310,7 +310,7 @@ class KCachedTest {
       val repeatNum: Int,
       val initCounter: AtomicInteger
   ) : KComponent() {
-    override fun DslScope.render(): Component? {
+    override fun ComponentScope.render(): Component? {
       val expensiveString1 by useCached(str, repeatNum) {
         initCounter.incrementAndGet()
         expensiveRepeatFunc(str, repeatNum)

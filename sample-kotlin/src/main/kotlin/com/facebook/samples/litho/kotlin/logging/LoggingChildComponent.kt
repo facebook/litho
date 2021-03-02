@@ -17,7 +17,7 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.TreePropProvider
 import com.facebook.litho.treeProp
@@ -25,7 +25,7 @@ import com.facebook.litho.useTreeProp
 import com.facebook.litho.widget.Text
 
 class LoggingChildComponent : KComponent() {
-  override fun DslScope.render(): Component {
+  override fun ComponentScope.render(): Component {
     val parent = useTreeProp<LogContext>()
 
     return TreePropProvider(

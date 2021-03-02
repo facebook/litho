@@ -30,7 +30,7 @@ import com.facebook.yoga.YogaWrap
  * ```
  */
 @Suppress("FunctionName")
-fun DslScope.Column(
+fun ComponentScope.Column(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -53,7 +53,7 @@ fun DslScope.Column(
  * ```
  */
 @Suppress("FunctionName")
-fun DslScope.Row(
+fun ComponentScope.Row(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,

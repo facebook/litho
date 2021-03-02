@@ -20,7 +20,7 @@ import android.graphics.Typeface.BOLD
 import android.widget.LinearLayout
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
@@ -40,7 +40,7 @@ import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 import com.facebook.yoga.YogaPositionType
 
 class FeedItemComponent(val artist: Artist) : KComponent() {
-  override fun DslScope.render() =
+  override fun ComponentScope.render() =
       Column(
           children =
               listOf(
@@ -72,13 +72,13 @@ private val recyclerConfiguration =
         .snapMode(SnapUtil.SNAP_TO_CENTER)
         .build()
 
-private fun DslScope.imageBlock(artist: Artist): Component =
+private fun ComponentScope.imageBlock(artist: Artist): Component =
     when (artist.images.size) {
       1 -> SingleImageComponent(imageUri = artist.images[0], imageAspectRatio = 2f)
       else -> imageRecycler(artist)
     }
 
-private fun DslScope.imageRecycler(artist: Artist): Component =
+private fun ComponentScope.imageRecycler(artist: Artist): Component =
     RecyclerCollectionComponent.create(context)
         .recyclerConfiguration(recyclerConfiguration)
         .section(ImagesSection.create(SectionContext(context)).images(artist.images).build())

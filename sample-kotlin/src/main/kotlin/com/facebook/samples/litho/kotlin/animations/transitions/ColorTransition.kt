@@ -20,7 +20,7 @@ import android.graphics.Color
 import com.facebook.litho.Animated
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -33,7 +33,7 @@ import com.facebook.litho.useState
 
 class ColorTransition : KComponent() {
 
-  override fun DslScope.render(): Component? {
+  override fun ComponentScope.render(): Component? {
     val isComplete = useState { false }
     val colorProgress = useBinding(0f)
     val bgColor =

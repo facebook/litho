@@ -19,7 +19,7 @@ package com.facebook.samples.litho.kotlin.lithography.components
 import android.graphics.Color.GRAY
 import android.graphics.Typeface.ITALIC
 import com.facebook.litho.Column
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
@@ -27,7 +27,7 @@ import com.facebook.litho.flexbox.padding
 import com.facebook.litho.widget.Text
 
 class FooterComponent(val text: String) : KComponent() {
-  override fun DslScope.render() =
+  override fun ComponentScope.render() =
       Column(
           style = Style.padding(8.dp),
           children =

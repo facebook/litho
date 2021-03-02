@@ -21,9 +21,9 @@ import java.lang.reflect.Modifier
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
 
-  final override fun onCreateLayout(c: ComponentContext): Component? = DslScope(c).render()
+  final override fun onCreateLayout(c: ComponentContext): Component? = ComponentScope(c).render()
 
-  abstract fun DslScope.render(): Component?
+  abstract fun ComponentScope.render(): Component?
 
   /**
    * Compare this component to a different one to check if they are equivalent. This is used to be

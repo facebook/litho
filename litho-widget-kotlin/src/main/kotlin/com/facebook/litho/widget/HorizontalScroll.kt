@@ -18,18 +18,18 @@ package com.facebook.litho.widget
 
 import android.view.View
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Px
 
 /** Builder function for creating [HorizontalScrollSpec] components. */
 @Suppress("FunctionName")
-inline fun DslScope.HorizontalScroll(
+inline fun ComponentScope.HorizontalScroll(
     initialScrollPosition: Px? = null,
     scrollbarEnabled: Boolean = true,
     fillViewport: Boolean = false,
     eventsController: HorizontalScrollEventsController? = null,
     noinline onScrollChange: ((View, scrollX: Int, oldScrollX: Int) -> Unit)? = null,
-    child: DslScope.() -> Component
+    child: ComponentScope.() -> Component
 ): HorizontalScroll =
     HorizontalScroll.create(context)
         .contentProps(child())

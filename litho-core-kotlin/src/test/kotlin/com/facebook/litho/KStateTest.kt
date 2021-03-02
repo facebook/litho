@@ -45,7 +45,7 @@ class KStateTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  private fun <T> DslScope.useCustomState(value: T): State<T> {
+  private fun <T> ComponentScope.useCustomState(value: T): State<T> {
     val state = useState { value }
     return state
   }
@@ -55,7 +55,7 @@ class KStateTest {
     lateinit var stateRef: AtomicReference<State<String>>
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val state = useState { "hello" }
         stateRef = AtomicReference(state)
 
@@ -84,7 +84,7 @@ class KStateTest {
     lateinit var state2Ref: AtomicReference<State<Int>>
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val state1 = useCustomState("hello")
         val state2 = useCustomState(20)
 
@@ -159,7 +159,7 @@ class KStateTest {
 
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied() {
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val counter = useState { 0 }
 
         return Row(
@@ -195,7 +195,7 @@ class KStateTest {
       val awaitable: CountDownLatch?,
       val initCounter: AtomicInteger
   ) : KComponent() {
-    override fun DslScope.render(): Component? {
+    override fun ComponentScope.render(): Component? {
       countDownLatch.countDown()
       awaitable?.await()
 

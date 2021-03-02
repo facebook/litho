@@ -31,7 +31,7 @@ class ClassValuePair<T>(internal val cls: Class<T>, internal val value: T)
  */
 class TreePropProvider(private vararg val props: ClassValuePair<*>, private val child: Component?) :
     KComponent() {
-  override fun DslScope.render(): Component? {
+  override fun ComponentScope.render(): Component? {
     props.forEach { createTreeProp(it.cls, it.value) }
     return child
   }
@@ -48,7 +48,7 @@ class TreePropProvider(private vararg val props: ClassValuePair<*>, private val 
 inline fun <reified T : Any> treeProp(type: KClass<T>, value: T) =
     ClassValuePair(type.javaObjectType, value)
 
-private fun <T> DslScope.createTreeProp(clazz: Class<out T>, value: T) {
+private fun <T> ComponentScope.createTreeProp(clazz: Class<out T>, value: T) {
   if (!context.isParentTreePropsCloned) {
     context.treeProps = TreeProps.acquire(context.treeProps)
     context.isParentTreePropsCloned = true
@@ -62,4 +62,4 @@ private fun <T> DslScope.createTreeProp(clazz: Class<out T>, value: T) {
  * specs API.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> DslScope.useTreeProp(): T? = context.getTreeProp(T::class.java)
+inline fun <reified T : Any> ComponentScope.useTreeProp(): T? = context.getTreeProp(T::class.java)

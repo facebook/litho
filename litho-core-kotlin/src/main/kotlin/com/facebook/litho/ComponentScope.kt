@@ -18,7 +18,7 @@ package com.facebook.litho
 
 import android.content.Context
 
-class DslScope(val context: ComponentContext) {
+class ComponentScope(val context: ComponentContext) {
   val androidContext: Context
     get() = context.androidContext
   val resourceResolver: ResourceResolver

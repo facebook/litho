@@ -16,8 +16,8 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
-import com.facebook.litho.DslScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -33,7 +33,7 @@ import com.facebook.samples.litho.kotlin.lithography.data.Decade
 import com.facebook.yoga.YogaAlign.CENTER
 
 class DecadeSeparator(val decade: Decade) : KComponent() {
-  override fun DslScope.render() =
+  override fun ComponentScope.render() =
       Row(
           alignItems = CENTER,
           style = Style.padding(16.dp).background(drawableColor(0xFFFAFAFA)),

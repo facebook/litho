@@ -25,7 +25,7 @@ package com.facebook.litho
  *
  * Note: You can only change or animate a DynamicValue on the main thread.
  */
-fun <T> DslScope.useBinding(initialValue: T) = useState { DynamicValue(initialValue) }.value
+fun <T> ComponentScope.useBinding(initialValue: T) = useState { DynamicValue(initialValue) }.value
 
 /**
  * Creates a [DynamicValue] deriving from an existing binding param, with modifications applied by
@@ -37,6 +37,9 @@ fun <T> DslScope.useBinding(initialValue: T) = useState { DynamicValue(initialVa
  * progress, 100f, 255f)) }
  * ```
  */
-fun <T, S> DslScope.useBinding(binding: DynamicValue<T>, transform: (T) -> S): DynamicValue<S> {
+fun <T, S> ComponentScope.useBinding(
+    binding: DynamicValue<T>,
+    transform: (T) -> S
+): DynamicValue<S> {
   return DerivedDynamicValue(binding, transform)
 }

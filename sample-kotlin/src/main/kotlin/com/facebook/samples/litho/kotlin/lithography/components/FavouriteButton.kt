@@ -19,7 +19,7 @@ package com.facebook.samples.litho.kotlin.lithography.components
 import android.R.drawable.star_off
 import android.R.drawable.star_on
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -30,7 +30,7 @@ import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
 
 class FavouriteButton : KComponent() {
-  override fun DslScope.render(): Component {
+  override fun ComponentScope.render(): Component {
     val isFavourite = useState { false }
     val star = drawableRes(if (isFavourite.value) star_on else star_off)
 

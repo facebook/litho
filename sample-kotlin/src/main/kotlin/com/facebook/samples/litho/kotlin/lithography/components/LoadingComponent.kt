@@ -17,7 +17,7 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import android.graphics.Color
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -28,7 +28,7 @@ import com.facebook.litho.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 
 class LoadingComponent : KComponent() {
-  override fun DslScope.render() =
+  override fun ComponentScope.render() =
       Row(
           justifyContent = CENTER,
           children =

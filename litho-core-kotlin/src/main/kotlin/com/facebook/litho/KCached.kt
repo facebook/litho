@@ -23,16 +23,16 @@ import kotlin.reflect.KProperty
  * value if it hasn't already been calculated or if the inputs have changed since the previous
  * calculation.
  */
-fun <T> DslScope.useCached(calculator: () -> T): CachedDelegate<T> =
+fun <T> ComponentScope.useCached(calculator: () -> T): CachedDelegate<T> =
     CachedDelegate(context, calculator = calculator)
 
-fun <T> DslScope.useCached(input1: Any, calculator: () -> T): CachedDelegate<T> =
+fun <T> ComponentScope.useCached(input1: Any, calculator: () -> T): CachedDelegate<T> =
     CachedDelegate(context, input1, calculator = calculator)
 
-fun <T> DslScope.useCached(input1: Any, input2: Any, calculator: () -> T): CachedDelegate<T> =
+fun <T> ComponentScope.useCached(input1: Any, input2: Any, calculator: () -> T): CachedDelegate<T> =
     CachedDelegate(context, input1, input2, calculator = calculator)
 
-fun <T> DslScope.useCached(vararg inputs: Any, calculator: () -> T): CachedDelegate<T> =
+fun <T> ComponentScope.useCached(vararg inputs: Any, calculator: () -> T): CachedDelegate<T> =
     CachedDelegate(context, inputs = inputs, calculator = calculator)
 
 class CachedDelegate<T>
