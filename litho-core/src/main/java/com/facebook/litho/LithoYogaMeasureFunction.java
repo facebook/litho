@@ -131,7 +131,20 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
         if (size.width < 0 || size.height < 0) {
           throw new IllegalStateException(
-              "MeasureOutput not set, ComponentLifecycle is: " + component);
+              "MeasureOutput not set, ComponentLifecycle is: "
+                  + component
+                  + " Width: "
+                  + width
+                  + " Height: "
+                  + height
+                  + " WidthMode: "
+                  + widthMode.name()
+                  + " HeightMode: "
+                  + heightMode.name()
+                  + " Measured width : "
+                  + size.width
+                  + " Measured Height: "
+                  + size.height);
         }
 
         outputWidth = size.width;
