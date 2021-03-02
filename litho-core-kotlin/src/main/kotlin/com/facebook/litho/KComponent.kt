@@ -64,3 +64,15 @@ abstract class KComponent : Component() {
     return true
   }
 }
+
+/**
+ * Sets a manual key on the given Component returned in the lambda, e.g.
+ * ```
+ * key("my_key") { Text(...) }
+ * ```
+ */
+fun key(key: String, componentLambda: () -> Component): Component {
+  val component = componentLambda()
+  component.key = key
+  return component
+}
