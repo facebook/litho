@@ -41,13 +41,11 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 class State<T>(private val context: ComponentContext, private val hookKey: String, val value: T) {
 
   fun update(newValue: T) {
-    context.updateHookStateAsync<StateHandler> { stateHandler ->
-      stateHandler.hookState[hookKey] = newValue
-    }
+    context.updateHookStateAsync { stateHandler -> stateHandler.hookState[hookKey] = newValue }
   }
 
   fun update(newValueFunction: (T) -> T) {
-    context.updateHookStateAsync<StateHandler> { stateHandler ->
+    context.updateHookStateAsync { stateHandler ->
       stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
     }
   }
