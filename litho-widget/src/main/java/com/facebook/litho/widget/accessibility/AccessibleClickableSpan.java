@@ -28,6 +28,8 @@ import javax.annotation.Nullable;
  */
 public abstract class AccessibleClickableSpan extends ClickableSpan {
   private @Nullable String mAccessibilityDescription;
+  private @Nullable String mRoleDescription;
+
   @AccessibilityRole.AccessibilityRoleType @Nullable private String mAccessibilityRole;
 
   public @Nullable String getAccessibilityDescription() {
@@ -36,6 +38,14 @@ public abstract class AccessibleClickableSpan extends ClickableSpan {
 
   public void setAccessibilityDescription(String accessibilityDescription) {
     mAccessibilityDescription = accessibilityDescription;
+  }
+
+  public @Nullable String getRoleDescription() {
+    return mRoleDescription;
+  }
+
+  public void setRoleDescription(String roleDescription) {
+    mRoleDescription = roleDescription;
   }
 
   @AccessibilityRole.AccessibilityRoleType
@@ -58,5 +68,15 @@ public abstract class AccessibleClickableSpan extends ClickableSpan {
     super();
     mAccessibilityDescription = accessibilityDescription;
     mAccessibilityRole = accessibilityRole;
+  }
+
+  public AccessibleClickableSpan(
+      @Nullable String accessibilityDescription,
+      @Nullable @AccessibilityRole.AccessibilityRoleType String accessibilityRole,
+      @Nullable String roleDescription) {
+    super();
+    mAccessibilityDescription = accessibilityDescription;
+    mAccessibilityRole = accessibilityRole;
+    mRoleDescription = roleDescription;
   }
 }

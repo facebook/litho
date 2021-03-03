@@ -987,9 +987,13 @@ class TextSpec {
     if (span instanceof AccessibleClickableSpan) {
       AccessibleClickableSpan accessibleClickableSpan = (AccessibleClickableSpan) span;
       String contentDescription = accessibleClickableSpan.getAccessibilityDescription();
+      String roleDescription = accessibleClickableSpan.getRoleDescription();
       String role = accessibleClickableSpan.getAccessibilityRole();
       if (contentDescription != null) {
         node.setContentDescription(contentDescription);
+      }
+      if (roleDescription != null) {
+        node.setRoleDescription(roleDescription);
       }
       if (role != null) {
         node.setClassName(role);
