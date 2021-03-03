@@ -26,8 +26,10 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
+import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
@@ -657,7 +659,20 @@ public class TransitionsExtension
       state.mDisappearingMountItems.put(transitionId, disappearingGroup);
     }
     final @OutputUnitType int type = animatableItem.getOutputType();
-    disappearingGroup.add(type, item);
+    if (disappearingGroup.get(type) != null) {
+      ErrorReporter.report(
+          LogLevel.ERROR,
+          "OutputUnitsAffinityGroup:mapDissapearingItemsWithTransitionId",
+          "Disappearing pair already exists for, component: "
+              + state.mLastTransitionsExtensionInput.getRootName()
+              + ", transition_id: "
+              + transitionId
+              + ", type: "
+              + type);
+      disappearingGroup.replace(type, item);
+    } else {
+      disappearingGroup.add(type, item);
+    }
   }
 
   private static void remountHostToRootIfNeeded(
