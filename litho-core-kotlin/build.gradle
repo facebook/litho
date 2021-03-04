@@ -68,6 +68,7 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     implementation deps.kotlinStandardLib
+    implementation deps.supportCore
 
     // Android Support Library
     compileOnly deps.supportAnnotations

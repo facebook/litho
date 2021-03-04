@@ -17,6 +17,7 @@
 package com.facebook.samples.litho.kotlin.animations.transitions
 
 import android.graphics.Color
+import android.util.Log
 import com.facebook.litho.Animated
 import com.facebook.litho.Column
 import com.facebook.litho.Component
@@ -30,6 +31,8 @@ import com.facebook.litho.flexbox.padding
 import com.facebook.litho.flexbox.width
 import com.facebook.litho.useBinding
 import com.facebook.litho.useState
+
+private const val TAG = "ColorTransition"
 
 class ColorTransition : KComponent() {
 
@@ -46,9 +49,10 @@ class ColorTransition : KComponent() {
               Animated.timing(
                       target = colorProgress,
                       to = if (isComplete.value) 0f else 1f,
-                      duration = 1000)
+                      duration = 1000,
+                      onUpdate = { Log.d(TAG, "onUpdate: $it") },
+                      onFinish = { isComplete.update(!isComplete.value) })
                   .start()
-              isComplete.update(!isComplete.value)
             },
         children =
             listOf(
