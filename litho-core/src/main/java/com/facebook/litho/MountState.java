@@ -960,7 +960,7 @@ class MountState implements MountDelegateTarget {
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
-            && currentComponent.shouldComponentUpdate(
+            && currentComponent.shouldUpdate(
                 currentLayoutOutput.getScopedContext(),
                 currentComponent,
                 nextLayoutOutput.getScopedContext(),
@@ -970,7 +970,7 @@ class MountState implements MountDelegateTarget {
       }
     }
 
-    return currentComponent.shouldComponentUpdate(
+    return currentComponent.shouldUpdate(
         currentLayoutOutput.getScopedContext(),
         currentComponent,
         nextLayoutOutput.getScopedContext(),

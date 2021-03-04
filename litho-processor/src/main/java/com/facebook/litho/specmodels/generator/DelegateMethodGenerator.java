@@ -34,6 +34,7 @@ import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DiffPropModel;
 import com.facebook.litho.specmodels.model.DiffStateParamModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.HasPureRender;
 import com.facebook.litho.specmodels.model.LifecycleMethodArgumentType;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
@@ -150,6 +151,11 @@ public class DelegateMethodGenerator {
       methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
       methodSpec.addParameter(specModel.getContextClass(), "_nextScopedContext");
       methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
+      if (methodDescription.name.equals("shouldUpdate") && specModel instanceof HasPureRender) {
+        methodSpec.beginControlFlow("if (!isPureRender())");
+        methodSpec.addStatement("return true");
+        methodSpec.endControlFlow();
+      }
       methodSpec.addStatement(
           "$L _prevImpl = ($L) _prevAbstractImpl", componentName, componentName);
       methodSpec.addStatement(

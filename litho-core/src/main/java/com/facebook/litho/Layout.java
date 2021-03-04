@@ -729,7 +729,7 @@ class Layout {
     final String globalKey =
         ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
     if (component != null) {
-      return component.shouldComponentUpdate(
+      return component.shouldUpdate(
           getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
           diffNode.getComponent(),
           component.getScopedContext(layoutStateContext, globalKey),

@@ -256,18 +256,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  final boolean shouldComponentUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
-    if (isPureRender()) {
-      return shouldUpdate(previousScopedContext, previous, nextScopedContext, next);
-    }
-
-    return true;
-  }
-
   void unbind(ComponentContext c, Object mountedContent) {
     try {
       onUnbind(c, mountedContent);
@@ -617,10 +605,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return true if the component needs an update, false otherwise.
    */
   protected boolean shouldUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
+      final @Nullable ComponentContext previousScopedContext,
+      final @Nullable Component previous,
+      final @Nullable ComponentContext nextScopedContext,
+      final @Nullable Component next) {
+    if (!isPureRender()) {
+      return true;
+    }
+
     final StateContainer prevStateContainer =
         previous == null ? null : previous.getStateContainer(previousScopedContext);
     final StateContainer nextStateContainer =

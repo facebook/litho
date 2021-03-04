@@ -631,7 +631,8 @@ public abstract class Component extends ComponentLifecycle
     return null;
   }
 
-  protected @Nullable StateContainer getStateContainer(ComponentContext scopedContext) {
+  protected @Nullable StateContainer getStateContainer(
+      final @Nullable ComponentContext scopedContext) {
     if (mUseStatelessComponent) {
 
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {

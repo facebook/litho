@@ -1190,7 +1190,7 @@ public class LayoutState
     final boolean isOutputUpdated;
     if (recycle != null) {
       isOutputUpdated =
-          !drawableComponent.shouldComponentUpdate(
+          !drawableComponent.shouldUpdate(
               recycleScopedContext, recycle.getComponent(), null, drawableComponent);
     } else {
       isOutputUpdated = false;

@@ -364,6 +364,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
       Component _prevAbstractImpl,
       ComponentContext _nextScopedContext,
       Component _nextAbstractImpl) {
+    if (!isPureRender()) {
+      return true;
+    }
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;
