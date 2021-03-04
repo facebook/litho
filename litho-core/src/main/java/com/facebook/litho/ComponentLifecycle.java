@@ -589,6 +589,27 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
+  final boolean shouldUpdate(
+      final @Nullable ComponentContext previousScopedContext,
+      final @Nullable Component previous,
+      final @Nullable ComponentContext nextScopedContext,
+      final @Nullable Component next) {
+    final StateContainer prevStateContainer =
+        previous == null
+            ? null
+            : (previous.isStateless() && previousScopedContext == null
+                ? null
+                : previous.getStateContainer(previousScopedContext));
+    final StateContainer nextStateContainer =
+        next == null
+            ? null
+            : (next.isStateless() && nextScopedContext == null
+                ? null
+                : next.getStateContainer(nextScopedContext));
+
+    return shouldUpdate(previous, prevStateContainer, next, nextStateContainer);
+  }
+
   /**
    * Whether the component needs updating.
    *
@@ -605,18 +626,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return true if the component needs an update, false otherwise.
    */
   protected boolean shouldUpdate(
-      final @Nullable ComponentContext previousScopedContext,
       final @Nullable Component previous,
-      final @Nullable ComponentContext nextScopedContext,
-      final @Nullable Component next) {
+      final @Nullable StateContainer prevStateContainer,
+      final @Nullable Component next,
+      final @Nullable StateContainer nextStateContainer) {
     if (!isPureRender()) {
       return true;
     }
 
-    final StateContainer prevStateContainer =
-        previous == null ? null : previous.getStateContainer(previousScopedContext);
-    final StateContainer nextStateContainer =
-        next == null ? null : next.getStateContainer(nextScopedContext);
     return !previous.isEquivalentTo(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }

@@ -42,6 +42,7 @@ import com.facebook.litho.specmodels.model.SimpleMethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
+import com.facebook.litho.specmodels.model.StateParamModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -147,15 +148,22 @@ public class DelegateMethodGenerator {
     }
 
     if (methodUsesDiffs) {
-      methodSpec.addParameter(specModel.getContextClass(), "_prevScopedContext");
-      methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
-      methodSpec.addParameter(specModel.getContextClass(), "_nextScopedContext");
-      methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
       if (methodDescription.name.equals("shouldUpdate") && specModel instanceof HasPureRender) {
+        methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
+        methodSpec.addParameter(specModel.getStateContainerClass(), "_prevStateContainer");
+        methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
+        methodSpec.addParameter(specModel.getStateContainerClass(), "_nextStateContainer");
+
         methodSpec.beginControlFlow("if (!isPureRender())");
         methodSpec.addStatement("return true");
         methodSpec.endControlFlow();
+      } else {
+        methodSpec.addParameter(specModel.getContextClass(), "_prevScopedContext");
+        methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
+        methodSpec.addParameter(specModel.getContextClass(), "_nextScopedContext");
+        methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
       }
+
       methodSpec.addStatement(
           "$L _prevImpl = ($L) _prevAbstractImpl", componentName, componentName);
       methodSpec.addStatement(
@@ -262,17 +270,35 @@ public class DelegateMethodGenerator {
             ParamTypeAndName.create(extraDefinedParam.getTypeName(), extraDefinedParam.getName()));
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
-        acquireStatements.addStatement(
-            // Diff<type> name = new Diff<type>(...)
-            "$T $L = new $T(_prevImpl == null ? null : _prevImpl.$L, "
-                + "_nextImpl == null ? null : _nextImpl.$L)",
-            methodParamModel.getTypeName(),
-            methodParamModel.getName(),
-            methodParamModel.getTypeName(),
-            ComponentBodyGenerator.getImplAccessor(
-                methodDescription.name, specModel, methodParamModel, "_prevScopedContext"),
-            ComponentBodyGenerator.getImplAccessor(
-                methodDescription.name, specModel, methodParamModel, "_nextScopedContext"));
+        if (specModel instanceof HasPureRender
+            && (methodParamModel instanceof StateParamModel
+                || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName())
+                    != null)) {
+          final String stateContainerClassNameWithTypeVars =
+              StateGenerator.getStateContainerClassNameWithTypeVars(specModel);
+          acquireStatements.addStatement(
+              "$T $L = new $T(_prevImpl == null ? null : (($L) _prevStateContainer).$L, "
+                  + "_nextImpl == null ? null : (($L) _nextStateContainer).$L)",
+              methodParamModel.getTypeName(),
+              methodParamModel.getName(),
+              methodParamModel.getTypeName(),
+              stateContainerClassNameWithTypeVars,
+              methodParamModel.getName(),
+              stateContainerClassNameWithTypeVars,
+              methodParamModel.getName());
+        } else {
+          acquireStatements.addStatement(
+              // Diff<type> name = new Diff<type>(...)
+              "$T $L = new $T(_prevImpl == null ? null : _prevImpl.$L, "
+                  + "_nextImpl == null ? null : _nextImpl.$L)",
+              methodParamModel.getTypeName(),
+              methodParamModel.getName(),
+              methodParamModel.getTypeName(),
+              ComponentBodyGenerator.getImplAccessor(
+                  methodDescription.name, specModel, methodParamModel, "_prevScopedContext"),
+              ComponentBodyGenerator.getImplAccessor(
+                  methodDescription.name, specModel, methodParamModel, "_nextScopedContext"));
+        }
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
       } else if (isOutputType(methodParamModel.getTypeName())) {

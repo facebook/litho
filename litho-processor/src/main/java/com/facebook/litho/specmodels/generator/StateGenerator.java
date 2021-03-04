@@ -327,7 +327,7 @@ public class StateGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }
 
-  private static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {
+  static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {
     if (specModel.getStateValues().isEmpty()) {
       return specModel.getStateContainerClass().toString();
     }

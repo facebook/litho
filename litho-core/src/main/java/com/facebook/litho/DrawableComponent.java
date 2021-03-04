@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.drawable.DrawableUtils;
 
 class DrawableComponent<T extends Drawable> extends Component {
@@ -110,12 +111,13 @@ class DrawableComponent<T extends Drawable> extends Component {
 
   @Override
   protected boolean shouldUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
-    final Drawable previousDrawable = ((DrawableComponent) previous).getDrawable();
-    final Drawable nextDrawable = ((DrawableComponent) next).getDrawable();
+      final @Nullable Component previous,
+      final @Nullable StateContainer previousStateContainer,
+      final @Nullable Component next,
+      final @Nullable StateContainer nextStateContainer) {
+    final Drawable previousDrawable =
+        previous == null ? null : ((DrawableComponent) previous).getDrawable();
+    final Drawable nextDrawable = next == null ? null : ((DrawableComponent) next).getDrawable();
 
     return !DrawableUtils.isEquivalentTo(previousDrawable, nextDrawable);
   }

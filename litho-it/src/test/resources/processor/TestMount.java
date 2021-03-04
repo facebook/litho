@@ -360,10 +360,10 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected boolean shouldUpdate(
-      ComponentContext _prevScopedContext,
       Component _prevAbstractImpl,
-      ComponentContext _nextScopedContext,
-      Component _nextAbstractImpl) {
+      StateContainer _prevStateContainer,
+      Component _nextAbstractImpl,
+      StateContainer _nextStateContainer) {
     if (!isPureRender()) {
       return true;
     }
