@@ -17,20 +17,30 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.widget.TextView;
 import androidx.annotation.UiThread;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.Diff;
 import com.facebook.litho.LifecycleStep;
+import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Size;
+import com.facebook.litho.TrackingMountContentPool;
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
+import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.annotations.State;
 
 @MountSpec(isPureRender = true)
 public class CrashingMountableSpec {
@@ -51,9 +61,12 @@ public class CrashingMountableSpec {
 
   @UiThread
   @OnCreateMountContent
-  static TextView onCreateMountContent(final Context c) {
+  static TextView onCreateMountContent(final Context c, final @InjectProp LifecycleStep lifecycle) {
     TextView view = new TextView(c);
     view.setText("Hello World");
+    if (lifecycle.equals(LifecycleStep.ON_CREATE_MOUNT_CONTENT)) {
+      throw new MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT);
+    }
     return view;
   }
 
@@ -62,6 +75,7 @@ public class CrashingMountableSpec {
   static void onMount(
       final ComponentContext context,
       final TextView textView,
+      @Prop String someStringProp,
       final @Prop LifecycleStep lifecycle) {
     if (lifecycle.equals(LifecycleStep.ON_MOUNT)) {
       throw new MountPhaseException(LifecycleStep.ON_MOUNT);
@@ -97,6 +111,45 @@ public class CrashingMountableSpec {
     if (lifecycle.equals(LifecycleStep.ON_UNBIND)) {
       throw new MountPhaseException(LifecycleStep.ON_UNBIND);
     }
+  }
+
+  @OnPrepare
+  static void onPrepare(
+      ComponentContext c, @Prop LifecycleStep lifecycle, @State Object dummyState) {
+    if (lifecycle.equals(LifecycleStep.ON_PREPARE)) {
+      throw new MountPhaseException(LifecycleStep.ON_PREPARE);
+    }
+  }
+
+  @OnBoundsDefined
+  static void onBoundsDefined(
+      ComponentContext c, ComponentLayout layout, @Prop LifecycleStep lifecycle) {
+    final Rect bounds =
+        new Rect(
+            layout.getX(),
+            layout.getY(),
+            layout.getX() + layout.getWidth(),
+            layout.getY() + layout.getHeight());
+    if (lifecycle.equals(LifecycleStep.ON_BOUNDS_DEFINED)) {
+      throw new MountPhaseException(LifecycleStep.ON_BOUNDS_DEFINED);
+    }
+  }
+
+  @OnCreateMountContentPool
+  static MountContentPool onCreateMountContentPool(@InjectProp LifecycleStep lifecycle) {
+    if (lifecycle.equals(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL)) {
+      throw new MountPhaseException(LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL);
+    }
+    return new TrackingMountContentPool("MountSpecLifecycleTester", 1, true);
+  }
+
+  @ShouldUpdate(onMount = true)
+  static boolean shouldUpdate(
+      @Prop Diff<String> someStringProp, @InjectProp LifecycleStep lifecycle) {
+    if (lifecycle.equals(LifecycleStep.SHOULD_UPDATE)) {
+      throw new MountPhaseException(LifecycleStep.SHOULD_UPDATE);
+    }
+    return !someStringProp.getPrevious().equals(someStringProp.getNext());
   }
 
   public static final class MountPhaseException extends RuntimeException {
