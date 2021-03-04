@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package main.kotlin.com.facebook.litho
+package com.facebook.litho.animated
 
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator

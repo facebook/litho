@@ -18,18 +18,19 @@ package com.facebook.samples.litho.kotlin.animations.transitions
 
 import android.graphics.Color
 import android.util.Log
-import com.facebook.litho.Animated
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.animated.Animated
+import com.facebook.litho.animated.backgroundColor
+import com.facebook.litho.animated.useBinding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.padding
 import com.facebook.litho.flexbox.width
-import com.facebook.litho.useBinding
 import com.facebook.litho.useState
 
 private const val TAG = "ColorTransition"

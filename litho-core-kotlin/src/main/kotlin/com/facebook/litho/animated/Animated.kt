@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho.animated
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Interpolator
-import main.kotlin.com.facebook.litho.Easing
+import com.facebook.litho.DynamicValue
 
 object Animated {
   /**

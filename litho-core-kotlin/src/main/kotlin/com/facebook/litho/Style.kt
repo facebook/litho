@@ -19,14 +19,6 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
-import com.facebook.litho.DynamicPropsManager.KEY_ALPHA
-import com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR
-import com.facebook.litho.DynamicPropsManager.KEY_ELEVATION
-import com.facebook.litho.DynamicPropsManager.KEY_ROTATION
-import com.facebook.litho.DynamicPropsManager.KEY_SCALE_X
-import com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y
-import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X
-import com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y
 import com.facebook.litho.drawable.ComparableColorDrawable
 
 /** Enums for [ObjectStyleItem]. */
@@ -44,18 +36,6 @@ private enum class ObjectField {
 private enum class FloatField {
   ALPHA,
   ELEVATION,
-}
-
-/** Enums for [DynamicStyleItem]. */
-private enum class DynamicField {
-  ALPHA,
-  BACKGROUND,
-  ELEVATION,
-  ROTATION,
-  SCALE_X,
-  SCALE_Y,
-  TRANSLATION_X,
-  TRANSLATION_Y,
 }
 
 /**
@@ -98,27 +78,10 @@ private class FloatStyleItem(val field: FloatField, val value: Float) : StyleIte
   }
 }
 
-/**
- * Common style item for all dynamic value styles. See note on [DynamicField] about this pattern.
- */
-private class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
-    val dynamicProps = component.getOrCreateCommonDynamicProps()
-    when (field) {
-      DynamicField.ALPHA -> dynamicProps.put(KEY_ALPHA, value)
-      DynamicField.BACKGROUND -> dynamicProps.put(KEY_BACKGROUND_COLOR, value)
-      DynamicField.ELEVATION -> dynamicProps.put(KEY_ELEVATION, value)
-      DynamicField.ROTATION -> dynamicProps.put(KEY_ROTATION, value)
-      DynamicField.SCALE_X -> dynamicProps.put(KEY_SCALE_X, value)
-      DynamicField.SCALE_Y -> dynamicProps.put(KEY_SCALE_Y, value)
-      DynamicField.TRANSLATION_X -> dynamicProps.put(KEY_TRANSLATION_X, value)
-      DynamicField.TRANSLATION_Y -> dynamicProps.put(KEY_TRANSLATION_Y, value)
-    }.exhaustive
-  }
-}
-
 /** exposed to avoid package-private error on [Component] */
 internal fun Component.getCommonPropsHolder() = getOrCreateCommonProps()
+
+internal fun Component.getOrCreateCommonDynamicPropsHolder() = getOrCreateCommonDynamicProps()
 
 /**
  * An immutable ordered collection of attributes ( [StyleItem] s) that can be applied to a
@@ -165,9 +128,6 @@ open class Style(
       this +
           ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
 
-  fun backgroundColor(background: DynamicValue<Int>) =
-      this + DynamicStyleItem(DynamicField.BACKGROUND, background)
-
   fun foreground(foreground: Drawable?) = this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
 
   fun onClick(onClick: (ClickEvent) -> Unit) = this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
@@ -181,28 +141,10 @@ open class Style(
 
   fun alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
 
-  fun alpha(alpha: DynamicValue<Float>) = this + DynamicStyleItem(DynamicField.ALPHA, alpha)
-
   fun elevation(elevation: Float) = this + FloatStyleItem(FloatField.ELEVATION, elevation)
-
-  fun elevation(elevation: DynamicValue<Float>) =
-      this + DynamicStyleItem(DynamicField.ELEVATION, elevation)
 
   fun outlineProvider(outlineProvider: ViewOutlineProvider?) =
       this + ObjectStyleItem(ObjectField.OUTLINE_PROVIDER, outlineProvider)
-
-  fun scaleX(scaleX: DynamicValue<Float>) = this + DynamicStyleItem(DynamicField.SCALE_X, scaleX)
-
-  fun scaleY(scaleY: DynamicValue<Float>) = this + DynamicStyleItem(DynamicField.SCALE_Y, scaleY)
-
-  fun translationX(translationX: DynamicValue<Float>) =
-      this + DynamicStyleItem(DynamicField.TRANSLATION_X, translationX)
-
-  fun translationY(translationY: DynamicValue<Float>) =
-      this + DynamicStyleItem(DynamicField.TRANSLATION_Y, translationY)
-
-  fun rotation(rotation: DynamicValue<Float>) =
-      this + DynamicStyleItem(DynamicField.ROTATION, rotation)
 
   open fun forEach(lambda: (StyleItem) -> Unit) {
     previousStyle?.forEach(lambda)
