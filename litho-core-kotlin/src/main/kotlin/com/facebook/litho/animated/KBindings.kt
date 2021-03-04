@@ -46,5 +46,5 @@ fun <T, S> ComponentScope.useBinding(
     binding: DynamicValue<T>,
     transform: (T) -> S
 ): DynamicValue<S> {
-  return DerivedDynamicValue(binding, transform)
+  return useState { DerivedDynamicValue(binding, transform) }.value
 }
