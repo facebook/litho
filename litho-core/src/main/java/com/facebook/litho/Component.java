@@ -649,9 +649,22 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  StateContainer getStateContainer(LayoutStateContext layoutStateContext, String globalKey) {
+  StateContainer getStateContainer(
+      final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
     if (mUseStatelessComponent) {
-      return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
+      if (layoutStateContext == null) {
+        throw new IllegalStateException(
+            "Cannot access a state container outside of a layout state calculation.");
+      }
+
+      ScopedComponentInfo scopedComponentInfo =
+          layoutStateContext.getScopedComponentInfo(globalKey);
+
+      if (scopedComponentInfo == null) {
+        return null;
+      }
+
+      return scopedComponentInfo.getStateContainer();
     } else {
       return mStateContainer;
     }

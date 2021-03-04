@@ -726,14 +726,30 @@ class Layout {
     }
 
     final Component component = layoutNode.getTailComponent();
-    final String globalKey =
-        ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
+
     if (component != null) {
-      return component.shouldUpdate(
-          getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
-          diffNode.getComponent(),
-          component.getScopedContext(layoutStateContext, globalKey),
-          component);
+      final String globalKey =
+          ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
+      if (component.isStateless()) {
+        Component diffNodeComponent = diffNode.getComponent();
+
+        return component.shouldUpdate(
+            diffNodeComponent,
+            diffNodeComponent == null || prevLayoutStateContext == null
+                ? null
+                : diffNodeComponent.getStateContainer(
+                    prevLayoutStateContext,
+                    ComponentUtils.getGlobalKey(
+                        diffNodeComponent, diffNode.getComponentGlobalKey())),
+            component,
+            component.getStateContainer(layoutStateContext, globalKey));
+      } else {
+        return component.shouldUpdate(
+            getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
+            diffNode.getComponent(),
+            component.getScopedContext(layoutStateContext, globalKey),
+            component);
+      }
     }
 
     return true;

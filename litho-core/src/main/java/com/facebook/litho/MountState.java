@@ -960,21 +960,42 @@ class MountState implements MountDelegateTarget {
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
-            && currentComponent.shouldUpdate(
-                currentLayoutOutput.getScopedContext(),
-                currentComponent,
-                nextLayoutOutput.getScopedContext(),
-                nextComponent);
+            && shouldUpdate(currentComponent, currentLayoutOutput, nextComponent, nextLayoutOutput);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    return currentComponent.shouldUpdate(
-        currentLayoutOutput.getScopedContext(),
-        currentComponent,
-        nextLayoutOutput.getScopedContext(),
-        nextComponent);
+    return shouldUpdate(currentComponent, currentLayoutOutput, nextComponent, nextLayoutOutput);
+  }
+
+  private static boolean shouldUpdate(
+      Component currentComponent,
+      LayoutOutput currentLayoutOutput,
+      Component nextComponent,
+      LayoutOutput nextLayoutOutput) {
+    if (currentComponent.isStateless()) {
+      ComponentContext currentScopedContext = currentLayoutOutput.getScopedContext();
+      ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
+
+      return currentComponent.shouldUpdate(
+          currentComponent,
+          currentScopedContext == null
+              ? null
+              : currentComponent.getStateContainer(
+                  currentScopedContext.getLayoutStateContext(), currentLayoutOutput.getKey()),
+          nextComponent,
+          nextScopedContext == null
+              ? null
+              : nextComponent.getStateContainer(
+                  nextScopedContext.getLayoutStateContext(), nextLayoutOutput.getKey()));
+    } else {
+      return currentComponent.shouldUpdate(
+          currentLayoutOutput.getScopedContext(),
+          currentComponent,
+          nextLayoutOutput.getScopedContext(),
+          nextComponent);
+    }
   }
 
   static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {

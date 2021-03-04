@@ -1189,9 +1189,23 @@ public class LayoutState
         recycle == null ? null : recycle.getScopedContext();
     final boolean isOutputUpdated;
     if (recycle != null) {
-      isOutputUpdated =
-          !drawableComponent.shouldUpdate(
-              recycleScopedContext, recycle.getComponent(), null, drawableComponent);
+      if (drawableComponent.isStateless()) {
+        isOutputUpdated =
+            !drawableComponent.shouldUpdate(
+                recycle.getComponent(),
+                recycleScopedContext == null
+                    ? null
+                    : recycle
+                        .getComponent()
+                        .getStateContainer(
+                            recycleScopedContext.getLayoutStateContext(), recycle.getKey()),
+                drawableComponent,
+                null);
+      } else {
+        isOutputUpdated =
+            !drawableComponent.shouldUpdate(
+                recycleScopedContext, recycle.getComponent(), null, drawableComponent);
+      }
     } else {
       isOutputUpdated = false;
     }
