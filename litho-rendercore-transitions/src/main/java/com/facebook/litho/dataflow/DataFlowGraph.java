@@ -91,7 +91,10 @@ public class DataFlowGraph {
   private boolean mIsFinishingBindings = false;
 
   @GuardedBy("this")
-  private final List<GraphBinding> mBindingsToRemove = new ArrayList<>();
+  private final List<GraphBinding> mBindingsToUnregister = new ArrayList<>();
+
+  @GuardedBy("this")
+  private final List<GraphBinding> mBindingsToRegister = new ArrayList<>();
 
   private boolean mIsDirty = false;
 
@@ -107,6 +110,10 @@ public class DataFlowGraph {
     if (!binding.isActive()) {
       throw new RuntimeException("Expected added GraphBinding to be active: " + binding);
     }
+    if (mIsFinishingBindings) {
+      mBindingsToRegister.add(binding);
+      return;
+    }
     mBindings.add(binding);
     registerNodes(binding);
     if (mBindings.size() == 1) {
@@ -121,7 +128,7 @@ public class DataFlowGraph {
    */
   public synchronized void unregister(GraphBinding binding) {
     if (mIsFinishingBindings) {
-      mBindingsToRemove.add(binding);
+      mBindingsToUnregister.add(binding);
       return;
     }
     if (!mBindings.remove(binding)) {
@@ -248,8 +255,8 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private void notifyFinishedBindings() {
-    // We need loop the graph bindings and flag the ones we need to remove so that we don't change
-    // the list while iterating.
+    // We need loop the graph bindings and flag the ones we need to add/remove so that we don't
+    // change the list while iterating.
     mIsFinishingBindings = true;
     for (final GraphBinding binding : mBindings) {
       boolean allAreFinished = true;
@@ -266,10 +273,14 @@ public class DataFlowGraph {
       }
     }
     mIsFinishingBindings = false;
-    for (final GraphBinding binding : mBindingsToRemove) {
+    for (final GraphBinding binding : mBindingsToRegister) {
+      register(binding);
+    }
+    for (final GraphBinding binding : mBindingsToUnregister) {
       unregister(binding);
     }
-    mBindingsToRemove.clear();
+    mBindingsToRegister.clear();
+    mBindingsToUnregister.clear();
   }
 
   @GuardedBy("this")
