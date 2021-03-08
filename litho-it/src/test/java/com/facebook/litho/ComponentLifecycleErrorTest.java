@@ -320,10 +320,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnDetachedCrashWithTestErrorBoundary() {
-    // TODO(T85584749): add onError coverage and remove expected exception
-    mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage(is("onDetached crash"));
-
     final ComponentContext context = mLithoViewRule.getContext();
 
     Component crashingComponent =

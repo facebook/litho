@@ -73,8 +73,14 @@ public class AttachDetachHandler {
       for (Map.Entry<String, Component> entry : toDetach.entrySet()) {
         final Component component = entry.getValue();
         final String key = entry.getKey();
+        final ComponentContext scopedContext =
+            component.getScopedContext(previousLayoutStateContext, key);
 
-        component.onDetached(component.getScopedContext(previousLayoutStateContext, key));
+        try {
+          component.onDetached(scopedContext);
+        } catch (Exception e) {
+          ComponentUtils.handle(scopedContext, e);
+        }
       }
     }
 
@@ -114,7 +120,14 @@ public class AttachDetachHandler {
     for (int i = 0, size = toDetach.size(); i < size; i++) {
       final Component component = toDetach.get(i);
       final String globalKey = toDetachKeys.get(i);
-      component.onDetached(component.getScopedContext(mLayoutStateContext, globalKey));
+      final ComponentContext scopedContext =
+          component.getScopedContext(mLayoutStateContext, globalKey);
+
+      try {
+        component.onDetached(scopedContext);
+      } catch (Exception e) {
+        ComponentUtils.handle(scopedContext, e);
+      }
     }
   }
 
