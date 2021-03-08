@@ -212,11 +212,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnCreateTransitionCrashWithTestErrorBoundary() {
-    // TODO(T85657700): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onCreateTransition crash");
-
     crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash");
   }
 

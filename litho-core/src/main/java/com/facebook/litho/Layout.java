@@ -256,11 +256,14 @@ class Layout {
       if (component.needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(globalKey, component);
       } else {
-
-        // Calls onCreateTransition on the Spec.
-        final Transition transition = component.createTransition(c);
-        if (transition != null) {
-          node.addTransition(transition);
+        try {
+          // Calls onCreateTransition on the Spec.
+          final Transition transition = component.createTransition(c);
+          if (transition != null) {
+            node.addTransition(transition);
+          }
+        } catch (Exception e) {
+          handle(parent, component, e);
         }
       }
     }
