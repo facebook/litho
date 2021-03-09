@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.flexbox.alignSelf
@@ -508,6 +509,25 @@ class CommonStylesTest {
                 .attachToWindow()
                 .findViewWithTagOrNull("view_tag"))
         .isNotNull()
+  }
+
+  @Test
+  fun viewTags_whenSet_areAddedToView() {
+    val viewTags =
+        SparseArray<String>().apply {
+          append(123, "first tag")
+          append(456, "second tag")
+        }
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).viewTags(viewTags)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.getTag(123)).isEqualTo("first tag")
+    assertThat(lithoViewRule.lithoView.getTag(456)).isEqualTo("second tag")
   }
 
   @Test

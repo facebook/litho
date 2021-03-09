@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
+import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import com.facebook.litho.drawable.ComparableColorDrawable
@@ -29,6 +30,7 @@ private enum class ObjectField {
   ON_LONG_CLICK,
   WRAP_IN_VIEW,
   VIEW_TAG,
+  VIEW_TAGS,
   OUTLINE_PROVIDER,
 }
 
@@ -62,6 +64,7 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
+      ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
       ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
     }.exhaustive
   }
@@ -138,6 +141,9 @@ open class Style(
   fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
 
   fun viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
+
+  fun viewTags(viewTags: SparseArray<out Any>) =
+      this + ObjectStyleItem(ObjectField.VIEW_TAGS, viewTags)
 
   fun alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
 
