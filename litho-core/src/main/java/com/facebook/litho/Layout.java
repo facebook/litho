@@ -270,7 +270,11 @@ class Layout {
 
     // 12. Call onPrepare for MountSpecs.
     if (isMountSpec(component)) {
-      component.onPrepare(c);
+      try {
+        component.onPrepare(c);
+      } catch (Exception e) {
+        handle(parent, component, e);
+      }
     }
 
     // 13. Add working ranges to the InternalNode.
