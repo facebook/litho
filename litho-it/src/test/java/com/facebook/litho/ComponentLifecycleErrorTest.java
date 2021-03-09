@@ -217,10 +217,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnAttachedCrashWithTestErrorBoundary() {
-    // TODO(T85584869): add onError coverage and remove expected exception
-    mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage(is("onAttached crash"));
-
     crashingScenarioLayoutHelper(LifecycleStep.ON_ATTACHED, "onAttached crash");
   }
 

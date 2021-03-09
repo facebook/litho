@@ -88,8 +88,13 @@ public class AttachDetachHandler {
       for (Map.Entry<String, Component> entry : toAttach.entrySet()) {
         final Component component = entry.getValue();
         final String key = entry.getKey();
+        final ComponentContext scopedContext = component.getScopedContext(layoutStateContext, key);
 
-        component.onAttached(component.getScopedContext(layoutStateContext, key));
+        try {
+          component.onAttached(scopedContext);
+        } catch (Exception e) {
+          ComponentUtils.handle(scopedContext, e);
+        }
       }
     }
   }
