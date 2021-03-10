@@ -55,27 +55,29 @@ class TransitionComponent : KComponent() {
     return Column(
         style =
             Style.onClick {
-              Animated.parallel(
-                      Animated.spring(
-                          xProgress,
-                          to = if (isXTransitionComplete.value) 100f else 50f,
-                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
-                      Animated.spring(
-                          x1Progress,
-                          to = if (isXTransitionComplete.value) 100f else 50f,
-                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
-                      Animated.spring(
-                          x2Progress,
-                          to = if (isXTransitionComplete.value) 100f else 50f,
-                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
-                      Animated.timing(
-                          target = colorProgress,
-                          to = if (isColorTransitionComplete.value) 0f else 1f,
-                          duration = 1000,
-                          onUpdate = { Log.d(TAG, "onUpdate: $it") },
-                          onFinish = {
-                            isColorTransitionComplete.update(!isColorTransitionComplete.value)
-                          }))
+              Animated.delay(
+                      2000,
+                      Animated.parallel(
+                          Animated.spring(
+                              xProgress,
+                              to = if (isXTransitionComplete.value) 100f else 50f,
+                              SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
+                          Animated.spring(
+                              x1Progress,
+                              to = if (isXTransitionComplete.value) 100f else 50f,
+                              SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
+                          Animated.spring(
+                              x2Progress,
+                              to = if (isXTransitionComplete.value) 100f else 50f,
+                              SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
+                          Animated.timing(
+                              target = colorProgress,
+                              to = if (isColorTransitionComplete.value) 0f else 1f,
+                              duration = 1000,
+                              onUpdate = { Log.d(TAG, "onUpdate: $it") },
+                              onFinish = {
+                                isColorTransitionComplete.update(!isColorTransitionComplete.value)
+                              })))
                   .start()
             },
         children =

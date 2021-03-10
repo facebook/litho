@@ -98,6 +98,16 @@ object Animated {
   /** Returns [ParallelAnimation] ready for running collection of animations in parallel */
   fun parallel(vararg animations: AnimatedAnimation): AnimatedAnimation =
       ParallelAnimation(animations)
+
+  /**
+   * Returns [AnimatedAnimation] ready for running single or a collection of animations after given
+   * delay in milliseconds
+   */
+  fun delay(startDelay: Long, animation: AnimatedAnimation): AnimatedAnimation {
+    val delayAnimator = ValueAnimator.ofFloat(0f, 1f)
+    delayAnimator.startDelay = startDelay
+    return sequence(AnimatorAnimation(delayAnimator), animation)
+  }
 }
 
 /**
