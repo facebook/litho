@@ -31,6 +31,7 @@ import com.facebook.litho.animated.translationX
 import com.facebook.litho.animated.useBinding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.height
+import com.facebook.litho.flexbox.margin
 import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
 
@@ -41,14 +42,42 @@ class TransitionComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
     val isColorTransitionComplete = useState { false }
     val isXTransitionComplete = useState { false }
-    val xProgress = useBinding(300f)
+    val xProgress = useBinding(500f)
+    val x1Progress = useBinding(500f)
+    val x2Progress = useBinding(500f)
     val colorProgress = useBinding(0f)
+    val rotation = useBinding(0f)
     val bgColor =
         useBinding(colorProgress) { progress ->
           Color.HSVToColor(floatArrayOf(100f * progress, 100f, 255f))
         }
 
     return Column(
+        style =
+            Style.onClick {
+              Animated.sequence(
+                      Animated.spring(
+                          xProgress,
+                          to = if (isXTransitionComplete.value) 100f else 50f,
+                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
+                      Animated.spring(
+                          x1Progress,
+                          to = if (isXTransitionComplete.value) 100f else 50f,
+                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
+                      Animated.spring(
+                          x2Progress,
+                          to = if (isXTransitionComplete.value) 100f else 50f,
+                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
+                      Animated.timing(
+                          target = colorProgress,
+                          to = if (isColorTransitionComplete.value) 0f else 1f,
+                          duration = 1000,
+                          onUpdate = { Log.d(TAG, "onUpdate: $it") },
+                          onFinish = {
+                            isColorTransitionComplete.update(!isColorTransitionComplete.value)
+                          }))
+                  .start()
+            },
         children =
             listOf(
                 Row(
@@ -67,20 +96,25 @@ class TransitionComponent : KComponent() {
                         }),
                 Row(
                     style =
-                        Style.width(100.dp)
-                            .height(100.dp)
+                        Style.width(20.dp)
+                            .height(20.dp)
+                            .margin(all = 20.dp)
                             .translationX(xProgress)
-                            .backgroundColor(Color.RED)
-                            .onClick {
-                              Animated.spring(
-                                      xProgress,
-                                      to = if (isXTransitionComplete.value) 100f else -100f,
-                                      SpringConfig(stiffness = 50f, dampingRatio = 0.2f),
-                                      onFinish = {
-                                        isXTransitionComplete.update(!isXTransitionComplete.value)
-                                      })
-                                  .start()
-                            }),
+                            .backgroundColor(bgColor)),
+                Row(
+                    style =
+                        Style.width(20.dp)
+                            .height(20.dp)
+                            .margin(all = 20.dp)
+                            .translationX(x1Progress)
+                            .backgroundColor(bgColor)),
+                Row(
+                    style =
+                        Style.width(20.dp)
+                            .height(20.dp)
+                            .margin(all = 20.dp)
+                            .translationX(x2Progress)
+                            .backgroundColor(bgColor)),
             ))
   }
 }

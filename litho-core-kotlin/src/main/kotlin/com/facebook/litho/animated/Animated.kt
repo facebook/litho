@@ -25,11 +25,12 @@ import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.facebook.litho.DynamicValue
+import main.kotlin.com.facebook.litho.animated.SequenceAnimation
 
 object Animated {
   /**
-   * Returns an [Animator] ready for running timing animation that calculate animated values and set
-   * them on target param.
+   * Returns an [AnimatedAnimation] ready for running timing animation that calculate animated
+   * values and set them on target param.
    *
    * By default it uses [AccelerateDecelerateInterpolator] and duration of 300 milliseconds.
    */
@@ -62,7 +63,7 @@ object Animated {
   }
 
   /**
-   * Returns an [SpringAnimation] ready for running spring animation based on the [SpringConfig]
+   * Returns an [AnimatedAnimation] ready for running spring animation based on the [SpringConfig]
    * params
    *
    * By default it uses medium stiffness and damping.
@@ -85,12 +86,32 @@ object Animated {
 
     return AnimatedSpringAnimation(springAnimation)
   }
+
+  /**
+   * Returns [SequenceAnimation] ready for running collection of animations in sequence one after
+   * another. The order of arguments is the order of the sequence
+   */
+  fun sequence(vararg animations: AnimatedAnimation): AnimatedAnimation =
+      SequenceAnimation(animations)
 }
 
-/** Animator controller */
+/**
+ * Interface representing single animation (like [Animated.timing] or [Animated.spring]) or a
+ * collection of them
+ */
 interface AnimatedAnimation {
   fun start()
   fun stop()
+  fun addListener(listener: AnimationListener)
+}
+
+/**
+ * Listener that allows to listen for different state updates on animation or the whole collection
+ * of them
+ */
+interface AnimationListener {
+  /** triggers when animation or set of animations is completed */
+  fun onFinish()
 }
 
 private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : AnimatedAnimation {
@@ -100,14 +121,27 @@ private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : An
   override fun stop() {
     springAnimation.cancel()
   }
+
+  override fun addListener(animationListener: AnimationListener) {
+    springAnimation.addEndListener { _, _, _, _ -> animationListener.onFinish() }
+  }
 }
 
-private class AnimatorAnimation(val animator: Animator) : AnimatedAnimation {
+private class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimation {
   override fun start() {
     animator.start()
   }
   override fun stop() {
     animator.cancel()
+  }
+
+  override fun addListener(animatorListener: AnimationListener) {
+    animator.addListener(
+        object : AnimatorListenerAdapter() {
+          override fun onAnimationEnd(animation: Animator) {
+            animatorListener.onFinish()
+          }
+        })
   }
 }
 
