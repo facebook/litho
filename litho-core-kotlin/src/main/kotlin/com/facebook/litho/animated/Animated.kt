@@ -21,6 +21,9 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Interpolator
+import androidx.dynamicanimation.animation.FloatValueHolder
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.facebook.litho.DynamicValue
 
 object Animated {
@@ -37,7 +40,7 @@ object Animated {
       easing: Interpolator = Easing.accelerateDecelerate(),
       onUpdate: ((Float) -> Unit)? = null,
       onFinish: (() -> Unit)? = null
-  ): Animator {
+  ): AnimatedAnimation {
 
     val animator = ValueAnimator.ofFloat(target.get(), to)
     animator.duration = duration
@@ -55,6 +58,77 @@ object Animated {
             }
           })
     }
-    return animator
+    return AnimatorAnimation(animator)
+  }
+
+  /**
+   * Returns an [SpringAnimation] ready for running spring animation based on the [SpringConfig]
+   * params
+   *
+   * By default it uses medium stiffness and damping.
+   */
+  fun spring(
+      target: DynamicValue<Float>,
+      to: Float,
+      springConfig: SpringConfig = SpringConfig(),
+      onUpdate: ((Float) -> Unit)? = null,
+      onFinish: (() -> Unit)? = null
+  ): AnimatedAnimation {
+    val springAnimation = SpringAnimation(DynamicFloatValueHolder(target))
+    val springForce = SpringForce()
+    springForce.finalPosition = to
+    springForce.stiffness = springConfig.stiffness
+    springForce.dampingRatio = springConfig.dampingRatio
+    springAnimation.spring = springForce
+    onUpdate?.let { springAnimation.addUpdateListener { _, value, _ -> onUpdate(value) } }
+    onFinish?.let { springAnimation.addEndListener { _, _, _, _ -> onFinish() } }
+
+    return AnimatedSpringAnimation(springAnimation)
+  }
+}
+
+/** Animator controller */
+interface AnimatedAnimation {
+  fun start()
+  fun stop()
+}
+
+private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : AnimatedAnimation {
+  override fun start() {
+    springAnimation.start()
+  }
+  override fun stop() {
+    springAnimation.cancel()
+  }
+}
+
+private class AnimatorAnimation(val animator: Animator) : AnimatedAnimation {
+  override fun start() {
+    animator.start()
+  }
+  override fun stop() {
+    animator.cancel()
+  }
+}
+
+/**
+ * The stiffer the spring is, the harder it is to stretch it and the faster it undergoes dampening.
+ * Spring damping ratio describes behavior after the disturbance, over-damp values (more than 1)
+ * make the spring quickly return to the rest position. Under-damp values (less than 1) cause
+ * overshooting. Damping equal to 0 will cause the spring to oscillate forever. (The lower the
+ * damping ratio, the higher the bounciness)
+ */
+class SpringConfig(
+    var stiffness: Float = SpringForce.STIFFNESS_LOW,
+    var dampingRatio: Float = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+)
+
+/** Bridge between Android [FloatValueHolder] and Litho DynamicValue<Float> */
+private class DynamicFloatValueHolder(val dynamicValue: DynamicValue<Float>) : FloatValueHolder() {
+  override fun getValue(): Float {
+    return dynamicValue.get()
+  }
+  override fun setValue(value: Float) {
+    dynamicValue.set(value)
   }
 }

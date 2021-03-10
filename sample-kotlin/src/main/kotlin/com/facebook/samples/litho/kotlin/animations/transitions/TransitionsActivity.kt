@@ -25,6 +25,6 @@ class TransitionsActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    setContentView(LithoView.create(this, ColorTransition()))
+    setContentView(LithoView.create(this, TransitionComponent()))
   }
 }
