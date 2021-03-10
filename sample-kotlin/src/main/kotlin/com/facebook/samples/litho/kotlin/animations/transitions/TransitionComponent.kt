@@ -55,7 +55,7 @@ class TransitionComponent : KComponent() {
     return Column(
         style =
             Style.onClick {
-              Animated.sequence(
+              Animated.parallel(
                       Animated.spring(
                           xProgress,
                           to = if (isXTransitionComplete.value) 100f else 50f,

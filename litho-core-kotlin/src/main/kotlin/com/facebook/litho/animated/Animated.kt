@@ -25,6 +25,7 @@ import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.facebook.litho.DynamicValue
+import main.kotlin.com.facebook.litho.animated.ParallelAnimation
 import main.kotlin.com.facebook.litho.animated.SequenceAnimation
 
 object Animated {
@@ -93,6 +94,10 @@ object Animated {
    */
   fun sequence(vararg animations: AnimatedAnimation): AnimatedAnimation =
       SequenceAnimation(animations)
+
+  /** Returns [ParallelAnimation] ready for running collection of animations in parallel */
+  fun parallel(vararg animations: AnimatedAnimation): AnimatedAnimation =
+      ParallelAnimation(animations)
 }
 
 /**
