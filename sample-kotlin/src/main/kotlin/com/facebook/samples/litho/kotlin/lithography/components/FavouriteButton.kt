@@ -28,6 +28,8 @@ import com.facebook.litho.drawableRes
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
+import com.facebook.litho.view.background
+import com.facebook.litho.view.onClick
 
 class FavouriteButton : KComponent() {
   override fun ComponentScope.render(): Component {

@@ -28,6 +28,7 @@ import com.facebook.litho.flexbox.padding
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
 import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 

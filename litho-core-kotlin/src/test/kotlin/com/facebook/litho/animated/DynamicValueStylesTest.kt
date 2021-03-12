@@ -28,6 +28,7 @@ import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
+import com.facebook.litho.view.background
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

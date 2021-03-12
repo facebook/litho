@@ -34,6 +34,7 @@ import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.margin
 import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
 
 private const val TAG = "TransitionComponent"
 

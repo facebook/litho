@@ -26,6 +26,8 @@ import com.facebook.litho.testing.child
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.view.onClick
+import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger

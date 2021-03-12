@@ -19,6 +19,7 @@ package com.facebook.litho
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.exactly
+import com.facebook.litho.view.viewTag
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test

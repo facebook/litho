@@ -33,6 +33,7 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sp
+import com.facebook.litho.view.background
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist

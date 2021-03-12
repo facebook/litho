@@ -14,42 +14,30 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho.flexbox
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.util.SparseArray
-import android.view.ViewOutlineProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.flexbox.flex
-import com.facebook.litho.flexbox.height
-import com.facebook.litho.flexbox.margin
-import com.facebook.litho.flexbox.maxHeight
-import com.facebook.litho.flexbox.maxWidth
-import com.facebook.litho.flexbox.minHeight
-import com.facebook.litho.flexbox.minWidth
-import com.facebook.litho.flexbox.padding
-import com.facebook.litho.flexbox.position
-import com.facebook.litho.flexbox.positionType
-import com.facebook.litho.flexbox.width
+import com.facebook.litho.ComponentHost
+import com.facebook.litho.LithoView
+import com.facebook.litho.Row
+import com.facebook.litho.Style
+import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
+import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaPositionType
-import java.util.concurrent.atomic.AtomicBoolean
-import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Unit tests for common styles defined in [Style]. */
 @RunWith(AndroidJUnit4::class)
-class CommonStylesTest {
+class FlexboxStylesTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
@@ -380,211 +368,5 @@ class CommonStylesTest {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
             })
-  }
-
-  @Test
-  fun background_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(style = Style.width(100.px).height(100.px).background(ColorDrawable(Color.WHITE)))
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
-  }
-
-  @Test
-  fun backgroundColor_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).backgroundColor(Color.WHITE)) }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
-  }
-
-  @Test
-  fun foreground_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(style = Style.width(100.px).height(100.px).foreground(ColorDrawable(Color.WHITE)))
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
-  }
-
-  @Test
-  fun onClick_whenSet_isDispatchedOnClick() {
-    val wasClicked = AtomicBoolean(false)
-
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(
-              style = Style.width(200.px).height(200.px),
-              children =
-                  listOf(
-                      Row(
-                          style =
-                              Style.width(100.px).height(100.px).viewTag("click_me").onClick {
-                                wasClicked.set(true)
-                              }),
-                  ))
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertThat(wasClicked.get()).isFalse()
-    lithoViewRule.findViewWithTag("click_me").performClick()
-    assertThat(wasClicked.get()).isTrue()
-  }
-
-  @Test
-  fun onLongClick_whenSet_isDispatchedOnLongClick() {
-    val wasLongClicked = AtomicBoolean(false)
-
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(
-              style =
-                  Style.width(100.px).height(100.px).viewTag("click_me").onLongClick {
-                    wasLongClicked.set(true)
-                    true
-                  })
-        }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertThat(wasLongClicked.get()).isFalse()
-    lithoViewRule.findViewWithTag("click_me").performLongClick()
-    assertThat(wasLongClicked.get()).isTrue()
-  }
-
-  @Test
-  fun wrapInView_whenSet_isRespected() {
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot {
-          Row(
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(style = Style.width(1.px).height(1.px).wrapInView()),
-                  ))
-        }
-        .assertMatches(
-            match<LithoView> {
-              bounds(0, 0, 100, 100)
-              child<ComponentHost>()
-            })
-  }
-
-  @Test
-  fun viewTag_whenSet_isAddedToView() {
-    assertThat(
-            lithoViewRule
-                .setSizeSpecs(unspecified(), unspecified())
-                .setRoot {
-                  Row(
-                      style = Style.width(200.px).height(200.px),
-                      children =
-                          listOf(
-                              Row(style = Style.width(100.px).height(100.px).viewTag("view_tag")),
-                          ))
-                }
-                .measure()
-                .layout()
-                .attachToWindow()
-                .findViewWithTagOrNull("view_tag"))
-        .isNotNull()
-  }
-
-  @Test
-  fun viewTags_whenSet_areAddedToView() {
-    val viewTags =
-        SparseArray<String>().apply {
-          append(123, "first tag")
-          append(456, "second tag")
-        }
-
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).viewTags(viewTags)) }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertThat(lithoViewRule.lithoView.getTag(123)).isEqualTo("first tag")
-    assertThat(lithoViewRule.lithoView.getTag(456)).isEqualTo("second tag")
-  }
-
-  @Test
-  fun alpha_whenSet_isRespected() {
-    val alpha = 0.5f
-
-    lithoViewRule
-        .setSizeSpecs(unspecified(), unspecified())
-        .setRoot { Row(style = Style.width(100.px).height(100.px).alpha(alpha)) }
-        .measure()
-        .layout()
-        .attachToWindow()
-
-    assertThat(lithoViewRule.lithoView.alpha).isEqualTo(alpha)
-  }
-
-  /**
-   * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so
-   * already loaded in another classloader exception' caused by multiple ClassLoaders trying to load
-   * Yoga when using @Config to specify a different target sdk. See:
-   * https://www.internalfb.com/intern/staticdocs/litho/docs/testing/unit-testing/
-   */
-  @Test
-  fun elevation_whenSet_isRespected() {
-    val elevation = 0.5f
-
-    class ElevationComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return Row(style = Style.elevation(elevation))
-      }
-    }
-
-    val node = Layout.create(lithoViewRule.context, ElevationComponent())
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.shadowElevation).isEqualTo(elevation)
-  }
-
-  /** See comment on [elevation_whenSet_isRespected] above. */
-  @Test
-  fun outlineProvider_whenSet_isRespected() {
-    val outlineProvider = ViewOutlineProvider.BOUNDS
-    class OutlineProviderComponent : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return Row(style = Style.outlineProvider(outlineProvider))
-      }
-    }
-
-    val node = Layout.create(lithoViewRule.context, OutlineProviderComponent())
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
-  }
-
-  private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
-    assertThat(componentHost.drawables).hasSize(1).first().isInstanceOf(MatrixDrawable::class.java)
-    assertThat((componentHost.drawables[0] as MatrixDrawable<ColorDrawable>).mountedDrawable)
-        .isInstanceOf(ColorDrawable::class.java)
-        .extracting("color")
-        .containsExactly(color)
   }
 }

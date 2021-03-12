@@ -16,30 +16,6 @@
 
 package com.facebook.litho
 
-import android.graphics.drawable.Drawable
-import android.util.SparseArray
-import android.view.ViewOutlineProvider
-import androidx.annotation.ColorInt
-import com.facebook.litho.drawable.ComparableColorDrawable
-
-/** Enums for [ObjectStyleItem]. */
-private enum class ObjectField {
-  BACKGROUND,
-  FOREGROUND,
-  ON_CLICK,
-  ON_LONG_CLICK,
-  WRAP_IN_VIEW,
-  VIEW_TAG,
-  VIEW_TAGS,
-  OUTLINE_PROVIDER,
-}
-
-/** Enums for [FloatStyleItem]. */
-private enum class FloatField {
-  ALPHA,
-  ELEVATION,
-}
-
 /**
  * Part of a [Style] that can apply an attribute to an underlying Component, e.g. width or click
  * handling.
@@ -48,37 +24,6 @@ interface StyleItem {
 
   /** Sets this style item value on the given [Component]. */
   fun applyToComponent(resourceResolver: ResourceResolver, component: Component)
-}
-
-/** Common style item for all object styles. See note on [DimenField] about this pattern. */
-private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
-    val commonProps = component.getOrCreateCommonProps()
-    when (field) {
-      ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
-      ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
-      ObjectField.ON_CLICK ->
-          commonProps.clickHandler(eventHandler(value as ((ClickEvent) -> Unit)))
-      ObjectField.ON_LONG_CLICK ->
-          commonProps.longClickHandler(
-              eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
-      ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
-      ObjectField.VIEW_TAG -> commonProps.viewTag(value)
-      ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
-      ObjectField.OUTLINE_PROVIDER -> commonProps.outlineProvider(value as ViewOutlineProvider?)
-    }.exhaustive
-  }
-}
-
-/** Common style item for all float styles. See note on [FloatField] about this pattern. */
-private class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
-    val commonProps = component.getOrCreateCommonProps()
-    when (field) {
-      FloatField.ALPHA -> commonProps.alpha(value)
-      FloatField.ELEVATION -> commonProps.shadowElevationPx(value)
-    }.exhaustive
-  }
 }
 
 /** exposed to avoid package-private error on [Component] */
@@ -124,33 +69,6 @@ open class Style(
     }
     return Style(if (this == Style) null else this, nextItem)
   }
-
-  fun background(background: Drawable?) = this + ObjectStyleItem(ObjectField.BACKGROUND, background)
-
-  fun backgroundColor(@ColorInt backgroundColor: Int) =
-      this +
-          ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
-
-  fun foreground(foreground: Drawable?) = this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
-
-  fun onClick(onClick: (ClickEvent) -> Unit) = this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
-
-  fun onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
-      this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
-
-  fun wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
-
-  fun viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
-
-  fun viewTags(viewTags: SparseArray<out Any>) =
-      this + ObjectStyleItem(ObjectField.VIEW_TAGS, viewTags)
-
-  fun alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
-
-  fun elevation(elevation: Float) = this + FloatStyleItem(FloatField.ELEVATION, elevation)
-
-  fun outlineProvider(outlineProvider: ViewOutlineProvider?) =
-      this + ObjectStyleItem(ObjectField.OUTLINE_PROVIDER, outlineProvider)
 
   open fun forEach(lambda: (StyleItem) -> Unit) {
     previousStyle?.forEach(lambda)
