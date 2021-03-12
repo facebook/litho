@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.LifecycleStep.ON_BIND;
+import static com.facebook.litho.LifecycleStep.ON_MOUNT;
+import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -59,15 +61,7 @@ public class InterStagePropsTest {
     final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
         new SimpleStateUpdateEmulatorSpec.Caller();
 
-    final Component root =
-        Column.create(mLithoViewRule.getContext())
-            .child(
-                MountSpecInterStagePropsTester.create(mLithoViewRule.getContext())
-                    .lifecycleTracker(lifecycleTracker))
-            .child(
-                SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
-            .build();
-
+    final Component root = createComponent(lifecycleTracker, stateUpdater);
     mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
 
     lifecycleTracker.reset();
@@ -77,5 +71,47 @@ public class InterStagePropsTest {
     assertThat(lifecycleTracker.getSteps())
         .describedAs("On Bind should be called")
         .contains(ON_BIND);
+  }
+
+  @Test
+  public void interStageProp_FromBind_usedIn_OnUnbind() {
+    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root = createComponent(lifecycleTracker, stateUpdater);
+    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+
+    lifecycleTracker.reset();
+
+    mLithoViewRule.detachFromWindow();
+
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("On Unbind should be called")
+        .contains(ON_UNBIND);
+  }
+
+  @Test
+  public void interStageProp_FromMeasure_usedIn_OnMount() {
+    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root = createComponent(lifecycleTracker, stateUpdater);
+    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("On Mount should be called")
+        .contains(ON_MOUNT);
+  }
+
+  private Component createComponent(
+      LifecycleTracker lifecycleTracker, SimpleStateUpdateEmulatorSpec.Caller stateUpdater) {
+    return Column.create(mLithoViewRule.getContext())
+        .child(
+            MountSpecInterStagePropsTester.create(mLithoViewRule.getContext())
+                .lifecycleTracker(lifecycleTracker))
+        .child(SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
+        .build();
   }
 }

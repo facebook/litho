@@ -25,13 +25,17 @@ import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleTracker;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
+import com.facebook.litho.annotations.FromBind;
+import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
+import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
+import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.Prop;
 
 @MountSpec
@@ -59,10 +63,24 @@ public class MountSpecInterStagePropsTesterSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop LifecycleTracker lifecycleTracker) {
+      @Prop LifecycleTracker lifecycleTracker,
+      final Output<Boolean> addOnMountLifecycleStep) {
     size.width = 600;
     size.height = 800;
     lifecycleTracker.addStep(LifecycleStep.ON_MEASURE);
+    addOnMountLifecycleStep.set(true);
+  }
+
+  @UiThread
+  @OnMount
+  static void onMount(
+      ComponentContext context,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromMeasure Boolean addOnMountLifecycleStep) {
+    if (addOnMountLifecycleStep) {
+      lifecycleTracker.addStep(LifecycleStep.ON_MOUNT);
+    }
   }
 
   @UiThread
@@ -77,9 +95,23 @@ public class MountSpecInterStagePropsTesterSpec {
       ComponentContext c,
       View view,
       @Prop LifecycleTracker lifecycleTracker,
-      @FromPrepare Boolean addOnBindLifecycleStep) {
+      @FromPrepare Boolean addOnBindLifecycleStep,
+      final Output<Boolean> addOnUnbindLifecycleStep) {
     if (addOnBindLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_BIND);
+    }
+    addOnUnbindLifecycleStep.set(true);
+  }
+
+  @UiThread
+  @OnUnbind
+  static void onUnbind(
+      ComponentContext c,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromBind Boolean addOnUnbindLifecycleStep) {
+    if (addOnUnbindLifecycleStep) {
+      lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
     }
   }
 }
