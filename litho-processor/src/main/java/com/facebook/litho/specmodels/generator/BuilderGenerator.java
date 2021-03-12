@@ -1281,6 +1281,13 @@ public class BuilderGenerator {
 
     return MethodSpec.methodBuilder(eventTriggerName)
         .addModifiers(Modifier.PUBLIC)
+        .addJavadoc(
+            "@deprecated Do not use this method to set an EventTrigger. Instead, set a Handle on\n"
+                + "this Component with .handle() and dispatch the trigger using the variant of\n"
+                + "$L.$L that takes a Handle param.\n",
+            specModel.getComponentName(),
+            eventTriggerName)
+        .addAnnotation(java.lang.Deprecated.class)
         .returns(getBuilderType(specModel))
         .addParameter(ClassNames.EVENT_TRIGGER, eventTriggerName)
         .addStatement("this.$L.$L = $L", implMemberName, eventTriggerName, eventTriggerName)

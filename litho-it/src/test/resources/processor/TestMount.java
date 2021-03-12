@@ -824,6 +824,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
       return this;
     }
 
+    /**
+     * @deprecated Do not use this method to set an EventTrigger. Instead, set a Handle on this
+     *     Component with .handle() and dispatch the trigger using the variant of
+     *     TestMount.onClickEventTriggerTrigger that takes a Handle param.
+     */
+    @Deprecated
     public Builder<S> onClickEventTriggerTrigger(EventTrigger onClickEventTriggerTrigger) {
       this.mTestMount.onClickEventTriggerTrigger = onClickEventTriggerTrigger;
       return this;
