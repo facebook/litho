@@ -351,27 +351,26 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFullImpressionEvent() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEvent =
-        new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .fullImpressionHandler(fullImpressionVisibleEvent)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEvent);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Full Impression visible event should be dispatched")
+        .contains(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT);
   }
 
   @Test

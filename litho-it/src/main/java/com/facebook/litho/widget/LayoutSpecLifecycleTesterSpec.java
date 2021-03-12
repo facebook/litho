@@ -22,6 +22,7 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.FocusedVisibleEvent;
+import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
@@ -77,6 +78,7 @@ public class LayoutSpecLifecycleTesterSpec {
         .focusedHandler(LayoutSpecLifecycleTester.onFocusedVisible(c))
         .invisibleHandler(LayoutSpecLifecycleTester.onInvisible(c))
         .unfocusedHandler(LayoutSpecLifecycleTester.onUnfocusedVisibleEvent(c))
+        .fullImpressionHandler(LayoutSpecLifecycleTester.onFullImpressionVisibleEvent(c))
         .build();
   }
 
@@ -153,6 +155,12 @@ public class LayoutSpecLifecycleTesterSpec {
   static void onUnfocusedVisibleEvent(
       final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE));
+  }
+
+  @OnEvent(FullImpressionVisibleEvent.class)
+  static void onFullImpressionVisibleEvent(
+      final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT));
   }
 
   public static class Caller {
