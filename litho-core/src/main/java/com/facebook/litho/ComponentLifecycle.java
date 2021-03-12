@@ -84,8 +84,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   static YogaMeasureFunction getYogaMeasureFunction(
-      @Nullable LayoutStateContext layoutStateContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+      final Component component, @Nullable LayoutStateContext layoutStateContext) {
+    if (component.isStateless()) {
       return layoutStateContext.getLithoYogaMeasureFunction();
     }
 

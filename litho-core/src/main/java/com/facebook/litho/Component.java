@@ -381,7 +381,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
-    if (layout != null && ComponentsConfiguration.useStatelessComponent) {
+    if (layout != null && mUseStatelessComponent) {
       assertSameBaseContext(context, layout.getContext());
     }
     mLayoutCreatedInWillRender = null;

@@ -19,7 +19,6 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +33,8 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
-  private final @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
+  private @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
+  private @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
   private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction;
 
   private static @Nullable LayoutState sTestLayoutState;
@@ -51,6 +50,14 @@ public class LayoutStateContext {
   }
 
   void copyScopedInfoFrom(LayoutStateContext layoutStateContext) {
+    if (mGlobalKeyToScopedContext == null) {
+      mGlobalKeyToScopedContext = new HashMap<>();
+    }
+
+    if (mGlobalKeyToScopedInfo == null) {
+      mGlobalKeyToScopedInfo = new HashMap<>();
+    }
+
     if (mGlobalKeyToScopedContext != null && layoutStateContext.mGlobalKeyToScopedContext != null) {
       mGlobalKeyToScopedContext.putAll(layoutStateContext.mGlobalKeyToScopedContext);
     }
@@ -73,17 +80,6 @@ public class LayoutStateContext {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
-    if (ComponentsConfiguration.useStatelessComponent) {
-      mGlobalKeyToScopedContext = new HashMap<>();
-      mGlobalKeyToScopedInfo = new HashMap<>();
-      mLithoYogaMeasureFunction =
-          new LithoYogaMeasureFunction(
-              this, layoutState == null ? null : layoutState.getPrevLayoutStateContext());
-    } else {
-      mGlobalKeyToScopedContext = null;
-      mGlobalKeyToScopedInfo = null;
-      mLithoYogaMeasureFunction = null;
-    }
   }
 
   void addScopedComponentInfo(
@@ -91,8 +87,15 @@ public class LayoutStateContext {
       Component component,
       ComponentContext scopedContext,
       ComponentContext parentContext) {
+    if (mGlobalKeyToScopedContext == null) {
+      mGlobalKeyToScopedContext = new HashMap<>();
+    }
+
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
 
+    if (mGlobalKeyToScopedInfo == null) {
+      mGlobalKeyToScopedInfo = new HashMap<>();
+    }
     InterStagePropsContainer newInterStagePropsContainer =
         component.createInterStagePropsContainer();
 
@@ -112,12 +115,12 @@ public class LayoutStateContext {
 
   @Nullable
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
-    return mGlobalKeyToScopedInfo.get(globalKey);
+    return mGlobalKeyToScopedInfo == null ? null : mGlobalKeyToScopedInfo.get(globalKey);
   }
 
   @Nullable
   ComponentContext getScopedContext(String globalKey) {
-    return mGlobalKeyToScopedInfo == null ? null : mGlobalKeyToScopedContext.get(globalKey);
+    return mGlobalKeyToScopedContext == null ? null : mGlobalKeyToScopedContext.get(globalKey);
   }
 
   void releaseReference() {
@@ -139,6 +142,12 @@ public class LayoutStateContext {
 
   @Nullable
   LithoYogaMeasureFunction getLithoYogaMeasureFunction() {
+    if (mLithoYogaMeasureFunction == null) {
+      mLithoYogaMeasureFunction =
+          new LithoYogaMeasureFunction(
+              this, mLayoutStateRef == null ? null : mLayoutStateRef.getPrevLayoutStateContext());
+    }
+
     return mLithoYogaMeasureFunction;
   }
 

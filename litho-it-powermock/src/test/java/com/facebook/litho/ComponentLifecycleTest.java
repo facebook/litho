@@ -555,7 +555,7 @@ public class ComponentLifecycleTest {
     when(mNode.getTailComponent()).thenReturn(component);
     when(mNode.getTailComponentKey()).thenReturn(KEY);
 
-    return ComponentLifecycle.getYogaMeasureFunction(mLayoutStateContext);
+    return ComponentLifecycle.getYogaMeasureFunction(component, mLayoutStateContext);
   }
 
   private static Component createSpyComponent(

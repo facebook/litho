@@ -137,7 +137,6 @@ class MountState implements MountDelegateTarget {
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
-  private final boolean mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
@@ -1209,7 +1208,7 @@ class MountState implements MountDelegateTarget {
       mMountStats.mountedCount++;
 
       final ComponentContext scopedContext =
-          mUseStatelessComponent
+          component.isStateless()
               ? layoutOutput.getScopedContext()
               : component.getScopedContext(null, null);
 
@@ -2720,7 +2719,7 @@ class MountState implements MountDelegateTarget {
    */
   private ComponentContext getContextForComponent(Component component, LayoutOutput layoutOutput) {
     ComponentContext c;
-    if (mUseStatelessComponent) {
+    if (component.isStateless()) {
       c = layoutOutput.getScopedContext();
     } else {
       c = component.getScopedContext(null, null);

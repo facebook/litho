@@ -236,7 +236,7 @@ class Layout {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || (isNestedTree(c, component) && !resolveNestedTree)) {
         node.setMeasureFunction(
-            ComponentLifecycle.getYogaMeasureFunction(c.getLayoutStateContext()));
+            ComponentLifecycle.getYogaMeasureFunction(component, c.getLayoutStateContext()));
       }
     }
 

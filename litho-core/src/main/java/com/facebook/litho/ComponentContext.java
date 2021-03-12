@@ -284,13 +284,13 @@ public class ComponentContext {
   }
 
   public String getGlobalKey() {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return mGlobalKey;
-    }
-
     if (mComponentScope == null) {
       throw new RuntimeException(
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
+    }
+
+    if (mComponentScope.isStateless()) {
+      return mGlobalKey;
     }
 
     return Component.getGlobalKey(this, mComponentScope);

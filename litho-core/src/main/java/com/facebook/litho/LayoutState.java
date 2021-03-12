@@ -243,10 +243,6 @@ public class LayoutState
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
 
-    if (ComponentsConfiguration.useStatelessComponent) {
-      mComponentKeys = new ArrayList<>();
-    }
-
     if (context.getComponentTree() != null) {
       mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
     } else {
@@ -1050,8 +1046,10 @@ public class LayoutState
         if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
-            if (layoutState.mComponentKeys != null) {
-
+            if (delegate.isStateless()) {
+              if (layoutState.mComponentKeys == null) {
+                layoutState.mComponentKeys = new ArrayList<>();
+              }
               layoutState.mComponentKeys.add(delegateKey);
             }
           }
@@ -1490,7 +1488,9 @@ public class LayoutState
       Component.markLayoutStarted(component, layoutStateContext);
 
       if (isReconcilable && currentLayoutState != null) {
-        layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
+        if (component.isStateless()) {
+          layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
+        }
       }
 
       layoutState.mLayoutStateContext = layoutStateContext;
