@@ -236,10 +236,6 @@ public abstract class Component extends ComponentLifecycle
     return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
   }
 
-  public boolean hasBackgroundSet() {
-    return mCommonProps != null && mCommonProps.getBackground() != null;
-  }
-
   public boolean hasClickHandlerSet() {
     return mCommonProps != null
         && mCommonProps.getNullableNodeInfo() != null
@@ -1506,8 +1502,9 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    @Deprecated
     public boolean hasBackgroundSet() {
-      return mComponent.hasBackgroundSet();
+      return mComponent.mCommonProps != null && mComponent.mCommonProps.getBackground() != null;
     }
 
     public boolean hasClickHandlerSet() {
