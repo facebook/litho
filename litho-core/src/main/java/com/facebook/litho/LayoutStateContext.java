@@ -92,10 +92,21 @@ public class LayoutStateContext {
       ComponentContext scopedContext,
       ComponentContext parentContext) {
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
+
+    InterStagePropsContainer newInterStagePropsContainer =
+        component.createInterStagePropsContainer();
+
+    if (mGlobalKeyToScopedInfo.containsKey(globalKey)) {
+      component.copyInterStageImpl(
+          newInterStagePropsContainer,
+          mGlobalKeyToScopedInfo.get(globalKey).getInterStagePropsContainer());
+    }
+
     mGlobalKeyToScopedInfo.put(
         globalKey,
         new ScopedComponentInfo(
             component,
+            newInterStagePropsContainer,
             ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext)));
   }
 
