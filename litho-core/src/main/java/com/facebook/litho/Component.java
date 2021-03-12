@@ -497,6 +497,7 @@ public abstract class Component extends ComponentLifecycle
     return mLayoutCreatedInWillRender;
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   @Nullable
   String getOwnerGlobalKey() {
     return mOwnerGlobalKey;
