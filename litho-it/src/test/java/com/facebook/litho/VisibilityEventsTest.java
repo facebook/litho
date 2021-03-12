@@ -425,29 +425,30 @@ public class VisibilityEventsTest {
 
   @Test
   public void testInvisibleEvent() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .invisibleHandler(invisibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
   }
 
   @Test
