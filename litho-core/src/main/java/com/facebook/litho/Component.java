@@ -927,7 +927,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     if (component.mLayoutCreatedInWillRender != null) {
-      return willRender(component.mLayoutCreatedInWillRender);
+      return willRender(component, component.mLayoutCreatedInWillRender);
     }
 
     // Missing StateHandler is only expected in tests
@@ -936,7 +936,7 @@ public abstract class Component extends ComponentLifecycle
             ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
             : c;
     component.mLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
-    return willRender(component.mLayoutCreatedInWillRender);
+    return willRender(component, component.mLayoutCreatedInWillRender);
   }
 
   static boolean isHostSpec(@Nullable Component component) {
@@ -1047,7 +1047,7 @@ public abstract class Component extends ComponentLifecycle
     return current;
   }
 
-  private static boolean willRender(InternalNode node) {
+  private static boolean willRender(Component component, InternalNode node) {
     if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
       return false;
     }
@@ -1056,6 +1056,7 @@ public abstract class Component extends ComponentLifecycle
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
+      component.mLayoutCreatedInWillRender = null;  // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
