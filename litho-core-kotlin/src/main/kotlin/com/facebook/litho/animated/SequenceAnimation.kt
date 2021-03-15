@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package main.kotlin.com.facebook.litho.animated
+package com.facebook.litho.animated
 
 import com.facebook.infer.annotation.ThreadConfined
-import com.facebook.litho.animated.AnimatedAnimation
-import com.facebook.litho.animated.AnimationListener
 import java.util.ArrayList
 
 /**
  * Creates collection of animators that will run one after another in sequence when
  * [SequenceAnimation.start] is triggered
  */
-class SequenceAnimation(val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
-  val sequenceAnimatorListeners = ArrayList<AnimationListener>()
-  val listener =
+class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
+  private val sequenceAnimatorListeners = ArrayList<AnimationListener>()
+  private val listener =
       object : AnimationListener {
         override fun onFinish() {
           animatorFinished()
         }
       }
 
-  var currentIndex = 0
-  var isActive = false
+  private var currentIndex = 0
+  private var isActive = false
 
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {

@@ -25,8 +25,6 @@ import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.facebook.litho.DynamicValue
-import main.kotlin.com.facebook.litho.animated.ParallelAnimation
-import main.kotlin.com.facebook.litho.animated.SequenceAnimation
 
 object Animated {
   /**
@@ -100,6 +98,18 @@ object Animated {
       ParallelAnimation(animations)
 
   /**
+   * Returns [AnimatedAnimation] ready for running collection of animations in stagger with given
+   * value in milliseconds
+   */
+  fun stagger(staggerMs: Long, vararg animations: AnimatedAnimation): AnimatedAnimation {
+    val staggerAnimations: ArrayList<AnimatedAnimation> = ArrayList()
+    animations.forEachIndexed { index, animation ->
+      staggerAnimations.add(delay(staggerMs * index, animation))
+    }
+    return ParallelAnimation(staggerAnimations.toTypedArray())
+  }
+
+  /**
    * Returns [AnimatedAnimation] ready for running single or a collection of animations after given
    * delay in milliseconds
    */
@@ -142,7 +152,7 @@ private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : An
   }
 }
 
-private class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimation {
+internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimation {
   override fun start() {
     animator.start()
   }

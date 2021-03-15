@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package main.kotlin.com.facebook.litho.animated
+package com.facebook.litho.animated
 
 import com.facebook.infer.annotation.ThreadConfined
-import com.facebook.litho.animated.AnimatedAnimation
-import com.facebook.litho.animated.AnimationListener
 
 /**
  * Creates collection of animators that will run in parallel when [ParallelAnimation.start] is
  * triggered
  */
-class ParallelAnimation(val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
-  val parallelAnimationListeners = ArrayList<AnimationListener>()
-  val listener =
+class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
+  private val parallelAnimationListeners = ArrayList<AnimationListener>()
+  private val listener =
       object : AnimationListener {
         override fun onFinish() {
           animatorFinished()
         }
       }
-  var parallelFinishedAnimators = 0
-  var isActive = false
+  private var parallelFinishedAnimators = 0
+  private var isActive = false
 
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {
