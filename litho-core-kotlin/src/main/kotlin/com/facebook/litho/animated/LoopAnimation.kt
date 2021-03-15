@@ -19,60 +19,52 @@ package com.facebook.litho.animated
 import com.facebook.infer.annotation.ThreadConfined
 
 /**
- * Creates collection of animators that will run in parallel when [ParallelAnimation.start] is
+ * Creates animation that will run in a loop [repeatCount] times when [LoopAnimation.start] is
  * triggered
  */
-class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
-  private val parallelAnimationListeners = mutableListOf<AnimationListener>()
-  private var parallelFinishedAnimators = 0
+class LoopAnimation(private var repeatCount: Int, private val animation: AnimatedAnimation) :
+    AnimatedAnimation {
+  private val loopAnimatorListeners = mutableListOf<AnimationListener>()
+  private var currentLoop = 0
   private var isActive = false
   init {
-    animators.forEach {
-      it.addListener(
-          object : AnimationListener {
-            override fun onFinish() {
-              animatorFinished()
-            }
-          })
-    }
+    animation.addListener(
+        object : AnimationListener {
+          override fun onFinish() {
+            loopOrEndAnimation()
+          }
+        })
   }
 
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {
     check(!isActive) { "start() called more than once" }
-    if (animators.isEmpty()) {
-      throw IllegalArgumentException("Empty animators collection")
-    }
     isActive = true
-    startAnimators()
+    animation.start()
   }
-
   @ThreadConfined(ThreadConfined.UI)
   override fun stop() {
+    animation.stop()
     finish()
-    animators.forEach { it.stop() }
   }
 
   override fun addListener(listener: AnimationListener) {
-    if (!parallelAnimationListeners.contains(listener)) {
-      parallelAnimationListeners.add(listener)
+    if (!loopAnimatorListeners.contains(listener)) {
+      loopAnimatorListeners.add(listener)
     }
   }
 
-  private fun animatorFinished() {
-    parallelFinishedAnimators++
-    if (animators.size == parallelFinishedAnimators) {
+  private fun loopOrEndAnimation() {
+    currentLoop++
+    if (currentLoop == repeatCount) {
+      loopAnimatorListeners.forEach { it.onFinish() }
       finish()
-      parallelAnimationListeners.forEach { it.onFinish() }
+      return
     }
+    animation.start()
   }
-
-  private fun startAnimators() {
-    animators.forEach { it.start() }
-  }
-
   private fun finish() {
     isActive = false
-    parallelFinishedAnimators = 0
+    currentLoop = 0
   }
 }

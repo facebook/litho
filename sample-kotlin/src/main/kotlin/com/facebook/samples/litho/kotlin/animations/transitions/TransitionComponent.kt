@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.kotlin.animations.transitions
 
 import android.graphics.Color
-import android.util.Log
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -25,7 +24,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.animated.Animated
-import com.facebook.litho.animated.SpringConfig
 import com.facebook.litho.animated.backgroundColor
 import com.facebook.litho.animated.translationX
 import com.facebook.litho.animated.useBinding
@@ -33,7 +31,6 @@ import com.facebook.litho.dp
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.margin
 import com.facebook.litho.flexbox.width
-import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 
 private const val TAG = "TransitionComponent"
@@ -41,13 +38,9 @@ private const val TAG = "TransitionComponent"
 class TransitionComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    val isColorTransitionComplete = useState { false }
-    val isXTransitionComplete = useState { false }
-    val xProgress = useBinding(500f)
-    val x1Progress = useBinding(500f)
-    val x2Progress = useBinding(500f)
+    val xProgress = useBinding(-2f)
     val colorProgress = useBinding(0f)
-    val rotation = useBinding(0f)
+    val xValue = useBinding(xProgress) { progress -> progress * progress * 100 }
     val bgColor =
         useBinding(colorProgress) { progress ->
           Color.HSVToColor(floatArrayOf(100f * progress, 100f, 255f))
@@ -56,66 +49,27 @@ class TransitionComponent : KComponent() {
     return Column(
         style =
             Style.onClick {
-              Animated.stagger(
-                      500,
-                      Animated.spring(
-                          xProgress,
-                          to = if (isXTransitionComplete.value) 100f else 50f,
-                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
-                      Animated.spring(
-                          x1Progress,
-                          to = if (isXTransitionComplete.value) 100f else 50f,
-                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
-                      Animated.spring(
-                          x2Progress,
-                          to = if (isXTransitionComplete.value) 100f else 50f,
-                          SpringConfig(stiffness = 50f, dampingRatio = 0.2f)),
-                      Animated.timing(
-                          target = colorProgress,
-                          to = if (isColorTransitionComplete.value) 0f else 1f,
-                          duration = 1000,
-                          onUpdate = { Log.d(TAG, "onUpdate: $it") },
-                          onFinish = {
-                            isColorTransitionComplete.update(!isColorTransitionComplete.value)
-                          }))
+              Animated.loop(
+                      Animated.sequence(
+                          Animated.timing(target = xProgress, to = 2f, duration = 3000),
+                          Animated.timing(target = xProgress, to = 2f, duration = 3000)),
+                      2)
+                  .start()
+              Animated.loop(
+                      Animated.parallel(
+                          Animated.timing(target = colorProgress, to = 2f, duration = 3000),
+                          Animated.timing(target = colorProgress, to = 2f, duration = 3000)),
+                      2)
                   .start()
             },
         children =
             listOf(
                 Row(
                     style =
-                        Style.width(100.dp).height(100.dp).backgroundColor(bgColor).onClick {
-                          Animated.timing(
-                                  target = colorProgress,
-                                  to = if (isColorTransitionComplete.value) 0f else 1f,
-                                  duration = 1000,
-                                  onUpdate = { Log.d(TAG, "onUpdate: $it") },
-                                  onFinish = {
-                                    isColorTransitionComplete.update(
-                                        !isColorTransitionComplete.value)
-                                  })
-                              .start()
-                        }),
-                Row(
-                    style =
                         Style.width(20.dp)
                             .height(20.dp)
                             .margin(all = 20.dp)
-                            .translationX(xProgress)
-                            .backgroundColor(bgColor)),
-                Row(
-                    style =
-                        Style.width(20.dp)
-                            .height(20.dp)
-                            .margin(all = 20.dp)
-                            .translationX(x1Progress)
-                            .backgroundColor(bgColor)),
-                Row(
-                    style =
-                        Style.width(20.dp)
-                            .height(20.dp)
-                            .margin(all = 20.dp)
-                            .translationX(x2Progress)
+                            .translationX(xValue)
                             .backgroundColor(bgColor)),
             ))
   }

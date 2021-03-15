@@ -17,23 +17,25 @@
 package com.facebook.litho.animated
 
 import com.facebook.infer.annotation.ThreadConfined
-import java.util.ArrayList
 
 /**
  * Creates collection of animators that will run one after another in sequence when
  * [SequenceAnimation.start] is triggered
  */
 class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
-  private val sequenceAnimatorListeners = ArrayList<AnimationListener>()
-  private val listener =
-      object : AnimationListener {
-        override fun onFinish() {
-          animatorFinished()
-        }
-      }
-
+  private val sequenceAnimatorListeners = mutableListOf<AnimationListener>()
   private var currentIndex = 0
   private var isActive = false
+  init {
+    animators.forEach {
+      it.addListener(
+          object : AnimationListener {
+            override fun onFinish() {
+              animatorFinished()
+            }
+          })
+    }
+  }
 
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {
@@ -48,6 +50,7 @@ class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : A
   @ThreadConfined(ThreadConfined.UI)
   override fun stop() {
     animators[currentIndex].stop()
+    finish()
   }
 
   override fun addListener(listener: AnimationListener) {
@@ -59,6 +62,7 @@ class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : A
   private fun animatorFinished() {
     currentIndex++
     if (currentIndex == animators.size) {
+      finish()
       sequenceAnimatorListeners.forEach { it.onFinish() }
       return
     }
@@ -66,7 +70,11 @@ class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : A
   }
 
   private fun startAnimator() {
-    animators[currentIndex].addListener(listener)
     animators[currentIndex].start()
+  }
+
+  private fun finish() {
+    isActive = false
+    currentIndex = 0
   }
 }

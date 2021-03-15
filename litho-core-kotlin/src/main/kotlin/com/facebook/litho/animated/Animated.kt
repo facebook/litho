@@ -110,6 +110,13 @@ object Animated {
   }
 
   /**
+   * Returns [LoopAnimation] ready for running [AnimatedAnimation] object repeated @repeatCount
+   * times. By default it runs infinite number of times.
+   */
+  fun loop(animation: AnimatedAnimation, repeatCount: Int = -1): AnimatedAnimation =
+      LoopAnimation(repeatCount, animation)
+
+  /**
    * Returns [AnimatedAnimation] ready for running single or a collection of animations after given
    * delay in milliseconds
    */
