@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -435,36 +434,6 @@ public class ComponentLifecycleTest {
     Layout.create((ComponentContext) any(), (Component) any(), eq(true), eq(true), (String) any());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-  }
-
-  @Test
-  public void testOnMeasureNotOverridden() {
-    Component component = setUpSpyComponentForCreateLayout(true, true);
-    YogaMeasureFunction measureFunction = getMeasureFunction(component);
-
-    try {
-      measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
-      fail("Should have failed without overridden onMeasure() when canMeasure() returns true.");
-    } catch (Exception e) {
-      assertThat(e).isExactlyInstanceOf(LithoMetadataExceptionWrapper.class);
-      assertThat(e.getCause()).isExactlyInstanceOf(IllegalStateException.class);
-      assertThat(e.getMessage()).contains("canMeasure()");
-    }
-  }
-
-  @Test
-  public void testMountSpecYogaMeasureOutputNotSet() {
-    Component component = new TestMountSpecWithEmptyOnMeasure(mNode);
-    YogaMeasureFunction measureFunction = getMeasureFunction(component);
-
-    try {
-      measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
-      fail("Should have failed when onMeasure() is empty.");
-    } catch (Exception e) {
-      assertThat(e).isExactlyInstanceOf(LithoMetadataExceptionWrapper.class);
-      assertThat(e.getCause()).isExactlyInstanceOf(IllegalStateException.class);
-      assertThat(e.getMessage()).contains("MeasureOutput not set");
-    }
   }
 
   @Test

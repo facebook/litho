@@ -167,7 +167,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
       return YogaMeasureOutput.make(outputWidth, outputHeight);
     } catch (Exception e) {
-      throw ComponentUtils.wrapWithMetadata(componentScopedContext, e);
+      ComponentUtils.handle(componentScopedContext, e);
+      return YogaMeasureOutput.make(0, 0);
     }
   }
 }

@@ -52,11 +52,11 @@ public class CrashingMountableSpec {
       final int heightSpec,
       final Size size,
       @Prop LifecycleStep lifecycle) {
+    size.height = 200;
+    size.width = 600;
     if (lifecycle.equals(LifecycleStep.ON_MEASURE)) {
       throw new MountPhaseException(LifecycleStep.ON_MEASURE);
     }
-    size.height = 200;
-    size.width = 600;
   }
 
   @UiThread
