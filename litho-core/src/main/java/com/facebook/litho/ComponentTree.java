@@ -2527,7 +2527,18 @@ public class ComponentTree {
       }
     }
 
-    release();
+    if (ThreadUtils.isMainThread()) {
+      release();
+    } else {
+      mMainThreadHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              release();
+            }
+          },
+          "Release");
+    }
   }
 
   private @Nullable LayoutState calculateLayoutState(
