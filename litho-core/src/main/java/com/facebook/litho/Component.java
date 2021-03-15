@@ -1056,7 +1056,7 @@ public abstract class Component extends ComponentLifecycle
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
-      component.mLayoutCreatedInWillRender = null;  // Clear the layout created in will render
+      component.mLayoutCreatedInWillRender = null; // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
