@@ -147,7 +147,7 @@ public class SectionContext extends ComponentContext {
   }
 
   /** @return New instance of {@link EventTrigger} that is created by the current mScope. */
-  <E> EventTrigger<E> newEventTrigger(String childKey, int id, Handle handle) {
+  <E> EventTrigger<E> newEventTrigger(int id, String childKey, @Nullable Handle handle) {
     final Section section = mScope == null ? null : mScope.get();
     String parentKey = section == null ? "" : section.getGlobalKey();
     return new EventTrigger<>(parentKey, id, childKey, handle);

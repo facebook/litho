@@ -486,10 +486,10 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
   }
 
-  private static EventTrigger onClickEventTriggerTrigger(
-      ComponentContext c, String key, Handle handle) {
+  private static EventTrigger createOnClickEventTriggerTrigger(
+      ComponentContext c, Component component) {
     int methodId = -830639048;
-    return newEventTrigger(c, key, methodId, handle);
+    return newEventTrigger(c, component, methodId);
   }
 
   /**
@@ -498,7 +498,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
    */
   @Deprecated
   public static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key) {
-    return onClickEventTriggerTrigger(c, key, null);
+    int methodId = -830639048;
+    return newEventTrigger(c, key, methodId);
   }
 
   private void onClickEventTrigger(ComponentContext c, EventTriggerTarget _abstract, View view) {
@@ -835,18 +836,18 @@ public final class TestMount<S extends View> extends Component implements TestTa
       return this;
     }
 
-    private void onClickEventTriggerTrigger(String key, Handle handle) {
+    private void registerOnClickEventTriggerTrigger() {
       com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
           this.mTestMount.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
         onClickEventTriggerTrigger =
-            TestMount.onClickEventTriggerTrigger(this.mContext, key, handle);
+            TestMount.createOnClickEventTriggerTrigger(this.mContext, this.mTestMount);
       }
       onClickEventTriggerTrigger(onClickEventTriggerTrigger);
     }
 
-    private void registerEventTriggers(String key, Handle handle) {
-      onClickEventTriggerTrigger(key, handle);
+    private void registerEventTriggers() {
+      registerOnClickEventTriggerTrigger();
     }
 
     @Override
@@ -857,7 +858,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     @Override
     public TestMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      registerEventTriggers(mTestMount.getKey(), mTestMount.getHandle());
+      registerEventTriggers();
       return mTestMount;
     }
   }

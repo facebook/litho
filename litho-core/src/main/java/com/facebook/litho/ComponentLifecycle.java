@@ -721,10 +721,23 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
-  /* TODO: (T81557408) Fix @Nullable issue. */
+  /**
+   * This variant is used to create an EventTrigger used to register this component as a target in
+   * {@link EventTriggersContainer}
+   */
   protected static <E> EventTrigger<E> newEventTrigger(
-      ComponentContext c, String childKey, int id, @Nullable Handle handle) {
-    return c.newEventTrigger(childKey, id, handle);
+      ComponentContext c, Component component, int methodId) {
+    return c.newEventTrigger(methodId, component.getKey(), component.getHandle());
+  }
+
+  /**
+   * This is used to create a Trigger to be invoked later, e.g. in the context of the deprecated
+   * trigger API TextInput.requestFocusTrigger(c, "my_key").
+   */
+  @Deprecated
+  protected static <E> EventTrigger<E> newEventTrigger(
+      ComponentContext c, String childKey, int methodId) {
+    return c.newEventTrigger(methodId, childKey, null);
   }
 
   public enum MountType {

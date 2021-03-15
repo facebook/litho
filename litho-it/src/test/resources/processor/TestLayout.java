@@ -320,10 +320,10 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  private static EventTrigger onClickEventTriggerTrigger(
-      ComponentContext c, String key, Handle handle) {
+  private static EventTrigger createOnClickEventTriggerTrigger(
+      ComponentContext c, Component component) {
     int methodId = -1670292499;
-    return newEventTrigger(c, key, methodId, handle);
+    return newEventTrigger(c, component, methodId);
   }
 
   /**
@@ -332,7 +332,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
    */
   @Deprecated
   public static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key) {
-    return onClickEventTriggerTrigger(c, key, null);
+    int methodId = -1670292499;
+    return newEventTrigger(c, key, methodId);
   }
 
   private void onClickEventTrigger(ComponentContext c, EventTriggerTarget _abstract, View view) {
@@ -845,18 +846,18 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    private void onClickEventTriggerTrigger(String key, Handle handle) {
+    private void registerOnClickEventTriggerTrigger() {
       com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
           this.mTestLayout.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
         onClickEventTriggerTrigger =
-            TestLayout.onClickEventTriggerTrigger(this.mContext, key, handle);
+            TestLayout.createOnClickEventTriggerTrigger(this.mContext, this.mTestLayout);
       }
       onClickEventTriggerTrigger(onClickEventTriggerTrigger);
     }
 
-    private void registerEventTriggers(String key, Handle handle) {
-      onClickEventTriggerTrigger(key, handle);
+    private void registerEventTriggers() {
+      registerOnClickEventTriggerTrigger();
     }
 
     @Override
@@ -867,7 +868,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     @Override
     public TestLayout build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      registerEventTriggers(mTestLayout.getKey(), mTestLayout.getHandle());
+      registerEventTriggers();
       return mTestLayout;
     }
   }

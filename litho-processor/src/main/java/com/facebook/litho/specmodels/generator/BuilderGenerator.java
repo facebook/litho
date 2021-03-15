@@ -50,9 +50,11 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the builder for a Component. */
+@SuppressWarnings("NewApi")
 public class BuilderGenerator {
 
   private static final String BUILDER = "Builder";
@@ -1301,10 +1303,8 @@ public class BuilderGenerator {
         ComponentBodyGenerator.getEventTriggerInstanceName(triggerMethodModel.name);
     final String implMemberName = getComponentMemberInstanceName(specModel);
 
-    return MethodSpec.methodBuilder(getEventTriggerKeyResetMethodName(triggerMethodModel.name))
+    return MethodSpec.methodBuilder(getRegisterEventTriggerMethodName(triggerMethodModel.name))
         .addModifiers(Modifier.PRIVATE)
-        .addParameter(ClassNames.STRING, "key")
-        .addParameter(ClassNames.HANDLE, "handle")
         .addStatement(
             "$L $L = this.$L.$L",
             ClassNames.EVENT_TRIGGER,
@@ -1313,10 +1313,11 @@ public class BuilderGenerator {
             eventTriggerName)
         .beginControlFlow("if ($L == null)", eventTriggerName)
         .addStatement(
-            "$L = $L.$L(this.mContext, key, handle)",
+            "$L = $L.$L(this.mContext, this.$L)",
             eventTriggerName,
             specModel.getComponentName(),
-            eventTriggerName)
+            TriggerGenerator.getCreateEventTriggerMethodName(triggerMethodModel.name),
+            getComponentMemberInstanceName(specModel))
         .endControlFlow()
         .addStatement("$L($L)", eventTriggerName, eventTriggerName)
         .build();
@@ -1334,21 +1335,21 @@ public class BuilderGenerator {
   private static MethodSpec generateRegisterEventTriggersMethod(
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods) {
     MethodSpec.Builder builder =
-        MethodSpec.methodBuilder("registerEventTriggers")
-            .addModifiers(Modifier.PRIVATE)
-            .addParameter(ClassNames.STRING, "key")
-            .addParameter(ClassNames.HANDLE, "handle");
+        MethodSpec.methodBuilder("registerEventTriggers").addModifiers(Modifier.PRIVATE);
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
-      builder.addStatement(
-          "$L(key, handle)", getEventTriggerKeyResetMethodName(triggerMethod.name));
+      builder.addStatement("$L()", getRegisterEventTriggerMethodName(triggerMethod.name));
     }
 
     return builder.build();
   }
 
-  private static String getEventTriggerKeyResetMethodName(CharSequence eventTriggerClassName) {
-    return ComponentBodyGenerator.getEventTriggerInstanceName(eventTriggerClassName);
+  private static String getRegisterEventTriggerMethodName(CharSequence eventTriggerClassName) {
+    final String asString = eventTriggerClassName.toString();
+    return "register"
+        + asString.substring(0, 1).toUpperCase(Locale.ROOT)
+        + asString.substring(1)
+        + "Trigger";
   }
 
   private static MethodSpec generateExtraBuilderMethod(
@@ -1395,9 +1396,7 @@ public class BuilderGenerator {
     }
 
     if (!specModel.getTriggerMethods().isEmpty()) {
-      String building = getComponentMemberInstanceName(specModel);
-      buildMethodBuilder.addStatement(
-          "registerEventTriggers($L.getKey(), $L.getHandle())", building, building);
+      buildMethodBuilder.addStatement("registerEventTriggers()");
     }
 
     return buildMethodBuilder

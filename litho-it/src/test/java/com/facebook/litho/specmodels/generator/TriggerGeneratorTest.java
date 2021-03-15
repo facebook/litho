@@ -318,10 +318,10 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private static com.facebook.litho.EventTrigger testTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.String key, com.facebook.litho.Handle handle) {\n"
+            "private static com.facebook.litho.EventTrigger createTestTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.Component component) {\n"
                 + "  int methodId = -773082596;\n"
-                + "  return newEventTrigger(c, key, methodId, handle);\n"
+                + "  return newEventTrigger(c, component, methodId);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -332,15 +332,16 @@ public class TriggerGeneratorTest {
                 + "@java.lang.Deprecated\n"
                 + "public static com.facebook.litho.EventTrigger testTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key) {\n"
-                + "  return testTriggerMethod1Trigger(c, key, null);\n"
+                + "  int methodId = -773082596;\n"
+                + "  return newEventTrigger(c, key, methodId);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
-            "private static com.facebook.litho.EventTrigger testTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.String key, com.facebook.litho.Handle handle) {\n"
+            "private static com.facebook.litho.EventTrigger createTestTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.Component component) {\n"
                 + "  int methodId = 969727739;\n"
-                + "  return newEventTrigger(c, key, methodId, handle);\n"
+                + "  return newEventTrigger(c, component, methodId);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(3).toString())
@@ -351,7 +352,8 @@ public class TriggerGeneratorTest {
                 + "@java.lang.Deprecated\n"
                 + "public static com.facebook.litho.EventTrigger testTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key) {\n"
-                + "  return testTriggerMethod2Trigger(c, key, null);\n"
+                + "  int methodId = 969727739;\n"
+                + "  return newEventTrigger(c, key, methodId);\n"
                 + "}\n");
   }
 }

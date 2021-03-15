@@ -525,7 +525,7 @@ public class ComponentContext {
   /**
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */
-  <E> EventTrigger<E> newEventTrigger(String childKey, int id, @Nullable Handle handle) {
+  <E> EventTrigger<E> newEventTrigger(int id, String childKey, @Nullable Handle handle) {
     String parentKey = mComponentScope == null ? "" : getGlobalKey();
     return new EventTrigger<>(parentKey, id, childKey, handle);
   }
