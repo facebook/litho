@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -233,6 +234,7 @@ public class ComponentTreeHolder {
   }
 
   @VisibleForTesting
+  @UiThread
   public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
     if (acquireStateHandlerOnRelease || shouldAcquireStateHandlerOnRelease()) {
       acquireStateHandler();
@@ -493,6 +495,7 @@ public class ComponentTreeHolder {
     }
   }
 
+  @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
       mComponentTree.release();

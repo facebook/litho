@@ -3288,6 +3288,7 @@ public class RecyclerBinder
     };
   }
 
+  @UiThread
   private static void maybeAcquireStateAndReleaseTree(
       ComponentTreeHolder holder, boolean acquireStateAndReleaseTree) {
     if (holder.isTreeValid()
