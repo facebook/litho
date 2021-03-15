@@ -215,7 +215,7 @@ class Layout {
       }
 
     } catch (Exception e) {
-      handle(parent, component, e);
+      ComponentUtils.handleWithHierarchy(parent, component, e);
       return NULL_LAYOUT;
     } finally {
       if (isTracing) {
@@ -263,7 +263,7 @@ class Layout {
             node.addTransition(transition);
           }
         } catch (Exception e) {
-          handle(parent, component, e);
+          ComponentUtils.handleWithHierarchy(parent, component, e);
         }
       }
     }
@@ -273,7 +273,7 @@ class Layout {
       try {
         component.onPrepare(c);
       } catch (Exception e) {
-        handle(parent, component, e);
+        ComponentUtils.handleWithHierarchy(parent, component, e);
       }
     }
 
@@ -814,42 +814,5 @@ class Layout {
   @TargetApi(JELLY_BEAN_MR1)
   private static int getLayoutDirection(final Context context) {
     return context.getResources().getConfiguration().getLayoutDirection();
-  }
-
-  private static void handle(ComponentContext parent, Component component, Exception exception) {
-    final EventHandler<ErrorEvent> nextHandler = parent.getErrorEventHandler();
-    final EventHandler<ErrorEvent> lastHandler;
-    Exception exceptionToThrow = exception;
-
-    if (exception instanceof ReThrownException) {
-      exceptionToThrow = ((ReThrownException) exception).original;
-      lastHandler = ((ReThrownException) exception).lastHandler;
-    } else if (exception instanceof LithoMetadataExceptionWrapper) {
-      lastHandler = ((LithoMetadataExceptionWrapper) exception).lastHandler;
-    } else {
-      lastHandler = null;
-    }
-
-    final LithoMetadataExceptionWrapper metadataWrapper =
-        (exceptionToThrow instanceof LithoMetadataExceptionWrapper)
-            ? (LithoMetadataExceptionWrapper) exceptionToThrow
-            : new LithoMetadataExceptionWrapper(parent, exceptionToThrow);
-    metadataWrapper.addComponentForLayoutStack(component);
-
-    // This means it was already handled by this handler so throw it up to the next frame until we
-    // get a new handler or get to the root
-    if (lastHandler == nextHandler) {
-      metadataWrapper.lastHandler = lastHandler;
-      throw metadataWrapper;
-    } else if (nextHandler instanceof ErrorEventHandler) { // at the root
-      ((ErrorEventHandler) nextHandler).onError(metadataWrapper);
-    } else { // Handle again with new handler
-      try {
-        ComponentLifecycle.dispatchErrorEvent(parent, exceptionToThrow);
-      } catch (ReThrownException ex) { // error handler re-raised the exception
-        metadataWrapper.lastHandler = nextHandler;
-        throw metadataWrapper;
-      }
-    }
   }
 }
