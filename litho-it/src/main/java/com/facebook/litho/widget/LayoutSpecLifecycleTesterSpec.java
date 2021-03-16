@@ -29,6 +29,7 @@ import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.UnfocusedVisibleEvent;
+import com.facebook.litho.VisibilityChangedEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
@@ -79,6 +80,7 @@ public class LayoutSpecLifecycleTesterSpec {
         .invisibleHandler(LayoutSpecLifecycleTester.onInvisible(c))
         .unfocusedHandler(LayoutSpecLifecycleTester.onUnfocusedVisibleEvent(c))
         .fullImpressionHandler(LayoutSpecLifecycleTester.onFullImpressionVisibleEvent(c))
+        .visibilityChangedHandler(LayoutSpecLifecycleTester.onVisibilityChangedEvent(c))
         .build();
   }
 
@@ -161,6 +163,12 @@ public class LayoutSpecLifecycleTesterSpec {
   static void onFullImpressionVisibleEvent(
       final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT));
+  }
+
+  @OnEvent(VisibilityChangedEvent.class)
+  static void onVisibilityChangedEvent(
+      final ComponentContext c, final @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_VISIBILITY_CHANGED));
   }
 
   public static class Caller {
