@@ -1,19 +1,3 @@
-/*
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
@@ -106,7 +90,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Comparable(type = 13)
   TestTreeProp treeProp;
 
-  @androidx.annotation.Nullable EventHandler testEventHandler;
+  @androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler;
 
   EventTrigger onClickEventTriggerTrigger;
 
@@ -420,7 +404,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @androidx.annotation.Nullable
-  public static EventHandler getTestEventHandler(ComponentContext context) {
+  public static EventHandler<TestEvent> getTestEventHandler(ComponentContext context) {
     if (context.getComponentScope() == null) {
       return null;
     }
@@ -820,7 +804,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     public Builder<S> testEventHandler(
-        @androidx.annotation.Nullable EventHandler testEventHandler) {
+        @androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler) {
       this.mTestMount.testEventHandler = testEventHandler;
       return this;
     }

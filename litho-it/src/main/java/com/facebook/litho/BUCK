@@ -21,6 +21,7 @@ litho_android_test_library(
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],

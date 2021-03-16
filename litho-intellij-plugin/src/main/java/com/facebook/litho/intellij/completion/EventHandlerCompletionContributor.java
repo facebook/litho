@@ -99,7 +99,7 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
             implementedEventHandlers = parentModel.getEventMethods();
 
         implementedEventHandlers.stream()
-            .filter(handler -> eventQualifiedName.equals(handler.typeModel.name.reflectionName()))
+            .filter(handler -> eventQualifiedName.equals(handler.typeModel.getReflectionName()))
             .map(
                 handler ->
                     createLookupElement(
@@ -122,7 +122,7 @@ public class EventHandlerCompletionContributor extends CompletionContributor {
     return LookupElementBuilder.create(componentName + "." + methodName + "()")
         .withLookupStrings(Arrays.asList(methodName, methodCallName))
         .withPresentableText(methodName)
-        .withTypeText("EventHandler<" + handler.typeModel.name.simpleName() + ">")
+        .withTypeText("EventHandler<" + handler.typeModel.getReflectionName() + ">")
         .withInsertHandler(
             (context, elem) -> {
               context.getEditor().getCaretModel().moveCaretRelatively(-1, 0, false, false, false);

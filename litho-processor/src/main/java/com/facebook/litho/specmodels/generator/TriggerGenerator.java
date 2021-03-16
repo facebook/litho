@@ -91,9 +91,9 @@ public class TriggerGenerator {
 
       methodBuilder.addStatement(
           "$T $L = ($T) $L",
-          eventMethodModel.typeModel.name,
+          eventMethodModel.typeModel.getRawName(),
           eventVariableName,
-          eventMethodModel.typeModel.name,
+          eventMethodModel.typeModel.getRawName(),
           "eventState");
 
       final CodeBlock.Builder eventTriggerParams =

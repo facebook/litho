@@ -119,7 +119,7 @@ class SpecTreeElementFactory {
     return new PresentableTreeElement(
         methodModel.name.toString()
             + " (@"
-            + StringUtil.getShortName(methodModel.typeModel.name.simpleName())
+            + StringUtil.getShortName(methodModel.typeModel.getReflectionName())
             + ")",
         methodModel.representedObject,
         Collections.emptyList());

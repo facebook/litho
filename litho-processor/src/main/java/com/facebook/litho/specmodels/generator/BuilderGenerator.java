@@ -1258,12 +1258,14 @@ public class BuilderGenerator {
   private static MethodSpec generateEventDeclarationBuilderMethod(
       SpecModel specModel, EventDeclarationModel eventDeclaration) {
     final String eventHandlerName =
-        ComponentBodyGenerator.getEventHandlerInstanceName(eventDeclaration.name);
+        ComponentBodyGenerator.getEventHandlerInstanceName(eventDeclaration);
     return MethodSpec.methodBuilder(eventHandlerName)
         .addModifiers(Modifier.PUBLIC)
         .returns(getBuilderType(specModel))
         .addParameter(
-            ParameterSpec.builder(ClassNames.EVENT_HANDLER, eventHandlerName)
+            ParameterSpec.builder(
+                    ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventDeclaration.name),
+                    eventHandlerName)
                 .addAnnotation(ClassNames.NULLABLE)
                 .build())
         .addStatement(

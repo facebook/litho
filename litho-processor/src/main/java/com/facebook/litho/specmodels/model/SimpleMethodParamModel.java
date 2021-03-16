@@ -32,7 +32,7 @@ public class SimpleMethodParamModel implements MethodParamModel {
   private final List<AnnotationSpec> mExternalAnnotations;
   private final Object mRepresentedObject;
 
-  SimpleMethodParamModel(
+  public SimpleMethodParamModel(
       TypeSpec typeSpec,
       String name,
       List<Annotation> annotations,

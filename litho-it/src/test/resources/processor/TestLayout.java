@@ -119,7 +119,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Comparable(type = 13)
   TestTreeProp treeProp;
 
-  @Nullable EventHandler testEventHandler;
+  @Nullable EventHandler<TestEvent> testEventHandler;
 
   EventTrigger onClickEventTriggerTrigger;
 
@@ -234,7 +234,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Nullable
-  public static EventHandler getTestEventHandler(ComponentContext context) {
+  public static EventHandler<TestEvent> getTestEventHandler(ComponentContext context) {
     if (context.getComponentScope() == null) {
       return null;
     }
@@ -830,7 +830,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    public Builder<S> testEventHandler(@Nullable EventHandler testEventHandler) {
+    public Builder<S> testEventHandler(@Nullable EventHandler<TestEvent> testEventHandler) {
       this.mTestLayout.testEventHandler = testEventHandler;
       return this;
     }
