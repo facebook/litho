@@ -609,45 +609,56 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleAndInvisibleEvents() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleHandler(visibleEventHandler)
-                    .invisibleHandler(invisibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
 
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    steps.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    steps.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 10, RIGHT, 15), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    steps.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 10, RIGHT, 15), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
