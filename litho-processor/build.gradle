@@ -36,6 +36,10 @@ dependencies {
 
     testImplementation deps.junit
     testImplementation deps.assertjCore
+    compileJava {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
 }
 
 apply from: rootProject.file('gradle/release.gradle')
