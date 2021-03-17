@@ -171,8 +171,6 @@ fun Style.alignSelf(align: YogaAlign) =
 fun Style.aspectRatio(aspectRatio: Float) =
     this + FloatStyleItem(FlexboxFloatField.ASPECT_RATIO, aspectRatio)
 
-fun Style.padding(all: Dimen) = this + FlexboxDimenStyleItem(FlexboxDimenField.PADDING_ALL, all)
-
 fun Style.padding(
     all: Dimen? = null,
     horizontal: Dimen? = null,
@@ -190,8 +188,6 @@ fun Style.padding(
         top?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_TOP, it) } +
         end?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_END, it) } +
         bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_BOTTOM, it) }
-
-fun Style.margin(all: Dimen) = this + FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_ALL, all)
 
 fun Style.margin(
     all: Dimen? = null,
