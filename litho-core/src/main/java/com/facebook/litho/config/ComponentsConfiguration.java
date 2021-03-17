@@ -228,7 +228,9 @@ public class ComponentsConfiguration {
 
   public static boolean useVisibilityExtension = false;
 
-  /** Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder */
+  /**
+   * Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder
+   */
   public static boolean computeRangeOnSyncLayout = false;
 
   /**

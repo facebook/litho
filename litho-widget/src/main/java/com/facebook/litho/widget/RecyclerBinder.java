@@ -3580,7 +3580,8 @@ public class RecyclerBinder
           if (ComponentsConfiguration.computeRangeOnSyncLayout) {
             // Since synchronous layout is about to happen, and the ScrollListener that updates the
             // visible and working ranges will not fire until after the full frame is rendered,
-            // we want to kick off background layout for the estimated visible range in the scrolling
+            // we want to kick off background layout for the estimated visible range in the
+            // scrolling
             // direction in an attempt to take advantage of more parallel layout.
             if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
                 && mCurrentLastVisiblePosition != RecyclerView.NO_POSITION) {
