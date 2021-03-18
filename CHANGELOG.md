@@ -4,7 +4,7 @@
 
 _release-date_
 
- * TBA
+* **Breaking:** `ComponentTree.release()` method asserts that it is called on the UI thread.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
 
