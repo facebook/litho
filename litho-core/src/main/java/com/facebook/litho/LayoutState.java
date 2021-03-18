@@ -2340,11 +2340,15 @@ public class LayoutState
         final Component component = mComponentsNeedingPreviousRenderData.get(i);
         final String globalKey =
             ComponentUtils.getGlobalKey(component, mComponentKeysNeedingPreviousRenderData.get(i));
-        final Transition transition =
-            component.createTransition(
-                component.getScopedContext(getLayoutStateContext(), globalKey));
-        if (transition != null) {
-          mountTimeTransitions.add(transition);
+        final ComponentContext scopedContext =
+            component.getScopedContext(getLayoutStateContext(), globalKey);
+        try {
+          final Transition transition = component.createTransition(scopedContext);
+          if (transition != null) {
+            mountTimeTransitions.add(transition);
+          }
+        } catch (Exception e) {
+          ComponentUtils.handleWithHierarchy(scopedContext, component, e);
         }
       }
     }
