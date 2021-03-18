@@ -243,25 +243,6 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   void assertContextSpecificStyleNotSet();
 
-  /* Nested tree related APIs */
-
-  boolean hasNestedTree();
-
-  /**
-   * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link Layout#create(ComponentContext, Component, boolean)}.
-   */
-  boolean isNestedTreeHolder();
-
-  @Nullable
-  InternalNode getNestedTree();
-
-  @Nullable
-  InternalNode getNestedTreeHolder();
-
-  @Nullable
-  TreeProps getPendingTreeProps();
-
   /* Test related APIs */
 
   /**
@@ -269,6 +250,24 @@ public interface LithoLayoutResult extends ComponentLayout {
    */
   @Nullable
   String getTestKey();
+
+  /* Measurement related APIs for mutating the result */
+
+  void setLastWidthSpec(int widthSpec);
+
+  void setLastHeightSpec(int heightSpec);
+
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the height.
+   */
+  void setLastMeasuredHeight(float lastMeasuredHeight);
+
+  /**
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the width.
+   */
+  void setLastMeasuredWidth(float lastMeasuredWidth);
 
   /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
   interface NestedTreeHolderResult extends LithoLayoutResult, Copyable<InternalNode> {

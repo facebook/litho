@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
@@ -54,7 +55,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode) {
-    final InternalNode node = (InternalNode) cssNode.getData();
+    final LithoLayoutResult node = (LithoLayoutResult) cssNode.getData();
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
     final ComponentContext componentScopedContext =
@@ -90,7 +91,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
       ComponentContext context = node.getContext();
 
-      if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
+      if (Component.isNestedTree(context, component) || node instanceof NestedTreeHolderResult) {
 
         // Find the nearest parent component context.
         final Component head = node.getHeadComponent();
@@ -113,8 +114,13 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           context = parent.getScopedContext(mLayoutStateContext, parentKey);
         }
 
-        final InternalNode nestedTree =
-            Layout.create(context, node, widthSpec, heightSpec, mPrevLayoutStateContext);
+        final LithoLayoutResult nestedTree =
+            Layout.create(
+                context,
+                (NestedTreeHolderResult) node,
+                widthSpec,
+                heightSpec,
+                mPrevLayoutStateContext);
 
         outputWidth = nestedTree.getWidth();
         outputHeight = nestedTree.getHeight();

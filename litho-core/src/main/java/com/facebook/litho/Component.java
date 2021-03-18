@@ -1052,7 +1052,7 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    if (node.isNestedTreeHolder()) {
+    if (node instanceof LithoLayoutResult.NestedTreeHolderResult) {
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.

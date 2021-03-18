@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
@@ -87,6 +88,12 @@ public class StateUpdatesWithReconciliationTest {
           @Override
           public InternalNode create(ComponentContext c) {
             return spy(new DefaultInternalNode(c));
+          }
+
+          @Override
+          public InternalNode.NestedTreeHolder createNestedTreeHolder(
+              ComponentContext c, @Nullable TreeProps props) {
+            return spy(new DefaultNestedTreeHolder(c, props));
           }
         };
     mComponentsLogger = new TestComponentsLogger();

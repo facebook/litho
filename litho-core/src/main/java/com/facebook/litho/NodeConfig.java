@@ -31,6 +31,9 @@ public class NodeConfig {
 
   public interface InternalNodeFactory {
     InternalNode create(ComponentContext componentContext);
+
+    InternalNode.NestedTreeHolder createNestedTreeHolder(
+        ComponentContext c, @Nullable TreeProps props);
   }
 
   /**

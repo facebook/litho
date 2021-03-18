@@ -90,6 +90,13 @@ public class InternalNodeTest {
         makeSizeSpec(0, UNSPECIFIED));
   }
 
+  private static InternalNode.NestedTreeHolder acquireNestedTreeHolder() {
+    final ComponentContext context = new ComponentContext(getApplicationContext());
+    context.setLayoutStateContextForTesting();
+
+    return new DefaultNestedTreeHolder(context, null);
+  }
+
   private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
     final ComponentContext context = new ComponentContext(getApplicationContext(), "TEST", logger);
     context.setLayoutStateContextForTesting();
@@ -309,12 +316,12 @@ public class InternalNodeTest {
 
   @Test
   public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
-    InternalNode holderNode = acquireInternalNode();
+    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
     InternalNode nestedTree = acquireInternalNode();
 
     nestedTree.layoutDirection(RTL);
     holderNode.calculateLayout();
-    holderNode.setNestedTree(nestedTree);
+    ((LithoLayoutResult.NestedTreeHolderResult) holderNode).setNestedResult(nestedTree);
 
     assertThat(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isFalse();
     assertThat(holderNode.getStyleDirection()).isEqualTo(INHERIT);
@@ -323,7 +330,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
-    InternalNode holderNode = acquireInternalNode();
+    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
     InternalNode nestedTree = acquireInternalNode();
 
     holderNode.calculateLayout();
@@ -335,7 +342,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
-    InternalNode holderNode = acquireInternalNode();
+    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
     InternalNode nestedTree = acquireInternalNode();
 
     holderNode.layoutDirection(RTL);
@@ -347,7 +354,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNodeSetFlags() {
-    InternalNode orig = acquireInternalNode();
+    InternalNode.NestedTreeHolder orig = acquireNestedTreeHolder();
     InternalNode dest = acquireInternalNode();
 
     orig.importantForAccessibility(0);

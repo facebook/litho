@@ -26,10 +26,12 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.DefaultInternalNode;
+import com.facebook.litho.DefaultNestedTreeHolder;
 import com.facebook.litho.DiffNode;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
@@ -638,11 +640,33 @@ public final class ComponentTestHelper {
   }
 
   @Deprecated
+  private static class TestNestedTreeHolder extends DefaultNestedTreeHolder {
+
+    protected TestNestedTreeHolder(ComponentContext context, @Nullable TreeProps props) {
+      super(context, props);
+    }
+
+    @Override
+    public InternalNode child(Component child) {
+      if (child != null) {
+        return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
+      }
+      return this;
+    }
+  }
+
+  @Deprecated
   private static class TestInternalNodeFactory implements NodeConfig.InternalNodeFactory {
 
     @Override
     public InternalNode create(ComponentContext c) {
       return new TestDefaultInternalNode(c);
+    }
+
+    @Override
+    public InternalNode.NestedTreeHolder createNestedTreeHolder(
+        ComponentContext c, @Nullable TreeProps props) {
+      return new TestNestedTreeHolder(c, props);
     }
   }
 }

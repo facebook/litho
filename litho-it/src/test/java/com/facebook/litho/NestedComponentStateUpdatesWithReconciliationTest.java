@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -63,8 +64,16 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
           @Override
-          public InternalNode create(ComponentContext c) {
+          public InternalNode create(final ComponentContext c) {
             DefaultInternalNode node = spy(new DefaultInternalNode(c));
+            node.getYogaNode().setData(node);
+            return node;
+          }
+
+          @Override
+          public InternalNode.NestedTreeHolder createNestedTreeHolder(
+              ComponentContext c, @Nullable TreeProps props) {
+            DefaultNestedTreeHolder node = spy(new DefaultNestedTreeHolder(c, props));
             node.getYogaNode().setData(node);
             return node;
           }

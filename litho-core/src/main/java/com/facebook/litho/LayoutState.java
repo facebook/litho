@@ -57,6 +57,7 @@ import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
@@ -723,7 +724,7 @@ public class LayoutState
     }
 
     // Early return if collecting results of a node holding a nested tree.
-    if (result.isNestedTreeHolder()) {
+    if (result instanceof NestedTreeHolderResult) {
       // If the nested tree is defined, it has been resolved during a measure call during
       // layout calculation.
       if (isTracing) {
@@ -733,10 +734,10 @@ public class LayoutState
             .arg("rootComponentId", result.getTailComponent().getId())
             .flush();
       }
-      InternalNode nestedTree =
+      LithoLayoutResult nestedTree =
           Layout.create(
               parentContext,
-              (InternalNode) result,
+              (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
               layoutState.mPrevLayoutStateContext);
@@ -2145,8 +2146,8 @@ public class LayoutState
   // collecting the LayoutOutputs. The nested tree itself effectively becomes the layout
   // root in this case.
   private boolean isLayoutRoot(LithoLayoutResult result) {
-    return mLayoutRoot.isNestedTreeHolder()
-        ? result == mLayoutRoot.getNestedTree()
+    return mLayoutRoot instanceof NestedTreeHolderResult
+        ? result == ((NestedTreeHolderResult) mLayoutRoot).getNestedResult()
         : result == mLayoutRoot;
   }
 

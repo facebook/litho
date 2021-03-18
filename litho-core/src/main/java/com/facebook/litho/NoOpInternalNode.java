@@ -121,9 +121,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void copyInto(InternalNode target) {}
-
-  @Override
   public @Nullable InternalNode duplicateParentState(boolean duplicateParentState) {
     return null;
   }
@@ -409,32 +406,12 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public InternalNode getNestedTree() {
-    return null;
-  }
-
-  @Override
-  public void setNestedTree(InternalNode nestedTree) {}
-
-  @Nullable
-  @Override
-  public InternalNode getNestedTreeHolder() {
-    return null;
-  }
-
-  @Nullable
-  @Override
   public NodeInfo getNodeInfo() {
     return null;
   }
 
   @Override
   public void setNodeInfo(NodeInfo nodeInfo) {}
-
-  @Override
-  public @Nullable NestedTreeProps getOrCreateNestedTreeProps() {
-    return null;
-  }
 
   @Override
   public @Nullable NodeInfo getOrCreateNodeInfo() {
@@ -444,12 +421,6 @@ class NoOpInternalNode implements InternalNode {
   @Nullable
   @Override
   public InternalNode getParent() {
-    return null;
-  }
-
-  @Nullable
-  @Override
-  public TreeProps getPendingTreeProps() {
     return null;
   }
 
@@ -592,11 +563,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean hasNestedTree() {
-    return false;
-  }
-
-  @Override
   public boolean hasStateListAnimatorResSet() {
     return false;
   }
@@ -663,17 +629,9 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean isNestedTreeHolder() {
-    return false;
-  }
-
-  @Override
   public @Nullable InternalNode justifyContent(YogaJustify justifyContent) {
     return null;
   }
-
-  @Override
-  public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {}
 
   @Override
   public @Nullable YogaDirection recursivelyResolveLayoutDirection() {

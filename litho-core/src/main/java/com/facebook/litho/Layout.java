@@ -31,6 +31,7 @@ import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -170,8 +171,7 @@ class Layout {
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = InternalNodeUtils.create(c);
-        node.markIsNestedTreeHolder(c.getTreeProps());
+        node = InternalNodeUtils.createNestedTreeHolder(c, c.getTreeProps());
       }
 
       // If the component can resolve itself resolve it.
@@ -287,16 +287,16 @@ class Layout {
     return node;
   }
 
-  static InternalNode create(
+  static LithoLayoutResult create(
       ComponentContext parentContext,
-      final InternalNode holder,
+      final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
 
     final Component component = holder.getTailComponent();
     final String componentGlobalKey = holder.getTailComponentKey();
-    final InternalNode currentLayout = holder.getNestedTree();
+    final LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // Find the immediate parent context
     List<Component> components = holder.getComponents();
@@ -317,7 +317,7 @@ class Layout {
     }
 
     // The resolved layout to return.
-    final InternalNode layout;
+    final LithoLayoutResult layout;
 
     if (currentLayout == null
         || !hasCompatibleSizeSpec(
@@ -329,7 +329,7 @@ class Layout {
             currentLayout.getLastMeasuredHeight())) {
 
       // Check if cached layout can be used.
-      final InternalNode cachedLayout =
+      final LithoLayoutResult cachedLayout =
           consumeCachedLayout(parentContext, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
@@ -340,7 +340,8 @@ class Layout {
 
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null && component.canUsePreviousLayout(parentContext)) {
-          remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
+          // TODO: Avoid this hard cast, after splitting is complete.
+          remeasure((InternalNode) currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;
         } else {
 
@@ -368,11 +369,12 @@ class Layout {
           // Create a new layout.
           layout = create(context, component, true, true, componentGlobalKey);
 
-          holder.copyInto(layout);
+          // TODO: Avoid this hard cast, after splitting is complete.
+          holder.copyInto((InternalNode) layout);
 
           measure(
               parentContext,
-              layout,
+              (InternalNode) layout, // TODO: Avoid this hard cast, after splitting is complete.
               widthSpec,
               heightSpec,
               prevLayoutStateContext,
@@ -385,7 +387,7 @@ class Layout {
         layout.setLastMeasuredWidth(layout.getWidth());
       }
 
-      holder.setNestedTree(layout);
+      holder.setNestedResult(layout);
     } else {
 
       // Use the previous layout.
@@ -628,10 +630,10 @@ class Layout {
   }
 
   @Nullable
-  static InternalNode consumeCachedLayout(
+  static LithoLayoutResult consumeCachedLayout(
       final ComponentContext c,
       final Component component,
-      final InternalNode holder,
+      final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec) {
     final LayoutState layoutState = c.getLayoutState();

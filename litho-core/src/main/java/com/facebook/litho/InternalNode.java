@@ -37,8 +37,7 @@ import javax.annotation.Nullable;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode
-    extends Inputs, LithoLayoutResult, LayoutProps, Copyable<InternalNode> {
+public interface InternalNode extends Inputs, LithoLayoutResult, LayoutProps {
 
   void addChildAt(InternalNode child, int index);
 
@@ -100,31 +99,7 @@ public interface InternalNode
 
   void setDiffNode(@Nullable DiffNode diffNode);
 
-  void setLastWidthSpec(int widthSpec);
-
-  void setLastHeightSpec(int heightSpec);
-
-  /**
-   * Sets the last value the measure funcion associated with this node {@link Component} returned
-   * for the height.
-   */
-  void setLastMeasuredHeight(float lastMeasuredHeight);
-
-  /**
-   * Sets the last value the measure funcion associated with this node {@link Component} returned
-   * for the width.
-   */
-  void setLastMeasuredWidth(float lastMeasuredWidth);
-
-  /**
-   * Set the nested tree before measuring it in order to transfer over important information such as
-   * layout direction needed during measurement.
-   */
-  void setNestedTree(InternalNode nestedTree);
-
   void setNodeInfo(NodeInfo nodeInfo);
-
-  NestedTreeProps getOrCreateNestedTreeProps();
 
   NodeInfo getOrCreateNodeInfo();
 
@@ -136,9 +111,6 @@ public interface InternalNode
   InternalNode invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler);
 
   InternalNode justifyContent(YogaJustify justifyContent);
-
-  /** Mark this node as a nested tree root holder. */
-  void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps);
 
   void registerDebugComponent(DebugComponent debugComponent);
 
@@ -205,15 +177,6 @@ public interface InternalNode
       ComponentContext c,
       Component next,
       @Nullable String nextKey);
-
-  class NestedTreeProps {
-    boolean mIsNestedTreeHolder;
-    @Nullable InternalNode mNestedTree;
-    @Nullable InternalNode mNestedTreeHolder;
-    @Nullable Edges mNestedTreePadding;
-    @Nullable Edges mNestedTreeBorderWidth;
-    @Nullable TreeProps mPendingTreeProps;
-  }
 
   /**
    * The API for the nested tree holder, which is used to hold the partial results of an unresolved

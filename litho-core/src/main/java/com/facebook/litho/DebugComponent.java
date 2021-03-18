@@ -22,6 +22,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
@@ -177,7 +178,10 @@ public final class DebugComponent {
       }
     }
 
-    final InternalNode nestedTree = mNode.getNestedTree();
+    final LithoLayoutResult nestedTree =
+        mNode instanceof NestedTreeHolderResult
+            ? ((NestedTreeHolderResult) mNode).getNestedResult()
+            : null;
     if (nestedTree != null && nestedTree.isInitialized()) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
@@ -422,8 +426,7 @@ public final class DebugComponent {
 
   @Nullable
   private static InternalNode parent(InternalNode node) {
-    final InternalNode parent = node.getParent();
-    return parent != null ? parent : node.getNestedTreeHolder();
+    return node.getParent();
   }
 
   private static int getXFromRoot(@Nullable InternalNode node) {
