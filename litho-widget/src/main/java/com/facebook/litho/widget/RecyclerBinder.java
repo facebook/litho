@@ -3544,10 +3544,16 @@ public class RecyclerBinder
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
-
       if (viewCreator != null) {
         final View view = viewCreator.createView(mComponentContext.getAndroidContext(), parent);
-        return new BaseViewHolder(view, false);
+        try {
+          return new BaseViewHolder(view, false);
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(
+              "createView() may not return null from :"
+                  + getClassNameForDebug(viewCreator.getClass()),
+              ex);
+        }
       } else {
         final LithoView lithoView =
             mLithoViewFactory == null
@@ -3556,6 +3562,14 @@ public class RecyclerBinder
 
         return new BaseViewHolder(lithoView, true);
       }
+    }
+
+    private @Nullable String getClassNameForDebug(Class c) {
+      Class<?> enclosingClass = c.getEnclosingClass();
+      if (enclosingClass == null) {
+        return c.getCanonicalName();
+      }
+      return enclosingClass.getCanonicalName();
     }
 
     @Override
@@ -3581,8 +3595,7 @@ public class RecyclerBinder
             // Since synchronous layout is about to happen, and the ScrollListener that updates the
             // visible and working ranges will not fire until after the full frame is rendered,
             // we want to kick off background layout for the estimated visible range in the
-            // scrolling
-            // direction in an attempt to take advantage of more parallel layout.
+            // scrolling direction in an attempt to take advantage of more parallel layout.
             if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
                 && mCurrentLastVisiblePosition != RecyclerView.NO_POSITION) {
               // Get the last known visible range if available.
