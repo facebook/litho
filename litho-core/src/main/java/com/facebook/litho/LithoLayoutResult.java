@@ -21,6 +21,7 @@ import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
+import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -268,4 +269,20 @@ public interface LithoLayoutResult extends ComponentLayout {
    */
   @Nullable
   String getTestKey();
+
+  /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
+  interface NestedTreeHolderResult extends LithoLayoutResult, Copyable<InternalNode> {
+
+    /**
+     * The {@link TreeProps} to to be set into the new {@link ComponentContext} before resolving the
+     * nested tree.
+     */
+    @Nullable
+    TreeProps getPendingTreeProps();
+
+    @Nullable
+    LithoLayoutResult getNestedResult();
+
+    void setNestedResult(@Nullable LithoLayoutResult tree);
+  }
 }

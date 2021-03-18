@@ -24,6 +24,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
@@ -213,4 +214,11 @@ public interface InternalNode
     @Nullable Edges mNestedTreeBorderWidth;
     @Nullable TreeProps mPendingTreeProps;
   }
+
+  /**
+   * The API for the nested tree holder, which is used to hold the partial results of an unresolved
+   * node which will be resolved after layout calculation for components which implement {@link
+   * OnCreateLayoutWithSizeSpec}.
+   */
+  interface NestedTreeHolder extends InternalNode, Copyable<InternalNode> {}
 }
