@@ -73,7 +73,8 @@ public class HorizontalScrollWithDynamicItemHeightSpec {
                 .section(
                     DataDiffSection.<Integer>create(new SectionContext(c))
                         .data(ITEM_HEIGHTS)
-                        .renderEventHandler(HorizontalScrollWithDynamicItemHeight.onRender(c))
+                        .renderEventHandler(
+                            HorizontalScrollWithDynamicItemHeight.<Integer>onRender(c))
                         .build())
                 .canMeasureRecycler(true))
         .child(
@@ -87,7 +88,7 @@ public class HorizontalScrollWithDynamicItemHeightSpec {
   }
 
   @OnEvent(RenderEvent.class)
-  static RenderInfo onRender(ComponentContext c, @FromEvent Object model, @FromEvent int index) {
+  static RenderInfo onRender(ComponentContext c, @FromEvent Integer model, @FromEvent int index) {
     final int height = (int) model;
     return ComponentRenderInfo.create()
         .component(

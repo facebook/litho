@@ -125,7 +125,7 @@ public class DataDiffSectionSpec<T> {
     final List<? extends T> previousData = data.getPrevious();
     final List<? extends T> nextData = data.getNext();
     final ComponentRenderer componentRenderer =
-        new ComponentRenderer(DataDiffSection.getRenderEventHandler(c), c);
+        new ComponentRenderer<T>(DataDiffSection.<T>getRenderEventHandler(c), c);
     final DiffSectionOperationExecutor operationExecutor =
         new DiffSectionOperationExecutor(changeSet);
     final RecyclerBinderUpdateCallback<T> updatesCallback;
@@ -308,13 +308,14 @@ public class DataDiffSectionSpec<T> {
     }
   }
 
-  private static class ComponentRenderer implements RecyclerBinderUpdateCallback.ComponentRenderer {
+  private static class ComponentRenderer<T>
+      implements RecyclerBinderUpdateCallback.ComponentRenderer {
 
-    private final EventHandler<RenderEvent> mRenderEventEventHandler;
+    private final EventHandler<RenderEvent<T>> mRenderEventEventHandler;
     private final SectionContext mSectionContext;
 
     private ComponentRenderer(
-        EventHandler<RenderEvent> renderEventEventHandler, SectionContext sectionContext) {
+        EventHandler<RenderEvent<T>> renderEventEventHandler, SectionContext sectionContext) {
       mRenderEventEventHandler = renderEventEventHandler;
       mSectionContext = sectionContext;
     }

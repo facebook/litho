@@ -57,7 +57,7 @@ public class EventHandlerTestHelper {
    */
   @SuppressWarnings("unchecked")
   public static <E, R> EventHandler<E> createMockEventHandler(
-      Class<E> eventClass, final MockEventHandler<E, R> handler) {
+      Class eventClass, final MockEventHandler<E, R> handler) {
     final EventDispatcher dispatcher = mock(EventDispatcher.class);
     when(dispatcher.dispatchOnEvent(any(EventHandler.class), any(eventClass)))
         .then(

@@ -37,8 +37,8 @@ import com.facebook.litho.widget.RenderInfo;
  * @param loggingExtras a bundle of logging extras we want to expose to the rendered component.
  */
 @Event(returnType = RenderInfo.class)
-public class RenderEvent {
+public class RenderEvent<T> {
   public int index;
-  public Object model;
+  public T model;
   public @Nullable Bundle loggingExtras;
 }

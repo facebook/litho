@@ -113,7 +113,7 @@ public class HorizontalScrollWithSnapComponentSpec {
                 .section(
                     DataDiffSection.<Integer>create(new SectionContext(c))
                         .data(Arrays.asList(colors))
-                        .renderEventHandler(HorizontalScrollWithSnapComponent.onRender(c))
+                        .renderEventHandler(HorizontalScrollWithSnapComponent.<Integer>onRender(c))
                         .build())
                 .canMeasureRecycler(true)
                 .itemDecoration(
@@ -144,7 +144,7 @@ public class HorizontalScrollWithSnapComponentSpec {
   }
 
   @OnEvent(RenderEvent.class)
-  static RenderInfo onRender(ComponentContext c, @FromEvent Object model, @FromEvent int index) {
+  static RenderInfo onRender(ComponentContext c, @FromEvent Integer model, @FromEvent int index) {
     return ComponentRenderInfo.create()
         .component(
             Row.create(c)
