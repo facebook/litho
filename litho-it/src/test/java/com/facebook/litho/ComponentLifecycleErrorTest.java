@@ -366,10 +366,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnBoundsDefinedCrashWithTestErrorBoundary() {
-    // TODO(T85975291): add onError coverage and remove expected exception
-    mExpectedException.expect(CrashingMountableSpec.MountPhaseException.class);
-    mExpectedException.expectMessage("Crashed on ON_BOUNDS_DEFINED");
-
     crashingScenarioMountHelper(
         LifecycleStep.ON_BOUNDS_DEFINED, "Crashed on ON_BOUNDS_DEFINED", false);
   }

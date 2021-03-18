@@ -865,11 +865,16 @@ public class LayoutState
       if (isTracing) {
         ComponentsSystrace.beginSection("onBoundsDefined:" + result.getSimpleName());
       }
-      component.onBoundsDefined(
-          component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey),
-          result);
-      if (isTracing) {
-        ComponentsSystrace.endSection();
+      final ComponentContext scopedContext =
+          component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey);
+      try {
+        component.onBoundsDefined(scopedContext, result);
+      } catch (Exception e) {
+        ComponentUtils.handleWithHierarchy(scopedContext, component, e);
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
       }
 
       renderTreeNode = addMountableOutput(layoutState, layoutOutput, parent);
@@ -1326,9 +1331,15 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("onBoundsDefined:" + result.getSimpleName());
     }
-    drawableComponent.onBoundsDefined(layoutState.mContext, result);
-    if (isTracing) {
-      ComponentsSystrace.endSection();
+
+    try {
+      drawableComponent.onBoundsDefined(layoutState.mContext, result);
+    } catch (Exception e) {
+      ComponentUtils.handleWithHierarchy(layoutState.mContext, drawableComponent, e);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
 
     final LayoutOutput drawableLayoutOutput =
