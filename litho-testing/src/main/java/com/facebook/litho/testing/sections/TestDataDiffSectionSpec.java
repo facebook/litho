@@ -43,7 +43,7 @@ class TestDataDiffSectionSpec {
     if (skipCheckIsSameHandler) {
       return Children.create()
           .child(
-              DataDiffSection.create(c)
+              DataDiffSection.<String>create(c)
                   .data(data)
                   .renderEventHandler(TestDataDiffSection.onRender(c))
                   .alwaysDetectDuplicates(alwaysDetectDuplicates))
@@ -51,7 +51,7 @@ class TestDataDiffSectionSpec {
     }
     return Children.create()
         .child(
-            DataDiffSection.create(c)
+            DataDiffSection.<String>create(c)
                 .data(data)
                 .renderEventHandler(TestDataDiffSection.onRender(c))
                 .onCheckIsSameItemEventHandler(TestDataDiffSection.onCheckIsSameItem(c))

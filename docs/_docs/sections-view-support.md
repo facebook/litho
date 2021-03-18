@@ -18,7 +18,7 @@ class MyGroupSectionSpec {
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
-          .child(DataDiffSection.create(c)
+          .child(DataDiffSection.<MyModel>create(c)
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
@@ -45,7 +45,7 @@ We've seen in the previous example how to use `ComponentRenderInfo` to declare h
 @GroupSectionSpec
 class MyGroupSectionSpec {
 
-  private static ViewCreator VIEW_CREATOR =  
+  private static ViewCreator VIEW_CREATOR =
       new ViewCreator<MyView>() {
           @Override
           public MyView createView(Context c, ViewGroup parent) {
@@ -59,7 +59,7 @@ class MyGroupSectionSpec {
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
-          .child(DataDiffSection.create(c)
+          .child(DataDiffSection.<MyModel>create(c)
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
@@ -88,7 +88,7 @@ class MyGroupSectionSpec {
 
 `ViewCreator` and `ViewBinder` are the logical equivalent of `onCreateViewHolder` and `onBindViewHolder` methods of the `RecyclerView.Adapter`.
 
-Views created by the same `ViewCreator` instance will be recycled in the same pool in RecyclerView. You can create a static instance of `ViewCreator` for different view types which you will use in the sections and pass static instance to `.viewCreator` method to ensure efficient recycling. You can use the `model` or the `index` to decide amongst multiple view types and return the appropriate `ViewCreator` instance. 
+Views created by the same `ViewCreator` instance will be recycled in the same pool in RecyclerView. You can create a static instance of `ViewCreator` for different view types which you will use in the sections and pass static instance to `.viewCreator` method to ensure efficient recycling. You can use the `model` or the `index` to decide amongst multiple view types and return the appropriate `ViewCreator` instance.
 
 The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](/javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if only need to implement one of the `ViewBinder` methods, typically `bind(View)`.
 
@@ -101,7 +101,7 @@ Here's how you could do that:
 @GroupSectionSpec
 class MyGroupSectionSpec {
 
-  private static ViewCreator VIEW_CREATOR =  
+  private static ViewCreator VIEW_CREATOR =
       new ViewCreator<MyView>() {
           @Override
           public MyView createView(Context c, ViewGroup parent) {
@@ -115,7 +115,7 @@ class MyGroupSectionSpec {
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
-          .child(DataDiffSection.create(c)
+          .child(DataDiffSection.<MyModel>create(c)
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
@@ -144,4 +144,3 @@ class MyGroupSectionSpec {
   }
 }
 ```
-

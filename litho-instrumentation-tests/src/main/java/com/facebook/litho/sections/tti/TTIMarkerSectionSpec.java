@@ -39,10 +39,12 @@ public class TTIMarkerSectionSpec {
   static final String RENDER_MARKER = "renderMaker";
 
   @OnCreateChildren
-  static Children onCreateChildren(final SectionContext c, @Prop List<Object> data) {
+  static Children onCreateChildren(final SectionContext c, @Prop List<String> data) {
     return Children.create()
         .child(
-            DataDiffSection.create(c).data(data).renderEventHandler(TTIMarkerSection.onRender(c)))
+            DataDiffSection.<String>create(c)
+                .data(data)
+                .renderEventHandler(TTIMarkerSection.onRender(c)))
         .build();
   }
 

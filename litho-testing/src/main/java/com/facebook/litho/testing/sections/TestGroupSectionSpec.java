@@ -46,7 +46,9 @@ public class TestGroupSectionSpec {
       @Prop(optional = true) Comparator isSameContentComparator) {
 
     DataDiffSection.Builder builder =
-        DataDiffSection.create(c).data(data).renderEventHandler(TestGroupSection.onRender(c, c));
+        DataDiffSection.<Object>create(c)
+            .data(data)
+            .renderEventHandler(TestGroupSection.onRender(c, c));
 
     if (isSameItemComparator != null) {
       builder.onCheckIsSameItemEventHandler(TestGroupSection.onCheckIsSameItem(c));

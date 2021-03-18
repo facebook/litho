@@ -35,7 +35,7 @@ public final class GroupSectionWithNullableRenderInfoSpec {
   static Children onCreateChildren(SectionContext c, @Prop List<? extends String> items) {
     return Children.create()
         .child(
-            DataDiffSection.create(c)
+            DataDiffSection.<String>create(c)
                 .data(items)
                 .renderEventHandler(GroupSectionWithNullableRenderInfo.onRender(c)))
         .build();

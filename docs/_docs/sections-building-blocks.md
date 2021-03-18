@@ -30,7 +30,7 @@ If you're new to using `DataDiffSection`, we recommend you watch this Litho Less
 ### How to Use DataDiffSection
 
 > **NOTE**: Because Sections diffing can occur on a background thread, mutations to the list or its elements from another thread can cause `DiffUtils` to emit an invalid diff! The reason for this is that `OnCheckIsSameItem` and/or `OnCheckIsSameContent` may return inconsistent results for the same pairs of indices over the course of diffing the lists. **This will show up as an `IndexOutOfBoundsException` thrown from `RecyclerBinder`**.
-> 
+>
 > To fix this, you need to prevent concurrent modification of the data with diffing on another thread: the easiest way to ensure this is to use immutable lists and immutable data with `DataDiffSection` and the Sections API.
 
 A `DataDiffSection` is used to represent a homogeneous list of data. The minimal information that you have to pass to a `DataDiffSection` is the list of items that it needs to render and a callback for rendering each item in this list.
@@ -78,7 +78,7 @@ Children onCreateChildren(
     SectionContext c,
     @Prop ImmutableList<MyModel> dataModel) {
   return Children.create()
-    .child(DataDiffSection.create(c)
+    .child(DataDiffSection.<MyModel>create(c)
         .data(dataModel)
         .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
         .onCheckIsSameContentEventHandler(MyGroupSection.onCheckIsSameContent(c))

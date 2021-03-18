@@ -17,7 +17,7 @@ class MyGroupSectionSpec {
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
           .child(
-              DataDiffSection.create(c)
+              DataDiffSection.<MyModel>create(c)
                 .data(dataModel)
                 .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
