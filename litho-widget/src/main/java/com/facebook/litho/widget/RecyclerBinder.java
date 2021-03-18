@@ -133,6 +133,7 @@ public class RecyclerBinder
   private final int mRecyclingMode;
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
+  private final boolean mIgnoreNullLayoutStateError;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -373,6 +374,7 @@ public class RecyclerBinder
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
+        boolean ignoreNullLayoutStateError,
         int recyclingMode,
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
@@ -392,6 +394,7 @@ public class RecyclerBinder
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
+            boolean ignoreNullLayoutStateError,
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
             @Nullable LithoHandler preallocateHandler,
@@ -406,6 +409,7 @@ public class RecyclerBinder
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
+              .ignoreNullLayoutStateError(ignoreNullLayoutStateError)
               .recyclingMode(recyclingMode)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
@@ -457,6 +461,7 @@ public class RecyclerBinder
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
+    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -747,6 +752,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
+      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
+      return this;
+    }
+
     public Builder recyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
       this.recyclingMode = recyclingMode;
       return this;
@@ -975,6 +985,7 @@ public class RecyclerBinder
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
@@ -3848,6 +3859,7 @@ public class RecyclerBinder
         mMoveLayoutsBetweenThreads,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
+        mIgnoreNullLayoutStateError,
         mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,

@@ -51,6 +51,7 @@ public class ComponentTreeHolder {
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final int mRecyclingMode;
+  private final boolean mIgnoreNullLayoutStateError;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -126,6 +127,7 @@ public class ComponentTreeHolder {
     private boolean incrementalVisibility;
     private int recyclingMode;
     private boolean visibilityProcessingEnabled = true;
+    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
 
     private Builder() {}
 
@@ -186,6 +188,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
+      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
+      return this;
+    }
+
     public Builder recyclingMode(int recyclingMode) {
       this.recyclingMode = recyclingMode;
       return this;
@@ -228,6 +235,7 @@ public class ComponentTreeHolder {
     mIncrementalMount = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mIncrementalVisibilityEnabled = builder.incrementalVisibility;
     mRecyclingMode = builder.recyclingMode;
@@ -487,6 +495,7 @@ public class ComponentTreeHolder {
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
               .incrementalVisibility(mIncrementalVisibilityEnabled)
+              .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
       if (mPendingNewLayoutListener != null) {

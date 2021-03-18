@@ -106,6 +106,7 @@ public class ComponentTree {
   private static boolean sBoostPerfLayoutStateFuture = false;
   private final boolean mAreTransitionsEnabled;
   private final boolean mUseStatelessComponent;
+  private final boolean mIgnoreNullLayoutStateError;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -347,6 +348,7 @@ public class ComponentTree {
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mInterruptUseCurrentLayoutSource = ComponentsConfiguration.interruptUseCurrentLayoutSource;
     isReconciliationEnabled = builder.isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
@@ -2134,7 +2136,7 @@ public class ComponentTree {
                 + ". Interruptible layouts: "
                 + mMoveLayoutsBetweenThreads;
 
-        if (ComponentsConfiguration.ignoreNullLayoutStateError) {
+        if (mIgnoreNullLayoutStateError) {
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR, "ComponentTree:LayoutStateNull", errorMessage);
         } else {
@@ -3132,6 +3134,7 @@ public class ComponentTree {
     private boolean incrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
     private boolean shouldForceAsyncStateUpdate =
         ComponentsConfiguration.shouldForceAsyncStateUpdate;
+    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3285,6 +3288,11 @@ public class ComponentTree {
     /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
+      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
       return this;
     }
 
