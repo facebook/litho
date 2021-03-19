@@ -461,7 +461,7 @@ public abstract class Component extends ComponentLifecycle
 
   /** @return a handle that is unique to this component. */
   @Nullable
-  protected Handle getHandle() {
+  Handle getHandle() {
     return mHandle;
   }
 
@@ -475,7 +475,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** @return a key that is local to the component's parent. */
-  protected String getKey() {
+  String getKey() {
     if (mKey == null && !mHasManualKey) {
       mKey = Integer.toString(getTypeId());
     }
