@@ -480,4 +480,8 @@ public class RCTextView extends View {
       }
     }
   }
+
+  public Layout getLayout() {
+    return mLayout;
+  }
 }
