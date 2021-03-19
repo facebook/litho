@@ -403,7 +403,8 @@ public abstract class Component extends ComponentLifecycle
    *     the exception. Null if the component isn't initialized.
    */
   @Override
-  protected @Nullable EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
+  @Nullable
+  EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
     if (mUseStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(

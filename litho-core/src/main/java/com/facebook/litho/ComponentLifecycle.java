@@ -658,7 +658,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     ComponentUtils.dispatchErrorEvent(c, e);
   }
 
-  protected abstract @Nullable EventHandler<ErrorEvent> getErrorHandler(ComponentContext c);
+  abstract @Nullable EventHandler<ErrorEvent> getErrorHandler(ComponentContext c);
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
