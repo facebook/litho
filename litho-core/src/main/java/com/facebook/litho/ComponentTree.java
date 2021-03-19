@@ -981,8 +981,23 @@ public class ComponentTree {
       return;
     }
     mMainThreadLayoutState = mCommittedLayoutState;
+    dispatchOnAttached();
+
     if (mLithoView != null) {
       mLithoView.setMountStateDirty();
+    }
+  }
+
+  @UiThread
+  @GuardedBy("this")
+  private void dispatchOnAttached() {
+    final @Nullable Map<String, Component> attachables =
+        mMainThreadLayoutState.consumeAttachables();
+    final LayoutStateContext layoutStateContext = mMainThreadLayoutState.getLayoutStateContext();
+    if (mAttachDetachHandler != null) {
+      mAttachDetachHandler.onAttached(layoutStateContext, attachables);
+    } else if (attachables != null) {
+      getOrCreateAttachDetachHandler().onAttached(layoutStateContext, attachables);
     }
   }
 
@@ -2207,7 +2222,6 @@ public class ComponentTree {
           rootHeight = localLayoutState.getHeight();
         }
 
-        attachables = localLayoutState.consumeAttachables();
         layoutStateContext = localLayoutState.getLayoutStateContext();
       }
 
@@ -2237,12 +2251,6 @@ public class ComponentTree {
               source == CalculateLayoutSource.UPDATE_STATE_ASYNC
                   || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
         }
-      }
-
-      if (mAttachDetachHandler != null) {
-        mAttachDetachHandler.onAttached(layoutStateContext, attachables);
-      } else if (attachables != null) {
-        getOrCreateAttachDetachHandler().onAttached(layoutStateContext, attachables);
       }
     }
 
@@ -2624,17 +2632,12 @@ public class ComponentTree {
     return mLayoutStateFutures;
   }
 
+  @UiThread
   private AttachDetachHandler getOrCreateAttachDetachHandler() {
-    AttachDetachHandler localAttachDetachHandler = mAttachDetachHandler;
-    if (localAttachDetachHandler == null) {
-      synchronized (this) {
-        localAttachDetachHandler = mAttachDetachHandler;
-        if (localAttachDetachHandler == null) {
-          mAttachDetachHandler = localAttachDetachHandler = new AttachDetachHandler();
-        }
-      }
+    if (mAttachDetachHandler == null) {
+      mAttachDetachHandler = new AttachDetachHandler();
     }
-    return localAttachDetachHandler;
+    return mAttachDetachHandler;
   }
 
   private void debugLog(String eventName, String info) {

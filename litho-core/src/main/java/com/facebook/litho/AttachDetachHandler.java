@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnAttached;
@@ -25,7 +28,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * A handler stores components that have implemented {@link OnAttached} or {@link OnDetached}
@@ -37,9 +39,7 @@ import javax.annotation.concurrent.GuardedBy;
 public class AttachDetachHandler {
 
   /** A container stores components whose {@link OnAttached} methods are already executed. */
-  @GuardedBy("this")
-  @Nullable
-  private Map<String, Component> mAttached;
+  @Nullable private Map<String, Component> mAttached;
 
   private @Nullable LayoutStateContext mLayoutStateContext;
 
@@ -51,22 +51,22 @@ public class AttachDetachHandler {
    * @param attachable contains components that have implemented {@link OnAttached} or {@link
    *     OnDetached} delegate methods.
    */
+  @UiThread
   void onAttached(
       LayoutStateContext layoutStateContext, @Nullable Map<String, Component> attachable) {
+    assertMainThread();
     @Nullable final Map<String, Component> toAttach;
     @Nullable final Map<String, Component> toDetach;
     final LayoutStateContext previousLayoutStateContext;
 
-    synchronized (this) {
-      toAttach = composeAttach(attachable, mAttached);
-      toDetach = composeDetach(attachable, mAttached);
-      previousLayoutStateContext = mLayoutStateContext;
-      if (attachable != null) {
-        mAttached = new LinkedHashMap<>(attachable);
-        mLayoutStateContext = layoutStateContext;
-      } else {
-        mAttached = null;
-      }
+    toAttach = composeAttach(attachable, mAttached);
+    toDetach = composeDetach(attachable, mAttached);
+    previousLayoutStateContext = mLayoutStateContext;
+    if (attachable != null) {
+      mAttached = new LinkedHashMap<>(attachable);
+      mLayoutStateContext = layoutStateContext;
+    } else {
+      mAttached = null;
     }
 
     if (toDetach != null) {
@@ -103,24 +103,24 @@ public class AttachDetachHandler {
    * Execute {@link OnDetached} callbacks for components stored in {@link #mAttached}, this method
    * should be called when releasing a {@link ComponentTree}.
    */
+  @UiThread
   void onDetached() {
+    assertMainThread();
     final List<Component> toDetach;
     final List<String> toDetachKeys;
-    synchronized (this) {
-      if (mAttached == null) {
-        return;
-      }
-
-      toDetach = new ArrayList<>();
-      toDetachKeys = new ArrayList<>();
-
-      for (Map.Entry<String, Component> entry : mAttached.entrySet()) {
-        toDetach.add(entry.getValue());
-        toDetachKeys.add(entry.getKey());
-      }
-
-      mAttached.clear();
+    if (mAttached == null) {
+      return;
     }
+
+    toDetach = new ArrayList<>();
+    toDetachKeys = new ArrayList<>();
+
+    for (Map.Entry<String, Component> entry : mAttached.entrySet()) {
+      toDetach.add(entry.getValue());
+      toDetachKeys.add(entry.getKey());
+    }
+
+    mAttached.clear();
 
     for (int i = 0, size = toDetach.size(); i < size; i++) {
       final Component component = toDetach.get(i);
@@ -136,7 +136,6 @@ public class AttachDetachHandler {
     }
   }
 
-  @GuardedBy("this")
   @Nullable
   private static Map<String, Component> composeAttach(
       @Nullable Map<String, Component> attachable, @Nullable Map<String, Component> attached) {
@@ -150,7 +149,6 @@ public class AttachDetachHandler {
     return toAttach;
   }
 
-  @GuardedBy("this")
   @Nullable
   private static Map<String, Component> composeDetach(
       @Nullable Map<String, Component> attachable, @Nullable Map<String, Component> attached) {
