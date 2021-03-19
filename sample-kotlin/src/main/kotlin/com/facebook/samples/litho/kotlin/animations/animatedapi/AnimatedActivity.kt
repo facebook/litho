@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.animations.transitions
+package com.facebook.samples.litho.kotlin.animations.animatedapi
 
 import android.os.Bundle
 import com.facebook.litho.LithoView
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
-class TransitionsActivity : NavigatableDemoActivity() {
+class AnimatedActivity : NavigatableDemoActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    setContentView(LithoView.create(this, TransitionComponent()))
+    setContentView(LithoView.create(this, AnimatedComponent()))
   }
 }
