@@ -65,7 +65,7 @@ public interface InternalNode extends Inputs, LithoLayoutResult, LayoutProps {
 
   void border(Edges width, int[] colors, float[] radii);
 
-  void calculateLayout(float width, float height);
+  LithoLayoutResult calculateLayout(float width, float height);
 
   void calculateLayout();
 

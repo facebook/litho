@@ -100,7 +100,9 @@ class NoOpInternalNode implements InternalNode {
   public void border(Edges width, int[] colors, float[] radii) {}
 
   @Override
-  public void calculateLayout(float width, float height) {}
+  public LithoLayoutResult calculateLayout(float width, float height) {
+    return this;
+  }
 
   @Override
   public void calculateLayout() {}

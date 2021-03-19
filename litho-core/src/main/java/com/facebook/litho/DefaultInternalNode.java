@@ -361,9 +361,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void calculateLayout(float width, float height) {
+  public LithoLayoutResult calculateLayout(float width, float height) {
     applyOverridesRecursive(this);
     mYogaNode.calculateLayout(width, height);
+
+    return this;
   }
 
   @Override
