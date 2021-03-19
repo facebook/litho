@@ -790,7 +790,10 @@ public class ComponentTreeTest {
     assertThat(lithoView.getWidth()).isEqualTo(1000);
     assertThat(lithoView.getHeight()).isEqualTo(1000);
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
 
@@ -1156,7 +1159,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue()
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
@@ -1171,7 +1177,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(0);
 
@@ -1245,7 +1254,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue()
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
@@ -1263,7 +1275,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
 
@@ -1341,7 +1356,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue()
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
@@ -1359,7 +1377,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
 
@@ -1561,7 +1582,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+    assertThat(
+            componentTree
+                .getMainThreadLayoutState()
+                .isForComponentId(((Component) newComponent).getId()))
         .isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
 

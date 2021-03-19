@@ -618,7 +618,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   // Get an id that is identical across cloned instances, but otherwise unique
-  protected int getId() {
+  int getId() {
     return mId;
   }
 
