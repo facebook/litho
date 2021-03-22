@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
@@ -443,13 +444,15 @@ class MaterialTextInputSpec {
   static void onBind(
       final ComponentContext c,
       MountableTextInputLayout textInputLayout,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) KeyListener keyListener) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
     TextInputSpec.onBindEditText(
         c,
         editText,
         textWatchers,
+        keyListener,
         MaterialTextInput.getTextChangedEventHandler(c),
         MaterialTextInput.getSelectionChangedEventHandler(c),
         MaterialTextInput.getKeyUpEventHandler(c),

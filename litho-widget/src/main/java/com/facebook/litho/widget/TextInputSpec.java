@@ -39,6 +39,7 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
+import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -789,11 +790,13 @@ class TextInputSpec {
   static void onBind(
       final ComponentContext c,
       EditTextWithEventHandlers editText,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) KeyListener keyListener) {
     onBindEditText(
         c,
         editText,
         textWatchers,
+        keyListener,
         TextInput.getTextChangedEventHandler(c),
         TextInput.getSelectionChangedEventHandler(c),
         TextInput.getKeyUpEventHandler(c),
@@ -806,6 +809,7 @@ class TextInputSpec {
       final ComponentContext c,
       EditTextWithEventHandlers editText,
       @Nullable List<TextWatcher> textWatchers,
+      @Nullable KeyListener keyListener,
       EventHandler textChangedEventHandler,
       EventHandler selectionChangedEventHandler,
       EventHandler keyUpEventHandler,
@@ -813,6 +817,7 @@ class TextInputSpec {
       EventHandler EditorActionEventHandler,
       EventHandler inputConnectionEventHandler) {
     editText.attachWatchers(textWatchers);
+    editText.setKeyListener(keyListener);
 
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(textChangedEventHandler);
@@ -835,6 +840,7 @@ class TextInputSpec {
   @OnUnbind
   static void onUnbind(final ComponentContext c, EditTextWithEventHandlers editText) {
     editText.detachWatchers();
+    editText.setKeyListener(null);
 
     editText.setComponentContext(null);
     editText.setTextChangedEventHandler(null);
