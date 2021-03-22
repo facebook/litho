@@ -270,12 +270,6 @@ public class ComponentsConfiguration {
   public static @Nullable String timelineDocsLink = null;
 
   /**
-   * If true, when a LithoView with nested LithoView children gets released, the children will get
-   * released too.
-   */
-  public static boolean releaseNestedLithoViews = false;
-
-  /**
    * Only used for testing. If true, the framework will not throw an error if a null LayoutState is
    * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
    */

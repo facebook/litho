@@ -1138,12 +1138,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public void release() {
     assertMainThread();
 
-    if (ComponentsConfiguration.releaseNestedLithoViews) {
-      final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
-      if (childrenLithoViews != null) {
-        for (LithoView child : childrenLithoViews) {
-          child.release();
-        }
+    final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
+    if (childrenLithoViews != null) {
+      for (LithoView child : childrenLithoViews) {
+        child.release();
       }
     }
 

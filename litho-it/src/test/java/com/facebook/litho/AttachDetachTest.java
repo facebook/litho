@@ -18,44 +18,18 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.HorizontalScroll;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
-import java.util.Arrays;
-import java.util.Collection;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class AttachDetachTest {
-  private boolean mDefaultReleaseNestedLithoViews;
-  private final boolean mReleaseNestedLithoViews;
+
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-
-  @ParameterizedRobolectricTestRunner.Parameters(name = "releaseNestedLithoViews={0}")
-  public static Collection data() {
-    return Arrays.asList(new Object[][] {{true}});
-  }
-
-  public AttachDetachTest(boolean releaseNestedLithoViews) {
-    mReleaseNestedLithoViews = releaseNestedLithoViews;
-  }
-
-  @Before
-  public void before() {
-    mDefaultReleaseNestedLithoViews = ComponentsConfiguration.releaseNestedLithoViews;
-    ComponentsConfiguration.releaseNestedLithoViews = mReleaseNestedLithoViews;
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.releaseNestedLithoViews = mDefaultReleaseNestedLithoViews;
-  }
 
   @Test
   public void horizontalScroll_releaseTree_childComponentShouldCallOnDetached() {
