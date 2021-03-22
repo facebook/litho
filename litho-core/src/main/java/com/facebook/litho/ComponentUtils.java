@@ -405,18 +405,18 @@ public class ComponentUtils {
    *     PlaygroundComponent |-Text[trans.key="text_transition_key";] |-Row | +-Text
    *     +-Text[manual.key="text2";]
    */
-  static String treeToString(@Nullable InternalNode root) {
+  static String treeToString(@Nullable LithoLayoutResult root) {
     if (root == null) {
       return "null";
     }
 
     final StringBuilder builder = new StringBuilder();
-    final Deque<InternalNode> stack = new LinkedList<>();
+    final Deque<LithoLayoutResult> stack = new LinkedList<>();
     stack.addLast(null);
     stack.addLast(root);
     int level = 0;
     while (!stack.isEmpty()) {
-      final InternalNode node = stack.removeLast();
+      final LithoLayoutResult node = stack.removeLast();
       if (node == null) {
         level--;
         continue;
@@ -430,7 +430,7 @@ public class ComponentUtils {
       if (node != root) {
         builder.append('\n');
         boolean isLast;
-        final Iterator<InternalNode> iterator = stack.iterator();
+        final Iterator<LithoLayoutResult> iterator = stack.iterator();
         iterator.next();
         iterator.next();
         for (int index = 0; index < level - 1; index++) {
