@@ -172,11 +172,7 @@ public interface InternalNode extends Inputs, LithoLayoutResult, LayoutProps {
    * @param next The new component to reconcile against.
    * @return The reconciled InternalNode which represents {@param next}.
    */
-  InternalNode reconcile(
-      LayoutStateContext layoutStateContext,
-      ComponentContext c,
-      Component next,
-      @Nullable String nextKey);
+  InternalNode reconcile(ComponentContext c, Component next, @Nullable String nextKey);
 
   /**
    * The API for the nested tree holder, which is used to hold the partial results of an unresolved

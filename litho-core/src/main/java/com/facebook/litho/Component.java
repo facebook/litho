@@ -310,9 +310,7 @@ public abstract class Component extends ComponentLifecycle
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       layoutState.clearCachedLayout(this);
 
-      lastMeasuredLayout =
-          Layout.createAndMeasureComponent(
-              layoutState.getLayoutStateContext(), c, this, widthSpec, heightSpec);
+      lastMeasuredLayout = Layout.createAndMeasureComponent(c, this, widthSpec, heightSpec);
 
       layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
 
@@ -361,9 +359,10 @@ public abstract class Component extends ComponentLifecycle
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null);
+    contextForLayout.setLayoutStateContext(layoutStateContext);
     final InternalNode internalNode =
-        Layout.createAndMeasureComponent(
-            new LayoutStateContext(null, null), contextForLayout, this, widthSpec, heightSpec);
+        Layout.createAndMeasureComponent(contextForLayout, this, widthSpec, heightSpec);
 
     outputSize.width = internalNode.getWidth();
     outputSize.height = internalNode.getHeight();

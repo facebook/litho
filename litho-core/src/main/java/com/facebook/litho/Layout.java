@@ -48,18 +48,16 @@ class Layout {
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
   static InternalNode createAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null, null);
+        c, component, null, widthSpec, heightSpec, null, null, null, null);
   }
 
   /* TODO: (T81557408) Fix @Nullable issue */
   static InternalNode createAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
       @Nullable final String globalKeyToReuse,
@@ -98,11 +96,7 @@ class Layout {
       ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
       Component updated = updatedScopedContext.getComponentScope();
       layout =
-          current.reconcile(
-              layoutStateContext,
-              c,
-              updated,
-              ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
+          current.reconcile(c, updated, ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
     }
 
     if (layoutStatePerfEvent != null) {

@@ -124,7 +124,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     assertThat(layout).isNotNull();
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout, times(0)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -134,7 +134,7 @@ public class StateUpdatesWithReconciliationTest {
 
     mComponentTree.setRoot(new DummyComponent());
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout, times(0)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -144,7 +144,7 @@ public class StateUpdatesWithReconciliationTest {
 
     mComponentTree.setRoot(mRootComponent);
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout, times(0)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -154,7 +154,7 @@ public class StateUpdatesWithReconciliationTest {
 
     mComponentTree.setRoot(current.getRootComponent());
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout, times(0)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -164,7 +164,7 @@ public class StateUpdatesWithReconciliationTest {
 
     mComponentTree.setRoot(mRootComponent.makeShallowCopy());
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout, times(0)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -174,7 +174,7 @@ public class StateUpdatesWithReconciliationTest {
 
     mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout, times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -185,7 +185,7 @@ public class StateUpdatesWithReconciliationTest {
     mComponentTree.updateStateAsync(getRootGlobalKey(current), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout, times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -195,7 +195,7 @@ public class StateUpdatesWithReconciliationTest {
 
     mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout, times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -244,7 +244,7 @@ public class StateUpdatesWithReconciliationTest {
     mComponentTree.setRoot(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     // reconciliation should be invoked
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout, times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -267,7 +267,7 @@ public class StateUpdatesWithReconciliationTest {
             .build());
 
     // reconciliation should not be invoked
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout, times(0)).reconcile(any(), any(), any());
   }
 
   /**

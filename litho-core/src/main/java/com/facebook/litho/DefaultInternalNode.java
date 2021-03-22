@@ -1575,11 +1575,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode reconcile(
-      LayoutStateContext layoutStateContext,
-      ComponentContext c,
-      Component next,
-      @Nullable String nextKey) {
+  public InternalNode reconcile(ComponentContext c, Component next, @Nullable String nextKey) {
     final StateHandler stateHandler = c.getStateHandler();
     final Set<String> keys;
     if (stateHandler == null) {
@@ -1588,7 +1584,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       keys = stateHandler.getKeysForPendingUpdates();
     }
 
-    return reconcile(layoutStateContext, c, this, next, nextKey, keys);
+    return reconcile(c.getLayoutStateContext(), c, this, next, nextKey, keys);
   }
 
   void setComponentContext(ComponentContext c) {

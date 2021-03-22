@@ -83,7 +83,6 @@ public class InternalNodeTest {
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
-        context.getLayoutStateContext(),
         context,
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
@@ -102,7 +101,6 @@ public class InternalNodeTest {
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
-        context.getLayoutStateContext(),
         context,
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
@@ -523,7 +521,6 @@ public class InternalNodeTest {
 
     InternalNode layout =
         createAndMeasureComponent(
-            context.getLayoutStateContext(),
             context,
             Column.create(context)
                 .child(Row.create(context).child(Column.create(context)))
