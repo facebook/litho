@@ -671,10 +671,16 @@ public abstract class Component extends ComponentLifecycle
   }
 
   protected void setStateContainer(StateContainer stateContainer) {
+    if (mUseStatelessComponent) {
+      return;
+    }
     mStateContainer = stateContainer;
   }
 
   protected void setInterStagePropsContainer(InterStagePropsContainer interStagePropsContainer) {
+    if (mUseStatelessComponent) {
+      return;
+    }
     mInterStagePropsContainer = interStagePropsContainer;
   }
 
