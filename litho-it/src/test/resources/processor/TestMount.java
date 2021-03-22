@@ -99,7 +99,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   private TestMountStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestMountStateContainer) super.getStateContainer(c);
+    return (TestMountStateContainer) Component.getStateContainer(c, this);
   }
 
   @Override
@@ -581,7 +581,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestMount component) {
     TestMountStateContainer _stateContainer = new TestMountStateContainer();
-    transferState(component.getStateContainer(c), _stateContainer);
+    transferState(Component.getStateContainer(c, component), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
     return _stateContainer;
   }

@@ -341,7 +341,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
     @Override
     protected void createInitialState(ComponentContext c) {
-      mStateContainer.mCount = STATE_VALUE_INITIAL_COUNT;
+      getStateContainerImpl(c).mCount = STATE_VALUE_INITIAL_COUNT;
     }
 
     @Override
@@ -355,6 +355,17 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     @Override
     protected StateContainer getStateContainer(ComponentContext scopedContext) {
       return mStateContainer;
+    }
+
+    @Nullable
+    @Override
+    protected StateContainer createStateContainer() {
+      return new DummyStateContainer();
+    }
+
+    @Nullable
+    protected DummyStateContainer getStateContainerImpl(ComponentContext c) {
+      return (DummyStateContainer) Component.getStateContainer(c, this);
     }
   }
 

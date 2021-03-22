@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class StateUpdateTestComponent extends Component {
@@ -45,6 +46,7 @@ class StateUpdateTestComponent extends Component {
   private int mId;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private final AtomicInteger createInitialStateCount = new AtomicInteger(0);
+  private static final AtomicInteger finalCounterValue = new AtomicInteger(0);
 
   StateUpdateTestComponent() {
     super("StateUpdateTestComponent");
@@ -69,8 +71,9 @@ class StateUpdateTestComponent extends Component {
 
   @Override
   protected void createInitialState(ComponentContext c) {
-    mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
+    getStateContainerImpl(c).mCount = INITIAL_COUNT_STATE_VALUE;
     createInitialStateCount.incrementAndGet();
+    finalCounterValue.set(INITIAL_COUNT_STATE_VALUE);
   }
 
   @Override
@@ -81,8 +84,8 @@ class StateUpdateTestComponent extends Component {
     nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
   }
 
-  int getCount() {
-    return mStateContainer.mCount;
+  int getCount(ComponentContext c) {
+    return finalCounterValue.get();
   }
 
   @Override
@@ -119,6 +122,17 @@ class StateUpdateTestComponent extends Component {
     return mStateContainer;
   }
 
+  @Nullable
+  @Override
+  protected StateContainer createStateContainer() {
+    return new TestStateContainer();
+  }
+
+  @Nullable
+  protected TestStateContainer getStateContainerImpl(ComponentContext c) {
+    return (TestStateContainer) Component.getStateContainer(c, this);
+  }
+
   static class TestStateContainer extends StateContainer {
     protected int mCount;
 
@@ -136,6 +150,7 @@ class StateUpdateTestComponent extends Component {
           mCount *= 2;
           break;
       }
+      finalCounterValue.set(mCount);
     }
   }
 }

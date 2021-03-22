@@ -115,7 +115,11 @@ public interface ClassNames {
   ClassName FROM_EVENT = ClassName.bestGuess("com.facebook.litho.annotations.FromEvent");
 
   ClassName SECTION = ClassName.bestGuess("com.facebook.litho.sections.Section");
+  ClassName SECTION_CONTEXT = ClassName.bestGuess("com.facebook.litho.sections.SectionContext");
   ClassName SECTION_BUILDER = ClassName.bestGuess("com.facebook.litho.sections.Section.Builder");
+
+  ClassName SURFACE = ClassName.bestGuess("com.facebook.surfaces.Surface");
+  ClassName SURFACE_CONTEXT = ClassName.bestGuess("com.facebook.surfaces.SurfaceContext");
 
   ClassName BASE_MATCHER = ClassName.bestGuess("com.facebook.litho.BaseMatcher");
   ClassName BASE_MATCHER_BUILDER = ClassName.bestGuess("com.facebook.litho.BaseMatcherBuilder");

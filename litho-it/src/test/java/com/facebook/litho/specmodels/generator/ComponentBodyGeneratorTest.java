@@ -235,7 +235,7 @@ public class ComponentBodyGeneratorTest {
                 .toString())
         .isEqualTo(
             "private com.facebook.litho.StateContainer getStateContainerImpl(com.facebook.litho.ComponentContext c) {\n"
-                + "  return (com.facebook.litho.StateContainer) super.getStateContainer(c);\n"
+                + "  return (com.facebook.litho.StateContainer) com.facebook.litho.Component.getStateContainer(c, this);\n"
                 + "}\n");
   }
 

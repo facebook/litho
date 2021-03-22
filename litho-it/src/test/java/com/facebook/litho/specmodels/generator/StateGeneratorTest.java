@@ -355,7 +355,7 @@ public class StateGeneratorTest {
             "private TestWithStateStateContainer getStateContainerWithLazyStateUpdatesApplied(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState component) {\n"
                 + "  TestWithStateStateContainer _stateContainer = new TestWithStateStateContainer();\n"
-                + "  transferState(component.getStateContainer(c), _stateContainer);\n"
+                + "  transferState(com.facebook.litho.Component.getStateContainer(c, component), _stateContainer);\n"
                 + "  c.applyLazyStateUpdatesForContainer(_stateContainer);\n"
                 + "  return _stateContainer;\n"
                 + "}\n");

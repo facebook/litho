@@ -228,7 +228,9 @@ public class ComponentBodyGenerator {
         .addParameter(specModel.getContextClass(), "c")
         .returns(stateContainerImplClassName)
         .addStatement(
-            "return ($T) super." + STATE_CONTAINER_GETTER + "(c)", stateContainerImplClassName)
+            "return ($T) $T." + STATE_CONTAINER_GETTER + "(c, this)",
+            stateContainerImplClassName,
+            StateGenerator.getStateContainerGetterClassName(specModel))
         .build();
   }
 

@@ -68,6 +68,7 @@ public class StateUpdatesTest {
   public void setup(boolean enableComponentTreeSpy) {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), LOG_TAG, mComponentsLogger);
+    mContext.setLayoutStateContextForTesting();
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
 
@@ -222,7 +223,7 @@ public class StateUpdatesTest {
 
   @Test
   public void testSetInitialStateValue() {
-    assertThat(mTestComponent.getCount())
+    assertThat(mTestComponent.getCount(mContext))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
   }
 
@@ -231,7 +232,7 @@ public class StateUpdatesTest {
     mComponentTree.updateStateAsync(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1);
   }
 
@@ -257,13 +258,13 @@ public class StateUpdatesTest {
     mComponentTree.updateStateLazy(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE);
 
     mComponentTree.updateStateAsync(
         mTestComponentKey, StateUpdateTestComponent.createNoopStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1);
   }
 
@@ -276,7 +277,7 @@ public class StateUpdatesTest {
     mComponentTree.updateStateAsync(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo((StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1);
   }
 
@@ -291,7 +292,7 @@ public class StateUpdatesTest {
     mComponentTree.updateStateLazy(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo((StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1);
   }
 
@@ -301,7 +302,7 @@ public class StateUpdatesTest {
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
     mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 1);
   }
 
@@ -314,7 +315,7 @@ public class StateUpdatesTest {
     mComponentTree.updateStateAsync(
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount(mContext))
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 2);
   }
 

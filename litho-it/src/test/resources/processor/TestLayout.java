@@ -128,7 +128,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   private TestLayoutStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestLayoutStateContainer) super.getStateContainer(c);
+    return (TestLayoutStateContainer) Component.getStateContainer(c, this);
   }
 
   @Override
@@ -432,7 +432,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestLayout component) {
     TestLayoutStateContainer _stateContainer = new TestLayoutStateContainer();
-    transferState(component.getStateContainer(c), _stateContainer);
+    transferState(Component.getStateContainer(c, component), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
     return _stateContainer;
   }

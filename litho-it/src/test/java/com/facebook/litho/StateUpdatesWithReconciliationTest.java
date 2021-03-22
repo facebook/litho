@@ -406,7 +406,18 @@ public class StateUpdatesWithReconciliationTest {
 
     @Override
     protected void createInitialState(ComponentContext c) {
-      mStateContainer.mCount = STATE_VALUE_INITIAL_COUNT;
+      getStateContainerImpl(c).mCount = STATE_VALUE_INITIAL_COUNT;
+    }
+
+    @Nullable
+    @Override
+    protected StateContainer createStateContainer() {
+      return new DummyStateContainer();
+    }
+
+    @Nullable
+    protected DummyStateContainer getStateContainerImpl(ComponentContext c) {
+      return (DummyStateContainer) Component.getStateContainer(c, this);
     }
 
     @Override
