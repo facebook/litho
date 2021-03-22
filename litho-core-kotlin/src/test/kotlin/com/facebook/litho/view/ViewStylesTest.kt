@@ -22,6 +22,7 @@ import android.text.Layout
 import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
@@ -40,6 +41,7 @@ import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
+import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
@@ -76,6 +78,60 @@ class ViewStylesTest {
         .attachToWindow()
 
     assertHasColorDrawableOfColor(lithoViewRule.lithoView, Color.WHITE)
+  }
+
+  @Test
+  fun clickable_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).clickable(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.isClickable).isTrue
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).clickable(false)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.isClickable).isFalse
+  }
+
+  @Test
+  fun clipChildren_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).clipChildren(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.clipChildren).isTrue
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).clipChildren(false)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.clipChildren).isFalse
+  }
+
+  @Test
+  fun focusable_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).focusable(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.isFocusable).isTrue
   }
 
   @Test
@@ -140,6 +196,49 @@ class ViewStylesTest {
     assertThat(wasLongClicked.get()).isFalse()
     lithoViewRule.findViewWithTag("click_me").performLongClick()
     assertThat(wasLongClicked.get()).isTrue()
+  }
+
+  @Test
+  fun rotation_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.width(100.px).height(100.px).rotation(90f).rotationX(45f).rotationY(30f))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.rotation).isEqualTo(90f)
+    assertThat(lithoViewRule.lithoView.rotationX).isEqualTo(45f)
+    assertThat(lithoViewRule.lithoView.rotationY).isEqualTo(30f)
+  }
+
+  @Test
+  fun scale_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).scale(0.5f)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.scaleX).isEqualTo(0.5f)
+    assertThat(lithoViewRule.lithoView.scaleY).isEqualTo(0.5f)
+  }
+
+  @Test
+  fun selected_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot { Row(style = Style.width(100.px).height(100.px).selected(true)) }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.lithoView.isSelected).isTrue
   }
 
   @Test
@@ -248,6 +347,49 @@ class ViewStylesTest {
     val node = resolveComponentToNodeForTest(lithoViewRule.context, OutlineProviderComponent())
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
+  }
+
+  /** See comment on [elevation_whenSet_isRespected] above. */
+  @Test
+  fun border_whenSet_isRespected() {
+    class ComponentWithBorder : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(
+            style =
+                Style.border(
+                    Border.create(context)
+                        .color(YogaEdge.LEFT, Color.BLUE)
+                        .color(YogaEdge.TOP, Color.RED)
+                        .color(YogaEdge.RIGHT, Color.BLACK)
+                        .color(YogaEdge.BOTTOM, Color.WHITE)
+                        .radiusDip(Border.Corner.TOP_LEFT, 5f)
+                        .radiusDip(Border.Corner.TOP_RIGHT, 6f)
+                        .radiusDip(Border.Corner.BOTTOM_RIGHT, 7f)
+                        .radiusDip(Border.Corner.BOTTOM_LEFT, 8f)
+                        .build()))
+      }
+    }
+
+    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithBorder())
+    assertThat(node.borderColors)
+        .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
+    assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
+  }
+
+  /** See comment on [elevation_whenSet_isRespected] above. */
+  @Test
+  fun clipToOutline_whenSet_isRespected() {
+    class ComponentThatClips : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.clipToOutline(true))
+      }
+    }
+
+    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentThatClips())
+    assertThat(node.getOrCreateNodeInfo().clipToOutline).isTrue
+
+    node.getOrCreateNodeInfo().setClipToOutline(false)
+    assertThat(node.getOrCreateNodeInfo().clipToOutline).isFalse
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {

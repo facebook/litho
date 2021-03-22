@@ -16,10 +16,13 @@
 
 package com.facebook.litho.view
 
+import android.animation.StateListAnimator
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
+import com.facebook.litho.Border
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.LongClickEvent
@@ -35,19 +38,30 @@ import com.facebook.litho.getCommonPropsHolder
 /** Enums for [ObjectStyleItem]. */
 private enum class ObjectField {
   BACKGROUND,
+  BORDER,
+  CLICKABLE,
+  CLIP_CHILDREN,
+  CLIP_TO_OUTLINE,
+  FOCUSABLE,
   FOREGROUND,
   ON_CLICK,
   ON_LONG_CLICK,
+  OUTLINE_PROVIDER,
+  SELECTED,
+  STATE_LIST_ANIMATOR,
   WRAP_IN_VIEW,
   VIEW_TAG,
   VIEW_TAGS,
-  OUTLINE_PROVIDER,
 }
 
 /** Enums for [FloatStyleItem]. */
 private enum class FloatField {
   ALPHA,
   ELEVATION,
+  ROTATION,
+  ROTATION_X,
+  ROTATION_Y,
+  SCALE,
 }
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
@@ -56,12 +70,19 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
+      ObjectField.BORDER -> commonProps.border(value as Border?)
+      ObjectField.CLICKABLE -> commonProps.clickable(value as Boolean)
+      ObjectField.CLIP_CHILDREN -> commonProps.clipChildren(value as Boolean)
+      ObjectField.CLIP_TO_OUTLINE -> commonProps.clipToOutline(value as Boolean)
+      ObjectField.FOCUSABLE -> commonProps.focusable(value as Boolean)
       ObjectField.FOREGROUND -> commonProps.foreground(value as Drawable?)
       ObjectField.ON_CLICK ->
           commonProps.clickHandler(eventHandler(value as ((ClickEvent) -> Unit)))
       ObjectField.ON_LONG_CLICK ->
           commonProps.longClickHandler(
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
+      ObjectField.SELECTED -> commonProps.selected(value as Boolean)
+      ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
       ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
@@ -77,9 +98,21 @@ private class FloatStyleItem(val field: FloatField, val value: Float) : StyleIte
     when (field) {
       FloatField.ALPHA -> commonProps.alpha(value)
       FloatField.ELEVATION -> commonProps.shadowElevationPx(value)
+      FloatField.ROTATION -> commonProps.rotation(value)
+      FloatField.ROTATION_X -> commonProps.rotationX(value)
+      FloatField.ROTATION_Y -> commonProps.rotationY(value)
+      FloatField.SCALE -> commonProps.scale(value)
     }.exhaustive
   }
 }
+
+/**
+ * Sets an alpha on the View this Component mounts to. Setting this property will cause the
+ * Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setAlpha]
+ */
+fun Style.alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
 
 /**
  * Sets a background on the View this Component mounts to. Setting this property will cause the
@@ -99,6 +132,58 @@ fun Style.background(background: Drawable?) =
  */
 fun Style.backgroundColor(@ColorInt backgroundColor: Int) =
     this + ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
+
+/**
+ * Describes how a [Border] should be drawn around this component. Setting this property will cause
+ * the Component to be represented as a View at mount time if it wasn't going to already.
+ */
+fun Style.border(border: Border) = this + ObjectStyleItem(ObjectField.BORDER, border)
+
+/**
+ * Sets if the View this Component mounts to should be clickable. Setting this property will cause
+ * the Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setClickable]
+ */
+fun Style.clickable(isClickable: Boolean) =
+    this + ObjectStyleItem(ObjectField.CLICKABLE, isClickable)
+
+/**
+ * Setting this to false allows child views of this view to draw outside its bounds, overriding the
+ * default behavior. It only applies to direct children. Setting this property will cause the
+ * Component to be represented as a View at mount time if it wasn't going to already.
+ */
+fun Style.clipChildren(clipChildren: Boolean) =
+    this + ObjectStyleItem(ObjectField.CLIP_CHILDREN, clipChildren)
+
+/**
+ * Sets whether the View's Outline should be used to clip the contents of the View. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ *
+ * See [android.view.View.setClipToOutline]
+ */
+fun Style.clipToOutline(clipToOutline: Boolean) =
+    this + ObjectStyleItem(ObjectField.CLIP_TO_OUTLINE, clipToOutline)
+
+/**
+ * Sets an elevation on the View this Component mounts to. Setting this property will cause the
+ * Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * NOTE: This style will be ignored pre-API 21.
+ *
+ * See [android.view.View.setElevation]
+ */
+fun Style.elevation(elevation: Float) = this + FloatStyleItem(FloatField.ELEVATION, elevation)
+
+/**
+ * Setting this property will cause the Component to be focusable. Setting this property will cause
+ * the Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setFocusable]
+ */
+fun Style.focusable(isFocusable: Boolean) =
+    this + ObjectStyleItem(ObjectField.FOCUSABLE, isFocusable)
 
 /**
  * Sets a foreground on the View this Component mounts to. Setting this property will cause the
@@ -124,6 +209,67 @@ fun Style.onClick(onClick: (ClickEvent) -> Unit) =
  */
 fun Style.onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
     this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
+
+/**
+ * Sets the degree that this component is rotated around the pivot point. Increasing the value
+ * results in clockwise rotation. By default, the pivot point is centered on the component. Setting
+ * this property will cause the Component to be represented as a View at mount time if it wasn't
+ * going to already.
+ *
+ * See [android.view.View.setRotation]
+ */
+fun Style.rotation(rotation: Float) = this + FloatStyleItem(FloatField.ROTATION, rotation)
+
+/**
+ * Sets the degree that this component is rotated around the horizontal axis through the pivot
+ * point. Setting this property will cause the Component to be represented as a View at mount time
+ * if it wasn't going to already.
+ *
+ * See [android.view.View.setRotationX]
+ */
+fun Style.rotationX(rotationX: Float) = this + FloatStyleItem(FloatField.ROTATION_X, rotationX)
+
+/**
+ * Sets the degree that this component is rotated around the vertical axis through the pivot point.
+ * Setting this property will cause the Component to be represented as a View at mount time if it
+ * wasn't going to already.
+ *
+ * See [android.view.View.setRotationY]
+ */
+fun Style.rotationY(rotationY: Float) = this + FloatStyleItem(FloatField.ROTATION_Y, rotationY)
+
+/**
+ * Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations and
+ * being able to animate size changes. Otherwise for non-animation usecases, you should use the
+ * standard layout properties to control the size of your component. Setting this property will
+ * cause the Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setScaleX] [android.view.View.setScaleY]
+ */
+fun Style.scale(scale: Float) = this + FloatStyleItem(FloatField.SCALE, scale)
+
+/**
+ * Changes the selection state of this Component. Setting this property will cause the Component to
+ * be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setSelected]
+ */
+fun Style.selected(isSelected: Boolean) = this + ObjectStyleItem(ObjectField.SELECTED, isSelected)
+
+/**
+ * Attaches the provided StateListAnimator to this Component. Setting this property will cause the
+ * Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setStateListAnimator]
+ *
+ * NOTE: This style will be ignored pre-API 21.
+ */
+fun Style.stateListAnimator(stateListAnimator: StateListAnimator?) =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      this + ObjectStyleItem(ObjectField.STATE_LIST_ANIMATOR, stateListAnimator)
+    } else {
+      this
+    }
 
 /**
  * Specifies that this Component should be represented as a View when this hierarchy is mounted.
@@ -154,24 +300,6 @@ fun Style.viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, v
  */
 fun Style.viewTags(viewTags: SparseArray<out Any>) =
     this + ObjectStyleItem(ObjectField.VIEW_TAGS, viewTags)
-
-/**
- * Sets an alpha on the View this Component mounts to. Setting this property will cause the
- * Component to be represented as a View at mount time if it wasn't going to already.
- *
- * See [android.view.View.setAlpha]
- */
-fun Style.alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
-
-/**
- * Sets an elevation on the View this Component mounts to. Setting this property will cause the
- * Component to be represented as a View at mount time if it wasn't going to already.
- *
- * NOTE: This style will be ignored pre-API 21.
- *
- * See [android.view.View.setElevation]
- */
-fun Style.elevation(elevation: Float) = this + FloatStyleItem(FloatField.ELEVATION, elevation)
 
 /**
  * Sets a [ViewOutlineProvider] on the View this Component mounts to. Setting this property will
