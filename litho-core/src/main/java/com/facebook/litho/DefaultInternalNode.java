@@ -1584,7 +1584,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       keys = stateHandler.getKeysForPendingUpdates();
     }
 
-    return reconcile(c.getLayoutStateContext(), c, this, next, nextKey, keys);
+    return reconcile(c, this, next, nextKey, keys);
   }
 
   void setComponentContext(ComponentContext c) {
@@ -1814,14 +1814,14 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final DefaultInternalNode current,
       final Component next,
       @Nullable final String nextKey,
       final Set<String> keys) {
     int mode =
-        getReconciliationMode(next.getScopedContext(layoutStateContext, nextKey), current, keys);
+        getReconciliationMode(
+            next.getScopedContext(parentContext.getLayoutStateContext(), nextKey), current, keys);
     final InternalNode layout;
 
     switch (mode) {
@@ -1830,13 +1830,24 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
           layout = current.deepClone();
         } else {
           layout =
-              reconcile(layoutStateContext, current, next, nextKey, keys, ReconciliationMode.COPY);
+              reconcile(
+                  parentContext.getLayoutStateContext(),
+                  current,
+                  next,
+                  nextKey,
+                  keys,
+                  ReconciliationMode.COPY);
         }
         break;
       case ReconciliationMode.RECONCILE:
         layout =
             reconcile(
-                layoutStateContext, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
+                parentContext.getLayoutStateContext(),
+                current,
+                next,
+                nextKey,
+                keys,
+                ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
         layout = Layout.create(parentContext, next, false, true, nextKey);
@@ -1913,7 +1924,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       if (mode == ReconciliationMode.COPY) {
         copy = reconcile(layoutStateContext, child, updated, key, keys, ReconciliationMode.COPY);
       } else {
-        copy = reconcile(layoutStateContext, parentContext, child, updated, key, keys);
+        copy = reconcile(parentContext, child, updated, key, keys);
       }
 
       // 3.3 Add the child to the cloned yoga node
