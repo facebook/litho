@@ -392,11 +392,9 @@ public class StateUpdatesWithReconciliationTest {
 
   static class DummyComponent extends Component {
 
-    private final DummyStateContainer mStateContainer;
-
     public DummyComponent() {
       super("TestComponent");
-      mStateContainer = new DummyStateContainer();
+      setStateContainer(new DummyStateContainer());
     }
 
     @Override
@@ -426,11 +424,6 @@ public class StateUpdatesWithReconciliationTest {
       DummyStateContainer prevStateContainerImpl = (DummyStateContainer) prevStateContainer;
       DummyStateContainer nextStateContainerImpl = (DummyStateContainer) nextStateContainer;
       nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
-    }
-
-    @Override
-    protected StateContainer getStateContainer(ComponentContext scopedContext) {
-      return mStateContainer;
     }
   }
 

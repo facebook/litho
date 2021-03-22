@@ -327,11 +327,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   static class DummyComponent extends Component {
 
-    private final DummyStateContainer mStateContainer;
-
     public DummyComponent() {
       super("TestComponent");
-      mStateContainer = new DummyStateContainer();
+      setStateContainer(new DummyStateContainer());
     }
 
     @Override
@@ -350,11 +348,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
       DummyStateContainer prevStateContainerImpl = (DummyStateContainer) prevStateContainer;
       DummyStateContainer nextStateContainerImpl = (DummyStateContainer) nextStateContainer;
       nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
-    }
-
-    @Override
-    protected StateContainer getStateContainer(ComponentContext scopedContext) {
-      return mStateContainer;
     }
 
     @Nullable

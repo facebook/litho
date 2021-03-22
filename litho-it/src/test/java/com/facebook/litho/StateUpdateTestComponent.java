@@ -41,7 +41,6 @@ class StateUpdateTestComponent extends Component {
     return new StateContainer.StateUpdate(STATE_UPDATE_TYPE_MULTIPLY);
   }
 
-  private final TestStateContainer mStateContainer;
   private StateUpdateTestComponent shallowCopy;
   private int mId;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
@@ -50,7 +49,7 @@ class StateUpdateTestComponent extends Component {
 
   StateUpdateTestComponent() {
     super("StateUpdateTestComponent");
-    mStateContainer = new TestStateContainer();
+    setStateContainer(new TestStateContainer());
     mId = sIdGenerator.getAndIncrement();
   }
 
@@ -115,11 +114,6 @@ class StateUpdateTestComponent extends Component {
   @Override
   protected int getId() {
     return mId;
-  }
-
-  @Override
-  protected StateContainer getStateContainer(ComponentContext scopedContext) {
-    return mStateContainer;
   }
 
   @Nullable
