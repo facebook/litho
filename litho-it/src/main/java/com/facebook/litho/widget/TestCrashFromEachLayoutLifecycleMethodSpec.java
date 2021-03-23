@@ -18,12 +18,17 @@ package com.facebook.litho.widget;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import com.facebook.litho.BoundaryWorkingRange;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.FocusedVisibleEvent;
+import com.facebook.litho.FullImpressionVisibleEvent;
+import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.VisibilityChangedEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -34,7 +39,9 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.OnRegisterRanges;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
@@ -92,6 +99,12 @@ public class TestCrashFromEachLayoutLifecycleMethodSpec {
     }
     return Column.create(c)
         .visibleHandler(TestCrashFromEachLayoutLifecycleMethod.onVisible(c))
+        .invisibleHandler(TestCrashFromEachLayoutLifecycleMethod.onInvisible(c))
+        .focusedHandler(TestCrashFromEachLayoutLifecycleMethod.onFocusedEventVisible(c))
+        .fullImpressionHandler(
+            TestCrashFromEachLayoutLifecycleMethod.onFullImpressionVisibleEvent(c))
+        .visibilityChangedHandler(
+            TestCrashFromEachLayoutLifecycleMethod.onVisibilityChangedEvent(c))
         .build();
   }
 
@@ -133,9 +146,56 @@ public class TestCrashFromEachLayoutLifecycleMethodSpec {
   }
 
   @OnEvent(VisibleEvent.class)
-  static void onVisible(final ComponentContext c, @Prop LifecycleStep crashFromStep) {
+  static void onVisible(final ComponentContext c, final @Prop LifecycleStep crashFromStep) {
     if (crashFromStep == LifecycleStep.ON_EVENT_VISIBLE) {
       throw new RuntimeException("onEventVisible crash");
+    }
+  }
+
+  @OnEvent(InvisibleEvent.class)
+  static void onInvisible(final ComponentContext c, final @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_EVENT_INVISIBLE) {
+      throw new RuntimeException("onEventInvisible crash");
+    }
+  }
+
+  @OnEvent(FocusedVisibleEvent.class)
+  static void onFocusedEventVisible(
+      final ComponentContext c, final @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_FOCUSED_EVENT_VISIBLE) {
+      throw new RuntimeException("onFocusedEventVisible crash");
+    }
+  }
+
+  @OnEvent(FullImpressionVisibleEvent.class)
+  static void onFullImpressionVisibleEvent(
+      final ComponentContext c, final @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT) {
+      throw new RuntimeException("onFullImpressionVisible crash");
+    }
+  }
+
+  @OnEvent(VisibilityChangedEvent.class)
+  static void onVisibilityChangedEvent(
+      final ComponentContext c, final @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_VISIBILITY_CHANGED) {
+      throw new RuntimeException("onVisibilityChanged crash");
+    }
+  }
+
+  @OnRegisterRanges
+  static void registerWorkingRanges(ComponentContext c, final @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_REGISTER_RANGES) {
+      throw new RuntimeException("onRegisterRanges crash");
+    }
+    TestCrashFromEachLayoutLifecycleMethod.registerBoundaryWorkingRange(
+        c, new BoundaryWorkingRange());
+  }
+
+  @OnEnteredRange(name = "boundary")
+  static void onEnteredWorkingRange(ComponentContext c, @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_ENTERED_RANGE) {
+      throw new RuntimeException("onEnteredRange crash");
     }
   }
 

@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
@@ -25,6 +28,10 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
@@ -42,6 +49,7 @@ import com.facebook.litho.widget.OnErrorPassUpParentTester;
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod;
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec;
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester;
+import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -221,6 +229,21 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
+  public void testOnRegisterRangesCrashWithTestErrorBoundary() {
+    crashingScenarioLayoutSectionHelper(LifecycleStep.ON_REGISTER_RANGES, "onRegisterRanges crash");
+  }
+
+  @Test
+  public void testOnEnteredRangeCrashWithTestErrorBoundary() {
+    // TODO(T87265593): add onError coverage and remove expected exception
+    // RuntimeException we throw is wrapped, so we need to expect that one
+    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("onEnteredRange crash");
+
+    crashingScenarioLayoutSectionHelper(LifecycleStep.ON_ENTERED_RANGE, "onEnteredRange crash");
+  }
+
+  @Test
   public void testOnUpdateStateCrashWithTestErrorBoundary() {
     final ComponentContext context = mLithoViewRule.getContext();
 
@@ -312,6 +335,76 @@ public class ComponentLifecycleErrorTest {
     Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
     assertThat(error).isInstanceOf(RuntimeException.class);
     assertThat(error).hasMessage("onEventVisible crash");
+  }
+
+  @Test
+  public void testOnEventInvisibleCrashWithTestErrorBoundary() {
+    // TODO(T87265660): add onError coverage and remove expected exception
+    // RuntimeException we throw is wrapped, so we need to expect that one
+    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("onEventInvisible crash");
+
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    TestCrashFromEachLayoutLifecycleMethodSpec.Caller caller =
+        new TestCrashFromEachLayoutLifecycleMethodSpec.Caller();
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context)
+            .crashFromStep(LifecycleStep.ON_EVENT_INVISIBLE)
+            .caller(caller)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
+            .build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY))
+        .measure()
+        .layout();
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(0, 0, 10, 5), true);
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onEventInvisible crash");
+  }
+
+  @Test
+  public void testOnFocusedEventVisibleCrashWithTestErrorBoundary() {
+    // TODO(T87265730): add onError coverage and remove expected exception
+    // RuntimeException we throw is wrapped, so we need to expect that one
+    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("onFocusedEventVisible crash");
+
+    crashingScenarioLayoutSectionHelper(
+        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash");
+  }
+
+  @Test
+  public void testOnFullImpressionVisibleEventCrashWithTestErrorBoundary() {
+    // TODO(T87265786): add onError coverage and remove expected exception
+    // RuntimeException we throw is wrapped, so we need to expect that one
+    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("onFullImpressionVisible crash");
+
+    crashingScenarioLayoutSectionHelper(
+        LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT, "onFullImpressionVisible crash");
+  }
+
+  @Test
+  public void testOnVisibilityChangedCrashWithTestErrorBoundary() {
+    // TODO(T87265817): add onError coverage and remove expected exception
+    // RuntimeException we throw is wrapped, so we need to expect that one
+    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
+    mExpectedException.expectMessage("onVisibilityChanged crash");
+
+    crashingScenarioLayoutSectionHelper(
+        LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash");
   }
 
   @Test
@@ -459,6 +552,40 @@ public class ComponentLifecycleErrorTest {
         TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
 
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage(expectedMessage);
+  }
+
+  private void crashingScenarioLayoutSectionHelper(
+      LifecycleStep crashFromStep, String expectedMessage) {
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context).crashFromStep(crashFromStep).build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context)
+            .heightPx(100)
+            .errorOutput(errorOutput)
+            .child(crashingComponent)
+            .build();
+
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(context)
+            .recyclerConfiguration(ListRecyclerConfiguration.create().build())
+            .section(
+                SingleComponentSection.create(new SectionContext(context))
+                    .component(component)
+                    .build())
+            .build();
+
+    mLithoViewRule
+        .setRoot(rcc)
+        .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    mLithoViewRule.attachToWindow().measure().layout();
 
     Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
     assertThat(error).isInstanceOf(RuntimeException.class);
