@@ -161,4 +161,4 @@ Testing other lifecycle methods is as simple as calling the lifecycle method wit
   }
 ```
 
-See [VerySimpleGroupSectionSpecTest](https://github.com/facebook/litho/blob/90d4fb176a6209371f58a68d9cd00bb214ffd54e/litho-it/src/test/java/com/facebook/litho/sections/common/VerySimpleGroupSectionSpecTest.java) for the full source of this example!  Testing for sections is still very basic so if you run into any missing functionality please [reach out to us](https://github.com/facebook/litho/issues/new) and describe your use case.
+See [VerySimpleGroupSectionSpecTest](https://github.com/facebook/litho/blob/master/litho-it/src/test/java/com/facebook/litho/sections/common/VerySimpleGroupSectionSpecTest.java) for the full source of this example!  Testing for sections is still very basic so if you run into any missing functionality please [reach out to us](https://github.com/facebook/litho/issues/new) and describe your use case.

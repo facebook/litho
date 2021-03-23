@@ -427,11 +427,7 @@ public abstract class Component extends ComponentLifecycle
     return mUseStatelessComponent;
   }
 
-  /**
-   * Get a key that is unique to this component within its tree.
-   *
-   * @return
-   */
+  /** Get a key that is unique to this component within its tree. */
   @Nullable
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
     if (component.mUseStatelessComponent) {
@@ -445,11 +441,7 @@ public abstract class Component extends ComponentLifecycle
     return component.mGlobalKey;
   }
 
-  /**
-   * Set a key for this component that is unique within its tree.
-   *
-   * @param key
-   */
+  /** Set a key for this component that is unique within its tree. */
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
   void setGlobalKey(String key) {
@@ -762,8 +754,6 @@ public abstract class Component extends ComponentLifecycle
    * Prepares a component for calling any pending state updates on it by setting the TreeProps which
    * the component requires from its parent, setting a scoped component context and applies the
    * pending state updates.
-   *
-   * @param c component context
    */
   private void applyStateUpdates(
       final ComponentContext parentContext,
@@ -810,9 +800,6 @@ public abstract class Component extends ComponentLifecycle
    * Returns the number of children of a given type {@param childComponent} component has and then
    * increments it by 1.
    *
-   * @param parentContext
-   * @param parentComponent
-   * @param childComponent
    * @return the number of children of {@param childComponent} type
    */
   static int getChildCountAndIncrement(
@@ -851,11 +838,6 @@ public abstract class Component extends ComponentLifecycle
   /**
    * Returns the number of children with same {@param manualKey} component has and then increments
    * it by 1.
-   *
-   * @param parentContext
-   * @param parentComponent
-   * @param manualKey
-   * @return
    */
   static int getManualKeyUsagesCountAndIncrement(
       final @Nullable ComponentContext parentContext,
@@ -1111,15 +1093,13 @@ public abstract class Component extends ComponentLifecycle
     protected abstract void setComponent(Component component);
 
     /**
-     * Ports {@link android.view.ViewCompat#setAccessibilityHeading} into components world. However,
-     * since the aforementioned ViewCompat's method is available only on API 19 and above, calling
-     * this method on lower APIs will have no effect. On the legit versions, on the other hand,
-     * calling this method will lead to the component being treated as a heading. The
+     * Ports {@link androidx.core.view.ViewCompat#setAccessibilityHeading} into components world.
+     * However, since the aforementioned ViewCompat's method is available only on API 19 and above,
+     * calling this method on lower APIs will have no effect. On the legit versions, on the other
+     * hand, calling this method will lead to the component being treated as a heading. The
      * AccessibilityHeading property allows accessibility services to help users navigate directly
-     * from one heading to the next. See <a
-     * href="https://developer.android.com/reference/android/support/v4/view/accessibility/
-     * AccessibilityNodeInfoCompat#setheading">https://developer.android.com/reference/android/
-     * support/v4/view/accessibility/AccessibilityNodeInfoCompat#setheading</a> for more
+     * from one heading to the next. See {@link
+     * androidx.core.view.accessibility.AccessibilityNodeInfoCompat#setHeading} for more
      * information.
      *
      * <p>Default: false
@@ -1311,7 +1291,7 @@ public abstract class Component extends ComponentLifecycle
      *             .duplicateParentState(true))
      * }</pre>
      *
-     * @see {@link android.view.View#setDuplicateParentStateEnabled(boolean)}
+     * @see android.view.View#setDuplicateParentStateEnabled(boolean)
      */
     public T duplicateParentState(boolean duplicateParentState) {
       mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
@@ -1334,7 +1314,7 @@ public abstract class Component extends ComponentLifecycle
      *             .clickable(true))
      * }</pre>
      *
-     * @see {@link ViewGroup#setAddStatesFromChildren(boolean)}
+     * @see android.view.ViewGroup#setAddStatesFromChildren
      */
     public T duplicateChildrenStates(boolean duplicateChildrenStates) {
       mComponent.getOrCreateCommonProps().duplicateChildrenStates(duplicateChildrenStates);
@@ -1964,7 +1944,7 @@ public abstract class Component extends ComponentLifecycle
     /**
      * Links a {@link DynamicValue} object to the rotation value for this Component
      *
-     * @param value controller for the rotation value
+     * @param rotation controller for the rotation value
      */
     public T rotation(DynamicValue<Float> rotation) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_ROTATION, rotation);
