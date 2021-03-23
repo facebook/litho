@@ -3,7 +3,7 @@ id: sections-testing
 title: Testing Sections
 ---
 
-[SectionComponentTestHelper](pathname:///javadoc/com/facebook/litho/testing/sections/SectionComponentTestHelper.html) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
+[SectionsTestHelper](pathname:///javadoc/com/facebook/litho/testing/sections/SectionsTestHelper.html) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
 
 To demonstrate the testing functionality, consider this simple group section with a a list of text and an optional image header.
 
