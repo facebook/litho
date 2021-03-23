@@ -817,7 +817,7 @@ class TextInputSpec {
       EventHandler EditorActionEventHandler,
       EventHandler inputConnectionEventHandler) {
     editText.attachWatchers(textWatchers);
-    editText.setKeyListener(keyListener);
+    editText.maybeSetKeyListener(keyListener);
 
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(textChangedEventHandler);
@@ -840,7 +840,7 @@ class TextInputSpec {
   @OnUnbind
   static void onUnbind(final ComponentContext c, EditTextWithEventHandlers editText) {
     editText.detachWatchers();
-    editText.setKeyListener(null);
+    editText.resetKeyListener();
 
     editText.setComponentContext(null);
     editText.setTextChangedEventHandler(null);
@@ -959,6 +959,9 @@ class TextInputSpec {
       implements EditText.OnEditorActionListener {
 
     private static final int UNMEASURED_LINE_COUNT = -1;
+
+    private final KeyListener mDefaultKeyListener;
+
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
@@ -976,6 +979,7 @@ class TextInputSpec {
       // Unfortunately we can't just override `void onEditorAction(int actionCode)` as that only
       // covers a subset of all cases where onEditorActionListener is invoked.
       this.setOnEditorActionListener(this);
+      mDefaultKeyListener = getKeyListener();
     }
 
     @Override
@@ -1142,6 +1146,16 @@ class TextInputSpec {
         imm.hideSoftInputFromWindow(getWindowToken(), 0);
         mIsSoftInputRequested = false;
       }
+    }
+
+    public void maybeSetKeyListener(@Nullable KeyListener listener) {
+      if (listener != null) {
+        setKeyListener(listener);
+      }
+    }
+
+    public void resetKeyListener() {
+      setKeyListener(mDefaultKeyListener);
     }
 
     static final class CompositeTextWatcher implements TextWatcher {
