@@ -973,27 +973,29 @@ class MountState implements MountDelegateTarget {
       LayoutOutput currentLayoutOutput,
       Component nextComponent,
       LayoutOutput nextLayoutOutput) {
-    if (currentComponent.isStateless()) {
-      ComponentContext currentScopedContext = currentLayoutOutput.getScopedContext();
-      ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
+    ComponentContext currentScopedContext = currentLayoutOutput.getScopedContext();
+    ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
 
-      return currentComponent.shouldUpdate(
-          currentComponent,
-          currentScopedContext == null
-              ? null
-              : currentComponent.getStateContainer(
-                  currentScopedContext.getLayoutStateContext(), currentLayoutOutput.getKey()),
-          nextComponent,
-          nextScopedContext == null
-              ? null
-              : nextComponent.getStateContainer(
-                  nextScopedContext.getLayoutStateContext(), nextLayoutOutput.getKey()));
-    } else {
-      return currentComponent.shouldUpdate(
-          currentLayoutOutput.getScopedContext(),
-          currentComponent,
-          nextLayoutOutput.getScopedContext(),
-          nextComponent);
+    try {
+      if (currentComponent.isStateless()) {
+        return currentComponent.shouldUpdate(
+            currentComponent,
+            currentScopedContext == null
+                ? null
+                : currentComponent.getStateContainer(
+                    currentScopedContext.getLayoutStateContext(), currentLayoutOutput.getKey()),
+            nextComponent,
+            nextScopedContext == null
+                ? null
+                : nextComponent.getStateContainer(
+                    nextScopedContext.getLayoutStateContext(), nextLayoutOutput.getKey()));
+      } else {
+        return currentComponent.shouldUpdate(
+            currentScopedContext, currentComponent, nextScopedContext, nextComponent);
+      }
+    } catch (Exception e) {
+      ComponentUtils.handle(nextScopedContext, e);
+      return true;
     }
   }
 

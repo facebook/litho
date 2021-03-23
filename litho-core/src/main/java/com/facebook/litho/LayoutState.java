@@ -1191,24 +1191,29 @@ public class LayoutState
     final Component drawableComponent = DrawableComponent.create(drawable);
     final ComponentContext recycleScopedContext =
         recycle == null ? null : recycle.getScopedContext();
-    final boolean isOutputUpdated;
+    boolean isOutputUpdated;
     if (recycle != null) {
-      if (drawableComponent.isStateless()) {
-        isOutputUpdated =
-            !drawableComponent.shouldUpdate(
-                recycle.getComponent(),
-                recycleScopedContext == null
-                    ? null
-                    : recycle
-                        .getComponent()
-                        .getStateContainer(
-                            recycleScopedContext.getLayoutStateContext(), recycle.getKey()),
-                drawableComponent,
-                null);
-      } else {
-        isOutputUpdated =
-            !drawableComponent.shouldUpdate(
-                recycleScopedContext, recycle.getComponent(), null, drawableComponent);
+      try {
+        if (drawableComponent.isStateless()) {
+          isOutputUpdated =
+              !drawableComponent.shouldUpdate(
+                  recycle.getComponent(),
+                  recycleScopedContext == null
+                      ? null
+                      : recycle
+                          .getComponent()
+                          .getStateContainer(
+                              recycleScopedContext.getLayoutStateContext(), recycle.getKey()),
+                  drawableComponent,
+                  null);
+        } else {
+          isOutputUpdated =
+              !drawableComponent.shouldUpdate(
+                  recycleScopedContext, recycle.getComponent(), null, drawableComponent);
+        }
+      } catch (Exception e) {
+        ComponentUtils.handleWithHierarchy(recycleScopedContext, drawableComponent, e);
+        isOutputUpdated = false;
       }
     } else {
       isOutputUpdated = false;

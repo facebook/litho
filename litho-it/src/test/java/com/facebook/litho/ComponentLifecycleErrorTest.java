@@ -396,11 +396,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testShouldUpdateCrashWithTestErrorBoundary() {
-    // TODO(T85975520): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("Crashed on SHOULD_UPDATE");
-
     final ComponentContext context = mLithoViewRule.getContext();
 
     Component crashingComponent =
