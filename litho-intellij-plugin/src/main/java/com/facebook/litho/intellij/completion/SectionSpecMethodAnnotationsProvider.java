@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.intellij.codeInsight.completion.CompletionParameters;
@@ -26,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SectionSpecMethodAnnotationsProvider extends CompletionProvider<CompletionParameters> {
+  static final String ANNOTATION_PREFIX = "SectionSpec";
   static final CompletionProvider<CompletionParameters> INSTANCE =
       new SectionSpecMethodAnnotationsProvider();
 
@@ -33,6 +35,7 @@ public class SectionSpecMethodAnnotationsProvider extends CompletionProvider<Com
 
   static {
     ANNOTATION_QUALIFIED_NAMES.add(OnCreateChildren.class.getTypeName());
+    ANNOTATION_QUALIFIED_NAMES.add(OnCreateInitialState.class.getTypeName());
   }
 
   @Override
@@ -41,6 +44,7 @@ public class SectionSpecMethodAnnotationsProvider extends CompletionProvider<Com
     MethodCompletionContributor.addMethodCompletions(
         parameters.getPosition(),
         LithoPluginUtils::hasLithoSectionSpecAnnotation,
+        ANNOTATION_PREFIX,
         ANNOTATION_QUALIFIED_NAMES,
         result);
   }

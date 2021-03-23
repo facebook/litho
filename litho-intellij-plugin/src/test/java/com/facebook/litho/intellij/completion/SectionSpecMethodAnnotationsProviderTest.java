@@ -46,7 +46,8 @@ public class SectionSpecMethodAnnotationsProviderTest extends LithoPluginIntelli
     for (String name : SectionSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
       final String shortName = LithoClassNames.shortName(name);
       if (ServiceManager.getService(project, TemplateService.class)
-              .getMethodTemplate(shortName, project)
+              .getMethodTemplate(
+                  SectionSpecMethodAnnotationsProvider.ANNOTATION_PREFIX, shortName, project)
           != null) {
         continue;
       }

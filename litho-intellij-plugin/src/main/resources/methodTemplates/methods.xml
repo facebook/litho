@@ -18,6 +18,7 @@
 <templateSet>
   <OnAttached method="@com.facebook.litho.annotations.OnAttached static void onAttached(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/onattached-ondetached */}"/>
   <OnCreateInitialState method="@com.facebook.litho.annotations.OnCreateInitialState static void onCreateInitialState(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: Use `File -> New -> Litho Component` menu */}"/>
+  <SectionSpec.OnCreateInitialState method="@com.facebook.litho.annotations.OnCreateInitialState static void onCreateInitialState(com.facebook.litho.sections.SectionContext c) {&#xA;/* TODO: https://fblitho.com/docs/state#initializing-a-state-value */}"/>
   <OnCreateLayout method="@com.facebook.litho.annotations.OnCreateLayout static com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: Use `File -> New -> Litho Component` menu */return com.facebook.litho.Column.create();}"/>
   <OnCreateLayoutWithSizeSpec method="@com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec static com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c, int widthSpec, int heightSpecm) {&#xA;/* TODO: https://fblitho.com/docs/custom-layout.html */return com.facebook.litho.Column.create();}"/>
   <OnCreateTransition method="@com.facebook.litho.annotations.OnCreateTransition static com.facebook.litho.Transition onCreateTransition(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/transition-basics */return com.facebook.litho.Transition.create();}"/>
