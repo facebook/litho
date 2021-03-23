@@ -36,5 +36,6 @@ fb_java_library(
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare4idea"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal4idea"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib-bare4idea"),
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib-bare4idea"),
     ],
 )

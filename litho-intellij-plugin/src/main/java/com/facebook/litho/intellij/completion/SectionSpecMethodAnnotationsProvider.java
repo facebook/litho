@@ -16,13 +16,13 @@
 
 package com.facebook.litho.intellij.completion;
 
-import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.sections.annotations.OnCreateChildren;
+import com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.util.ProcessingContext;
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,8 +34,10 @@ public class SectionSpecMethodAnnotationsProvider extends CompletionProvider<Com
   static final Set<String> ANNOTATION_QUALIFIED_NAMES = new HashSet<>();
 
   static {
-    ANNOTATION_QUALIFIED_NAMES.add(OnCreateChildren.class.getTypeName());
-    ANNOTATION_QUALIFIED_NAMES.add(OnCreateInitialState.class.getTypeName());
+    for (Class<? extends Annotation> permittedMethod :
+        GroupSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS) {
+      ANNOTATION_QUALIFIED_NAMES.add(permittedMethod.getTypeName());
+    }
   }
 
   @Override
