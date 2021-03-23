@@ -155,16 +155,14 @@ class ViewStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(200.px).height(200.px),
-              children =
-                  listOf(
-                      Row(
-                          style =
-                              Style.width(100.px).height(100.px).viewTag("click_me").onClick {
-                                wasClicked.set(true)
-                              }),
-                  ))
+          Row(style = Style.width(200.px).height(200.px)) {
+            child(
+                Row(
+                    style =
+                        Style.width(100.px).height(100.px).viewTag("click_me").onClick {
+                          wasClicked.set(true)
+                        }))
+          }
         }
         .measure()
         .layout()
@@ -246,12 +244,9 @@ class ViewStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(style = Style.width(1.px).height(1.px).wrapInView()),
-                  ))
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.width(1.px).height(1.px).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -266,12 +261,9 @@ class ViewStylesTest {
             lithoViewRule
                 .setSizeSpecs(unspecified(), unspecified())
                 .setRoot {
-                  Row(
-                      style = Style.width(200.px).height(200.px),
-                      children =
-                          listOf(
-                              Row(style = Style.width(100.px).height(100.px).viewTag("view_tag")),
-                          ))
+                  Row(style = Style.width(200.px).height(200.px)) {
+                    child(Row(style = Style.width(100.px).height(100.px).viewTag("view_tag")))
+                  }
                 }
                 .measure()
                 .layout()

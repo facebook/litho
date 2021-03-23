@@ -27,10 +27,7 @@ import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
 class FeedItemCard(val artist: Artist) : KComponent() {
   override fun ComponentScope.render() =
-      Column(
-          style = Style.padding(horizontal = 16.dp, vertical = 8.dp),
-          children =
-              listOf(
-                  Card { FeedItemComponent(artist = artist) },
-              ))
+      Column(style = Style.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        child(Card { FeedItemComponent(artist = artist) })
+      }
 }

@@ -54,12 +54,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.height(100.px).maxWidth(200.px),
-              children =
-                  listOf(
-                      Row(style = Style.width(500.px)),
-                  ))
+          Row(style = Style.height(100.px).maxWidth(200.px)) {
+            child(Row(style = Style.width(500.px)))
+          }
         }
         .assertMatches(match<LithoView> { bounds(0, 0, 200, 100) })
   }
@@ -77,12 +74,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(100.px).maxHeight(200.px),
-              children =
-                  listOf(
-                      Row(style = Style.height(500.px)),
-                  ))
+          Row(style = Style.width(100.px).maxHeight(200.px)) {
+            child(Row(style = Style.height(500.px)))
+          }
         }
         .assertMatches(match<LithoView> { bounds(0, 0, 100, 200) })
   }
@@ -100,12 +94,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(style = Style.flex(basis = 50.px).wrapInView()),
-                  ))
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.flex(basis = 50.px).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -119,12 +110,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(style = Style.flex(grow = 1f).wrapInView()),
-                  ))
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -138,15 +126,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(
-                          style =
-                              Style.height(100.px).minWidth(50.px).flex(shrink = 1f).wrapInView()),
-                  ))
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.height(100.px).minWidth(50.px).flex(shrink = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -160,12 +142,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(style = Style.width(100.px).alignSelf(YogaAlign.STRETCH).wrapInView()),
-                  ))
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.width(100.px).alignSelf(YogaAlign.STRETCH).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -189,11 +168,9 @@ class FlexboxStylesTest {
               style =
                   Style.width(100.px)
                       .height(100.px)
-                      .padding(start = left.px, top = top.px, end = right.px, bottom = bottom.px),
-              children =
-                  listOf(
-                      Row(style = Style.flex(grow = 1f).wrapInView()),
-                  ))
+                      .padding(start = left.px, top = top.px, end = right.px, bottom = bottom.px)) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -215,11 +192,9 @@ class FlexboxStylesTest {
               style =
                   Style.width(100.px)
                       .height(100.px)
-                      .padding(horizontal = horizontal.px, vertical = vertical.px),
-              children =
-                  listOf(
-                      Row(style = Style.flex(grow = 1f).wrapInView()),
-                  ))
+                      .padding(horizontal = horizontal.px, vertical = vertical.px)) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -239,11 +214,9 @@ class FlexboxStylesTest {
         .setRoot {
           Row(
               alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px).padding(padding.px),
-              children =
-                  listOf(
-                      Row(style = Style.flex(grow = 1f).wrapInView()),
-                  ))
+              style = Style.width(100.px).height(100.px).padding(padding.px)) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -264,21 +237,15 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(
-                          style =
-                              Style.margin(
-                                      start = left.px,
-                                      top = top.px,
-                                      end = right.px,
-                                      bottom = bottom.px)
-                                  .flex(grow = 1f)
-                                  .wrapInView()),
-                  ))
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.margin(
+                                start = left.px, top = top.px, end = right.px, bottom = bottom.px)
+                            .flex(grow = 1f)
+                            .wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -295,17 +262,14 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(
-                          style =
-                              Style.margin(horizontal = horizontal.px, vertical = vertical.px)
-                                  .flex(grow = 1f)
-                                  .wrapInView()),
-                  ))
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.margin(horizontal = horizontal.px, vertical = vertical.px)
+                            .flex(grow = 1f)
+                            .wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -323,13 +287,9 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              alignItems = YogaAlign.STRETCH,
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView()),
-                  ))
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {
@@ -348,20 +308,15 @@ class FlexboxStylesTest {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
-          Row(
-              style = Style.width(100.px).height(100.px),
-              children =
-                  listOf(
-                      Row(
-                          style =
-                              Style.positionType(YogaPositionType.ABSOLUTE)
-                                  .position(
-                                      start = left.px,
-                                      top = top.px,
-                                      end = right.px,
-                                      bottom = bottom.px)
-                                  .wrapInView()),
-                  ))
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .position(
+                                start = left.px, top = top.px, end = right.px, bottom = bottom.px)
+                            .wrapInView()))
+          }
         }
         .assertMatches(
             match<LithoView> {

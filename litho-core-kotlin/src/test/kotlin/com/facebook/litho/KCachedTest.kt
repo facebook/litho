@@ -221,16 +221,10 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(
-            children =
-                listOf(
-                    Leaf1("hello", 100, initCounter),
-                    Column(
-                        children =
-                            listOf(
-                                Leaf1("hello", 100, initCounter),
-                            )),
-                ))
+        return Row() {
+          child(Leaf1("hello", 100, initCounter))
+          child(Column() { child(Leaf1("hello", 100, initCounter)) })
+        }
       }
     }
 
@@ -248,13 +242,11 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row(
-            children =
-                listOf(
-                    Leaf1("hello", 100, initCounter),
-                    Leaf1("hello", 100, initCounter),
-                    Leaf2("hello", 100, initCounter),
-                ))
+        return Row() {
+          child(Leaf1("hello", 100, initCounter))
+          child(Leaf1("hello", 100, initCounter))
+          child(Leaf2("hello", 100, initCounter))
+        }
       }
     }
 
@@ -321,12 +313,10 @@ class KCachedTest {
         expensiveRepeatFunc(str, repeatNum)
       }
 
-      return Row(
-          children =
-              listOf(
-                  Text(text = expensiveString1),
-                  Text(text = expensiveString2),
-              ))
+      return Row() {
+        child(Text(text = expensiveString1))
+        child(Text(text = expensiveString2))
+      }
     }
   }
 

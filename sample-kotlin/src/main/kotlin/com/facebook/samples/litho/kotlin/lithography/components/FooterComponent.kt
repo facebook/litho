@@ -28,10 +28,7 @@ import com.facebook.litho.widget.Text
 
 class FooterComponent(val text: String) : KComponent() {
   override fun ComponentScope.render() =
-      Column(
-          style = Style.padding(8.dp),
-          children =
-              listOf(
-                  Text(text = text, textColor = GRAY, textStyle = ITALIC),
-              ))
+      Column(style = Style.padding(8.dp)) {
+        child(Text(text = text, textColor = GRAY, textStyle = ITALIC))
+      }
 }

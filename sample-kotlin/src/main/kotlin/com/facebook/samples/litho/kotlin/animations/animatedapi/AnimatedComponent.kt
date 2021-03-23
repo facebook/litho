@@ -117,127 +117,115 @@ class AnimatedComponent : KComponent() {
                           isScaleTransitionComplete.update(!isScaleTransitionComplete.value)
                         }))))
 
-    return Column(
-        children =
-            listOf(
+    return Column {
+      child(
+          Row(
+              style =
+                  Style.onClick {
+                    blueBlockAnimation.start()
+                    staggerTopAnimation.start()
+                    pulseAnimation.start()
+                  }) {
+            child(
+                Column(
+                    style =
+                        Style.width(100.dp)
+                            .height(150.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#99b3ff"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(100.dp)
+                            .height(150.dp)
+                            .margin(all = 5.dp)
+                            .alpha(alpha)
+                            .background(buildRoundedRect(context, Color.parseColor("#ffd480"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(100.dp)
+                            .height(150.dp)
+                            .margin(all = 5.dp)
+                            .alpha(alpha2)
+                            .background(buildRoundedRect(context, Color.parseColor("#e699cc"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(100.dp)
+                            .height(150.dp)
+                            .margin(all = 5.dp)
+                            .alpha(alpha3)
+                            .background(buildRoundedRect(context, Color.parseColor("#9fdfbf"), 8))))
+          })
+      child(
+          Row(
+              style =
+                  Style.width(150.dp)
+                      .height(70.dp)
+                      .margin(all = 50.dp)
+                      .alignSelf(YogaAlign.CENTER)
+                      .scaleX(
+                          if (isScaleTransitionComplete.value) {
+                            scale
+                          } else {
+                            scale2
+                          })
+                      .scaleY(
+                          if (isScaleTransitionComplete.value) {
+                            scale
+                          } else {
+                            scale2
+                          })
+                      .background(buildRoundedRect(context, Color.parseColor("#d9d9d9"), 8))) {
+            child(
                 Row(
                     style =
-                        Style.onClick {
-                          blueBlockAnimation.start()
-                          staggerTopAnimation.start()
-                          pulseAnimation.start()
-                        },
-                    children =
-                        listOf(
-                            Column(
-                                style =
-                                    Style.width(100.dp)
-                                        .height(150.dp)
-                                        .margin(all = 5.dp)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#99b3ff"), 8))),
-                            Column(
-                                style =
-                                    Style.width(100.dp)
-                                        .height(150.dp)
-                                        .margin(all = 5.dp)
-                                        .alpha(alpha)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#ffd480"), 8))),
-                            Column(
-                                style =
-                                    Style.width(100.dp)
-                                        .height(150.dp)
-                                        .margin(all = 5.dp)
-                                        .alpha(alpha2)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#e699cc"), 8))),
-                            Column(
-                                style =
-                                    Style.width(100.dp)
-                                        .height(150.dp)
-                                        .margin(all = 5.dp)
-                                        .alpha(alpha3)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#9fdfbf"), 8))),
-                        )),
-                Row(
-                    children =
-                        listOf(
-                            Row(
-                                style =
-                                    Style.margin(30.dp)
-                                        .width(90.dp)
-                                        .height(20.dp)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#999999"), 12)))),
+                        Style.margin(30.dp)
+                            .width(90.dp)
+                            .height(20.dp)
+                            .background(
+                                buildRoundedRect(context, Color.parseColor("#999999"), 12))))
+          })
+      child(
+          Row(style = Style.alignSelf(YogaAlign.CENTER).wrapInView()) {
+            child(
+                Column(
                     style =
-                        Style.width(150.dp)
-                            .height(70.dp)
-                            .margin(all = 50.dp)
-                            .alignSelf(YogaAlign.CENTER)
-                            .scaleX(
-                                if (isScaleTransitionComplete.value) {
-                                  scale
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .translationY(
+                                if (isYProgressCompleted.value) {
+                                  y2Progress
                                 } else {
-                                  scale2
+                                  yProgress
                                 })
-                            .scaleY(
-                                if (isScaleTransitionComplete.value) {
-                                  scale
-                                } else {
-                                  scale2
-                                })
-                            .background(buildRoundedRect(context, Color.parseColor("#d9d9d9"), 8))),
-                Row(
-                    style = Style.alignSelf(YogaAlign.CENTER).wrapInView(),
-                    children =
-                        listOf(
-                            Column(
-                                style =
-                                    Style.width(50.dp)
-                                        .height(50.dp)
-                                        .margin(all = 5.dp)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#666699"), 8))),
-                            Column(
-                                style =
-                                    Style.width(50.dp)
-                                        .height(50.dp)
-                                        .margin(all = 5.dp)
-                                        .translationY(
-                                            if (isYProgressCompleted.value) {
-                                              y2Progress
-                                            } else {
-                                              yProgress
-                                            })
-                                        .alpha(alphaProgress)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#666699"), 8))),
-                            Column(
-                                style =
-                                    Style.width(50.dp)
-                                        .height(50.dp)
-                                        .margin(all = 5.dp)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#666699"), 8))),
-                            Column(
-                                style =
-                                    Style.width(50.dp)
-                                        .height(50.dp)
-                                        .margin(all = 5.dp)
-                                        .background(
-                                            buildRoundedRect(
-                                                context, Color.parseColor("#666699"), 8))),
-                        ))))
+                            .alpha(alphaProgress)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+          })
+    }
   }
 
   private fun buildRoundedRect(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {

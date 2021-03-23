@@ -165,13 +165,12 @@ class KStateTest {
         val counter = useState { 0 }
 
         return Row(
-            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } },
-            children =
-                listOf(
-                    Text(
-                        style = Style.viewTag("Counter: ${counter.value}"),
-                        text = "Counter: ${counter.value}"),
-                ))
+            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } }) {
+          child(
+              Text(
+                  style = Style.viewTag("Counter: ${counter.value}"),
+                  text = "Counter: ${counter.value}"))
+        }
       }
     }
 

@@ -123,13 +123,12 @@ class KTreePropsTest {
         return TreePropProvider(
             treeProp(type = String::class, value = "kavabanga"),
             child =
-                Row(
-                    children =
-                        listOf(
-                            TreePropProvider(
-                                treeProp(type = Int::class, value = 42), child = Child1Component()),
-                            Child2Component(),
-                        )))
+                Row {
+                  child(
+                      TreePropProvider(
+                          treeProp(type = Int::class, value = 42), child = Child1Component()))
+                  child(Child2Component())
+                })
       }
     }
 

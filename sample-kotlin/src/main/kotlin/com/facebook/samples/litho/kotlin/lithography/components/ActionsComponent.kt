@@ -29,11 +29,8 @@ import com.facebook.litho.view.background
 class ActionsComponent(val style: Style? = null) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return Row(
-        style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style,
-        children =
-            listOf(
-                FavouriteButton(),
-            ))
+    return Row(style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style) {
+      child(FavouriteButton())
+    }
   }
 }

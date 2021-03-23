@@ -29,10 +29,7 @@ import com.facebook.yoga.YogaJustify.CENTER
 
 class LoadingComponent : KComponent() {
   override fun ComponentScope.render() =
-      Row(
-          justifyContent = CENTER,
-          children =
-              listOf(
-                  Progress(color = Color.DKGRAY, style = Style.width(50.dp).height(50.dp)),
-              ))
+      Row(justifyContent = CENTER) {
+        child(Progress(color = Color.DKGRAY, style = Style.width(50.dp).height(50.dp)))
+      }
 }
