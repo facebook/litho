@@ -45,4 +45,5 @@
   <GetExtraAccessibilityNodesCount method="@com.facebook.litho.annotations.GetExtraAccessibilityNodesCount static int getExtraAccessibilityNodesCount() {&#xA;/* TODO: https://fblitho.com/docs/accessibility#extra-accessibility-nodes */return 0;}"/>
   <GetExtraAccessibilityNodeAt method="@com.facebook.litho.annotations.GetExtraAccessibilityNodeAt static int getExtraAccessibilityNodeAt(int x, int y) {&#xA;/* TODO: https://fblitho.com/javadoc/com/facebook/litho/annotations/GetExtraAccessibilityNodeAt.html */return -1;}"/>
   <OnMeasureBaseline method="@com.facebook.litho.annotations.OnMeasureBaseline static int onMeasureBaseline(com.facebook.litho.ComponentContext c, int width, int height) {&#xA;/* TODO: https://fblitho.com/javadoc/com/facebook/litho/annotations/OnMeasureBaseline.html */return height;}"/>
+  <OnCreateChildren method="@com.facebook.litho.sections.annotations.OnCreateChildren static com.facebook.litho.sections.Children onCreateChildren(com.facebook.litho.sections.SectionContext c) {&#xA;/* TODO: https://fblitho.com/docs/group-sections */return com.facebook.litho.sections.Children.create().build();}" />
 </templateSet>

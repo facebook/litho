@@ -51,6 +51,7 @@ public class MethodCompletionContributor extends CompletionContributor {
     extend(CompletionType.BASIC, METHOD_ANNOTATION, OnEventCompletionProvider.INSTANCE);
     extend(CompletionType.BASIC, METHOD_ANNOTATION, LayoutSpecMethodAnnotationsProvider.INSTANCE);
     extend(CompletionType.BASIC, METHOD_ANNOTATION, MountSpecMethodAnnotationsProvider.INSTANCE);
+    extend(CompletionType.BASIC, METHOD_ANNOTATION, SectionSpecMethodAnnotationsProvider.INSTANCE);
   }
 
   static void addMethodCompletions(
