@@ -62,7 +62,6 @@ public class EventDeclarationsExtractor {
         try {
           name = TypeName.get(type.asElement().asType());
         } catch (Exception e) {
-          e.printStackTrace();
           name = ClassName.bestGuess(type.asElement().toString());
         }
 

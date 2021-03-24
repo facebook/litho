@@ -115,7 +115,6 @@ public class TriggerMethodExtractor {
         try {
           name = TypeName.get(eventClass.asType());
         } catch (Exception e) {
-          e.printStackTrace();
           name = ClassName.bestGuess(eventClass.toString());
         }
 
