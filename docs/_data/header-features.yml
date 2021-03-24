@@ -1,0 +1,7 @@
+# Add features here if you are wanting a bulleted list of features in the header of the
+# landing page.
+
+- feature: Do you know React? Litho uses React's programming model.
+- feature: No more inherited view hierachies. Only leafs generate views.
+- feature: Thread-safe throughout. Tasks are performed off the main thread.
+- feature: Efficient memory footprint with built-in view/drawable recycling.

@@ -1,0 +1,263 @@
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: $litho-light;
+
+  .nav {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    height: $header-height;
+    width: 100%;
+    background-color: $litho-vibrant;
+
+    @media screen and (max-width: 750px) {
+      justify-content: space-around;
+    }
+
+    a {
+      margin-right: 20px;
+      padding: 3px 12px 3px 12px;
+      border-radius: 3px;
+      color: $litho-light;
+      font-weight: 500;
+
+      @media screen and (max-width: 750px) {
+        margin-right: 0px;
+      }
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  section {
+    display: flex;
+    position: relative;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 500px;
+
+    @media screen and (max-width: 750px) {
+      height: auto;
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+
+    &.light {
+      background-color: $litho-light;
+      color: $text;
+    }
+
+    &.dark {
+      background-color: $litho-dark;
+      color: $litho-light;
+    }
+
+    &.hero {
+      background-color: $litho-vibrant;
+      color: $litho-light;
+      height: 400px;
+      padding-bottom: 30px;
+
+      @media screen and (max-width: 750px) {
+        height: auto;
+        padding-top: 20px;
+        padding-bottom: 40px;
+      }
+
+      .content {
+        margin-top: -30px;
+
+        @media screen and (max-width: 750px) {
+          margin-top: 0px;
+        }
+
+        .logo {
+          width: 300px;
+          height: 300px;
+          margin-right: 5%;
+
+          @media screen and (max-width: 750px) {
+            width: 100px;
+            height: 100px;
+            margin-right: 0px;
+            margin-bottom: 20px;
+          }
+        }
+
+        .header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          p {
+            font-size: 54px;
+            line-height: 120%;
+            font-weight: 300;
+            margin-bottom: 20px;
+
+            @media screen and (max-width: 750px) {
+              font-size: 32px;
+              text-align: center;
+            }
+          }
+
+          .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+
+            @media screen and (max-width: 750px) {
+              justify-content: space-around;
+            }
+
+            a {
+              margin-right: 20px;
+              padding: 8px 15px 8px 15px;
+              border-radius: 5px;
+              color: $litho-light;
+              border-color: $litho-light;
+              border-width: 2px;
+              border-style: solid;
+              font-size: 12px;
+              font-weight: 900;
+
+              @media screen and (max-width: 750px) {
+                margin-right: 0px;
+              }
+
+              &:hover {
+                background-color: $litho-light;
+                color: $litho-vibrant;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .divider {
+      width: 100%;
+      height: 4vw;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      max-width: 1200px;
+
+      @media screen and (max-width: 750px) {
+        flex-direction: column;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 40%;
+
+        @media screen and (max-width: 750px) {
+          width: 90%;
+        }
+
+        .title {
+          align-self: flex-start;
+          font-size: 20px;
+          font-weight: 500;
+          line-height: 150%;
+          margin-bottom: 15px;
+
+          @media screen and (max-width: 750px) {
+            margin-top: 10%;
+            margin-bottom: 1%;
+          }
+        }
+
+        img {
+          width: 350px;
+        }
+
+        p {
+          font-size: 20px;
+          font-weight: 300;
+          line-height: 150%;
+
+          @media screen and (max-width: 750px) {
+            margin-top: 3%;
+          }
+        }
+
+        a {
+          color: $litho-vibrant;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    background-color: $litho-dark;
+    color: $litho-light;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+
+    .logo {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      svg {
+        width: 40px;
+        height: 50px;
+        fill: white;
+        margin-right: 10px;
+      }
+
+      h2 {
+        font-weight: normal;
+      }
+    }
+
+    a {
+      margin-left: 20px;
+      font-weight: 300;
+      color: $litho-light;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .last-left-link {
+      margin-right: auto;
+    }
+  }
+}
