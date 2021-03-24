@@ -81,6 +81,7 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.supportTestJunit
+    testImplementation deps.mockitokotlin
 }
 
 apply from: rootProject.file('gradle/release.gradle')

@@ -112,6 +112,7 @@ ext.deps = [
         mockitoCore        : 'org.mockito:mockito-core:2.26.0',
         assertjCore        : 'org.assertj:assertj-core:2.9.0',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
+        mockitokotlin      : 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0',
         // Proguard annotations (published through Yoga)
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor
