@@ -55,6 +55,7 @@
   items:
   - id: updating-ui
   - id: border
+  - id: gradient
   - id: tooltips
   - id: saving-state
 - title: Compatibility
