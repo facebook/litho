@@ -41,6 +41,7 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.OnExitedRange;
 import com.facebook.litho.annotations.OnRegisterRanges;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
@@ -196,6 +197,13 @@ public class TestCrashFromEachLayoutLifecycleMethodSpec {
   static void onEnteredWorkingRange(ComponentContext c, @Prop LifecycleStep crashFromStep) {
     if (crashFromStep == LifecycleStep.ON_ENTERED_RANGE) {
       throw new RuntimeException("onEnteredRange crash");
+    }
+  }
+
+  @OnExitedRange(name = "boundary")
+  static void onExitedWorkingRange(ComponentContext c, @Prop LifecycleStep crashFromStep) {
+    if (crashFromStep == LifecycleStep.ON_EXITED_RANGE) {
+      throw new RuntimeException("onExitedRange crash");
     }
   }
 

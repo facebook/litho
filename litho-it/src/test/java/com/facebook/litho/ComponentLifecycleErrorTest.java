@@ -230,17 +230,19 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnRegisterRangesCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutSectionHelper(LifecycleStep.ON_REGISTER_RANGES, "onRegisterRanges crash");
+    crashingScenarioLayoutSectionHelper(
+        LifecycleStep.ON_REGISTER_RANGES, "onRegisterRanges crash", false);
   }
 
   @Test
   public void testOnEnteredRangeCrashWithTestErrorBoundary() {
-    // TODO(T87265593): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onEnteredRange crash");
+    crashingScenarioLayoutSectionHelper(
+        LifecycleStep.ON_ENTERED_RANGE, "onEnteredRange crash", false);
+  }
 
-    crashingScenarioLayoutSectionHelper(LifecycleStep.ON_ENTERED_RANGE, "onEnteredRange crash");
+  @Test
+  public void testOnExitedRangeCrashWithTestErrorBoundary() {
+    crashingScenarioLayoutSectionHelper(LifecycleStep.ON_EXITED_RANGE, "onExitedRange crash", true);
   }
 
   @Test
@@ -367,19 +369,19 @@ public class ComponentLifecycleErrorTest {
   @Test
   public void testOnFocusedEventVisibleCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash");
+        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash", false);
   }
 
   @Test
   public void testOnFullImpressionVisibleEventCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT, "onFullImpressionVisible crash");
+        LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT, "onFullImpressionVisible crash", false);
   }
 
   @Test
   public void testOnVisibilityChangedCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash");
+        LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash", false);
   }
 
   @Test
@@ -534,7 +536,7 @@ public class ComponentLifecycleErrorTest {
   }
 
   private void crashingScenarioLayoutSectionHelper(
-      LifecycleStep crashFromStep, String expectedMessage) {
+      LifecycleStep crashFromStep, String expectedMessage, boolean releaseAfter) {
     final ComponentContext context = mLithoViewRule.getContext();
 
     Component crashingComponent =
@@ -561,6 +563,9 @@ public class ComponentLifecycleErrorTest {
         .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
     mLithoViewRule.attachToWindow().measure().layout();
+    if (releaseAfter) {
+      mLithoViewRule.release();
+    }
 
     Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
     assertThat(error).isInstanceOf(RuntimeException.class);

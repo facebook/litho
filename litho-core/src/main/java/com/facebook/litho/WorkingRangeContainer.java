@@ -82,8 +82,13 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          component.dispatchOnEnteredRange(
-              component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
+          ComponentContext scopedContext =
+              component.getScopedContext(layoutStateContext, globalKey);
+          try {
+            component.dispatchOnEnteredRange(scopedContext, rangeTuple.mName);
+          } catch (Exception e) {
+            ComponentUtils.handle(scopedContext, e);
+          }
           statusHandler.setEnteredRangeStatus(rangeTuple.mName, component, globalKey);
 
         } else if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)
@@ -94,8 +99,13 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          component.dispatchOnExitedRange(
-              component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
+          ComponentContext scopedContext =
+              component.getScopedContext(layoutStateContext, globalKey);
+          try {
+            component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
+          } catch (Exception e) {
+            ComponentUtils.handle(scopedContext, e);
+          }
           statusHandler.setExitedRangeStatus(rangeTuple.mName, component, globalKey);
         }
       }
@@ -119,8 +129,13 @@ class WorkingRangeContainer {
         Component component = rangeTuple.mComponents.get(i);
         String globalKey = rangeTuple.mComponentKeys.get(i);
         if (statusHandler.isInRange(rangeTuple.mName, component, globalKey)) {
-          component.dispatchOnExitedRange(
-              component.getScopedContext(layoutStateContext, globalKey), rangeTuple.mName);
+          ComponentContext scopedContext =
+              component.getScopedContext(layoutStateContext, globalKey);
+          try {
+            component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
+          } catch (Exception e) {
+            ComponentUtils.handle(scopedContext, e);
+          }
         }
       }
     }
