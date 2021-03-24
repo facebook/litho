@@ -309,11 +309,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnEventVisibleCrashWithTestErrorBoundary() {
-    // TODO(T85672862): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onEventVisible crash");
-
     final ComponentContext context = mLithoViewRule.getContext();
 
     TestCrashFromEachLayoutLifecycleMethodSpec.Caller caller =
@@ -339,11 +334,6 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnEventInvisibleCrashWithTestErrorBoundary() {
-    // TODO(T87265660): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onEventInvisible crash");
-
     final ComponentContext context = mLithoViewRule.getContext();
 
     TestCrashFromEachLayoutLifecycleMethodSpec.Caller caller =
@@ -376,33 +366,18 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnFocusedEventVisibleCrashWithTestErrorBoundary() {
-    // TODO(T87265730): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onFocusedEventVisible crash");
-
     crashingScenarioLayoutSectionHelper(
         LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash");
   }
 
   @Test
   public void testOnFullImpressionVisibleEventCrashWithTestErrorBoundary() {
-    // TODO(T87265786): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onFullImpressionVisible crash");
-
     crashingScenarioLayoutSectionHelper(
         LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT, "onFullImpressionVisible crash");
   }
 
   @Test
   public void testOnVisibilityChangedCrashWithTestErrorBoundary() {
-    // TODO(T87265817): add onError coverage and remove expected exception
-    // RuntimeException we throw is wrapped, so we need to expect that one
-    mExpectedException.expect(com.facebook.litho.LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectMessage("onVisibilityChanged crash");
-
     crashingScenarioLayoutSectionHelper(
         LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash");
   }
