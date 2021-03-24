@@ -320,7 +320,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  private static EventTrigger createOnClickEventTriggerTrigger(
+  private static EventTrigger<ClickEvent> createOnClickEventTriggerTrigger(
       ComponentContext c, Component component) {
     int methodId = -1670292499;
     return newEventTrigger(c, component, methodId);
@@ -331,7 +331,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
    *     component a Handle and use {@link #onClickEventTrigger(ComponentContext, Handle)}.
    */
   @Deprecated
-  public static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key) {
+  public static EventTrigger<ClickEvent> onClickEventTriggerTrigger(
+      ComponentContext c, String key) {
     int methodId = -1670292499;
     return newEventTrigger(c, key, methodId);
   }

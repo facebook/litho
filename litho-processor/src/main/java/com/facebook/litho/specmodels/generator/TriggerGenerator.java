@@ -38,9 +38,14 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the trigger methods for a Component. */
@@ -167,6 +172,7 @@ public class TriggerGenerator {
   static MethodSpec generateOnTriggerMethodDelegate(
       SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
     final String componentName = specModel.getComponentName();
+
     final MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PRIVATE)
@@ -260,10 +266,17 @@ public class TriggerGenerator {
       ClassName contextClassName,
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
 
+    final @Nullable EventDeclarationModel eventDeclarationModel = eventMethodModel.typeModel;
+
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(
                 ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name))
-            .returns(ClassNames.EVENT_TRIGGER)
+            .addTypeVariables(getEventDeclarationTypeVariables(eventDeclarationModel))
+            .returns(
+                eventDeclarationModel == null
+                    ? ClassNames.EVENT_TRIGGER
+                    : ParameterizedTypeName.get(
+                        ClassNames.EVENT_TRIGGER, eventDeclarationModel.name))
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
     triggerMethod
@@ -288,9 +301,16 @@ public class TriggerGenerator {
       ClassName componentClassName,
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
 
+    final @Nullable EventDeclarationModel eventDeclarationModel = eventMethodModel.typeModel;
+
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(getCreateEventTriggerMethodName(eventMethodModel.name))
-            .returns(ClassNames.EVENT_TRIGGER)
+            .addTypeVariables(getEventDeclarationTypeVariables(eventDeclarationModel))
+            .returns(
+                eventDeclarationModel == null
+                    ? ClassNames.EVENT_TRIGGER
+                    : ParameterizedTypeName.get(
+                        ClassNames.EVENT_TRIGGER, eventDeclarationModel.name))
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
 
     triggerMethod
@@ -565,5 +585,19 @@ public class TriggerGenerator {
     }
 
     return eventTriggerMethod;
+  }
+
+  private static List<TypeVariableName> getEventDeclarationTypeVariables(
+      final @Nullable EventDeclarationModel eventDeclarationModel) {
+    if (eventDeclarationModel == null
+        || !(eventDeclarationModel.name instanceof ParameterizedTypeName)) {
+      return Collections.emptyList();
+    }
+
+    final List<TypeVariableName> typeVariables = new ArrayList<>();
+    for (TypeName name : ((ParameterizedTypeName) eventDeclarationModel.name).typeArguments) {
+      typeVariables.add((TypeVariableName) name);
+    }
+    return typeVariables;
   }
 }

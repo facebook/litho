@@ -318,7 +318,7 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private static com.facebook.litho.EventTrigger createTestTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
+            "private static com.facebook.litho.EventTrigger<com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent> createTestTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.Component component) {\n"
                 + "  int methodId = -773082596;\n"
                 + "  return newEventTrigger(c, component, methodId);\n"
@@ -330,7 +330,7 @@ public class TriggerGeneratorTest {
                 + " * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #testTriggerMethod1(ComponentContext, Handle)}.\n"
                 + " */\n"
                 + "@java.lang.Deprecated\n"
-                + "public static com.facebook.litho.EventTrigger testTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
+                + "public static com.facebook.litho.EventTrigger<com.facebook.litho.specmodels.generator.TriggerGeneratorTest.TestEvent> testTriggerMethod1Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key) {\n"
                 + "  int methodId = -773082596;\n"
                 + "  return newEventTrigger(c, key, methodId);\n"
@@ -338,7 +338,7 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
-            "private static com.facebook.litho.EventTrigger createTestTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
+            "private static com.facebook.litho.EventTrigger<java.lang.Object> createTestTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.Component component) {\n"
                 + "  int methodId = 969727739;\n"
                 + "  return newEventTrigger(c, component, methodId);\n"
@@ -350,7 +350,7 @@ public class TriggerGeneratorTest {
                 + " * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #testTriggerMethod2(ComponentContext, Handle)}.\n"
                 + " */\n"
                 + "@java.lang.Deprecated\n"
-                + "public static com.facebook.litho.EventTrigger testTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
+                + "public static com.facebook.litho.EventTrigger<java.lang.Object> testTriggerMethod2Trigger(com.facebook.litho.ComponentContext c,\n"
                 + "    java.lang.String key) {\n"
                 + "  int methodId = 969727739;\n"
                 + "  return newEventTrigger(c, key, methodId);\n"
