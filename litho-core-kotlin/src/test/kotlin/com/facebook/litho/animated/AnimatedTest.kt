@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package test.kotlin.com.facebook.litho.animated
+package com.facebook.litho.animated
 
 import android.os.Looper.getMainLooper
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -24,10 +24,6 @@ import com.facebook.litho.DynamicValue
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.animated.Animated
-import com.facebook.litho.animated.AnimationListener
-import com.facebook.litho.animated.alpha
-import com.facebook.litho.animated.translationX
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.width
 import com.facebook.litho.px
@@ -53,7 +49,7 @@ class AnimatedTest {
   private lateinit var listener3: AnimationListener
 
   @Test
-  fun timingAnimation_alphaValueChange_whenAnimationFinish() {
+  fun timingAnimation_whenAnimationFinish_alphaValueChange() {
     val alphaProgress = DynamicValue(0f)
     val animation = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
     lithoViewRule
@@ -71,7 +67,7 @@ class AnimatedTest {
   }
 
   @Test
-  fun timingAnimation_onFinishCallbackCalled_whenAnimationFinish() {
+  fun timingAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
     val alphaProgress = DynamicValue(0f)
@@ -86,7 +82,7 @@ class AnimatedTest {
   }
 
   @Test
-  fun sequenceAnimation_alphaAndXValueChange_whenAnimationFinish() {
+  fun sequenceAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
@@ -108,7 +104,7 @@ class AnimatedTest {
     assertThat(view.translationX).isEqualTo(200f).describedAs("translationX value after animation")
   }
   @Test
-  fun sequenceAnimation_onFinishCallbackCalled_whenAnimationFinish() {
+  fun sequenceAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
     listener3 = mock()
@@ -135,7 +131,7 @@ class AnimatedTest {
   }
 
   @Test
-  fun loopAnimation_alphaAndXValueChange_whenAnimationFinish() {
+  fun loopAnimation_whenAnimationFinish_alphaAndXValueChange() {
     val alphaProgress = DynamicValue(0f)
     val xProgress = DynamicValue(100f)
     val animation1 = Animated.timing(target = alphaProgress, to = 1f, duration = 1000)
@@ -158,7 +154,7 @@ class AnimatedTest {
   }
 
   @Test
-  fun loopAnimation_onFinishCallbackCalled_whenAnimationFinish() {
+  fun loopAnimation_whenAnimationFinish_onFinishCallbackCalled() {
     listener = mock()
     listener2 = mock()
     listener3 = mock()
@@ -182,7 +178,7 @@ class AnimatedTest {
         .onFinish()
   }
 
-  class TestComponent(
+  private class TestComponent(
       private val alphaProgress: DynamicValue<Float> = DynamicValue<Float>(0f),
       private val xProgress: DynamicValue<Float> = DynamicValue<Float>(100f)
   ) : KComponent() {
