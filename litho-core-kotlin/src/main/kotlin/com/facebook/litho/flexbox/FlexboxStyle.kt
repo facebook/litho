@@ -149,6 +149,14 @@ fun Style.width(width: Dimen) = this + FlexboxDimenStyleItem(FlexboxDimenField.W
 /** Sets a specific preferred height for this component when its parent lays it out. */
 fun Style.height(height: Dimen) = this + FlexboxDimenStyleItem(FlexboxDimenField.HEIGHT, height)
 
+/** Sets a specific preferred percent width for this component when its parent lays it out. */
+fun Style.widthPercent(widthPercent: Float) =
+    this + FloatStyleItem(FlexboxFloatField.WIDTH_PERCENT, widthPercent)
+
+/** Sets a specific preferred percent height for this component when its parent lays it out. */
+fun Style.heightPercent(heightPercent: Float) =
+    this + FloatStyleItem(FlexboxFloatField.HEIGHT_PERCENT, heightPercent)
+
 /** Sets a preferred minimum width for this component when its parent lays it out. */
 fun Style.minWidth(minWidth: Dimen) =
     this + FlexboxDimenStyleItem(FlexboxDimenField.MIN_WIDTH, minWidth)

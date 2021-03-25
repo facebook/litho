@@ -50,6 +50,22 @@ class FlexboxStylesTest {
   }
 
   @Test
+  fun widthPercentAndHeightPercent_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(Row(style = Style.heightPercent(50f).widthPercent(50f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(0, 0, 50, 50) }
+            })
+  }
+
+  @Test
   fun maxWidth_whenSet_isRespected() {
     lithoViewRule
         .setSizeSpecs(unspecified(), unspecified())
