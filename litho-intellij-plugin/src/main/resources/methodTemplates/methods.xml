@@ -18,7 +18,6 @@
 <templateSet>
   <OnAttached method="@com.facebook.litho.annotations.OnAttached static void onAttached(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/onattached-ondetached */}"/>
   <OnCreateInitialState method="@com.facebook.litho.annotations.OnCreateInitialState static void onCreateInitialState(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: Use `File -> New -> Litho Component` menu */}"/>
-  <SectionSpec.OnCreateInitialState method="@com.facebook.litho.annotations.OnCreateInitialState static void onCreateInitialState(com.facebook.litho.sections.SectionContext c) {&#xA;/* TODO: https://fblitho.com/docs/state#initializing-a-state-value */}"/>
   <OnCreateLayout method="@com.facebook.litho.annotations.OnCreateLayout static com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: Use `File -> New -> Litho Component` menu */return com.facebook.litho.Column.create();}"/>
   <OnCreateLayoutWithSizeSpec method="@com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec static com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c, int widthSpec, int heightSpecm) {&#xA;/* TODO: https://fblitho.com/docs/custom-layout.html */return com.facebook.litho.Column.create();}"/>
   <OnCreateTransition method="@com.facebook.litho.annotations.OnCreateTransition static com.facebook.litho.Transition onCreateTransition(com.facebook.litho.ComponentContext c) {&#xA;/* TODO: https://fblitho.com/docs/transition-basics */return com.facebook.litho.Transition.create();}"/>
@@ -46,5 +45,8 @@
   <GetExtraAccessibilityNodesCount method="@com.facebook.litho.annotations.GetExtraAccessibilityNodesCount static int getExtraAccessibilityNodesCount() {&#xA;/* TODO: https://fblitho.com/docs/accessibility#extra-accessibility-nodes */return 0;}"/>
   <GetExtraAccessibilityNodeAt method="@com.facebook.litho.annotations.GetExtraAccessibilityNodeAt static int getExtraAccessibilityNodeAt(int x, int y) {&#xA;/* TODO: https://fblitho.com/javadoc/com/facebook/litho/annotations/GetExtraAccessibilityNodeAt.html */return -1;}"/>
   <OnMeasureBaseline method="@com.facebook.litho.annotations.OnMeasureBaseline static int onMeasureBaseline(com.facebook.litho.ComponentContext c, int width, int height) {&#xA;/* TODO: https://fblitho.com/javadoc/com/facebook/litho/annotations/OnMeasureBaseline.html */return height;}"/>
+  <!-- SectionSpec method completion -->
   <OnCreateChildren method="@com.facebook.litho.sections.annotations.OnCreateChildren static com.facebook.litho.sections.Children onCreateChildren(com.facebook.litho.sections.SectionContext c) {&#xA;/* TODO: https://fblitho.com/docs/group-sections */return com.facebook.litho.sections.Children.create().build();}" />
+  <SectionSpec.OnCreateInitialState method="@com.facebook.litho.annotations.OnCreateInitialState static void onCreateInitialState(com.facebook.litho.sections.SectionContext c) {&#xA;/* TODO: https://fblitho.com/docs/state#initializing-a-state-value */}"/>
+  <OnCreateService method="@com.facebook.litho.sections.annotations.OnCreateService static placeholder_service_type OnCreateService(com.facebook.litho.sections.SectionContext c) {&#xA; /* TODO: https://fblitho.com/docs/services#null__oncreateservice */}" />
 </templateSet>
