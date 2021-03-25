@@ -120,7 +120,6 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
-  private final boolean mIncrementalVisibility;
   private final @RecyclingMode int mRecyclingMode;
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
@@ -387,7 +386,6 @@ public class ComponentTree {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
-    mIncrementalVisibility = builder.incrementalVisibility;
   }
 
   private static boolean incrementalMountGloballyDisabled() {
@@ -1733,10 +1731,6 @@ public class ComponentTree {
   @UiThread
   public LithoView getLithoView() {
     return mLithoView;
-  }
-
-  boolean hasIncrementalVisibility() {
-    return mIncrementalVisibility;
   }
 
   /**
@@ -3134,7 +3128,6 @@ public class ComponentTree {
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
-    private boolean incrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
     private boolean shouldForceAsyncStateUpdate =
         ComponentsConfiguration.shouldForceAsyncStateUpdate;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
@@ -3317,11 +3310,6 @@ public class ComponentTree {
      */
     public Builder useCancelableLayoutFutures(boolean isEnabled) {
       this.useCancelableLayoutFutures = isEnabled;
-      return this;
-    }
-
-    public Builder incrementalVisibility(boolean isEnabled) {
-      this.incrementalVisibility = isEnabled;
       return this;
     }
 

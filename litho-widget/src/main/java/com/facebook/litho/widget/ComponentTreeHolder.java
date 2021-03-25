@@ -47,7 +47,6 @@ public class ComponentTreeHolder {
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
-  private final boolean mIncrementalVisibilityEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final int mRecyclingMode;
@@ -237,7 +236,6 @@ public class ComponentTreeHolder {
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
-    mIncrementalVisibilityEnabled = builder.incrementalVisibility;
     mRecyclingMode = builder.recyclingMode;
   }
 
@@ -494,7 +492,6 @@ public class ComponentTreeHolder {
               .visibilityProcessing(mVisibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
-              .incrementalVisibility(mIncrementalVisibilityEnabled)
               .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
