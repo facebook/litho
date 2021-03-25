@@ -49,6 +49,7 @@ private enum class ObjectField {
   OUTLINE_PROVIDER,
   SELECTED,
   STATE_LIST_ANIMATOR,
+  TRANSITION_NAME,
   WRAP_IN_VIEW,
   VIEW_TAG,
   VIEW_TAGS,
@@ -83,6 +84,7 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
       ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
+      ObjectField.TRANSITION_NAME -> commonProps.transitionName(value as String?)
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
       ObjectField.VIEW_TAGS -> commonProps.viewTags(value as SparseArray<Any>)
@@ -270,6 +272,15 @@ fun Style.stateListAnimator(stateListAnimator: StateListAnimator?) =
     } else {
       this
     }
+
+/**
+ * Sets Activity transition name on the View this Component mounts to. Setting this property will
+ * cause the Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * See [android.view.View.setTransitionName]
+ */
+fun Style.transitionName(transitionName: String?) =
+    this + ObjectStyleItem(ObjectField.TRANSITION_NAME, transitionName)
 
 /**
  * Specifies that this Component should be represented as a View when this hierarchy is mounted.
