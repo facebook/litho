@@ -27,7 +27,7 @@ abstract class KComponent : Component() {
   internal final override fun render(c: ComponentContext): RenderResult {
     val componentScope = ComponentScope(c)
     val componentResult = componentScope.render()
-    return RenderResult(componentResult, listOf())
+    return RenderResult(componentResult, componentScope.transitions)
   }
 
   abstract fun ComponentScope.render(): Component?
