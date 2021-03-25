@@ -118,7 +118,6 @@ public class ComponentLifecycleTest {
           }
         };
 
-    when(Layout.onCreateLayout((ComponentContext) any(), (Component) any())).thenCallRealMethod();
     when(Layout.create(
             (ComponentContext) any(),
             (Component) any(),

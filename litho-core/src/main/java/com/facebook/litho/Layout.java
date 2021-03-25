@@ -185,8 +185,8 @@ class Layout {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        // Calls the onCreateLayout or onCreateLayoutWithSizeSpec on the Spec.
-        final Component root = onCreateLayout(c, component);
+        final RenderResult renderResult = component.render(c);
+        final Component root = renderResult.component;
 
         // TODO: (T57741374) this step is required because of a bug in redex.
         if (root == component) {
@@ -195,6 +195,10 @@ class Layout {
           node = create(c, root, false);
         } else {
           node = null;
+        }
+
+        if (renderResult != null && node != null) {
+          applyRenderResultToNode(renderResult, node);
         }
       }
 
@@ -394,9 +398,12 @@ class Layout {
     return layout;
   }
 
-  static @Nullable Component onCreateLayout(final ComponentContext c, final Component component) {
-    final Component root = component.createComponentLayout(c);
-    return root != null && root.getId() > 0 ? root : null;
+  static void applyRenderResultToNode(RenderResult renderResult, InternalNode node) {
+    if (renderResult.transitions != null) {
+      for (Transition t : renderResult.transitions) {
+        node.addTransition(t);
+      }
+    }
   }
 
   /**

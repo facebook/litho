@@ -594,7 +594,7 @@ public abstract class Component extends ComponentLifecycle
 
   /**
    * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
-   * instead of going through {@link #createComponentLayout(ComponentContext)}.
+   * instead of going through {@link #render(ComponentContext)}.
    */
   protected boolean canResolve() {
     return false;

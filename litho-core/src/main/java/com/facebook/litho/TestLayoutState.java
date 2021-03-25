@@ -100,7 +100,8 @@ public class TestLayoutState {
     } else if (isMountSpec(component)) {
       node = InternalNodeUtils.create(c);
     } else {
-      final Component root = component.createComponentLayout(c);
+      final RenderResult renderResult = component.render(c);
+      final Component root = renderResult.component;
       if (root == null || root.getId() <= 0) {
         node = null;
       } else {

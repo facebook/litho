@@ -203,20 +203,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             context, context.getWidthSpec(), context.getHeightSpec());
   }
 
-  @Nullable
-  @ThreadSafe(enableChecks = false)
-  Component createComponentLayout(ComponentContext c) {
-    Component layoutComponent = null;
-
-    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-      layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
-    } else {
-      layoutComponent = onCreateLayout(c);
-    }
-
-    return layoutComponent;
-  }
-
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
@@ -426,6 +412,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
     return Column.create(c).build();
+  }
+
+  /**
+   * Invokes the Component-specific render implementation, returning a RenderResult. The
+   * RenderResult will have the Component this Component rendered to (which will then need to be
+   * render()'ed or {@link #resolve(ComponentContext)}'ed), as well as other metadata from that
+   * render call such as transitions that should be applied.
+   */
+  @ThreadSafe(enableChecks = false)
+  RenderResult render(ComponentContext c) {
+    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+      return new RenderResult(onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec()));
+    } else {
+      return new RenderResult(onCreateLayout(c));
+    }
   }
 
   /**
