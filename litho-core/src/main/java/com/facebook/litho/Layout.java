@@ -98,10 +98,7 @@ class Layout {
       layout =
           current
               .getInternalNode()
-              .reconcile(
-                  c,
-                  updated,
-                  ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
+              .reconcile(c, updated, ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
     }
 
     if (layoutStatePerfEvent != null) {
