@@ -17,6 +17,7 @@
 package com.facebook.litho.flexbox
 
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dimen
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
@@ -173,54 +174,6 @@ fun Style.minHeight(minHeight: Dimen) =
 fun Style.maxHeight(maxHeight: Dimen) =
     this + FlexboxDimenStyleItem(FlexboxDimenField.MAX_HEIGHT, maxHeight)
 
-/**
- * Flex allows you to define how this component should take up space within its parent. It's
- * comprised of the following properties:
- *
- * **flex-grow**: This component should take up remaining space in its parent. If multiple children
- * of the parent have a flex-grow set, the extra space is divided up based on proportions of
- * flex-grow values, i.e. a child with flex-grow of 2 will get twice as much of the space as its
- * sibling with flex-grow of 1.
- *
- * **flex-shrink**: This component should shrink if necessary. Similar to flex-grow, the value
- * determines the proportion of space *taken* from each child. Setting a flex-shink of 0 means the
- * child won't shrink.
- *
- * **flex-basis**: Defines the default size of the component before extra space is distributed. If
- * omitted, the measured size of the content (or the width/height styles) will be used instead.
- *
- * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
- * properties.
- * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
- *
- * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null
- */
-fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null) =
-    this +
-        grow?.let { FloatStyleItem(FlexboxFloatField.FLEX_GROW, it) } +
-        shrink?.let { FloatStyleItem(FlexboxFloatField.FLEX_SHRINK, it) } +
-        basis?.let { FlexboxDimenStyleItem(FlexboxDimenField.FLEX_BASIS, it) }
-
-/**
- * Defines how a child should be aligned with a Row or Column, overriding the parent's align-items
- * property for this child.
- *
- * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
- * properties.
- * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
- */
-fun Style.alignSelf(align: YogaAlign) =
-    this + FlexboxObjectStyleItem(FlexboxObjectField.ALIGN_SELF, align)
-
-/**
- * Defines an aspect ratio for this component, meaning the ratio of width to height. This means if
- * aspectRatio is set to 2 and width is calculated to be 50px, then height will be 100px.
- *
- * Note: This property is not part of the flexbox standard.
- */
-fun Style.aspectRatio(aspectRatio: Float) =
-    this + FloatStyleItem(FlexboxFloatField.ASPECT_RATIO, aspectRatio)
-
 /** Defines padding on the component on a per-edge basis. */
 fun Style.padding(
     all: Dimen? = null,
@@ -259,32 +212,143 @@ fun Style.margin(
         end?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_END, it) } +
         bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_BOTTOM, it) }
 
+/** See the [flexboxParams] inline function wrapper for documentation on this class. */
+class FlexboxParams(
+    private val flexGrow: Float? = null,
+    private val flexShrink: Float? = null,
+    private val flexBasis: Dimen? = null,
+    private val alignSelf: YogaAlign? = null,
+    private val positionType: YogaPositionType? = null,
+    private val positionStart: Dimen? = null,
+    private val positionTop: Dimen? = null,
+    private val positionEnd: Dimen? = null,
+    private val positionBottom: Dimen? = null,
+    private val aspectRatio: Float? = null,
+    private val component: Component
+) {
+
+  /**
+   * Note: This will be rewritten when flexbox containers are no longer treated special in Litho.
+   */
+  internal fun getComponentWithAppliedParams(context: ComponentContext): Component {
+    val commonProps = component.getCommonPropsHolder()
+    flexGrow?.let { commonProps.flexGrow(it) }
+    flexShrink?.let { commonProps.flexShrink(it) }
+    flexBasis?.let { commonProps.flexBasisPx(it.toPixels(context.resourceResolver)) }
+    alignSelf?.let { commonProps.alignSelf(it) }
+    positionType?.let { commonProps.positionType(it) }
+    positionStart?.let {
+      commonProps.positionPx(YogaEdge.START, it.toPixels(context.resourceResolver))
+    }
+    positionTop?.let { commonProps.positionPx(YogaEdge.TOP, it.toPixels(context.resourceResolver)) }
+    positionEnd?.let { commonProps.positionPx(YogaEdge.END, it.toPixels(context.resourceResolver)) }
+    positionBottom?.let {
+      commonProps.positionPx(YogaEdge.BOTTOM, it.toPixels(context.resourceResolver))
+    }
+    aspectRatio?.let { commonProps.aspectRatio(it) }
+    return component
+  }
+}
+
 /**
- * Used in conjunction with [positionType] to define how a component should be positioned in its
- * parent.
+ * Returns a [FlexboxParams] wrapping a component.
  *
- * For positionType of ABSOLUTE: the values specified here will define how inset the child is from
- * the same edge on its parent. E.g. for `position(0.px, 0.px, 0.px, 0.px)`, it will be the full
- * size of the parent (no insets). For `position(0.px, 10.px, 0.px, 10.px)`, the child will be the
- * full width of the parent, but inset by 10px on the top and bottom.
+ * This allows you to specify flexbox properties which only apply when hosted in a flexbox
+ * container, i.e. [Row] or [Column]. [Row] and [Column] accept children of the FlexboxParam type,
+ * which will add the wrapped Component as a child with the given params.
  *
- * For positionType of RELATIVE: the values specified here will define how the child is positioned
- * relative to where that edge would have normally been positioned.
+ * See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on flexbox
+ * properties.
  *
  * See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  */
-fun Style.position(
-    start: Dimen? = null,
-    top: Dimen? = null,
-    end: Dimen? = null,
-    bottom: Dimen? = null
-) =
-    this +
-        start?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_START, it) } +
-        top?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_TOP, it) } +
-        end?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_END, it) } +
-        bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_BOTTOM, it) }
+inline fun flexboxParams(
 
-/** See docs in [position]. */
-fun Style.positionType(positionType: YogaPositionType) =
-    this + FlexboxObjectStyleItem(FlexboxObjectField.POSITION_TYPE, positionType)
+    /**
+     * When positive, this component should take up remaining space in its parent. If multiple
+     * children of the parent have a flex-grow set, the extra space is divided up based on
+     * proportions of flex-grow values, i.e. a child with flex-grow of 2 will get twice as much of
+     * the space as its sibling with flex-grow of 1.
+     *
+     * Default: 0
+     */
+    flexGrow: Float? = null,
+
+    /**
+     * When positive, this component should shrink if necessary. Similar to flex-grow, the value
+     * determines the proportion of space *taken* from each child. Setting a flex-shink of 0 means
+     * the child won't shrink.
+     *
+     * Default: 1
+     */
+    flexShrink: Float? = null,
+
+    /**
+     * Defines the default size of the component before extra space is distributed. If omitted, the
+     * measured size of the content (or the width/height styles) will be used instead.
+     */
+    flexBasis: Dimen? = null,
+
+    /**
+     * Defines how a child should be aligned with a Row or Column, overriding the parent's
+     * align-items property for this child.
+     *
+     * - See https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more documentation on
+     * flexbox properties.
+     * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
+     *
+     * Default: AUTO (defined by parent)
+     */
+    alignSelf: YogaAlign? = null,
+
+    /**
+     * Used in conjunction with [positionStart], [positionTop], etc to define how a component should
+     * be positioned in its parent.
+     *
+     * For positionType of ABSOLUTE: the values specified here will define how inset the child is
+     * from the same edge on its parent. E.g. for `position(0.px, 0.px, 0.px, 0.px)`, it will be the
+     * full size of the parent (no insets). For `position(0.px, 10.px, 0.px, 10.px)`, the child will
+     * be the full width of the parent, but inset by 10px on the top and bottom.
+     *
+     * For positionType of RELATIVE: the values specified here will define how the child is
+     * positioned relative to where that edge would have normally been positioned.
+     *
+     * See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
+     */
+    positionType: YogaPositionType? = null,
+
+    /** See docs in [positionType]. */
+    positionStart: Dimen? = null,
+
+    /** See docs in [positionType]. */
+    positionTop: Dimen? = null,
+
+    /** See docs in [positionType]. */
+    positionEnd: Dimen? = null,
+
+    /** See docs in [positionType]. */
+    positionBottom: Dimen? = null,
+
+    /**
+     * Defines an aspect ratio for this component, meaning the ratio of width to height. This means
+     * if aspectRatio is set to 2 and width is calculated to be 50px, then height will be 100px.
+     *
+     * Note: This property is not part of the flexbox standard.
+     */
+    aspectRatio: Float? = null,
+
+    /** A lambda that returns the component that these params apply to. */
+    component: () -> Component
+) =
+    FlexboxParams(
+        flexGrow,
+        flexShrink,
+        flexBasis,
+        alignSelf,
+        positionType,
+        positionStart,
+        positionTop,
+        positionEnd,
+        positionBottom,
+        aspectRatio,
+        component())

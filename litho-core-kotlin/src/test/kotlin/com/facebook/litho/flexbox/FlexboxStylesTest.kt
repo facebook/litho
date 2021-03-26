@@ -111,7 +111,7 @@ class FlexboxStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(style = Style.width(100.px).height(100.px)) {
-            child(Row(style = Style.flex(basis = 50.px).wrapInView()))
+            child(flexboxParams(flexBasis = 50.px) { Row(style = Style.wrapInView()) })
           }
         }
         .assertMatches(
@@ -127,7 +127,7 @@ class FlexboxStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(style = Style.width(100.px).height(100.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+            child(flexboxParams(flexGrow = 1f) { Row(style = Style.wrapInView()) })
           }
         }
         .assertMatches(
@@ -143,7 +143,10 @@ class FlexboxStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
-            child(Row(style = Style.height(100.px).minWidth(50.px).flex(shrink = 1f).wrapInView()))
+            child(
+                flexboxParams(flexShrink = 1f) {
+                  Row(style = Style.height(100.px).minWidth(50.px).wrapInView())
+                })
           }
         }
         .assertMatches(
@@ -159,7 +162,10 @@ class FlexboxStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(style = Style.width(100.px).height(100.px)) {
-            child(Row(style = Style.width(100.px).alignSelf(YogaAlign.STRETCH).wrapInView()))
+            child(
+                flexboxParams(alignSelf = YogaAlign.STRETCH) {
+                  Row(style = Style.width(100.px).wrapInView())
+                })
           }
         }
         .assertMatches(
@@ -185,7 +191,7 @@ class FlexboxStylesTest {
                   Style.width(100.px)
                       .height(100.px)
                       .padding(start = left.px, top = top.px, end = right.px, bottom = bottom.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+            child(flexboxParams(flexGrow = 1f) { Row(style = Style.wrapInView()) })
           }
         }
         .assertMatches(
@@ -209,7 +215,7 @@ class FlexboxStylesTest {
                   Style.width(100.px)
                       .height(100.px)
                       .padding(horizontal = horizontal.px, vertical = vertical.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+            child(flexboxParams(flexGrow = 1f) { Row(style = Style.wrapInView()) })
           }
         }
         .assertMatches(
@@ -231,7 +237,7 @@ class FlexboxStylesTest {
           Row(
               alignItems = YogaAlign.STRETCH,
               style = Style.width(100.px).height(100.px).padding(padding.px)) {
-            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+            child(flexboxParams(flexGrow = 1f) { Row(style = Style.wrapInView()) })
           }
         }
         .assertMatches(
@@ -255,12 +261,13 @@ class FlexboxStylesTest {
         .setRoot {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
-                Row(
-                    style =
-                        Style.margin(
-                                start = left.px, top = top.px, end = right.px, bottom = bottom.px)
-                            .flex(grow = 1f)
-                            .wrapInView()))
+                flexboxParams(flexGrow = 1f) {
+                  Row(
+                      style =
+                          Style.margin(
+                                  start = left.px, top = top.px, end = right.px, bottom = bottom.px)
+                              .wrapInView())
+                })
           }
         }
         .assertMatches(
@@ -280,11 +287,12 @@ class FlexboxStylesTest {
         .setRoot {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
             child(
-                Row(
-                    style =
-                        Style.margin(horizontal = horizontal.px, vertical = vertical.px)
-                            .flex(grow = 1f)
-                            .wrapInView()))
+                flexboxParams(flexGrow = 1f) {
+                  Row(
+                      style =
+                          Style.margin(horizontal = horizontal.px, vertical = vertical.px)
+                              .wrapInView())
+                })
           }
         }
         .assertMatches(
@@ -304,7 +312,8 @@ class FlexboxStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
-            child(Row(style = Style.margin(margin.px).flex(grow = 1f).wrapInView()))
+            child(
+                flexboxParams(flexGrow = 1f) { Row(style = Style.margin(margin.px).wrapInView()) })
           }
         }
         .assertMatches(
@@ -326,12 +335,12 @@ class FlexboxStylesTest {
         .setRoot {
           Row(style = Style.width(100.px).height(100.px)) {
             child(
-                Row(
-                    style =
-                        Style.positionType(YogaPositionType.ABSOLUTE)
-                            .position(
-                                start = left.px, top = top.px, end = right.px, bottom = bottom.px)
-                            .wrapInView()))
+                flexboxParams(
+                    positionType = YogaPositionType.ABSOLUTE,
+                    positionStart = left.px,
+                    positionTop = top.px,
+                    positionEnd = right.px,
+                    positionBottom = bottom.px) { Row(style = Style.wrapInView()) })
           }
         }
         .assertMatches(
