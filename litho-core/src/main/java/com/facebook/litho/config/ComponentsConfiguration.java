@@ -279,4 +279,6 @@ public class ComponentsConfiguration {
 
   /** When the LithoView visibility changes, rebind */
   public static boolean rebindWhenVisibilityChanges = false;
+
+  public static boolean swallowUnhandledExceptions = false;
 }
