@@ -50,4 +50,5 @@
   <SectionSpec.OnCreateInitialState method="@com.facebook.litho.annotations.OnCreateInitialState static void onCreateInitialState(com.facebook.litho.sections.SectionContext c) {&#xA;/* TODO: https://fblitho.com/docs/state#initializing-a-state-value */}"/>
   <OnCreateService method="@com.facebook.litho.sections.annotations.OnCreateService static placeholder_service_type OnCreateService(com.facebook.litho.sections.SectionContext c) {&#xA; /* TODO: https://fblitho.com/docs/services#null__oncreateservice */}" />
   <OnBindService method="@com.facebook.litho.sections.annotations.OnBindService static void onBindService(com.facebook.litho.sections.SectionContext c, placeholder_service_type service) {&#xA; /* TODO: https://fblitho.com/docs/services#null__onbindservice-and-onunbindservice */}" />
+  <OnUnbindService method="@com.facebook.litho.sections.annotations.OnUnbindService static void onUnbindService(com.facebook.litho.sections.SectionContext c, placeholder_service_type service) {&#xA; /* TODO: https://fblitho.com/docs/services#null__onbindservice-and-onunbindservice */}" />
 </templateSet>
