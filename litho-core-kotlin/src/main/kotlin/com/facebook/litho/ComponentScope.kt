@@ -30,8 +30,9 @@ class ComponentScope(val context: ComponentContext) {
 
   // TODO: Extract into more generic container to track hooks when needed
   internal var useStateIndex = 0
-
   internal var transitions: MutableList<Transition>? = null
+  internal var useEffectEntries: MutableList<Attachable>? = null
+
   inline fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
 
   /*inline*/ fun Component.applyStyle(style: Style?) {

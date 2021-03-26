@@ -30,14 +30,20 @@ class RenderResult {
 
   public final @Nullable Component component;
   public final @Nullable List<Transition> transitions;
+  public final @Nullable List<Attachable> useEffectEntries;
 
   public RenderResult(@Nullable Component component) {
     this.component = component;
     this.transitions = null;
+    this.useEffectEntries = null;
   }
 
-  public RenderResult(@Nullable Component component, @Nullable List<Transition> transitions) {
+  public RenderResult(
+      @Nullable Component component,
+      @Nullable List<Transition> transitions,
+      @Nullable List<Attachable> useEffectEntries) {
     this.component = component;
     this.transitions = transitions;
+    this.useEffectEntries = useEffectEntries;
   }
 }

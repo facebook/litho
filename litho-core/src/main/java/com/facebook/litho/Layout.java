@@ -410,6 +410,11 @@ class Layout {
         node.addTransition(t);
       }
     }
+    if (renderResult.useEffectEntries != null) {
+      for (Attachable attachable : renderResult.useEffectEntries) {
+        node.addAttachable(attachable);
+      }
+    }
   }
 
   /**
