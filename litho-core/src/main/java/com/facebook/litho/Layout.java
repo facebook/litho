@@ -266,7 +266,13 @@ class Layout {
       }
     }
 
-    // 12. Call onPrepare for MountSpecs.
+    // 12. Add attachable components
+    if (component.hasAttachDetachCallback()) {
+      // needs ComponentUtils.getGlobalKey?
+      node.addAttachable(new LayoutSpecAttachable(globalKey, component));
+    }
+
+    // 13. Call onPrepare for MountSpecs.
     if (isMountSpec(component)) {
       try {
         component.onPrepare(c);
@@ -275,7 +281,7 @@ class Layout {
       }
     }
 
-    // 13. Add working ranges to the InternalNode.
+    // 14. Add working ranges to the InternalNode.
     Component.addWorkingRangeToNode(node, c, component);
 
     if (isTracing) {

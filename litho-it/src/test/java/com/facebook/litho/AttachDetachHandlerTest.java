@@ -83,7 +83,7 @@ public class AttachDetachHandlerTest {
         .describedAs("Should call @OnDetached method")
         .containsExactly("root:" + AttachDetachTesterSpec.ON_DETACHED);
 
-    assertThat(attachDetachHandler.getAttached().size()).isEqualTo(0);
+    assertThat(attachDetachHandler.getAttached()).isNullOrEmpty();
   }
 
   @Test

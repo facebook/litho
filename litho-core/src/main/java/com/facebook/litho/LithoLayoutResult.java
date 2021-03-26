@@ -251,6 +251,9 @@ public interface LithoLayoutResult extends ComponentLayout {
   @Nullable
   String getTestKey();
 
+  @Nullable
+  List<Attachable> getAttachables();
+
   /* Measurement related APIs for mutating the result */
 
   void setLastWidthSpec(int widthSpec);

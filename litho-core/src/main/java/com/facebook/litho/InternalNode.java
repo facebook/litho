@@ -47,6 +47,8 @@ public interface InternalNode extends Inputs, LithoLayoutResult, LayoutProps {
 
   void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations);
 
+  void addAttachable(Attachable attachable);
+
   InternalNode alignContent(YogaAlign alignContent);
 
   InternalNode alignItems(YogaAlign alignItems);

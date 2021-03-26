@@ -56,6 +56,14 @@ class NoOpInternalNode implements InternalNode {
   public void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations) {}
 
   @Override
+  public void addAttachable(Attachable attachable) {}
+
+  @Override
+  public @Nullable List<Attachable> getAttachables() {
+    return null;
+  }
+
+  @Override
   public @Nullable InternalNode alignContent(YogaAlign alignContent) {
     return null;
   }

@@ -218,8 +218,7 @@ public class LayoutState
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
-  /** A container stores components whose OnAttached delegate methods are about to be executed. */
-  private @Nullable Map<String, Component> mAttachableContainer;
+  private @Nullable List<Attachable> mAttachables;
 
   final boolean mShouldDisableDrawableOutputs =
       ComponentsConfiguration.shouldDisableDrawableOutputs;
@@ -1023,6 +1022,14 @@ public class LayoutState
       }
     }
 
+    final List<Attachable> attachables = result.getAttachables();
+    if (attachables != null) {
+      if (layoutState.mAttachables == null) {
+        layoutState.mAttachables = new ArrayList<>();
+      }
+      layoutState.mAttachables.addAll(attachables);
+    }
+
     if (component != null) {
       final Rect rect = new Rect();
       if (layoutOutput != null) {
@@ -1058,12 +1065,6 @@ public class LayoutState
               }
               layoutState.mComponentKeys.add(delegateKey);
             }
-          }
-          if (delegate.hasAttachDetachCallback()) {
-            if (layoutState.mAttachableContainer == null) {
-              layoutState.mAttachableContainer = new LinkedHashMap<>();
-            }
-            layoutState.mAttachableContainer.put(delegateKey, delegate);
           }
         }
         if (delegateKey != null || delegate.hasHandle()) {
@@ -1153,10 +1154,8 @@ public class LayoutState
   }
 
   @Nullable
-  Map<String, Component> consumeAttachables() {
-    @Nullable Map<String, Component> tmp = mAttachableContainer;
-    mAttachableContainer = null;
-    return tmp;
+  List<Attachable> getAttachables() {
+    return mAttachables;
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(

@@ -989,8 +989,7 @@ public class ComponentTree {
   @UiThread
   @GuardedBy("this")
   private void dispatchOnAttached() {
-    final @Nullable Map<String, Component> attachables =
-        mMainThreadLayoutState.consumeAttachables();
+    final @Nullable List<Attachable> attachables = mMainThreadLayoutState.getAttachables();
     final LayoutStateContext layoutStateContext = mMainThreadLayoutState.getLayoutStateContext();
     if (mAttachDetachHandler != null) {
       mAttachDetachHandler.onAttached(layoutStateContext, attachables);

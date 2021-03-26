@@ -156,6 +156,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable ArrayList<Transition> mTransitions;
   private @Nullable Map<String, Component> mComponentsNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
+  private @Nullable ArrayList<Attachable> mAttachables;
   protected @Nullable String mTestKey;
   private @Nullable Set<DebugComponent> mDebugComponents;
   private @Nullable List<Component> mUnresolvedComponents;
@@ -232,6 +233,19 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       mWorkingRangeRegistrations = new ArrayList<>(registrations.size());
     }
     mWorkingRangeRegistrations.addAll(registrations);
+  }
+
+  @Override
+  public void addAttachable(Attachable attachable) {
+    if (mAttachables == null) {
+      mAttachables = new ArrayList<>(4);
+    }
+    mAttachables.add(attachable);
+  }
+
+  @Override
+  public @Nullable List<Attachable> getAttachables() {
+    return mAttachables;
   }
 
   @Override
