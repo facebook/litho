@@ -1532,19 +1532,41 @@ public class LayoutState
         currentLayoutState.mLayoutRoot = null;
       }
 
-      final InternalNode root =
-          layoutCreatedInWillRender == null
-              ? Layout.createAndMeasureComponent(
-                  c,
-                  component,
-                  isReconcilable ? component.getKey() : null,
-                  widthSpec,
-                  heightSpec,
-                  isReconcilable ? currentLayoutState.mLayoutRoot : null,
-                  layoutState.mPrevLayoutStateContext,
-                  diffTreeRoot,
-                  logLayoutState)
-              : layoutCreatedInWillRender;
+      final InternalNode root;
+      if (layoutCreatedInWillRender == null) {
+
+        final LayoutResultHolder holder =
+            Layout.createAndMeasureComponent(
+                c,
+                component,
+                isReconcilable ? component.getKey() : null,
+                widthSpec,
+                heightSpec,
+                isReconcilable ? currentLayoutState.mLayoutRoot : null,
+                layoutState.mPrevLayoutStateContext,
+                diffTreeRoot,
+                logLayoutState);
+
+        // Check if layout was interrupted.
+        if (holder.wasLayoutInterrupted()) {
+
+          layoutState.mLayoutRoot = holder.mPartiallyResolvedLayout;
+          layoutState.mRootTransitionId = getTransitionIdForNode(holder.mPartiallyResolvedLayout);
+          layoutState.mIsCreateLayoutInProgress = false;
+          layoutState.mIsPartialLayoutState = true;
+          if (logLayoutState != null) {
+            logger.logPerfEvent(logLayoutState);
+          }
+
+          return layoutState;
+        } else {
+          root = holder.mResult;
+        }
+
+      } else {
+        root = layoutCreatedInWillRender;
+      }
+
       // Null check for tests.
       if (root.getContext() != null) {
         root.getContext().setLayoutStateContext(layoutStateContext);
@@ -1553,14 +1575,6 @@ public class LayoutState
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
       layoutState.mIsCreateLayoutInProgress = false;
-
-      if (layoutStateContext.isLayoutInterrupted()) {
-        layoutState.mIsPartialLayoutState = true;
-        if (logLayoutState != null) {
-          logger.logPerfEvent(logLayoutState);
-        }
-        return layoutState;
-      }
 
       if (logLayoutState != null) {
         logLayoutState.markerPoint("start_collect_results");

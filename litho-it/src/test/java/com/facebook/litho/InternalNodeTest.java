@@ -83,10 +83,11 @@ public class InternalNodeTest {
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
-        context,
-        Column.create(context).build(),
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+            context,
+            Column.create(context).build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED))
+        .mResult;
   }
 
   private static InternalNode.NestedTreeHolder acquireNestedTreeHolder() {
@@ -101,10 +102,11 @@ public class InternalNodeTest {
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
-        context,
-        Column.create(context).build(),
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+            context,
+            Column.create(context).build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED))
+        .mResult;
   }
 
   private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
@@ -521,14 +523,15 @@ public class InternalNodeTest {
 
     InternalNode layout =
         createAndMeasureComponent(
-            context,
-            Column.create(context)
-                .child(Row.create(context).child(Column.create(context)))
-                .child(Column.create(context).child(Row.create(context)))
-                .child(SolidColor.create(context).color(Color.RED))
-                .build(),
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
+                context,
+                Column.create(context)
+                    .child(Row.create(context).child(Column.create(context)))
+                    .child(Column.create(context).child(Row.create(context)))
+                    .child(SolidColor.create(context).color(Color.RED))
+                    .build(),
+                makeSizeSpec(0, UNSPECIFIED),
+                makeSizeSpec(0, UNSPECIFIED))
+            .mResult;
 
     InternalNode cloned = layout.deepClone();
 

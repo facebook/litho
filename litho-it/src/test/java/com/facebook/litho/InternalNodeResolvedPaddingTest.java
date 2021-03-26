@@ -45,10 +45,11 @@ public class InternalNodeResolvedPaddingTest {
 
     mInternalNode =
         createAndMeasureComponent(
-            context,
-            Column.create(context).build(),
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
+                context,
+                Column.create(context).build(),
+                makeSizeSpec(0, UNSPECIFIED),
+                makeSizeSpec(0, UNSPECIFIED))
+            .mResult;
   }
 
   private static void setDirection(InternalNode node, YogaDirection direction) {

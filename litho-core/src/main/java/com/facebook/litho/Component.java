@@ -310,7 +310,13 @@ public abstract class Component extends ComponentLifecycle
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       layoutState.clearCachedLayout(this);
 
-      lastMeasuredLayout = Layout.createAndMeasureComponent(c, this, widthSpec, heightSpec);
+      final LayoutResultHolder container =
+          Layout.createAndMeasureComponent(c, this, widthSpec, heightSpec);
+      if (container.wasLayoutInterrupted()) {
+        return;
+      }
+
+      lastMeasuredLayout = container.mResult;
 
       layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
 
@@ -361,11 +367,17 @@ public abstract class Component extends ComponentLifecycle
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null);
     contextForLayout.setLayoutStateContext(layoutStateContext);
-    final InternalNode internalNode =
+
+    final LayoutResultHolder holder =
         Layout.createAndMeasureComponent(contextForLayout, this, widthSpec, heightSpec);
 
-    outputSize.width = internalNode.getWidth();
-    outputSize.height = internalNode.getHeight();
+    if (holder.wasLayoutInterrupted()) {
+      outputSize.height = 0;
+      outputSize.width = 0;
+    } else {
+      outputSize.height = holder.mResult.getHeight();
+      outputSize.width = holder.mResult.getWidth();
+    }
   }
 
   @Override

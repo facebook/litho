@@ -588,7 +588,7 @@ public class LayoutStateCreateTreeTest {
         };
 
     final InternalNode root =
-        Layout.createAndMeasureComponent(mComponentContext, component, 800, 600);
+        Layout.createAndMeasureComponent(mComponentContext, component, 800, 600).mResult;
     verify(root).flexGrow(anyFloat());
   }
 

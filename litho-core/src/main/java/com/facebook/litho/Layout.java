@@ -47,7 +47,7 @@ class Layout {
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
-  static InternalNode createAndMeasureComponent(
+  static LayoutResultHolder createAndMeasureComponent(
       final ComponentContext c,
       final Component component,
       final int widthSpec,
@@ -57,7 +57,7 @@ class Layout {
   }
 
   /* TODO: (T81557408) Fix @Nullable issue */
-  static InternalNode createAndMeasureComponent(
+  static LayoutResultHolder createAndMeasureComponent(
       final ComponentContext c,
       final Component component,
       @Nullable final String globalKeyToReuse,
@@ -86,7 +86,7 @@ class Layout {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
 
-        return layout;
+        return LayoutResultHolder.interrupted(layout);
       } else {
         // Layout is complete, disable interruption from this point on.
         c.markLayoutUninterruptible();
@@ -114,7 +114,7 @@ class Layout {
       layoutStatePerfEvent.markerPoint("end_measure");
     }
 
-    return layout;
+    return new LayoutResultHolder(layout);
   }
 
   public static InternalNode create(final ComponentContext parent, final Component component) {
