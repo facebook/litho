@@ -26,4 +26,3 @@ For Sections debugging, you can turn on a flag in [SectionsDebug](pathname:///ja
 ```java
 SectionsDebug.ENABLED = true;
 ```
-

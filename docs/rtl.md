@@ -5,7 +5,7 @@ title: RTL
 
 Support for right-to-left (RTL) layouts in Litho follows a similar pattern to Android's RTL support. In order to make your component RTL-ready, simply use the `START` and `END` variants of padding and margin parameters instead of `LEFT` and `RIGHT`. All the rest will be handled by the layout system automatically.
 
-For example, here's a 
+For example, here's a
 
 ```java
 Column.create(c)

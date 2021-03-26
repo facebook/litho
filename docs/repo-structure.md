@@ -64,4 +64,3 @@ parts of the framework they want to use. The available projects are as follows:
 ### `/LITHO_DEFS` and `/BUCK`
 
 These files define how to build Litho.  The `BUCK` file is the input to [buck](https://buckbuild.com), and the `/LITHO_DEFS` file contains some constants needed for buck to find targets inside the repository.  It is imported in `/BUCK`.
-

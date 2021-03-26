@@ -22,5 +22,3 @@ The `LithoView` from this example, if directly used in your view hierarchy as is
 :::
 
 For more information about performing layout off the main thread, see [Async Layout](asynchronous-layout).
-
-

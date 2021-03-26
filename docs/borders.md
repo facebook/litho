@@ -168,7 +168,7 @@ Under the hood, each effect utilizes a standard [PathEffect](https://developer.a
 
 Border effects are specified via the various `*Effect` methods on the `Border.Builder` object.
 
-:::caution IMPORTANT 
+:::caution IMPORTANT
 Currently Litho does not support varying border widths with effects. Each border width must be the same.
 :::
 

@@ -41,4 +41,3 @@ The generated `ComponentLifecycle` class is what you are going to [use in your p
 The only API exposed by the generated class is a `create(...)` method that returns the appropriate [`Component.Builder`](pathname:///javadoc/com/facebook/litho/Component.Builder.html) for the `@Prop`s that you declared in your spec class.
 
 At runtime, all component instances of a certain type share the same `ComponentLifecycle` reference. This means that there will only be one spec instance per component type, not per component instance.
-

@@ -41,7 +41,7 @@ class MyComponentSpec {
 
 When the lifecycle methods get called, the `@Prop` parameters will hold the value passed down from the Component's parent when the Component was created (or their default values).
 
-Props are defined and used the same way in `LayoutSpecs` and `MountSpecs`.   
+Props are defined and used the same way in `LayoutSpecs` and `MountSpecs`.
 
 ## Setting Props
 

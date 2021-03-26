@@ -13,7 +13,7 @@ Transitions can be used to animate view properties when they change between layo
 
 When we make changes to a tree due to a new state, these changes happen immediately. Let's imagine that we have a simple Component that renders a yellow square, and aligns it to either the right or left edge of screen based on value of the `@State boolean toRight`.
 
-```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=start end=no_animation
+```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=start end=no_animation
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -27,7 +27,7 @@ When the value of the state changes we re-render the `ComponentTree` which makes
 
 There is a simple way to add bounds animations to all transitioning components between tree changes. Add the following:
 
-```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=no_animation end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SimpleAllLayoutTransitionComponentSpec.java start=no_animation end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -54,7 +54,7 @@ For more control over the transitions we can use these apis:
 
 To put it all together, here is what it would look like in our case:
 
-```java file=../../../sample/src/main/java/com/facebook/samples/litho/animations/docs/AlphaTransitionComponentSpec.java start=start end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/AlphaTransitionComponentSpec.java start=start end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">

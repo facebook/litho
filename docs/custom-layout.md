@@ -4,7 +4,7 @@ title: Custom Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
+Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout.
 
 Litho provides a custom layout API for accessing size information while the [`ComponentTree`](pathname:///javadoc/com/facebook/litho/ComponentTree.html) is being created and measured, as well as the possibility to measure a component in isolation.
 
@@ -37,7 +37,7 @@ final Component<Text> textComponent = Text.create(c)
 
 final Size outputSize = new Size();
 textComponent.measure(
-    c, 
+    c,
     SizeSpec.makeSizeSpec(0, UNSPECIFIED),
     SizeSpec.makeSizeSpec(0, UNSPECIFIED),
     outputSize);

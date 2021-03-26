@@ -26,6 +26,6 @@ static int onCalculateExpensiveValue(
 }
 ```
 
-`@OnCalculateCachedValue` is called whenever the dependent props or state change - i.e. an equality check on them fails. 
+`@OnCalculateCachedValue` is called whenever the dependent props or state change - i.e. an equality check on them fails.
 
 Cached values are stored on the `ComponentTree`, so they will live for the lifetime of the `ComponentTree`.

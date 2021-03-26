@@ -20,7 +20,7 @@ import React from 'react';
 import Highlight, {defaultProps} from 'prism-react-renderer';
 import github from 'prism-react-renderer/themes/github';
 import dracula from 'prism-react-renderer/themes/dracula';
-import {site} from '../versionConfig.js';
+import {site} from '../website/versionConfig.js';
 import useThemeContext from '@theme/hooks/useThemeContext';
 
 // VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces

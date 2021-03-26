@@ -13,16 +13,16 @@ For example, setting a click handler on any component is as simple as:
 @LayoutSpec
 class MyComponentSpec {
 
-	@OnCreateLayout
-	static Component onCreateLayout(
-	    ComponentContext c,
-	    @Prop String title) {
-	    
-	  return Text.create(c)
-	      .text(title)
-	      .clickHandler(MyComponent.onClick(c))
-	      .build();
-    }
+  @OnCreateLayout
+  static Component onCreateLayout(
+      ComponentContext c,
+      @Prop String title) {
+
+    return Text.create(c)
+        .text(title)
+        .clickHandler(MyComponent.onClick(c))
+      .build();
+  }
 }
 ```
 
@@ -31,14 +31,14 @@ And the callback within MyComponentSpec would look like this:
 ```java
 @LayoutSpec
 class MyComponentSpec {
-... 
-    @OnEvent(ClickEvent.class)
-    static void onClick(
-        ComponentContext c,
-        @FromEvent View view,
-        @Prop String someProp) {
-        // Handle click here.
-    }
+...
+  @OnEvent(ClickEvent.class)
+  static void onClick(
+      ComponentContext c,
+      @FromEvent View view,
+      @Prop String someProp) {
+    // Handle click here.
+  }
 }
 ```
 
