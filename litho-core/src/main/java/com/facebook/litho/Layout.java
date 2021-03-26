@@ -660,7 +660,7 @@ class Layout {
               + " Component#measureMightNotCacheInternalNode.");
     }
 
-    final InternalNode cachedLayout = layoutState.getCachedLayout(component);
+    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
 
     if (cachedLayout != null) {
       layoutState.clearCachedLayout(component);

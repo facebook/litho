@@ -161,7 +161,7 @@ public class LayoutState
   private final ArrayList<IncrementalMountOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Set<Long> mRenderUnitIdsWhichHostRenderTrees = new ArraySet<>(4);
 
-  private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
+  private final Map<Integer, LithoLayoutResult> mLastMeasuredLayouts;
 
   private @Nullable LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
@@ -2010,7 +2010,7 @@ public class LayoutState
   }
 
   @Nullable
-  InternalNode getCachedLayout(Component component) {
+  LithoLayoutResult getCachedLayout(Component component) {
     return mLastMeasuredLayouts.get(component.getId());
   }
 
@@ -2023,7 +2023,7 @@ public class LayoutState
     mLastMeasuredLayouts.remove(component.getId());
   }
 
-  void addLastMeasuredLayout(Component component, InternalNode lastMeasuredLayout) {
+  void addLastMeasuredLayout(Component component, LithoLayoutResult lastMeasuredLayout) {
     mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 

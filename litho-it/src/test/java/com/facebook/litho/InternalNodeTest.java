@@ -424,7 +424,7 @@ public class InternalNodeTest {
     textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
     assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
-    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
+    LithoLayoutResult cachedLayout = layoutState.getCachedLayout(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
@@ -448,7 +448,7 @@ public class InternalNodeTest {
     textComponent.measureMightNotCacheInternalNode(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
     assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
-    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
+    LithoLayoutResult cachedLayout = layoutState.getCachedLayout(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);

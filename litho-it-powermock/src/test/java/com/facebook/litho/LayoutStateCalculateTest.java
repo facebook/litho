@@ -130,9 +130,10 @@ public class LayoutStateCalculateTest {
 
     // Check the cached measured component tree
     assertThat(layoutState.getCachedLayout(component)).isNotNull();
-    final InternalNode cachedLayout = layoutState.getCachedLayout(component);
+    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getInternalNode().getTailComponent())
+        .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =
@@ -192,9 +193,10 @@ public class LayoutStateCalculateTest {
 
     // Check the cached measured component tree
     assertThat(layoutState.getCachedLayout(sizeDependentComponentSpy)).isNotNull();
-    final InternalNode cachedLayout = layoutState.getCachedLayout(sizeDependentComponentSpy);
+    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(sizeDependentComponentSpy);
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getInternalNode().getTailComponent())
+        .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =
@@ -260,7 +262,7 @@ public class LayoutStateCalculateTest {
 
     // Check the cached measured component tree
     assertThat(layoutState.getCachedLayout(sizeDependentComponentSpy)).isNotNull();
-    final InternalNode cachedLayout = layoutState.getCachedLayout(sizeDependentComponentSpy);
+    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(sizeDependentComponentSpy);
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
     assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
@@ -335,7 +337,7 @@ public class LayoutStateCalculateTest {
 
     // Check the cached measured component tree
     assertThat(layoutState.getCachedLayout(componentSpy)).isNotNull();
-    final InternalNode cachedLayout = layoutState.getCachedLayout(componentSpy);
+    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(componentSpy);
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
     assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);

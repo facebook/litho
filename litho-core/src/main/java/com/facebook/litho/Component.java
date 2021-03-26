@@ -302,7 +302,7 @@ public abstract class Component extends ComponentLifecycle
               + ": Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    InternalNode lastMeasuredLayout = layoutState.getCachedLayout(this);
+    LithoLayoutResult lastMeasuredLayout = layoutState.getCachedLayout(this);
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())

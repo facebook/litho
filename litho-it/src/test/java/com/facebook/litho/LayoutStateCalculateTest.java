@@ -1030,7 +1030,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, EXACTLY);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(internalNode.getWidth());
@@ -1073,7 +1073,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(100);
@@ -1116,7 +1116,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(99);
@@ -1157,7 +1157,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(50);
