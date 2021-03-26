@@ -55,8 +55,8 @@ public class InternalNodeUtils {
    * its main tree holder node.
    */
   static boolean hasValidLayoutDirectionInNestedTree(
-      NestedTreeHolderResult holder, InternalNode nestedTree) {
-    return nestedTree.isLayoutDirectionInherit()
+      NestedTreeHolderResult holder, LithoLayoutResult nestedTree) {
+    return nestedTree.getInternalNode().isLayoutDirectionInherit()
         || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
   }
 

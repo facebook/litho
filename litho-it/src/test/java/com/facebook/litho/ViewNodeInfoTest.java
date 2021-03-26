@@ -38,10 +38,10 @@ public class ViewNodeInfoTest {
 
   @Test
   public void testTouchBoundsNoHostTranslation() {
-    final InternalNode node =
+    final TouchExpansionTestInternalNode node =
         new TouchExpansionTestInternalNode(new ComponentContext(getApplicationContext()));
 
-    mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
+    mViewNodeInfo.setExpandedTouchBounds(node, node, 10, 10, 20, 20);
 
     assertThat(mViewNodeInfo.getExpandedTouchBounds()).isEqualTo(new Rect(9, 8, 23, 24));
   }

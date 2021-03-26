@@ -914,14 +914,16 @@ public class ComponentHostTest {
     final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
 
+    LithoLayoutResult result = mock(LithoLayoutResult.class);
     InternalNode node = mock(InternalNode.class);
+    when(result.getInternalNode()).thenReturn(node);
     when(node.hasTouchExpansion()).thenReturn(true);
-    when(node.getTouchExpansionLeft()).thenReturn(1);
-    when(node.getTouchExpansionTop()).thenReturn(1);
-    when(node.getTouchExpansionRight()).thenReturn(1);
-    when(node.getTouchExpansionBottom()).thenReturn(1);
+    when(result.getTouchExpansionLeft()).thenReturn(1);
+    when(result.getTouchExpansionTop()).thenReturn(1);
+    when(result.getTouchExpansionRight()).thenReturn(1);
+    when(result.getTouchExpansionBottom()).thenReturn(1);
 
-    viewNodeInfo.setExpandedTouchBounds(node, 1, 1, 1, 1);
+    viewNodeInfo.setExpandedTouchBounds(result, node, 1, 1, 1, 1);
 
     MountItem viewMountItem =
         MountItemTestHelper.create(

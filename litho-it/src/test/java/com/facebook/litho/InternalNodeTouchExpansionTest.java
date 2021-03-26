@@ -37,19 +37,20 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTouchExpansionTest {
-  private InternalNode mInternalNode;
+  private DefaultInternalNode mInternalNode;
 
   @Before
   public void setup() {
     final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
     mInternalNode =
-        createAndMeasureComponent(
-                context,
-                Column.create(context).build(),
-                makeSizeSpec(0, UNSPECIFIED),
-                makeSizeSpec(0, UNSPECIFIED))
-            .mResult;
+        (DefaultInternalNode)
+            createAndMeasureComponent(
+                    context,
+                    Column.create(context).build(),
+                    makeSizeSpec(0, UNSPECIFIED),
+                    makeSizeSpec(0, UNSPECIFIED))
+                .mResult;
 
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }

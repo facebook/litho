@@ -300,13 +300,14 @@ class Layout {
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
 
-    final Component component = holder.getTailComponent();
-    final String componentGlobalKey = holder.getTailComponentKey();
+    final InternalNode node = holder.getInternalNode();
+    final Component component = node.getTailComponent();
+    final String componentGlobalKey = node.getTailComponentKey();
     final LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // Find the immediate parent context
-    List<Component> components = holder.getComponents();
-    List<String> componentKeys = holder.getComponentKeys();
+    List<Component> components = node.getComponents();
+    List<String> componentKeys = node.getComponentKeys();
     if (components.size() > 1) {
       int index = components.size() - 2;
       final Component parent = components.get(index);
@@ -401,7 +402,7 @@ class Layout {
     }
 
     // This is checking only nested tree roots however should be moved to check all the tree roots.
-    layout.assertContextSpecificStyleNotSet();
+    layout.getInternalNode().assertContextSpecificStyleNotSet();
 
     return layout;
   }
