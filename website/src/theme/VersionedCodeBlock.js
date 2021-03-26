@@ -20,13 +20,13 @@ import React from 'react';
 import Highlight, {defaultProps} from 'prism-react-renderer';
 import github from 'prism-react-renderer/themes/github';
 import dracula from 'prism-react-renderer/themes/dracula';
-import {site} from '../website/versionConfig.js';
+import {site} from '../../versionConfig.js';
 import useThemeContext from '@theme/hooks/useThemeContext';
 
 // VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces
 // placeholders e.g. {{site.lithoVersion}} with current versions stated in ../versionConfig.js
 // When updating versions in documentation, it suffices to update the versions in ../versionConfig.js
-export const VersionedCodeBlock = ({language, code}) => {
+const VersionedCodeBlock = ({language, code}) => {
   // replace all placeholders with actual versions
   const modifiedCode = code
     .replace(/{{site.lithoVersion}}/g, site.lithoVersion)
@@ -65,3 +65,5 @@ function getCodeBlockTheme() {
     return github;
   }
 }
+
+export default VersionedCodeBlock;
