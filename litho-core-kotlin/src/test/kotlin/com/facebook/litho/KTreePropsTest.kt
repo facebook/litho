@@ -54,10 +54,7 @@ class KTreePropsTest {
 
     class ParentComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return TreePropProvider(
-            treeProp(type = Int::class, value = 32),
-            treeProp(type = Rect::class, value = rect),
-            child = ChildComponent())
+        return TreePropProvider(Int::class to 32, Rect::class to rect) { ChildComponent() }
       }
     }
 
@@ -81,14 +78,13 @@ class KTreePropsTest {
     // Overrides tree prop from ParentComponent
     class IntermediateComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return TreePropProvider(treeProp(type = Int::class, value = 24), child = ChildComponent())
+        return TreePropProvider(Int::class to 24) { ChildComponent() }
       }
     }
 
     class ParentComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return TreePropProvider(
-            treeProp(type = Int::class, value = 18), child = IntermediateComponent())
+        return TreePropProvider(Int::class to 18) { IntermediateComponent() }
       }
     }
 
@@ -120,15 +116,12 @@ class KTreePropsTest {
 
     class ParentComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return TreePropProvider(
-            treeProp(type = String::class, value = "kavabanga"),
-            child =
-                Row {
-                  child(
-                      TreePropProvider(
-                          treeProp(type = Int::class, value = 42), child = Child1Component()))
-                  child(Child2Component())
-                })
+        return TreePropProvider(String::class to "kavabanga") {
+          Row {
+            child(TreePropProvider(Int::class to 42) { Child1Component() })
+            child(Child2Component())
+          }
+        }
       }
     }
 
