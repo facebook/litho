@@ -114,8 +114,6 @@ public interface InternalNode extends Inputs, LithoLayoutResult, LayoutProps {
 
   InternalNode justifyContent(YogaJustify justifyContent);
 
-  void registerDebugComponent(DebugComponent debugComponent);
-
   InternalNode removeChildAt(int index);
 
   /** This method marks all resolved layout property values to undefined. */

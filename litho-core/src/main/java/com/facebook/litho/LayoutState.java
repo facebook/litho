@@ -167,7 +167,8 @@ public class LayoutState
 
   private final List<TestOutput> mTestOutputs;
 
-  @Nullable InternalNode mLayoutRoot;
+  @Nullable LithoLayoutResult mLayoutRoot;
+  @Nullable InternalNode mPartiallyResolvedLayoutRoot;
   @Nullable TransitionId mRootTransitionId;
   @Nullable String mRootComponentName;
 
@@ -1525,14 +1526,15 @@ public class LayoutState
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
 
-      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
+      final LithoLayoutResult layoutCreatedInWillRender =
+          component.consumeLayoutCreatedInWillRender(c);
 
       // Release the current InternalNode tree if it is not reconcilable.
       if (!isReconcilable && currentLayoutState != null) {
         currentLayoutState.mLayoutRoot = null;
       }
 
-      final InternalNode root;
+      final LithoLayoutResult root;
       if (layoutCreatedInWillRender == null) {
 
         final LayoutResultHolder holder =
@@ -1550,7 +1552,7 @@ public class LayoutState
         // Check if layout was interrupted.
         if (holder.wasLayoutInterrupted()) {
 
-          layoutState.mLayoutRoot = holder.mPartiallyResolvedLayout;
+          layoutState.mPartiallyResolvedLayoutRoot = holder.mPartiallyResolvedLayout;
           layoutState.mRootTransitionId = getTransitionIdForNode(holder.mPartiallyResolvedLayout);
           layoutState.mIsCreateLayoutInProgress = false;
           layoutState.mIsPartialLayoutState = true;
@@ -1659,12 +1661,14 @@ public class LayoutState
       // resume resolving the InternalNode and measure it.
       Layout.resumeCreateAndMeasureComponent(
           c,
-          layoutState.mLayoutRoot,
+          layoutState.mPartiallyResolvedLayoutRoot,
           widthSpec,
           heightSpec,
           layoutState.mPrevLayoutStateContext,
           layoutState.mDiffTreeRoot,
           logLayoutState);
+
+      layoutState.mLayoutRoot = layoutState.mPartiallyResolvedLayoutRoot;
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
@@ -1733,7 +1737,7 @@ public class LayoutState
     final boolean isTracing = ComponentsSystrace.isTracing();
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
-    final InternalNode root = layoutState.mLayoutRoot;
+    final LithoLayoutResult root = layoutState.mLayoutRoot;
 
     switch (SizeSpec.getMode(widthSpec)) {
       case SizeSpec.EXACTLY:
@@ -2155,7 +2159,7 @@ public class LayoutState
 
   @Nullable
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public InternalNode getLayoutRoot() {
+  public LithoLayoutResult getLayoutRoot() {
     return mLayoutRoot;
   }
 

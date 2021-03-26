@@ -28,8 +28,8 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsPools;
-import com.facebook.litho.InternalNode;
 import com.facebook.litho.LayoutState;
+import com.facebook.litho.LithoLayoutResult;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.TreeProp;
@@ -284,7 +284,7 @@ public class LithoViewRule implements TestRule {
     return getComponentTree().getCommittedLayoutState();
   }
 
-  public @Nullable InternalNode getCurrentRootNode() {
+  public @Nullable LithoLayoutResult getCurrentRootNode() {
     return getCommittedLayoutState() != null ? getCommittedLayoutState().getLayoutRoot() : null;
   }
 }

@@ -38,6 +38,8 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   ComponentContext getContext();
 
+  InternalNode getInternalNode();
+
   YogaNode getYogaNode();
 
   String getSimpleName();
@@ -243,7 +245,7 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   void assertContextSpecificStyleNotSet();
 
-  /* Test related APIs */
+  /* Testing and debugging related APIs */
 
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
@@ -253,6 +255,8 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   @Nullable
   List<Attachable> getAttachables();
+
+  void registerDebugComponent(DebugComponent debugComponent);
 
   /* Measurement related APIs for mutating the result */
 

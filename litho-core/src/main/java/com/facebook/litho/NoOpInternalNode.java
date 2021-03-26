@@ -252,6 +252,11 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
+  @Override
+  public InternalNode getInternalNode() {
+    return this;
+  }
+
   @Nullable
   @Override
   public DiffNode getDiffNode() {

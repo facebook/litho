@@ -40,9 +40,9 @@ public class LithoViewTestHelper {
    * it.
    */
   public static final class InternalNodeRef {
-    private final InternalNode mInternalNodeRef;
+    private final LithoLayoutResult mInternalNodeRef;
 
-    private InternalNodeRef(InternalNode node) {
+    private InternalNodeRef(LithoLayoutResult node) {
       this.mInternalNodeRef = node;
     }
   }

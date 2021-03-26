@@ -121,81 +121,81 @@ public class StateUpdatesWithReconciliationTest {
   @Test
   public void initial_condition() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     assertThat(layout).isNotNull();
-    verify(layout, times(0)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_new_instance() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(new DummyComponent());
 
-    verify(layout, times(0)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_same_instance() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(mRootComponent);
 
-    verify(layout, times(0)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_same_instance_internal() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(current.getRootComponent());
 
-    verify(layout, times(0)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_shallowCopy() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(mRootComponent.makeShallowCopy());
 
-    verify(layout, times(0)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void update_state_sync() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
-    verify(layout, times(1)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
   public void update_state_async() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.updateStateAsync(getRootGlobalKey(current), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    verify(layout, times(1)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
   public void simple_update_state_sync() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
-    verify(layout, times(1)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -236,7 +236,7 @@ public class StateUpdatesWithReconciliationTest {
     before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     // trigger a state update
     caller.increment();
@@ -244,7 +244,7 @@ public class StateUpdatesWithReconciliationTest {
     mComponentTree.setRoot(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     // reconciliation should be invoked
-    verify(layout, times(1)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -255,7 +255,7 @@ public class StateUpdatesWithReconciliationTest {
     before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     // trigger a state update
     caller.increment();
@@ -267,7 +267,7 @@ public class StateUpdatesWithReconciliationTest {
             .build());
 
     // reconciliation should not be invoked
-    verify(layout, times(0)).reconcile(any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   /**

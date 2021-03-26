@@ -52,12 +52,13 @@ public final class DebugComponent {
   private static final Map<String, Overrider> sOverriders = new HashMap<>();
 
   private String mGlobalKey;
-  private InternalNode mNode;
+  private LithoLayoutResult mNode;
   private int mComponentIndex;
 
   private DebugComponent() {}
 
-  static synchronized @Nullable DebugComponent getInstance(InternalNode node, int componentIndex) {
+  static synchronized @Nullable DebugComponent getInstance(
+      LithoLayoutResult node, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
     final ComponentContext context = node.getContext();
 
@@ -99,7 +100,7 @@ public final class DebugComponent {
   public static DebugComponent getRootInstance(@Nullable ComponentTree componentTree) {
     final LayoutState layoutState =
         componentTree == null ? null : componentTree.getMainThreadLayoutState();
-    final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
+    final LithoLayoutResult root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null && root != ComponentContext.NULL_LAYOUT) {
       final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
       return DebugComponent.getInstance(root, outerWrapperComponentIndex);
@@ -403,7 +404,7 @@ public final class DebugComponent {
   @Nullable
   public DebugLayoutNode getLayoutNode() {
     if (isLayoutNode()) {
-      return new DebugLayoutNode(mNode);
+      return new DebugLayoutNode(mNode.getInternalNode());
     }
     return null;
   }
@@ -425,18 +426,18 @@ public final class DebugComponent {
   }
 
   @Nullable
-  private static InternalNode parent(InternalNode node) {
+  private static InternalNode parent(LithoLayoutResult node) {
     return node.getParent();
   }
 
-  private static int getXFromRoot(@Nullable InternalNode node) {
+  private static int getXFromRoot(@Nullable LithoLayoutResult node) {
     if (node == null) {
       return 0;
     }
     return node.getX() + getXFromRoot(parent(node));
   }
 
-  private static int getYFromRoot(@Nullable InternalNode node) {
+  private static int getYFromRoot(@Nullable LithoLayoutResult node) {
     if (node == null) {
       return 0;
     }

@@ -63,7 +63,7 @@ class Layout {
       @Nullable final String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable InternalNode current,
+      final @Nullable LithoLayoutResult current,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
@@ -96,7 +96,12 @@ class Layout {
       ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
       Component updated = updatedScopedContext.getComponentScope();
       layout =
-          current.reconcile(c, updated, ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
+          current
+              .getInternalNode()
+              .reconcile(
+                  c,
+                  updated,
+                  ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
     }
 
     if (layoutStatePerfEvent != null) {

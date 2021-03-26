@@ -597,6 +597,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public InternalNode getInternalNode() {
+    return this;
+  }
+
+  @Override
   public @Nullable DiffNode getDiffNode() {
     return mDiffNode;
   }
