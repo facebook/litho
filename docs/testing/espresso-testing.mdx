@@ -28,14 +28,14 @@ dependencies to your `build.gradle` file alongside your Espresso setup:
 <br clear="right" />
 <br />
 
-export const espressoCode = `dependencies {
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
   // ...
   androidTestCompile 'com.facebook.litho:litho-espresso:{{site.lithoVersion}}'
   androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
   androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-}`;
-
-<VersionedCodeBlock language="groovy" code={espressoCode} />
+}
+`} />
 
 ## Matching
 

@@ -4,12 +4,13 @@ title: Getting Started
 ---
 
 import VersionedCodeBlock from '@theme/VersionedCodeBlock';
-export const testingDependenciesCode = `testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'`;
 
 In order to use any of the testing utilities please include the `litho-testing` package in the
 build. Add the following lines to the `dependencies` block in the `build.gradle` file:
 
-<VersionedCodeBlock language="groovy" code={testingDependenciesCode} />
+<VersionedCodeBlock language="groovy" code={`
+testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
+`} />
 
 Litho's testing APIs are exposed through fluid AssertJ methods. They are available as:
 

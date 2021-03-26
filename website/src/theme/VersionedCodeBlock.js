@@ -23,16 +23,30 @@ import dracula from 'prism-react-renderer/themes/dracula';
 import {site} from '../../versionConfig.js';
 import useThemeContext from '@theme/hooks/useThemeContext';
 
-// VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces
-// placeholders e.g. {{site.lithoVersion}} with current versions stated in ../versionConfig.js
-// When updating versions in documentation, it suffices to update the versions in ../versionConfig.js
+/*
+VersionedCodeBlock is a wrapper component for the normal codeblock. It replaces
+placeholders e.g. {{site.lithoVersion}} with current versions stated in ../versionConfig.js
+When updating versions in documentation, it suffices to update the versions in ../versionConfig.js
+
+Use in *.mdx like:
+
+ import VersionedCodeBlock from '@theme/VersionedCodeBlock'
+
+ <VersionedCodeBlock language="groovy" code={`
+ dependencies {
+   debugImplementation 'com.facebook.flipper:flipper:{{site.flipperVersion}}'
+   debugImplementation 'com.facebook.flipper:flipper-litho-plugin:{{site.flipperVersion}}'
+ }
+ `}/>
+*/
 const VersionedCodeBlock = ({language, code}) => {
   // replace all placeholders with actual versions
   const modifiedCode = code
     .replace(/{{site.lithoVersion}}/g, site.lithoVersion)
     .replace(/{{site.soloaderVersion}}/g, site.soloaderVersion)
     .replace(/{{site.lithoSnapshotVersion}}/g, site.lithoSnapshotVersion)
-    .replace(/{{site.flipperVersion}}/g, site.flipperVersion);
+    .replace(/{{site.flipperVersion}}/g, site.flipperVersion)
+    .trim();
   const theme = getCodeBlockTheme();
   // render as a codeblock
   return (

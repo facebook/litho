@@ -19,12 +19,12 @@ Luckily, we have [Flipper](https://fbflipper.com) – an extensible mobile app d
 
 To add Flipper and Litho plugins to you app you need to do the [following steps](https://fbflipper.com/docs/setup/layout-plugin):
 
-export const flipperDependencies =`dependencies {
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
   debugImplementation 'com.facebook.flipper:flipper:{{site.flipperVersion}}'
   debugImplementation 'com.facebook.flipper:flipper-litho-plugin:{{site.flipperVersion}}'
-}`;
-
-<VersionedCodeBlock language="groovy" code={flipperDependencies} />
+}
+`} />
 
 And init `FlipperClient` with Inspector plugin which is typically done in your custom `Application` class:
 

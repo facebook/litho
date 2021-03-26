@@ -29,19 +29,20 @@ repositories {
   ]}>
   <TabItem value="java">
 
-export const dependenciesCode = `dependencies {
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
-  annotationProcessor 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'\n
+  annotationProcessor 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'
+  
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
+  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'
+  
   // Testing Litho
   testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
-}`;
-
-
-<VersionedCodeBlock language="groovy" code={dependenciesCode} />
+}
+`} />
 
   </TabItem>
   <TabItem value="kotlin">
@@ -50,18 +51,20 @@ export const dependenciesCode = `dependencies {
 Kotlin support for Litho is experimental at this point.
 :::
 
-export const kaptDependenciesCode = `dependencies {
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-widget:{{site.lithoVersion}}'
-  kapt 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'\n
+  kapt 'com.facebook.litho:litho-processor:{{site.lithoVersion}}'
+  
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'\n
+  implementation 'com.facebook.soloader:soloader:{{site.soloaderVersion}}'
+  
   // Testing Litho
   testImplementation 'com.facebook.litho:litho-testing:{{site.lithoVersion}}'
-}`
-
-<VersionedCodeBlock language="groovy" code={kaptDependenciesCode} />
+}
+`} />
 
 Don't forget that in order to use dependencies with annotation processors, you need to apply Kotlin
 KAPT plugin at the top of your application's `build.gradle` file:
@@ -87,28 +90,30 @@ include Sections by adding the following additional dependencies to your `build.
   ]}>
   <TabItem value="java">
 
-export const additionalDependenciesCode = `dependencies {\n
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
   // Sections
   implementation 'com.facebook.litho:litho-sections-core:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-sections-widget:{{site.lithoVersion}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'\n
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'
+  
   annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.lithoVersion}}'
-}`;
-
-<VersionedCodeBlock language="groovy" code={additionalDependenciesCode} />
+}
+`} />
 
   </TabItem>
   <TabItem value="kotlin">
 
-export const kaptAdditionalDependenciesCode = `dependencies {\n
+<VersionedCodeBlock language="groovy" code={`
+dependencies {
   // Sections
   implementation 'com.facebook.litho:litho-sections-core:{{site.lithoVersion}}'
   implementation 'com.facebook.litho:litho-sections-widget:{{site.lithoVersion}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'\n
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.lithoVersion}}'
+  
   kapt 'com.facebook.litho:litho-sections-processor:{{site.lithoVersion}}'
-}`;
-
-<VersionedCodeBlock language="groovy" code={kaptAdditionalDependenciesCode} />
+}
+`} />
 
   </TabItem>
 </Tabs>
