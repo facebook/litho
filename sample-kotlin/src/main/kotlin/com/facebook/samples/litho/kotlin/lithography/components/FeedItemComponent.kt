@@ -25,10 +25,8 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.flexboxParams
 import com.facebook.litho.flexbox.padding
-import com.facebook.litho.flexbox.position
-import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -41,29 +39,29 @@ import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 import com.facebook.yoga.YogaPositionType
 
 class FeedItemComponent(val artist: Artist) : KComponent() {
-  override fun ComponentScope.render() =
-      Column() {
-        child(
-            Column() {
-              child(imageBlock(artist))
-              child(
-                  Text(
-                      text = artist.name,
-                      style =
-                          Style.position(start = 4.dp, bottom = 4.dp)
-                              .positionType(YogaPositionType.ABSOLUTE)
-                              .padding(horizontal = 6.dp)
-                              .background(drawableColor(0xddffffff)),
-                      textSize = 24.sp,
-                      textStyle = BOLD))
-              child(
-                  ActionsComponent(
-                      style =
-                          Style.position(top = 4.dp, end = 4.dp)
-                              .positionType(YogaPositionType.ABSOLUTE)))
-            })
-        child(FooterComponent(text = artist.biography))
-      }
+  override fun ComponentScope.render() = Column {
+    child(
+        Column {
+          child(imageBlock(artist))
+          child(
+              flexboxParams(
+                  positionType = YogaPositionType.ABSOLUTE,
+                  positionStart = 4.dp,
+                  positionBottom = 4.dp) {
+                Text(
+                    text = artist.name,
+                    style = Style.padding(horizontal = 6.dp).background(drawableColor(0xddffffff)),
+                    textSize = 24.sp,
+                    textStyle = BOLD)
+              })
+          child(
+              flexboxParams(
+                  positionType = YogaPositionType.ABSOLUTE,
+                  positionTop = 4.dp,
+                  positionEnd = 4.dp) { ActionsComponent() })
+        })
+    child(FooterComponent(text = artist.biography))
+  }
 }
 
 private val recyclerConfiguration =

@@ -23,7 +23,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.flexbox.flex
+import com.facebook.litho.flexbox.flexboxParams
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.margin
 import com.facebook.litho.flexbox.padding
@@ -37,22 +37,20 @@ class DecadeSeparator(val decade: Decade) : KComponent() {
   override fun ComponentScope.render() =
       Row(alignItems = CENTER, style = Style.padding(16.dp).background(drawableColor(0xFFFAFAFA))) {
         child(
-            Row(
-                style =
-                    Style.height(Dimen.Hairline)
-                        .flex(grow = 1f)
-                        .background(drawableColor(0xFFAAAAAA))))
+            flexboxParams(flexGrow = 1f) {
+              Row(style = Style.height(Dimen.Hairline).background(drawableColor(0xFFAAAAAA)))
+            })
         child(
-            Text(
-                text = "${decade.year}",
-                textSize = 14.sp,
-                textColor = 0xFFAAAAAA.toInt(),
-                style = Style.margin(horizontal = 10.dp).flex(shrink = 0f)))
+            flexboxParams(flexShrink = 0f) {
+              Text(
+                  text = "${decade.year}",
+                  textSize = 14.sp,
+                  textColor = 0xFFAAAAAA.toInt(),
+                  style = Style.margin(horizontal = 10.dp))
+            })
         child(
-            Row(
-                style =
-                    Style.height(Dimen.Hairline)
-                        .flex(grow = 1f)
-                        .background(drawableColor(0xFFAAAAAA))))
+            flexboxParams(flexGrow = 1f) {
+              Row(style = Style.height(Dimen.Hairline).background(drawableColor(0xFFAAAAAA)))
+            })
       }
 }
