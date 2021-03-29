@@ -115,7 +115,7 @@ public class NestedTreeResolutionTest {
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
     NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-    verify(holder, times(2)).copyInto(any(InternalNode.class));
+    verify(holder.getInternalNode(), times(2)).copyInto(any(InternalNode.class));
   }
 
   @Test
@@ -143,6 +143,6 @@ public class NestedTreeResolutionTest {
     assertThat(props.setps).containsExactly(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
     NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-    verify(holder).copyInto(any(InternalNode.class));
+    verify(holder.getInternalNode()).copyInto(any(InternalNode.class));
   }
 }

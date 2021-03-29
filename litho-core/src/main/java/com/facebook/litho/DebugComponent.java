@@ -52,14 +52,16 @@ public final class DebugComponent {
   private static final Map<String, Overrider> sOverriders = new HashMap<>();
 
   private String mGlobalKey;
-  private LithoLayoutResult mNode;
+  private LithoLayoutResult mResult;
+  private InternalNode mNode;
   private int mComponentIndex;
 
   private DebugComponent() {}
 
   static synchronized @Nullable DebugComponent getInstance(
-      LithoLayoutResult node, int componentIndex) {
+      LithoLayoutResult result, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
+    final InternalNode node = result.getInternalNode();
     final ComponentContext context = node.getContext();
 
     if (componentIndex >= node.getComponents().size()) {
@@ -73,7 +75,8 @@ public final class DebugComponent {
             node.getComponentKeys() == null ? null : node.getComponentKeys().get(componentIndex));
 
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
-    debugComponent.mNode = node;
+    debugComponent.mResult = result;
+    debugComponent.mNode = result.getInternalNode();
     debugComponent.mComponentIndex = componentIndex;
     node.registerDebugComponent(debugComponent);
 
@@ -102,16 +105,18 @@ public final class DebugComponent {
         componentTree == null ? null : componentTree.getMainThreadLayoutState();
     final LithoLayoutResult root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null && root != ComponentContext.NULL_LAYOUT) {
-      final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
+      final InternalNode node = root.getInternalNode();
+      final int outerWrapperComponentIndex = Math.max(0, node.getComponents().size() - 1);
       return DebugComponent.getInstance(root, outerWrapperComponentIndex);
     }
     return null;
   }
 
   @Nullable
-  public static DebugComponent getRootInstance(InternalNode rootInternalNode) {
+  public static DebugComponent getRootInstance(LithoLayoutResult rootResult) {
+    final InternalNode rootInternalNode = rootResult.getInternalNode();
     final int outerWrapperComponentIndex = Math.max(0, rootInternalNode.getComponents().size() - 1);
-    return DebugComponent.getInstance(rootInternalNode, outerWrapperComponentIndex);
+    return DebugComponent.getInstance(rootResult, outerWrapperComponentIndex);
   }
 
   private static String generateGlobalKey(ComponentContext context, String componentKey) {
@@ -160,7 +165,7 @@ public final class DebugComponent {
   public List<DebugComponent> getChildComponents() {
     if (!isLayoutNode()) {
       final int nextComponentIndex = mComponentIndex - 1;
-      DebugComponent component = getInstance(mNode, nextComponentIndex);
+      DebugComponent component = getInstance(mResult, nextComponentIndex);
       if (component != null) {
         return Collections.singletonList(component);
       } else {
@@ -170,9 +175,9 @@ public final class DebugComponent {
 
     final List<DebugComponent> children = new ArrayList<>();
 
-    for (int i = 0, count = mNode.getChildCount(); i < count; i++) {
-      final InternalNode childNode = mNode.getChildAt(i);
-      final int index = Math.max(0, childNode.getComponents().size() - 1);
+    for (int i = 0, count = mResult.getChildCount(); i < count; i++) {
+      final LithoLayoutResult childNode = mResult.getChildAt(i);
+      final int index = Math.max(0, childNode.getInternalNode().getComponents().size() - 1);
       DebugComponent component = getInstance(childNode, index);
       if (component != null) {
         children.add(component);
@@ -180,13 +185,13 @@ public final class DebugComponent {
     }
 
     final LithoLayoutResult nestedTree =
-        mNode instanceof NestedTreeHolderResult
+        mResult instanceof NestedTreeHolderResult
             ? ((NestedTreeHolderResult) mNode).getNestedResult()
             : null;
-    if (nestedTree != null && nestedTree.isInitialized()) {
+    if (nestedTree != null) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
-        final InternalNode childNode = nestedTree.getChildAt(i);
-        int index = Math.max(0, childNode.getComponents().size() - 1);
+        final LithoLayoutResult childNode = nestedTree.getChildAt(i);
+        int index = Math.max(0, childNode.getInternalNode().getComponents().size() - 1);
         DebugComponent component = getInstance(childNode, index);
         if (component != null) {
           children.add(component);
@@ -233,8 +238,8 @@ public final class DebugComponent {
       return new Rect(0, 0, mNode.getWidth(), mNode.getHeight());
     }
 
-    final int x = getXFromRoot(mNode);
-    final int y = getYFromRoot(mNode);
+    final int x = getXFromRoot(mResult);
+    final int y = getYFromRoot(mResult);
     return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
   }
 
@@ -283,7 +288,7 @@ public final class DebugComponent {
   }
 
   /**
-   * @return This component's componentTag or null if none is set. Unlike {@link getTestKey}, this
+   * @return This component's componentTag or null if none is set. Unlike {@link #getTestKey}, this
    *     will return tags for any Component, including Components which are not LayoutNodes.
    */
   @Nullable
@@ -404,7 +409,7 @@ public final class DebugComponent {
   @Nullable
   public DebugLayoutNode getLayoutNode() {
     if (isLayoutNode()) {
-      return new DebugLayoutNode(mNode.getInternalNode());
+      return new DebugLayoutNode(mNode);
     }
     return null;
   }
@@ -426,7 +431,7 @@ public final class DebugComponent {
   }
 
   @Nullable
-  private static InternalNode parent(LithoLayoutResult node) {
+  private static LithoLayoutResult parent(LithoLayoutResult node) {
     return node.getParent();
   }
 

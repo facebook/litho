@@ -65,6 +65,11 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   }
 
   @Override
+  public DefaultNestedTreeHolder getInternalNode() {
+    return this;
+  }
+
+  @Override
   public void paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
     getNestedTreePadding().set(edge, percent);

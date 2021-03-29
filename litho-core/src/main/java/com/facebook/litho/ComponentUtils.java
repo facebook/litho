@@ -416,11 +416,13 @@ public class ComponentUtils {
     stack.addLast(root);
     int level = 0;
     while (!stack.isEmpty()) {
-      final LithoLayoutResult node = stack.removeLast();
-      if (node == null) {
+      final LithoLayoutResult result = stack.removeLast();
+      if (result == null) {
         level--;
         continue;
       }
+
+      final InternalNode node = result.getInternalNode();
 
       final Component component = node.getTailComponent();
       if (component == null) {
@@ -464,8 +466,8 @@ public class ComponentUtils {
       }
 
       stack.addLast(null);
-      for (int index = node.getChildCount() - 1; index >= 0; index--) {
-        stack.addLast(node.getChildAt(index));
+      for (int index = result.getChildCount() - 1; index >= 0; index--) {
+        stack.addLast(result.getChildAt(index));
       }
       level++;
     }

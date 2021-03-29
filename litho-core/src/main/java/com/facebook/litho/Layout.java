@@ -367,7 +367,7 @@ class Layout {
             context = parentContext.makeNewCopy();
           }
 
-          context.setTreeProps(holder.getPendingTreeProps());
+          context.setTreeProps(holder.getInternalNode().getPendingTreeProps());
 
           // Set the size specs in ComponentContext for the nested tree
           // TODO: (T48229905) size specs should be passed in as arguments.
@@ -378,7 +378,7 @@ class Layout {
           final InternalNode newNode = create(context, component, true, true, componentGlobalKey);
 
           // TODO: Avoid this hard cast, after splitting is complete.
-          holder.copyInto(newNode);
+          holder.getInternalNode().copyInto(newNode);
 
           layout =
               measure(

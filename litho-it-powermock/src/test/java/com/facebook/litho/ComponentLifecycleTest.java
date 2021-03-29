@@ -148,6 +148,7 @@ public class ComponentLifecycleTest {
     mContext = spy(c);
     mLayoutStateContext = c.getLayoutStateContext();
     when(mNode.getContext()).thenReturn(mContext);
+    when(mNode.getInternalNode()).thenReturn(mNode);
 
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);

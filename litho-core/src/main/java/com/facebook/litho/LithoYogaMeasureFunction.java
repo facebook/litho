@@ -55,7 +55,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode) {
-    final LithoLayoutResult node = (LithoLayoutResult) cssNode.getData();
+    final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
+    final InternalNode node = result.getInternalNode();
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
     final ComponentContext componentScopedContext =
@@ -83,15 +84,15 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
             .flush();
       }
 
-      node.setLastWidthSpec(widthSpec);
-      node.setLastHeightSpec(heightSpec);
+      result.setLastWidthSpec(widthSpec);
+      result.setLastHeightSpec(heightSpec);
 
       int outputWidth = 0;
       int outputHeight = 0;
 
       ComponentContext context = node.getContext();
 
-      if (Component.isNestedTree(context, component) || node instanceof NestedTreeHolderResult) {
+      if (Component.isNestedTree(context, component) || result instanceof NestedTreeHolderResult) {
 
         // Find the nearest parent component context.
         final Component head = node.getHeadComponent();
@@ -117,7 +118,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         final LithoLayoutResult nestedTree =
             Layout.create(
                 context,
-                (NestedTreeHolderResult) node,
+                (NestedTreeHolderResult) result,
                 widthSpec,
                 heightSpec,
                 mPrevLayoutStateContext);
@@ -133,7 +134,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       } else {
         final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-        component.onMeasure(componentScopedContext, node, widthSpec, heightSpec, size);
+        component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size);
 
         if (size.width < 0 || size.height < 0) {
           throw new IllegalStateException(
@@ -164,8 +165,10 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         }
       }
 
-      node.setLastMeasuredWidth(outputWidth);
-      node.setLastMeasuredHeight(outputHeight);
+      result.setLastMeasuredWidth(outputWidth);
+      result.setLastMeasuredHeight(outputHeight);
+      result.setLastWidthSpec(widthSpec);
+      result.setLastHeightSpec(heightSpec);
 
       if (isTracing) {
         ComponentsSystrace.endSection();

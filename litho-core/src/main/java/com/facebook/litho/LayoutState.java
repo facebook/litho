@@ -1052,7 +1052,7 @@ public class LayoutState
       }
     }
 
-    final List<Attachable> attachables = result.getAttachables();
+    final List<Attachable> attachables = result.getInternalNode().getAttachables();
     if (attachables != null) {
       if (layoutState.mAttachables == null) {
         layoutState.mAttachables = new ArrayList<>();
