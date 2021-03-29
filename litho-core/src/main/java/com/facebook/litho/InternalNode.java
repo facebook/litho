@@ -42,7 +42,7 @@ import java.util.Map;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode extends Inputs, LithoLayoutResult, LayoutProps {
+public interface InternalNode extends Inputs, ComponentLayout, LayoutProps {
 
   void addChildAt(InternalNode child, int index);
 

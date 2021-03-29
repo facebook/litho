@@ -39,7 +39,7 @@ import java.util.Map;
  * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
  * overridden so no actions are performed, and no exceptions are thrown.
  */
-class NoOpInternalNode implements InternalNode {
+class NoOpInternalNode implements InternalNode, LithoLayoutResult {
 
   NoOpInternalNode() {}
 
@@ -210,7 +210,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public InternalNode getChildAt(int index) {
+  public NoOpInternalNode getChildAt(int index) {
     return null;
   }
 
@@ -435,7 +435,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public InternalNode getParent() {
+  public NoOpInternalNode getParent() {
     return null;
   }
 

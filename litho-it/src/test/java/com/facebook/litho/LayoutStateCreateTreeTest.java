@@ -600,11 +600,12 @@ public class LayoutStateCreateTreeTest {
     }
 
     protected InternalNode resolve(ComponentContext c) {
+      LithoLayoutResult result = mock(LithoLayoutResult.class);
       InternalNode node = mock(InternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
-      when(node.calculateLayout(anyFloat(), anyFloat())).thenReturn(node);
-      when(node.getInternalNode()).thenReturn(node);
+      when(node.calculateLayout(anyFloat(), anyFloat())).thenReturn(result);
+      when(result.getInternalNode()).thenReturn(node);
       return node;
     }
 

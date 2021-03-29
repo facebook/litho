@@ -37,7 +37,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
  */
 public class ComponentContext {
 
-  public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
+  public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;

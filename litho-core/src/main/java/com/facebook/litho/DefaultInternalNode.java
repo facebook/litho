@@ -79,7 +79,7 @@ import javax.annotation.Nullable;
 /** Default implementation of {@link InternalNode}. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class DefaultInternalNode implements InternalNode, Cloneable {
+public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
@@ -541,8 +541,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable InternalNode getChildAt(int index) {
-    return (InternalNode) mYogaNode.getChildAt(index).getData();
+  public @Nullable DefaultInternalNode getChildAt(int index) {
+    return (DefaultInternalNode) mYogaNode.getChildAt(index).getData();
   }
 
   @Override
@@ -660,7 +660,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * height. This is used together with {@link InternalNode#getLastHeightSpec()} to implement
+   * height. This is used together with {@link LithoLayoutResult#getLastHeightSpec()} to implement
    * measure caching.
    */
   @Override
@@ -679,8 +679,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * width. This is used together with {@link InternalNode#getLastWidthSpec()} to implement measure
-   * caching.
+   * width. This is used together with {@link LithoLayoutResult#getLastWidthSpec()} to implement
+   * measure caching.
    */
   @Override
   public float getLastMeasuredWidth() {
@@ -751,11 +751,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable InternalNode getParent() {
+  public @Nullable DefaultInternalNode getParent() {
     if (mYogaNode == null || mYogaNode.getOwner() == null) {
       return null;
     }
-    return (InternalNode) mYogaNode.getOwner().getData();
+    return (DefaultInternalNode) mYogaNode.getOwner().getData();
   }
 
   @Override
@@ -1564,20 +1564,15 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public DefaultInternalNode deepClone() {
 
-    // 1. Return the null layout.
-    if (this == NULL_LAYOUT) {
-      return this;
-    }
-
-    // 2. Clone this layout.
+    // 1. Clone this layout.
     final DefaultInternalNode copy = clone();
 
-    // 3. Clone the YogaNode of this layout and set it on the cloned layout.
+    // 2. Clone the YogaNode of this layout and set it on the cloned layout.
     YogaNode node = mYogaNode.cloneWithoutChildren();
     copy.mYogaNode = node;
     node.setData(copy);
 
-    // 4. Deep clone all children and add it to the cloned YogaNode
+    // 3. Deep clone all children and add it to the cloned YogaNode
     final int count = getChildCount();
     for (int i = 0; i < count; i++) {
       copy.child(getChildAt(i).deepClone());
