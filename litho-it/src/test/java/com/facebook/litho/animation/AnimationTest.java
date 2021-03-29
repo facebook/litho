@@ -1559,4 +1559,45 @@ public class AnimationTest {
     view = mLithoViewRule.findViewWithTagOrNull(TRANSITION_KEY);
     assertThat(view).describedAs("view after setting new tree").isNull();
   }
+
+  @Test
+  public void animationProperties_animat_elementShouldAnimateInTheXAxis() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return getAnimatingXPropertyComponent();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    assertThat(mLithoViewRule.getLithoView().getClipChildren())
+        .describedAs("before animation, clip children is set to true")
+        .isTrue();
+
+    mStateCaller.update();
+
+    mTransitionTestRule.step(5);
+
+    assertThat(mLithoViewRule.getLithoView().getClipChildren())
+        .describedAs("during animation, clip children is set to false")
+        .isFalse();
+
+    mTransitionTestRule.step(5);
+
+    assertThat(mLithoViewRule.getLithoView().getClipChildren())
+        .describedAs("after animation, clip children is set to true")
+        .isTrue();
+  }
 }

@@ -35,7 +35,6 @@ import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderCoreSystrace;
-import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.TransitionsExtensionInput;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -807,7 +806,7 @@ public class TransitionManager {
   }
 
   private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
-    if (view instanceof Host && !(view instanceof RootHost)) {
+    if (view instanceof Host) {
       if (clipChildren) {
         // When clip children is true we want to restore what the view had before.
         // It can happen that two different animations run on the same parent, in that case we won't
@@ -823,7 +822,7 @@ public class TransitionManager {
     }
 
     final ViewParent parent = view.getParent();
-    if (parent instanceof Host && !(parent instanceof RootHost)) {
+    if (parent instanceof Host) {
       recursivelySetChildClippingForView((View) parent, clipChildren);
     }
   }
