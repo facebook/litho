@@ -405,6 +405,33 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
+  public void testOnTriggerCrashWithTestErrorBoundary() {
+    final ComponentContext context = mLithoViewRule.getContext();
+    final Handle triggerHandle = new Handle();
+
+    Component crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(context)
+            .crashFromStep(LifecycleStep.ON_TRIGGER)
+            .handle(triggerHandle)
+            .build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    final Object bazObject = new Object();
+
+    // We need to use a ComponentContext with a ComponentTree on it
+    TestCrashFromEachLayoutLifecycleMethod.triggerTestEvent(
+        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onTrigger crash");
+  }
+
+  @Test
   public void testOnMountCrashWithTestErrorBoundary() {
     crashingScenarioMountHelper(LifecycleStep.ON_MOUNT, "Crashed on ON_MOUNT", false);
   }

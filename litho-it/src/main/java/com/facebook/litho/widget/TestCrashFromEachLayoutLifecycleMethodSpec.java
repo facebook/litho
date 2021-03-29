@@ -27,10 +27,12 @@ import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.TestTriggerEvent;
 import com.facebook.litho.Transition;
 import com.facebook.litho.VisibilityChangedEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.CachedValue;
+import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
@@ -43,6 +45,7 @@ import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnExitedRange;
 import com.facebook.litho.annotations.OnRegisterRanges;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
@@ -204,6 +207,14 @@ public class TestCrashFromEachLayoutLifecycleMethodSpec {
   static void onExitedWorkingRange(ComponentContext c, @Prop LifecycleStep crashFromStep) {
     if (crashFromStep == LifecycleStep.ON_EXITED_RANGE) {
       throw new RuntimeException("onExitedRange crash");
+    }
+  }
+
+  @OnTrigger(TestTriggerEvent.class)
+  static void triggerTestEvent(
+      ComponentContext c, @Prop LifecycleStep crashFromStep, @FromTrigger Object triggerObject) {
+    if (crashFromStep == LifecycleStep.ON_TRIGGER) {
+      throw new RuntimeException("onTrigger crash");
     }
   }
 

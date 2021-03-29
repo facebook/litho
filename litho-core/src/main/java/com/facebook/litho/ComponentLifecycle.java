@@ -112,7 +112,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return acceptTriggerEventImpl(eventTrigger, eventState, params);
     } catch (Exception e) {
       if (eventTrigger.mComponentContext != null) {
-        throw ComponentUtils.wrapWithMetadata(eventTrigger.mComponentContext, e);
+        ComponentUtils.handle(eventTrigger.mComponentContext, e);
+        return null;
       } else {
         throw e;
       }
