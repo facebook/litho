@@ -26,16 +26,19 @@ import com.facebook.litho.LifecycleTracker;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.annotations.FromBind;
+import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
+import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
+import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 
 @MountSpec
@@ -112,6 +115,27 @@ public class MountSpecInterStagePropsTesterSpec {
       @FromBind Boolean addOnUnbindLifecycleStep) {
     if (addOnUnbindLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
+    }
+  }
+
+  @OnBoundsDefined
+  static void onBoundsDefined(
+      ComponentContext c,
+      ComponentLayout layout,
+      @Prop LifecycleTracker lifecycleTracker,
+      Output<Boolean> addOnUnMountLifecycleStep) {
+    addOnUnMountLifecycleStep.set(true);
+  }
+
+  @UiThread
+  @OnUnmount
+  static void onUnmount(
+      ComponentContext context,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromBoundsDefined Boolean addOnUnMountLifecycleStep) {
+    if (addOnUnMountLifecycleStep) {
+      lifecycleTracker.addStep(LifecycleStep.ON_UNMOUNT);
     }
   }
 }

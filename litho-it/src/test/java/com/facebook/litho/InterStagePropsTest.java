@@ -17,16 +17,23 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.LifecycleStep.ON_BIND;
+import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC;
 import static com.facebook.litho.LifecycleStep.ON_MOUNT;
+import static com.facebook.litho.LifecycleStep.ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC;
 import static com.facebook.litho.LifecycleStep.ON_UNBIND;
+import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
+import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecInterStagePropsTester;
+import com.facebook.litho.widget.RootComponentInterStageProps;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,6 +110,41 @@ public class InterStagePropsTest {
     assertThat(lifecycleTracker.getSteps())
         .describedAs("On Mount should be called")
         .contains(ON_MOUNT);
+  }
+
+  @Test
+  public void interStageProp_FromBoundsDefined_usedIn_OnUnMount() {
+    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root = createComponent(lifecycleTracker, stateUpdater);
+    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+
+    lifecycleTracker.reset();
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("On Unmount should be called")
+        .contains(ON_UNMOUNT);
+  }
+
+  @Test
+  public void interStageProp_FromPreviousCreateLayout_usedIn_OnCreateLayoutWithSizeSpec() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+
+    final ComponentContext c = mLithoViewRule.getContext();
+    final RootComponentInterStageProps component =
+        RootComponentInterStageProps.create(c).steps(info).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().setSizePx(100, 100).measure().layout();
+
+    assertThat(getSteps(info))
+        .containsExactly(
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
+            ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC,
+            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
   }
 
   private Component createComponent(
