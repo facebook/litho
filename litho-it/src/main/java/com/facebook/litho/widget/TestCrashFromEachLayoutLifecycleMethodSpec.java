@@ -26,6 +26,7 @@ import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LifecycleStep;
+import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TestTriggerEvent;
 import com.facebook.litho.Transition;
@@ -44,6 +45,7 @@ import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnExitedRange;
+import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnRegisterRanges;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -110,6 +112,13 @@ public class TestCrashFromEachLayoutLifecycleMethodSpec {
         .visibilityChangedHandler(
             TestCrashFromEachLayoutLifecycleMethod.onVisibilityChangedEvent(c))
         .build();
+  }
+
+  @OnLoadStyle
+  static void onLoadStyle(ComponentContext c, Output<LifecycleStep> crashFromStep) {
+    // no need for the if clause for crashFromStep, we invoke this method
+    // via TestCrashFromEachLayoutLifecycleMethod.create(context, 0, R.style.Animation)
+    throw new RuntimeException("onLoadStyle crash");
   }
 
   @OnCreateTransition

@@ -41,6 +41,7 @@ import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.CrashFromLayoutFromStyle;
 import com.facebook.litho.widget.CrashingMountable;
 import com.facebook.litho.widget.CrashingMountableSpec;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
@@ -429,6 +430,26 @@ public class ComponentLifecycleErrorTest {
     Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
     assertThat(error).isInstanceOf(RuntimeException.class);
     assertThat(error).hasMessage("onTrigger crash");
+  }
+
+  @Test
+  public void testOnLoadStyleCrashWithTestErrorBoundary() {
+    // note: this test has a slightly different flow than the rest, since
+    // TestCrashFromEachLayoutLifecycleMethod.create(c, 0, android.R.style.Animation) crashes at
+    // component initialization and not at layout, so we need to wrap it in another spec that will
+    // rethrow from onCreateLayout()
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    Component crashingComponent = CrashFromLayoutFromStyle.create(context).build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onLoadStyle crash");
   }
 
   @Test
