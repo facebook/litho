@@ -180,8 +180,7 @@ public class RecyclerBinderTest {
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
-              boolean incrementalVisibility) {
+              boolean preallocatePerMountSpec) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
@@ -208,8 +207,7 @@ public class RecyclerBinderTest {
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
-              boolean incrementalVisibility) {
+              boolean preallocatePerMountSpec) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);

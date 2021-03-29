@@ -86,8 +86,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec,
-              boolean incrementalVisibility) {
+              boolean preallocatePerMountSpec) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

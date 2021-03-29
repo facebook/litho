@@ -145,7 +145,6 @@ public class RecyclerBinder
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
-  private final boolean mIncrementalVisibility;
   private final boolean mRecyclerViewItemPrefetch;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
@@ -378,8 +377,7 @@ public class RecyclerBinder
         int recyclingMode,
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
-        boolean preallocatePerMountSpec,
-        boolean incrementalVisibility);
+        boolean preallocatePerMountSpec);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -398,8 +396,7 @@ public class RecyclerBinder
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
             @Nullable LithoHandler preallocateHandler,
-            boolean preallocatePerMountSpec,
-            boolean incrementalVisibility) {
+            boolean preallocatePerMountSpec) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -414,7 +411,6 @@ public class RecyclerBinder
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
-              .incrementalVisibility(incrementalVisibility)
               .build();
         }
       };
@@ -456,7 +452,6 @@ public class RecyclerBinder
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
     private LithoHandler mAsyncInsertLayoutHandler;
-    private boolean mIncrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
     private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
@@ -658,11 +653,6 @@ public class RecyclerBinder
             "Estimated viewport count must be > 0: " + estimatedViewportCount);
       }
       this.estimatedViewportCount = estimatedViewportCount;
-      return this;
-    }
-
-    public Builder incrementalVisibilityHandling(boolean isEnabled) {
-      mIncrementalVisibility = isEnabled;
       return this;
     }
 
@@ -905,7 +895,6 @@ public class RecyclerBinder
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mLithoViewFactory = builder.lithoViewFactory;
-    mIncrementalVisibility = builder.mIncrementalVisibility;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
 
@@ -3863,8 +3852,7 @@ public class RecyclerBinder
         mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
-        mPreallocatePerMountSpec,
-        mIncrementalVisibility);
+        mPreallocatePerMountSpec);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

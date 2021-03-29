@@ -123,7 +123,6 @@ public class ComponentTreeHolder {
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private boolean incrementalVisibility;
     private int recyclingMode;
     private boolean visibilityProcessingEnabled = true;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
@@ -199,11 +198,6 @@ public class ComponentTreeHolder {
 
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       isLayoutDiffingEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder incrementalVisibility(boolean isEnabled) {
-      incrementalVisibility = isEnabled;
       return this;
     }
 
