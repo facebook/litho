@@ -7,5 +7,5 @@
   <Image width="16" height="16" type="image/x-icon">https://fblitho.com/images/favicon.png</Image>
   <Url type="text/html" method="get" template="https://fblitho.com/search?q={searchTerms}"/>
   <Url type="application/opensearchdescription+xml" rel="self" template="https://fblitho.com/opensearch.xml" />
-  <moz:SearchForm>https://fblitho.com</moz:SearchForm>
+  <moz:SearchForm>https://fblitho.com/</moz:SearchForm>
 </OpenSearchDescription>
