@@ -20,11 +20,11 @@ import androidx.annotation.Nullable;
 
 public class LayoutResultHolder {
 
-  final InternalNode mResult;
+  final LithoLayoutResult mResult;
   final @Nullable InternalNode mPartiallyResolvedLayout;
 
   public LayoutResultHolder(final LithoLayoutResult result) {
-    mResult = (InternalNode) result; // TODO: remove hard cast as split proceeds
+    mResult = result;
     mPartiallyResolvedLayout = null;
   }
 
