@@ -1694,16 +1694,16 @@ public class LayoutState
 
       // If we already have a LayoutState but the InternalNode is only partially resolved,
       // resume resolving the InternalNode and measure it.
-      Layout.resumeCreateAndMeasureComponent(
-          c,
-          layoutState.mPartiallyResolvedLayoutRoot,
-          widthSpec,
-          heightSpec,
-          layoutState.mPrevLayoutStateContext,
-          layoutState.mDiffTreeRoot,
-          logLayoutState);
 
-      layoutState.mLayoutRoot = layoutState.mPartiallyResolvedLayoutRoot;
+      layoutState.mLayoutRoot =
+          Layout.resumeCreateAndMeasureComponent(
+              c,
+              layoutState.mPartiallyResolvedLayoutRoot,
+              widthSpec,
+              heightSpec,
+              layoutState.mPrevLayoutStateContext,
+              layoutState.mDiffTreeRoot,
+              logLayoutState);
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 

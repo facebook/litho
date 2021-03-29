@@ -110,13 +110,14 @@ class Layout {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    measure(c, layout, widthSpec, heightSpec, prevLayoutStateContext, diff);
+    LithoLayoutResult result =
+        measure(c, layout, widthSpec, heightSpec, prevLayoutStateContext, diff);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
     }
 
-    return new LayoutResultHolder(layout);
+    return new LayoutResultHolder(result);
   }
 
   public static InternalNode create(final ComponentContext parent, final Component component) {
@@ -348,8 +349,7 @@ class Layout {
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null
             && component.canUsePreviousLayout(parentContext, componentGlobalKey)) {
-          // TODO: Avoid this hard cast, after splitting is complete.
-          remeasure((InternalNode) currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
+          remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;
         } else {
 
@@ -375,18 +375,19 @@ class Layout {
           context.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          layout = create(context, component, true, true, componentGlobalKey);
+          final InternalNode newNode = create(context, component, true, true, componentGlobalKey);
 
           // TODO: Avoid this hard cast, after splitting is complete.
-          holder.copyInto((InternalNode) layout);
+          holder.copyInto(newNode);
 
-          measure(
-              parentContext,
-              (InternalNode) layout, // TODO: Avoid this hard cast, after splitting is complete.
-              widthSpec,
-              heightSpec,
-              prevLayoutStateContext,
-              holder.getDiffNode());
+          layout =
+              measure(
+                  parentContext,
+                  newNode, // TODO: Avoid this hard cast, after splitting is complete.
+                  widthSpec,
+                  heightSpec,
+                  prevLayoutStateContext,
+                  node.getDiffNode());
         }
 
         layout.setLastWidthSpec(widthSpec);
@@ -457,7 +458,7 @@ class Layout {
     return c;
   }
 
-  static void measure(
+  static LithoLayoutResult measure(
       final ComponentContext c,
       final InternalNode root,
       final int widthSpec,
@@ -488,20 +489,23 @@ class Layout {
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
-    root.calculateLayout(
-        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
-            ? YogaConstants.UNDEFINED
-            : SizeSpec.getSize(widthSpec),
-        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
-            ? YogaConstants.UNDEFINED
-            : SizeSpec.getSize(heightSpec));
+    LithoLayoutResult result =
+        root.calculateLayout(
+            SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+                ? YogaConstants.UNDEFINED
+                : SizeSpec.getSize(widthSpec),
+            SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
+                ? YogaConstants.UNDEFINED
+                : SizeSpec.getSize(heightSpec));
 
     if (isTracing) {
       ComponentsSystrace.endSection(/* measureTree */ );
     }
+
+    return result;
   }
 
-  static void resumeCreateAndMeasureComponent(
+  static LithoLayoutResult resumeCreateAndMeasureComponent(
       final ComponentContext c,
       final InternalNode root,
       final int widthSpec,
@@ -511,7 +515,7 @@ class Layout {
       final @Nullable PerfEvent logLayoutState) {
 
     if (root == NULL_LAYOUT) {
-      return;
+      return NULL_LAYOUT;
     }
 
     resume(root);
@@ -520,11 +524,14 @@ class Layout {
       logLayoutState.markerPoint("start_measure");
     }
 
-    measure(c, root, widthSpec, heightSpec, prevLayoutStateContext, diff);
+    final LithoLayoutResult result =
+        measure(c, root, widthSpec, heightSpec, prevLayoutStateContext, diff);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
     }
+
+    return result;
   }
 
   static void resume(final InternalNode root) {
@@ -544,7 +551,7 @@ class Layout {
 
   @VisibleForTesting
   static void remeasure(
-      final InternalNode layout,
+      final LithoLayoutResult layout,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
@@ -552,14 +559,15 @@ class Layout {
       return;
     }
 
-    layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
+    // Reset all resolved props to force-remeasure.
+    layout.getInternalNode().resetResolvedLayoutProperties();
     measure(
-        layout.getContext(),
-        layout,
+        layout.getInternalNode().getContext(),
+        layout.getInternalNode(),
         widthSpec,
         heightSpec,
         prevLayoutStateContext,
-        layout.getDiffNode());
+        layout.getInternalNode().getDiffNode());
   }
 
   /**
