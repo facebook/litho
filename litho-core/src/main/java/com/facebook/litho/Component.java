@@ -1021,6 +1021,14 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
+  boolean canUsePreviousLayout(ComponentContext parentContext, String globalKey) {
+    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
+        && !onShouldCreateLayoutWithNewSizeSpec(
+            getScopedContext(parentContext.getLayoutStateContext(), globalKey),
+            parentContext.getWidthSpec(),
+            parentContext.getHeightSpec());
+  }
+
   protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {
     return dynamicValue.get();
   }

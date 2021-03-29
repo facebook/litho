@@ -346,7 +346,8 @@ class Layout {
       } else {
 
         // Check if previous layout can be remeasured and used.
-        if (currentLayout != null && component.canUsePreviousLayout(parentContext)) {
+        if (currentLayout != null
+            && component.canUsePreviousLayout(parentContext, componentGlobalKey)) {
           // TODO: Avoid this hard cast, after splitting is complete.
           remeasure((InternalNode) currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;

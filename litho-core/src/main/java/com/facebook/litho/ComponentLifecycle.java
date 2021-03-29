@@ -198,12 +198,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  boolean canUsePreviousLayout(ComponentContext context) {
-    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
-        && !onShouldCreateLayoutWithNewSizeSpec(
-            context, context.getWidthSpec(), context.getHeightSpec());
-  }
-
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {

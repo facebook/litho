@@ -434,11 +434,6 @@ public class ComponentLifecycleTest {
     }
 
     @Override
-    protected boolean canUsePreviousLayout(ComponentContext context) {
-      return super.canUsePreviousLayout(context);
-    }
-
-    @Override
     public String getKey() {
       return KEY;
     }
