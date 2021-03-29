@@ -235,19 +235,19 @@ public final class DebugComponent {
   /** @return The bounds of this component relative to its hosting {@link LithoView}. */
   public Rect getBoundsInLithoView() {
     if (isRoot()) {
-      return new Rect(0, 0, mNode.getWidth(), mNode.getHeight());
+      return new Rect(0, 0, mResult.getWidth(), mResult.getHeight());
     }
 
     final int x = getXFromRoot(mResult);
     final int y = getYFromRoot(mResult);
-    return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
+    return new Rect(x, y, x + mResult.getWidth(), y + mResult.getHeight());
   }
 
   /** @return The bounds of this component relative to its parent. */
   public Rect getBounds() {
-    final int x = mNode.getX();
-    final int y = mNode.getY();
-    return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
+    final int x = mResult.getX();
+    final int y = mResult.getY();
+    return new Rect(x, y, x + mResult.getWidth(), y + mResult.getHeight());
   }
 
   /** @return True if this and given debug components share the same internal node */
