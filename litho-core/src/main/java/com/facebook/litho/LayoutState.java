@@ -1600,7 +1600,14 @@ public class LayoutState
         }
 
       } else {
-        root = layoutCreatedInWillRender;
+        root =
+            Layout.measure(
+                c,
+                layoutCreatedInWillRender,
+                widthSpec,
+                heightSpec,
+                layoutState.mPrevLayoutStateContext,
+                diffTreeRoot);
       }
 
       // Null check for tests.
