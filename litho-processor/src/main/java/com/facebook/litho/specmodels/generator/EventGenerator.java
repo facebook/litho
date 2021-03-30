@@ -447,7 +447,8 @@ public class EventGenerator {
 
   private static TypeName updateTypeVariableBounds(
       TypeName type, List<TypeVariableName> variables, int position) {
-    TypeVariableName updated = TypeVariableName.get(variables.get(position).name, type);
+    TypeVariableName updated =
+        TypeVariableName.get(variables.get(position).name, type.isPrimitive() ? type.box() : type);
     variables.set(position, updated);
     return updated;
   }

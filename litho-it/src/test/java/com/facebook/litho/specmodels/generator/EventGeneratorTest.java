@@ -666,4 +666,74 @@ public class EventGeneratorTest {
                 + "      });\n"
                 + "}\n");
   }
+
+  @Test
+  public void whenEventHandlerWithPrimitiveTypedVariables_shouldGenerateTypedEventHandlerFactory() {
+    final TypeVariableName typeM = TypeVariableName.get("M");
+    final ParameterizedTypeName eventClass =
+        ParameterizedTypeName.get(ClassName.bestGuess("EventClass"), typeM);
+
+    EventDeclarationModel eventModel =
+        new EventDeclarationModel(
+            eventClass,
+            ClassName.VOID,
+            ImmutableList.of(
+                new FieldModel(
+                    FieldSpec.builder(typeM, "field1", Modifier.PUBLIC).build(), new Object())),
+            new Object());
+
+    ImmutableList<MethodParamModel> params =
+        ImmutableList.of(
+            new SimpleMethodParamModel(
+                new TypeSpec(ClassNames.COMPONENT_CONTEXT),
+                "c",
+                ImmutableList.of(),
+                ImmutableList.of(),
+                new Object()),
+            new SimpleMethodParamModel(
+                new TypeSpec(TypeName.INT),
+                "field1",
+                ImmutableList.of((Annotation) () -> FromEvent.class),
+                ImmutableList.of(),
+                new Object()));
+
+    SpecMethodModel<EventMethod, EventDeclarationModel> handlerModel =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
+            ImmutableList.of(),
+            "onEvent",
+            new TypeSpec(ClassName.VOID),
+            ImmutableList.of(),
+            params,
+            new Object(),
+            eventModel);
+
+    MethodSpec method =
+        EventGenerator.generateEventHandlerFactory(
+            handlerModel, ClassNames.COMPONENT_CONTEXT, "TestComponent");
+
+    assertThat(method.typeVariables).hasSize(1);
+    TypeVariableName T0 = method.typeVariables.get(0);
+
+    assertThat(T0.bounds).hasSize(1);
+
+    assertThat(method.returnType).isInstanceOf(ParameterizedTypeName.class);
+
+    ParameterizedTypeName returnType = ((ParameterizedTypeName) method.returnType);
+    assertThat(returnType.typeArguments.get(0)).isInstanceOf(ParameterizedTypeName.class);
+
+    ParameterizedTypeName returnEventType = (ParameterizedTypeName) returnType.typeArguments.get(0);
+    assertThat(returnEventType.rawType).isEqualTo(eventClass.rawType);
+    assertThat(returnEventType.typeArguments).hasSize(1);
+
+    assertThat(returnEventType.typeArguments.get(0)).isInstanceOf(TypeVariableName.class);
+
+    assertThat(method.toString())
+        .isEqualTo(
+            "public static <T extends java.lang.Integer> com.facebook.litho.EventHandler<EventClass<T>> onEvent(com.facebook.litho.ComponentContext c) {\n"
+                + "  return newEventHandler(TestComponent.class, \"TestComponent\", c, -1349761029, new Object[] {\n"
+                + "        c,\n"
+                + "      });\n"
+                + "}\n");
+  }
 }
