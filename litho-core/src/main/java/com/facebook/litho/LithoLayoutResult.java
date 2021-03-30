@@ -35,6 +35,8 @@ public interface LithoLayoutResult extends ComponentLayout {
   @Nullable
   LithoLayoutResult getParent();
 
+  void setParent(LithoLayoutResult parent);
+
   YogaNode getYogaNode();
 
   boolean shouldDrawBorders();

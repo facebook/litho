@@ -62,6 +62,9 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   @Override
   public void setNestedResult(@Nullable LithoLayoutResult tree) {
     mNestedTree = tree;
+    if (tree != null) {
+      tree.setParent(this);
+    }
   }
 
   @Override

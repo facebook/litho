@@ -133,6 +133,8 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable List<String> mComponentGlobalKeys;
 
+  private @Nullable LithoLayoutResult mParent;
+
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
   protected final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
 
@@ -752,10 +754,16 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
 
   @Override
   public @Nullable DefaultInternalNode getParent() {
-    if (mYogaNode == null || mYogaNode.getOwner() == null) {
-      return null;
+    if (mYogaNode != null && mYogaNode.getOwner() != null) {
+      return (DefaultInternalNode) mYogaNode.getOwner().getData();
+    } else {
+      return mParent != null ? (DefaultInternalNode) mParent : null;
     }
-    return (DefaultInternalNode) mYogaNode.getOwner().getData();
+  }
+
+  @Override
+  public void setParent(LithoLayoutResult parent) {
+    mParent = parent;
   }
 
   @Override

@@ -439,6 +439,9 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
     return null;
   }
 
+  @Override
+  public void setParent(LithoLayoutResult parent) {}
+
   @Nullable
   @Override
   public Component getTailComponent() {
