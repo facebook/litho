@@ -145,7 +145,7 @@ module.exports = {
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
-      additionalLanguages: ['groovy', 'kotlin'],
+      additionalLanguages: ['java', 'groovy', 'kotlin'],
     },
   },
   plugins: ['docusaurus-plugin-sass'],
