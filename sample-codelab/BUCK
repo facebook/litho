@@ -24,6 +24,7 @@ fb_native.android_binary(
     includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
+    aapt_mode = "aapt2",
     deps = [
         LITHO_SAMPLE_CODELAB_JAVA,
     ],

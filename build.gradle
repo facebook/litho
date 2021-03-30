@@ -90,7 +90,7 @@ ext.deps = [
         supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
         supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
         // Arch
-        archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
+        archLifecycle      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
         // First-party
         fresco             : 'com.facebook.fresco:fresco:1.13.0',
         soloader           : 'com.facebook.soloader:soloader:0.8.2',

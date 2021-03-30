@@ -20,7 +20,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.LithoView
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val mStateHandlerViewModel = ViewModelProviders.of(this).get(StateHandlerViewModel::class.java)
+    val stateHandlerViewModel = ViewModelProvider(this).get(StateHandlerViewModel::class.java)
 
     val componentContext = ComponentContext(this)
 
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
      */
     mComponentTree =
         ComponentTree.create(componentContext, RootComponent.create(componentContext).build())
-            .stateHandler(mStateHandlerViewModel.getStateHandler())
+            .stateHandler(stateHandlerViewModel.getStateHandler())
             .build()
 
     val lithoView = LithoView(componentContext)
@@ -54,13 +54,13 @@ class MainActivity : AppCompatActivity() {
   override fun onDestroy() {
     super.onDestroy()
 
-    val mStateHandlerViewModel = ViewModelProviders.of(this).get(StateHandlerViewModel::class.java)
+    val stateHandlerViewModel = ViewModelProvider(this).get(StateHandlerViewModel::class.java)
 
     /**
      * Before destroying the activity, save the StateHandler so we can restore the state value after
      * the configuration change.
      */
-    mStateHandlerViewModel.updateStateHandler(mComponentTree)
+    stateHandlerViewModel.updateStateHandler(mComponentTree)
   }
 
   class StateHandlerViewModel : ViewModel() {
