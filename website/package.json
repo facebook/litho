@@ -1,7 +1,4 @@
 {
-  "name": "website",
-  "version": "0.0.0",
-  "private": true,
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
@@ -23,16 +20,7 @@
   "devDependencies": {
     "prettier": "^2.0.2"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "resolutions": {
+    "is-svg": "4.2.2"
   }
 }
