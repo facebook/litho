@@ -2214,17 +2214,16 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final InternalNode node =
+    final LithoLayoutResult node =
         createAndMeasureComponent(
                 c, component, makeSizeSpec(width, AT_MOST), makeSizeSpec(height, AT_MOST))
-            .mResult
-            .getInternalNode();
+            .mResult;
 
     assertThat(node.getWidth()).isEqualTo(width);
     assertThat(node.getHeight()).isEqualTo(height);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) node.getChildAt(0)).getWidth()).isEqualTo(width);
-    assertThat(((InternalNode) node.getChildAt(0)).getHeight()).isEqualTo(height);
+    assertThat((node.getChildAt(0)).getWidth()).isEqualTo(width);
+    assertThat((node.getChildAt(0)).getHeight()).isEqualTo(height);
   }
 
   @Test

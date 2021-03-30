@@ -24,6 +24,7 @@ import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.litho.it.R.style.TextSizeStyle;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
@@ -70,7 +71,7 @@ public class ComponentStyleTest {
     Component component = Text.create(mContext, 0, PaddingStyle).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
-    assertThat(node.getPaddingLeft()).isEqualTo(mDimen);
+    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(mDimen);
   }
 
   @Test
@@ -79,7 +80,7 @@ public class ComponentStyleTest {
         Text.create(mContext, 0, PaddingStyle).text("text").paddingPx(ALL, mDimen * 2).build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
-    assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
+    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
   @Test
@@ -100,7 +101,7 @@ public class ComponentStyleTest {
     Component component = Text.create(mContext, testAttrLargePadding, 0).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
-    assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
+    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 
   @Test
@@ -112,7 +113,7 @@ public class ComponentStyleTest {
             .build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
-    assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
+    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
   @Test
@@ -128,6 +129,6 @@ public class ComponentStyleTest {
         Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
-    assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
+    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 }

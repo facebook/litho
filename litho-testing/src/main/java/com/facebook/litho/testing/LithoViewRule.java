@@ -102,6 +102,11 @@ public class LithoViewRule implements TestRule {
     return mContext;
   }
 
+  public LithoViewRule useContext(ComponentContext c) {
+    mContext = c;
+    return this;
+  }
+
   /** Gets the current {@link LithoView}; creates a new instance if {@code null}. */
   public LithoView getLithoView() {
     if (mLithoView == null) {
