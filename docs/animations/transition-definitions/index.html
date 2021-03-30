@@ -6,18 +6,21 @@
 <meta name="generator" content="Docusaurus v2.0.0-alpha.72">
 <link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="Litho Blog RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="Litho Blog Atom Feed">
+<link rel="preconnect" href="https://www.google-analytics.com">
+<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-44373548-28","auto"),ga("send","pageview")</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
 <link rel="search" type="application/opensearchdescription+xml" title="Litho" href="/opensearch.xml"><title data-react-helmet="true">Advanced: More ways to define transitions | Litho</title><meta data-react-helmet="true" property="og:url" content="https://fblitho.com/docs/animations/transition-definitions"><meta data-react-helmet="true" name="docsearch:language" content="en"><meta data-react-helmet="true" name="docsearch:version" content="current"><meta data-react-helmet="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-react-helmet="true" property="og:title" content="Advanced: More ways to define transitions | Litho"><meta data-react-helmet="true" name="description" content="Moved from old website without any change."><meta data-react-helmet="true" property="og:description" content="Moved from old website without any change."><link data-react-helmet="true" rel="shortcut icon" href="/images/favicon.png"><link data-react-helmet="true" rel="canonical" href="https://fblitho.com/docs/animations/transition-definitions"><link data-react-helmet="true" rel="alternate" href="https://fblitho.com/docs/animations/transition-definitions" hreflang="en"><link data-react-helmet="true" rel="alternate" href="https://fblitho.com/docs/animations/transition-definitions" hreflang="x-default"><link data-react-helmet="true" rel="preconnect" href="https://BH4D9OD16A-dsn.algolia.net" crossorigin="anonymous"><link rel="stylesheet" href="/assets/css/styles.7ff81ca3.css">
 <link rel="stylesheet" href="/assets/css/main.8f6b6ba9.css">
-<link rel="preload" href="/assets/js/styles.d2190fad.js" as="script">
-<link rel="preload" href="/assets/js/runtime~main.a45ab8df.js" as="script">
-<link rel="preload" href="/assets/js/main.cf319421.js" as="script">
-<link rel="preload" href="/assets/js/1.12cac8ac.js" as="script">
-<link rel="preload" href="/assets/js/2.850c22da.js" as="script">
-<link rel="preload" href="/assets/js/101.dad3d6f1.js" as="script">
-<link rel="preload" href="/assets/js/104.38080ff7.js" as="script">
-<link rel="preload" href="/assets/js/935f2afb.0357c862.js" as="script">
-<link rel="preload" href="/assets/js/17896441.3831b6a8.js" as="script">
-<link rel="preload" href="/assets/js/0a79b19f.b9d7f838.js" as="script">
+<link rel="preload" href="/assets/js/styles.10ad285b.js" as="script">
+<link rel="preload" href="/assets/js/runtime~main.cc1968ac.js" as="script">
+<link rel="preload" href="/assets/js/main.858ab3c4.js" as="script">
+<link rel="preload" href="/assets/js/1.bef55bbe.js" as="script">
+<link rel="preload" href="/assets/js/2.9164bb93.js" as="script">
+<link rel="preload" href="/assets/js/101.76b4e9ac.js" as="script">
+<link rel="preload" href="/assets/js/104.2357c688.js" as="script">
+<link rel="preload" href="/assets/js/935f2afb.c8b14f56.js" as="script">
+<link rel="preload" href="/assets/js/17896441.41a43866.js" as="script">
+<link rel="preload" href="/assets/js/0a79b19f.4d7b39b9.js" as="script">
 </head>
 <body>
 <script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){var t=null;try{t=localStorage.getItem("theme")}catch(t){}return t}();t(null!==e?e:"light")}()</script>
@@ -28,15 +31,15 @@ T81099238</p></div></div><h3><a aria-hidden="true" tabindex="-1" class="anchor e
 Another implementation for the above sample using <code>@OnUpdateStateWithTransition</code> may look like this:</p><div class="codeBlockContainer_K1bP"><div class="codeBlockContent_hGly java"><div tabindex="0" class="prism-code language-java codeBlock_23N8 thin-scrollbar"><div class="codeBlockLines_39YC" style="color:rgb(36, 41, 46);background-color:#f6f8fa"><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">@OnEvent(ClickEvent.class)</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">static void onClick(ComponentContext c) {</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">  MyComponent.toggleWithTransition(c);</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">}</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain" style="display:inline-block">
 </span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">@OnUpdateStateWithTransition</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">static Transition toggle(StateValue&lt;Boolean&gt; expanded) {</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">  expanded.set(!expanded.get()); // Updating state value</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain" style="display:inline-block">
 </span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">  boolean isExpanding = expanded.get();</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">  if (isExpanding) {</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">    return Transition.allLayout().animator(ANIMATOR);</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">  } else {</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">    return null;</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">  }</span></div><div class="token-line" style="color:rgb(36, 41, 46)"><span class="token plain">}</span></div></div></div><button type="button" aria-label="Copy code to clipboard" class="copyButton_Ue-o">Copy</button></div></div></div></article><div class="margin-vert--xl"><div class="row"><div class="col"><a href="https://github.com/facebook/litho/edit/master/website/../docs/animations/transition-definitions.md" target="_blank" rel="noreferrer noopener"><svg fill="currentColor" height="1.2em" width="1.2em" preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 40 40" class="iconEdit_2_ui" aria-label="Edit page"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div></div></div><div class="margin-vert--lg"><nav class="pagination-nav" aria-label="Docs pages navigation"><div class="pagination-nav__item"><a class="pagination-nav__link" href="/docs/animations/transition-choreography"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">« Customizing Transitions</div></a></div><div class="pagination-nav__item pagination-nav__item--next"><a class="pagination-nav__link" href="/docs/animations/transition-key-types"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Advanced: Transitions key scoping »</div></a></div></nav></div></div></div><div class="col col--3"><div class="tableOfContents_35-E thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#state-arguments" class="table-of-contents__link">@State Arguments</a></li><li><a href="#prop-difft-and-state-difft" class="table-of-contents__link">@Prop <code>Diff&lt;T&gt;</code> and @State <code>Diff&lt;T&gt;</code></a></li><li><a href="#onupdatestatewithtransition" class="table-of-contents__link">@OnUpdateStateWithTransition</a></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container"><div class="row footer__links"><div class="col footer__col"><h4 class="footer__title">Learn</h4><ul class="footer__items"><li class="footer__item"><a class="footer__link-item" href="/docs/getting-started">Getting Started</a></li><li class="footer__item"><a href="/javadoc" target="_blank" rel="noopener noreferrer" class="footer__link-item">API</a></li></ul></div><div class="col footer__col"><h4 class="footer__title">Open Source</h4><ul class="footer__items"><li class="footer__item"><a class="footer__link-item" href="/docs/contributing">How To Contribute</a></li><li class="footer__item"><a href="https://opensource.facebook.com" target="_blank" rel="noopener noreferrer" class="footer__link-item">Open Source Projects</a></li></ul></div><div class="col footer__col"><h4 class="footer__title">Legal</h4><ul class="footer__items"><li class="footer__item"><a href="https://opensource.facebook.com/legal/privacy" target="_blank" rel="noopener noreferrer" class="footer__link-item">Privacy</a></li><li class="footer__item"><a href="https://opensource.facebook.com/legal/terms" target="_blank" rel="noopener noreferrer" class="footer__link-item">Terms</a></li></ul></div><div class="col footer__col"><h4 class="footer__title">Social</h4><ul class="footer__items"><li class="footer__item"><a href="https://github.com/facebook/litho" target="_blank" rel="noopener noreferrer" class="footer__link-item">Github</a></li><li class="footer__item"><a href="https://twitter.com/fblitho" target="_blank" rel="noopener noreferrer" class="footer__link-item">Twitter</a></li></ul></div></div><div class="footer__bottom text--center"><div class="margin-bottom--sm"><a href="https://opensource.facebook.com" target="_blank" rel="noopener noreferrer" class="footerLogoLink_MyFc"><img src="/images/oss_logo.png" alt="Facebook Open Source Logo" class="themedImage_1VuW themedImage--light_3UqQ footer__logo"><img src="/images/oss_logo.png" alt="Facebook Open Source Logo" class="themedImage_1VuW themedImage--dark_hz6m footer__logo"></a></div><div class="footer__copyright">Copyright © 2021 Facebook, Inc.</div></div></div></footer></div>
-<script src="/assets/js/styles.d2190fad.js"></script>
-<script src="/assets/js/runtime~main.a45ab8df.js"></script>
-<script src="/assets/js/main.cf319421.js"></script>
-<script src="/assets/js/1.12cac8ac.js"></script>
-<script src="/assets/js/2.850c22da.js"></script>
-<script src="/assets/js/101.dad3d6f1.js"></script>
-<script src="/assets/js/104.38080ff7.js"></script>
-<script src="/assets/js/935f2afb.0357c862.js"></script>
-<script src="/assets/js/17896441.3831b6a8.js"></script>
-<script src="/assets/js/0a79b19f.b9d7f838.js"></script>
+<script src="/assets/js/styles.10ad285b.js"></script>
+<script src="/assets/js/runtime~main.cc1968ac.js"></script>
+<script src="/assets/js/main.858ab3c4.js"></script>
+<script src="/assets/js/1.bef55bbe.js"></script>
+<script src="/assets/js/2.9164bb93.js"></script>
+<script src="/assets/js/101.76b4e9ac.js"></script>
+<script src="/assets/js/104.2357c688.js"></script>
+<script src="/assets/js/935f2afb.c8b14f56.js"></script>
+<script src="/assets/js/17896441.41a43866.js"></script>
+<script src="/assets/js/0a79b19f.4d7b39b9.js"></script>
 </body>
 </html>
