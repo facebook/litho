@@ -106,7 +106,7 @@ public class ComponentsConfiguration {
 
   /**
    * If false, global keys will not be generated (litho level state updates won't work). It's highly
-   * discouraged to to change this to false, unless you handle all your updates outside of the litho
+   * discouraged to change this to false, unless you handle all your updates outside of the litho
    * framework
    */
   public static boolean useGlobalKeys = true;
@@ -189,12 +189,6 @@ public class ComponentsConfiguration {
 
   public static boolean useSharedFutureOnParallel = true;
 
-  /**
-   * If true, we also check if the RecyclerBinder needs remeasuring when checking if it's been
-   * measured.
-   */
-  public static boolean checkNeedsRemeasure = false;
-
   /** (Hopefully) temporary measure as we're investigating a major crash in libhwui. */
   public static boolean disableComponentHostPool = true;
 
@@ -223,8 +217,6 @@ public class ComponentsConfiguration {
   public static boolean delegateToRenderCoreMount = false;
 
   public static boolean shouldDisableDrawableOutputs = false;
-
-  public static boolean useVisibilityExtension = false;
 
   /**
    * Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder
