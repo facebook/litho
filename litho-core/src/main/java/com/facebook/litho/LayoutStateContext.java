@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,8 @@ public class LayoutStateContext {
 
   private boolean mIsLayoutStarted = false;
 
+  private boolean mIsScopedInfoCopiedFromLSCInstance = false;
+
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     if (sTestLayoutState == null) {
       sTestLayoutState = new LayoutState(c);
@@ -50,6 +53,8 @@ public class LayoutStateContext {
   }
 
   void copyScopedInfoFrom(LayoutStateContext layoutStateContext) {
+    mIsScopedInfoCopiedFromLSCInstance = true;
+
     if (mGlobalKeyToScopedContext == null) {
       mGlobalKeyToScopedContext = new HashMap<>();
     }
@@ -96,13 +101,34 @@ public class LayoutStateContext {
     if (mGlobalKeyToScopedInfo == null) {
       mGlobalKeyToScopedInfo = new HashMap<>();
     }
+
     InterStagePropsContainer newInterStagePropsContainer =
         component.createInterStagePropsContainer();
 
     if (mGlobalKeyToScopedInfo.containsKey(globalKey)) {
-      component.copyInterStageImpl(
-          newInterStagePropsContainer,
-          mGlobalKeyToScopedInfo.get(globalKey).getInterStagePropsContainer());
+      InterStagePropsContainer prevInterStagePropsContainer =
+          mGlobalKeyToScopedInfo.get(globalKey).getInterStagePropsContainer();
+
+      try {
+        component.copyInterStageImpl(newInterStagePropsContainer, prevInterStagePropsContainer);
+      } catch (NullPointerException ex) {
+        if (ComponentsConfiguration.throwExceptionInterStagePropsContainerNull) {
+          throw new IllegalStateException(
+              "Encountered NPE while copying ISPContainer: "
+                  + component
+                  + " ,globalKey: "
+                  + globalKey
+                  + " ,newISPContainer: "
+                  + newInterStagePropsContainer
+                  + " ,prevISPContainer: "
+                  + prevInterStagePropsContainer
+                  + " ,scopedInfoCopiedFromLSC: "
+                  + mIsScopedInfoCopiedFromLSCInstance
+                  + " ,hasCachedLayout: "
+                  + (mLayoutStateRef == null ? "null" : mLayoutStateRef.hasCachedLayout(component)),
+              ex);
+        }
+      }
     }
 
     mGlobalKeyToScopedInfo.put(

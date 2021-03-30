@@ -254,6 +254,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useStatelessComponent = false;
 
+  public static boolean throwExceptionInterStagePropsContainerNull = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
