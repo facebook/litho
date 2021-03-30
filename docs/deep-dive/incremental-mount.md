@@ -3,8 +3,8 @@ id: incremental-mount
 title: Incremental Mount
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
 :::
 
 Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.

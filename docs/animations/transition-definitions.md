@@ -3,8 +3,9 @@ id: transition-definitions
 title: 'Advanced: More ways to define transitions'
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
+
 T81099238
 :::
 

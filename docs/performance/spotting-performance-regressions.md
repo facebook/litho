@@ -2,5 +2,6 @@
 id: spotting-performance-regressions
 title: Spotting Performance Regressions
 ---
-:::danger UNDER CONSTRUCTION
+:::note
+🚧   THIS PAGE IS UNDER CONSTRUCTION
 :::

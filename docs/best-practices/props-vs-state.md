@@ -3,8 +3,8 @@ id: props-vs-state
 title: Props vs. State
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
 :::
 
 Litho components have two types of data models: [Props](/docs/props) and [State](/docs/mainconcepts/coordinate-state-actions/hoisting-state). It's important to understand the difference between the two to know when you need to use each of them.

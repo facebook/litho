@@ -3,8 +3,8 @@ id: events
 title: Events Overview
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
 :::
 
 The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention we suffix Event class names with *Event*. Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.

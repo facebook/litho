@@ -3,8 +3,8 @@ id: trigger-events
 title: Triggering events with Handles
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
 :::
 
 You can trigger Events on components using a `Handle`. A `Handle` is a unique identifier that can be shared can with other components by passing it as a `@Prop`. Use `new Handle()` to create a new `Handle` and assign it to a component using the `.handle(..)` method in the component's builder.

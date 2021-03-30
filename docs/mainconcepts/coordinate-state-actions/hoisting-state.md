@@ -2,5 +2,6 @@
 id: hoisting-state
 title: Hoisting State
 ---
-:::danger UNDER CONSTRUCTION
+:::note
+🚧   THIS PAGE IS UNDER CONSTRUCTION
 :::

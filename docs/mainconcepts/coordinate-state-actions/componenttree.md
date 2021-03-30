@@ -3,8 +3,8 @@ id: componenttree
 title: "ComponentTree"
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
 :::
 
 In the [Using Components](/docs/using-components) guide, we saw how you can create a root component and pass it to a `LithoView`, which will take care of creating a [`ComponentTree`](pathname:///javadoc/com/facebook/litho/ComponentTree.html) with the given root. `ComponentTree` manages your component's lifecycle in a thread-safe way. You can create and make calls to it from any thread.

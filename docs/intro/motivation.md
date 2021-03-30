@@ -3,8 +3,8 @@ id: motivation
 title: "Motivation"
 ---
 
-:::danger Content needs to be updated
-Moved from old website without any change.
+:::caution Content will be updated
+This page was moved from the old website without any change and might be updated
 :::
 
 Building a list interface on Android is fairly simple. Just create a layout for

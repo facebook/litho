@@ -3,6 +3,6 @@ id: building-lists
 title: Building Lists
 ---
 
-:::danger
-🚧 THIS PAGE IS UNDER CONSTRUCTION
+:::note
+🚧   THIS PAGE IS UNDER CONSTRUCTION
 :::
