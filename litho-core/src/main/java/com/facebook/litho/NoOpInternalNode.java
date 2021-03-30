@@ -877,5 +877,5 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   }
 
   @Override
-  public void freeze() {}
+  public void freeze(YogaNode node, @Nullable YogaNode parent) {}
 }

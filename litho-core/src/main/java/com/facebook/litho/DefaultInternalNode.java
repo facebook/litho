@@ -350,11 +350,12 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
   }
 
   @Override
-  public void freeze() {
+  public void freeze(final YogaNode node, final @Nullable YogaNode parentYogaNode) {
 
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
     // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
-    final InternalNode parent = getParent();
+    final InternalNode parent =
+        parentYogaNode != null ? (InternalNode) parentYogaNode.getData() : null;
 
     if (parent != null
         && parent.getImportantForAccessibility()
