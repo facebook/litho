@@ -206,9 +206,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUseDeepCloneDuringReconciliation = false;
 
-  /** When enabled it would use Internal Nodes for layout diffing instead Diff Nodes. */
-  public static boolean useInternalNodesForLayoutDiffing = false;
-
   /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */
   public static boolean shouldForceAsyncStateUpdate = false;
 

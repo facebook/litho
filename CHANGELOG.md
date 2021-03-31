@@ -7,6 +7,7 @@ _release-date_
  * **Breaking:** `ComponentTree.release()` method asserts that it is called on the UI thread.
  * **BREAKING**: `getErrorHandler`, `getHandle`, `getId`, and `getKey` are now package-private for `Component` and `Section`. This is for compatibility with the Kotlin API.
  * **Breaking:** Removed `checkNeedsRemeasure`, `useVisibilityExtension` configuration parameters from `ComponentsConfiguration`.
+ * **Breaking:** Removed `useInternalNodesForLayoutDiffing` configuration parameter from `ComponentsConfiguration`.
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
 
 
