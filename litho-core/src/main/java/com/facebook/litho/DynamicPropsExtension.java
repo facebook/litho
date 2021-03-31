@@ -48,7 +48,8 @@ public class DynamicPropsExtension
       final LayoutOutput output = lithoRenderUnit.output;
       final DynamicPropsExtensionState state = extensionState.getState();
 
-      state.mDynamicPropsManager.onBindComponentToContent(output.getComponent(), content);
+      state.mDynamicPropsManager.onBindComponentToContent(
+          output.getComponent(), output.getScopedContext(), content);
     }
   }
 

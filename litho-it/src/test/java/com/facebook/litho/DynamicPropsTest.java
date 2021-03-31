@@ -230,7 +230,7 @@ public class DynamicPropsTest {
     final Component component = componentBuilder.shadowElevation(elevationDV).build();
 
     final DynamicPropsManager dynamicPropsManager = new DynamicPropsManager();
-    dynamicPropsManager.onBindComponentToContent(component, lithoView);
+    dynamicPropsManager.onBindComponentToContent(component, mContext, lithoView);
 
     assertThat(lithoView.getElevation()).isEqualTo(startValue);
 

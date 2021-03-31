@@ -2733,7 +2733,8 @@ class MountState implements MountDelegateTarget {
   private void bindComponentToContent(MountItem mountItem, Component component, Object content) {
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     component.bind(getContextForComponent(component, layoutOutput), content);
-    mDynamicPropsManager.onBindComponentToContent(component, content);
+    mDynamicPropsManager.onBindComponentToContent(
+        component, layoutOutput.getScopedContext(), content);
     mountItem.setIsBound(true);
   }
 

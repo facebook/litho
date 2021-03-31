@@ -54,7 +54,8 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   private final Map<Component, Set<DynamicValue<?>>> mAffectingDynamicValues = new HashMap<>();
   private final Map<Component, Object> mContents = new HashMap<>();
 
-  void onBindComponentToContent(Component component, Object content) {
+  void onBindComponentToContent(
+      Component component, ComponentContext scopedContext, Object content) {
     final boolean hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(component);
     final boolean hasCustomDynamicProps = component.getDynamicProps().length > 0;
 
@@ -84,11 +85,14 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
     for (int i = 0; i < dynamicProps.length; i++) {
       final DynamicValue<?> value = dynamicProps[i];
 
-      component.bindDynamicProp(i, value.get(), content);
+      try {
+        component.bindDynamicProp(i, value.get(), content);
 
-      addDependentComponentAndSubscribeIfNeeded(value, component);
-
-      dynamicValues.add(value);
+        addDependentComponentAndSubscribeIfNeeded(value, component);
+        dynamicValues.add(value);
+      } catch (Exception e) {
+        ComponentUtils.handle(scopedContext, e);
+      }
     }
 
     mAffectingDynamicValues.put(component, dynamicValues);

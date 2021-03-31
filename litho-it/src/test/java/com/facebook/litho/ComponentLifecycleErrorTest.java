@@ -44,6 +44,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CrashFromLayoutFromStyle;
 import com.facebook.litho.widget.CrashingMountable;
 import com.facebook.litho.widget.CrashingMountableSpec;
+import com.facebook.litho.widget.DynamicPropCrasher;
 import com.facebook.litho.widget.OnErrorNotPresentChild;
 import com.facebook.litho.widget.OnErrorPassUpChildTester;
 import com.facebook.litho.widget.OnErrorPassUpParentTester;
@@ -450,6 +451,26 @@ public class ComponentLifecycleErrorTest {
     Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
     assertThat(error).isInstanceOf(RuntimeException.class);
     assertThat(error).hasMessage("onLoadStyle crash");
+  }
+
+  @Test
+  public void testOnBindDynamicValueCrashWithTestErrorBoundary() {
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    DynamicValue<String> dynamicStringProp = new DynamicValue<>("dynamic_prop_test");
+    Component crashingComponent =
+        DynamicPropCrasher.create(context).someStringProp(dynamicStringProp).build();
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    dynamicStringProp.set("change_dynamic_prop_test");
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("onBindDynamicValue crash");
   }
 
   @Test
