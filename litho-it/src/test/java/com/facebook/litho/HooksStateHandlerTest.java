@@ -22,6 +22,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/** Tests for the hooks state (useState) integration with StateHandler. */
 @RunWith(LithoTestRunner.class)
 public class HooksStateHandlerTest {
 
@@ -61,7 +62,7 @@ public class HooksStateHandlerTest {
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
-        new HookUpdater<StateHandler>() {
+        new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler.getHookState().put("newKey", "newValue");
@@ -99,7 +100,7 @@ public class HooksStateHandlerTest {
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
-        new HookUpdater<StateHandler>() {
+        new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler.getHookState().put("newKey", "newValue");
@@ -108,7 +109,7 @@ public class HooksStateHandlerTest {
         });
 
     first.queueHookStateUpdate(
-        new HookUpdater<StateHandler>() {
+        new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler
@@ -147,7 +148,7 @@ public class HooksStateHandlerTest {
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
-        new HookUpdater<StateHandler>() {
+        new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler.getHookState().put("newKey", "newValue");
@@ -156,7 +157,7 @@ public class HooksStateHandlerTest {
         });
 
     first.queueHookStateUpdate(
-        new HookUpdater<StateHandler>() {
+        new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler
@@ -168,7 +169,7 @@ public class HooksStateHandlerTest {
     final StateHandler second = new StateHandler(first);
 
     first.queueHookStateUpdate(
-        new HookUpdater<StateHandler>() {
+        new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler

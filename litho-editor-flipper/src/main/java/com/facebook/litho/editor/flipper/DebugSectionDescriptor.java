@@ -143,7 +143,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
     if (node.isDiffSectionSpec()) {
       for (int i = 0; i < childCount; i++) {
         final View view = (View) getChildAt(node, i);
-        highlightChildView(view, selected, isAlignmentMode);
+        highlightChildView(view, selected);
       }
     } else {
       for (int i = 0; i < childCount; i++) {
@@ -156,7 +156,7 @@ public class DebugSectionDescriptor extends NodeDescriptor<DebugSection> {
 
   // This is similar to the implementation in ViewDescriptor but doesn't
   // target the parent view.
-  private void highlightChildView(View node, boolean selected, boolean isAlignmentMode) {
+  private void highlightChildView(View node, boolean selected) {
     if (!selected) {
       HighlightedOverlay.removeHighlight(node);
       return;

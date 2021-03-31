@@ -37,6 +37,18 @@ public class TemplateService implements Disposable {
   private final Map<String, PsiMethod> templates = new HashMap<>();
 
   @Nullable
+  public PsiMethod getMethodTemplate(@Nullable String prefix, String targetName, Project project) {
+    if (prefix != null) {
+      final PsiMethod templateFromFullName = getMethodTemplate(prefix + "." + targetName, project);
+      if (templateFromFullName != null) {
+        return templateFromFullName;
+      }
+    }
+
+    return getMethodTemplate(targetName, project);
+  }
+
+  @Nullable
   public PsiMethod getMethodTemplate(String targetName, Project project) {
     final PsiMethod savedTemplate = templates.get(targetName);
     if (savedTemplate != null) return savedTemplate;

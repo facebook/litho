@@ -17,12 +17,13 @@
 package com.facebook.litho.editor.instances;
 
 import java.lang.reflect.Field;
+import javax.annotation.Nullable;
 
 public final class EditorUtils {
   private EditorUtils() {}
 
   @SuppressWarnings("unchecked")
-  public static <T> T getNodeUNSAFE(Field f, Object node) {
+  public static @Nullable <T> T getNodeUNSAFE(Field f, Object node) {
     try {
       boolean oldAccessibility = f.isAccessible();
       f.setAccessible(true);

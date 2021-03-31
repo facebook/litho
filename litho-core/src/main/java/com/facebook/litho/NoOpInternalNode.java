@@ -39,7 +39,7 @@ import java.util.Map;
  * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
  * overridden so no actions are performed, and no exceptions are thrown.
  */
-class NoOpInternalNode implements InternalNode {
+class NoOpInternalNode implements InternalNode, LithoLayoutResult {
 
   NoOpInternalNode() {}
 
@@ -54,6 +54,14 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations) {}
+
+  @Override
+  public void addAttachable(Attachable attachable) {}
+
+  @Override
+  public @Nullable List<Attachable> getAttachables() {
+    return null;
+  }
 
   @Override
   public @Nullable InternalNode alignContent(YogaAlign alignContent) {
@@ -100,7 +108,9 @@ class NoOpInternalNode implements InternalNode {
   public void border(Edges width, int[] colors, float[] radii) {}
 
   @Override
-  public void calculateLayout(float width, float height) {}
+  public LithoLayoutResult calculateLayout(float width, float height) {
+    return this;
+  }
 
   @Override
   public void calculateLayout() {}
@@ -119,9 +129,6 @@ class NoOpInternalNode implements InternalNode {
   public @Nullable InternalNode child(InternalNode child) {
     return null;
   }
-
-  @Override
-  public void copyInto(InternalNode target) {}
 
   @Override
   public @Nullable InternalNode duplicateParentState(boolean duplicateParentState) {
@@ -203,7 +210,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public InternalNode getChildAt(int index) {
+  public NoOpInternalNode getChildAt(int index) {
     return null;
   }
 
@@ -243,6 +250,11 @@ class NoOpInternalNode implements InternalNode {
   @Override
   public @Nullable ComponentContext getContext() {
     return null;
+  }
+
+  @Override
+  public InternalNode getInternalNode() {
+    return this;
   }
 
   @Nullable
@@ -409,21 +421,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public InternalNode getNestedTree() {
-    return null;
-  }
-
-  @Override
-  public void setNestedTree(InternalNode nestedTree) {}
-
-  @Nullable
-  @Override
-  public InternalNode getNestedTreeHolder() {
-    return null;
-  }
-
-  @Nullable
-  @Override
   public NodeInfo getNodeInfo() {
     return null;
   }
@@ -432,26 +429,18 @@ class NoOpInternalNode implements InternalNode {
   public void setNodeInfo(NodeInfo nodeInfo) {}
 
   @Override
-  public @Nullable NestedTreeProps getOrCreateNestedTreeProps() {
-    return null;
-  }
-
-  @Override
   public @Nullable NodeInfo getOrCreateNodeInfo() {
     return null;
   }
 
   @Nullable
   @Override
-  public InternalNode getParent() {
+  public NoOpInternalNode getParent() {
     return null;
   }
 
-  @Nullable
   @Override
-  public TreeProps getPendingTreeProps() {
-    return null;
-  }
+  public void setParent(LithoLayoutResult parent) {}
 
   @Nullable
   @Override
@@ -592,11 +581,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean hasNestedTree() {
-    return false;
-  }
-
-  @Override
   public boolean hasStateListAnimatorResSet() {
     return false;
   }
@@ -663,17 +647,9 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean isNestedTreeHolder() {
-    return false;
-  }
-
-  @Override
   public @Nullable InternalNode justifyContent(YogaJustify justifyContent) {
     return null;
   }
-
-  @Override
-  public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {}
 
   @Override
   public @Nullable YogaDirection recursivelyResolveLayoutDirection() {
@@ -896,14 +872,10 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode reconcile(
-      LayoutStateContext layoutStateContext,
-      ComponentContext c,
-      Component next,
-      @Nullable String nextKey) {
+  public InternalNode reconcile(ComponentContext c, Component next, @Nullable String nextKey) {
     return this;
   }
 
   @Override
-  public void freeze() {}
+  public void freeze(YogaNode node, @Nullable YogaNode parent) {}
 }

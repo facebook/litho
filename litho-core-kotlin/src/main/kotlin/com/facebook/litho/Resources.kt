@@ -26,29 +26,29 @@ import androidx.annotation.StringRes
 import com.facebook.litho.drawable.ComparableColorDrawable
 
 /** Retrieve a dimensional for a resource ID as a [Dp] value. */
-fun DslScope.dpRes(@DimenRes id: Int): Dp =
+fun ComponentScope.dpRes(@DimenRes id: Int): Dp =
     resourceResolver.pixelsToDips(resourceResolver.resolveDimenSizeRes(id)).dp
 
 /** Retrieve a dimensional for a resource ID as a [Sp] value. */
 // TODO Internally this will be consumed as a pixel value, i.e. converted back. Think about better
 //  approach.
-fun DslScope.spRes(@DimenRes id: Int): Sp =
+fun ComponentScope.spRes(@DimenRes id: Int): Sp =
     resourceResolver.pixelsToSips(resourceResolver.resolveDimenSizeRes(id)).sp
 
 /** Return a string for a resource ID. */
-fun DslScope.stringRes(@StringRes id: Int): String =
+fun ComponentScope.stringRes(@StringRes id: Int): String =
     requireNotNull(resourceResolver.resolveStringRes(id)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
 /** Return a string for a resource ID, substituting the format arguments with [formatArgs]. */
-fun DslScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): String =
+fun ComponentScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): String =
     requireNotNull(resourceResolver.resolveStringRes(id, formatArgs)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
 /** Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [Drawable] instance. */
-fun DslScope.drawableRes(@DrawableRes id: Int): Drawable =
+fun ComponentScope.drawableRes(@DrawableRes id: Int): Drawable =
     requireNotNull(resourceResolver.resolveDrawableRes(id)) {
       "Drawable resource not found for ID #0x${Integer.toHexString(id)}"
     }
@@ -58,27 +58,28 @@ fun DslScope.drawableRes(@DrawableRes id: Int): Drawable =
  * [Drawable] instance. If given attribute ID can not be found, default Drawable resource ID
  * [defResId] is used.
  */
-fun DslScope.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): Drawable =
+fun ComponentScope.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): Drawable =
     drawableRes(resourceResolver.resolveResIdAttr(id, defResId))
 
 /**
  * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [Drawable] instance.
  */
-fun DslScope.drawableColor(@ColorInt color: Int): Drawable = ComparableColorDrawable.create(color)
+fun ComponentScope.drawableColor(@ColorInt color: Int): Drawable =
+    ComparableColorDrawable.create(color)
 
 /**
  * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [Drawable] instance.
  */
-fun DslScope.drawableColor(@ColorInt color: Long): Drawable =
+fun ComponentScope.drawableColor(@ColorInt color: Long): Drawable =
     ComparableColorDrawable.create(color.toInt())
 
 /** Return a [ColorInt] value for a color resource ID. */
-@ColorInt fun DslScope.colorRes(@ColorRes id: Int): Int = resourceResolver.resolveColorRes(id)
+@ColorInt fun ComponentScope.colorRes(@ColorRes id: Int): Int = resourceResolver.resolveColorRes(id)
 
 /**
  * Return a [ColorInt] value, corresponding to an attribute resource ID. If given attribute ID can
  * not be found, default color resource ID [defResId] is used.
  */
 @ColorInt
-fun DslScope.colorAttr(@AttrRes id: Int, @ColorRes defResId: Int = 0): Int =
+fun ComponentScope.colorAttr(@AttrRes id: Int, @ColorRes defResId: Int = 0): Int =
     resourceResolver.resolveColorAttr(id, defResId)

@@ -235,7 +235,7 @@ public class ComponentBodyGeneratorTest {
                 .toString())
         .isEqualTo(
             "private com.facebook.litho.StateContainer getStateContainerImpl(com.facebook.litho.ComponentContext c) {\n"
-                + "  return (com.facebook.litho.StateContainer) super.getStateContainer(c);\n"
+                + "  return (com.facebook.litho.StateContainer) com.facebook.litho.Component.getStateContainer(c, this);\n"
                 + "}\n");
   }
 
@@ -380,7 +380,8 @@ public class ComponentBodyGeneratorTest {
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
-            "@androidx.annotation.Nullable\n" + "com.facebook.litho.EventHandler objectHandler;\n");
+            "@androidx.annotation.Nullable\n"
+                + "com.facebook.litho.EventHandler<java.lang.Object> objectHandler;\n");
   }
 
   @Test

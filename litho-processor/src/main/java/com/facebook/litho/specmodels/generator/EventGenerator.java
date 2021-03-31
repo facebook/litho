@@ -22,6 +22,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VAR
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
 import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
+import static com.facebook.litho.specmodels.model.MethodParamModelUtils.isAnnotatedWith;
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
@@ -31,21 +32,24 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecMethodModelUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the event methods for a Component. */
@@ -81,12 +85,23 @@ public class EventGenerator {
   static TypeSpecDataHolder generateGetEventHandlerMethod(
       SpecModel specModel, EventDeclarationModel eventDeclaration) {
     final String scopeMethodName = specModel.getScopeMethodName();
+    final ClassName eventClassName = ClassName.bestGuess(eventDeclaration.getRawName().toString());
+    final List<TypeVariableName> typeVariables;
+    if (eventDeclaration.name instanceof ParameterizedTypeName) {
+      typeVariables = new ArrayList<>();
+      for (TypeName name : ((ParameterizedTypeName) eventDeclaration.name).typeArguments) {
+        typeVariables.add((TypeVariableName) name);
+      }
+    } else {
+      typeVariables = Collections.emptyList();
+    }
     return TypeSpecDataHolder.newBuilder()
         .addMethod(
-            MethodSpec.methodBuilder("get" + eventDeclaration.name.simpleName() + "Handler")
+            MethodSpec.methodBuilder("get" + eventClassName.simpleName() + "Handler")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addAnnotation(ClassNames.NULLABLE)
-                .returns(ClassNames.EVENT_HANDLER)
+                .addTypeVariables(typeVariables)
+                .returns(ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventDeclaration.name))
                 .addParameter(specModel.getContextClass(), "context")
                 .addCode(
                     CodeBlock.builder()
@@ -98,7 +113,7 @@ public class EventGenerator {
                     "return (($L) context.$L()).$L",
                     specModel.getComponentName(),
                     scopeMethodName,
-                    ComponentBodyGenerator.getEventHandlerInstanceName(eventDeclaration.name))
+                    ComponentBodyGenerator.getEventHandlerInstanceName(eventDeclaration))
                 .build())
         .build();
   }
@@ -115,14 +130,16 @@ public class EventGenerator {
 
   static TypeSpecDataHolder generateEventDispatcher(EventDeclarationModel eventDeclaration) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-
+    final ClassName eventClassName = ClassName.bestGuess(eventDeclaration.getRawName().toString());
     MethodSpec.Builder eventDispatcherMethod =
-        MethodSpec.methodBuilder("dispatch" + eventDeclaration.name.simpleName())
+        MethodSpec.methodBuilder("dispatch" + eventClassName.simpleName())
             .addModifiers(Modifier.STATIC)
             .addParameter(ClassNames.EVENT_HANDLER, "_eventHandler");
 
     eventDispatcherMethod.addStatement(
-        "final $T _eventState = new $T()", eventDeclaration.name, eventDeclaration.name);
+        "final $T _eventState = new $T()",
+        eventDeclaration.getRawName(),
+        eventDeclaration.getRawName());
 
     for (FieldModel fieldModel : eventDeclaration.fields) {
       if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
@@ -133,6 +150,11 @@ public class EventGenerator {
       TypeName typeName = fieldModel.field.type;
       if (typeName instanceof ParameterizedTypeName) {
         typeName = ((ParameterizedTypeName) fieldModel.field.type).rawType;
+      } else if (typeName instanceof TypeVariableName) {
+        typeName =
+            ((TypeVariableName) typeName).bounds.isEmpty()
+                ? OBJECT
+                : ((TypeVariableName) typeName).bounds.get(0);
       }
 
       eventDispatcherMethod
@@ -178,6 +200,7 @@ public class EventGenerator {
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PRIVATE)
             .returns(eventMethodModel.returnType)
+            .addTypeVariables(eventMethodModel.typeVariables)
             .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
@@ -220,14 +243,16 @@ public class EventGenerator {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
-      final boolean hasParamAnnotation =
-          MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
+      final boolean hasParamAnnotation = isAnnotatedWith(methodParamModel, Param.class);
       if (hasParamAnnotation
-          || MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)
+          || isAnnotatedWith(methodParamModel, FromEvent.class)
           || methodParamModel.getTypeName().equals(specModel.getContextClass())) {
+
+        TypeName type = methodParamModel.getTypeName();
+
         methodSpec.addParameter(
             parameter(
-                methodParamModel.getTypeName(),
+                type,
                 methodParamModel.getName(),
                 hasParamAnnotation
                     ? methodParamModel.getExternalAnnotations()
@@ -318,14 +343,15 @@ public class EventGenerator {
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
       TypeName paramClass,
       String componentName) {
+
+    final Map.Entry<TypeName, List<TypeVariableName>> eventInfo = getEventInfo(eventMethodModel);
+
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-            .addTypeVariables(eventMethodModel.typeVariables)
+            .addTypeVariables(eventInfo.getValue())
             .addParameter(paramClass, "c")
-            .returns(
-                ParameterizedTypeName.get(
-                    ClassNames.EVENT_HANDLER, eventMethodModel.typeModel.name));
+            .returns(ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventInfo.getKey()));
 
     final CodeBlock.Builder paramsBlock = CodeBlock.builder();
 
@@ -333,18 +359,12 @@ public class EventGenerator {
     paramsBlock.indent();
     paramsBlock.add("c,\n");
 
-    final Set<TypeVariableName> paramTypeVariables = new HashSet<>();
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
-      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
+      if (isAnnotatedWith(methodParamModel, Param.class)) {
         builder.addParameter(parameter(methodParamModel));
         paramsBlock.add("$L,\n", methodParamModel.getName());
-
-        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
-          paramTypeVariables.add((TypeVariableName) methodParamModel.getTypeName());
-        }
       }
     }
-    builder.addTypeVariables(paramTypeVariables);
 
     paramsBlock.unindent();
     paramsBlock.add("}");
@@ -357,5 +377,106 @@ public class EventGenerator {
         paramsBlock.build());
 
     return builder.build();
+  }
+
+  private static Map.Entry<TypeName, List<TypeVariableName>> getEventInfo(
+      SpecMethodModel<EventMethod, EventDeclarationModel> model) {
+
+    // If not a parameterised event type then immediately return the type
+    if (!(model.typeModel.name instanceof ParameterizedTypeName)) {
+      return new HashMap.SimpleEntry<>(model.typeModel.name, new ArrayList<>(model.typeVariables));
+    }
+
+    final ParameterizedTypeName eventType = (ParameterizedTypeName) model.typeModel.name;
+    final List<TypeVariableName> methodVariables = new ArrayList<>(model.typeVariables);
+    final List<TypeName> eventClassVariables = eventType.typeArguments;
+
+    int numberOfOriginalTypeVariables = methodVariables.size();
+
+    // Map the generic fields to their type variable name
+    final Map<String, TypeName> fields = new HashMap<>();
+    for (FieldModel field : model.typeModel.fields) {
+      if (field.field.type instanceof TypeVariableName) {
+        fields.put(field.field.name, field.field.type);
+      }
+    }
+
+    // Fill the type variable list with the lower bounds
+    final TypeName[] outputVariableTypes = new TypeName[eventClassVariables.size()];
+    final Map<TypeName, Integer> positions = new HashMap<>();
+
+    for (int i = 0; i < eventClassVariables.size(); i++) {
+      TypeName v = eventClassVariables.get(i);
+      if (v instanceof TypeVariableName) {
+        List<TypeName> bounds = ((TypeVariableName) v).bounds;
+        outputVariableTypes[i] =
+            getNextTypeNameAndUpdateMethodVariables(
+                bounds.isEmpty() ? OBJECT : bounds.get(0), methodVariables);
+        positions.put(v, i);
+      } else {
+        throw new IllegalArgumentException("This should not be possible. _head in sand_");
+      }
+    }
+
+    // Find usages of named generic fields
+    model.methodParams.forEach(
+        param -> {
+          if (isAnnotatedWith(param, FromEvent.class) && fields.containsKey(param.getName())) {
+            // Replace the type variable list with the new bounds
+            final int position = positions.get(fields.get(param.getName()));
+            if (param.getTypeName() instanceof TypeVariableName) {
+              // If param is a type variable then use it
+              outputVariableTypes[position] = param.getTypeName();
+              // Remove the extra "T(n)" type variable
+              methodVariables.set(numberOfOriginalTypeVariables + position, null);
+            } else {
+              // If param is concrete type then update the lower bounds of the type variable
+              outputVariableTypes[position] =
+                  updateTypeVariableBounds(
+                      param.getTypeName(),
+                      methodVariables,
+                      numberOfOriginalTypeVariables + position);
+            }
+          }
+        });
+
+    return new HashMap.SimpleEntry<>(
+        ParameterizedTypeName.get(eventType.rawType, outputVariableTypes),
+        methodVariables.stream().filter(name -> name != null).collect(Collectors.toList()));
+  }
+
+  private static TypeName updateTypeVariableBounds(
+      TypeName type, List<TypeVariableName> variables, int position) {
+    TypeVariableName updated =
+        TypeVariableName.get(variables.get(position).name, type.isPrimitive() ? type.box() : type);
+    variables.set(position, updated);
+    return updated;
+  }
+
+  private static TypeName getNextTypeNameAndUpdateMethodVariables(
+      TypeName type, List<TypeVariableName> variables) {
+
+    String name = "T";
+    int i = 0;
+    if (containsTypeVariable(variables, name)) {
+      while (containsTypeVariable(variables, name + i)) {
+        i++;
+      }
+      name = name + i;
+    }
+
+    final TypeVariableName variable = TypeVariableName.get(name, type);
+    variables.add(variable);
+
+    return variable;
+  }
+
+  private static boolean containsTypeVariable(List<TypeVariableName> variables, String name) {
+    for (TypeVariableName variable : variables) {
+      if (variable.name.equals(name)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -21,9 +21,17 @@ import java.lang.reflect.Modifier
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
 
-  final override fun onCreateLayout(c: ComponentContext): Component? = DslScope(c).render()
+  final override fun onCreateLayout(c: ComponentContext) =
+      error("Render components should call render() not onCreateLayout()")
 
-  abstract fun DslScope.render(): Component?
+  internal final override fun render(c: ComponentContext): RenderResult {
+    val componentScope = ComponentScope(c)
+    val componentResult = componentScope.render()
+    return RenderResult(
+        componentResult, componentScope.transitions, componentScope.useEffectEntries)
+  }
+
+  abstract fun ComponentScope.render(): Component?
 
   /**
    * Compare this component to a different one to check if they are equivalent. This is used to be
@@ -63,4 +71,16 @@ abstract class KComponent : Component() {
 
     return true
   }
+}
+
+/**
+ * Sets a manual key on the given Component returned in the lambda, e.g.
+ * ```
+ * key("my_key") { Text(...) }
+ * ```
+ */
+fun key(key: String, componentLambda: () -> Component): Component {
+  val component = componentLambda()
+  component.key = key
+  return component
 }

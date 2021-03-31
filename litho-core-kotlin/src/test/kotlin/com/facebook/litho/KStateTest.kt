@@ -26,6 +26,8 @@ import com.facebook.litho.testing.child
 import com.facebook.litho.testing.exactly
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
+import com.facebook.litho.view.onClick
+import com.facebook.litho.view.viewTag
 import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
@@ -45,7 +47,7 @@ class KStateTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
   @Rule @JvmField val backgroundLayoutLooperRule = BackgroundLayoutLooperRule()
 
-  private fun <T> DslScope.useCustomState(value: T): State<T> {
+  private fun <T> ComponentScope.useCustomState(value: T): State<T> {
     val state = useState { value }
     return state
   }
@@ -55,7 +57,7 @@ class KStateTest {
     lateinit var stateRef: AtomicReference<State<String>>
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val state = useState { "hello" }
         stateRef = AtomicReference(state)
 
@@ -84,7 +86,7 @@ class KStateTest {
     lateinit var state2Ref: AtomicReference<State<Int>>
 
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val state1 = useCustomState("hello")
         val state2 = useCustomState(20)
 
@@ -159,17 +161,16 @@ class KStateTest {
 
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied() {
     class TestComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         val counter = useState { 0 }
 
         return Row(
-            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } },
-            children =
-                listOf(
-                    Text(
-                        style = Style.viewTag("Counter: ${counter.value}"),
-                        text = "Counter: ${counter.value}"),
-                ))
+            style = Style.viewTag("test_view").onClick { counter.update { value -> value + 1 } }) {
+          child(
+              Text(
+                  style = Style.viewTag("Counter: ${counter.value}"),
+                  text = "Counter: ${counter.value}"))
+        }
       }
     }
 
@@ -195,7 +196,7 @@ class KStateTest {
       val awaitable: CountDownLatch?,
       val initCounter: AtomicInteger
   ) : KComponent() {
-    override fun DslScope.render(): Component? {
+    override fun ComponentScope.render(): Component? {
       countDownLatch.countDown()
       awaitable?.await()
 

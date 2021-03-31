@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -46,10 +47,10 @@ public class ComponentTreeHolder {
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
-  private final boolean mIncrementalVisibilityEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final int mRecyclingMode;
+  private final boolean mIgnoreNullLayoutStateError;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -122,9 +123,9 @@ public class ComponentTreeHolder {
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private boolean incrementalVisibility;
     private int recyclingMode;
     private boolean visibilityProcessingEnabled = true;
+    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
 
     private Builder() {}
 
@@ -185,6 +186,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
+      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
+      return this;
+    }
+
     public Builder recyclingMode(int recyclingMode) {
       this.recyclingMode = recyclingMode;
       return this;
@@ -192,11 +198,6 @@ public class ComponentTreeHolder {
 
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       isLayoutDiffingEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder incrementalVisibility(boolean isEnabled) {
-      incrementalVisibility = isEnabled;
       return this;
     }
 
@@ -227,12 +228,13 @@ public class ComponentTreeHolder {
     mIncrementalMount = builder.incrementalMount;
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
-    mIncrementalVisibilityEnabled = builder.incrementalVisibility;
     mRecyclingMode = builder.recyclingMode;
   }
 
   @VisibleForTesting
+  @UiThread
   public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
     if (acquireStateHandlerOnRelease || shouldAcquireStateHandlerOnRelease()) {
       acquireStateHandler();
@@ -484,7 +486,7 @@ public class ComponentTreeHolder {
               .visibilityProcessing(mVisibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
-              .incrementalVisibility(mIncrementalVisibilityEnabled)
+              .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
       if (mPendingNewLayoutListener != null) {
@@ -493,6 +495,7 @@ public class ComponentTreeHolder {
     }
   }
 
+  @UiThread
   public synchronized void releaseTree() {
     if (mComponentTree != null) {
       mComponentTree.release();

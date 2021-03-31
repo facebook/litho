@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class StateUpdateTestComponent extends Component {
@@ -40,15 +41,15 @@ class StateUpdateTestComponent extends Component {
     return new StateContainer.StateUpdate(STATE_UPDATE_TYPE_MULTIPLY);
   }
 
-  private final TestStateContainer mStateContainer;
   private StateUpdateTestComponent shallowCopy;
   private int mId;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private final AtomicInteger createInitialStateCount = new AtomicInteger(0);
+  private static final AtomicInteger finalCounterValue = new AtomicInteger(0);
 
   StateUpdateTestComponent() {
     super("StateUpdateTestComponent");
-    mStateContainer = new TestStateContainer();
+    setStateContainer(new TestStateContainer());
     mId = sIdGenerator.getAndIncrement();
   }
 
@@ -69,8 +70,9 @@ class StateUpdateTestComponent extends Component {
 
   @Override
   protected void createInitialState(ComponentContext c) {
-    mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
+    getStateContainerImpl(c).mCount = INITIAL_COUNT_STATE_VALUE;
     createInitialStateCount.incrementAndGet();
+    finalCounterValue.set(INITIAL_COUNT_STATE_VALUE);
   }
 
   @Override
@@ -81,8 +83,8 @@ class StateUpdateTestComponent extends Component {
     nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
   }
 
-  int getCount() {
-    return mStateContainer.mCount;
+  int getCount(ComponentContext c) {
+    return finalCounterValue.get();
   }
 
   @Override
@@ -114,9 +116,15 @@ class StateUpdateTestComponent extends Component {
     return mId;
   }
 
+  @Nullable
   @Override
-  protected StateContainer getStateContainer(ComponentContext scopedContext) {
-    return mStateContainer;
+  protected StateContainer createStateContainer() {
+    return new TestStateContainer();
+  }
+
+  @Nullable
+  protected TestStateContainer getStateContainerImpl(ComponentContext c) {
+    return (TestStateContainer) Component.getStateContainer(c, this);
   }
 
   static class TestStateContainer extends StateContainer {
@@ -136,6 +144,7 @@ class StateUpdateTestComponent extends Component {
           mCount *= 2;
           break;
       }
+      finalCounterValue.set(mCount);
     }
   }
 }

@@ -16,26 +16,34 @@
 
 package com.facebook.litho;
 
+import static android.os.Looper.getMainLooper;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.AttachDetachTester;
 import com.facebook.litho.widget.AttachDetachTesterSpec;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class AttachDetachHandlerTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
 
   @Test
   public void component_setRootWithLayout_onAttachedIsCalled() {
@@ -75,7 +83,7 @@ public class AttachDetachHandlerTest {
         .describedAs("Should call @OnDetached method")
         .containsExactly("root:" + AttachDetachTesterSpec.ON_DETACHED);
 
-    assertThat(attachDetachHandler.getAttached().size()).isEqualTo(0);
+    assertThat(attachDetachHandler.getAttached()).isNullOrEmpty();
   }
 
   @Test
@@ -323,10 +331,79 @@ public class AttachDetachHandlerTest {
     assertThat(latch1.await(5000, TimeUnit.MILLISECONDS)).isTrue();
     assertThat(latch2.await(5000, TimeUnit.MILLISECONDS)).isTrue();
 
+    shadowOf(getMainLooper()).idle();
+
     assertThat(steps)
         .describedAs("Should call @OnAttached only once for each component")
         .containsExactly(
             "c1:" + AttachDetachTesterSpec.ON_ATTACHED,
             "root:" + AttachDetachTesterSpec.ON_ATTACHED);
+  }
+
+  @Test
+  public void component_setRoot_onAttachedIsCalledOnUIThread() {
+    final List<String> steps = new ArrayList<>();
+    final ConcurrentHashMap<String, Object> extraThreadInfo = new ConcurrentHashMap<>();
+
+    final Component root =
+        AttachDetachTester.create(mLithoViewRule.getContext())
+            .name("root")
+            .steps(steps)
+            .extraThreadInfo(extraThreadInfo)
+            .build();
+
+    mLithoViewRule.attachToWindow().measure().layout();
+    mLithoViewRule.setRoot(root);
+
+    assertThat(steps)
+        .describedAs("Should call @OnAttached method")
+        .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
+
+    final AttachDetachHandler attachDetachHandler =
+        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+    assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
+
+    final Boolean isMainThreadLayout =
+        (Boolean) extraThreadInfo.get(AttachDetachTesterSpec.IS_MAIN_THREAD_LAYOUT);
+    assertThat(isMainThreadLayout).isTrue();
+
+    final Boolean isMainThreadAttached =
+        (Boolean) extraThreadInfo.get(AttachDetachTesterSpec.IS_MAIN_THREAD_ON_ATTACHED);
+    assertThat(isMainThreadAttached).isTrue();
+  }
+
+  @Test
+  public void component_setRootAsync_onAttachedIsCalledOnUIThread() {
+    final List<String> steps = new ArrayList<>();
+    final ConcurrentHashMap<String, Object> extraThreadInfo = new ConcurrentHashMap<>();
+
+    final Component root =
+        AttachDetachTester.create(mLithoViewRule.getContext())
+            .name("root")
+            .steps(steps)
+            .extraThreadInfo(extraThreadInfo)
+            .build();
+
+    mLithoViewRule.attachToWindow().measure().layout();
+    mLithoViewRule.setRootAsync(root);
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+    shadowOf(getMainLooper()).idle();
+
+    assertThat(steps)
+        .describedAs("Should call @OnAttached method")
+        .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
+
+    final AttachDetachHandler attachDetachHandler =
+        mLithoViewRule.getComponentTree().getAttachDetachHandler();
+    assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
+
+    final Boolean isMainThreadLayout =
+        (Boolean) extraThreadInfo.get(AttachDetachTesterSpec.IS_MAIN_THREAD_LAYOUT);
+    assertThat(isMainThreadLayout).isFalse();
+
+    final Boolean isMainThreadAttached =
+        (Boolean) extraThreadInfo.get(AttachDetachTesterSpec.IS_MAIN_THREAD_ON_ATTACHED);
+    assertThat(isMainThreadAttached).isTrue();
   }
 }

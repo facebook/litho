@@ -68,6 +68,8 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     implementation deps.kotlinStandardLib
+    implementation deps.supportCore
+    implementation deps.supportDynamicAnimations
 
     // Android Support Library
     compileOnly deps.supportAnnotations
@@ -79,6 +81,7 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.robolectric
     testImplementation deps.supportTestJunit
+    testImplementation deps.mockitokotlin
 }
 
 apply from: rootProject.file('gradle/release.gradle')

@@ -45,7 +45,7 @@ class KTreePropsTest {
     val rect = Rect()
 
     class ChildComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         treeProp1Ref.prop = useTreeProp<Int>()
         treeProp2Ref.prop = useTreeProp<Rect>()
         return null
@@ -53,11 +53,8 @@ class KTreePropsTest {
     }
 
     class ParentComponent : KComponent() {
-      override fun DslScope.render(): Component? {
-        return TreePropProvider(
-            treeProp(type = Int::class, value = 32),
-            treeProp(type = Rect::class, value = rect),
-            child = ChildComponent())
+      override fun ComponentScope.render(): Component? {
+        return TreePropProvider(Int::class to 32, Rect::class to rect) { ChildComponent() }
       }
     }
 
@@ -72,7 +69,7 @@ class KTreePropsTest {
     val treePropRef = TreePropHolder()
 
     class ChildComponent : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         treePropRef.prop = useTreeProp<Int>()
         return null
       }
@@ -80,15 +77,14 @@ class KTreePropsTest {
 
     // Overrides tree prop from ParentComponent
     class IntermediateComponent : KComponent() {
-      override fun DslScope.render(): Component? {
-        return TreePropProvider(treeProp(type = Int::class, value = 24), child = ChildComponent())
+      override fun ComponentScope.render(): Component? {
+        return TreePropProvider(Int::class to 24) { ChildComponent() }
       }
     }
 
     class ParentComponent : KComponent() {
-      override fun DslScope.render(): Component? {
-        return TreePropProvider(
-            treeProp(type = Int::class, value = 18), child = IntermediateComponent())
+      override fun ComponentScope.render(): Component? {
+        return TreePropProvider(Int::class to 18) { IntermediateComponent() }
       }
     }
 
@@ -104,7 +100,7 @@ class KTreePropsTest {
     val child2IntPropRef = TreePropHolder()
 
     class Child1Component : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         child1StringPropRef.prop = useTreeProp<String>()
         child1IntPropRef.prop = useTreeProp<Int>()
         return null
@@ -112,24 +108,20 @@ class KTreePropsTest {
     }
 
     class Child2Component : KComponent() {
-      override fun DslScope.render(): Component? {
+      override fun ComponentScope.render(): Component? {
         child2IntPropRef.prop = useTreeProp<Int>()
         return null
       }
     }
 
     class ParentComponent : KComponent() {
-      override fun DslScope.render(): Component? {
-        return TreePropProvider(
-            treeProp(type = String::class, value = "kavabanga"),
-            child =
-                Row(
-                    children =
-                        listOf(
-                            TreePropProvider(
-                                treeProp(type = Int::class, value = 42), child = Child1Component()),
-                            Child2Component(),
-                        )))
+      override fun ComponentScope.render(): Component? {
+        return TreePropProvider(String::class to "kavabanga") {
+          Row {
+            child(TreePropProvider(Int::class to 42) { Child1Component() })
+            child(Child2Component())
+          }
+        }
       }
     }
 

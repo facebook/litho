@@ -138,10 +138,10 @@ class HostComponent extends Component {
 
   @Override
   protected boolean shouldUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
+      final @Nullable Component previous,
+      final @Nullable StateContainer previousStateContainer,
+      final @Nullable Component next,
+      final @Nullable StateContainer nextStateContainer) {
     return true;
   }
 

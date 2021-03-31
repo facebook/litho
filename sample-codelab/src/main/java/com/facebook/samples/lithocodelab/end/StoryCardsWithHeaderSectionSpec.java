@@ -46,7 +46,7 @@ class StoryCardsWithHeaderSectionSpec {
                   .component(Text.create(c).text("Header " + letter).textSizeDip(20).build())
                   .build())
           .child(
-              DataDiffSection.create(c)
+              DataDiffSection.<String>create(c)
                   .data(getStoriesContent())
                   .key("dds" + letter)
                   .renderEventHandler(StoryCardsWithHeaderSection.renderStory(c))

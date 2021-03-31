@@ -19,13 +19,13 @@ package com.facebook.litho.widget
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dp
-import com.facebook.litho.DslScope
 import com.facebook.litho.dp
 
 /** Builder function for creating [CardSpec] components. */
 @Suppress("FunctionName")
-inline fun DslScope.Card(
+inline fun ComponentScope.Card(
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
     cornerRadius: Dp = 2.dp,
     elevation: Dp = 2.dp,
@@ -38,7 +38,7 @@ inline fun DslScope.Card(
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
     transparencyEnabled: Boolean = false,
-    child: DslScope.() -> Component
+    child: ComponentScope.() -> Component
 ): Card =
     Card.create(context)
         .transparencyEnabled(transparencyEnabled)

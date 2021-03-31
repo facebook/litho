@@ -117,7 +117,7 @@ public class ViewPagerDemoComponentSpec {
         .positionType(YogaPositionType.ABSOLUTE)
         .flexGrow(1)
         .child(
-            ViewPagerComponent.create(c)
+            ViewPagerComponent.<Model>create(c)
                 .positionPx(YogaEdge.ALL, 0)
                 .dataDiffSection(
                     DataDiffSection.<Model>create(new SectionContext(c))

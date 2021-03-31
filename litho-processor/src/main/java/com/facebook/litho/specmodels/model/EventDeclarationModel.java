@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
@@ -25,13 +26,13 @@ import javax.annotation.concurrent.Immutable;
 /** Model that is an abstract representation of a {@link com.facebook.litho.annotations.Event}. */
 @Immutable
 public class EventDeclarationModel {
-  public final ClassName name;
+  public final TypeName name;
   public final TypeName returnType;
   public final ImmutableList<FieldModel> fields;
   public final Object representedObject;
 
   public EventDeclarationModel(
-      ClassName name,
+      TypeName name,
       TypeName returnType,
       ImmutableList<FieldModel> fields,
       Object representedObject) {
@@ -55,5 +56,13 @@ public class EventDeclarationModel {
   @Override
   public int hashCode() {
     return Objects.hash(name, returnType, fields, representedObject);
+  }
+
+  public TypeName getRawName() {
+    return name instanceof ParameterizedTypeName ? ((ParameterizedTypeName) name).rawType : name;
+  }
+
+  public String getReflectionName() {
+    return ClassName.bestGuess(getRawName().toString()).reflectionName();
   }
 }

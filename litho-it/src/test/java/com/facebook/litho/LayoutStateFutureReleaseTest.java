@@ -97,7 +97,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Row row = Row.create(mContext).child(child1).child(child2).build();
 
-    final ComponentLayout result = row.resolve(c);
+    final InternalNode result = row.resolve(c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertEquals(result, ComponentContext.NULL_LAYOUT);
@@ -131,7 +131,7 @@ public class LayoutStateFutureReleaseTest {
 
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
-    final ComponentLayout result = column.resolve(c);
+    final InternalNode result = column.resolve(c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
     assertEquals(result, ComponentContext.NULL_LAYOUT);

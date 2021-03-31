@@ -106,7 +106,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Comparable(type = 13)
   TestTreeProp treeProp;
 
-  @androidx.annotation.Nullable EventHandler testEventHandler;
+  @androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler;
 
   EventTrigger onClickEventTriggerTrigger;
 
@@ -115,7 +115,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   private TestMountStateContainer getStateContainerImpl(ComponentContext c) {
-    return (TestMountStateContainer) super.getStateContainer(c);
+    return (TestMountStateContainer) Component.getStateContainer(c, this);
   }
 
   @Override
@@ -360,10 +360,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected boolean shouldUpdate(
-      ComponentContext _prevScopedContext,
       Component _prevAbstractImpl,
-      ComponentContext _nextScopedContext,
-      Component _nextAbstractImpl) {
+      StateContainer _prevStateContainer,
+      Component _nextAbstractImpl,
+      StateContainer _nextStateContainer) {
+    if (!isPureRender()) {
+      return true;
+    }
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;
@@ -417,7 +420,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @androidx.annotation.Nullable
-  public static EventHandler getTestEventHandler(ComponentContext context) {
+  public static EventHandler<TestEvent> getTestEventHandler(ComponentContext context) {
     if (context.getComponentScope() == null) {
       return null;
     }
@@ -483,10 +486,10 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
   }
 
-  private static EventTrigger onClickEventTriggerTrigger(
-      ComponentContext c, String key, Handle handle) {
+  private static EventTrigger<ClickEvent> createOnClickEventTriggerTrigger(
+      ComponentContext c, Component component) {
     int methodId = -830639048;
-    return newEventTrigger(c, key, methodId, handle);
+    return newEventTrigger(c, component, methodId);
   }
 
   /**
@@ -494,8 +497,10 @@ public final class TestMount<S extends View> extends Component implements TestTa
    *     component a Handle and use {@link #onClickEventTrigger(ComponentContext, Handle)}.
    */
   @Deprecated
-  public static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key) {
-    return onClickEventTriggerTrigger(c, key, null);
+  public static EventTrigger<ClickEvent> onClickEventTriggerTrigger(
+      ComponentContext c, String key) {
+    int methodId = -830639048;
+    return newEventTrigger(c, key, methodId);
   }
 
   private void onClickEventTrigger(ComponentContext c, EventTriggerTarget _abstract, View view) {
@@ -593,7 +598,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
       ComponentContext c, TestMount component) {
     TestMountStateContainer _stateContainer = new TestMountStateContainer();
-    transferState(component.getStateContainer(c), _stateContainer);
+    transferState(Component.getStateContainer(c, component), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
     return _stateContainer;
   }
@@ -816,28 +821,34 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     public Builder<S> testEventHandler(
-        @androidx.annotation.Nullable EventHandler testEventHandler) {
+        @androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler) {
       this.mTestMount.testEventHandler = testEventHandler;
       return this;
     }
 
+    /**
+     * @deprecated Do not use this method to set an EventTrigger. Instead, set a Handle on this
+     *     Component with .handle() and dispatch the trigger using the variant of
+     *     TestMount.onClickEventTriggerTrigger that takes a Handle param.
+     */
+    @Deprecated
     public Builder<S> onClickEventTriggerTrigger(EventTrigger onClickEventTriggerTrigger) {
       this.mTestMount.onClickEventTriggerTrigger = onClickEventTriggerTrigger;
       return this;
     }
 
-    private void onClickEventTriggerTrigger(String key, Handle handle) {
+    private void registerOnClickEventTriggerTrigger() {
       com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
           this.mTestMount.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
         onClickEventTriggerTrigger =
-            TestMount.onClickEventTriggerTrigger(this.mContext, key, handle);
+            TestMount.createOnClickEventTriggerTrigger(this.mContext, this.mTestMount);
       }
       onClickEventTriggerTrigger(onClickEventTriggerTrigger);
     }
 
-    private void registerEventTriggers(String key, Handle handle) {
-      onClickEventTriggerTrigger(key, handle);
+    private void registerEventTriggers() {
+      registerOnClickEventTriggerTrigger();
     }
 
     @Override
@@ -848,7 +859,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     @Override
     public TestMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      registerEventTriggers(mTestMount.getKey(), mTestMount.getHandle());
+      registerEventTriggers();
       return mTestMount;
     }
   }

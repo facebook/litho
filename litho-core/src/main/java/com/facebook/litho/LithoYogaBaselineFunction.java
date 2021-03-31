@@ -23,7 +23,8 @@ public class LithoYogaBaselineFunction implements YogaBaselineFunction {
 
   @Override
   public float baseline(YogaNode cssNode, float width, float height) {
-    final InternalNode node = (InternalNode) cssNode.getData();
+    final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
+    final InternalNode node = result.getInternalNode();
     return node.getTailComponent().onMeasureBaseline(node.getContext(), (int) width, (int) height);
   }
 }

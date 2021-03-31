@@ -133,6 +133,7 @@ public class RecyclerBinder
   private final int mRecyclingMode;
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
+  private final boolean mIgnoreNullLayoutStateError;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -144,7 +145,6 @@ public class RecyclerBinder
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
-  private final boolean mIncrementalVisibility;
   private final boolean mRecyclerViewItemPrefetch;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
@@ -373,11 +373,11 @@ public class RecyclerBinder
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
+        boolean ignoreNullLayoutStateError,
         int recyclingMode,
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
-        boolean preallocatePerMountSpec,
-        boolean incrementalVisibility);
+        boolean preallocatePerMountSpec);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -392,11 +392,11 @@ public class RecyclerBinder
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
+            boolean ignoreNullLayoutStateError,
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
             @Nullable LithoHandler preallocateHandler,
-            boolean preallocatePerMountSpec,
-            boolean incrementalVisibility) {
+            boolean preallocatePerMountSpec) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -406,11 +406,11 @@ public class RecyclerBinder
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
+              .ignoreNullLayoutStateError(ignoreNullLayoutStateError)
               .recyclingMode(recyclingMode)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
-              .incrementalVisibility(incrementalVisibility)
               .build();
         }
       };
@@ -452,11 +452,11 @@ public class RecyclerBinder
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
     private LithoHandler mAsyncInsertLayoutHandler;
-    private boolean mIncrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
     private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
+    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -656,11 +656,6 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder incrementalVisibilityHandling(boolean isEnabled) {
-      mIncrementalVisibility = isEnabled;
-      return this;
-    }
-
     /**
      * Only for horizontally scrolling layouts! If true, the height of the RecyclerView is not known
      * when it's measured; the first item is measured and its height will determine the height of
@@ -744,6 +739,11 @@ public class RecyclerBinder
 
     public Builder isReconciliationEnabled(boolean isEnabled) {
       isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
+      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
       return this;
     }
 
@@ -895,7 +895,6 @@ public class RecyclerBinder
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mLithoViewFactory = builder.lithoViewFactory;
-    mIncrementalVisibility = builder.mIncrementalVisibility;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
 
@@ -975,6 +974,7 @@ public class RecyclerBinder
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
@@ -3203,6 +3203,10 @@ public class RecyclerBinder
   }
 
   private void computeRange(int firstVisible, int lastVisible) {
+    computeRange(firstVisible, lastVisible, mRangeTraverser);
+  }
+
+  private void computeRange(int firstVisible, int lastVisible, RecyclerRangeTraverser traverser) {
     final int rangeSize;
     final int rangeStart;
     final int rangeEnd;
@@ -3227,7 +3231,7 @@ public class RecyclerBinder
       }
     }
 
-    mRangeTraverser.traverse(
+    traverser.traverse(
         0,
         treeHoldersSize,
         firstVisible,
@@ -3288,6 +3292,7 @@ public class RecyclerBinder
     };
   }
 
+  @UiThread
   private static void maybeAcquireStateAndReleaseTree(
       ComponentTreeHolder holder, boolean acquireStateAndReleaseTree) {
     if (holder.isTreeValid()
@@ -3539,10 +3544,16 @@ public class RecyclerBinder
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
-
       if (viewCreator != null) {
         final View view = viewCreator.createView(mComponentContext.getAndroidContext(), parent);
-        return new BaseViewHolder(view, false);
+        try {
+          return new BaseViewHolder(view, false);
+        } catch (IllegalArgumentException ex) {
+          throw new IllegalArgumentException(
+              "createView() may not return null from :"
+                  + getClassNameForDebug(viewCreator.getClass()),
+              ex);
+        }
       } else {
         final LithoView lithoView =
             mLithoViewFactory == null
@@ -3551,6 +3562,14 @@ public class RecyclerBinder
 
         return new BaseViewHolder(lithoView, true);
       }
+    }
+
+    private @Nullable String getClassNameForDebug(Class c) {
+      Class<?> enclosingClass = c.getEnclosingClass();
+      if (enclosingClass == null) {
+        return c.getCanonicalName();
+      }
+      return enclosingClass.getCanonicalName();
     }
 
     @Override
@@ -3571,6 +3590,26 @@ public class RecyclerBinder
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
         if (!componentTreeHolder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
+
+          if (ComponentsConfiguration.computeRangeOnSyncLayout) {
+            // Since synchronous layout is about to happen, and the ScrollListener that updates the
+            // visible and working ranges will not fire until after the full frame is rendered,
+            // we want to kick off background layout for the estimated visible range in the
+            // scrolling direction in an attempt to take advantage of more parallel layout.
+            if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
+                && mCurrentLastVisiblePosition != RecyclerView.NO_POSITION) {
+              // Get the last known visible range if available.
+              final int range = mCurrentLastVisiblePosition - mCurrentFirstVisiblePosition;
+              if (position > mCurrentLastVisiblePosition) {
+                // Scrolling down
+                computeRange(position, position + range, RecyclerRangeTraverser.FORWARD_TRAVERSER);
+              } else if (position < mCurrentFirstVisiblePosition) {
+                // Scrolling up
+                computeRange(position - range, position, RecyclerRangeTraverser.BACKWARD_TRAVERSER);
+              }
+            }
+          }
+
           final Size size = new Size();
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
@@ -3809,11 +3848,11 @@ public class RecyclerBinder
         mMoveLayoutsBetweenThreads,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
+        mIgnoreNullLayoutStateError,
         mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
-        mPreallocatePerMountSpec,
-        mIncrementalVisibility);
+        mPreallocatePerMountSpec);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

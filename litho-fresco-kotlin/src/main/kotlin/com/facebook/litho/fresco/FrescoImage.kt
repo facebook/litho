@@ -17,11 +17,11 @@
 package com.facebook.litho.fresco
 
 import com.facebook.drawee.interfaces.DraweeController
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 
 /** Builder function for creating [FrescoImageSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun DslScope.FrescoImage(
+inline fun ComponentScope.FrescoImage(
     controller: DraweeController,
     imageAspectRatio: Float
 ): FrescoImage =

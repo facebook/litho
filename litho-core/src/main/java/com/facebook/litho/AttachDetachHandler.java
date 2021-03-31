@@ -16,139 +16,122 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnDetached;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
- * A handler stores components that have implemented {@link OnAttached} or {@link OnDetached}
- * delegate methods. {@link OnAttached} method is called when a component is attached to the {@link
- * ComponentTree}, in contrast, {@link OnDetached} method is called when a component is detached
- * from the tree.
+ * Manages dispatching attach/detach events to a set of {@link Attachable}.
+ *
+ * <p>For Spec Components, this will invoke {@link OnAttached} when a component is attached to the
+ * {@link ComponentTree} and {@link OnDetached} when a component is detached from the tree.
+ *
+ * <p>For Kotlin components, this will handle dispatching callbacks registered with the {@code
+ * useEffect} hook.
  */
 @ThreadSafe
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AttachDetachHandler {
 
-  /** A container stores components whose {@link OnAttached} methods are already executed. */
-  @GuardedBy("this")
-  @Nullable
-  private Map<String, Component> mAttached;
+  @Nullable private Map<String, Attachable> mAttached;
 
   private @Nullable LayoutStateContext mLayoutStateContext;
 
   /**
-   * Execute {@link OnAttached} method for components in the set of given attachable minus {@link
-   * #mAttached}; execute {@link OnDetached} method for components in the set of {@link #mAttached}
-   * minus given attachable.
-   *
-   * @param attachable contains components that have implemented {@link OnAttached} or {@link
-   *     OnDetached} delegate methods.
+   * Marks the given Attachables as attached, invoking attach if they weren't already attached. Any
+   * Attachables that were attached and are no longer attached will be detached. Note that identity
+   * is determined by {@link Attachable#getUniqueId()}.
    */
-  void onAttached(
-      LayoutStateContext layoutStateContext, @Nullable Map<String, Component> attachable) {
-    @Nullable final Map<String, Component> toAttach;
-    @Nullable final Map<String, Component> toDetach;
-    final LayoutStateContext previousLayoutStateContext;
+  @UiThread
+  void onAttached(LayoutStateContext layoutStateContext, @Nullable List<Attachable> attachables) {
+    assertMainThread();
+    if (mAttached == null && attachables == null) {
+      return;
+    }
 
-    synchronized (this) {
-      toAttach = composeAttach(attachable, mAttached);
-      toDetach = composeDetach(attachable, mAttached);
-      previousLayoutStateContext = mLayoutStateContext;
-      if (attachable != null) {
-        mAttached = new LinkedHashMap<>(attachable);
-        mLayoutStateContext = layoutStateContext;
-      } else {
-        mAttached = null;
+    final LayoutStateContext previousLayoutStateContext = mLayoutStateContext;
+    mLayoutStateContext = layoutStateContext;
+
+    if (attachables == null) {
+      detachAll(Preconditions.checkNotNull(mAttached));
+      mAttached = null;
+      return;
+    }
+
+    LinkedHashMap<String, Attachable> attachableMap = new LinkedHashMap<>(attachables.size());
+    for (Attachable attachable : attachables) {
+      attachableMap.put(attachable.getUniqueId(), attachable);
+    }
+
+    if (mAttached == null) {
+      attachAll(attachableMap);
+      mAttached = attachableMap;
+      return;
+    }
+
+    final LayoutStateContext safeLayoutStateContext =
+        Preconditions.checkNotNull(previousLayoutStateContext);
+    for (Map.Entry<String, Attachable> attachedEntry : mAttached.entrySet()) {
+      if (!attachableMap.containsKey(attachedEntry.getKey())) {
+        attachedEntry.getValue().detach(safeLayoutStateContext);
       }
     }
 
-    if (toDetach != null) {
-      for (Map.Entry<String, Component> entry : toDetach.entrySet()) {
-        final Component component = entry.getValue();
-        final String key = entry.getKey();
-
-        component.onDetached(component.getScopedContext(previousLayoutStateContext, key));
+    for (Map.Entry<String, Attachable> attachableEntry : attachableMap.entrySet()) {
+      final Attachable existing = mAttached.get(attachableEntry.getKey());
+      if (existing == null) {
+        attachableEntry.getValue().attach(mLayoutStateContext);
+      } else if (existing.shouldUpdate(attachableEntry.getValue())) {
+        existing.detach(safeLayoutStateContext);
+        attachableEntry.getValue().attach(mLayoutStateContext);
+      } else if (!existing.useLegacyUpdateBehavior()) {
+        // If the attachable already exists and it doesn't need to update, make sure to use the
+        // existing one.
+        attachableEntry.setValue(existing);
       }
     }
 
-    if (toAttach != null) {
-      for (Map.Entry<String, Component> entry : toAttach.entrySet()) {
-        final Component component = entry.getValue();
-        final String key = entry.getKey();
-
-        component.onAttached(component.getScopedContext(layoutStateContext, key));
-      }
-    }
+    mAttached = attachableMap;
   }
 
-  /**
-   * Execute {@link OnDetached} callbacks for components stored in {@link #mAttached}, this method
-   * should be called when releasing a {@link ComponentTree}.
-   */
+  /** Detaches all Attachables currently attached. */
+  @UiThread
   void onDetached() {
-    final List<Component> toDetach;
-    final List<String> toDetachKeys;
-    synchronized (this) {
-      if (mAttached == null) {
-        return;
-      }
-
-      toDetach = new ArrayList<>();
-      toDetachKeys = new ArrayList<>();
-
-      for (Map.Entry<String, Component> entry : mAttached.entrySet()) {
-        toDetach.add(entry.getValue());
-        toDetachKeys.add(entry.getKey());
-      }
-
-      mAttached.clear();
+    assertMainThread();
+    if (mAttached == null) {
+      return;
     }
+    detachAll(mAttached);
+    mAttached = null;
+  }
 
-    for (int i = 0, size = toDetach.size(); i < size; i++) {
-      final Component component = toDetach.get(i);
-      final String globalKey = toDetachKeys.get(i);
-      component.onDetached(component.getScopedContext(mLayoutStateContext, globalKey));
+  private void attachAll(Map<String, Attachable> toAttach) {
+    final LayoutStateContext layoutStateContext = Preconditions.checkNotNull(mLayoutStateContext);
+    for (Attachable entry : toAttach.values()) {
+      entry.attach(layoutStateContext);
     }
   }
 
-  @GuardedBy("this")
-  @Nullable
-  private static Map<String, Component> composeAttach(
-      @Nullable Map<String, Component> attachable, @Nullable Map<String, Component> attached) {
-    Map<String, Component> toAttach = null;
-    if (attachable != null) {
-      toAttach = new LinkedHashMap<>(attachable);
-      if (attached != null) {
-        toAttach.keySet().removeAll(attached.keySet());
-      }
+  private void detachAll(Map<String, Attachable> toDetach) {
+    final LayoutStateContext layoutStateContext = Preconditions.checkNotNull(mLayoutStateContext);
+    for (Attachable entry : toDetach.values()) {
+      entry.detach(layoutStateContext);
     }
-    return toAttach;
-  }
-
-  @GuardedBy("this")
-  @Nullable
-  private static Map<String, Component> composeDetach(
-      @Nullable Map<String, Component> attachable, @Nullable Map<String, Component> attached) {
-    Map<String, Component> toDetach = null;
-    if (attached != null) {
-      toDetach = new LinkedHashMap<>(attached);
-      if (attachable != null) {
-        toDetach.keySet().removeAll(attachable.keySet());
-      }
-    }
-    return toDetach;
   }
 
   @VisibleForTesting
   @Nullable
-  Map<String, Component> getAttached() {
+  Map<String, Attachable> getAttached() {
     return mAttached;
   }
 }

@@ -88,8 +88,9 @@ ext.deps = [
         supportMaterial    : 'com.google.android.material:material:1.2.0',
         supportTransition  : 'androidx.transition:transition:1.0.0',
         supportSwipeRefresh: 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0',
+        supportDynamicAnimations : 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03',
         // Arch
-        archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
+        archLifecycle      : 'androidx.lifecycle:lifecycle-viewmodel:2.3.1',
         // First-party
         fresco             : 'com.facebook.fresco:fresco:1.13.0',
         soloader           : 'com.facebook.soloader:soloader:0.8.2',
@@ -111,6 +112,7 @@ ext.deps = [
         mockitoCore        : 'org.mockito:mockito-core:2.26.0',
         assertjCore        : 'org.assertj:assertj-core:2.9.0',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
+        mockitokotlin      : 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0',
         // Proguard annotations (published through Yoga)
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor
@@ -124,8 +126,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.16.0' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:1.16.0'
+        ? 'com.facebook.yoga:yoga:1.17.0' // can be a '-SNAPSHOT' release
+        : 'com.facebook.yoga:yoga:1.17.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.

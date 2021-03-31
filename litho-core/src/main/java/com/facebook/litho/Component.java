@@ -236,10 +236,6 @@ public abstract class Component extends ComponentLifecycle
     return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
   }
 
-  public boolean hasBackgroundSet() {
-    return mCommonProps != null && mCommonProps.getBackground() != null;
-  }
-
   public boolean hasClickHandlerSet() {
     return mCommonProps != null
         && mCommonProps.getNullableNodeInfo() != null
@@ -306,7 +302,7 @@ public abstract class Component extends ComponentLifecycle
               + ": Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    InternalNode lastMeasuredLayout = layoutState.getCachedLayout(this);
+    LithoLayoutResult lastMeasuredLayout = layoutState.getCachedLayout(this);
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
@@ -314,9 +310,13 @@ public abstract class Component extends ComponentLifecycle
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       layoutState.clearCachedLayout(this);
 
-      lastMeasuredLayout =
-          Layout.createAndMeasureComponent(
-              layoutState.getLayoutStateContext(), c, this, widthSpec, heightSpec);
+      final LayoutResultHolder container =
+          Layout.createAndMeasureComponent(c, this, widthSpec, heightSpec);
+      if (container.wasLayoutInterrupted()) {
+        return;
+      }
+
+      lastMeasuredLayout = container.mResult;
 
       layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
 
@@ -365,12 +365,19 @@ public abstract class Component extends ComponentLifecycle
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
-    final InternalNode internalNode =
-        Layout.createAndMeasureComponent(
-            new LayoutStateContext(null, null), contextForLayout, this, widthSpec, heightSpec);
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null);
+    contextForLayout.setLayoutStateContext(layoutStateContext);
 
-    outputSize.width = internalNode.getWidth();
-    outputSize.height = internalNode.getHeight();
+    final LayoutResultHolder holder =
+        Layout.createAndMeasureComponent(contextForLayout, this, widthSpec, heightSpec);
+
+    if (holder.wasLayoutInterrupted()) {
+      outputSize.height = 0;
+      outputSize.width = 0;
+    } else {
+      outputSize.height = holder.mResult.getHeight();
+      outputSize.width = holder.mResult.getWidth();
+    }
   }
 
   @Override
@@ -381,7 +388,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
-    if (layout != null && ComponentsConfiguration.useStatelessComponent) {
+    if (layout != null && mUseStatelessComponent) {
       assertSameBaseContext(context, layout.getContext());
     }
     mLayoutCreatedInWillRender = null;
@@ -407,6 +414,23 @@ public abstract class Component extends ComponentLifecycle
    *     the exception. Null if the component isn't initialized.
    */
   @Override
+  @Nullable
+  EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
+    if (mUseStatelessComponent) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access error event handler outside of a layout state calculation.");
+      }
+
+      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
+      final String globalKey = scopedContext.getGlobalKey();
+
+      return layoutStateContext.getScopedComponentInfo(globalKey).getErrorEventHandler();
+    }
+
+    return mErrorEventHandler;
+  }
+
   protected @Nullable EventHandler<ErrorEvent> getErrorHandler() {
     return mErrorEventHandler;
   }
@@ -415,11 +439,7 @@ public abstract class Component extends ComponentLifecycle
     return mUseStatelessComponent;
   }
 
-  /**
-   * Get a key that is unique to this component within its tree.
-   *
-   * @return
-   */
+  /** Get a key that is unique to this component within its tree. */
   @Nullable
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
     if (component.mUseStatelessComponent) {
@@ -433,11 +453,7 @@ public abstract class Component extends ComponentLifecycle
     return component.mGlobalKey;
   }
 
-  /**
-   * Set a key for this component that is unique within its tree.
-   *
-   * @param key
-   */
+  /** Set a key for this component that is unique within its tree. */
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
   void setGlobalKey(String key) {
@@ -449,7 +465,7 @@ public abstract class Component extends ComponentLifecycle
 
   /** @return a handle that is unique to this component. */
   @Nullable
-  protected Handle getHandle() {
+  Handle getHandle() {
     return mHandle;
   }
 
@@ -463,7 +479,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** @return a key that is local to the component's parent. */
-  protected String getKey() {
+  String getKey() {
     if (mKey == null && !mHasManualKey) {
       mKey = Integer.toString(getTypeId());
     }
@@ -485,6 +501,7 @@ public abstract class Component extends ComponentLifecycle
     return mLayoutCreatedInWillRender;
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   @Nullable
   String getOwnerGlobalKey() {
     return mOwnerGlobalKey;
@@ -544,9 +561,11 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    clone.copyInterStageImpl(
-        clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
-        getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
+    if (!mUseStatelessComponent) {
+      clone.copyInterStageImpl(
+          clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
+          getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
+    }
 
     // update the cloned component with the new context.
     final ComponentContext scopedContext =
@@ -587,7 +606,7 @@ public abstract class Component extends ComponentLifecycle
 
   /**
    * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
-   * instead of going through {@link #createComponentLayout(ComponentContext)}.
+   * instead of going through {@link #render(ComponentContext)}.
    */
   protected boolean canResolve() {
     return false;
@@ -603,7 +622,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   // Get an id that is identical across cloned instances, but otherwise unique
-  protected int getId() {
+  int getId() {
     return mId;
   }
 
@@ -615,8 +634,9 @@ public abstract class Component extends ComponentLifecycle
     return null;
   }
 
-  protected @Nullable StateContainer getStateContainer(ComponentContext scopedContext) {
-    if (mUseStatelessComponent) {
+  protected static @Nullable StateContainer getStateContainer(
+      final @Nullable ComponentContext scopedContext, Component component) {
+    if (component.mUseStatelessComponent) {
 
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
@@ -628,23 +648,42 @@ public abstract class Component extends ComponentLifecycle
 
       return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
     } else {
-      return mStateContainer;
+      return component.mStateContainer;
     }
   }
 
-  StateContainer getStateContainer(LayoutStateContext layoutStateContext, String globalKey) {
+  StateContainer getStateContainer(
+      final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
     if (mUseStatelessComponent) {
-      return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
+      if (layoutStateContext == null) {
+        throw new IllegalStateException(
+            "Cannot access a state container outside of a layout state calculation.");
+      }
+
+      ScopedComponentInfo scopedComponentInfo =
+          layoutStateContext.getScopedComponentInfo(globalKey);
+
+      if (scopedComponentInfo == null) {
+        return null;
+      }
+
+      return scopedComponentInfo.getStateContainer();
     } else {
       return mStateContainer;
     }
   }
 
   protected void setStateContainer(StateContainer stateContainer) {
+    if (mUseStatelessComponent) {
+      return;
+    }
     mStateContainer = stateContainer;
   }
 
   protected void setInterStagePropsContainer(InterStagePropsContainer interStagePropsContainer) {
+    if (mUseStatelessComponent) {
+      return;
+    }
     mInterStagePropsContainer = interStagePropsContainer;
   }
 
@@ -711,7 +750,9 @@ public abstract class Component extends ComponentLifecycle
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext, globalKey);
-    generateErrorEventHandler(parentContext, scopedContext);
+    if (!mUseStatelessComponent) {
+      generateErrorEventHandler(parentContext, scopedContext);
+    }
 
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {
@@ -725,8 +766,6 @@ public abstract class Component extends ComponentLifecycle
    * Prepares a component for calling any pending state updates on it by setting the TreeProps which
    * the component requires from its parent, setting a scoped component context and applies the
    * pending state updates.
-   *
-   * @param c component context
    */
   private void applyStateUpdates(
       final ComponentContext parentContext,
@@ -773,9 +812,6 @@ public abstract class Component extends ComponentLifecycle
    * Returns the number of children of a given type {@param childComponent} component has and then
    * increments it by 1.
    *
-   * @param parentContext
-   * @param parentComponent
-   * @param childComponent
    * @return the number of children of {@param childComponent} type
    */
   static int getChildCountAndIncrement(
@@ -814,11 +850,6 @@ public abstract class Component extends ComponentLifecycle
   /**
    * Returns the number of children with same {@param manualKey} component has and then increments
    * it by 1.
-   *
-   * @param parentContext
-   * @param parentComponent
-   * @param manualKey
-   * @return
    */
   static int getManualKeyUsagesCountAndIncrement(
       final @Nullable ComponentContext parentContext,
@@ -896,7 +927,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     if (component.mLayoutCreatedInWillRender != null) {
-      return willRender(component.mLayoutCreatedInWillRender);
+      return willRender(component, component.mLayoutCreatedInWillRender);
     }
 
     // Missing StateHandler is only expected in tests
@@ -905,7 +936,7 @@ public abstract class Component extends ComponentLifecycle
             ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
             : c;
     component.mLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
-    return willRender(component.mLayoutCreatedInWillRender);
+    return willRender(component, component.mLayoutCreatedInWillRender);
   }
 
   static boolean isHostSpec(@Nullable Component component) {
@@ -990,6 +1021,14 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
+  boolean canUsePreviousLayout(ComponentContext parentContext, String globalKey) {
+    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
+        && !onShouldCreateLayoutWithNewSizeSpec(
+            getScopedContext(parentContext.getLayoutStateContext(), globalKey),
+            parentContext.getWidthSpec(),
+            parentContext.getHeightSpec());
+  }
+
   protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {
     return dynamicValue.get();
   }
@@ -1016,15 +1055,16 @@ public abstract class Component extends ComponentLifecycle
     return current;
   }
 
-  private static boolean willRender(InternalNode node) {
+  private static boolean willRender(Component component, InternalNode node) {
     if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
       return false;
     }
 
-    if (node.isNestedTreeHolder()) {
+    if (node instanceof LithoLayoutResult.NestedTreeHolderResult) {
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
+      component.mLayoutCreatedInWillRender = null; // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
@@ -1073,15 +1113,13 @@ public abstract class Component extends ComponentLifecycle
     protected abstract void setComponent(Component component);
 
     /**
-     * Ports {@link android.view.ViewCompat#setAccessibilityHeading} into components world. However,
-     * since the aforementioned ViewCompat's method is available only on API 19 and above, calling
-     * this method on lower APIs will have no effect. On the legit versions, on the other hand,
-     * calling this method will lead to the component being treated as a heading. The
+     * Ports {@link androidx.core.view.ViewCompat#setAccessibilityHeading} into components world.
+     * However, since the aforementioned ViewCompat's method is available only on API 19 and above,
+     * calling this method on lower APIs will have no effect. On the legit versions, on the other
+     * hand, calling this method will lead to the component being treated as a heading. The
      * AccessibilityHeading property allows accessibility services to help users navigate directly
-     * from one heading to the next. See <a
-     * href="https://developer.android.com/reference/android/support/v4/view/accessibility/
-     * AccessibilityNodeInfoCompat#setheading">https://developer.android.com/reference/android/
-     * support/v4/view/accessibility/AccessibilityNodeInfoCompat#setheading</a> for more
+     * from one heading to the next. See {@link
+     * androidx.core.view.accessibility.AccessibilityNodeInfoCompat#setHeading} for more
      * information.
      *
      * <p>Default: false
@@ -1273,7 +1311,7 @@ public abstract class Component extends ComponentLifecycle
      *             .duplicateParentState(true))
      * }</pre>
      *
-     * @see {@link android.view.View#setDuplicateParentStateEnabled(boolean)}
+     * @see android.view.View#setDuplicateParentStateEnabled(boolean)
      */
     public T duplicateParentState(boolean duplicateParentState) {
       mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
@@ -1296,7 +1334,7 @@ public abstract class Component extends ComponentLifecycle
      *             .clickable(true))
      * }</pre>
      *
-     * @see {@link ViewGroup#setAddStatesFromChildren(boolean)}
+     * @see android.view.ViewGroup#setAddStatesFromChildren
      */
     public T duplicateChildrenStates(boolean duplicateChildrenStates) {
       mComponent.getOrCreateCommonProps().duplicateChildrenStates(duplicateChildrenStates);
@@ -1472,8 +1510,9 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    @Deprecated
     public boolean hasBackgroundSet() {
-      return mComponent.hasBackgroundSet();
+      return mComponent.mCommonProps != null && mComponent.mCommonProps.getBackground() != null;
     }
 
     public boolean hasClickHandlerSet() {
@@ -1925,7 +1964,7 @@ public abstract class Component extends ComponentLifecycle
     /**
      * Links a {@link DynamicValue} object to the rotation value for this Component
      *
-     * @param value controller for the rotation value
+     * @param rotation controller for the rotation value
      */
     public T rotation(DynamicValue<Float> rotation) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_ROTATION, rotation);
@@ -2270,7 +2309,11 @@ public abstract class Component extends ComponentLifecycle
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
         mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
-        component.loadStyle(c, defStyleAttr, defStyleRes);
+        try {
+          component.loadStyle(c, defStyleAttr, defStyleRes);
+        } catch (Exception e) {
+          ComponentUtils.handleWithHierarchy(c, component, e);
+        }
       }
       mComponent.setBuilderContext(c.getAndroidContext());
     }

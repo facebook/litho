@@ -18,12 +18,12 @@ package com.facebook.litho.widget
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
 
 /** Builder function for creating [ImageSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun DslScope.Image(
+inline fun ComponentScope.Image(
     drawable: Drawable,
     style: Style? = null,
     scaleType: ScaleType = ScaleType.FIT_CENTER

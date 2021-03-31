@@ -23,7 +23,7 @@ package com.facebook.litho
  * Assignments to the state variables are allowed only in [updateState] block to batch updates and
  * trigger a UI layout only once per batch.
  */
-fun <T> DslScope.useState(initializer: () -> T): State<T> {
+fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
   val hookKey = "$globalKey:$hookIndex"
@@ -41,13 +41,11 @@ fun <T> DslScope.useState(initializer: () -> T): State<T> {
 class State<T>(private val context: ComponentContext, private val hookKey: String, val value: T) {
 
   fun update(newValue: T) {
-    context.updateHookStateAsync<StateHandler> { stateHandler ->
-      stateHandler.hookState[hookKey] = newValue
-    }
+    context.updateHookStateAsync { stateHandler -> stateHandler.hookState[hookKey] = newValue }
   }
 
   fun update(newValueFunction: (T) -> T) {
-    context.updateHookStateAsync<StateHandler> { stateHandler ->
+    context.updateHookStateAsync { stateHandler ->
       stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
     }
   }

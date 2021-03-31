@@ -173,7 +173,7 @@ public abstract class Section extends SectionLifecycle
 
   /** @return get the {@link Handle} associated with this section. */
   @Nullable
-  protected Handle getHandle() {
+  Handle getHandle() {
     return mHandle;
   }
 
@@ -191,7 +191,7 @@ public abstract class Section extends SectionLifecycle
    *     responsible to set different localScopes to children with the same {@link
    *     SectionLifecycle}.
    */
-  protected String getKey() {
+  String getKey() {
     return mKey;
   }
 
@@ -356,12 +356,12 @@ public abstract class Section extends SectionLifecycle
   }
 
   @Nullable
-  protected StateContainer getStateContainer(ComponentContext c) {
-    return mStateContainer;
+  protected static StateContainer getStateContainer(ComponentContext c, Section section) {
+    return section.mStateContainer;
   }
 
   protected StateContainer getStateContainer() {
-    return getStateContainer(mScopedContext);
+    return Section.getStateContainer(mScopedContext, this);
   }
 
   protected void setStateContainer(StateContainer stateContainer) {

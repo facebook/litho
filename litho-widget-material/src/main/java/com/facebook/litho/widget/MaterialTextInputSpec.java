@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
@@ -165,6 +166,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextTopPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
+      @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText) {
     EditText editText =
         TextInputSpec.createAndMeasureEditText(
@@ -188,6 +190,7 @@ class MaterialTextInputSpec {
             gravity,
             editable,
             inputType,
+            keyListener,
             imeOptions,
             inputFilters,
             multiline,
@@ -255,6 +258,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextTopPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) Diff<Integer> editTextBottomPadding,
+      @Prop(optional = true) Diff<KeyListener> keyListener,
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedEditTextRef,
       @State Diff<AtomicReference<CharSequence>> savedText) {
@@ -285,6 +289,7 @@ class MaterialTextInputSpec {
             cursorDrawableRes,
             movementMethod,
             error,
+            keyListener,
             measureSeqNumber,
             mountedEditTextRef,
             savedText);
@@ -349,6 +354,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextTopPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextEndPadding,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int editTextBottomPadding,
+      @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     EditTextWithEventHandlers editText = (EditTextWithEventHandlers) textInputLayout.getEditText();
@@ -371,6 +377,7 @@ class MaterialTextInputSpec {
         gravity,
         editable,
         inputType,
+        keyListener,
         imeOptions,
         inputFilters,
         multiline,
@@ -462,10 +469,11 @@ class MaterialTextInputSpec {
   static void onUnmount(
       ComponentContext c,
       MountableTextInputLayout textInputLayout,
+      @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<EditTextWithEventHandlers> mountedEditTextRef) {
     final EditTextWithEventHandlers editText =
         (EditTextWithEventHandlers) textInputLayout.getEditText();
-    TextInputSpec.onUnmount(c, editText, mountedEditTextRef);
+    TextInputSpec.onUnmount(c, editText, keyListener, mountedEditTextRef);
   }
 
   @OnUnbind

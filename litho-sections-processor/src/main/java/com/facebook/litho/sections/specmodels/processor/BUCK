@@ -7,6 +7,8 @@ load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_JAVAPOET_TARGET",
+    "LITHO_JSR_TARGET",
     "LITHO_PROCESSOR_LIB_TARGET",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "fb_java_library",
@@ -47,4 +49,26 @@ fb_java_library(
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"),
         make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model"),
     ],
+)
+
+fb_java_library(
+    name = "processor-lib-bare4idea",
+    srcs = glob([
+        "*.java",
+        "**/*.java",
+    ]),
+    labels = ["supermodule:android/default/litho.core"],
+    provided_deps = [
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib-bare4idea"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare4idea"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal4idea"),
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model4idea"),
+    ],
+    source = "8",
+    target = "8",
+    visibility = ["PUBLIC"],
 )

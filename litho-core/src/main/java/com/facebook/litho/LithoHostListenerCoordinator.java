@@ -127,7 +127,8 @@ public class LithoHostListenerCoordinator {
       return;
     }
 
-    mIncrementalMountExtension = IncrementalMountExtension.getInstance();
+    mIncrementalMountExtension =
+        IncrementalMountExtension.getInstance(!lithoView.delegateToRenderCore());
 
     mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);

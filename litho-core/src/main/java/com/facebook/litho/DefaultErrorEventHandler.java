@@ -16,13 +16,24 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
+
 /** Default implementation of ErrorEvent handler. */
 public class DefaultErrorEventHandler extends ErrorEventHandler {
+
+  private static final String SWALLOW_UNHANLED_EXCEPTIONS = "DefaultErrorEventHandler";
 
   static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
 
   @Override
   public void onError(Exception e) {
+    if (ComponentsConfiguration.swallowUnhandledExceptions) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          SWALLOW_UNHANLED_EXCEPTIONS,
+          "Swallowing exception in experiment: " + e.getMessage());
+      return;
+    }
     ComponentUtils.rethrow(e);
   }
 }

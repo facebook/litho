@@ -142,11 +142,11 @@ public class TreeDiffingTest {
     return sum;
   }
 
-  private InternalNode createInternalNodeForMeasurableComponent(Component component) {
+  private DefaultInternalNode createInternalNodeForMeasurableComponent(Component component) {
     component.setScopedContext(mContext);
     final ComponentContext c = new ComponentContext(mContext);
     c.setLayoutStateContextForTesting();
-    return Layout.create(c, component);
+    return (DefaultInternalNode) Layout.create(c, component);
   }
 
   private long measureInternalNode(
@@ -184,7 +184,7 @@ public class TreeDiffingTest {
   public void tesLastConstraints() {
     final Component component = TestDrawableComponent.create(mContext).key("global_key").build();
 
-    InternalNode node = createInternalNodeForMeasurableComponent(component);
+    DefaultInternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DefaultDiffNode();
     diffNode.setLastWidthSpec(makeSizeSpec(10, SizeSpec.EXACTLY));
     diffNode.setLastHeightSpec(makeSizeSpec(5, SizeSpec.EXACTLY));
@@ -213,11 +213,11 @@ public class TreeDiffingTest {
   public void measureAndCreateDiffNode() {
     final Component component = TestDrawableComponent.create(mContext).build();
 
-    InternalNode node = createInternalNodeForMeasurableComponent(component);
+    DefaultInternalNode node = createInternalNodeForMeasurableComponent(component);
     long output = measureInternalNode(node, UNDEFINED, UNDEFINED);
 
     node.setCachedMeasuresValid(false);
-    DiffNode diffNode = createDiffNode(node, null);
+    DiffNode diffNode = createDiffNode(node, node, null);
     assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
     assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
   }

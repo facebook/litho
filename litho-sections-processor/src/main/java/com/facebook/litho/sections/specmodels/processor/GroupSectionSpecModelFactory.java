@@ -71,7 +71,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
 
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
-  private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
+  public static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
       new BuilderMethodModel(

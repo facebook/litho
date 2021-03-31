@@ -82,7 +82,7 @@ public class HideableDataDiffSectionSpec<T> {
         .child(
             DataDiffSection.<T>create(c)
                 .data(removeBlacklistedItems(c, data, blacklistState, getUniqueIdentifierHandler))
-                .renderEventHandler(HideableDataDiffSection.onRenderEvent(c))
+                .renderEventHandler(HideableDataDiffSection.<T>onRenderEvent(c))
                 .onCheckIsSameContentEventHandler(onSameContentEventHandler)
                 .onCheckIsSameItemEventHandler(onSameItemEventHandler))
         .build();
@@ -108,12 +108,12 @@ public class HideableDataDiffSectionSpec<T> {
   }
 
   @OnEvent(RenderEvent.class)
-  protected static RenderInfo onRenderEvent(
+  protected static <T> RenderInfo onRenderEvent(
       SectionContext c,
+      @Prop EventHandler<RenderWithHideItemHandlerEvent> renderWithHideItemHandler,
       @FromEvent int index,
-      @FromEvent Object model,
-      @FromEvent Bundle loggingExtras,
-      @Prop EventHandler<RenderWithHideItemHandlerEvent> renderWithHideItemHandler) {
+      @FromEvent T model,
+      @FromEvent Bundle loggingExtras) {
     return HideableDataDiffSection.dispatchRenderWithHideItemHandlerEvent(
         renderWithHideItemHandler,
         index,

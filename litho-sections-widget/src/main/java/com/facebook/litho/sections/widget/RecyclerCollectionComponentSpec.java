@@ -321,6 +321,7 @@ public class RecyclerCollectionComponentSpec {
             .canInterruptAndMoveLayoutsBetweenThreads(
                 binderConfiguration.moveLayoutsBetweenThreads())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
+            .ignoreNullLayoutStateError(binderConfiguration.ignoreNullLayoutStateError())
             .recyclingMode(binderConfiguration.getRecyclingMode())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())

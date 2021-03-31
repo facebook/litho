@@ -16,6 +16,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
+
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -29,6 +31,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 
 /** Generator for the cases within the event handler switch clause. */
 public class EventCaseGenerator {
@@ -82,9 +85,9 @@ public class EventCaseGenerator {
 
     methodBuilder.addStatement(
         "$T $L = ($T) $L",
-        eventMethodModel.typeModel.name,
+        eventMethodModel.typeModel.getRawName(),
         eventVariableName,
-        eventMethodModel.typeModel.name,
+        eventMethodModel.typeModel.getRawName(),
         "eventState");
 
     final CodeBlock.Builder eventHandlerParams =
@@ -93,15 +96,25 @@ public class EventCaseGenerator {
     int paramIndex = 0;
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)) {
+        TypeName type = methodParamModel.getTypeName();
+        if (type instanceof TypeVariableName) {
+          type =
+              ((TypeVariableName) type).bounds.isEmpty()
+                  ? OBJECT
+                  : ((TypeVariableName) type).bounds.get(0);
+        }
         eventHandlerParams.add(
-            ",\n($T) $L.$L",
-            methodParamModel.getTypeName(),
-            eventVariableName,
-            methodParamModel.getName());
+            ",\n($T) $L.$L", type, eventVariableName, methodParamModel.getName());
       } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)
           || methodParamModel.getTypeName().equals(mContextClass)) {
-        eventHandlerParams.add(
-            ",\n($T) eventHandler.params[$L]", methodParamModel.getTypeName(), paramIndex++);
+        TypeName type = methodParamModel.getTypeName();
+        if (type instanceof TypeVariableName) {
+          type =
+              ((TypeVariableName) type).bounds.isEmpty()
+                  ? OBJECT
+                  : ((TypeVariableName) type).bounds.get(0);
+        }
+        eventHandlerParams.add(",\n($T) eventHandler.params[$L]", type, paramIndex++);
       }
     }
 

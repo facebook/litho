@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -222,6 +223,10 @@ public class EventValidation {
       baseClassType = ClassName.get(fromEvent.baseClass());
     } catch (MirroredTypeException mte) {
       baseClassType = ClassName.get(mte.getTypeMirror());
+    }
+
+    if (eventFieldType instanceof TypeVariableName) {
+      eventFieldType = ClassNames.OBJECT;
     }
     return baseClassType.equals(eventFieldType);
   }

@@ -24,68 +24,77 @@ import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.TextInput;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class ResolveResTest {
-  private ComponentContext mContext;
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme));
+    mLithoViewRule.useContext(
+        new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme)));
   }
 
   @Test
   public void testDefaultDimenWidthRes() {
-    Column column = Column.create(mContext).widthRes(test_dimen).build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Column column = Column.create(c).widthRes(test_dimen).build();
 
-    InternalNode node = createAndGetInternalNode(column);
-    node.calculateLayout();
+    mLithoViewRule
+        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .measure()
+        .layout();
 
-    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
-    assertThat(node.getWidth()).isEqualTo(dimen);
+    int dimen = c.getResources().getDimensionPixelSize(test_dimen);
+    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testDefaultDimenPaddingRes() {
-    Column column = Column.create(mContext).paddingRes(LEFT, test_dimen).build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Column column = Column.create(c).paddingRes(LEFT, test_dimen).build();
 
-    InternalNode node = createAndGetInternalNode(column);
-    node.calculateLayout();
+    mLithoViewRule
+        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .measure()
+        .layout();
 
-    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
-    assertThat(node.getWidth()).isEqualTo(dimen);
+    int dimen = c.getResources().getDimensionPixelSize(test_dimen);
+    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testFloatDimenWidthRes() {
-    Column column = Column.create(mContext).widthRes(test_dimen_float).build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Column column = Column.create(c).widthRes(test_dimen_float).build();
 
-    InternalNode node = createAndGetInternalNode(column);
-    node.calculateLayout();
+    mLithoViewRule
+        .setRootAndSizeSpec(column, MeasureSpecUtils.unspecified(), MeasureSpecUtils.unspecified())
+        .measure()
+        .layout();
 
-    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
-    assertThat(node.getWidth()).isEqualTo(dimen);
+    int dimen = c.getResources().getDimensionPixelSize(test_dimen_float);
+    assertThat(mLithoViewRule.getLithoView().getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testFloatDimenPaddingRes() {
-    Column column = Column.create(mContext).paddingRes(LEFT, test_dimen_float).build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Row row =
+        Row.create(c).child(TextInput.create(c).paddingRes(LEFT, test_dimen_float)).build();
 
-    InternalNode node = createAndGetInternalNode(column);
-    node.calculateLayout();
+    mLithoViewRule.attachToWindow().setSizePx(100, 100).setRoot(row).measure().layout();
 
-    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
-    assertThat(node.getPaddingLeft()).isEqualTo(dimen);
-  }
-
-  private InternalNode createAndGetInternalNode(Component component) {
-    final ComponentContext c = new ComponentContext(mContext);
-    c.setLayoutStateContextForTesting();
-
-    return Layout.create(c, component);
+    int dimen = c.getResources().getDimensionPixelSize(test_dimen_float);
+    assertThat(mLithoViewRule.getLithoView().getChildAt(0).getPaddingLeft()).isEqualTo(dimen);
   }
 }

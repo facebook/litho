@@ -16,10 +16,6 @@
 
 package com.facebook.litho;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.Layout.createAndMeasureComponent;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaDirection.LTR;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.END;
@@ -28,110 +24,102 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.START;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class InternalNodeResolvedPaddingTest {
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
   private InternalNode mInternalNode;
 
   @Before
   public void setup() {
-    final ComponentContext context = new ComponentContext(getApplicationContext());
+    final ComponentContext context = mLithoViewRule.getContext();
     context.setLayoutStateContextForTesting();
-
-    mInternalNode =
-        createAndMeasureComponent(
-            context.getLayoutStateContext(),
-            context,
-            Column.create(context).build(),
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
+    mInternalNode = Column.create(context).build().resolve(context);
   }
 
-  private static void setDirection(InternalNode node, YogaDirection direction) {
-    node.layoutDirection(direction);
-    node.calculateLayout();
+  private InternalNodeResolvedPaddingTest padding(YogaEdge edge, int padding) {
+    mInternalNode.paddingPx(edge, padding);
+    return this;
+  }
+
+  private InternalNodeResolvedPaddingTest direction(YogaDirection direction) {
+    mInternalNode.layoutDirection(direction);
+    return this;
+  }
+
+  private LithoLayoutResult calculateLayout() {
+    return mInternalNode.calculateLayout(100, 100);
   }
 
   @Test
   public void testPaddingLeftWithUndefinedStartEnd() {
-    mInternalNode.paddingPx(LEFT, 10);
-    setDirection(mInternalNode, LTR);
-    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(10);
+    LithoLayoutResult result = padding(LEFT, 10).direction(LTR).calculateLayout();
+    assertThat(result.getPaddingLeft()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingLeftWithDefinedStart() {
-    mInternalNode.paddingPx(START, 5);
-    mInternalNode.paddingPx(LEFT, 10);
-    setDirection(mInternalNode, LTR);
-    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(5);
+    LithoLayoutResult result = padding(START, 5).padding(LEFT, 10).direction(LTR).calculateLayout();
+    assertThat(result.getPaddingLeft()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingLeftWithDefinedEnd() {
-    mInternalNode.paddingPx(END, 5);
-    mInternalNode.paddingPx(LEFT, 10);
-    setDirection(mInternalNode, LTR);
-    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(10);
+    LithoLayoutResult result = padding(END, 5).padding(LEFT, 10).direction(LTR).calculateLayout();
+    assertThat(result.getPaddingLeft()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingLeftWithDefinedStartInRtl() {
-    mInternalNode.paddingPx(START, 5);
-    mInternalNode.paddingPx(LEFT, 10);
-    setDirection(mInternalNode, RTL);
-    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(10);
+    LithoLayoutResult result = padding(START, 5).padding(LEFT, 10).direction(RTL).calculateLayout();
+    assertThat(result.getPaddingLeft()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingLeftWithDefinedEndInRtl() {
-    mInternalNode.paddingPx(END, 5);
-    mInternalNode.paddingPx(LEFT, 10);
-    setDirection(mInternalNode, RTL);
-    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(5);
+    LithoLayoutResult result = padding(END, 5).padding(LEFT, 10).direction(RTL).calculateLayout();
+    assertThat(result.getPaddingLeft()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingRightWithUndefinedStartEnd() {
-    mInternalNode.paddingPx(RIGHT, 10);
-    setDirection(mInternalNode, LTR);
-    assertThat(mInternalNode.getPaddingRight()).isEqualTo(10);
+    LithoLayoutResult result = padding(RIGHT, 10).direction(LTR).calculateLayout();
+    assertThat(result.getPaddingRight()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingRightWithDefinedStart() {
-    mInternalNode.paddingPx(START, 5);
-    mInternalNode.paddingPx(RIGHT, 10);
-    setDirection(mInternalNode, LTR);
-    assertThat(mInternalNode.getPaddingRight()).isEqualTo(10);
+    padding(START, 5).padding(RIGHT, 10).direction(LTR);
+    LithoLayoutResult result = calculateLayout();
+    assertThat(result.getPaddingRight()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingRightWithDefinedEnd() {
-    mInternalNode.paddingPx(END, 5);
-    mInternalNode.paddingPx(RIGHT, 10);
-    setDirection(mInternalNode, LTR);
-    assertThat(mInternalNode.getPaddingRight()).isEqualTo(5);
+    LithoLayoutResult result = padding(END, 5).padding(RIGHT, 10).direction(LTR).calculateLayout();
+    assertThat(result.getPaddingRight()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingRightWithDefinedStartInRtl() {
-    mInternalNode.paddingPx(START, 5);
-    mInternalNode.paddingPx(RIGHT, 10);
-    setDirection(mInternalNode, RTL);
-    assertThat(mInternalNode.getPaddingRight()).isEqualTo(5);
+    LithoLayoutResult result =
+        padding(START, 5).padding(RIGHT, 10).direction(RTL).calculateLayout();
+    assertThat(result.getPaddingRight()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingRightWithDefinedEndInRtl() {
-    mInternalNode.paddingPx(END, 5);
-    mInternalNode.paddingPx(RIGHT, 10);
-    setDirection(mInternalNode, RTL);
-    assertThat(mInternalNode.getPaddingRight()).isEqualTo(10);
+    LithoLayoutResult result = padding(END, 5).padding(RIGHT, 10).direction(RTL).calculateLayout();
+    assertThat(result.getPaddingRight()).isEqualTo(10);
   }
 }

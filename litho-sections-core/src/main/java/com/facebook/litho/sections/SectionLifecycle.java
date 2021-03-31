@@ -26,6 +26,7 @@ import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
+import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.NoOpEventHandler;
 import com.facebook.litho.StateContainer;
@@ -239,9 +240,23 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return eventHandler;
   }
 
+  /**
+   * This variant is used to create an EventTrigger used to register this component as a target in
+   * {@link EventTriggersContainer}
+   */
   protected static <E> EventTrigger<E> newEventTrigger(
-      SectionContext c, String childKey, int id, Handle handle) {
-    return c.newEventTrigger(childKey, id, handle);
+      SectionContext c, Section section, int methodId) {
+    return c.newEventTrigger(methodId, section.getKey(), section.getHandle());
+  }
+
+  /**
+   * This is used to create a Trigger to be invoked later, e.g. in the context of the deprecated
+   * trigger API TextInput.requestFocusTrigger(c, "my_key").
+   */
+  @Deprecated
+  protected static <E> EventTrigger<E> newEventTrigger(
+      SectionContext c, String childKey, int methodId) {
+    return c.newEventTrigger(methodId, childKey, null);
   }
 
   @Nullable

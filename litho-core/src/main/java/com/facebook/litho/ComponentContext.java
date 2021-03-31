@@ -37,7 +37,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
  */
 public class ComponentContext {
 
-  public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
+  public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
@@ -149,6 +149,7 @@ public class ComponentContext {
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+    mGlobalKey = context.mGlobalKey;
   }
 
   ComponentContext makeNewCopy() {
@@ -177,16 +178,16 @@ public class ComponentContext {
    * Creates a new ComponentContext instance scoped to the given component and sets it on the
    * component.
    *
-   * @param context context scoped to the parent component
+   * @param parentContext context scoped to the parent component
    * @param scope component associated with the newly created scoped context
    * @return a new ComponentContext instance scoped to the given component
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      ComponentContext context, Component scope, @Nullable String globalKey) {
-    ComponentContext componentContext = context.makeNewCopy();
+      ComponentContext parentContext, Component scope, @Nullable String globalKey) {
+    ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mComponentScope = scope;
-    componentContext.mComponentTree = context.mComponentTree;
+    componentContext.mComponentTree = parentContext.mComponentTree;
 
     if (scope.mUseStatelessComponent
         && globalKey != null
@@ -194,7 +195,7 @@ public class ComponentContext {
       componentContext.mGlobalKey = globalKey;
       componentContext
           .getLayoutStateContext()
-          .addScopedComponentInfo(globalKey, scope, componentContext);
+          .addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
     }
 
     return componentContext;
@@ -283,22 +284,32 @@ public class ComponentContext {
   }
 
   public String getGlobalKey() {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return mGlobalKey;
-    }
-
     if (mComponentScope == null) {
       throw new RuntimeException(
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
+    }
+
+    if (mComponentScope.isStateless()) {
+      return mGlobalKey;
     }
 
     return Component.getGlobalKey(this, mComponentScope);
   }
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
-    if (mComponentScope != null && mComponentScope.getErrorHandler() != null) {
-      return mComponentScope.getErrorHandler();
+    if (mComponentScope != null) {
+      if (mComponentScope.mUseStatelessComponent) {
+        EventHandler<ErrorEvent> errorEventHandler =
+            getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
+
+        if (errorEventHandler != null) {
+          return errorEventHandler;
+        }
+      } else if (mComponentScope.getErrorHandler() != null) {
+        return mComponentScope.getErrorHandler();
+      }
     }
+
     if (mComponentTree != null) {
       return mComponentTree.getErrorEventHandler();
     }
@@ -359,7 +370,7 @@ public class ComponentContext {
    * EXPERIMENTAL - called to enqueue a HookUpdater that will update State that was created via
    * useState.
    */
-  public <T> void updateHookStateAsync(HookUpdater<T> updateBlock) {
+  public void updateHookStateAsync(HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -514,7 +525,7 @@ public class ComponentContext {
   /**
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */
-  <E> EventTrigger<E> newEventTrigger(String childKey, int id, @Nullable Handle handle) {
+  <E> EventTrigger<E> newEventTrigger(int id, String childKey, @Nullable Handle handle) {
     String parentKey = mComponentScope == null ? "" : getGlobalKey();
     return new EventTrigger<>(parentKey, id, childKey, handle);
   }

@@ -111,6 +111,13 @@ public class TriggerMethodExtractor {
                 ? ImmutableList.of()
                 : FieldsExtractor.extractFields(eventClass);
 
+        TypeName name;
+        try {
+          name = TypeName.get(eventClass.asType());
+        } catch (Exception e) {
+          name = ClassName.bestGuess(eventClass.toString());
+        }
+
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             SpecMethodModel.<EventMethod, EventDeclarationModel>builder()
@@ -121,9 +128,7 @@ public class TriggerMethodExtractor {
                 .typeVariables(ImmutableList.copyOf(getTypeVariables(executableElement)))
                 .methodParams(ImmutableList.copyOf(methodParams))
                 .representedObject(executableElement)
-                .typeModel(
-                    new EventDeclarationModel(
-                        ClassName.bestGuess(eventClass.toString()), returnType, fields, eventClass))
+                .typeModel(new EventDeclarationModel(name, returnType, fields, eventClass))
                 .build();
         delegateMethods.add(eventMethod);
       }

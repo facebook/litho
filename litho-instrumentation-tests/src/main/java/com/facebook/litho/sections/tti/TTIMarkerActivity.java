@@ -35,7 +35,7 @@ public class TTIMarkerActivity extends Activity {
     final ComponentContext c = new ComponentContext(this);
     final SectionContext sc = new SectionContext(this);
 
-    final List<Object> data = new ArrayList<>();
+    final List<String> data = new ArrayList<>();
     data.add("Hello World");
 
     final Component component =

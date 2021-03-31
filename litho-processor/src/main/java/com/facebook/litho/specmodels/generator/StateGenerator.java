@@ -144,12 +144,23 @@ public class StateGenerator {
                 stateContainerClassName,
                 STATE_CONTAINER_NAME,
                 stateContainerClassName)
-            .addStatement("transferState(component.getStateContainer(c), $L)", STATE_CONTAINER_NAME)
+            .addStatement(
+                "transferState($T.getStateContainer(c, component), $L)",
+                getStateContainerGetterClassName(specModel),
+                STATE_CONTAINER_NAME)
             .addStatement("c.applyLazyStateUpdatesForContainer($L)", STATE_CONTAINER_NAME)
             .addStatement("return $L", STATE_CONTAINER_NAME)
             .build();
 
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec).build();
+  }
+
+  static ClassName getStateContainerGetterClassName(SpecModel specModel) {
+    return specModel.getContextClass().equals(ClassNames.SECTION_CONTEXT)
+        ? ClassNames.SECTION
+        : specModel.getContextClass().equals(ClassNames.SURFACE_CONTEXT)
+            ? ClassNames.SURFACE
+            : ClassNames.COMPONENT;
   }
 
   static boolean hasUpdateStateWithTransition(SpecModel specModel) {
@@ -327,7 +338,7 @@ public class StateGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }
 
-  private static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {
+  static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {
     if (specModel.getStateValues().isEmpty()) {
       return specModel.getStateContainerClass().toString();
     }

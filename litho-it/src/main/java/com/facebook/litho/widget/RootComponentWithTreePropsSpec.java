@@ -22,9 +22,10 @@ import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.Prop;
 
 @LayoutSpec
-class RootComponentWithTreePropsSpec {
+public class RootComponentWithTreePropsSpec {
 
   @OnCreateTreeProp
   public static A onCreateTreeProp(ComponentContext c) {
@@ -32,10 +33,14 @@ class RootComponentWithTreePropsSpec {
   }
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(
+      ComponentContext c, @Prop(optional = true) boolean shouldNotUpdateState) {
     return Row.create(c)
         .key("Row")
-        .child(ChildComponentWithStateUpdate.create(c))
+        .child(
+            shouldNotUpdateState
+                ? Text.create(c).text("hello world")
+                : ChildComponentWithStateUpdate.create(c))
         .child(NestedTreeParentComponent.create(c).key("NestedTreeParentComponent").flexGrow(1))
         .build();
   }

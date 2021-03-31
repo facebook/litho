@@ -18,7 +18,7 @@ package com.facebook.litho.testing
 
 import android.view.View
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.rendercore.testing.ViewAssertions
 import com.facebook.rendercore.testing.match.ViewMatchNode
 
@@ -31,9 +31,9 @@ fun atMost(px: Int) = View.MeasureSpec.makeMeasureSpec(px, View.MeasureSpec.AT_M
 /** Shorthand for creating a [View.MeasureSpec.UNSPECIFIED] measure spec. */
 fun unspecified() = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
 
-/** Shorthand helper to create a root component that needs a DslScope. */
-fun LithoViewRule.setRoot(componentFunction: DslScope.() -> Component) =
-    setRoot(with(DslScope(context)) { componentFunction() })
+/** Shorthand helper to create a root component that needs a ComponentScope. */
+fun LithoViewRule.setRoot(componentFunction: ComponentScope.() -> Component) =
+    setRoot(with(ComponentScope(context)) { componentFunction() })
 
 /**
  * Measures/lays out/attaches to window if not already done, then matches the hierarchy against the

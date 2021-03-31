@@ -17,22 +17,20 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flexbox.padding
+import com.facebook.litho.view.background
 
 class ActionsComponent(val style: Style? = null) : KComponent() {
 
-  override fun DslScope.render(): Component? {
-    return Row(
-        style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style,
-        children =
-            listOf(
-                FavouriteButton(),
-            ))
+  override fun ComponentScope.render(): Component? {
+    return Row(style = Style.padding(2.dp).background(drawableColor(0xddffffff)) + style) {
+      child(FavouriteButton())
+    }
   }
 }

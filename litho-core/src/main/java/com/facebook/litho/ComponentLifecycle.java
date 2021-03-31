@@ -84,8 +84,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   static YogaMeasureFunction getYogaMeasureFunction(
-      @Nullable LayoutStateContext layoutStateContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+      final Component component, @Nullable LayoutStateContext layoutStateContext) {
+    if (component.isStateless()) {
       return layoutStateContext.getLithoYogaMeasureFunction();
     }
 
@@ -112,7 +112,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return acceptTriggerEventImpl(eventTrigger, eventState, params);
     } catch (Exception e) {
       if (eventTrigger.mComponentContext != null) {
-        throw ComponentUtils.wrapWithMetadata(eventTrigger.mComponentContext, e);
+        ComponentUtils.handle(eventTrigger.mComponentContext, e);
+        return null;
       } else {
         throw e;
       }
@@ -151,7 +152,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return dispatchOnEventImpl(eventHandler, eventState);
     } catch (Exception e) {
       if (eventHandler.params != null && eventHandler.params[0] instanceof ComponentContext) {
-        throw ComponentUtils.wrapWithMetadata((ComponentContext) eventHandler.params[0], e);
+        ComponentUtils.handle((ComponentContext) eventHandler.params[0], e);
+        return null;
       } else {
         throw e;
       }
@@ -160,7 +162,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      getErrorHandler().dispatchEvent((ErrorEvent) eventState);
+      getErrorHandler((ComponentContext) eventHandler.params[0])
+          .dispatchEvent((ErrorEvent) eventState);
     }
 
     // Don't do anything by default, unless we're handling an error.
@@ -193,26 +196,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         ComponentsSystrace.endSection();
       }
     }
-  }
-
-  boolean canUsePreviousLayout(ComponentContext context) {
-    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
-        && !onShouldCreateLayoutWithNewSizeSpec(
-            context, context.getWidthSpec(), context.getHeightSpec());
-  }
-
-  @Nullable
-  @ThreadSafe(enableChecks = false)
-  Component createComponentLayout(ComponentContext c) {
-    Component layoutComponent = null;
-
-    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-      layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
-    } else {
-      layoutComponent = onCreateLayout(c);
-    }
-
-    return layoutComponent;
   }
 
   final @Nullable Transition createTransition(ComponentContext c) {
@@ -253,18 +236,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         ComponentsSystrace.endSection();
       }
     }
-  }
-
-  final boolean shouldComponentUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
-    if (isPureRender()) {
-      return shouldUpdate(previousScopedContext, previous, nextScopedContext, next);
-    }
-
-    return true;
   }
 
   void unbind(ComponentContext c, Object mountedContent) {
@@ -439,6 +410,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
+   * Invokes the Component-specific render implementation, returning a RenderResult. The
+   * RenderResult will have the Component this Component rendered to (which will then need to be
+   * render()'ed or {@link #resolve(ComponentContext)}'ed), as well as other metadata from that
+   * render call such as transitions that should be applied.
+   */
+  @ThreadSafe(enableChecks = false)
+  RenderResult render(ComponentContext c) {
+    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+      return new RenderResult(onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec()));
+    } else {
+      return new RenderResult(onCreateLayout(c));
+    }
+  }
+
+  /**
    * Create the object that will be mounted in the {@link LithoView}.
    *
    * @param context The {@link Context} to be used to create the content.
@@ -600,6 +586,27 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
+  final boolean shouldUpdate(
+      final @Nullable ComponentContext previousScopedContext,
+      final @Nullable Component previous,
+      final @Nullable ComponentContext nextScopedContext,
+      final @Nullable Component next) {
+    final StateContainer prevStateContainer =
+        previous == null
+            ? null
+            : (previous.isStateless() && previousScopedContext == null
+                ? null
+                : Component.getStateContainer(previousScopedContext, previous));
+    final StateContainer nextStateContainer =
+        next == null
+            ? null
+            : (next.isStateless() && nextScopedContext == null
+                ? null
+                : Component.getStateContainer(nextScopedContext, next));
+
+    return shouldUpdate(previous, prevStateContainer, next, nextStateContainer);
+  }
+
   /**
    * Whether the component needs updating.
    *
@@ -616,14 +623,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return true if the component needs an update, false otherwise.
    */
   protected boolean shouldUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
-    final StateContainer prevStateContainer =
-        previous == null ? null : previous.getStateContainer(previousScopedContext);
-    final StateContainer nextStateContainer =
-        next == null ? null : next.getStateContainer(nextScopedContext);
+      final @Nullable Component previous,
+      final @Nullable StateContainer prevStateContainer,
+      final @Nullable Component next,
+      final @Nullable StateContainer nextStateContainer) {
+    if (!isPureRender()) {
+      return true;
+    }
+
     return !previous.isEquivalentTo(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
@@ -648,7 +655,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     ComponentUtils.dispatchErrorEvent(c, e);
   }
 
-  protected abstract @Nullable EventHandler<ErrorEvent> getErrorHandler();
+  abstract @Nullable EventHandler<ErrorEvent> getErrorHandler(ComponentContext c);
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
@@ -711,10 +718,23 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
-  /* TODO: (T81557408) Fix @Nullable issue. */
+  /**
+   * This variant is used to create an EventTrigger used to register this component as a target in
+   * {@link EventTriggersContainer}
+   */
   protected static <E> EventTrigger<E> newEventTrigger(
-      ComponentContext c, String childKey, int id, @Nullable Handle handle) {
-    return c.newEventTrigger(childKey, id, handle);
+      ComponentContext c, Component component, int methodId) {
+    return c.newEventTrigger(methodId, component.getKey(), component.getHandle());
+  }
+
+  /**
+   * This is used to create a Trigger to be invoked later, e.g. in the context of the deprecated
+   * trigger API TextInput.requestFocusTrigger(c, "my_key").
+   */
+  @Deprecated
+  protected static <E> EventTrigger<E> newEventTrigger(
+      ComponentContext c, String childKey, int methodId) {
+    return c.newEventTrigger(methodId, childKey, null);
   }
 
   public enum MountType {

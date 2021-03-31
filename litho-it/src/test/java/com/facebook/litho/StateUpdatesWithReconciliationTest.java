@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
@@ -88,6 +89,12 @@ public class StateUpdatesWithReconciliationTest {
           public InternalNode create(ComponentContext c) {
             return spy(new DefaultInternalNode(c));
           }
+
+          @Override
+          public InternalNode.NestedTreeHolder createNestedTreeHolder(
+              ComponentContext c, @Nullable TreeProps props) {
+            return spy(new DefaultNestedTreeHolder(c, props));
+          }
         };
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), mLogTag, mComponentsLogger);
@@ -114,81 +121,81 @@ public class StateUpdatesWithReconciliationTest {
   @Test
   public void initial_condition() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     assertThat(layout).isNotNull();
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_new_instance() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(new DummyComponent());
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_same_instance() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(mRootComponent);
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_same_instance_internal() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(current.getRootComponent());
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void set_root_shallowCopy() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.setRoot(mRootComponent.makeShallowCopy());
 
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   @Test
   public void update_state_sync() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
   public void update_state_async() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.updateStateAsync(getRootGlobalKey(current), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
   public void simple_update_state_sync() {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(getRootGlobalKey(current), createStateUpdate(), "test", false);
 
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -229,7 +236,7 @@ public class StateUpdatesWithReconciliationTest {
     before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     // trigger a state update
     caller.increment();
@@ -237,7 +244,7 @@ public class StateUpdatesWithReconciliationTest {
     mComponentTree.setRoot(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     // reconciliation should be invoked
-    verify(layout, times(1)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(1)).reconcile(any(), any(), any());
   }
 
   @Test
@@ -248,7 +255,7 @@ public class StateUpdatesWithReconciliationTest {
     before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    InternalNode layout = current.getLayoutRoot();
+    LithoLayoutResult layout = current.getLayoutRoot();
 
     // trigger a state update
     caller.increment();
@@ -260,7 +267,7 @@ public class StateUpdatesWithReconciliationTest {
             .build());
 
     // reconciliation should not be invoked
-    verify(layout, times(0)).reconcile(any(), any(), any(), any());
+    verify(layout.getInternalNode(), times(0)).reconcile(any(), any(), any());
   }
 
   /**
@@ -385,11 +392,9 @@ public class StateUpdatesWithReconciliationTest {
 
   static class DummyComponent extends Component {
 
-    private final DummyStateContainer mStateContainer;
-
     public DummyComponent() {
       super("TestComponent");
-      mStateContainer = new DummyStateContainer();
+      setStateContainer(new DummyStateContainer());
     }
 
     @Override
@@ -399,7 +404,18 @@ public class StateUpdatesWithReconciliationTest {
 
     @Override
     protected void createInitialState(ComponentContext c) {
-      mStateContainer.mCount = STATE_VALUE_INITIAL_COUNT;
+      getStateContainerImpl(c).mCount = STATE_VALUE_INITIAL_COUNT;
+    }
+
+    @Nullable
+    @Override
+    protected StateContainer createStateContainer() {
+      return new DummyStateContainer();
+    }
+
+    @Nullable
+    protected DummyStateContainer getStateContainerImpl(ComponentContext c) {
+      return (DummyStateContainer) Component.getStateContainer(c, this);
     }
 
     @Override
@@ -408,11 +424,6 @@ public class StateUpdatesWithReconciliationTest {
       DummyStateContainer prevStateContainerImpl = (DummyStateContainer) prevStateContainer;
       DummyStateContainer nextStateContainerImpl = (DummyStateContainer) nextStateContainer;
       nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
-    }
-
-    @Override
-    protected StateContainer getStateContainer(ComponentContext scopedContext) {
-      return mStateContainer;
     }
   }
 

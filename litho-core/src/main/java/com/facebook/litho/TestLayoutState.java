@@ -100,7 +100,8 @@ public class TestLayoutState {
     } else if (isMountSpec(component)) {
       node = InternalNodeUtils.create(c);
     } else {
-      final Component root = component.createComponentLayout(c);
+      final RenderResult renderResult = component.render(c);
+      final Component root = renderResult.component;
       if (root == null || root.getId() <= 0) {
         node = null;
       } else {
@@ -124,7 +125,7 @@ public class TestLayoutState {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure) {
         node.setMeasureFunction(
-            ComponentLifecycle.getYogaMeasureFunction(c.getLayoutStateContext()));
+            ComponentLifecycle.getYogaMeasureFunction(component, c.getLayoutStateContext()));
       }
     }
 

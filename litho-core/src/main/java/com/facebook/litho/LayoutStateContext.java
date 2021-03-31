@@ -34,13 +34,15 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private final @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
-  private final @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
+  private @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
+  private @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
   private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction;
 
   private static @Nullable LayoutState sTestLayoutState;
 
   private boolean mIsLayoutStarted = false;
+
+  private boolean mIsScopedInfoCopiedFromLSCInstance = false;
 
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     if (sTestLayoutState == null) {
@@ -51,6 +53,16 @@ public class LayoutStateContext {
   }
 
   void copyScopedInfoFrom(LayoutStateContext layoutStateContext) {
+    mIsScopedInfoCopiedFromLSCInstance = true;
+
+    if (mGlobalKeyToScopedContext == null) {
+      mGlobalKeyToScopedContext = new HashMap<>();
+    }
+
+    if (mGlobalKeyToScopedInfo == null) {
+      mGlobalKeyToScopedInfo = new HashMap<>();
+    }
+
     if (mGlobalKeyToScopedContext != null && layoutStateContext.mGlobalKeyToScopedContext != null) {
       mGlobalKeyToScopedContext.putAll(layoutStateContext.mGlobalKeyToScopedContext);
     }
@@ -73,32 +85,68 @@ public class LayoutStateContext {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
-    if (ComponentsConfiguration.useStatelessComponent) {
-      mGlobalKeyToScopedContext = new HashMap<>();
-      mGlobalKeyToScopedInfo = new HashMap<>();
-      mLithoYogaMeasureFunction =
-          new LithoYogaMeasureFunction(this, layoutState.getPrevLayoutStateContext());
-    } else {
-      mGlobalKeyToScopedContext = null;
-      mGlobalKeyToScopedInfo = null;
-      mLithoYogaMeasureFunction = null;
-    }
   }
 
   void addScopedComponentInfo(
-      String globalKey, Component component, ComponentContext scopedContext) {
+      String globalKey,
+      Component component,
+      ComponentContext scopedContext,
+      ComponentContext parentContext) {
+    if (mGlobalKeyToScopedContext == null) {
+      mGlobalKeyToScopedContext = new HashMap<>();
+    }
+
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
-    mGlobalKeyToScopedInfo.put(globalKey, new ScopedComponentInfo(component));
+
+    if (mGlobalKeyToScopedInfo == null) {
+      mGlobalKeyToScopedInfo = new HashMap<>();
+    }
+
+    InterStagePropsContainer newInterStagePropsContainer =
+        component.createInterStagePropsContainer();
+
+    if (mGlobalKeyToScopedInfo.containsKey(globalKey)) {
+      InterStagePropsContainer prevInterStagePropsContainer =
+          mGlobalKeyToScopedInfo.get(globalKey).getInterStagePropsContainer();
+
+      try {
+        component.copyInterStageImpl(newInterStagePropsContainer, prevInterStagePropsContainer);
+      } catch (NullPointerException ex) {
+        if (ComponentsConfiguration.throwExceptionInterStagePropsContainerNull) {
+          throw new IllegalStateException(
+              "Encountered NPE while copying ISPContainer: "
+                  + component
+                  + " ,globalKey: "
+                  + globalKey
+                  + " ,newISPContainer: "
+                  + newInterStagePropsContainer
+                  + " ,prevISPContainer: "
+                  + prevInterStagePropsContainer
+                  + " ,scopedInfoCopiedFromLSC: "
+                  + mIsScopedInfoCopiedFromLSCInstance
+                  + " ,hasCachedLayout: "
+                  + (mLayoutStateRef == null ? "null" : mLayoutStateRef.hasCachedLayout(component)),
+              ex);
+        }
+      }
+    }
+
+    mGlobalKeyToScopedInfo.put(
+        globalKey,
+        new ScopedComponentInfo(
+            component,
+            newInterStagePropsContainer,
+            ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext)));
   }
 
   @Nullable
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
-    return mGlobalKeyToScopedInfo.get(globalKey);
+    return mGlobalKeyToScopedInfo == null ? null : mGlobalKeyToScopedInfo.get(globalKey);
   }
 
   @Nullable
   ComponentContext getScopedContext(String globalKey) {
-    return mGlobalKeyToScopedInfo == null ? null : mGlobalKeyToScopedContext.get(globalKey);
+    return mGlobalKeyToScopedContext == null ? null : mGlobalKeyToScopedContext.get(globalKey);
   }
 
   void releaseReference() {
@@ -120,6 +168,12 @@ public class LayoutStateContext {
 
   @Nullable
   LithoYogaMeasureFunction getLithoYogaMeasureFunction() {
+    if (mLithoYogaMeasureFunction == null) {
+      mLithoYogaMeasureFunction =
+          new LithoYogaMeasureFunction(
+              this, mLayoutStateRef == null ? null : mLayoutStateRef.getPrevLayoutStateContext());
+    }
+
     return mLithoYogaMeasureFunction;
   }
 

@@ -76,22 +76,6 @@ public class TestSizeDependentComponent extends Component {
   boolean hasFixedSizes;
   boolean isDelegate;
 
-  @Override
-  public boolean equals(Object other) {
-    if (this == other) {
-      return true;
-    }
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-    TestSizeDependentComponent state = (TestSizeDependentComponent) other;
-    if (this.getId() == state.getId()) {
-      return true;
-    }
-
-    return true;
-  }
-
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
 
     TestSizeDependentComponent mTestSizeDependentComponent;

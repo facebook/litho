@@ -39,16 +39,16 @@ import java.util.Set;
  * DynamicValue#mValue} until the Component gets unbound, at which point, the DynamicPropsManager
  * unsubscribes from the DynamicValues.
  */
-class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
-  static final int KEY_ALPHA = 1;
-  static final int KEY_TRANSLATION_X = 2;
-  static final int KEY_TRANSLATION_Y = 3;
-  static final int KEY_SCALE_X = 4;
-  static final int KEY_SCALE_Y = 5;
-  static final int KEY_ELEVATION = 6;
-  static final int KEY_BACKGROUND_COLOR = 7;
-  static final int KEY_ROTATION = 8;
-  static final int KEY_BACKGROUND_DRAWABLE = 9;
+public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
+  public static final int KEY_ALPHA = 1;
+  public static final int KEY_TRANSLATION_X = 2;
+  public static final int KEY_TRANSLATION_Y = 3;
+  public static final int KEY_SCALE_X = 4;
+  public static final int KEY_SCALE_Y = 5;
+  public static final int KEY_ELEVATION = 6;
+  public static final int KEY_BACKGROUND_COLOR = 7;
+  public static final int KEY_ROTATION = 8;
+  public static final int KEY_BACKGROUND_DRAWABLE = 9;
 
   private final Map<DynamicValue<?>, Set<Component>> mDependentComponents = new HashMap<>();
   private final Map<Component, Set<DynamicValue<?>>> mAffectingDynamicValues = new HashMap<>();

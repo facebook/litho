@@ -20,7 +20,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
@@ -28,24 +28,24 @@ import com.facebook.litho.flexbox.padding
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
 import com.facebook.litho.useState
+import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
 class PlaygroundActivity : NavigatableDemoActivity() {
 
   class PlaygroundComponent : KComponent() {
-    override fun DslScope.render(): Component? {
+    override fun ComponentScope.render(): Component? {
       val counter = useState { 1 }
 
       return Column(
-          style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } },
-          children =
-              listOf(
-                  Text(text = "Hello, Kotlin World!", textSize = 20.sp),
-                  Text(
-                      text = "with ${"❤️".repeat(counter.value)} from London",
-                      textStyle = Typeface.ITALIC),
-              ))
+          style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } }) {
+        child(Text(text = "Hello, Kotlin World!", textSize = 20.sp))
+        child(
+            Text(
+                text = "with ${"❤️".repeat(counter.value)} from London",
+                textStyle = Typeface.ITALIC))
+      }
     }
   }
 

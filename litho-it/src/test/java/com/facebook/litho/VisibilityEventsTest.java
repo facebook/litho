@@ -267,60 +267,40 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFocusedOccupiesHalfViewport() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .focusedHandler(focusedEventHandler)
-                    .widthPx(10)
-                    .heightPx(10))
-            .build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(10).build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    content.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 4), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
   }
 
   @Test
   public void testFocusedOccupiesLessThanHalfViewport() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .focusedHandler(focusedEventHandler)
-                    .widthPx(10)
-                    .heightPx(3))
-            .build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c).steps(steps).widthPx(10).heightPx(3).build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    content.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 2), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler);
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
   }
 
   @Test
@@ -371,104 +351,103 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFullImpressionEvent() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEvent =
-        new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .fullImpressionHandler(fullImpressionVisibleEvent)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEvent);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Full Impression visible event should be dispatched")
+        .contains(LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT);
   }
 
   @Test
   public void testVisibility1fTop() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEvent = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleHandler(visibleEvent)
-                    .visibleHeightRatio(1f)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .visibleHeightRatio(1f)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEvent);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
   public void testVisibility1fBottom() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEvent = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleHandler(visibleEvent)
-                    .visibleHeightRatio(1f)
-                    .widthPx(10)
-                    .heightPx(5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .visibleHeightRatio(1f)
+            .widthPx(10)
+            .heightPx(5)
             .build();
 
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEvent);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
   public void testInvisibleEvent() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .invisibleHandler(invisibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
     mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
   }
 
   @Test
@@ -630,78 +609,78 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleAndInvisibleEvents() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
-    final Component root =
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content)
-                    .visibleHandler(visibleEventHandler)
-                    .invisibleHandler(invisibleEventHandler)
-                    .widthPx(10)
-                    .heightPx(5)
-                    .marginPx(YogaEdge.TOP, 5))
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(c)
+            .steps(steps)
+            .widthPx(10)
+            .heightPx(5)
+            .marginPx(YogaEdge.TOP, 5)
             .build();
 
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(component)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
         .measure()
         .layout();
 
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    steps.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 5), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    steps.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 9), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 10, RIGHT, 15), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+    steps.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 10, RIGHT, 15), true);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
   }
 
   @Test
   public void testMultipleVisibleEvents() {
-    final TestComponent content1 = create(mContext).build();
-    final TestComponent content2 = create(mContext).build();
-    final TestComponent content3 = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
-    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-        new EventHandler<>(content3, 4);
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
+
+    final LayoutSpecLifecycleTester component1 =
+        LayoutSpecLifecycleTester.create(c).steps(steps1).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component2 =
+        LayoutSpecLifecycleTester.create(c).steps(steps2).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component3 =
+        LayoutSpecLifecycleTester.create(c).steps(steps3).widthPx(10).heightPx(5).build();
+
     final Component root =
         Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content1)
-                    .visibleHandler(visibleEventHandler1)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content2)
-                    .visibleHandler(visibleEventHandler2)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content3)
-                    .visibleHandler(visibleEventHandler3)
-                    .visibilityChangedHandler(visibilityChangedHandler)
-                    .widthPx(10)
-                    .heightPx(5))
+            .key("root")
+            .child(component1)
+            .child(component2)
+            .child(component3)
             .build();
 
     mLithoViewRule
@@ -711,72 +690,90 @@ public class VisibilityEventsTest {
         .measure()
         .layout();
 
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_VISIBILITY_CHANGED);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_VISIBILITY_CHANGED);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibilityChangedHandler);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_VISIBILITY_CHANGED);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+    steps1.clear();
+    steps2.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_VISIBILITY_CHANGED);
   }
 
   @Test
   public void testMultipleVisibleAndInvisibleEvents() {
-    final TestComponent content1 = create(mContext).build();
-    final TestComponent content2 = create(mContext).build();
-    final TestComponent content3 = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
-    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content3, 3);
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
+
+    final LayoutSpecLifecycleTester component1 =
+        LayoutSpecLifecycleTester.create(c).steps(steps1).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component2 =
+        LayoutSpecLifecycleTester.create(c).steps(steps2).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component3 =
+        LayoutSpecLifecycleTester.create(c).steps(steps3).widthPx(10).heightPx(5).build();
+
     final Component root =
         Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content1)
-                    .visibleHandler(visibleEventHandler1)
-                    .invisibleHandler(invisibleEventHandler1)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content2)
-                    .visibleHandler(visibleEventHandler2)
-                    .invisibleHandler(invisibleEventHandler2)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(content3)
-                    .visibleHandler(visibleEventHandler3)
-                    .invisibleHandler(invisibleEventHandler3)
-                    .widthPx(10)
-                    .heightPx(5))
+            .key("root")
+            .child(component1)
+            .child(component2)
+            .child(component3)
             .build();
 
     mLithoViewRule
@@ -786,120 +783,184 @@ public class VisibilityEventsTest {
         .measure()
         .layout();
 
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 3), true);
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 11), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 5, RIGHT, 11), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 5, RIGHT, 11), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
   }
 
   @Test
   public void testSkipFullyVisible() {
-    final TestComponent content1 = create(mContext).key("tc1").build();
-    final TestComponent content2 = create(mContext).key("tc2").build();
-    final TestComponent content3 = create(mContext).key("tc3").build();
-    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
-    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content3, 3);
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
+
+    final LayoutSpecLifecycleTester component1 =
+        LayoutSpecLifecycleTester.create(c).steps(steps1).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component2 =
+        LayoutSpecLifecycleTester.create(c).steps(steps2).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component3 =
+        LayoutSpecLifecycleTester.create(c).steps(steps3).widthPx(10).heightPx(5).build();
+
     final Component root =
         Column.create(mContext)
             .key("root")
-            .child(
-                Wrapper.create(mContext)
-                    .key("child1")
-                    .delegate(content1)
-                    .visibleHandler(visibleEventHandler1)
-                    .invisibleHandler(invisibleEventHandler1)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .key("child2")
-                    .delegate(content2)
-                    .visibleHandler(visibleEventHandler2)
-                    .invisibleHandler(invisibleEventHandler2)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .key("child3")
-                    .delegate(content3)
-                    .visibleHandler(visibleEventHandler3)
-                    .invisibleHandler(invisibleEventHandler3)
-                    .widthPx(10)
-                    .heightPx(5))
+            .child(component1)
+            .child(component2)
+            .child(component3)
             .build();
 
     mLithoViewRule
@@ -915,25 +976,49 @@ public class VisibilityEventsTest {
       assertThat(item.wasFullyVisible()).isTrue();
     }
 
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    //
     visibilityItemMap = getVisibilityIdToItemMap();
     assertThat(visibilityItemMap.size()).isEqualTo(3);
     for (String key : visibilityItemMap.keySet()) {
@@ -941,169 +1026,175 @@ public class VisibilityEventsTest {
       assertThat(item.wasFullyVisible()).isTrue();
     }
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
     visibilityItemMap = getVisibilityIdToItemMap();
     assertThat(visibilityItemMap.size()).isEqualTo(3);
+    int fullyVisibleCount = 0;
+    for (String key : visibilityItemMap.keySet()) {
+      VisibilityItem item = visibilityItemMap.get(key);
+      fullyVisibleCount += item.wasFullyVisible() ? 1 : 0;
+    }
+    assertThat(fullyVisibleCount).isEqualTo(1);
 
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
-                .wasFullyVisible())
-        .isFalse();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
-                .wasFullyVisible())
-        .isFalse();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_INVISIBLE);
 
     visibilityItemMap = getVisibilityIdToItemMap();
     assertThat(visibilityItemMap.size()).isEqualTo(0);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    visibilityItemMap = getVisibilityIdToItemMap();
-    assertThat(visibilityItemMap.size()).isEqualTo(3);
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
-                .wasFullyVisible())
-        .isFalse();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
-                .wasFullyVisible())
-        .isFalse();
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 3, RIGHT, 12), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
 
     visibilityItemMap = getVisibilityIdToItemMap();
     assertThat(visibilityItemMap.size()).isEqualTo(3);
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
-                .wasFullyVisible())
-        .isTrue();
+    fullyVisibleCount = 0;
+    for (String key : visibilityItemMap.keySet()) {
+      VisibilityItem item = visibilityItemMap.get(key);
+      fullyVisibleCount += item.wasFullyVisible() ? 1 : 0;
+    }
+    assertThat(fullyVisibleCount).isEqualTo(1);
+
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Invisible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_INVISIBLE);
+
+    visibilityItemMap = getVisibilityIdToItemMap();
+    assertThat(visibilityItemMap.size()).isEqualTo(3);
+    for (String key : visibilityItemMap.keySet()) {
+      VisibilityItem item = visibilityItemMap.get(key);
+      assertThat(item.wasFullyVisible()).isTrue();
+    }
   }
 
   @Test
   public void testDispatchFocusedHandler() {
-    final TestComponent content1 = create(mContext).key("tc1").build();
-    final TestComponent content2 = create(mContext).key("tc2").build();
-    final TestComponent content3 = create(mContext).key("tc3").build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps1 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps2 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> steps3 = new ArrayList<>();
 
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<FocusedVisibleEvent> focusedEventHandler3 = new EventHandler<>(content3, 3);
-
-    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler1 =
-        new EventHandler<>(content1, 4);
-    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler2 =
-        new EventHandler<>(content2, 5);
-    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler3 =
-        new EventHandler<>(content3, 6);
+    final LayoutSpecLifecycleTester component1 =
+        LayoutSpecLifecycleTester.create(c).steps(steps1).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component2 =
+        LayoutSpecLifecycleTester.create(c).steps(steps2).widthPx(10).heightPx(5).build();
+    final LayoutSpecLifecycleTester component3 =
+        LayoutSpecLifecycleTester.create(c).steps(steps3).widthPx(10).heightPx(5).build();
 
     final Component root =
         Column.create(mContext)
             .key("root")
-            .child(
-                Wrapper.create(mContext)
-                    .key("child1")
-                    .delegate(content1)
-                    .focusedHandler(focusedEventHandler1)
-                    .unfocusedHandler(unfocusedEventHandler1)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .key("child2")
-                    .delegate(content2)
-                    .focusedHandler(focusedEventHandler2)
-                    .unfocusedHandler(unfocusedEventHandler2)
-                    .widthPx(10)
-                    .heightPx(5))
-            .child(
-                Wrapper.create(mContext)
-                    .key("child3")
-                    .delegate(content3)
-                    .focusedHandler(focusedEventHandler3)
-                    .unfocusedHandler(unfocusedEventHandler3)
-                    .widthPx(10)
-                    .heightPx(5))
+            .child(component1)
+            .child(component2)
+            .child(component3)
             .build();
 
     mLithoViewRule
@@ -1119,36 +1210,73 @@ public class VisibilityEventsTest {
       assertThat(item.wasFullyVisible()).isTrue();
     }
 
-    assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(focusedEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(focusedEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler3);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).contains(unfocusedEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler3);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 4, RIGHT, 15), true);
 
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Focused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Focused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Focused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Unfocused visible event should be dispatched")
+        .contains(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
 
-    mLithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler3);
+    steps1.clear();
+    steps2.clear();
+    steps3.clear();
+    mLithoViewRule.getLithoView().notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 15), true);
+
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Focused visible event should be dispatched")
+        .contains(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Focused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Focused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_FOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps1))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps2))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
+    assertThat(LifecycleStep.getSteps(steps3))
+        .describedAs("Unfocused visible event should not be dispatched")
+        .doesNotContain(LifecycleStep.ON_UNFOCUSED_EVENT_VISIBLE);
   }
 
   @Test

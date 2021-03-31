@@ -139,10 +139,13 @@ module.exports = {
         indexName: 'fblitho',
       }
     }),
+    googleAnalytics: {
+      trackingID: 'UA-44373548-28',
+    },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
-      additionalLanguages: ['groovy', 'kotlin'],
+      additionalLanguages: ['java', 'groovy', 'kotlin'],
     },
   },
   plugins: ['docusaurus-plugin-sass'],
@@ -151,6 +154,7 @@ module.exports = {
       require.resolve('docusaurus-plugin-internaldocs-fb/docusaurus-preset'),
       {
         docs: {
+          path: '../docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/facebook/litho/edit/master/website/',
         },

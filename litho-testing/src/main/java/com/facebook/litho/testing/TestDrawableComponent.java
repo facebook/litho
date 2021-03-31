@@ -20,12 +20,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.StateContainer;
 
 /**
  * @deprecated Use MountSpecLifecycleTester if lifecycle assertions are needed or
@@ -58,10 +60,10 @@ public class TestDrawableComponent extends TestComponent {
 
   @Override
   public boolean shouldUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
+      final @Nullable Component previous,
+      final @Nullable StateContainer previousStateContainer,
+      final @Nullable Component next,
+      final @Nullable StateContainer nextStateContainer) {
     return !next.equals(previous);
   }
 

@@ -228,7 +228,9 @@ public class ComponentBodyGenerator {
         .addParameter(specModel.getContextClass(), "c")
         .returns(stateContainerImplClassName)
         .addStatement(
-            "return ($T) super." + STATE_CONTAINER_GETTER + "(c)", stateContainerImplClassName)
+            "return ($T) $T." + STATE_CONTAINER_GETTER + "(c, this)",
+            stateContainerImplClassName,
+            StateGenerator.getStateContainerGetterClassName(specModel))
         .build();
   }
 
@@ -412,7 +414,8 @@ public class ComponentBodyGenerator {
     for (EventDeclarationModel eventDeclaration : specModel.getEventDeclarations()) {
       typeSpecDataHolder.addField(
           FieldSpec.builder(
-                  ClassNames.EVENT_HANDLER, getEventHandlerInstanceName(eventDeclaration.name))
+                  ParameterizedTypeName.get(ClassNames.EVENT_HANDLER, eventDeclaration.name),
+                  getEventHandlerInstanceName(eventDeclaration))
               .addAnnotation(ClassNames.NULLABLE)
               .build());
     }
@@ -420,8 +423,8 @@ public class ComponentBodyGenerator {
     return typeSpecDataHolder.build();
   }
 
-  static String getEventHandlerInstanceName(ClassName eventHandlerClassName) {
-    final String eventHandlerName = eventHandlerClassName.simpleName();
+  static String getEventHandlerInstanceName(EventDeclarationModel model) {
+    final String eventHandlerName = ClassName.bestGuess(model.getRawName().toString()).simpleName();
     return eventHandlerName.substring(0, 1).toLowerCase(Locale.ROOT)
         + eventHandlerName.substring(1)
         + "Handler";

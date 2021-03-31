@@ -165,6 +165,10 @@ public final class ThreadUtils {
     }
   }
 
+  public static void postOnUiThread(Runnable runnable) {
+    ensureUiThreadHandler().post(runnable);
+  }
+
   public static void runOnBackgroundThread(Runnable runnable) {
     ensureDefaultBackgroundThreadHandler().post(runnable);
   }

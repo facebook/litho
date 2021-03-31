@@ -40,7 +40,7 @@ class ComposedAnimationsComponentSpec {
     return RecyclerCollectionComponent.create(c)
         .disablePTR(true)
         .section(
-            DataDiffSection.create(new SectionContext(c))
+            DataDiffSection.<Object>create(new SectionContext(c))
                 .data(generateData(20))
                 .renderEventHandler(ComposedAnimationsComponent.onRender(c))
                 .onCheckIsSameItemEventHandler(ComposedAnimationsComponent.isSameItem(c))

@@ -19,8 +19,8 @@ package com.facebook.litho.widget
 import android.view.MotionEvent
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dp
-import com.facebook.litho.DslScope
 import com.facebook.litho.Px
 import com.facebook.litho.Style
 import com.facebook.litho.dp
@@ -28,7 +28,7 @@ import com.facebook.litho.px
 
 /** Builder function for creating [VerticalScrollSpec] components. */
 @Suppress("FunctionName")
-inline fun DslScope.VerticalScroll(
+inline fun ComponentScope.VerticalScroll(
     initialScrollPosition: Px = 0.px,
     scrollbarEnabled: Boolean = false,
     scrollbarFadingEnabled: Boolean = true,
@@ -40,7 +40,7 @@ inline fun DslScope.VerticalScroll(
     noinline onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     style: Style? = null,
-    child: DslScope.() -> Component
+    child: ComponentScope.() -> Component
 ): VerticalScroll =
     VerticalScroll.create(context)
         .childComponent(child())

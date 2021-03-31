@@ -21,6 +21,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
 public class NestedTreeParentComponentSpec {
@@ -34,7 +35,10 @@ public class NestedTreeParentComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
-    return NestedTreeComponent.create(c).key("NestedTreeComponent").build();
+    return NestedTreeComponent.create(c)
+        .paddingPx(YogaEdge.ALL, 5)
+        .key("NestedTreeComponent")
+        .build();
   }
 
   public static NestedTreeParentComponent create(ComponentContext c) {

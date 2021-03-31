@@ -17,7 +17,7 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Column
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
@@ -26,11 +26,8 @@ import com.facebook.litho.widget.Card
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
 class FeedItemCard(val artist: Artist) : KComponent() {
-  override fun DslScope.render() =
-      Column(
-          style = Style.padding(horizontal = 16.dp, vertical = 8.dp),
-          children =
-              listOf(
-                  Card { FeedItemComponent(artist = artist) },
-              ))
+  override fun ComponentScope.render() =
+      Column(style = Style.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        child(Card { FeedItemComponent(artist = artist) })
+      }
 }

@@ -106,6 +106,7 @@ public class ComponentTree {
   private static boolean sBoostPerfLayoutStateFuture = false;
   private final boolean mAreTransitionsEnabled;
   private final boolean mUseStatelessComponent;
+  private final boolean mIgnoreNullLayoutStateError;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -119,7 +120,6 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
-  private final boolean mIncrementalVisibility;
   private final @RecyclingMode int mRecyclingMode;
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
@@ -347,6 +347,7 @@ public class ComponentTree {
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mInterruptUseCurrentLayoutSource = ComponentsConfiguration.interruptUseCurrentLayoutSource;
     isReconciliationEnabled = builder.isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
@@ -385,7 +386,6 @@ public class ComponentTree {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
-    mIncrementalVisibility = builder.incrementalVisibility;
   }
 
   private static boolean incrementalMountGloballyDisabled() {
@@ -979,8 +979,22 @@ public class ComponentTree {
       return;
     }
     mMainThreadLayoutState = mCommittedLayoutState;
+    dispatchOnAttached();
+
     if (mLithoView != null) {
       mLithoView.setMountStateDirty();
+    }
+  }
+
+  @UiThread
+  @GuardedBy("this")
+  private void dispatchOnAttached() {
+    final @Nullable List<Attachable> attachables = mMainThreadLayoutState.getAttachables();
+    final LayoutStateContext layoutStateContext = mMainThreadLayoutState.getLayoutStateContext();
+    if (mAttachDetachHandler != null) {
+      mAttachDetachHandler.onAttached(layoutStateContext, attachables);
+    } else if (attachables != null) {
+      getOrCreateAttachDetachHandler().onAttached(layoutStateContext, attachables);
     }
   }
 
@@ -1718,10 +1732,6 @@ public class ComponentTree {
     return mLithoView;
   }
 
-  boolean hasIncrementalVisibility() {
-    return mIncrementalVisibility;
-  }
-
   /**
    * Provides a new instance from the StateHandler pool that is initialized with the information
    * from the StateHandler currently held by the ComponentTree. Once the state updates have been
@@ -2134,7 +2144,7 @@ public class ComponentTree {
                 + ". Interruptible layouts: "
                 + mMoveLayoutsBetweenThreads;
 
-        if (ComponentsConfiguration.ignoreNullLayoutStateError) {
+        if (mIgnoreNullLayoutStateError) {
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR, "ComponentTree:LayoutStateNull", errorMessage);
         } else {
@@ -2205,7 +2215,6 @@ public class ComponentTree {
           rootHeight = localLayoutState.getHeight();
         }
 
-        attachables = localLayoutState.consumeAttachables();
         layoutStateContext = localLayoutState.getLayoutStateContext();
       }
 
@@ -2235,12 +2244,6 @@ public class ComponentTree {
               source == CalculateLayoutSource.UPDATE_STATE_ASYNC
                   || source == CalculateLayoutSource.UPDATE_STATE_SYNC);
         }
-      }
-
-      if (mAttachDetachHandler != null) {
-        mAttachDetachHandler.onAttached(layoutStateContext, attachables);
-      } else if (attachables != null) {
-        getOrCreateAttachDetachHandler().onAttached(layoutStateContext, attachables);
       }
     }
 
@@ -2330,12 +2333,12 @@ public class ComponentTree {
   }
 
   /**
-   * The contract is that in order to release a ComponentTree, you must do so from the main thread,
-   * or guarantee that it will never be accessed from the main thread again. Usually HostView will
-   * handle releasing, but if you never attach to a host view, then you should call release
-   * yourself.
+   * The contract is that in order to release a ComponentTree, you must do so from the main thread.
+   * Usually HostView will handle releasing, but if you never attach to a host view, then you should
+   * call release yourself.
    */
   public void release() {
+    assertMainThread();
     if (mIsMounting) {
       throw new IllegalStateException("Releasing a ComponentTree that is currently being mounted");
     }
@@ -2527,7 +2530,18 @@ public class ComponentTree {
       }
     }
 
-    release();
+    if (ThreadUtils.isMainThread()) {
+      release();
+    } else {
+      mMainThreadHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              release();
+            }
+          },
+          "Release");
+    }
   }
 
   private @Nullable LayoutState calculateLayoutState(
@@ -2611,17 +2625,12 @@ public class ComponentTree {
     return mLayoutStateFutures;
   }
 
+  @UiThread
   private AttachDetachHandler getOrCreateAttachDetachHandler() {
-    AttachDetachHandler localAttachDetachHandler = mAttachDetachHandler;
-    if (localAttachDetachHandler == null) {
-      synchronized (this) {
-        localAttachDetachHandler = mAttachDetachHandler;
-        if (localAttachDetachHandler == null) {
-          mAttachDetachHandler = localAttachDetachHandler = new AttachDetachHandler();
-        }
-      }
+    if (mAttachDetachHandler == null) {
+      mAttachDetachHandler = new AttachDetachHandler();
     }
-    return localAttachDetachHandler;
+    return mAttachDetachHandler;
   }
 
   private void debugLog(String eventName, String info) {
@@ -3118,9 +3127,9 @@ public class ComponentTree {
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
-    private boolean incrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
     private boolean shouldForceAsyncStateUpdate =
         ComponentsConfiguration.shouldForceAsyncStateUpdate;
+    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3277,6 +3286,11 @@ public class ComponentTree {
       return this;
     }
 
+    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
+      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
+      return this;
+    }
+
     /** Sets the ErrorEventHandler */
     public Builder errorHandler(ErrorEventHandler errorEventHandler) {
       this.errorEventHandler = errorEventHandler;
@@ -3295,11 +3309,6 @@ public class ComponentTree {
      */
     public Builder useCancelableLayoutFutures(boolean isEnabled) {
       this.useCancelableLayoutFutures = isEnabled;
-      return this;
-    }
-
-    public Builder incrementalVisibility(boolean isEnabled) {
-      this.incrementalVisibility = isEnabled;
       return this;
     }
 

@@ -65,6 +65,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private boolean mVisibilityHintIsVisible;
   private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
   private boolean mSkipMountingIfNotVisible;
+  private final boolean mRebindWhenVisibilityChanges;
 
   public interface OnDirtyMountListener {
     /**
@@ -228,6 +229,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+    mRebindWhenVisibilityChanges = ComponentsConfiguration.rebindWhenVisibilityChanges;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -708,6 +710,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mNullComponentCause = mComponentTree == null ? "set_CT" : null;
   }
 
+  boolean delegateToRenderCore() {
+    return mDelegateToRenderCore;
+  }
+
   private void setupMountExtensions(ComponentTree componentTree) {
     if (!mUseExtensions) {
       throw new IllegalStateException("Using mount extensions is disabled on this LithoView.");
@@ -910,11 +916,17 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (forceMount) {
         notifyVisibleBoundsChanged();
       } else if (getLocalVisibleRect(mRect)) {
+        if (mRebindWhenVisibilityChanges) {
+          rebind();
+        }
         processVisibilityOutputs(mRect);
       }
       recursivelySetVisibleHint(true, skipMountingIfNotVisible);
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
+      if (mRebindWhenVisibilityChanges) {
+        unbind();
+      }
       recursivelySetVisibleHint(false, skipMountingIfNotVisible);
       clearVisibilityItems();
     }
@@ -1126,12 +1138,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public void release() {
     assertMainThread();
 
-    if (ComponentsConfiguration.releaseNestedLithoViews) {
-      final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
-      if (childrenLithoViews != null) {
-        for (LithoView child : childrenLithoViews) {
-          child.release();
-        }
+    final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
+    if (childrenLithoViews != null) {
+      for (LithoView child : childrenLithoViews) {
+        child.release();
       }
     }
 

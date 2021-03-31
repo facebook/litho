@@ -18,7 +18,9 @@ package com.facebook.litho;
 
 import android.content.res.TypedArray;
 import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 
 public class InternalNodeUtils {
 
@@ -28,6 +30,16 @@ public class InternalNodeUtils {
       return factory.create(context);
     } else {
       return new DefaultInternalNode(context);
+    }
+  }
+
+  static InternalNode.NestedTreeHolder createNestedTreeHolder(
+      final ComponentContext context, final @Nullable TreeProps props) {
+    NodeConfig.InternalNodeFactory factory = NodeConfig.sInternalNodeFactory;
+    if (factory != null) {
+      return factory.createNestedTreeHolder(context, props);
+    } else {
+      return new DefaultNestedTreeHolder(context, props);
     }
   }
 
@@ -42,8 +54,9 @@ public class InternalNodeUtils {
    * Check that the root of the nested tree we are going to use, has valid layout directions with
    * its main tree holder node.
    */
-  static boolean hasValidLayoutDirectionInNestedTree(InternalNode holder, InternalNode nestedTree) {
-    return nestedTree.isLayoutDirectionInherit()
+  static boolean hasValidLayoutDirectionInNestedTree(
+      NestedTreeHolderResult holder, LithoLayoutResult nestedTree) {
+    return nestedTree.getInternalNode().isLayoutDirectionInherit()
         || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
   }
 

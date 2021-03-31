@@ -1030,7 +1030,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, EXACTLY);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(internalNode.getWidth());
@@ -1073,7 +1073,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(100);
@@ -1116,7 +1116,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(99);
@@ -1157,7 +1157,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
+    final LithoLayoutResult internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(50);
@@ -2214,19 +2214,16 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final InternalNode node =
+    final LithoLayoutResult node =
         createAndMeasureComponent(
-            c.getLayoutStateContext(),
-            c,
-            component,
-            makeSizeSpec(width, AT_MOST),
-            makeSizeSpec(height, AT_MOST));
+                c, component, makeSizeSpec(width, AT_MOST), makeSizeSpec(height, AT_MOST))
+            .mResult;
 
     assertThat(node.getWidth()).isEqualTo(width);
     assertThat(node.getHeight()).isEqualTo(height);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) node.getChildAt(0)).getWidth()).isEqualTo(width);
-    assertThat(((InternalNode) node.getChildAt(0)).getHeight()).isEqualTo(height);
+    assertThat((node.getChildAt(0)).getWidth()).isEqualTo(width);
+    assertThat((node.getChildAt(0)).getHeight()).isEqualTo(height);
   }
 
   @Test

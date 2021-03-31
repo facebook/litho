@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -63,8 +64,16 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
           @Override
-          public InternalNode create(ComponentContext c) {
+          public InternalNode create(final ComponentContext c) {
             DefaultInternalNode node = spy(new DefaultInternalNode(c));
+            node.getYogaNode().setData(node);
+            return node;
+          }
+
+          @Override
+          public InternalNode.NestedTreeHolder createNestedTreeHolder(
+              ComponentContext c, @Nullable TreeProps props) {
+            DefaultNestedTreeHolder node = spy(new DefaultNestedTreeHolder(c, props));
             node.getYogaNode().setData(node);
             return node;
           }
@@ -318,11 +327,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   static class DummyComponent extends Component {
 
-    private final DummyStateContainer mStateContainer;
-
     public DummyComponent() {
       super("TestComponent");
-      mStateContainer = new DummyStateContainer();
+      setStateContainer(new DummyStateContainer());
     }
 
     @Override
@@ -332,7 +339,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
     @Override
     protected void createInitialState(ComponentContext c) {
-      mStateContainer.mCount = STATE_VALUE_INITIAL_COUNT;
+      getStateContainerImpl(c).mCount = STATE_VALUE_INITIAL_COUNT;
     }
 
     @Override
@@ -343,9 +350,15 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
       nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
     }
 
+    @Nullable
     @Override
-    protected StateContainer getStateContainer(ComponentContext scopedContext) {
-      return mStateContainer;
+    protected StateContainer createStateContainer() {
+      return new DummyStateContainer();
+    }
+
+    @Nullable
+    protected DummyStateContainer getStateContainerImpl(ComponentContext c) {
+      return (DummyStateContainer) Component.getStateContainer(c, this);
     }
   }
 

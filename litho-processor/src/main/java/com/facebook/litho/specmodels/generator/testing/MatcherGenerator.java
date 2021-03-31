@@ -145,7 +145,6 @@ public final class MatcherGenerator {
 
     if (prop.hasVarArgs()) {
       dataHolder.addMethod(varArgBuilder(specModel, prop));
-      final ParameterizedTypeName type = (ParameterizedTypeName) prop.getTypeName();
       if (isComponentType(prop)) {
         dataHolder.addMethod(varArgBuilderBuilder(specModel, prop));
       }
@@ -696,7 +695,6 @@ public final class MatcherGenerator {
       FieldExtractorSpec fieldExtractorSpec,
       Function<FieldExtractorSpec, CodeBlock> fieldExtractorBlockFn) {
     final String matcherName = getPropComponentMatcherName(fieldExtractorSpec.propModel);
-    final String propValueName = getPropValueName(fieldExtractorSpec.propModel) + "Component";
     return CodeBlock.builder()
         .add(fieldExtractorBlockFn.apply(fieldExtractorSpec))
         .beginControlFlow(

@@ -31,6 +31,7 @@ import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -46,25 +47,23 @@ class Layout {
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
-  static InternalNode createAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
+  static LayoutResultHolder createAndMeasureComponent(
       final ComponentContext c,
       final Component component,
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null, null);
+        c, component, null, widthSpec, heightSpec, null, null, null, null);
   }
 
   /* TODO: (T81557408) Fix @Nullable issue */
-  static InternalNode createAndMeasureComponent(
-      final LayoutStateContext layoutStateContext,
+  static LayoutResultHolder createAndMeasureComponent(
       final ComponentContext c,
       final Component component,
       @Nullable final String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
-      final @Nullable InternalNode current,
+      final @Nullable LithoLayoutResult current,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent layoutStatePerfEvent) {
@@ -87,7 +86,7 @@ class Layout {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
 
-        return layout;
+        return LayoutResultHolder.interrupted(layout);
       } else {
         // Layout is complete, disable interruption from this point on.
         c.markLayoutUninterruptible();
@@ -97,11 +96,9 @@ class Layout {
       ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
       Component updated = updatedScopedContext.getComponentScope();
       layout =
-          current.reconcile(
-              layoutStateContext,
-              c,
-              updated,
-              ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
+          current
+              .getInternalNode()
+              .reconcile(c, updated, ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
     }
 
     if (layoutStatePerfEvent != null) {
@@ -113,13 +110,14 @@ class Layout {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    measure(c, layout, widthSpec, heightSpec, prevLayoutStateContext, diff);
+    LithoLayoutResult result =
+        measure(c, layout, widthSpec, heightSpec, prevLayoutStateContext, diff);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
     }
 
-    return layout;
+    return new LayoutResultHolder(result);
   }
 
   public static InternalNode create(final ComponentContext parent, final Component component) {
@@ -170,8 +168,7 @@ class Layout {
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
-        node = InternalNodeUtils.create(c);
-        node.markIsNestedTreeHolder(c.getTreeProps());
+        node = InternalNodeUtils.createNestedTreeHolder(c, c.getTreeProps());
       }
 
       // If the component can resolve itself resolve it.
@@ -191,8 +188,8 @@ class Layout {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        // Calls the onCreateLayout or onCreateLayoutWithSizeSpec on the Spec.
-        final Component root = onCreateLayout(c, component);
+        final RenderResult renderResult = component.render(c);
+        final Component root = renderResult.component;
 
         // TODO: (T57741374) this step is required because of a bug in redex.
         if (root == component) {
@@ -201,6 +198,10 @@ class Layout {
           node = create(c, root, false);
         } else {
           node = null;
+        }
+
+        if (renderResult != null && node != null) {
+          applyRenderResultToNode(renderResult, node);
         }
       }
 
@@ -215,7 +216,7 @@ class Layout {
       }
 
     } catch (Exception e) {
-      handle(parent, component, e);
+      ComponentUtils.handleWithHierarchy(parent, component, e);
       return NULL_LAYOUT;
     } finally {
       if (isTracing) {
@@ -236,7 +237,7 @@ class Layout {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || (isNestedTree(c, component) && !resolveNestedTree)) {
         node.setMeasureFunction(
-            ComponentLifecycle.getYogaMeasureFunction(c.getLayoutStateContext()));
+            ComponentLifecycle.getYogaMeasureFunction(component, c.getLayoutStateContext()));
       }
     }
 
@@ -256,21 +257,34 @@ class Layout {
       if (component.needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(globalKey, component);
       } else {
-
-        // Calls onCreateTransition on the Spec.
-        final Transition transition = component.createTransition(c);
-        if (transition != null) {
-          node.addTransition(transition);
+        try {
+          // Calls onCreateTransition on the Spec.
+          final Transition transition = component.createTransition(c);
+          if (transition != null) {
+            node.addTransition(transition);
+          }
+        } catch (Exception e) {
+          ComponentUtils.handleWithHierarchy(parent, component, e);
         }
       }
     }
 
-    // 12. Call onPrepare for MountSpecs.
-    if (isMountSpec(component)) {
-      component.onPrepare(c);
+    // 12. Add attachable components
+    if (component.hasAttachDetachCallback()) {
+      // needs ComponentUtils.getGlobalKey?
+      node.addAttachable(new LayoutSpecAttachable(globalKey, component));
     }
 
-    // 13. Add working ranges to the InternalNode.
+    // 13. Call onPrepare for MountSpecs.
+    if (isMountSpec(component)) {
+      try {
+        component.onPrepare(c);
+      } catch (Exception e) {
+        ComponentUtils.handleWithHierarchy(parent, component, e);
+      }
+    }
+
+    // 14. Add working ranges to the InternalNode.
     Component.addWorkingRangeToNode(node, c, component);
 
     if (isTracing) {
@@ -280,20 +294,21 @@ class Layout {
     return node;
   }
 
-  static InternalNode create(
+  static LithoLayoutResult create(
       ComponentContext parentContext,
-      final InternalNode holder,
+      final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
 
-    final Component component = holder.getTailComponent();
-    final String componentGlobalKey = holder.getTailComponentKey();
-    final InternalNode currentLayout = holder.getNestedTree();
+    final InternalNode node = holder.getInternalNode();
+    final Component component = node.getTailComponent();
+    final String componentGlobalKey = node.getTailComponentKey();
+    final LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // Find the immediate parent context
-    List<Component> components = holder.getComponents();
-    List<String> componentKeys = holder.getComponentKeys();
+    List<Component> components = node.getComponents();
+    List<String> componentKeys = node.getComponentKeys();
     if (components.size() > 1) {
       int index = components.size() - 2;
       final Component parent = components.get(index);
@@ -310,7 +325,7 @@ class Layout {
     }
 
     // The resolved layout to return.
-    final InternalNode layout;
+    final LithoLayoutResult layout;
 
     if (currentLayout == null
         || !hasCompatibleSizeSpec(
@@ -322,7 +337,7 @@ class Layout {
             currentLayout.getLastMeasuredHeight())) {
 
       // Check if cached layout can be used.
-      final InternalNode cachedLayout =
+      final LithoLayoutResult cachedLayout =
           consumeCachedLayout(parentContext, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
@@ -332,7 +347,8 @@ class Layout {
       } else {
 
         // Check if previous layout can be remeasured and used.
-        if (currentLayout != null && component.canUsePreviousLayout(parentContext)) {
+        if (currentLayout != null
+            && component.canUsePreviousLayout(parentContext, componentGlobalKey)) {
           remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;
         } else {
@@ -351,7 +367,7 @@ class Layout {
             context = parentContext.makeNewCopy();
           }
 
-          context.setTreeProps(holder.getPendingTreeProps());
+          context.setTreeProps(holder.getInternalNode().getPendingTreeProps());
 
           // Set the size specs in ComponentContext for the nested tree
           // TODO: (T48229905) size specs should be passed in as arguments.
@@ -359,17 +375,19 @@ class Layout {
           context.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          layout = create(context, component, true, true, componentGlobalKey);
+          final InternalNode newNode = create(context, component, true, true, componentGlobalKey);
 
-          holder.copyInto(layout);
+          // TODO: Avoid this hard cast, after splitting is complete.
+          holder.getInternalNode().copyInto(newNode);
 
-          measure(
-              parentContext,
-              layout,
-              widthSpec,
-              heightSpec,
-              prevLayoutStateContext,
-              holder.getDiffNode());
+          layout =
+              measure(
+                  parentContext,
+                  newNode, // TODO: Avoid this hard cast, after splitting is complete.
+                  widthSpec,
+                  heightSpec,
+                  prevLayoutStateContext,
+                  node.getDiffNode());
         }
 
         layout.setLastWidthSpec(widthSpec);
@@ -378,7 +396,7 @@ class Layout {
         layout.setLastMeasuredWidth(layout.getWidth());
       }
 
-      holder.setNestedTree(layout);
+      holder.setNestedResult(layout);
     } else {
 
       // Use the previous layout.
@@ -386,14 +404,22 @@ class Layout {
     }
 
     // This is checking only nested tree roots however should be moved to check all the tree roots.
-    layout.assertContextSpecificStyleNotSet();
+    layout.getInternalNode().assertContextSpecificStyleNotSet();
 
     return layout;
   }
 
-  static @Nullable Component onCreateLayout(final ComponentContext c, final Component component) {
-    final Component root = component.createComponentLayout(c);
-    return root != null && root.getId() > 0 ? root : null;
+  static void applyRenderResultToNode(RenderResult renderResult, InternalNode node) {
+    if (renderResult.transitions != null) {
+      for (Transition t : renderResult.transitions) {
+        node.addTransition(t);
+      }
+    }
+    if (renderResult.useEffectEntries != null) {
+      for (Attachable attachable : renderResult.useEffectEntries) {
+        node.addAttachable(attachable);
+      }
+    }
   }
 
   /**
@@ -432,7 +458,7 @@ class Layout {
     return c;
   }
 
-  static void measure(
+  static LithoLayoutResult measure(
       final ComponentContext c,
       final InternalNode root,
       final int widthSpec,
@@ -463,20 +489,23 @@ class Layout {
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
-    root.calculateLayout(
-        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
-            ? YogaConstants.UNDEFINED
-            : SizeSpec.getSize(widthSpec),
-        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
-            ? YogaConstants.UNDEFINED
-            : SizeSpec.getSize(heightSpec));
+    LithoLayoutResult result =
+        root.calculateLayout(
+            SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+                ? YogaConstants.UNDEFINED
+                : SizeSpec.getSize(widthSpec),
+            SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
+                ? YogaConstants.UNDEFINED
+                : SizeSpec.getSize(heightSpec));
 
     if (isTracing) {
       ComponentsSystrace.endSection(/* measureTree */ );
     }
+
+    return result;
   }
 
-  static void resumeCreateAndMeasureComponent(
+  static LithoLayoutResult resumeCreateAndMeasureComponent(
       final ComponentContext c,
       final InternalNode root,
       final int widthSpec,
@@ -486,7 +515,7 @@ class Layout {
       final @Nullable PerfEvent logLayoutState) {
 
     if (root == NULL_LAYOUT) {
-      return;
+      return NULL_LAYOUT;
     }
 
     resume(root);
@@ -495,11 +524,14 @@ class Layout {
       logLayoutState.markerPoint("start_measure");
     }
 
-    measure(c, root, widthSpec, heightSpec, prevLayoutStateContext, diff);
+    final LithoLayoutResult result =
+        measure(c, root, widthSpec, heightSpec, prevLayoutStateContext, diff);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
     }
+
+    return result;
   }
 
   static void resume(final InternalNode root) {
@@ -519,7 +551,7 @@ class Layout {
 
   @VisibleForTesting
   static void remeasure(
-      final InternalNode layout,
+      final LithoLayoutResult layout,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
@@ -529,12 +561,12 @@ class Layout {
 
     layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
     measure(
-        layout.getContext(),
-        layout,
+        layout.getInternalNode().getContext(),
+        layout.getInternalNode(),
         widthSpec,
         heightSpec,
         prevLayoutStateContext,
-        layout.getDiffNode());
+        layout.getInternalNode().getDiffNode());
   }
 
   /**
@@ -621,10 +653,10 @@ class Layout {
   }
 
   @Nullable
-  static InternalNode consumeCachedLayout(
+  static LithoLayoutResult consumeCachedLayout(
       final ComponentContext c,
       final Component component,
-      final InternalNode holder,
+      final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec) {
     final LayoutState layoutState = c.getLayoutState();
@@ -636,7 +668,7 @@ class Layout {
               + " Component#measureMightNotCacheInternalNode.");
     }
 
-    final InternalNode cachedLayout = layoutState.getCachedLayout(component);
+    final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
 
     if (cachedLayout != null) {
       layoutState.clearCachedLayout(component);
@@ -726,14 +758,37 @@ class Layout {
     }
 
     final Component component = layoutNode.getTailComponent();
-    final String globalKey =
-        ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
+
     if (component != null) {
-      return component.shouldComponentUpdate(
-          getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
-          diffNode.getComponent(),
-          component.getScopedContext(layoutStateContext, globalKey),
-          component);
+      final String globalKey =
+          ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
+      final ComponentContext scopedContext =
+          component.getScopedContext(layoutStateContext, globalKey);
+
+      try {
+        if (component.isStateless()) {
+          Component diffNodeComponent = diffNode.getComponent();
+
+          return component.shouldUpdate(
+              diffNodeComponent,
+              diffNodeComponent == null || prevLayoutStateContext == null
+                  ? null
+                  : diffNodeComponent.getStateContainer(
+                      prevLayoutStateContext,
+                      ComponentUtils.getGlobalKey(
+                          diffNodeComponent, diffNode.getComponentGlobalKey())),
+              component,
+              component.getStateContainer(layoutStateContext, globalKey));
+        } else {
+          return component.shouldUpdate(
+              getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
+              diffNode.getComponent(),
+              scopedContext,
+              component);
+        }
+      } catch (Exception e) {
+        ComponentUtils.handleWithHierarchy(scopedContext, component, e);
+      }
     }
 
     return true;
@@ -791,42 +846,5 @@ class Layout {
   @TargetApi(JELLY_BEAN_MR1)
   private static int getLayoutDirection(final Context context) {
     return context.getResources().getConfiguration().getLayoutDirection();
-  }
-
-  private static void handle(ComponentContext parent, Component component, Exception exception) {
-    final EventHandler<ErrorEvent> nextHandler = parent.getErrorEventHandler();
-    final EventHandler<ErrorEvent> lastHandler;
-    Exception exceptionToThrow = exception;
-
-    if (exception instanceof ReThrownException) {
-      exceptionToThrow = ((ReThrownException) exception).original;
-      lastHandler = ((ReThrownException) exception).lastHandler;
-    } else if (exception instanceof LithoMetadataExceptionWrapper) {
-      lastHandler = ((LithoMetadataExceptionWrapper) exception).lastHandler;
-    } else {
-      lastHandler = null;
-    }
-
-    final LithoMetadataExceptionWrapper metadataWrapper =
-        (exceptionToThrow instanceof LithoMetadataExceptionWrapper)
-            ? (LithoMetadataExceptionWrapper) exceptionToThrow
-            : new LithoMetadataExceptionWrapper(parent, exceptionToThrow);
-    metadataWrapper.addComponentForLayoutStack(component);
-
-    // This means it was already handled by this handler so throw it up to the next frame until we
-    // get a new handler or get to the root
-    if (lastHandler == nextHandler) {
-      metadataWrapper.lastHandler = lastHandler;
-      throw metadataWrapper;
-    } else if (nextHandler instanceof ErrorEventHandler) { // at the root
-      ((ErrorEventHandler) nextHandler).onError(metadataWrapper);
-    } else { // Handle again with new handler
-      try {
-        ComponentLifecycle.dispatchErrorEvent(parent, exceptionToThrow);
-      } catch (ReThrownException ex) { // error handler re-raised the exception
-        metadataWrapper.lastHandler = nextHandler;
-        throw metadataWrapper;
-      }
-    }
   }
 }

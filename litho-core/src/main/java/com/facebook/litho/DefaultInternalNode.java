@@ -53,7 +53,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.OkToExtend;
-import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
@@ -80,7 +79,7 @@ import javax.annotation.Nullable;
 /** Default implementation of {@link InternalNode}. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class DefaultInternalNode implements InternalNode, Cloneable {
+public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
@@ -98,9 +97,9 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
   private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
-  private static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
+  protected static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
   private static final long PFLAG_MARGIN_IS_SET = 1L << 9;
-  private static final long PFLAG_PADDING_IS_SET = 1L << 10;
+  protected static final long PFLAG_PADDING_IS_SET = 1L << 10;
   private static final long PFLAG_POSITION_IS_SET = 1L << 11;
   private static final long PFLAG_WIDTH_IS_SET = 1L << 12;
   private static final long PFLAG_MIN_WIDTH_IS_SET = 1L << 13;
@@ -108,22 +107,22 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private static final long PFLAG_HEIGHT_IS_SET = 1L << 15;
   private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 16;
   private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 17;
-  private static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
-  private static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
-  private static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
-  private static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 21;
-  private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 22;
-  private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
-  private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
+  protected static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
+  protected static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
+  protected static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
+  protected static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 21;
+  protected static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 22;
+  protected static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
+  protected static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
   private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 25;
   private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
-  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
-  private static final long PFLAG_BORDER_IS_SET = 1L << 28;
-  private static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
-  private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
-  private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
-  private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
-  private static final long PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1L << 33;
+  protected static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
+  protected static final long PFLAG_BORDER_IS_SET = 1L << 28;
+  protected static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
+  protected static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
+  protected static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
+  protected static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
+  protected static final long PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1L << 33;
 
   private YogaNode mYogaNode;
   private ComponentContext mComponentContext;
@@ -134,46 +133,48 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable List<String> mComponentGlobalKeys;
 
-  private final int[] mBorderColors = new int[Border.EDGE_COUNT];
-  private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
+  private @Nullable LithoLayoutResult mParent;
+
+  protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
+  protected final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
 
   private @Nullable DiffNode mDiffNode;
-  private @Nullable NodeInfo mNodeInfo;
-  private @Nullable NestedTreeProps mNestedTreeProps;
-  private @Nullable EventHandler<VisibleEvent> mVisibleHandler;
-  private @Nullable EventHandler<FocusedVisibleEvent> mFocusedHandler;
-  private @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
-  private @Nullable EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
-  private @Nullable EventHandler<InvisibleEvent> mInvisibleHandler;
-  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
-  private @Nullable Drawable mBackground;
-  private @Nullable Drawable mForeground;
+  protected @Nullable NodeInfo mNodeInfo;
+  protected @Nullable EventHandler<VisibleEvent> mVisibleHandler;
+  protected @Nullable EventHandler<FocusedVisibleEvent> mFocusedHandler;
+  protected @Nullable EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  protected @Nullable EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
+  protected @Nullable EventHandler<InvisibleEvent> mInvisibleHandler;
+  protected @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+  protected @Nullable Drawable mBackground;
+  protected @Nullable Drawable mForeground;
   private @Nullable PathEffect mBorderPathEffect;
-  private @Nullable StateListAnimator mStateListAnimator;
+  protected @Nullable StateListAnimator mStateListAnimator;
   private @Nullable boolean[] mIsPaddingPercent;
   private @Nullable Edges mTouchExpansion;
-  private @Nullable String mTransitionKey;
-  private @Nullable String mTransitionOwnerKey;
-  private @Nullable Transition.TransitionKeyType mTransitionKeyType;
+  protected @Nullable String mTransitionKey;
+  protected @Nullable String mTransitionOwnerKey;
+  protected @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
   private @Nullable Map<String, Component> mComponentsNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
-  private @Nullable String mTestKey;
+  private @Nullable ArrayList<Attachable> mAttachables;
+  protected @Nullable String mTestKey;
   private @Nullable Set<DebugComponent> mDebugComponents;
   private @Nullable List<Component> mUnresolvedComponents;
-  private @Nullable Paint mLayerPaint;
+  protected @Nullable Paint mLayerPaint;
 
-  private boolean mDuplicateParentState;
-  private boolean mDuplicateChildrenStates;
-  private boolean mForceViewWrapping;
+  protected boolean mDuplicateParentState;
+  protected boolean mDuplicateChildrenStates;
+  protected boolean mForceViewWrapping;
   private boolean mCachedMeasuresValid;
 
-  private int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
-  private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-  private @DrawableRes int mStateListAnimatorRes;
+  protected int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
+  protected int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+  protected @DrawableRes int mStateListAnimatorRes;
 
-  private float mVisibleHeightRatio;
-  private float mVisibleWidthRatio;
+  protected float mVisibleHeightRatio;
+  protected float mVisibleWidthRatio;
   private float mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
   private float mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
   private float mResolvedX = YogaConstants.UNDEFINED;
@@ -186,7 +187,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
 
-  private long mPrivateFlags;
+  protected long mPrivateFlags;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
     this(componentContext, NodeConfig.createYogaNode());
@@ -234,6 +235,19 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       mWorkingRangeRegistrations = new ArrayList<>(registrations.size());
     }
     mWorkingRangeRegistrations.addAll(registrations);
+  }
+
+  @Override
+  public void addAttachable(Attachable attachable) {
+    if (mAttachables == null) {
+      mAttachables = new ArrayList<>(4);
+    }
+    mAttachables.add(attachable);
+  }
+
+  @Override
+  public @Nullable List<Attachable> getAttachables() {
+    return mAttachables;
   }
 
   @Override
@@ -336,11 +350,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void freeze() {
+  public void freeze(final YogaNode node, final @Nullable YogaNode parentYogaNode) {
 
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
     // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
-    final InternalNode parent = getParent();
+    final InternalNode parent =
+        parentYogaNode != null ? (InternalNode) parentYogaNode.getData() : null;
 
     if (parent != null
         && parent.getImportantForAccessibility()
@@ -363,9 +378,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void calculateLayout(float width, float height) {
+  public LithoLayoutResult calculateLayout(float width, float height) {
     applyOverridesRecursive(this);
     mYogaNode.calculateLayout(width, height);
+
+    return this;
   }
 
   @Override
@@ -527,8 +544,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable InternalNode getChildAt(int index) {
-    return (InternalNode) mYogaNode.getChildAt(index).getData();
+  public @Nullable DefaultInternalNode getChildAt(int index) {
+    return (DefaultInternalNode) mYogaNode.getChildAt(index).getData();
   }
 
   @Override
@@ -580,6 +597,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public ComponentContext getContext() {
     return mComponentContext;
+  }
+
+  @Override
+  public InternalNode getInternalNode() {
+    return this;
   }
 
   @Override
@@ -641,7 +663,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * height. This is used together with {@link InternalNode#getLastHeightSpec()} to implement
+   * height. This is used together with {@link LithoLayoutResult#getLastHeightSpec()} to implement
    * measure caching.
    */
   @Override
@@ -660,8 +682,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * width. This is used together with {@link InternalNode#getLastWidthSpec()} to implement measure
-   * caching.
+   * width. This is used together with {@link LithoLayoutResult#getLastWidthSpec()} to implement
+   * measure caching.
    */
   @Override
   public float getLastMeasuredWidth() {
@@ -713,28 +735,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable InternalNode getNestedTree() {
-    return mNestedTreeProps != null ? mNestedTreeProps.mNestedTree : null;
-  }
-
-  /**
-   * Set the nested tree before measuring it in order to transfer over important information such as
-   * layout direction needed during measurement.
-   */
-  @Override
-  public void setNestedTree(InternalNode nestedTree) {
-    if (nestedTree != NULL_LAYOUT) {
-      nestedTree.getOrCreateNestedTreeProps().mNestedTreeHolder = this;
-    }
-    getOrCreateNestedTreeProps().mNestedTree = nestedTree;
-  }
-
-  @Override
-  public @Nullable InternalNode getNestedTreeHolder() {
-    return mNestedTreeProps != null ? mNestedTreeProps.mNestedTreeHolder : null;
-  }
-
-  @Override
   public @Nullable NodeInfo getNodeInfo() {
     return mNodeInfo;
   }
@@ -742,14 +742,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void setNodeInfo(NodeInfo nodeInfo) {
     mNodeInfo = nodeInfo;
-  }
-
-  @Override
-  public NestedTreeProps getOrCreateNestedTreeProps() {
-    if (mNestedTreeProps == null) {
-      mNestedTreeProps = new NestedTreeProps();
-    }
-    return mNestedTreeProps;
   }
 
   @Override
@@ -762,16 +754,17 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable InternalNode getParent() {
-    if (mYogaNode == null || mYogaNode.getOwner() == null) {
-      return null;
+  public @Nullable DefaultInternalNode getParent() {
+    if (mYogaNode != null && mYogaNode.getOwner() != null) {
+      return (DefaultInternalNode) mYogaNode.getOwner().getData();
+    } else {
+      return mParent != null ? (DefaultInternalNode) mParent : null;
     }
-    return (InternalNode) mYogaNode.getOwner().getData();
   }
 
   @Override
-  public @Nullable TreeProps getPendingTreeProps() {
-    return mNestedTreeProps != null ? mNestedTreeProps.mPendingTreeProps : null;
+  public void setParent(LithoLayoutResult parent) {
+    mParent = parent;
   }
 
   @Override
@@ -941,11 +934,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public boolean hasNestedTree() {
-    return mNestedTreeProps != null && mNestedTreeProps.mNestedTree != null;
-  }
-
-  @Override
   public boolean hasStateListAnimatorResSet() {
     return (mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0;
   }
@@ -1039,15 +1027,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         || getResolvedLayoutDirection() == YogaDirection.INHERIT;
   }
 
-  /**
-   * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link Layout#create(ComponentContext, Component, boolean)}.
-   */
-  @Override
-  public boolean isNestedTreeHolder() {
-    return mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder;
-  }
-
   @Override
   public void isReferenceBaseline(boolean isReferenceBaseline) {
     mYogaNode.setIsReferenceBaseline(isReferenceBaseline);
@@ -1081,13 +1060,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   public void marginPx(YogaEdge edge, @Px int margin) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
-  }
-
-  /** Mark this node as a nested tree root holder. */
-  @Override
-  public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {
-    getOrCreateNestedTreeProps().mIsNestedTreeHolder = true;
-    getOrCreateNestedTreeProps().mPendingTreeProps = TreeProps.copy(currentTreeProps);
   }
 
   @Override
@@ -1141,23 +1113,13 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
-    if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
-      getNestedTreePadding().set(edge, percent);
-      setIsPaddingPercent(edge, true);
-    } else {
-      mYogaNode.setPaddingPercent(edge, percent);
-    }
+    mYogaNode.setPaddingPercent(edge, percent);
   }
 
   @Override
   public void paddingPx(YogaEdge edge, @Px int padding) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
-    if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
-      getNestedTreePadding().set(edge, padding);
-      setIsPaddingPercent(edge, false);
-    } else {
-      mYogaNode.setPadding(edge, padding);
-    }
+    mYogaNode.setPadding(edge, padding);
   }
 
   @Override
@@ -1214,16 +1176,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   @Override
   public void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
-    if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
-      NestedTreeProps props = getOrCreateNestedTreeProps();
-      if (props.mNestedTreeBorderWidth == null) {
-        props.mNestedTreeBorderWidth = new Edges();
-      }
-
-      props.mNestedTreeBorderWidth.set(edge, borderWidth);
-    } else {
-      mYogaNode.setBorder(edge, borderWidth);
-    }
+    mYogaNode.setBorder(edge, borderWidth);
   }
 
   @Override
@@ -1486,109 +1439,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public void copyInto(InternalNode target) {
-    if (target == NULL_LAYOUT) {
-      return;
-    }
-
-    if (mNodeInfo != null) {
-      if (target.getNodeInfo() == null) {
-        target.setNodeInfo(mNodeInfo);
-      } else {
-        mNodeInfo.copyInto(target.getOrCreateNodeInfo());
-      }
-    }
-    if (target.isLayoutDirectionInherit()) {
-      target.layoutDirection(getResolvedLayoutDirection());
-    }
-    if (target.isImportantForAccessibilityIsSet()) {
-      target.importantForAccessibility(mImportantForAccessibility);
-    }
-    if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
-      target.duplicateParentState(mDuplicateParentState);
-    }
-    if ((mPrivateFlags & PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET) != 0L) {
-      target.duplicateChildrenStates(mDuplicateChildrenStates);
-    }
-    if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
-      target.background(mBackground);
-    }
-    if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
-      target.foreground(mForeground);
-    }
-    if (mForceViewWrapping) {
-      target.wrapInView();
-    }
-    if ((mPrivateFlags & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
-      target.visibleHandler(mVisibleHandler);
-    }
-    if ((mPrivateFlags & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
-      target.focusedHandler(mFocusedHandler);
-    }
-    if ((mPrivateFlags & PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0L) {
-      target.fullImpressionHandler(mFullImpressionHandler);
-    }
-    if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
-      target.invisibleHandler(mInvisibleHandler);
-    }
-    if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
-      target.unfocusedHandler(mUnfocusedHandler);
-    }
-    if ((mPrivateFlags & PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET) != 0L) {
-      target.visibilityChangedHandler(mVisibilityChangedHandler);
-    }
-    if (mTestKey != null) {
-      target.testKey(mTestKey);
-    }
-    if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-      if (mNestedTreeProps == null || mNestedTreeProps.mNestedTreePadding == null) {
-        throw new IllegalStateException(
-            "copyInto() must be used when resolving a nestedTree. If padding was set on the holder node, we must have a mNestedTreePadding instance");
-      }
-      for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
-        float value = mNestedTreeProps.mNestedTreePadding.getRaw(i);
-        if (!YogaConstants.isUndefined(value)) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          if (isPaddingPercent(edge)) {
-            target.paddingPercent(edge, value);
-          } else {
-            target.paddingPx(edge, (int) value);
-          }
-        }
-      }
-    }
-    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-      if (mNestedTreeProps == null || mNestedTreeProps.mNestedTreeBorderWidth == null) {
-        throw new IllegalStateException(
-            "copyInto() must be used when resolving a nestedTree.If border width was set on the holder node, we must have a mNestedTreeBorderWidth instance");
-      }
-
-      target.border(mNestedTreeProps.mNestedTreeBorderWidth, mBorderColors, mBorderRadius);
-    }
-    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
-      target.transitionKey(mTransitionKey, mTransitionOwnerKey);
-    }
-    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
-      target.transitionKeyType(mTransitionKeyType);
-    }
-    if (mVisibleHeightRatio != 0) {
-      target.visibleHeightRatio(mVisibleHeightRatio);
-    }
-    if (mVisibleWidthRatio != 0) {
-      target.visibleWidthRatio(mVisibleWidthRatio);
-    }
-    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_SET) != 0L) {
-      target.stateListAnimator(mStateListAnimator);
-    }
-    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0L) {
-      target.stateListAnimatorRes(mStateListAnimatorRes);
-    }
-    if (mLayerType != LayerType.LAYER_TYPE_NOT_SET) {
-      target.layerType(mLayerType, mLayerPaint);
-    }
-  }
-
-  @Override
   public void applyAttributes(TypedArray a) {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
@@ -1723,20 +1573,15 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public DefaultInternalNode deepClone() {
 
-    // 1. Return the null layout.
-    if (this == NULL_LAYOUT) {
-      return this;
-    }
-
-    // 2. Clone this layout.
+    // 1. Clone this layout.
     final DefaultInternalNode copy = clone();
 
-    // 3. Clone the YogaNode of this layout and set it on the cloned layout.
+    // 2. Clone the YogaNode of this layout and set it on the cloned layout.
     YogaNode node = mYogaNode.cloneWithoutChildren();
     copy.mYogaNode = node;
     node.setData(copy);
 
-    // 4. Deep clone all children and add it to the cloned YogaNode
+    // 3. Deep clone all children and add it to the cloned YogaNode
     final int count = getChildCount();
     for (int i = 0; i < count; i++) {
       copy.child(getChildAt(i).deepClone());
@@ -1753,11 +1598,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode reconcile(
-      LayoutStateContext layoutStateContext,
-      ComponentContext c,
-      Component next,
-      @Nullable String nextKey) {
+  public InternalNode reconcile(ComponentContext c, Component next, @Nullable String nextKey) {
     final StateHandler stateHandler = c.getStateHandler();
     final Set<String> keys;
     if (stateHandler == null) {
@@ -1766,7 +1607,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       keys = stateHandler.getKeysForPendingUpdates();
     }
 
-    return reconcile(layoutStateContext, c, this, next, nextKey, keys);
+    return reconcile(c, this, next, nextKey, keys);
   }
 
   void setComponentContext(ComponentContext c) {
@@ -1784,7 +1625,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return node;
   }
 
-  private boolean isPaddingPercent(YogaEdge edge) {
+  protected boolean isPaddingPercent(YogaEdge edge) {
     return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
   }
 
@@ -1796,19 +1637,13 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         applyOverridesRecursive(node.getChildAt(i));
       }
 
-      if (node.hasNestedTree()) {
-        applyOverridesRecursive(node.getNestedTree());
+      if (node instanceof NestedTreeHolderResult) {
+        LithoLayoutResult result = ((NestedTreeHolderResult) node).getNestedResult();
+        if (result != null) {
+          applyOverridesRecursive((InternalNode) result);
+        }
       }
     }
-  }
-
-  @ReturnsOwnership
-  private Edges getNestedTreePadding() {
-    NestedTreeProps props = getOrCreateNestedTreeProps();
-    if (props.mNestedTreePadding == null) {
-      props.mNestedTreePadding = new Edges();
-    }
-    return props.mNestedTreePadding;
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
@@ -1836,7 +1671,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return result;
   }
 
-  private void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
+  protected void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
     if (mIsPaddingPercent == null && isPaddingPercent) {
       mIsPaddingPercent = new boolean[YogaEdge.ALL.intValue() + 1];
     }
@@ -1865,7 +1700,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * Release properties which are not longer required for the current layout pass or release
    * properties which should be reset during reconciliation.
    */
-  private void clean() {
+  protected void clean() {
     // 1. Release or clone props.
     mComponents = new ArrayList<>();
 
@@ -2002,14 +1837,14 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final DefaultInternalNode current,
       final Component next,
       @Nullable final String nextKey,
       final Set<String> keys) {
     int mode =
-        getReconciliationMode(next.getScopedContext(layoutStateContext, nextKey), current, keys);
+        getReconciliationMode(
+            next.getScopedContext(parentContext.getLayoutStateContext(), nextKey), current, keys);
     final InternalNode layout;
 
     switch (mode) {
@@ -2018,13 +1853,24 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
           layout = current.deepClone();
         } else {
           layout =
-              reconcile(layoutStateContext, current, next, nextKey, keys, ReconciliationMode.COPY);
+              reconcile(
+                  parentContext.getLayoutStateContext(),
+                  current,
+                  next,
+                  nextKey,
+                  keys,
+                  ReconciliationMode.COPY);
         }
         break;
       case ReconciliationMode.RECONCILE:
         layout =
             reconcile(
-                layoutStateContext, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
+                parentContext.getLayoutStateContext(),
+                current,
+                next,
+                nextKey,
+                keys,
+                ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
         layout = Layout.create(parentContext, next, false, true, nextKey);
@@ -2081,35 +1927,30 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
             .getTailComponent()
             .getScopedContext(layoutStateContext, layout.getTailComponentKey());
 
-    // 3. Clear the nested tree
-    if (layout.getNestedTree() != null) {
-      layout.getOrCreateNestedTreeProps().mNestedTree = null;
-    }
-
-    // 4. Iterate over children.
+    // 3. Iterate over children.
     int count = currentNode.getChildCount();
     for (int i = 0; i < count; i++) {
       final DefaultInternalNode child = (DefaultInternalNode) currentNode.getChildAt(i).getData();
 
-      // 4.1 Get the head component of the child layout.
+      // 3.1 Get the head component of the child layout.
       List<Component> components = child.getComponents();
       List<String> componentKeys = child.getComponentKeys();
       int index = Math.max(0, components.size() - 1);
       final Component component = components.get(index);
       final String key = componentKeys == null ? null : componentKeys.get(index);
 
-      // 4.2 Update the head component of the child layout.
+      // 3.2 Update the head component of the child layout.
       final Component updated = component.makeUpdatedShallowCopy(parentContext, key);
 
-      // 4.3 Reconcile child layout.
+      // 3.3 Reconcile child layout.
       final InternalNode copy;
       if (mode == ReconciliationMode.COPY) {
         copy = reconcile(layoutStateContext, child, updated, key, keys, ReconciliationMode.COPY);
       } else {
-        copy = reconcile(layoutStateContext, parentContext, child, updated, key, keys);
+        copy = reconcile(parentContext, child, updated, key, keys);
       }
 
-      // 4.3 Add the child to the cloned yoga node
+      // 3.3 Add the child to the cloned yoga node
       layout.child(copy);
     }
 
@@ -2186,7 +2027,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     final Component root = current.getHeadComponent();
 
     // 1.0 check early exit conditions
-    if (c == null || root == null || current.isNestedTreeHolder()) {
+    if (c == null || root == null || current instanceof NestedTreeHolder) {
       return ReconciliationMode.RECREATE;
     }
 

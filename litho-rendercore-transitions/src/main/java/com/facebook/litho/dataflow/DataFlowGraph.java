@@ -24,7 +24,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -76,13 +79,22 @@ public class DataFlowGraph {
   private final TimingSource mTimingSource;
 
   @GuardedBy("this")
-  private final ArrayList<GraphBinding> mBindings = new ArrayList<>();
+  private final Set<GraphBinding> mBindings = new LinkedHashSet<>();
 
   @GuardedBy("this")
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
 
   @GuardedBy("this")
   private final Map<ValueNode, NodeState> mNodeStates = new HashMap<>();
+
+  @GuardedBy("this")
+  private boolean mIsFinishingBindings = false;
+
+  @GuardedBy("this")
+  private final List<GraphBinding> mBindingsToUnregister = new ArrayList<>();
+
+  @GuardedBy("this")
+  private final List<GraphBinding> mBindingsToRegister = new ArrayList<>();
 
   private boolean mIsDirty = false;
 
@@ -98,6 +110,10 @@ public class DataFlowGraph {
     if (!binding.isActive()) {
       throw new RuntimeException("Expected added GraphBinding to be active: " + binding);
     }
+    if (mIsFinishingBindings) {
+      mBindingsToRegister.add(binding);
+      return;
+    }
     mBindings.add(binding);
     registerNodes(binding);
     if (mBindings.size() == 1) {
@@ -111,6 +127,10 @@ public class DataFlowGraph {
    * removed from the graph.
    */
   public synchronized void unregister(GraphBinding binding) {
+    if (mIsFinishingBindings) {
+      mBindingsToUnregister.add(binding);
+      return;
+    }
     if (!mBindings.remove(binding)) {
       throw new RuntimeException("Tried to unregister non-existent binding");
     }
@@ -154,8 +174,8 @@ public class DataFlowGraph {
     final ArraySet<ValueNode> leafNodes = new ArraySet<>();
     final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
 
-    for (int i = 0, bindingsSize = mBindings.size(); i < bindingsSize; i++) {
-      final ArrayList<ValueNode> nodes = mBindings.get(i).getAllNodes();
+    for (final GraphBinding binding : mBindings) {
+      final ArrayList<ValueNode> nodes = binding.getAllNodes();
       for (int j = 0, nodesSize = nodes.size(); j < nodesSize; j++) {
         final ValueNode node = nodes.get(j);
         final int outputCount = node.getOutputCount();
@@ -235,10 +255,10 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private void notifyFinishedBindings() {
-    // Iterate in reverse order since notifying that a binding is finished results in removing
-    // that binding.
-    for (int i = mBindings.size() - 1; i >= 0; i--) {
-      final GraphBinding binding = mBindings.get(i);
+    // We need loop the graph bindings and flag the ones we need to add/remove so that we don't
+    // change the list while iterating.
+    mIsFinishingBindings = true;
+    for (final GraphBinding binding : mBindings) {
       boolean allAreFinished = true;
       final ArrayList<ValueNode> nodesToCheck = binding.getAllNodes();
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
@@ -252,6 +272,15 @@ public class DataFlowGraph {
         binding.notifyNodesHaveFinished();
       }
     }
+    mIsFinishingBindings = false;
+    for (final GraphBinding binding : mBindingsToRegister) {
+      register(binding);
+    }
+    for (final GraphBinding binding : mBindingsToUnregister) {
+      unregister(binding);
+    }
+    mBindingsToRegister.clear();
+    mBindingsToUnregister.clear();
   }
 
   @GuardedBy("this")

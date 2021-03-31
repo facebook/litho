@@ -587,10 +587,9 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    final InternalNode root =
-        Layout.createAndMeasureComponent(
-            mComponentContext.getLayoutStateContext(), mComponentContext, component, 800, 600);
-    verify(root).flexGrow(anyFloat());
+    final LithoLayoutResult root =
+        Layout.createAndMeasureComponent(mComponentContext, component, 800, 600).mResult;
+    verify(root.getInternalNode()).flexGrow(anyFloat());
   }
 
   private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
@@ -601,9 +600,12 @@ public class LayoutStateCreateTreeTest {
     }
 
     protected InternalNode resolve(ComponentContext c) {
+      LithoLayoutResult result = mock(LithoLayoutResult.class);
       InternalNode node = mock(InternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
+      when(node.calculateLayout(anyFloat(), anyFloat())).thenReturn(result);
+      when(result.getInternalNode()).thenReturn(node);
       return node;
     }
 

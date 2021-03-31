@@ -177,7 +177,8 @@ public class StateHandler {
     }
 
     if (currentStateContainer != null) {
-      component.transferState(currentStateContainer, component.getStateContainer(scopedContext));
+      component.transferState(
+          currentStateContainer, Component.getStateContainer(scopedContext, component));
     } else {
       final ComponentTree componentTree = scopedContext.getComponentTree();
       if (componentTree != null && componentTree.getInitialStateContainer() != null) {
@@ -200,7 +201,7 @@ public class StateHandler {
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        final StateContainer stateContainer = component.getStateContainer(scopedContext);
+        final StateContainer stateContainer = Component.getStateContainer(scopedContext, component);
         stateContainer.applyStateUpdate(update);
         final Transition transition = obtainTransitionFromStateContainer(stateContainer);
         if (transition != null) {
@@ -223,7 +224,7 @@ public class StateHandler {
     }
 
     synchronized (this) {
-      final StateContainer stateContainer = component.getStateContainer(scopedContext);
+      final StateContainer stateContainer = Component.getStateContainer(scopedContext, component);
       mStateContainers.put(key, stateContainer);
       if (transitionsFromStateUpdate != null && !transitionsFromStateUpdate.isEmpty()) {
         maybeInitPendingStateUpdateTransitions();

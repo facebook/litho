@@ -83,23 +83,31 @@ public class InternalNodeTest {
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
-        context.getLayoutStateContext(),
-        context,
-        Column.create(context).build(),
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+            context,
+            Column.create(context).build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED))
+        .mResult
+        .getInternalNode();
   }
 
-  private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
+  private static InternalNode.NestedTreeHolder acquireNestedTreeHolder() {
+    final ComponentContext context = new ComponentContext(getApplicationContext());
+    context.setLayoutStateContextForTesting();
+
+    return new DefaultNestedTreeHolder(context, null);
+  }
+
+  private static LithoLayoutResult acquireInternalNodeWithLogger(ComponentsLogger logger) {
     final ComponentContext context = new ComponentContext(getApplicationContext(), "TEST", logger);
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
-        context.getLayoutStateContext(),
-        context,
-        Column.create(context).build(),
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+            context,
+            Column.create(context).build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED))
+        .mResult;
   }
 
   private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
@@ -309,12 +317,13 @@ public class InternalNodeTest {
 
   @Test
   public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
-    InternalNode holderNode = acquireInternalNode();
+    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
     InternalNode nestedTree = acquireInternalNode();
 
     nestedTree.layoutDirection(RTL);
     holderNode.calculateLayout();
-    holderNode.setNestedTree(nestedTree);
+    ((LithoLayoutResult.NestedTreeHolderResult) holderNode)
+        .setNestedResult((LithoLayoutResult) nestedTree);
 
     assertThat(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isFalse();
     assertThat(holderNode.getStyleDirection()).isEqualTo(INHERIT);
@@ -323,7 +332,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
-    InternalNode holderNode = acquireInternalNode();
+    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
     InternalNode nestedTree = acquireInternalNode();
 
     holderNode.calculateLayout();
@@ -335,7 +344,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
-    InternalNode holderNode = acquireInternalNode();
+    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
     InternalNode nestedTree = acquireInternalNode();
 
     holderNode.layoutDirection(RTL);
@@ -347,7 +356,7 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNodeSetFlags() {
-    InternalNode orig = acquireInternalNode();
+    InternalNode.NestedTreeHolder orig = acquireNestedTreeHolder();
     InternalNode dest = acquireInternalNode();
 
     orig.importantForAccessibility(0);
@@ -415,7 +424,7 @@ public class InternalNodeTest {
     textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
     assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
-    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
+    LithoLayoutResult cachedLayout = layoutState.getCachedLayout(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
@@ -439,7 +448,7 @@ public class InternalNodeTest {
     textComponent.measureMightNotCacheInternalNode(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
     assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
-    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
+    LithoLayoutResult cachedLayout = layoutState.getCachedLayout(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
@@ -498,11 +507,11 @@ public class InternalNodeTest {
     when(componentsLogger.newPerformanceEvent((ComponentContext) any(), anyInt()))
         .thenReturn(perfEvent);
 
-    InternalNode node = acquireInternalNodeWithLogger(componentsLogger);
-    node.alignSelf(YogaAlign.AUTO);
-    node.flex(1f);
+    LithoLayoutResult node = acquireInternalNodeWithLogger(componentsLogger);
+    node.getInternalNode().alignSelf(YogaAlign.AUTO);
+    node.getInternalNode().flex(1f);
 
-    node.assertContextSpecificStyleNotSet();
+    node.getInternalNode().assertContextSpecificStyleNotSet();
     assertThat(mComponentsReporter.getLoggedMessages())
         .contains(
             new Pair<>(
@@ -514,19 +523,19 @@ public class InternalNodeTest {
     final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
 
-    InternalNode layout =
+    LithoLayoutResult layout =
         createAndMeasureComponent(
-            context.getLayoutStateContext(),
-            context,
-            Column.create(context)
-                .child(Row.create(context).child(Column.create(context)))
-                .child(Column.create(context).child(Row.create(context)))
-                .child(SolidColor.create(context).color(Color.RED))
-                .build(),
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
+                context,
+                Column.create(context)
+                    .child(Row.create(context).child(Column.create(context)))
+                    .child(Column.create(context).child(Row.create(context)))
+                    .child(SolidColor.create(context).color(Color.RED))
+                    .build(),
+                makeSizeSpec(0, UNSPECIFIED),
+                makeSizeSpec(0, UNSPECIFIED))
+            .mResult;
 
-    InternalNode cloned = layout.deepClone();
+    InternalNode cloned = layout.getInternalNode().deepClone();
 
     assertThat(cloned).isNotNull();
 
@@ -542,24 +551,24 @@ public class InternalNodeTest {
                 cloned.getChildAt(0).getTailComponentKey()))
         .isEqualTo(
             ComponentUtils.getGlobalKey(
-                layout.getChildAt(0).getTailComponent(),
-                layout.getChildAt(0).getTailComponentKey()));
+                layout.getChildAt(0).getInternalNode().getTailComponent(),
+                layout.getChildAt(0).getInternalNode().getTailComponentKey()));
     assertThat(
             ComponentUtils.getGlobalKey(
                 cloned.getChildAt(1).getTailComponent(),
                 cloned.getChildAt(1).getTailComponentKey()))
         .isEqualTo(
             ComponentUtils.getGlobalKey(
-                layout.getChildAt(1).getTailComponent(),
-                layout.getChildAt(1).getTailComponentKey()));
+                layout.getChildAt(1).getInternalNode().getTailComponent(),
+                layout.getChildAt(1).getInternalNode().getTailComponentKey()));
     assertThat(
             ComponentUtils.getGlobalKey(
                 cloned.getChildAt(2).getTailComponent(),
                 cloned.getChildAt(2).getTailComponentKey()))
         .isEqualTo(
             ComponentUtils.getGlobalKey(
-                layout.getChildAt(2).getTailComponent(),
-                layout.getChildAt(2).getTailComponentKey()));
+                layout.getChildAt(2).getInternalNode().getTailComponent(),
+                layout.getChildAt(2).getInternalNode().getTailComponentKey()));
 
     assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
     assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());

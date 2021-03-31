@@ -39,6 +39,7 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
+import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -275,6 +276,7 @@ class TextInputSpec {
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
+      @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText) {
     EditText forMeasure =
         TextInputSpec.createAndMeasureEditText(
@@ -298,6 +300,7 @@ class TextInputSpec {
             gravity,
             editable,
             inputType,
+            keyListener,
             imeOptions,
             inputFilters,
             multiline,
@@ -347,6 +350,7 @@ class TextInputSpec {
       int gravity,
       boolean editable,
       int inputType,
+      @Nullable KeyListener keyListener,
       int imeOptions,
       List<InputFilter> inputFilters,
       boolean multiline,
@@ -381,6 +385,7 @@ class TextInputSpec {
         gravity,
         editable,
         inputType,
+        keyListener,
         imeOptions,
         inputFilters,
         multiline,
@@ -415,6 +420,7 @@ class TextInputSpec {
       int gravity,
       boolean editable,
       int inputType,
+      @Nullable KeyListener keyListener,
       int imeOptions,
       @Nullable List<InputFilter> inputFilters,
       boolean multiline,
@@ -446,7 +452,7 @@ class TextInputSpec {
     if (!editable) {
       inputType = EditorInfo.TYPE_NULL;
     }
-    setInputTypeIfChanged(editText, inputType);
+    setInputTypeAndKeyListenerIfChanged(editText, inputType, keyListener);
 
     // Needs to be set before the text so it would apply to the current text
     if (inputFilters != null) {
@@ -525,10 +531,16 @@ class TextInputSpec {
     }
   }
 
-  private static void setInputTypeIfChanged(EditText editText, int inputType) {
+  private static void setInputTypeAndKeyListenerIfChanged(
+      EditText editText, int inputType, @Nullable KeyListener keyListener) {
     // Avoid redundant call to InputMethodManager#restartInput.
     if (inputType != editText.getInputType()) {
       editText.setInputType(inputType);
+    }
+
+    // Optionally Set KeyListener later to override the one set by the InputType
+    if (keyListener != null && keyListener != editText.getKeyListener()) {
+      editText.setKeyListener(keyListener);
     }
   }
 
@@ -559,6 +571,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> cursorDrawableRes,
       @Prop(optional = true) Diff<MovementMethod> movementMethod,
       @Prop(optional = true, resType = ResType.STRING) Diff<CharSequence> error,
+      @Prop(optional = true) Diff<KeyListener> keyListener,
       @State Diff<Integer> measureSeqNumber,
       @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedView,
       @State Diff<AtomicReference<CharSequence>> savedText) {
@@ -608,6 +621,9 @@ class TextInputSpec {
       return true;
     }
     if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
+      return true;
+    }
+    if (!ObjectsCompat.equals(keyListener.getPrevious(), keyListener.getNext())) {
       return true;
     }
     if (!ObjectsCompat.equals(imeOptions.getPrevious(), imeOptions.getNext())) {
@@ -746,6 +762,7 @@ class TextInputSpec {
       @Prop(optional = true) MovementMethod movementMethod,
       @Prop(optional = true, resType = ResType.STRING) CharSequence error,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
+      @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -767,6 +784,7 @@ class TextInputSpec {
         gravity,
         editable,
         inputType,
+        keyListener,
         imeOptions,
         inputFilters,
         multiline,
@@ -827,7 +845,12 @@ class TextInputSpec {
   static void onUnmount(
       ComponentContext c,
       EditTextWithEventHandlers editText,
+      @Prop(optional = true) @Nullable KeyListener keyListener,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    if (keyListener != null) {
+      editText.setKeyListener(null); // Clear any KeyListener
+      editText.setInputType(inputType); // Set the input type back to default.
+    }
     editText.setTextState(null);
     mountedView.set(null);
   }
@@ -953,6 +976,7 @@ class TextInputSpec {
       implements EditText.OnEditorActionListener {
 
     private static final int UNMEASURED_LINE_COUNT = -1;
+
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;

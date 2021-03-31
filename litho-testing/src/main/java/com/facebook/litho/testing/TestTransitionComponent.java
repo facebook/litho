@@ -17,9 +17,11 @@
 package com.facebook.litho.testing;
 
 import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.Transition;
 import com.facebook.litho.Wrapper;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -36,10 +38,10 @@ public class TestTransitionComponent extends TestComponent {
 
   @Override
   public boolean shouldUpdate(
-      ComponentContext previousScopedContext,
-      Component previous,
-      ComponentContext nextScopedContext,
-      Component next) {
+      final @Nullable Component previous,
+      final @Nullable StateContainer previousStateContainer,
+      final @Nullable Component next,
+      final @Nullable StateContainer nextStateContainer) {
     return !next.equals(previous);
   }
 

@@ -13,6 +13,7 @@ com.facebook.litho.sections
 com.facebook.litho.sections.annotations
 com.facebook.litho.sections.common
 com.facebook.litho.sections.config
+com.facebook.litho.sections.debug
 com.facebook.litho.sections.logger
 com.facebook.litho.sections.specmodels.model
 com.facebook.litho.sections.specmodels.processor
@@ -54,3 +55,4 @@ com.facebook.rendercore.utils
 com.facebook.rendercore.visibility
 com.facebook.widget.accessibility.delegates
 com.facebook.yoga
+com.google.android.material.textfield

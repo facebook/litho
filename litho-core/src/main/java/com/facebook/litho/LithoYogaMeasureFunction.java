@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
+import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
@@ -54,7 +55,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode widthMode,
       float height,
       YogaMeasureMode heightMode) {
-    final InternalNode node = (InternalNode) cssNode.getData();
+    final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
+    final InternalNode node = result.getInternalNode();
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
     final ComponentContext componentScopedContext =
@@ -82,15 +84,15 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
             .flush();
       }
 
-      node.setLastWidthSpec(widthSpec);
-      node.setLastHeightSpec(heightSpec);
+      result.setLastWidthSpec(widthSpec);
+      result.setLastHeightSpec(heightSpec);
 
       int outputWidth = 0;
       int outputHeight = 0;
 
       ComponentContext context = node.getContext();
 
-      if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
+      if (Component.isNestedTree(context, component) || result instanceof NestedTreeHolderResult) {
 
         // Find the nearest parent component context.
         final Component head = node.getHeadComponent();
@@ -113,8 +115,13 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           context = parent.getScopedContext(mLayoutStateContext, parentKey);
         }
 
-        final InternalNode nestedTree =
-            Layout.create(context, node, widthSpec, heightSpec, mPrevLayoutStateContext);
+        final LithoLayoutResult nestedTree =
+            Layout.create(
+                context,
+                (NestedTreeHolderResult) result,
+                widthSpec,
+                heightSpec,
+                mPrevLayoutStateContext);
 
         outputWidth = nestedTree.getWidth();
         outputHeight = nestedTree.getHeight();
@@ -127,11 +134,24 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       } else {
         final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-        component.onMeasure(componentScopedContext, node, widthSpec, heightSpec, size);
+        component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size);
 
         if (size.width < 0 || size.height < 0) {
           throw new IllegalStateException(
-              "MeasureOutput not set, ComponentLifecycle is: " + component);
+              "MeasureOutput not set, ComponentLifecycle is: "
+                  + component
+                  + " Width: "
+                  + width
+                  + " Height: "
+                  + height
+                  + " WidthMode: "
+                  + widthMode.name()
+                  + " HeightMode: "
+                  + heightMode.name()
+                  + " Measured width : "
+                  + size.width
+                  + " Measured Height: "
+                  + size.height);
         }
 
         outputWidth = size.width;
@@ -145,8 +165,10 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         }
       }
 
-      node.setLastMeasuredWidth(outputWidth);
-      node.setLastMeasuredHeight(outputHeight);
+      result.setLastMeasuredWidth(outputWidth);
+      result.setLastMeasuredHeight(outputHeight);
+      result.setLastWidthSpec(widthSpec);
+      result.setLastHeightSpec(heightSpec);
 
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -154,7 +176,8 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
       return YogaMeasureOutput.make(outputWidth, outputHeight);
     } catch (Exception e) {
-      throw ComponentUtils.wrapWithMetadata(componentScopedContext, e);
+      ComponentUtils.handle(componentScopedContext, e);
+      return YogaMeasureOutput.make(0, 0);
     }
   }
 }

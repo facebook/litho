@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import org.jetbrains.annotations.Nullable;
 
 public class MethodCompletionContributor extends CompletionContributor {
 
@@ -51,6 +52,7 @@ public class MethodCompletionContributor extends CompletionContributor {
     extend(CompletionType.BASIC, METHOD_ANNOTATION, OnEventCompletionProvider.INSTANCE);
     extend(CompletionType.BASIC, METHOD_ANNOTATION, LayoutSpecMethodAnnotationsProvider.INSTANCE);
     extend(CompletionType.BASIC, METHOD_ANNOTATION, MountSpecMethodAnnotationsProvider.INSTANCE);
+    extend(CompletionType.BASIC, METHOD_ANNOTATION, SectionSpecMethodAnnotationsProvider.INSTANCE);
   }
 
   static void addMethodCompletions(
@@ -58,36 +60,46 @@ public class MethodCompletionContributor extends CompletionContributor {
       Predicate<PsiClass> condition,
       Collection<String> annotationFQNs,
       CompletionResultSet result) {
+    addMethodCompletions(position, condition, null, annotationFQNs, result);
+  }
+
+  static void addMethodCompletions(
+      PsiElement position,
+      Predicate<PsiClass> condition,
+      @Nullable String prefix,
+      Collection<String> annotationFqns,
+      CompletionResultSet result) {
     Optional<PsiClass> maybeCls = CompletionUtils.findFirstParent(position, condition);
     if (!maybeCls.isPresent()) {
       return;
     }
 
     final Project project = position.getProject();
-    for (String annotationFQN : annotationFQNs) {
+    for (String annotationFQN : annotationFqns) {
       LookupElement lookup =
           PrioritizedLookupElement.withPriority(
-              createMethodLookup(annotationFQN, project, maybeCls.get()), Integer.MAX_VALUE);
+              createMethodLookup(prefix, annotationFQN, project, maybeCls.get()),
+              Integer.MAX_VALUE);
       result.addElement(lookup);
     }
   }
 
   private static LookupElement createMethodLookup(
-      String annotationFQN, Project project, PsiClass specClass) {
-    final String annotation = StringUtil.getShortName(annotationFQN);
+      @Nullable String prefix, String annotationFqn, Project project, PsiClass specClass) {
+    final String annotation = StringUtil.getShortName(annotationFqn);
     final TemplateService templateService =
         ServiceManager.getService(project, TemplateService.class);
-    final PsiMethod psiMethod = templateService.getMethodTemplate(annotation, project);
+    final PsiMethod psiMethod = templateService.getMethodTemplate(prefix, annotation, project);
     if (psiMethod != null) {
       return createMethodLookup(
           psiMethod,
           Collections.singletonList(psiMethod),
           specClass,
-          getOrCreateClass(annotationFQN, project),
+          getOrCreateClass(annotationFqn, project),
           "@" + annotation,
           () -> log(annotation));
     }
-    return SpecLookupElement.create(annotationFQN, project, (context, t) -> log(annotation));
+    return SpecLookupElement.create(annotationFqn, project, (context, t) -> log(annotation));
   }
 
   static PsiClass getOrCreateClass(String qualifiedClassName, Project project) {

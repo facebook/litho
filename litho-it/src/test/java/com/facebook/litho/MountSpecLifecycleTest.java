@@ -27,8 +27,6 @@ import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.widget.CrashingMountable;
-import com.facebook.litho.widget.CrashingMountableSpec;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
@@ -578,59 +576,5 @@ public class MountSpecLifecycleTest {
     assertThat(info_child2.getSteps())
         .describedAs("Should not recreate initial state.")
         .doesNotContain(ON_CREATE_INITIAL_STATE);
-  }
-
-  @Test
-  public void lifecycle_setRootWithCrashingSpec_shouldCrashOnMount() {
-    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectCause(
-        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
-    final ComponentContext c = mLithoViewRule.getContext();
-    final Component component =
-        Column.create(c)
-            .child(CrashingMountable.create(c).lifecycle(LifecycleStep.ON_MOUNT))
-            .build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
-  }
-
-  @Test
-  public void lifecycle_setRootWithCrashingSpec_shouldCrashOnUnMount() {
-    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectCause(
-        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
-    final ComponentContext c = mLithoViewRule.getContext();
-    final Component component =
-        Column.create(c)
-            .child(CrashingMountable.create(c).lifecycle(LifecycleStep.ON_UNMOUNT))
-            .build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
-    mLithoViewRule.getLithoView().unmountAllItems();
-  }
-
-  @Test
-  public void lifecycle_setRootWithCrashingSpec_shouldCrashOBind() {
-    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectCause(
-        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
-    final ComponentContext c = mLithoViewRule.getContext();
-    final Component component =
-        Column.create(c)
-            .child(CrashingMountable.create(c).lifecycle(LifecycleStep.ON_BIND))
-            .build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
-  }
-
-  @Test
-  public void lifecycle_setRootWithCrashingSpec_shouldCrashOnUnBind() {
-    mExpectedException.expectCause(
-        ThrowableMatcher.forClass(CrashingMountableSpec.MountPhaseException.class));
-
-    final ComponentContext c = mLithoViewRule.getContext();
-    final Component component =
-        Column.create(c)
-            .child(CrashingMountable.create(c).lifecycle(LifecycleStep.ON_UNBIND))
-            .build();
-    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
-    mLithoViewRule.getLithoView().unmountAllItems();
   }
 }

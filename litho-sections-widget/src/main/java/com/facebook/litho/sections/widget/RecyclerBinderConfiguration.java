@@ -41,6 +41,7 @@ public class RecyclerBinderConfiguration {
   private final @Nullable ComponentWarmer mComponentWarmer;
   private final @ComponentTree.RecyclingMode int mRecyclingMode;
   private final @Nullable LithoViewFactory mLithoViewFactory;
+  private final boolean mIgnoreNullLayoutStateError;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -80,6 +81,7 @@ public class RecyclerBinderConfiguration {
       boolean moveLayoutsBetweenThreads,
       boolean useCancelableLayoutFutures,
       boolean isReconciliationEnabled,
+      boolean ignoreNullLayoutStateError,
       @ComponentTree.RecyclingMode int recyclingMode,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
@@ -101,6 +103,7 @@ public class RecyclerBinderConfiguration {
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     mIsReconciliationEnabled = isReconciliationEnabled;
+    mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
     mRecyclingMode = recyclingMode;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
@@ -170,6 +173,10 @@ public class RecyclerBinderConfiguration {
     return mIsReconciliationEnabled;
   }
 
+  public boolean ignoreNullLayoutStateError() {
+    return mIgnoreNullLayoutStateError;
+  }
+
   public @ComponentTree.RecyclingMode int getRecyclingMode() {
     return mRecyclingMode;
   }
@@ -223,6 +230,8 @@ public class RecyclerBinderConfiguration {
     private int mEstimatedViewportCount = UNSET;
     private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private LithoViewFactory mLithoViewFactory;
+    private boolean mIgnoreNullLayoutStateError =
+        ComponentsConfiguration.ignoreNullLayoutStateError;
 
     Builder() {}
 
@@ -368,6 +377,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder ignoreNullLayoutStateError(boolean shouldIgnore) {
+      mIgnoreNullLayoutStateError = shouldIgnore;
+      return this;
+    }
+
     public Builder recyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
       mRecyclingMode = recyclingMode;
       return this;
@@ -425,6 +439,7 @@ public class RecyclerBinderConfiguration {
           mMoveLayoutsBetweenThreads,
           mUseCancelableLayoutFutures,
           mIsReconciliationEnabled,
+          mIgnoreNullLayoutStateError,
           mRecyclingMode,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,

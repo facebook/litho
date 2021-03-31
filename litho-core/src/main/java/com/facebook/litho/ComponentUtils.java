@@ -405,22 +405,24 @@ public class ComponentUtils {
    *     PlaygroundComponent |-Text[trans.key="text_transition_key";] |-Row | +-Text
    *     +-Text[manual.key="text2";]
    */
-  static String treeToString(@Nullable InternalNode root) {
+  static String treeToString(@Nullable LithoLayoutResult root) {
     if (root == null) {
       return "null";
     }
 
     final StringBuilder builder = new StringBuilder();
-    final Deque<InternalNode> stack = new LinkedList<>();
+    final Deque<LithoLayoutResult> stack = new LinkedList<>();
     stack.addLast(null);
     stack.addLast(root);
     int level = 0;
     while (!stack.isEmpty()) {
-      final InternalNode node = stack.removeLast();
-      if (node == null) {
+      final LithoLayoutResult result = stack.removeLast();
+      if (result == null) {
         level--;
         continue;
       }
+
+      final InternalNode node = result.getInternalNode();
 
       final Component component = node.getTailComponent();
       if (component == null) {
@@ -430,7 +432,7 @@ public class ComponentUtils {
       if (node != root) {
         builder.append('\n');
         boolean isLast;
-        final Iterator<InternalNode> iterator = stack.iterator();
+        final Iterator<LithoLayoutResult> iterator = stack.iterator();
         iterator.next();
         iterator.next();
         for (int index = 0; index < level - 1; index++) {
@@ -464,8 +466,8 @@ public class ComponentUtils {
       }
 
       stack.addLast(null);
-      for (int index = node.getChildCount() - 1; index >= 0; index--) {
-        stack.addLast(node.getChildAt(index));
+      for (int index = result.getChildCount() - 1; index >= 0; index--) {
+        stack.addLast(result.getChildAt(index));
       }
       level++;
     }
@@ -496,6 +498,48 @@ public class ComponentUtils {
     final EventHandler<ErrorEvent> handler = c.getErrorEventHandler();
     if (handler != null) {
       handler.dispatchEvent(e);
+    }
+  }
+
+  /**
+   * Utility to get a component to handle an exception gracefully during the layout phase when
+   * dealing with component hierarchy.
+   */
+  static void handleWithHierarchy(
+      ComponentContext parent, Component component, Exception exception) {
+    final EventHandler<ErrorEvent> nextHandler = parent.getErrorEventHandler();
+    final EventHandler<ErrorEvent> lastHandler;
+    Exception exceptionToThrow = exception;
+
+    if (exception instanceof ReThrownException) {
+      exceptionToThrow = ((ReThrownException) exception).original;
+      lastHandler = ((ReThrownException) exception).lastHandler;
+    } else if (exception instanceof LithoMetadataExceptionWrapper) {
+      lastHandler = ((LithoMetadataExceptionWrapper) exception).lastHandler;
+    } else {
+      lastHandler = null;
+    }
+
+    final LithoMetadataExceptionWrapper metadataWrapper =
+        (exceptionToThrow instanceof LithoMetadataExceptionWrapper)
+            ? (LithoMetadataExceptionWrapper) exceptionToThrow
+            : new LithoMetadataExceptionWrapper(parent, exceptionToThrow);
+    metadataWrapper.addComponentForLayoutStack(component);
+
+    // This means it was already handled by this handler so throw it up to the next frame until we
+    // get a new handler or get to the root
+    if (lastHandler == nextHandler) {
+      metadataWrapper.lastHandler = lastHandler;
+      throw metadataWrapper;
+    } else if (nextHandler instanceof ErrorEventHandler) { // at the root
+      ((ErrorEventHandler) nextHandler).onError(metadataWrapper);
+    } else { // Handle again with new handler
+      try {
+        ComponentLifecycle.dispatchErrorEvent(parent, exceptionToThrow);
+      } catch (ReThrownException ex) { // error handler re-raised the exception
+        metadataWrapper.lastHandler = nextHandler;
+        throw metadataWrapper;
+      }
     }
   }
 
@@ -545,5 +589,15 @@ public class ComponentUtils {
       return (LithoMetadataExceptionWrapper) e;
     }
     return new LithoMetadataExceptionWrapper(c, e);
+  }
+
+  public static EventHandler<ErrorEvent> createOrGetErrorEventHandler(
+      Component component, ComponentContext parentContext, ComponentContext scopedContext) {
+    if (component.hasOwnErrorHandler()) {
+      return new EventHandler<>(
+          component, ComponentLifecycle.ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
+    } else {
+      return parentContext.getErrorEventHandler();
+    }
   }
 }

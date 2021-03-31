@@ -16,158 +16,32 @@
 
 package com.facebook.litho;
 
-import android.animation.StateListAnimator;
-import android.graphics.Paint;
-import android.graphics.PathEffect;
-import android.graphics.drawable.Drawable;
-import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaNode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
 
 /** The {@link LayoutResult} class for Litho */
 public interface LithoLayoutResult extends ComponentLayout {
 
-  /* InternalNode related APIs */
-
-  ComponentContext getContext();
-
-  YogaNode getYogaNode();
-
-  String getSimpleName();
-
-  @Nullable
-  InternalNode getParent();
-
-  @Nullable
-  InternalNode getChildAt(int index);
+  InternalNode getInternalNode();
 
   int getChildCount();
 
-  int getChildIndex(InternalNode child);
-
-  /**
-   * For testing and debugging purposes only where initialization may have not occurred. For any
-   * production use, this should never be necessary.
-   */
-  boolean isInitialized();
-
-  /* Component related APIs */
-
-  /**
-   * Return the list of components contributing to this InternalNode. This exists in both debug and
-   * production mode.
-   */
-  List<Component> getComponents();
-
-  /**
-   * Return the list of keys of components contributing to this InternalNode. This exists in both
-   * debug and production mode.
-   */
-  @Nullable
-  List<String> getComponentKeys();
+  LithoLayoutResult getChildAt(int i);
 
   @Nullable
-  Component getHeadComponent();
+  LithoLayoutResult getParent();
 
-  @Nullable
-  String getHeadComponentKey();
+  void setParent(LithoLayoutResult parent);
 
-  @Nullable
-  Component getTailComponent();
-
-  @Nullable
-  String getTailComponentKey();
-
-  @Nullable
-  List<Component> getUnresolvedComponents();
-
-  @Nullable
-  Map<String, Component> getComponentsNeedingPreviousRenderData();
-
-  @Nullable
-  ArrayList<WorkingRangeContainer.Registration> getWorkingRangeRegistrations();
-
-  /* Visibility related APIs */
-
-  boolean hasVisibilityHandlers();
-
-  @Nullable
-  EventHandler<VisibleEvent> getVisibleHandler();
-
-  @Nullable
-  EventHandler<InvisibleEvent> getInvisibleHandler();
-
-  @Nullable
-  EventHandler<FocusedVisibleEvent> getFocusedHandler();
-
-  @Nullable
-  EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler();
-
-  @Nullable
-  EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler();
-
-  @Nullable
-  EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler();
-
-  float getVisibleHeightRatio();
-
-  float getVisibleWidthRatio();
-
-  /* Transitions related APIs */
-
-  boolean hasTransitionKey();
-
-  @Nullable
-  String getTransitionKey();
-
-  @Nullable
-  String getTransitionOwnerKey();
-
-  @Nullable
-  String getTransitionGlobalKey();
-
-  @Nullable
-  Transition.TransitionKeyType getTransitionKeyType();
-
-  @Nullable
-  ArrayList<Transition> getTransitions();
-
-  /* Output related APIs */
-
-  @Nullable
-  NodeInfo getNodeInfo();
-
-  @Nullable
-  Drawable getForeground();
-
-  boolean hasStateListAnimatorResSet();
-
-  @Nullable
-  StateListAnimator getStateListAnimator();
-
-  @DrawableRes
-  int getStateListAnimatorRes();
+  YogaNode getYogaNode();
 
   boolean shouldDrawBorders();
 
-  boolean hasBorderColor();
-
-  int[] getBorderColors();
-
-  float[] getBorderRadius();
-
   int getLayoutBorder(YogaEdge edge);
-
-  @Nullable
-  PathEffect getBorderPathEffect();
-
-  boolean hasTouchExpansion();
 
   int getTouchExpansionBottom();
 
@@ -177,59 +51,20 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   int getTouchExpansionTop();
 
-  @Nullable
-  Edges getTouchExpansion();
-
-  boolean isDuplicateParentStateEnabled();
-
-  boolean isDuplicateChildrenStatesEnabled();
-
-  boolean isForceViewWrapping();
-
-  boolean isImportantForAccessibilityIsSet();
-
-  int getImportantForAccessibility();
-
-  @LayerType
-  int getLayerType();
-
-  @Nullable
-  Paint getLayerPaint();
-
-  /* Layout and measurement related APIs */
-
-  float getMaxHeight();
-
-  float getMaxWidth();
-
-  float getMinHeight();
-
-  float getMinWidth();
-
-  float getStyleHeight();
-
-  float getStyleWidth();
-
-  boolean isLayoutDirectionInherit();
-
-  YogaDirection getStyleDirection();
-
   /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
   YogaDirection recursivelyResolveLayoutDirection();
 
-  boolean areCachedMeasuresValid();
-
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * height. This is used together with {@link InternalNode#getLastHeightSpec()} to implement
+   * height. This is used together with {@link LithoLayoutResult#getLastHeightSpec()} to implement
    * measure caching.
    */
   float getLastMeasuredHeight();
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the
-   * width. This is used together with {@link InternalNode#getLastWidthSpec()} to implement measure
-   * caching.
+   * width. This is used together with {@link LithoLayoutResult#getLastWidthSpec()} to implement
+   * measure caching.
    */
   float getLastMeasuredWidth();
 
@@ -237,35 +72,34 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   int getLastWidthSpec();
 
-  @Nullable
-  DiffNode getDiffNode();
+  /* Measurement related APIs for mutating the result */
 
-  void assertContextSpecificStyleNotSet();
+  void setLastWidthSpec(int widthSpec);
 
-  /* Nested tree related APIs */
-
-  boolean hasNestedTree();
+  void setLastHeightSpec(int heightSpec);
 
   /**
-   * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link Layout#create(ComponentContext, Component, boolean)}.
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the height.
    */
-  boolean isNestedTreeHolder();
-
-  @Nullable
-  InternalNode getNestedTree();
-
-  @Nullable
-  InternalNode getNestedTreeHolder();
-
-  @Nullable
-  TreeProps getPendingTreeProps();
-
-  /* Test related APIs */
+  void setLastMeasuredHeight(float lastMeasuredHeight);
 
   /**
-   * A unique identifier which may be set for retrieving a component and its bounds when testing.
+   * Sets the last value the measure funcion associated with this node {@link Component} returned
+   * for the width.
    */
-  @Nullable
-  String getTestKey();
+  void setLastMeasuredWidth(float lastMeasuredWidth);
+
+  void resetResolvedLayoutProperties();
+
+  /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
+  interface NestedTreeHolderResult extends LithoLayoutResult {
+
+    NestedTreeHolder getInternalNode();
+
+    @Nullable
+    LithoLayoutResult getNestedResult();
+
+    void setNestedResult(@Nullable LithoLayoutResult tree);
+  }
 }

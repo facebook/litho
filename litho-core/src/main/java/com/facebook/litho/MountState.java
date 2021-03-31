@@ -137,7 +137,6 @@ class MountState implements MountDelegateTarget {
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
-  private final boolean mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
@@ -960,21 +959,44 @@ class MountState implements MountDelegateTarget {
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
-            && currentComponent.shouldComponentUpdate(
-                currentLayoutOutput.getScopedContext(),
-                currentComponent,
-                nextLayoutOutput.getScopedContext(),
-                nextComponent);
+            && shouldUpdate(currentComponent, currentLayoutOutput, nextComponent, nextLayoutOutput);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    return currentComponent.shouldComponentUpdate(
-        currentLayoutOutput.getScopedContext(),
-        currentComponent,
-        nextLayoutOutput.getScopedContext(),
-        nextComponent);
+    return shouldUpdate(currentComponent, currentLayoutOutput, nextComponent, nextLayoutOutput);
+  }
+
+  private static boolean shouldUpdate(
+      Component currentComponent,
+      LayoutOutput currentLayoutOutput,
+      Component nextComponent,
+      LayoutOutput nextLayoutOutput) {
+    ComponentContext currentScopedContext = currentLayoutOutput.getScopedContext();
+    ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
+
+    try {
+      if (currentComponent.isStateless()) {
+        return currentComponent.shouldUpdate(
+            currentComponent,
+            currentScopedContext == null
+                ? null
+                : currentComponent.getStateContainer(
+                    currentScopedContext.getLayoutStateContext(), currentLayoutOutput.getKey()),
+            nextComponent,
+            nextScopedContext == null
+                ? null
+                : nextComponent.getStateContainer(
+                    nextScopedContext.getLayoutStateContext(), nextLayoutOutput.getKey()));
+      } else {
+        return currentComponent.shouldUpdate(
+            currentScopedContext, currentComponent, nextScopedContext, nextComponent);
+      }
+    } catch (Exception e) {
+      ComponentUtils.handle(nextScopedContext, e);
+      return true;
+    }
   }
 
   static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {
@@ -1188,7 +1210,7 @@ class MountState implements MountDelegateTarget {
       mMountStats.mountedCount++;
 
       final ComponentContext scopedContext =
-          mUseStatelessComponent
+          component.isStateless()
               ? layoutOutput.getScopedContext()
               : component.getScopedContext(null, null);
 
@@ -2699,7 +2721,7 @@ class MountState implements MountDelegateTarget {
    */
   private ComponentContext getContextForComponent(Component component, LayoutOutput layoutOutput) {
     ComponentContext c;
-    if (mUseStatelessComponent) {
+    if (component.isStateless()) {
       c = layoutOutput.getScopedContext();
     } else {
       c = component.getScopedContext(null, null);

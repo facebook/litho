@@ -20,19 +20,18 @@ import android.graphics.Typeface.BOLD
 import android.widget.LinearLayout
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.flexbox.aspectRatio
+import com.facebook.litho.flexbox.flexboxParams
 import com.facebook.litho.flexbox.padding
-import com.facebook.litho.flexbox.position
-import com.facebook.litho.flexbox.positionType
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sp
+import com.facebook.litho.view.background
 import com.facebook.litho.widget.SnapUtil
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
@@ -40,30 +39,29 @@ import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
 import com.facebook.yoga.YogaPositionType
 
 class FeedItemComponent(val artist: Artist) : KComponent() {
-  override fun DslScope.render() =
-      Column(
-          children =
-              listOf(
-                  Column(
-                      children =
-                          listOf(
-                              imageBlock(artist),
-                              Text(
-                                  text = artist.name,
-                                  style =
-                                      Style.position(start = 4.dp, bottom = 4.dp)
-                                          .positionType(YogaPositionType.ABSOLUTE)
-                                          .padding(horizontal = 6.dp)
-                                          .background(drawableColor(0xddffffff)),
-                                  textSize = 24.sp,
-                                  textStyle = BOLD),
-                              ActionsComponent(
-                                  style =
-                                      Style.position(top = 4.dp, end = 4.dp)
-                                          .positionType(YogaPositionType.ABSOLUTE)),
-                          )),
-                  FooterComponent(text = artist.biography),
-              ))
+  override fun ComponentScope.render() = Column {
+    child(
+        Column {
+          child(imageBlock(artist))
+          child(
+              flexboxParams(
+                  positionType = YogaPositionType.ABSOLUTE,
+                  positionStart = 4.dp,
+                  positionBottom = 4.dp) {
+                Text(
+                    text = artist.name,
+                    style = Style.padding(horizontal = 6.dp).background(drawableColor(0xddffffff)),
+                    textSize = 24.sp,
+                    textStyle = BOLD)
+              })
+          child(
+              flexboxParams(
+                  positionType = YogaPositionType.ABSOLUTE,
+                  positionTop = 4.dp,
+                  positionEnd = 4.dp) { ActionsComponent() })
+        })
+    child(FooterComponent(text = artist.biography))
+  }
 }
 
 private val recyclerConfiguration =
@@ -72,13 +70,13 @@ private val recyclerConfiguration =
         .snapMode(SnapUtil.SNAP_TO_CENTER)
         .build()
 
-private fun DslScope.imageBlock(artist: Artist): Component =
+private fun ComponentScope.imageBlock(artist: Artist): Component =
     when (artist.images.size) {
       1 -> SingleImageComponent(imageUri = artist.images[0], imageAspectRatio = 2f)
       else -> imageRecycler(artist)
     }
 
-private fun DslScope.imageRecycler(artist: Artist): Component =
+private fun ComponentScope.imageRecycler(artist: Artist): Component =
     RecyclerCollectionComponent.create(context)
         .recyclerConfiguration(recyclerConfiguration)
         .section(ImagesSection.create(SectionContext(context)).images(artist.images).build())

@@ -18,7 +18,13 @@ package com.facebook.litho
 
 import kotlin.reflect.KClass
 
-class ClassValuePair<T>(internal val cls: Class<T>, internal val value: T)
+/**
+ * Defines a single tree prop, i.e. a mapping from type to concrete instance of that type that is
+ * visible to the subtree, to be used with [TreePropProvider].
+ *
+ * You can create a Pair with the `to` infix function, e.g. `String::class to "Hello World!"`.
+ */
+typealias ClassValuePair<T> = Pair<KClass<T>, T>
 
 /**
  * A component which provides one or more tree props to the given child hierarchy. A tree prop is a
@@ -29,26 +35,27 @@ class ClassValuePair<T>(internal val cls: Class<T>, internal val value: T)
  * to be available throughout a hierarchy, without having to manual thread them through as
  * individual props. Tree props can be accessed in children via [useTreeProp].
  */
-class TreePropProvider(private vararg val props: ClassValuePair<*>, private val child: Component?) :
-    KComponent() {
-  override fun DslScope.render(): Component? {
-    props.forEach { createTreeProp(it.cls, it.value) }
+@Suppress("FunctionNaming")
+inline fun TreePropProvider(
+    vararg props: ClassValuePair<*>,
+    component: () -> Component?
+): TreePropProviderImpl? {
+  val resolvedComponent = component() ?: return null
+  return TreePropProviderImpl(props, child = resolvedComponent)
+}
+
+/** See [TreePropProvider]. */
+class TreePropProviderImpl(
+    private val props: Array<out ClassValuePair<*>>,
+    private val child: Component
+) : KComponent() {
+  override fun ComponentScope.render(): Component {
+    props.forEach { createTreeProp(it.first.javaObjectType, it.second) }
     return child
   }
 }
 
-/**
- * Creates a tree prop, i.e. a mapping from type to concrete instance of that type that is visible
- * to the subtree, to be used with [TreePropProvider].
- *
- * Note: The reason this isn't using a reified T is because we want to make sure devs are explicit
- * about the type they are providing a tree prop for. For instance if type B extends type A, then we
- * want the dev to choose whether an instance of B is providing A::class or B::class
- */
-inline fun <reified T : Any> treeProp(type: KClass<T>, value: T) =
-    ClassValuePair(type.javaObjectType, value)
-
-private fun <T> DslScope.createTreeProp(clazz: Class<out T>, value: T) {
+private fun <T> ComponentScope.createTreeProp(clazz: Class<out T>, value: T) {
   if (!context.isParentTreePropsCloned) {
     context.treeProps = TreeProps.acquire(context.treeProps)
     context.isParentTreePropsCloned = true
@@ -62,4 +69,4 @@ private fun <T> DslScope.createTreeProp(clazz: Class<out T>, value: T) {
  * specs API.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> DslScope.useTreeProp(): T? = context.getTreeProp(T::class.java)
+inline fun <reified T : Any> ComponentScope.useTreeProp(): T? = context.getTreeProp(T::class.java)

@@ -26,17 +26,17 @@ import javax.annotation.Nullable;
 final class ScopedComponentInfo {
 
   // Can be final if Component is stateless and cloning is not needed anymore.
-  private StateContainer mStateContainer;
+  private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  @Nullable private SparseIntArray mChildCounters;
+  private @Nullable SparseIntArray mChildCounters;
 
   /** Count the times a manual key is used so that clashes can be resolved. */
-  @Nullable private Map<String, Integer> mManualKeysCounter;
+  private @Nullable Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
@@ -44,11 +44,22 @@ final class ScopedComponentInfo {
    */
   private @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
-  ScopedComponentInfo(Component component) {
+  /**
+   * Holds an event handler with its dispatcher set to the parent component, or - in case that this
+   * is a root component - a default handler that reraises the exception.
+   */
+  private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
+
+  ScopedComponentInfo(
+      final Component component,
+      final @Nullable InterStagePropsContainer interStagePropsContainer,
+      final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
     mStateContainer = component.createStateContainer();
-    mInterStagePropsContainer = component.createInterStagePropsContainer();
+    mInterStagePropsContainer = interStagePropsContainer;
+    mErrorEventHandler = errorEventHandler;
   }
 
+  @Nullable
   StateContainer getStateContainer() {
     return mStateContainer;
   }
@@ -111,5 +122,14 @@ final class ScopedComponentInfo {
     if (mWorkingRangeRegistrations != null && !mWorkingRangeRegistrations.isEmpty()) {
       node.addWorkingRanges(mWorkingRangeRegistrations);
     }
+  }
+
+  /**
+   * @return The error handler dispatching to either the parent component if available, or reraising
+   *     the exception. Null if the component isn't initialized.
+   */
+  @Nullable
+  EventHandler<ErrorEvent> getErrorEventHandler() {
+    return mErrorEventHandler;
   }
 }

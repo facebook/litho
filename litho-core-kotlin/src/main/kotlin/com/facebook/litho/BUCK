@@ -14,7 +14,9 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_DYNAMICANIMATION_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_STDLIB_TARGET",
     "LITHO_YOGA_TARGET",
@@ -38,6 +40,8 @@ litho_android_library(
     deps = [
         LITHO_YOGA_TARGET,
         LITHO_KOTLIN_STDLIB_TARGET,
+        LITHO_ANDROIDSUPPORT_DYNAMICANIMATION_TARGET,
+        LITHO_INFERANNOTATIONS_TARGET,
     ],
     exported_deps = [
         LITHO_JAVA_TARGET,

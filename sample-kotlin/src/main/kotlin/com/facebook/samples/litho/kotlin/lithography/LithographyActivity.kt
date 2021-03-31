@@ -18,7 +18,7 @@ package com.facebook.samples.litho.kotlin.lithography
 
 import android.os.Bundle
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
@@ -36,9 +36,7 @@ class LithographyActivity : NavigatableDemoActivity() {
   private val c by lazy(NONE) { ComponentContext(this) }
   private val lithoView by lazy(NONE) { LithoView(c) }
   private val fetcher by lazy(NONE) { DataFetcher(viewModel.model) }
-  private val viewModel by lazy(NONE) {
-    ViewModelProviders.of(this).get(DecadeViewModel::class.java)
-  }
+  private val viewModel by lazy(NONE) { ViewModelProvider(this).get(DecadeViewModel::class.java) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

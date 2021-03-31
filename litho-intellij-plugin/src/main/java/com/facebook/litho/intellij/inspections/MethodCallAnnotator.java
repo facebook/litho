@@ -100,7 +100,7 @@ public class MethodCallAnnotator implements Annotator {
 
     final List<IntentionAction> fixes =
         implementedEventHandlers.stream()
-            .filter(handler -> eventQualifiedName.equals(handler.typeModel.name.reflectionName()))
+            .filter(handler -> eventQualifiedName.equals(handler.typeModel.getReflectionName()))
             .map(handler -> handler.name.toString())
             .distinct()
             .map(

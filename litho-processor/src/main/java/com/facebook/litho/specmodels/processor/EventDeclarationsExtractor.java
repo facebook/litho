@@ -57,12 +57,16 @@ public class EventDeclarationsExtractor {
             runMode.contains(RunMode.ABI)
                 ? ImmutableList.of()
                 : FieldsExtractor.extractFields(type.asElement());
+
+        TypeName name;
+        try {
+          name = TypeName.get(type.asElement().asType());
+        } catch (Exception e) {
+          name = ClassName.bestGuess(type.asElement().toString());
+        }
+
         eventDeclarations.add(
-            new EventDeclarationModel(
-                ClassName.bestGuess(type.asElement().toString()),
-                returnType,
-                fields,
-                type.asElement()));
+            new EventDeclarationModel(name, returnType, fields, type.asElement()));
       }
     } else {
       eventDeclarations = Collections.emptyList();

@@ -17,10 +17,10 @@
 package com.facebook.litho.widget
 
 import androidx.annotation.ColorInt
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
 
 /** Builder function for creating [SolidColorSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun DslScope.SolidColor(@ColorInt color: Int, style: Style? = null): SolidColor =
+inline fun ComponentScope.SolidColor(@ColorInt color: Int, style: Style? = null): SolidColor =
     SolidColor.create(context).color(color).build().apply { applyStyle(style) }

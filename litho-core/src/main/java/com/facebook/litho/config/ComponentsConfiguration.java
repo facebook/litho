@@ -106,7 +106,7 @@ public class ComponentsConfiguration {
 
   /**
    * If false, global keys will not be generated (litho level state updates won't work). It's highly
-   * discouraged to to change this to false, unless you handle all your updates outside of the litho
+   * discouraged to change this to false, unless you handle all your updates outside of the litho
    * framework
    */
   public static boolean useGlobalKeys = true;
@@ -189,12 +189,6 @@ public class ComponentsConfiguration {
 
   public static boolean useSharedFutureOnParallel = true;
 
-  /**
-   * If true, we also check if the RecyclerBinder needs remeasuring when checking if it's been
-   * measured.
-   */
-  public static boolean checkNeedsRemeasure = false;
-
   /** (Hopefully) temporary measure as we're investigating a major crash in libhwui. */
   public static boolean disableComponentHostPool = true;
 
@@ -212,11 +206,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUseDeepCloneDuringReconciliation = false;
 
-  /** When enabled it would use Internal Nodes for layout diffing instead Diff Nodes. */
-  public static boolean useInternalNodesForLayoutDiffing = false;
-
-  public static boolean incrementalVisibilityHandling = false;
-
   /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */
   public static boolean shouldForceAsyncStateUpdate = false;
 
@@ -226,7 +215,10 @@ public class ComponentsConfiguration {
 
   public static boolean shouldDisableDrawableOutputs = false;
 
-  public static boolean useVisibilityExtension = false;
+  /**
+   * Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder
+   */
+  public static boolean computeRangeOnSyncLayout = false;
 
   /**
    * If {@code false} we won't force Component to update when Device Orientation change, and rely on
@@ -249,6 +241,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useStatelessComponent = false;
 
+  public static boolean throwExceptionInterStagePropsContainerNull = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
@@ -265,16 +259,15 @@ public class ComponentsConfiguration {
   public static @Nullable String timelineDocsLink = null;
 
   /**
-   * If true, when a LithoView with nested LithoView children gets released, the children will get
-   * released too.
-   */
-  public static boolean releaseNestedLithoViews = false;
-
-  /**
    * Only used for testing. If true, the framework will not throw an error if a null LayoutState is
    * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
    */
   @Deprecated public static boolean ignoreNullLayoutStateError = false;
 
   public static boolean interruptUseCurrentLayoutSource = false;
+
+  /** When the LithoView visibility changes, rebind */
+  public static boolean rebindWhenVisibilityChanges = false;
+
+  public static boolean swallowUnhandledExceptions = false;
 }

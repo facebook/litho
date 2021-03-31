@@ -18,12 +18,12 @@ package com.facebook.litho.widget
 
 import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
-import com.facebook.litho.DslScope
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
 
 /** Builder function for creating [ProgressSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
-inline fun DslScope.Progress(
+inline fun ComponentScope.Progress(
     @ColorInt color: Int,
     style: Style? = null,
     indeterminateDrawable: Drawable? = null
