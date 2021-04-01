@@ -139,9 +139,12 @@ module.exports = {
         indexName: 'fblitho',
       }
     }),
-    googleAnalytics: {
-      trackingID: 'UA-44373548-28',
-    },
+    googleAnalytics: fbContent({
+      internal: undefined,
+      external: {
+        trackingID: 'UA-44373548-28',
+      }
+    }),
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
