@@ -127,6 +127,9 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
             } else if (psiElement instanceof PsiTypeElement
                 && psiElement.getText().equals("placeholder_service_type")) {
               templateBuilder.replaceElement(psiElement, "ServiceType");
+            } else if (psiElement instanceof PsiTypeElement
+                && psiElement.getText().equals("placeholder_tree_prop_type")) {
+              templateBuilder.replaceElement(psiElement, "TreePropType");
             } else if (psiElement instanceof PsiIdentifier
                 && psiElement.getParent() instanceof PsiMethod) {
               // Method name
