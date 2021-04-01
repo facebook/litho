@@ -21,8 +21,9 @@ import java.lang.reflect.Modifier
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
 
-  final override fun onCreateLayout(c: ComponentContext) =
-      error("Render components should call render() not onCreateLayout()")
+  // This implementation is a temporary fix for a release build/redex issue as it drops transitions
+  // and useEffect calls. If everything were working correctly, this should not be called at all.
+  final override fun onCreateLayout(c: ComponentContext) = ComponentScope(c).render()
 
   internal final override fun render(c: ComponentContext): RenderResult {
     val componentScope = ComponentScope(c)
