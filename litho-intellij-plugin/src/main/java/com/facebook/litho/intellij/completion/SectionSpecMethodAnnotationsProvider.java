@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory;
 import com.intellij.codeInsight.completion.CompletionParameters;
@@ -38,6 +39,7 @@ public class SectionSpecMethodAnnotationsProvider extends CompletionProvider<Com
         GroupSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS) {
       ANNOTATION_QUALIFIED_NAMES.add(permittedMethod.getTypeName());
     }
+    ANNOTATION_QUALIFIED_NAMES.add(OnUpdateState.class.getTypeName());
   }
 
   @Override
