@@ -55,6 +55,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
@@ -2207,6 +2208,15 @@ public abstract class Component extends ComponentLifecycle
      */
     public T useHeightAsBaseline(boolean useHeightAsBaseline) {
       mComponent.getOrCreateCommonProps().useHeightAsBaseline(useHeightAsBaseline);
+      return getThis();
+    }
+
+    /**
+     * Developers can provide a custom baseline function to calculate the special baseline modes
+     * which are not handled by Litho or Yoga layout, for instance baseline-first or baseline-last.
+     */
+    public T useCustomBaselineFunction(YogaBaselineFunction yogaBaselineFunction) {
+      mComponent.getOrCreateCommonProps().useCustomBaselineFunction(yogaBaselineFunction);
       return getThis();
     }
 

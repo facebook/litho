@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
@@ -83,4 +84,6 @@ interface LayoutProps {
   void isReferenceBaseline(boolean isReferenceBaseline);
 
   void useHeightAsBaseline(boolean useHeightAsBaseline);
+
+  void useCustomBaselineFunction(YogaBaselineFunction yogaBaselineFunction);
 }
