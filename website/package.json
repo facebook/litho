@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@docusaurus/core": "^2.0.0-alpha.72",
+    "@docusaurus/plugin-client-redirects": "^2.0.0-alpha.72",
     "@docusaurus/preset-classic": "^2.0.0-alpha.72",
     "clsx": "^1.1.1",
     "docusaurus-plugin-internaldocs-fb": "^0.7.4",

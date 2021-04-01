@@ -151,7 +151,56 @@ module.exports = {
       additionalLanguages: ['java', 'groovy', 'kotlin'],
     },
   },
-  plugins: ['docusaurus-plugin-sass'],
+  plugins: [
+    'docusaurus-plugin-sass',
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        fromExtensions: ['html', 'htm'],
+        redirects: [
+          {
+            to: '/docs/sections/start',
+            from: ['/docs/sections-intro'],
+          },
+          {
+            to: '/docs/sections/recycler-collection-component',
+            from: [
+              '/docs/recycler-collection-component',
+              '/docs/hscrolls',
+            ],
+          },
+          {
+            to: '/docs/sections/services',
+            from: ['/docs/services'],
+          },
+          {
+            to: '/docs/animations/transition-basics',
+            from: ['/docs/transition-basics'],
+          },
+          {
+            to: '/docs/animations/transition-types',
+            from: ['/docs/transition-types'],
+          },
+          {
+            to: '/docs/animations/transition-choreography',
+            from: ['/docs/transition-choreography'],
+          },
+          {
+            to: '/docs/animations/transition-all-layout',
+            from: ['/docs/transition-all-layout'],
+          },
+          {
+            to: '/docs/animations/transition-definitions',
+            from: ['/docs/transition-definitions'],
+          },
+          {
+            to: '/docs/animations/transition-key-types',
+            from: ['/docs/transition-key-types'],
+          },
+        ],
+      },
+    ]
+  ],
   presets: [
     [
       require.resolve('docusaurus-plugin-internaldocs-fb/docusaurus-preset'),
