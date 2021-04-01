@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -34,14 +35,20 @@ public class RootComponentWithTreePropsSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      ComponentContext c, @Prop(optional = true) boolean shouldNotUpdateState) {
+      ComponentContext c,
+      @Prop(optional = true) boolean shouldNotUpdateState,
+      @Prop(optional = true) LifecycleStep crashFromStep) {
     return Row.create(c)
         .key("Row")
         .child(
             shouldNotUpdateState
                 ? Text.create(c).text("hello world")
                 : ChildComponentWithStateUpdate.create(c))
-        .child(NestedTreeParentComponent.create(c).key("NestedTreeParentComponent").flexGrow(1))
+        .child(
+            NestedTreeParentComponent.create(c)
+                .crashFromStep(crashFromStep)
+                .key("NestedTreeParentComponent")
+                .flexGrow(1))
         .build();
   }
 

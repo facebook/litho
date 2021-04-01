@@ -25,6 +25,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TreeProp;
 import java.util.List;
 
@@ -61,7 +62,11 @@ public class NestedTreeComponentSpec {
       final ComponentContext c,
       final int widthSpec,
       final int heightSpec,
+      final @Prop(optional = true) LifecycleStep crashFromStep,
       final @Nullable @TreeProp ExtraProps props) {
+    if (crashFromStep == LifecycleStep.ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC) {
+      throw new RuntimeException("onShouldCreateLayoutWithSizeSpec crash");
+    }
     return props == null || props.shouldCreateNewLayout;
   }
 
