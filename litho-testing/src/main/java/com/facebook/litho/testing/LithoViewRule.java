@@ -84,6 +84,7 @@ public class LithoViewRule implements TestRule {
       public void evaluate() throws Throwable {
         try {
           mContext = new ComponentContext(ApplicationProvider.getApplicationContext());
+          mContext.setLayoutStateContextForTesting();
           base.evaluate();
         } finally {
           ComponentsPools.clearMountContentPools();
