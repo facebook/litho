@@ -21,6 +21,7 @@ load(
     "LITHO_KOTLIN_STDLIB_TARGET",
     "LITHO_YOGA_TARGET",
     "litho_android_library",
+    "make_dep_path",
 )
 
 litho_android_library(
@@ -34,6 +35,7 @@ litho_android_library(
         LITHO_ANDROIDSUPPORT_TARGET,
     ],
     required_for_source_only_abi = True,
+    tests = [make_dep_path("litho-core-kotlin/src/test/kotlin/com/facebook/litho:litho")],
     visibility = [
         "PUBLIC",
     ],
