@@ -267,4 +267,6 @@ public class ComponentsConfiguration {
   public static boolean rebindWhenVisibilityChanges = false;
 
   public static boolean swallowUnhandledExceptions = false;
+
+  public static boolean unmountAllSetsNullComponentTree = false;
 }

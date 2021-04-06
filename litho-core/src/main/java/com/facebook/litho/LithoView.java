@@ -657,7 +657,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     if (mComponentTree != null) {
       if (componentTree == null) {
-        unmountAllItems();
+        unmountAllItemsInternal();
       } else {
         clearVisibilityItems();
         clearLastMountedTree();
@@ -1357,7 +1357,20 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mPreviousMountVisibleRectBounds.set(currentVisibleArea);
   }
 
+  /**
+   * @Deprecated This method will go away - use setComponentTree(null) instead, which also unmounts
+   * all items.
+   */
   public void unmountAllItems() {
+    if (ComponentsConfiguration.unmountAllSetsNullComponentTree) {
+      setComponentTree(null);
+      return;
+    }
+
+    unmountAllItemsInternal();
+  }
+
+  void unmountAllItemsInternal() {
     if (mUseExtensions) {
       mMountDelegateTarget.unmountAllItems();
       if (mLithoHostListenerCoordinator != null) {
