@@ -656,7 +656,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     setMountStateDirty();
 
     if (mComponentTree != null) {
-      if (ComponentsConfiguration.unmountAllWhenComponentTreeSetToNull && componentTree == null) {
+      if (componentTree == null) {
         unmountAllItems();
       } else {
         clearVisibilityItems();
