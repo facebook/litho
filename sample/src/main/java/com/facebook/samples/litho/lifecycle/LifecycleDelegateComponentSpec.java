@@ -16,12 +16,12 @@
 
 package com.facebook.samples.litho.lifecycle;
 
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_ATTACHED;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_INITIAL_STATE;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_LAYOUT;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_TRANSITION;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_TREE_PROP;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_DETACHED;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_ATTACHED;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_INITIAL_STATE;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_LAYOUT;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TRANSITION;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TREE_PROP;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_DETACHED;
 
 import android.graphics.Color;
 import android.os.SystemClock;
@@ -50,6 +50,7 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import java.util.Random;
+import javax.annotation.Nullable;
 
 @LayoutSpec
 class LifecycleDelegateComponentSpec {
@@ -69,36 +70,27 @@ class LifecycleDelegateComponentSpec {
 
   private static final DummyTreeProp sDummyTreeProp = new DummyTreeProp();
 
-  interface DelegateListener {
-    int ON_CREATE_INITIAL_STATE = 0;
-    int ON_CREATE_TREE_PROP = 1;
-    int ON_CREATE_LAYOUT = 2;
-    int ON_CREATE_TRANSITION = 3;
-    int ON_ATTACHED = 4;
-    int ON_DETACHED = 5;
-
-    void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id);
-
-    void setRootComponent(boolean isSync);
-  }
-
   @OnCreateInitialState
   static void onCreateInitialState(
       ComponentContext c,
       StateValue<Random> random,
       StateValue<Integer> colorIndex,
       @Prop DelegateListener delegateListener,
-      @Prop int id) {
+      @Prop int id,
+      @Prop(optional = true) DelegateListener consoleDelegateListener) {
     final Random rand = new Random();
     random.set(rand);
     colorIndex.set(rand.nextInt(COLORS.length));
-    onDelegateMethodCalled(delegateListener, ON_CREATE_INITIAL_STATE, id);
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_INITIAL_STATE, id);
   }
 
   @OnCreateTreeProp
   static DummyTreeProp onCreateTreeProp(
-      ComponentContext c, @Prop DelegateListener delegateListener, @Prop int id) {
-    onDelegateMethodCalled(delegateListener, ON_CREATE_TREE_PROP, id);
+      ComponentContext c,
+      @Prop DelegateListener delegateListener,
+      @Prop int id,
+      @Prop(optional = true) DelegateListener consoleDelegateListener) {
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_TREE_PROP, id);
     return sDummyTreeProp;
   }
 
@@ -107,29 +99,39 @@ class LifecycleDelegateComponentSpec {
       ComponentContext c,
       @Prop DelegateListener delegateListener,
       @Prop int id,
+      @Prop(optional = true) DelegateListener consoleDelegateListener,
       @State Integer colorIndex) {
-    onDelegateMethodCalled(delegateListener, ON_CREATE_LAYOUT, id);
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_LAYOUT, id);
 
     return Column.create(c).child(buttons(c)).child(bricks(c, colorIndex)).build();
   }
 
   @OnCreateTransition
   static Transition onCreateTransition(
-      ComponentContext c, @Prop DelegateListener delegateListener, @Prop int id) {
-    onDelegateMethodCalled(delegateListener, ON_CREATE_TRANSITION, id);
+      ComponentContext c,
+      @Prop DelegateListener delegateListener,
+      @Prop int id,
+      @Prop(optional = true) DelegateListener consoleDelegateListener) {
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_TRANSITION, id);
     return Transition.allLayout().animator(Transition.SPRING_WITH_OVERSHOOT);
   }
 
   @OnAttached
   static void onAttached(
-      ComponentContext c, @Prop DelegateListener delegateListener, @Prop int id) {
-    onDelegateMethodCalled(delegateListener, ON_ATTACHED, id);
+      ComponentContext c,
+      @Prop DelegateListener delegateListener,
+      @Prop(optional = true) DelegateListener consoleDelegateListener,
+      @Prop int id) {
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_ATTACHED, id);
   }
 
   @OnDetached
   static void onDetached(
-      ComponentContext c, @Prop DelegateListener delegateListener, @Prop int id) {
-    onDelegateMethodCalled(delegateListener, ON_DETACHED, id);
+      ComponentContext c,
+      @Prop DelegateListener delegateListener,
+      @Prop(optional = true) DelegateListener consoleDelegateListener,
+      @Prop int id) {
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_DETACHED, id);
   }
 
   @OnUpdateState
@@ -223,9 +225,17 @@ class LifecycleDelegateComponentSpec {
         .build();
   }
 
-  private static void onDelegateMethodCalled(DelegateListener delegateListener, int type, int id) {
+  private static void onDelegateMethodCalled(
+      DelegateListener delegateListener,
+      @Nullable DelegateListener consoleDelegateListener,
+      int type,
+      int id) {
     delegateListener.onDelegateMethodCalled(
         type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
+    if (consoleDelegateListener != null) {
+      consoleDelegateListener.onDelegateMethodCalled(
+          type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
+    }
   }
 
   static class DummyTreeProp {}

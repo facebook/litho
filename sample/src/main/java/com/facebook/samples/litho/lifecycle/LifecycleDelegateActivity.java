@@ -25,7 +25,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.NavigatableDemoActivity;
-import com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,13 +33,18 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
   private static final AtomicInteger mId = new AtomicInteger(0);
   private LithoView mLithoView;
   private ConsoleView mConsoleView;
+  private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener() {};
 
   private final DelegateListener mDelegateListener =
       new DelegateListener() {
         @Override
         public void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id) {
           if (mConsoleView != null) {
-            mConsoleView.log(type, thread, timestamp, id);
+            mConsoleView.post(
+                new ConsoleView.LogRunnable(
+                    mConsoleView,
+                    LifecycleDelegateLog.prefix(thread, timestamp, id),
+                    LifecycleDelegateLog.log(type)));
           }
         }
 
@@ -53,6 +57,7 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
                     .id(mId.getAndIncrement())
                     .key(String.valueOf(random.nextInt())) // Force to reset component.
                     .delegateListener(mDelegateListener)
+                    .consoleDelegateListener(mConsoleDelegateListener)
                     .build();
             if (isSync) {
               mLithoView.setComponent(root);
@@ -78,6 +83,7 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
             LifecycleDelegateComponent.create(componentContext)
                 .id(mId.getAndIncrement())
                 .delegateListener(mDelegateListener)
+                .consoleDelegateListener(mConsoleDelegateListener)
                 .build());
     final LayoutParams params1 = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;

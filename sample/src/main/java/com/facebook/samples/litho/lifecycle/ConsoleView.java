@@ -18,12 +18,6 @@ package com.facebook.samples.litho.lifecycle;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_ATTACHED;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_INITIAL_STATE;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_LAYOUT;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_TRANSITION;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_CREATE_TREE_PROP;
-import static com.facebook.samples.litho.lifecycle.LifecycleDelegateComponentSpec.DelegateListener.ON_DETACHED;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -32,13 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ConsoleView extends ScrollView {
-
-  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd hh:mm:ss.SSS");
 
   public ConsoleView(Context context) {
     super(context);
@@ -53,37 +42,7 @@ public class ConsoleView extends ScrollView {
     addView(parent);
   }
 
-  public void log(int type, Thread thread, long timestamp, int id) {
-    String log;
-    switch (type) {
-      case ON_CREATE_INITIAL_STATE:
-        log = "onCreateInitialState";
-        break;
-      case ON_CREATE_TREE_PROP:
-        log = "onCreateTreeProp";
-        break;
-      case ON_CREATE_LAYOUT:
-        log = "onCreateLayout";
-        break;
-      case ON_CREATE_TRANSITION:
-        log = "onCreateTransition";
-        break;
-      case ON_ATTACHED:
-        log = "onAttached";
-        break;
-      case ON_DETACHED:
-        log = "onDetached";
-        break;
-      default:
-        log = "invalid type=" + type;
-        break;
-    }
-    final Date date = new Date(timestamp);
-    final String dateFormatted = DATE_FORMAT.format(date);
-    post(new LogRunnable(this, dateFormatted + " [" + thread.getName() + "][id=" + id + "] ", log));
-  }
-
-  private static class LogRunnable implements Runnable {
+  public static class LogRunnable implements Runnable {
     private final WeakReference<ConsoleView> mRootRef;
     private final String mPrefix;
     private final String mLog;
