@@ -25,6 +25,13 @@ interface DelegateListener {
   int ON_DETACHED = 5;
   int ON_VISIBLE = 6;
   int ON_INVISIBLE = 7;
+  int ON_PREPARE = 8;
+  int ON_MEASURE = 9;
+  int ON_BOUNDS_DEFINED = 10;
+  int ON_MOUNT = 11;
+  int ON_BIND = 12;
+  int ON_UNBIND = 13;
+  int ON_UNMOUNT = 14;
 
   void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id);
 

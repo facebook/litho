@@ -17,17 +17,26 @@
 package com.facebook.samples.litho.lifecycle;
 
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_ATTACHED;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_BIND;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_BOUNDS_DEFINED;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_INITIAL_STATE;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_LAYOUT;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TRANSITION;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TREE_PROP;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_DETACHED;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_INVISIBLE;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_MEASURE;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_MOUNT;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_PREPARE;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_UNBIND;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_UNMOUNT;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_VISIBLE;
 
+import android.os.SystemClock;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.annotation.Nullable;
 
 public class LifecycleDelegateLog {
   private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd hh:mm:ss.SSS");
@@ -59,6 +68,27 @@ public class LifecycleDelegateLog {
       case ON_INVISIBLE:
         log = "onInvisible";
         break;
+      case ON_PREPARE:
+        log = "onPrepare";
+        break;
+      case ON_MEASURE:
+        log = "onMeasure";
+        break;
+      case ON_BOUNDS_DEFINED:
+        log = "onBoundsDefined";
+        break;
+      case ON_MOUNT:
+        log = "onMount";
+        break;
+      case ON_BIND:
+        log = "onBind";
+        break;
+      case ON_UNBIND:
+        log = "onUnbind";
+        break;
+      case ON_UNMOUNT:
+        log = "onUnmount";
+        break;
       default:
         log = "invalid type=" + type;
         break;
@@ -72,5 +102,18 @@ public class LifecycleDelegateLog {
     String prefix = dateFormatted + " [" + thread.getName() + "][id=" + id + "] ";
 
     return prefix;
+  }
+
+  public static void onDelegateMethodCalled(
+      DelegateListener delegateListener,
+      @Nullable DelegateListener consoleDelegateListener,
+      int type,
+      int id) {
+    delegateListener.onDelegateMethodCalled(
+        type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
+    if (consoleDelegateListener != null) {
+      consoleDelegateListener.onDelegateMethodCalled(
+          type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
+    }
   }
 }

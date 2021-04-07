@@ -24,9 +24,9 @@ import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TR
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_DETACHED;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_INVISIBLE;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_VISIBLE;
+import static com.facebook.samples.litho.lifecycle.LifecycleDelegateLog.onDelegateMethodCalled;
 
 import android.graphics.Color;
-import android.os.SystemClock;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -54,7 +54,6 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import java.util.Random;
-import javax.annotation.Nullable;
 
 @LayoutSpec
 class LifecycleDelegateComponentSpec {
@@ -112,6 +111,14 @@ class LifecycleDelegateComponentSpec {
         .invisibleHandler(LifecycleDelegateComponent.onInvisible(c))
         .child(buttons(c))
         .child(bricks(c, colorIndex))
+        .child(
+            LifecycleDelegateMountComponent.create(c)
+                .delegateListener(delegateListener)
+                .consoleDelegateListener(consoleDelegateListener)
+                .id(id)
+                .paddingDip(YogaEdge.ALL, 4)
+                .marginDip(YogaEdge.TOP, 10)
+                .build())
         .build();
   }
 
@@ -250,19 +257,6 @@ class LifecycleDelegateComponentSpec {
                         .widthDip(100)
                         .heightDip(100)))
         .build();
-  }
-
-  private static void onDelegateMethodCalled(
-      DelegateListener delegateListener,
-      @Nullable DelegateListener consoleDelegateListener,
-      int type,
-      int id) {
-    delegateListener.onDelegateMethodCalled(
-        type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
-    if (consoleDelegateListener != null) {
-      consoleDelegateListener.onDelegateMethodCalled(
-          type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
-    }
   }
 
   static class DummyTreeProp {}
