@@ -2258,7 +2258,7 @@ class MountState implements MountDelegateTarget {
 
         for (int i = lithoViews.size() - 1; i >= 0; i--) {
           final LithoView lithoView = lithoViews.get(i);
-          lithoView.unmountAllItemsInternal();
+          lithoView.unmountAllItems();
         }
       }
 

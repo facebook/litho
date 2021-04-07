@@ -111,6 +111,9 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
+  /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
+  public static boolean unmountAllWhenComponentTreeSetToNull = false;
+
   /**
    * Configuration for creating a thread pool of threads used for background layout. If null, a
    * single default thread will be used for background layout.
@@ -267,6 +270,4 @@ public class ComponentsConfiguration {
   public static boolean rebindWhenVisibilityChanges = false;
 
   public static boolean swallowUnhandledExceptions = false;
-
-  public static boolean unmountAllSetsNullComponentTree = false;
 }
