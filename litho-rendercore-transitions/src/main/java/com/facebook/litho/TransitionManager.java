@@ -815,8 +815,11 @@ public class TransitionManager {
           ((Host) view).setClipChildren(mOverriddenClipChildrenFlags.remove(view));
         }
       } else {
-        // In this case we save the actual configuration and then we set clip to false.
-        mOverriddenClipChildrenFlags.put((Host) view, ((Host) view).getClipChildren());
+        // In this case we only save the actual configuration if it's not already saved, otherwise
+        // we may be saving the wrong one. Then we set clip to false.
+        if (!mOverriddenClipChildrenFlags.containsKey(view)) {
+          mOverriddenClipChildrenFlags.put((Host) view, ((Host) view).getClipChildren());
+        }
         ((Host) view).setClipChildren(false);
       }
     }

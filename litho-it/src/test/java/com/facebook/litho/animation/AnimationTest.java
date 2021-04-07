@@ -132,22 +132,7 @@ public class AnimationTest {
 
   @Test
   public void animationProperties_animatingPropertyX_elementShouldAnimateInTheXAxis() {
-    final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
-            .stateCaller(mStateCaller)
-            .transition(
-                Transition.create(TRANSITION_KEY)
-                    .animator(Transition.timing(144))
-                    .animate(AnimatedProperties.X))
-            .testComponent(
-                new TestAnimationsComponentSpec
-                    .TestComponent() { // This could be a lambda but it fails ci.
-                  @Override
-                  public Component getComponent(ComponentContext componentContext, boolean state) {
-                    return getAnimatingXPropertyComponent();
-                  }
-                })
-            .build();
+    final TestAnimationsComponent component = getAnimatingXPropertyComponent();
     mLithoViewRule.setRoot(component);
     mActivityController.get().setContentView(mLithoViewRule.getLithoView());
     mActivityController.resume().visible();
@@ -1244,7 +1229,7 @@ public class AnimationTest {
         .isEqualTo(200);
   }
 
-  private Component getAnimatingXPropertyComponent() {
+  private TestAnimationsComponent getAnimatingXPropertyComponent() {
     return TestAnimationsComponent.create(mLithoViewRule.getContext())
         .stateCaller(mStateCaller)
         .transition(
@@ -1424,22 +1409,7 @@ public class AnimationTest {
   public void animation_animatingComponentAndChangingHost_elementShouldAnimateOnlyOnce() {
     LithoView secondLithoView = new LithoView(mActivityController.get());
     secondLithoView.setComponentTree(null);
-    final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
-            .stateCaller(mStateCaller)
-            .transition(
-                Transition.create(TRANSITION_KEY)
-                    .animator(Transition.timing(144))
-                    .animate(AnimatedProperties.X))
-            .testComponent(
-                new TestAnimationsComponentSpec
-                    .TestComponent() { // This could be a lambda but it fails ci.
-                  @Override
-                  public Component getComponent(ComponentContext componentContext, boolean state) {
-                    return getAnimatingXPropertyComponent();
-                  }
-                })
-            .build();
+    final TestAnimationsComponent component = getAnimatingXPropertyComponent();
     mLithoViewRule.setRoot(component);
 
     FrameLayout fl = new FrameLayout(mActivityController.get());
@@ -1561,23 +1531,8 @@ public class AnimationTest {
   }
 
   @Test
-  public void animationProperties_animat_elementShouldAnimateInTheXAxis() {
-    final TestAnimationsComponent component =
-        TestAnimationsComponent.create(mLithoViewRule.getContext())
-            .stateCaller(mStateCaller)
-            .transition(
-                Transition.create(TRANSITION_KEY)
-                    .animator(Transition.timing(144))
-                    .animate(AnimatedProperties.X))
-            .testComponent(
-                new TestAnimationsComponentSpec
-                    .TestComponent() { // This could be a lambda but it fails ci.
-                  @Override
-                  public Component getComponent(ComponentContext componentContext, boolean state) {
-                    return getAnimatingXPropertyComponent();
-                  }
-                })
-            .build();
+  public void animation_clipChildren_shouldBeFalseDuringAnimation() {
+    final TestAnimationsComponent component = getAnimatingXPropertyComponent();
     mLithoViewRule.setRoot(component);
     mActivityController.get().setContentView(mLithoViewRule.getLithoView());
     mActivityController.resume().visible();
