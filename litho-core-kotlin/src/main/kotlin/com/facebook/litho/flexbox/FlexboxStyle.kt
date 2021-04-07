@@ -352,3 +352,11 @@ inline fun flexboxParams(
         positionBottom,
         aspectRatio,
         component())
+
+/**
+ * Provides backwards compatibility to use a Kotlin component with [flexboxParams] as a child of a
+ * Spec component (e.g. Row/Column).
+ */
+fun <T : Component.ContainerBuilder<T>> Component.ContainerBuilder<T>.child(
+    childWithParams: FlexboxParams
+): T = child(childWithParams.getComponentWithAppliedParams(context!!))

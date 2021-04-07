@@ -349,4 +349,33 @@ class FlexboxStylesTest {
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
             })
   }
+
+  @Test
+  fun childUsingFlexboxChild_whenSetOnJavaSpec_respectedFlexboxChildProperties() {
+    val left = 10
+    val top = 20
+    val right = 30
+    val bottom = 40
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row.create(lithoViewRule.context)
+              .widthPx(100)
+              .heightPx(100)
+              .child(
+                  flexboxParams(
+                      positionType = YogaPositionType.ABSOLUTE,
+                      positionStart = left.px,
+                      positionTop = top.px,
+                      positionEnd = right.px,
+                      positionBottom = bottom.px) { Row(style = Style.wrapInView()) })
+              .build()
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
+            })
+  }
 }
