@@ -2323,6 +2323,15 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
+     * Note: This is exposed for backwards compatibility with the Kotlin API to allow applying
+     * common props via Style without moving Style into Java. Use with caution since at this point
+     * the Component is still being built and should not escape the Builder.
+     */
+    final Component getComponent() {
+      return mComponent;
+    }
+
+    /**
      * Checks that all the required props are supplied, and if not throws a useful exception
      *
      * @param requiredPropsCount expected number of props
