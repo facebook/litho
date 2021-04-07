@@ -56,9 +56,14 @@ class EventDispatcherUtils {
     sClickEvent.view = view;
 
     final EventDispatcher eventDispatcher = clickHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
+    final Object token = EventDispatcherInstrumenter.onBeginWork(clickHandler, sClickEvent);
+    try {
+      eventDispatcher.dispatchOnEvent(clickHandler, sClickEvent);
 
-    sClickEvent.view = null;
+      sClickEvent.view = null;
+    } finally {
+      EventDispatcherInstrumenter.onEndWork(token);
+    }
   }
 
   static void dispatchOnFocusChanged(
@@ -74,9 +79,15 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher =
         focusChangeHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
+    final Object token =
+        EventDispatcherInstrumenter.onBeginWork(focusChangeHandler, sFocusChangedEvent);
+    try {
+      eventDispatcher.dispatchOnEvent(focusChangeHandler, sFocusChangedEvent);
 
-    sFocusChangedEvent.view = null;
+      sFocusChangedEvent.view = null;
+    } finally {
+      EventDispatcherInstrumenter.onEndWork(token);
+    }
   }
 
   static boolean dispatchOnLongClick(EventHandler<LongClickEvent> longClickHandler, View view) {
@@ -90,11 +101,16 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher =
         longClickHandler.mHasEventDispatcher.getEventDispatcher();
-    final Object returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
+    final Object token = EventDispatcherInstrumenter.onBeginWork(longClickHandler, sLongClickEvent);
+    try {
+      final Object returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
 
-    sLongClickEvent.view = null;
+      sLongClickEvent.view = null;
 
-    return returnValue != null && (boolean) returnValue;
+      return returnValue != null && (boolean) returnValue;
+    } finally {
+      EventDispatcherInstrumenter.onEndWork(token);
+    }
   }
 
   static boolean dispatchOnTouch(
@@ -109,12 +125,17 @@ class EventDispatcherUtils {
     sTouchEvent.motionEvent = event;
 
     final EventDispatcher eventDispatcher = touchHandler.mHasEventDispatcher.getEventDispatcher();
-    final Object returnValue = eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
+    final Object token = EventDispatcherInstrumenter.onBeginWork(touchHandler, sTouchEvent);
+    try {
+      final Object returnValue = eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
 
-    sTouchEvent.view = null;
-    sTouchEvent.motionEvent = null;
+      sTouchEvent.view = null;
+      sTouchEvent.motionEvent = null;
 
-    return returnValue != null && (boolean) returnValue;
+      return returnValue != null && (boolean) returnValue;
+    } finally {
+      EventDispatcherInstrumenter.onEndWork(token);
+    }
   }
 
   static boolean dispatchOnInterceptTouch(
@@ -130,12 +151,19 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher =
         interceptTouchHandler.mHasEventDispatcher.getEventDispatcher();
-    final Object returnValue =
-        eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
-    sInterceptTouchEvent.motionEvent = null;
-    sInterceptTouchEvent.view = null;
+    final Object token =
+        EventDispatcherInstrumenter.onBeginWork(interceptTouchHandler, sInterceptTouchEvent);
+    try {
+      final Object returnValue =
+          eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
 
-    return returnValue != null && (boolean) returnValue;
+      sInterceptTouchEvent.motionEvent = null;
+      sInterceptTouchEvent.view = null;
+
+      return returnValue != null && (boolean) returnValue;
+    } finally {
+      EventDispatcherInstrumenter.onEndWork(token);
+    }
   }
 
   static boolean dispatchDispatchPopulateAccessibilityEvent(
