@@ -44,4 +44,4 @@ private class TransitionKeyStyleItem(
 fun Style.transitionKey(
     transitionKey: String?,
     transitionKeyType: TransitionKeyType = TransitionKeyType.LOCAL
-) = this + TransitionKeyStyleItem(transitionKey, transitionKeyType)
+): Style = this + TransitionKeyStyleItem(transitionKey, transitionKeyType)
