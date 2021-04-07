@@ -52,6 +52,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
 
@@ -349,7 +350,9 @@ class HorizontalScrollSpec {
 
     void unmount() {
       mLithoView.unbind();
-      mLithoView.setComponentTree(null);
+      if (!ComponentsConfiguration.unmountAllWhenComponentTreeSetToNull) {
+        mLithoView.setComponentTree(null);
+      }
 
       mComponentWidth = 0;
       mComponentHeight = 0;

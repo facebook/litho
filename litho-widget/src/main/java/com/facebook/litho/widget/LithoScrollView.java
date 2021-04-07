@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.widget.VerticalScrollSpec.OnInterceptTouchListener;
 import com.facebook.litho.widget.VerticalScrollSpec.ScrollPosition;
 import java.util.List;
@@ -170,7 +171,9 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   void unmount() {
     mLithoView.unbind();
-    mLithoView.setComponentTree(null);
+    if (!ComponentsConfiguration.unmountAllWhenComponentTreeSetToNull) {
+      mLithoView.setComponentTree(null);
+    }
 
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
