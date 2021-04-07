@@ -23,6 +23,8 @@ interface DelegateListener {
   int ON_CREATE_TRANSITION = 3;
   int ON_ATTACHED = 4;
   int ON_DETACHED = 5;
+  int ON_VISIBLE = 6;
+  int ON_INVISIBLE = 7;
 
   void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id);
 

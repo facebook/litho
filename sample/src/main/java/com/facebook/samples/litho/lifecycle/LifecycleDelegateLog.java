@@ -22,6 +22,8 @@ import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_LA
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TRANSITION;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TREE_PROP;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_DETACHED;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_INVISIBLE;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_VISIBLE;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,12 @@ public class LifecycleDelegateLog {
         break;
       case ON_DETACHED:
         log = "onDetached";
+        break;
+      case ON_VISIBLE:
+        log = "onVisible";
+        break;
+      case ON_INVISIBLE:
+        log = "onInvisible";
         break;
       default:
         log = "invalid type=" + type;

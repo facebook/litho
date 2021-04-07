@@ -22,6 +22,8 @@ import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_LA
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TRANSITION;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_CREATE_TREE_PROP;
 import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_DETACHED;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_INVISIBLE;
+import static com.facebook.samples.litho.lifecycle.DelegateListener.ON_VISIBLE;
 
 import android.graphics.Color;
 import android.os.SystemClock;
@@ -30,9 +32,11 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -103,7 +107,12 @@ class LifecycleDelegateComponentSpec {
       @State Integer colorIndex) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_LAYOUT, id);
 
-    return Column.create(c).child(buttons(c)).child(bricks(c, colorIndex)).build();
+    return Column.create(c)
+        .visibleHandler(LifecycleDelegateComponent.onVisible(c))
+        .invisibleHandler(LifecycleDelegateComponent.onInvisible(c))
+        .child(buttons(c))
+        .child(bricks(c, colorIndex))
+        .build();
   }
 
   @OnCreateTransition
@@ -137,6 +146,24 @@ class LifecycleDelegateComponentSpec {
   @OnUpdateState
   static void updateBricks(StateValue<Integer> colorIndex, @Param Random rand) {
     colorIndex.set(rand.nextInt(COLORS.length));
+  }
+
+  @OnEvent(VisibleEvent.class)
+  static void onVisible(
+      ComponentContext c,
+      @Prop DelegateListener delegateListener,
+      @Prop int id,
+      @Prop(optional = true) DelegateListener consoleDelegateListener) {
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_VISIBLE, id);
+  }
+
+  @OnEvent(InvisibleEvent.class)
+  static void onInvisible(
+      ComponentContext c,
+      @Prop DelegateListener delegateListener,
+      @Prop int id,
+      @Prop(optional = true) DelegateListener consoleDelegateListener) {
+    onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_INVISIBLE, id);
   }
 
   @OnEvent(ClickEvent.class)
