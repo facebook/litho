@@ -95,7 +95,7 @@ public class NestedTreeResolutionTest {
 
     final ExtraProps props = new ExtraProps();
     props.shouldCreateNewLayout = true;
-    props.setps = new ArrayList<>();
+    props.steps = new ArrayList<>();
 
     mLithoViewRule
         .setTreeProp(ExtraProps.class, props)
@@ -109,7 +109,7 @@ public class NestedTreeResolutionTest {
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
-    assertThat(props.setps)
+    assertThat(props.steps)
         .containsExactly(
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
             LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
@@ -126,7 +126,7 @@ public class NestedTreeResolutionTest {
 
     final ExtraProps props = new ExtraProps();
     props.shouldCreateNewLayout = false;
-    props.setps = new ArrayList<>();
+    props.steps = new ArrayList<>();
 
     mLithoViewRule
         .setTreeProp(ExtraProps.class, props)
@@ -140,7 +140,7 @@ public class NestedTreeResolutionTest {
 
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
-    assertThat(props.setps).containsExactly(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    assertThat(props.steps).containsExactly(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
 
     NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
     verify(holder.getInternalNode()).copyInto(any(InternalNode.class));

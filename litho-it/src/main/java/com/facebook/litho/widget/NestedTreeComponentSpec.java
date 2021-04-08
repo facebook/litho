@@ -47,8 +47,8 @@ public class NestedTreeComponentSpec {
     // Added to swallow the lint error.
     String s = String.format("w:%d,h:%d", widthSpec, heightSpec);
 
-    if (props != null && props.setps != null) {
-      props.setps.add(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+    if (props != null && props.steps != null) {
+      props.steps.add(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
     }
 
     return Row.create(c)
@@ -74,6 +74,6 @@ public class NestedTreeComponentSpec {
 
   public static class ExtraProps {
     public boolean shouldCreateNewLayout;
-    public List<LifecycleStep> setps;
+    public @Nullable List<LifecycleStep> steps;
   }
 }
