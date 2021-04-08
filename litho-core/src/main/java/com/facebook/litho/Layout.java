@@ -515,7 +515,7 @@ class Layout {
       final @Nullable PerfEvent logLayoutState) {
 
     if (root == NULL_LAYOUT) {
-      return NULL_LAYOUT;
+      return NullLayoutResult.INSTANCE;
     }
 
     resume(root);
@@ -555,7 +555,7 @@ class Layout {
       final int widthSpec,
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
-    if (layout == NULL_LAYOUT) { // If NULL LAYOUT return immediately.
+    if (layout == NullLayoutResult.INSTANCE) { // If NULL layout result, then return immediately.
       return;
     }
 

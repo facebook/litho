@@ -23,7 +23,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLifecycle.MountType.NONE;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
@@ -757,7 +756,7 @@ public class LayoutState
         ComponentsSystrace.endSection();
       }
 
-      if (nestedTree == NULL_LAYOUT) {
+      if (nestedTree == NullLayoutResult.INSTANCE) {
         return;
       }
 
@@ -1811,7 +1810,7 @@ public class LayoutState
     // Reset markers before collecting layout outputs.
     layoutState.mCurrentHostMarker = -1;
 
-    if (root == NULL_LAYOUT) {
+    if (root == NullLayoutResult.INSTANCE) {
       return;
     }
 

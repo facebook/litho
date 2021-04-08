@@ -39,7 +39,7 @@ import java.util.Map;
  * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
  * overridden so no actions are performed, and no exceptions are thrown.
  */
-class NoOpInternalNode implements InternalNode, LithoLayoutResult {
+class NoOpInternalNode implements InternalNode {
 
   NoOpInternalNode() {}
 
@@ -109,7 +109,7 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
 
   @Override
   public LithoLayoutResult calculateLayout(float width, float height) {
-    return this;
+    return NullLayoutResult.INSTANCE;
   }
 
   @Override
@@ -253,8 +253,8 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   }
 
   @Override
-  public InternalNode getInternalNode() {
-    return this;
+  public YogaNode getYogaNode() {
+    return null;
   }
 
   @Nullable
@@ -264,57 +264,7 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   }
 
   @Override
-  public int getX() {
-    return 0;
-  }
-
-  @Override
-  public int getY() {
-    return 0;
-  }
-
-  @Override
-  public int getWidth() {
-    return 0;
-  }
-
-  @Override
-  public int getHeight() {
-    return 0;
-  }
-
-  @Override
-  public int getPaddingTop() {
-    return 0;
-  }
-
-  @Override
-  public int getPaddingRight() {
-    return 0;
-  }
-
-  @Override
-  public int getPaddingBottom() {
-    return 0;
-  }
-
-  @Override
-  public int getPaddingLeft() {
-    return 0;
-  }
-
-  @Override
-  public boolean isPaddingSet() {
-    return false;
-  }
-
-  @Override
   public @Nullable Drawable getBackground() {
-    return null;
-  }
-
-  @Override
-  public @Nullable YogaDirection getResolvedLayoutDirection() {
     return null;
   }
 
@@ -363,43 +313,6 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   }
 
   @Override
-  public int getLastHeightSpec() {
-    return 0;
-  }
-
-  @Override
-  public void setLastHeightSpec(int heightSpec) {}
-
-  @Override
-  public float getLastMeasuredHeight() {
-    return 0;
-  }
-
-  @Override
-  public void setLastMeasuredHeight(float lastMeasuredHeight) {}
-
-  @Override
-  public float getLastMeasuredWidth() {
-    return 0;
-  }
-
-  @Override
-  public void setLastMeasuredWidth(float lastMeasuredWidth) {}
-
-  @Override
-  public int getLastWidthSpec() {
-    return 0;
-  }
-
-  @Override
-  public void setLastWidthSpec(int widthSpec) {}
-
-  @Override
-  public int getLayoutBorder(YogaEdge edge) {
-    return 0;
-  }
-
-  @Override
   public float getMaxHeight() {
     return 0;
   }
@@ -438,9 +351,6 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   public NoOpInternalNode getParent() {
     return null;
   }
-
-  @Override
-  public void setParent(LithoLayoutResult parent) {}
 
   @Nullable
   @Override
@@ -490,26 +400,6 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   @Override
   public Edges getTouchExpansion() {
     return null;
-  }
-
-  @Override
-  public int getTouchExpansionBottom() {
-    return 0;
-  }
-
-  @Override
-  public int getTouchExpansionLeft() {
-    return 0;
-  }
-
-  @Override
-  public int getTouchExpansionRight() {
-    return 0;
-  }
-
-  @Override
-  public int getTouchExpansionTop() {
-    return 0;
   }
 
   @Nullable
@@ -567,11 +457,6 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   @Nullable
   @Override
   public ArrayList<WorkingRangeContainer.Registration> getWorkingRangeRegistrations() {
-    return null;
-  }
-
-  @Override
-  public @Nullable YogaNode getYogaNode() {
     return null;
   }
 
@@ -652,20 +537,12 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
   }
 
   @Override
-  public @Nullable YogaDirection recursivelyResolveLayoutDirection() {
-    return null;
-  }
-
-  @Override
   public void registerDebugComponent(DebugComponent debugComponent) {}
 
   @Override
   public @Nullable InternalNode removeChildAt(int index) {
     return null;
   }
-
-  @Override
-  public void resetResolvedLayoutProperties() {}
 
   @Override
   public void setBorderWidth(YogaEdge edge, int borderWidth) {}
@@ -681,11 +558,6 @@ class NoOpInternalNode implements InternalNode, LithoLayoutResult {
 
   @Override
   public void setStyleWidthFromSpec(int widthSpec) {}
-
-  @Override
-  public boolean shouldDrawBorders() {
-    return false;
-  }
 
   @Override
   public @Nullable InternalNode stateListAnimator(@Nullable StateListAnimator stateListAnimator) {

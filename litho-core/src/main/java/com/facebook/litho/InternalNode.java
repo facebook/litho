@@ -195,7 +195,6 @@ public interface InternalNode extends Inputs, LayoutProps {
    * Reconcile returns a new InternalNode tree where only mutated sub-trees are recreated and all
    * other sub-trees are copied. The returned InternalNode tree represents the updated layout tree.
    *
-   * @param layoutStateContext
    * @param c The new ComponentContext.
    * @param next The new component to reconcile against.
    * @return The reconciled InternalNode which represents {@param next}.
