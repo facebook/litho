@@ -66,7 +66,7 @@ public class DataDiffSectionSpecTest {
   private SectionTree mSectionTree;
   private TestTarget mTestTarget;
 
-  @Mock public EventHandler<OnCheckIsSameItemEvent> mIsSameItemEventEventHandler;
+  @Mock public EventHandler<OnCheckIsSameItemEvent<String>> mIsSameItemEventEventHandler;
   @Mock public HasEventDispatcher mHasEventDispatcher;
 
   @Before

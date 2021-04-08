@@ -76,7 +76,7 @@ public class HideableDataDiffSectionSpec<T> {
       @State HashSet blacklistState,
       @Prop List<T> data,
       @Prop EventHandler<GetUniqueIdentifierEvent> getUniqueIdentifierHandler,
-      @Prop(optional = true) EventHandler<OnCheckIsSameItemEvent> onSameItemEventHandler,
+      @Prop(optional = true) EventHandler<OnCheckIsSameItemEvent<T>> onSameItemEventHandler,
       @Prop(optional = true) EventHandler<OnCheckIsSameContentEvent> onSameContentEventHandler) {
     return Children.create()
         .child(

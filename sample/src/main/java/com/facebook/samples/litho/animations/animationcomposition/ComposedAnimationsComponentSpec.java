@@ -40,7 +40,7 @@ class ComposedAnimationsComponentSpec {
     return RecyclerCollectionComponent.create(c)
         .disablePTR(true)
         .section(
-            DataDiffSection.<Object>create(new SectionContext(c))
+            DataDiffSection.<Data>create(new SectionContext(c))
                 .data(generateData(20))
                 .renderEventHandler(ComposedAnimationsComponent.onRender(c))
                 .onCheckIsSameItemEventHandler(ComposedAnimationsComponent.isSameItem(c))
@@ -49,7 +49,7 @@ class ComposedAnimationsComponentSpec {
   }
 
   @OnEvent(RenderEvent.class)
-  static RenderInfo onRender(ComponentContext c, @FromEvent int index) {
+  static RenderInfo onRender(ComponentContext c, @FromEvent int index, @FromEvent Data model) {
     final int numDemos = 5;
     Component component;
     // Keep alternating between demos
@@ -81,8 +81,8 @@ class ComposedAnimationsComponentSpec {
     return previousItem.number == nextItem.number;
   }
 
-  private static List<Object> generateData(int number) {
-    List<Object> dummyData = new ArrayList<>(number);
+  private static List<Data> generateData(int number) {
+    List<Data> dummyData = new ArrayList<>(number);
     for (int i = 0; i < number; i++) {
       dummyData.add(new Data(i));
     }
