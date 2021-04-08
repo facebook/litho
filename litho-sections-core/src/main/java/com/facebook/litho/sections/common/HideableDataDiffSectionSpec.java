@@ -77,7 +77,7 @@ public class HideableDataDiffSectionSpec<T> {
       @Prop List<T> data,
       @Prop EventHandler<GetUniqueIdentifierEvent> getUniqueIdentifierHandler,
       @Prop(optional = true) EventHandler<OnCheckIsSameItemEvent<T>> onSameItemEventHandler,
-      @Prop(optional = true) EventHandler<OnCheckIsSameContentEvent> onSameContentEventHandler) {
+      @Prop(optional = true) EventHandler<OnCheckIsSameContentEvent<T>> onSameContentEventHandler) {
     return Children.create()
         .child(
             DataDiffSection.<T>create(c)

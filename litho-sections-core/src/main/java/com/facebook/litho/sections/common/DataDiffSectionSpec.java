@@ -345,7 +345,7 @@ public class DataDiffSectionSpec<T> {
     private final List<? extends T> mNextData;
     private final SectionContext mSectionContext;
     private final EventHandler<OnCheckIsSameItemEvent<T>> mIsSameItemEventHandler;
-    private final EventHandler<OnCheckIsSameContentEvent> mIsSameContentEventHandler;
+    private final EventHandler<OnCheckIsSameContentEvent<T>> mIsSameContentEventHandler;
 
     Callback(
         SectionContext sectionContext, List<? extends T> previousData, List<? extends T> nextData) {

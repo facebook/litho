@@ -26,7 +26,7 @@ import com.facebook.litho.annotations.Event;
  * temporarily removed until the bug in the attached task is fixed.
  */
 @Event(returnType = Boolean.class)
-public class OnCheckIsSameContentEvent {
-  public Object previousItem;
-  public Object nextItem;
+public class OnCheckIsSameContentEvent<T> {
+  public T previousItem;
+  public T nextItem;
 }
