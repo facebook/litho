@@ -37,6 +37,7 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 public class MethodCompletionContributor extends CompletionContributor {
@@ -128,7 +130,7 @@ public class MethodCompletionContributor extends CompletionContributor {
               handleInsert(methods, context, specClass);
               postProcessor.run();
             })
-        .appendTailText(" {...}", true)
+        .appendTailText(getReadableParameterLists(mainMethod), true)
         .withTypeText("Litho", true)
         .withPsiElement(documentationCls);
   }
@@ -154,5 +156,11 @@ public class MethodCompletionContributor extends CompletionContributor {
             insertionContext.getProject(),
             insertionContext.getEditor(),
             insertionContext.getFile());
+  }
+
+  private static String getReadableParameterLists(PsiMethod psiMethod) {
+    return Arrays.stream(psiMethod.getParameterList().getParameters())
+        .map(psiParam -> psiParam.getType().getPresentableText() + " " + psiParam.getName())
+        .collect(Collectors.joining(", ", "(", ")"));
   }
 }
