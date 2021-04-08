@@ -203,7 +203,8 @@ public class LithoHostListenerCoordinator {
       throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
     }
 
-    mTransitionsExtension = TransitionsExtension.getInstance();
+    mTransitionsExtension =
+        TransitionsExtension.getInstance((AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
 
     registerListener(mTransitionsExtension);
