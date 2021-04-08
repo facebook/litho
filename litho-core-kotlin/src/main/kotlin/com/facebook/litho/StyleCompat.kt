@@ -21,7 +21,7 @@ package com.facebook.litho
  * Component. Using this builder method is the equivalent of setting all common props the Style
  * defines.
  */
-fun <T : Component.Builder<T>> Component.Builder<T>.kotlinStyle(style: Style): T {
-  style.applyToComponent(context!!.resourceResolver, component)
+fun <T : Component.Builder<T>> Component.Builder<T>.kotlinStyle(style: Style?): T {
+  style?.applyToComponent(context!!.resourceResolver, component)
   return getThis()
 }
