@@ -38,7 +38,7 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
   private final DelegateListener mDelegateListener =
       new DelegateListener() {
         @Override
-        public void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id) {
+        public void onDelegateMethodCalled(int type, Thread thread, long timestamp, String id) {
           if (mConsoleView != null) {
             mConsoleView.post(
                 new ConsoleView.LogRunnable(
@@ -54,7 +54,7 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
             final Component root =
                 LifecycleDelegateComponent.create(
                         new ComponentContext(LifecycleDelegateActivity.this))
-                    .id(mId.getAndIncrement())
+                    .id(String.valueOf(mId.getAndIncrement()))
                     .key(String.valueOf(random.nextInt())) // Force to reset component.
                     .delegateListener(mDelegateListener)
                     .consoleDelegateListener(mConsoleDelegateListener)
@@ -81,7 +81,7 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
         LithoView.create(
             this,
             LifecycleDelegateComponent.create(componentContext)
-                .id(mId.getAndIncrement())
+                .id(String.valueOf(mId.getAndIncrement()))
                 .delegateListener(mDelegateListener)
                 .consoleDelegateListener(mConsoleDelegateListener)
                 .build());

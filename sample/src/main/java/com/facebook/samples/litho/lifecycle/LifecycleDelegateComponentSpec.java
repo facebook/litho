@@ -38,6 +38,7 @@ import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -79,7 +80,7 @@ class LifecycleDelegateComponentSpec {
       StateValue<Random> random,
       StateValue<Integer> colorIndex,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     final Random rand = new Random();
     random.set(rand);
@@ -91,7 +92,7 @@ class LifecycleDelegateComponentSpec {
   static DummyTreeProp onCreateTreeProp(
       ComponentContext c,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_TREE_PROP, id);
     return sDummyTreeProp;
@@ -101,7 +102,7 @@ class LifecycleDelegateComponentSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
       @State Integer colorIndex) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_LAYOUT, id);
@@ -126,7 +127,7 @@ class LifecycleDelegateComponentSpec {
   static Transition onCreateTransition(
       ComponentContext c,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_TRANSITION, id);
     return Transition.allLayout().animator(Transition.SPRING_WITH_OVERSHOOT);
@@ -137,7 +138,7 @@ class LifecycleDelegateComponentSpec {
       ComponentContext c,
       @Prop DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
-      @Prop int id) {
+      @Prop String id) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_ATTACHED, id);
   }
 
@@ -146,7 +147,7 @@ class LifecycleDelegateComponentSpec {
       ComponentContext c,
       @Prop DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
-      @Prop int id) {
+      @Prop String id) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_DETACHED, id);
   }
 
@@ -159,7 +160,7 @@ class LifecycleDelegateComponentSpec {
   static void onVisible(
       ComponentContext c,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_VISIBLE, id);
   }
@@ -168,7 +169,7 @@ class LifecycleDelegateComponentSpec {
   static void onInvisible(
       ComponentContext c,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_INVISIBLE, id);
   }

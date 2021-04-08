@@ -96,7 +96,7 @@ public class LifecycleDelegateLog {
     return log;
   }
 
-  public static String prefix(Thread thread, long timestamp, int id) {
+  public static String prefix(Thread thread, long timestamp, String id) {
     final Date date = new Date(timestamp);
     final String dateFormatted = DATE_FORMAT.format(date);
     String prefix = dateFormatted + " [" + thread.getName() + "][id=" + id + "] ";
@@ -108,7 +108,7 @@ public class LifecycleDelegateLog {
       DelegateListener delegateListener,
       @Nullable DelegateListener consoleDelegateListener,
       int type,
-      int id) {
+      String id) {
     delegateListener.onDelegateMethodCalled(
         type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
     if (consoleDelegateListener != null) {

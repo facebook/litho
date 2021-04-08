@@ -33,7 +33,7 @@ interface DelegateListener {
   int ON_UNBIND = 13;
   int ON_UNMOUNT = 14;
 
-  void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id);
+  void onDelegateMethodCalled(int type, Thread thread, long timestamp, String id);
 
   void setRootComponent(boolean isSync);
 }

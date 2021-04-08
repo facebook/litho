@@ -50,7 +50,7 @@ public class LifecycleDelegateMountComponentSpec {
   static void onPrepare(
       ComponentContext c,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
       Output<String> contentString) {
     contentString.set("Hello, Litho-World!");
@@ -65,7 +65,7 @@ public class LifecycleDelegateMountComponentSpec {
       int heightSpec,
       Size size,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     size.height = 100;
     size.width = 600;
@@ -77,7 +77,7 @@ public class LifecycleDelegateMountComponentSpec {
       ComponentContext c,
       ComponentLayout layout,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_BOUNDS_DEFINED, id);
   }
@@ -92,7 +92,7 @@ public class LifecycleDelegateMountComponentSpec {
       ComponentContext c,
       TextView textView,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
       @FromPrepare String contentString) {
     textView.setText(contentString);
@@ -104,7 +104,7 @@ public class LifecycleDelegateMountComponentSpec {
       ComponentContext c,
       TextView textView,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_BIND, id);
   }
@@ -114,7 +114,7 @@ public class LifecycleDelegateMountComponentSpec {
       ComponentContext c,
       TextView textView,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_UNBIND, id);
   }
@@ -124,7 +124,7 @@ public class LifecycleDelegateMountComponentSpec {
       ComponentContext c,
       TextView textView,
       @Prop DelegateListener delegateListener,
-      @Prop int id,
+      @Prop String id,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_UNMOUNT, id);
   }

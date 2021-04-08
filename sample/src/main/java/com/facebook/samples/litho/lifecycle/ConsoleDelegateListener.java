@@ -19,7 +19,7 @@ package com.facebook.samples.litho.lifecycle;
 public class ConsoleDelegateListener implements DelegateListener {
 
   @Override
-  public void onDelegateMethodCalled(int type, Thread thread, long timestamp, int id) {
+  public void onDelegateMethodCalled(int type, Thread thread, long timestamp, String id) {
     android.util.Log.d(
         "LifecycleActivity",
         LifecycleDelegateLog.prefix(thread, timestamp, id) + LifecycleDelegateLog.log(type));
