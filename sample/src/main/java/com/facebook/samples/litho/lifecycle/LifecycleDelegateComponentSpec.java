@@ -38,7 +38,6 @@ import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
