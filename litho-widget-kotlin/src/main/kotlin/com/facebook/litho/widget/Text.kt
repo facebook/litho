@@ -33,7 +33,7 @@ import com.facebook.litho.sp
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun ComponentScope.Text(
-    text: CharSequence,
+    text: CharSequence?,
     style: Style? = null,
     @ColorInt textColor: Int = Color.BLACK,
     textSize: Sp = 14.sp,
