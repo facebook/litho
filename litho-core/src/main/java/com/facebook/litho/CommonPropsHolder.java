@@ -989,7 +989,6 @@ class CommonPropsHolder implements CommonProps {
     private static final int PFLAG_MARGIN_PERCENT_IS_SET = 1 << 26;
     private static final int PFLAG_MARGIN_AUTO_IS_SET = 1 << 27;
     private static final int PFLAG_IS_REFERENCE_BASELINE_IS_SET = 1 << 28;
-    private static final int PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1 << 29;
 
     private int mPrivateFlags;
 
@@ -1223,7 +1222,6 @@ class CommonPropsHolder implements CommonProps {
 
     @Override
     public void useHeightAsBaseline(boolean useHeightAsBaseline) {
-      mPrivateFlags |= PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET;
       mUseHeightAsBaseline = useHeightAsBaseline;
     }
 
@@ -1348,7 +1346,7 @@ class CommonPropsHolder implements CommonProps {
       if ((mPrivateFlags & PFLAG_IS_REFERENCE_BASELINE_IS_SET) != 0L) {
         target.isReferenceBaseline(mIsReferenceBaseline);
       }
-      if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
+      if (mUseHeightAsBaseline) {
         target.useHeightAsBaseline(mUseHeightAsBaseline);
       }
     }
