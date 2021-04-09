@@ -305,6 +305,26 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public void heightAuto() {
+    getOrCreateLayoutProps().heightAuto();
+  }
+
+  @Override
+  public void widthAuto() {
+    getOrCreateLayoutProps().widthAuto();
+  }
+
+  @Override
+  public void flexBasisAuto() {
+    getOrCreateLayoutProps().flexBasisAuto();
+  }
+
+  @Override
+  public void setBorderWidth(YogaEdge edge, float borderWidth) {
+    getOrCreateLayoutProps().setBorderWidth(edge, borderWidth);
+  }
+
+  @Override
   public void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
@@ -1022,6 +1042,11 @@ class CommonPropsHolder implements CommonProps {
     @Nullable private Edges mPositionPercents;
     private boolean mIsReferenceBaseline;
     private boolean mUseHeightAsBaseline;
+    private boolean mHeightAuto;
+    private boolean mWidthAuto;
+    private boolean mFlexBasisAuto;
+
+    private @Nullable Edges mBorderEdges;
 
     @Override
     public void widthPx(@Px int width) {
@@ -1226,6 +1251,30 @@ class CommonPropsHolder implements CommonProps {
     }
 
     @Override
+    public void heightAuto() {
+      mHeightAuto = true;
+    }
+
+    @Override
+    public void widthAuto() {
+      mWidthAuto = true;
+    }
+
+    @Override
+    public void flexBasisAuto() {
+      mFlexBasisAuto = true;
+    }
+
+    /** Used by {@link DebugLayoutNodeEditor} */
+    @Override
+    public void setBorderWidth(YogaEdge edge, float borderWidth) {
+      if (mBorderEdges == null) {
+        mBorderEdges = new Edges();
+      }
+      mBorderEdges.set(edge, borderWidth);
+    }
+
+    @Override
     public void copyInto(LayoutProps target) {
       if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
         target.widthPx(mWidthPx);
@@ -1349,6 +1398,23 @@ class CommonPropsHolder implements CommonProps {
       if (mUseHeightAsBaseline) {
         target.useHeightAsBaseline(mUseHeightAsBaseline);
       }
+      if (mHeightAuto) {
+        target.heightAuto();
+      }
+      if (mWidthAuto) {
+        target.widthAuto();
+      }
+      if (mFlexBasisAuto) {
+        target.flexBasisAuto();
+      }
+      if (mBorderEdges != null) {
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mBorderEdges.getRaw(i);
+          if (!YogaConstants.isUndefined(value)) {
+            target.setBorderWidth(YogaEdge.fromInt(i), value);
+          }
+        }
+      }
     }
 
     @Override
@@ -1392,6 +1458,10 @@ class CommonPropsHolder implements CommonProps {
           && CommonUtils.isEquivalentTo(mPaddings, other.mPaddings)
           && CommonUtils.isEquivalentTo(mPaddingPercents, other.mPaddingPercents)
           && CommonUtils.isEquivalentTo(mPositionPercents, other.mPositionPercents)
+          && mHeightAuto == other.mHeightAuto
+          && mWidthAuto == other.mWidthAuto
+          && mFlexBasisAuto == other.mFlexBasisAuto
+          && CommonUtils.isEquivalentTo(mBorderEdges, other.mBorderEdges)
           && CommonUtils.equals(mMarginAutos, other.mMarginAutos);
     }
   }

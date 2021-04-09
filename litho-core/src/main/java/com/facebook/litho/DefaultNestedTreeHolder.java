@@ -87,7 +87,7 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   }
 
   @Override
-  public void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
+  public void setBorderWidth(YogaEdge edge, float borderWidth) {
     if (mNestedTreeBorderWidth == null) {
       mNestedTreeBorderWidth = new Edges();
     }

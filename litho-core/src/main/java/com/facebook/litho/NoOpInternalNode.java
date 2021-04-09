@@ -141,9 +141,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable InternalNode flexBasisAuto() {
-    return null;
-  }
+  public void flexBasisAuto() {}
 
   @Override
   public @Nullable InternalNode flexDirection(YogaFlexDirection direction) {
@@ -486,9 +484,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable InternalNode heightAuto() {
-    return null;
-  }
+  public void heightAuto() {}
 
   @Override
   public @Nullable InternalNode importantForAccessibility(int importantForAccessibility) {
@@ -545,7 +541,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void setBorderWidth(YogaEdge edge, int borderWidth) {}
+  public void setBorderWidth(YogaEdge edge, float borderWidth) {}
 
   @Override
   public void setCachedMeasuresValid(boolean valid) {}
@@ -623,9 +619,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable InternalNode widthAuto() {
-    return null;
-  }
+  public void widthAuto() {}
 
   @Override
   public void widthPx(int width) {}

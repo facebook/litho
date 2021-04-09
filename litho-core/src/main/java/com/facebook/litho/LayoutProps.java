@@ -83,4 +83,13 @@ interface LayoutProps {
   void isReferenceBaseline(boolean isReferenceBaseline);
 
   void useHeightAsBaseline(boolean useHeightAsBaseline);
+
+  void heightAuto();
+
+  void widthAuto();
+
+  void flexBasisAuto();
+
+  /** Used by {@link DebugLayoutNodeEditor} */
+  void setBorderWidth(YogaEdge edge, float borderWidth);
 }

@@ -438,9 +438,8 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
 
   // Used by stetho to re-set auto value
   @Override
-  public InternalNode flexBasisAuto() {
+  public void flexBasisAuto() {
     mYogaNode.setFlexBasisAuto();
-    return this;
   }
 
   @Override
@@ -960,9 +959,8 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
 
   // Used by stetho to re-set auto value
   @Override
-  public InternalNode heightAuto() {
+  public void heightAuto() {
     mYogaNode.setHeightAuto();
-    return this;
   }
 
   @Override
@@ -1175,7 +1173,7 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
   }
 
   @Override
-  public void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
+  public void setBorderWidth(YogaEdge edge, float borderWidth) {
     mYogaNode.setBorder(edge, borderWidth);
   }
 
@@ -1330,9 +1328,8 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
   }
 
   @Override
-  public InternalNode widthAuto() {
+  public void widthAuto() {
     mYogaNode.setWidthAuto();
-    return this;
   }
 
   @Override

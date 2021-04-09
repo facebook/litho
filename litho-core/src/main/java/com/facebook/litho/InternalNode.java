@@ -87,7 +87,7 @@ public interface InternalNode extends Inputs, LayoutProps {
   InternalNode duplicateChildrenStates(boolean duplicateChildState);
 
   /** Used by stetho to re-set auto value */
-  InternalNode flexBasisAuto();
+  void flexBasisAuto();
 
   InternalNode flexDirection(YogaFlexDirection direction);
 
@@ -114,7 +114,7 @@ public interface InternalNode extends Inputs, LayoutProps {
   NodeInfo getOrCreateNodeInfo();
 
   /** Used by stetho to re-set auto value */
-  InternalNode heightAuto();
+  void heightAuto();
 
   InternalNode importantForAccessibility(int importantForAccessibility);
 
@@ -123,8 +123,6 @@ public interface InternalNode extends Inputs, LayoutProps {
   InternalNode justifyContent(YogaJustify justifyContent);
 
   InternalNode removeChildAt(int index);
-
-  void setBorderWidth(YogaEdge edge, @Px int borderWidth);
 
   void setCachedMeasuresValid(boolean valid);
 
@@ -158,7 +156,7 @@ public interface InternalNode extends Inputs, LayoutProps {
   InternalNode visibleWidthRatio(float visibleWidthRatio);
 
   // Used by stetho to re-set auto value
-  InternalNode widthAuto();
+  void widthAuto();
 
   InternalNode wrap(YogaWrap wrap);
 
