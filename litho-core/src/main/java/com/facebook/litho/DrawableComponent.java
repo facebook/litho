@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
 import com.facebook.litho.drawable.DrawableUtils;
 
 class DrawableComponent<T extends Drawable> extends Component {
@@ -60,36 +59,6 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  void bind(ComponentContext c, Object mountedContent) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("onBind:" + SIMPLE_NAME);
-    }
-    try {
-      onBind(c, mountedContent);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-  }
-
-  @Override
-  void mount(ComponentContext c, Object mountedContent) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("onMount:" + SIMPLE_NAME);
-    }
-    try {
-      onMount(c, mountedContent);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-  }
-
-  @Override
   protected void onUnmount(ComponentContext context, Object mountedContent) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
     matrixDrawable.unmount();
@@ -107,19 +76,6 @@ class DrawableComponent<T extends Drawable> extends Component {
 
   public static DrawableComponent create(Drawable drawable) {
     return new DrawableComponent<>(drawable);
-  }
-
-  @Override
-  protected boolean shouldUpdate(
-      final @Nullable Component previous,
-      final @Nullable StateContainer previousStateContainer,
-      final @Nullable Component next,
-      final @Nullable StateContainer nextStateContainer) {
-    final Drawable previousDrawable =
-        previous == null ? null : ((DrawableComponent) previous).getDrawable();
-    final Drawable nextDrawable = next == null ? null : ((DrawableComponent) next).getDrawable();
-
-    return !DrawableUtils.isEquivalentTo(previousDrawable, nextDrawable);
   }
 
   private Drawable getDrawable() {

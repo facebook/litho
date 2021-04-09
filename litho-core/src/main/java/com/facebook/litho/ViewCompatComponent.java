@@ -99,12 +99,12 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  void bind(ComponentContext c, Object mountedContent) {
+  protected void onBind(ComponentContext c, Object mountedContent) {
     mViewBinder.bind((V) mountedContent);
   }
 
   @Override
-  void unbind(ComponentContext c, Object mountedContent) {
+  protected void onUnbind(ComponentContext c, Object mountedContent) {
     mViewBinder.unbind((V) mountedContent);
   }
 
@@ -114,7 +114,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  public V createMountContent(Context c) {
+  public V onCreateMountContent(Context c) {
     return (V) mViewCreator.createView(c, null);
   }
 

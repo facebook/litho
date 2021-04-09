@@ -53,36 +53,6 @@ class HostComponent extends Component {
   }
 
   @Override
-  void bind(ComponentContext c, Object mountedContent) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("onBind:" + SIMPLE_NAME);
-    }
-    try {
-      onBind(c, mountedContent);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-  }
-
-  @Override
-  void mount(ComponentContext c, Object convertContent) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("onMount:" + SIMPLE_NAME);
-    }
-    try {
-      onMount(c, convertContent);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-  }
-
-  @Override
   protected void onMount(ComponentContext c, Object convertContent) {
     final ComponentHost host = (ComponentHost) convertContent;
 

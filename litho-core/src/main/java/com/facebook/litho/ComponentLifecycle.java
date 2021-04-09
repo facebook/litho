@@ -127,7 +127,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  public Object createMountContent(Context c) {
+  public final Object createMountContent(Context c) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
@@ -180,8 +180,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return MountType.NONE;
   }
 
-  void bind(ComponentContext c, Object mountedContent) {
-    c.enterNoStateUpdatesMethod("bind");
+  final void bind(ComponentContext c, Object mountedContent) {
+    if (c != null) {
+      c.enterNoStateUpdatesMethod("bind");
+    }
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
@@ -189,9 +191,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     try {
       onBind(c, mountedContent);
     } catch (Exception e) {
-      ComponentUtils.handle(c, e);
+      if (c != null) {
+        ComponentUtils.handle(c, e);
+      } else {
+        throw e;
+      }
     } finally {
-      c.exitNoStateUpdatesMethod();
+      if (c != null) {
+        c.exitNoStateUpdatesMethod();
+      }
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -210,18 +218,20 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return mTypeId;
   }
 
-  void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+  final void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     c.setDefStyle(defStyleAttr, defStyleRes);
     onLoadStyle(c);
     c.setDefStyle(0, 0);
   }
 
-  void loadStyle(ComponentContext c) {
+  final void loadStyle(ComponentContext c) {
     onLoadStyle(c);
   }
 
-  void mount(ComponentContext c, Object convertContent) {
-    c.enterNoStateUpdatesMethod("mount");
+  final void mount(ComponentContext c, Object convertContent) {
+    if (c != null) {
+      c.enterNoStateUpdatesMethod("mount");
+    }
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("onMount:" + ((Component) this).getSimpleName());
@@ -229,16 +239,22 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     try {
       onMount(c, convertContent);
     } catch (Exception e) {
-      ComponentUtils.handle(c, e);
+      if (c != null) {
+        ComponentUtils.handle(c, e);
+      } else {
+        throw e;
+      }
     } finally {
-      c.exitNoStateUpdatesMethod();
+      if (c != null) {
+        c.exitNoStateUpdatesMethod();
+      }
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
     }
   }
 
-  void unbind(ComponentContext c, Object mountedContent) {
+  final void unbind(ComponentContext c, Object mountedContent) {
     try {
       onUnbind(c, mountedContent);
     } catch (Exception e) {
@@ -246,7 +262,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  void unmount(ComponentContext c, Object mountedContent) {
+  final void unmount(ComponentContext c, Object mountedContent) {
     try {
       onUnmount(c, mountedContent);
     } catch (Exception e) {
