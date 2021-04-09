@@ -59,7 +59,6 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTest {
-  private static final int LIFECYCLE_TEST_ID = 1;
 
   private static class TestComponent extends Component {
 
@@ -70,11 +69,6 @@ public class InternalNodeTest {
     @Override
     public boolean isEquivalentTo(Component other) {
       return this == other;
-    }
-
-    @Override
-    int getTypeId() {
-      return LIFECYCLE_TEST_ID;
     }
   }
 

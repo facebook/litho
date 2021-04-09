@@ -214,7 +214,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return transition;
   }
 
-  int getTypeId() {
+  final int getTypeId() {
     return mTypeId;
   }
 

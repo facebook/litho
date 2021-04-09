@@ -42,10 +42,6 @@ public class ComponentsPoolsTest {
   private static final int POOL_SIZE = 2;
   private final Component mLifecycle =
       new Component("Lifecycle") {
-        @Override
-        int getTypeId() {
-          return 1;
-        }
 
         @Override
         protected int poolSize() {
@@ -60,10 +56,6 @@ public class ComponentsPoolsTest {
 
   private final Component mLifecycleWithEmptyPoolSize =
       new Component("LifecycleWithEmptyPoolSize") {
-        @Override
-        int getTypeId() {
-          return 2;
-        }
 
         @Override
         protected int poolSize() {

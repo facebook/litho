@@ -21,8 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class StateUpdateTestComponent extends Component {
 
-  private static final int LIFECYCLE_TEST_ID = 1;
-
   private static final int STATE_UPDATE_TYPE_NOOP = 0;
   private static final int STATE_UPDATE_TYPE_INCREMENT = 1;
   private static final int STATE_UPDATE_TYPE_MULTIPLY = 2;
@@ -56,11 +54,6 @@ class StateUpdateTestComponent extends Component {
   @Override
   public boolean isEquivalentTo(Component other) {
     return this == other;
-  }
-
-  @Override
-  int getTypeId() {
-    return LIFECYCLE_TEST_ID;
   }
 
   @Override

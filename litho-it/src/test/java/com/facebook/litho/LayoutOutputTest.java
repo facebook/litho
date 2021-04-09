@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LayoutOutputTest {
 
-  private static final int LIFECYCLE_TEST_ID = 1;
   private static final int LEVEL_TEST = 1;
   private static final int SEQ_TEST = 1;
   private static final int MAX_LEVEL_TEST = 255;
@@ -46,11 +45,6 @@ public class LayoutOutputTest {
     @Override
     public boolean isEquivalentTo(Component other) {
       return this == other;
-    }
-
-    @Override
-    int getTypeId() {
-      return LIFECYCLE_TEST_ID;
     }
   }
 
@@ -119,8 +113,10 @@ public class LayoutOutputTest {
     long stableIdSeq2 =
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST + 1, OutputUnitType.CONTENT, SEQ_TEST + 1);
 
-    assertThat(toBinaryString(stableId)).isEqualTo("1000000010000000000000000001");
-    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("1000000100000000000000000010");
+    assertThat(toBinaryString(stableId))
+        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010000000000000000001");
+    assertThat(toBinaryString(stableIdSeq2))
+        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000100000000000000000010");
   }
 
   @Test
@@ -130,7 +126,8 @@ public class LayoutOutputTest {
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
-    assertThat(toBinaryString(stableId)).isEqualTo("1000000010010000000000000001");
+    assertThat(toBinaryString(stableId))
+        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010010000000000000001");
   }
 
   @Test
@@ -140,7 +137,8 @@ public class LayoutOutputTest {
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
-    assertThat(toBinaryString(stableId)).isEqualTo("1000000010100000000000000001");
+    assertThat(toBinaryString(stableId))
+        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010100000000000000001");
   }
 
   @Test
@@ -150,7 +148,8 @@ public class LayoutOutputTest {
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
-    assertThat(toBinaryString(stableId)).isEqualTo("1000000010110000000000000001");
+    assertThat(toBinaryString(stableId))
+        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010110000000000000001");
   }
 
   @Test
@@ -160,7 +159,8 @@ public class LayoutOutputTest {
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
-    assertThat(toBinaryString(stableId)).isEqualTo("1000000011000000000000000001");
+    assertThat(toBinaryString(stableId))
+        .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000011000000000000000001");
   }
 
   @Test

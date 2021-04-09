@@ -32,10 +32,6 @@ public class PoolBisectUtilTest {
 
   private final Component mBarComponent =
       new Component("BarComponent") {
-        @Override
-        int getTypeId() {
-          return 1;
-        }
 
         @Override
         protected Object onCreateMountContent(Context context) {
@@ -45,10 +41,6 @@ public class PoolBisectUtilTest {
 
   private final Component mFooComponent =
       new Component("FooComponent") {
-        @Override
-        int getTypeId() {
-          return 2;
-        }
 
         @Override
         protected Object onCreateMountContent(Context context) {
