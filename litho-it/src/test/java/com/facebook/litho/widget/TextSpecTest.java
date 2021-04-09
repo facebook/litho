@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.core.text.TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -30,9 +31,11 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.style.ClickableSpan;
+import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.core.text.TextDirectionHeuristicCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
@@ -508,6 +511,137 @@ public class TextSpecTest {
             getMountedDrawableLayoutAlignment(
                 ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.RIGHT))
         .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+  }
+
+  /* Test for LTR text aligned left. */
+  @Test
+  public void testCustomEllipsisTextForLtrShortText() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple\nSome second line", 1, "Truncate", TextAlignment.LEFT, FIRSTSTRONG_LTR);
+
+    assertEquals(textDrawable.getText().toString(), "SimpleTruncate");
+  }
+
+  @Test
+  public void testCustomEllipsisTextForLtrLongText() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple sentence that should be quite long quite long quite long quite long quite long"
+                + " quite long quite long\n"
+                + "Some second line",
+            1,
+            "Truncate",
+            TextAlignment.LEFT,
+            FIRSTSTRONG_LTR);
+
+    assertEquals(
+        textDrawable.getText().toString(),
+        "Simple sentence that should be quite long quite long quite long quite long quite long"
+            + " quiteTruncate");
+  }
+
+  @Test
+  public void testCustomEllipsisTextForLtrShortTextWithShortEllipsis() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple\nSome second line", 1, ".", TextAlignment.LEFT, FIRSTSTRONG_LTR);
+
+    assertEquals(textDrawable.getText().toString(), "Simple.");
+  }
+
+  @Test
+  public void testCustomEllipsisTextForLtrLongTextWithShortEllipsis() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple sentence that should be quite long quite long quite long quite long quite long"
+                + " quite long quite long\n"
+                + "Some second line",
+            1,
+            ".",
+            TextAlignment.LEFT,
+            FIRSTSTRONG_LTR);
+
+    assertEquals(
+        textDrawable.getText().toString(),
+        "Simple sentence that should be quite long quite long quite long quite long quite long"
+            + " quite long q.");
+  }
+
+  /* Test for LTR text aligned right. */
+  @Test
+  public void testCustomEllipsisTextForLtrShortTextAlignedRight() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple\nSome second line", 1, "Truncate", TextAlignment.RIGHT, FIRSTSTRONG_LTR);
+
+    assertEquals(textDrawable.getText().toString(), "SimpleTruncate");
+  }
+
+  @Test
+  public void testCustomEllipsisTextForLtrLongTextAlignedRight() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple sentence that should be quite long quite long quite long quite long quite long"
+                + " quite long quite long\n"
+                + "Some second line",
+            1,
+            "Truncate",
+            TextAlignment.RIGHT,
+            FIRSTSTRONG_LTR);
+
+    assertEquals(
+        textDrawable.getText().toString(),
+        "Simple sentence that should be quite long quite long quite long quite long quite long"
+            + " quiteTruncate");
+  }
+
+  @Test
+  public void testCustomEllipsisTextForLtrShortTextWithShortEllipsisAlignedRight() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple\nSome second line", 1, ".", TextAlignment.RIGHT, FIRSTSTRONG_LTR);
+
+    assertEquals(textDrawable.getText().toString(), "Simple.");
+  }
+
+  @Test
+  public void testCustomEllipsisTextForLtrLongTextWithShortEllipsisAlignedRight() {
+    TextDrawable textDrawable =
+        getMountedDrawableForTextWithMaxLines(
+            "Simple sentence that should be quite long quite long quite long quite long quite long"
+                + " quite long quite long\n"
+                + "Some second line",
+            1,
+            ".",
+            TextAlignment.RIGHT,
+            FIRSTSTRONG_LTR);
+
+    assertEquals(
+        textDrawable.getText().toString(),
+        "Simple sentence that should be quite long quite long quite long quite long quite long"
+            + " quite long q.");
+  }
+
+  private TextDrawable getMountedDrawableForTextWithMaxLines(
+      CharSequence text,
+      int maxLines,
+      String customEllipsisText,
+      TextAlignment alignment,
+      TextDirectionHeuristicCompat textDirection) {
+    return (TextDrawable)
+        ComponentTestHelper.mountComponent(
+            mContext,
+            Text.create(mContext)
+                .ellipsize(TruncateAt.END)
+                .textDirection(textDirection)
+                .text(text)
+                .alignment(alignment)
+                .maxLines(maxLines)
+                .customEllipsisText(customEllipsisText)
+                .build())
+            .getDrawables()
+            .get(0);
   }
 
   private Layout.Alignment getMountedDrawableLayoutAlignment(

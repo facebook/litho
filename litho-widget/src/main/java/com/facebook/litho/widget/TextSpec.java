@@ -530,51 +530,10 @@ class TextSpec {
       layoutBuilder.setTextStyle(textStyle);
     }
 
-    if (textDirection == null) {
-      textDirection =
-          layoutDirection == YogaDirection.RTL
-              ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
-              : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
-    }
+    textDirection = getTextDirection(textDirection, layoutDirection);
     layoutBuilder.setTextDirection(textDirection);
-
-    final Alignment alignment;
-    final boolean layoutRtl, textRtl;
-    switch (textAlignment) {
-      default:
-      case TEXT_START:
-        alignment = Alignment.ALIGN_NORMAL;
-        break;
-      case TEXT_END:
-        alignment = Alignment.ALIGN_OPPOSITE;
-        break;
-      case LAYOUT_START:
-        layoutRtl = (layoutDirection == YogaDirection.RTL);
-        textRtl = (textDirection.isRtl(text, 0, text.length()));
-        alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_NORMAL : Alignment.ALIGN_OPPOSITE;
-        break;
-      case LAYOUT_END:
-        layoutRtl = (layoutDirection == YogaDirection.RTL);
-        textRtl = (textDirection.isRtl(text, 0, text.length()));
-        alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_OPPOSITE : Alignment.ALIGN_NORMAL;
-        break;
-      case LEFT:
-        alignment =
-            textDirection.isRtl(text, 0, text.length())
-                ? Alignment.ALIGN_OPPOSITE
-                : Alignment.ALIGN_NORMAL;
-        break;
-      case RIGHT:
-        alignment =
-            textDirection.isRtl(text, 0, text.length())
-                ? Alignment.ALIGN_NORMAL
-                : Alignment.ALIGN_OPPOSITE;
-        break;
-      case CENTER:
-        alignment = Alignment.ALIGN_CENTER;
-        break;
-    }
-    layoutBuilder.setAlignment(alignment);
+    layoutBuilder.setAlignment(
+        getLayoutAlignment(textAlignment, textDirection, text, layoutDirection));
 
     newLayout = layoutBuilder.build();
 
@@ -700,9 +659,51 @@ class TextSpec {
     if (customEllipsisText != null && !customEllipsisText.equals("")) {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
+        Layout customEllipsisLayout =
+            createTextLayout(
+                c,
+                SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
+                ellipsize,
+                shouldIncludeFontPadding,
+                maxLines,
+                shadowRadius,
+                shadowDx,
+                shadowDy,
+                shadowColor,
+                isSingleLine,
+                customEllipsisText,
+                textColor,
+                textColorStateList,
+                linkColor,
+                textSize,
+                extraSpacing,
+                spacingMultiplier,
+                letterSpacing,
+                textStyle,
+                typeface,
+                getTextAlignment(textAlignment, alignment),
+                glyphWarming,
+                layout.getResolvedLayoutDirection(),
+                minEms,
+                maxEms,
+                minTextWidth,
+                maxTextWidth,
+                c.getAndroidContext().getResources().getDisplayMetrics().density,
+                breakStrategy,
+                hyphenationFrequency,
+                justificationMode,
+                textDirection,
+                lineHeight);
+
+        YogaDirection layoutDirection = layout.getResolvedLayoutDirection();
+        TextDirectionHeuristicCompat finalTextDirection =
+            getTextDirection(textDirection, layoutDirection);
+        Layout.Alignment finalLayoutAlignment = customEllipsisLayout.getAlignment();
+        boolean isRtl = finalTextDirection.isRtl(text, 0, text.length());
+        boolean isAlignedLeft = isRtl ^ (finalLayoutAlignment == Alignment.ALIGN_NORMAL);
         final CharSequence truncated =
             truncateText(
-                text, customEllipsisText, textLayout.get(), ellipsizedLineNumber, layoutWidth);
+                text, customEllipsisText, textLayout.get(), customEllipsisLayout, ellipsizedLineNumber, layoutWidth, isAlignedLeft, isRtl);
 
         Layout newLayout =
             createTextLayout(
@@ -760,6 +761,8 @@ class TextSpec {
    * @param text Text to truncate
    * @param customEllipsisText Text to append to the end to indicate truncation happened
    * @param newLayout A Layout object populated with measurement information for this text
+   * @param ellipsisTextLayout A Layout object populated with measurement information for the
+   *     ellipsis text.
    * @param ellipsizedLineNumber The line number within the text at which truncation occurs (i.e.
    *     the last visible line).
    * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
@@ -769,16 +772,25 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
+      Layout ellipsisTextLayout,
       int ellipsizedLineNumber,
-      float layoutWidth) {
-    Rect bounds = new Rect();
-    newLayout
-        .getPaint()
-        .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
+      float layoutWidth,
+      boolean isAlignedLeft,
+      boolean isRtl) {
+    float customEllipsisTextWidth = ellipsisTextLayout.getLineWidth(0);
     // Identify the X position at which to truncate the final line:
-    // Note: The left position of the line is needed for the case of RTL text.
-    final float ellipsisTarget =
-        layoutWidth - bounds.width() + newLayout.getLineLeft(ellipsizedLineNumber);
+    float ellipsisTarget;
+    if (!isRtl && isAlignedLeft) {
+      ellipsisTarget = layoutWidth - customEllipsisTextWidth;
+    } else if (!isRtl /* && !isAlignedLeft */) {
+      final float gap = layoutWidth - newLayout.getLineWidth(ellipsizedLineNumber);
+      ellipsisTarget = layoutWidth - customEllipsisTextWidth + gap;
+    } else if (/* isRtl && */ isAlignedLeft) {
+      final float gap = layoutWidth - newLayout.getLineWidth(ellipsizedLineNumber);
+      ellipsisTarget = customEllipsisTextWidth - gap;
+    } else /* isRtl && !isAlignedLeft */ {
+      ellipsisTarget = customEllipsisTextWidth;
+    }
     // Get character offset number corresponding to that X position:
     int ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
@@ -1052,5 +1064,57 @@ class TextSpec {
       }
     }
     return TEXT_START;
+  }
+
+  private static TextDirectionHeuristicCompat getTextDirection(
+      TextDirectionHeuristicCompat textDirection, YogaDirection layoutDirection) {
+    if (textDirection == null) {
+      textDirection = layoutDirection == YogaDirection.RTL
+          ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
+          : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
+    }
+    return textDirection;
+  }
+
+  private static Alignment getLayoutAlignment(
+      TextAlignment textAlignment,
+      TextDirectionHeuristicCompat textDirection,
+      CharSequence text,
+      YogaDirection layoutDirection) {
+    final Alignment alignment;
+    final boolean layoutRtl, textRtl;
+    switch(textAlignment) {
+      default:
+      case TEXT_START:
+        alignment = Alignment.ALIGN_NORMAL;
+        break;
+      case TEXT_END:
+        alignment = Alignment.ALIGN_OPPOSITE;
+        break;
+      case LAYOUT_START:
+        layoutRtl = (layoutDirection == YogaDirection.RTL);
+        textRtl = (textDirection.isRtl(text, 0, text.length()));
+        alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_NORMAL : Alignment.ALIGN_OPPOSITE;
+        break;
+      case LAYOUT_END:
+        layoutRtl = (layoutDirection == YogaDirection.RTL);
+        textRtl = (textDirection.isRtl(text, 0, text.length()));
+        alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_OPPOSITE : Alignment.ALIGN_NORMAL;
+        break;
+      case LEFT:
+        alignment = textDirection.isRtl(text, 0, text.length())
+            ? Alignment.ALIGN_OPPOSITE
+            : Alignment.ALIGN_NORMAL;
+        break;
+      case RIGHT:
+        alignment = textDirection.isRtl(text, 0, text.length())
+            ? Alignment.ALIGN_NORMAL
+            : Alignment.ALIGN_OPPOSITE;
+        break;
+      case CENTER:
+        alignment = Alignment.ALIGN_CENTER;
+        break;
+    }
+    return alignment;
   }
 }
