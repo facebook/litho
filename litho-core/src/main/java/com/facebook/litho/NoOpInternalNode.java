@@ -23,6 +23,7 @@ import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
@@ -716,6 +717,9 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void useHeightAsBaseline(boolean useHeightAsBaseline) {}
+
+  @Override
+  public void useCustomBaselineFunction(YogaBaselineFunction yogaBaselineFunction) {}
 
   @Override
   public @Nullable InternalNode wrap(YogaWrap wrap) {

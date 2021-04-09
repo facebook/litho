@@ -24,6 +24,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.view.View;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.yoga.YogaBaselineFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,8 @@ import org.junit.runner.RunWith;
 public class YogaAlignBaselineTest {
 
   private ComponentContext mContext;
+  private static final YogaBaselineFunction YOGA_BASELINE_FUNCTION =
+      (node, width, height) -> height;
 
   @Before
   public void setup() {
@@ -91,7 +94,7 @@ public class YogaAlignBaselineTest {
                             .heightPx(800)
                             .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
                             .child(Column.create(c).widthPx(500).heightPx(400).wrapInView())
-                            .useHeightAsBaseline(true))
+                            .useCustomBaselineFunction(YOGA_BASELINE_FUNCTION))
                     .alignItems(BASELINE)
                     .widthPx(1000)
                     .heightPx(1000)
@@ -166,7 +169,7 @@ public class YogaAlignBaselineTest {
                             .heightPx(800)
                             .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
                             .child(Column.create(c).widthPx(500).heightPx(400).wrapInView())
-                            .useHeightAsBaseline(true))
+                            .useCustomBaselineFunction(YOGA_BASELINE_FUNCTION))
                     .alignItems(BASELINE)
                     .widthPx(2000)
                     .heightPx(2000)

@@ -1302,6 +1302,13 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
   }
 
   @Override
+  public void useCustomBaselineFunction(YogaBaselineFunction yogaBaselineFunction) {
+    if (yogaBaselineFunction != null) {
+      mYogaNode.setBaselineFunction(yogaBaselineFunction);
+    }
+  }
+
+  @Override
   public InternalNode visibilityChangedHandler(
       @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET;

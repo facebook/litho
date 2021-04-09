@@ -31,6 +31,7 @@ import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -302,6 +303,11 @@ class CommonPropsHolder implements CommonProps {
   @Override
   public void useHeightAsBaseline(boolean useHeightAsBaseline) {
     getOrCreateLayoutProps().useHeightAsBaseline(useHeightAsBaseline);
+  }
+
+  @Override
+  public void useCustomBaselineFunction(YogaBaselineFunction yogaBaselineFunction) {
+    getOrCreateLayoutProps().useCustomBaselineFunction(yogaBaselineFunction);
   }
 
   @Override
@@ -990,6 +996,7 @@ class CommonPropsHolder implements CommonProps {
     private static final int PFLAG_MARGIN_AUTO_IS_SET = 1 << 27;
     private static final int PFLAG_IS_REFERENCE_BASELINE_IS_SET = 1 << 28;
     private static final int PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1 << 29;
+    private static final int PFLAG_USE_CUSTOM_BASELINE_FUNCTION = 1 << 30;
 
     private int mPrivateFlags;
 
@@ -1021,6 +1028,7 @@ class CommonPropsHolder implements CommonProps {
     @Nullable private Edges mPaddings;
     @Nullable private Edges mPaddingPercents;
     @Nullable private Edges mPositionPercents;
+    @Nullable private YogaBaselineFunction mYogaBaselineFunction;
     private boolean mIsReferenceBaseline;
     private boolean mUseHeightAsBaseline;
 
@@ -1228,6 +1236,12 @@ class CommonPropsHolder implements CommonProps {
     }
 
     @Override
+    public void useCustomBaselineFunction(YogaBaselineFunction yogaBaselineFunction) {
+      mPrivateFlags |= PFLAG_USE_CUSTOM_BASELINE_FUNCTION;
+      mYogaBaselineFunction = yogaBaselineFunction;
+    }
+
+    @Override
     public void copyInto(LayoutProps target) {
       if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
         target.widthPx(mWidthPx);
@@ -1350,6 +1364,9 @@ class CommonPropsHolder implements CommonProps {
       }
       if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
         target.useHeightAsBaseline(mUseHeightAsBaseline);
+      }
+      if ((mPrivateFlags & PFLAG_USE_CUSTOM_BASELINE_FUNCTION) != 0L) {
+        target.useCustomBaselineFunction(mYogaBaselineFunction);
       }
     }
 
