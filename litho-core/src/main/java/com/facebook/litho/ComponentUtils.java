@@ -521,9 +521,7 @@ public class ComponentUtils {
     }
 
     final LithoMetadataExceptionWrapper metadataWrapper =
-        (exceptionToThrow instanceof LithoMetadataExceptionWrapper)
-            ? (LithoMetadataExceptionWrapper) exceptionToThrow
-            : new LithoMetadataExceptionWrapper(parent, exceptionToThrow);
+        wrapWithMetadata(parent, exceptionToThrow);
     metadataWrapper.addComponentForLayoutStack(component);
 
     // This means it was already handled by this handler so throw it up to the next frame until we
@@ -535,7 +533,7 @@ public class ComponentUtils {
       ((ErrorEventHandler) nextHandler).onError(metadataWrapper);
     } else { // Handle again with new handler
       try {
-        ComponentLifecycle.dispatchErrorEvent(parent, exceptionToThrow);
+        dispatchErrorEvent(parent, exceptionToThrow);
       } catch (ReThrownException ex) { // error handler re-raised the exception
         metadataWrapper.lastHandler = nextHandler;
         throw metadataWrapper;

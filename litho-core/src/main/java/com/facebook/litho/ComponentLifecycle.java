@@ -642,14 +642,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void transferState(
       StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
-  /**
-   * For internal use, only. In order to reraise an error event up the hierarchy use {@link
-   * ComponentUtils#raise(ComponentContext, Exception)} instead.
-   */
-  protected static void dispatchErrorEvent(ComponentContext c, Exception e) {
-    ComponentUtils.dispatchErrorEvent(c, e);
-  }
-
   /** For internal use, only. */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
     ComponentUtils.dispatchErrorEvent(c, e);
