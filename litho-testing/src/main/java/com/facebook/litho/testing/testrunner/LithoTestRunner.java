@@ -17,6 +17,12 @@
 package com.facebook.litho.testing.testrunner;
 
 import com.facebook.litho.ComponentsSystrace;
+import com.facebook.litho.config.ComponentsConfiguration;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.RobolectricTestRunner;
@@ -54,8 +60,45 @@ public class LithoTestRunner extends RobolectricTestRunner {
   }
 
   public static class LithoTestLifecycle extends DefaultTestLifecycle {
+
+    private final Map<Field, Object> mSavedComponentsConfiguration;
+
     public LithoTestLifecycle() {
       ComponentsSystrace.provide(NoOpComponentsSystrace.sInstance);
+      mSavedComponentsConfiguration = recordComponentsConfiguration();
+    }
+
+    @Override
+    public void afterTest(Method method) {
+      super.afterTest(method);
+      restoreComponentsConfiguration(mSavedComponentsConfiguration);
+    }
+
+    private static Map<Field, Object> recordComponentsConfiguration() {
+      final HashMap<Field, Object> record = new HashMap<>();
+      for (Field f : ComponentsConfiguration.class.getDeclaredFields()) {
+        final int modifiers = f.getModifiers();
+        if (Modifier.isStatic(modifiers)
+            && Modifier.isPublic(modifiers)
+            && !Modifier.isFinal(modifiers)) {
+          try {
+            record.put(f, f.get(null));
+          } catch (IllegalAccessException e) {
+            throw new RuntimeException("Couldn't record ComponentsConfiguration state", e);
+          }
+        }
+      }
+      return record;
+    }
+
+    private static void restoreComponentsConfiguration(Map<Field, Object> fieldsToValues) {
+      for (Map.Entry<Field, Object> entry : fieldsToValues.entrySet()) {
+        try {
+          entry.getKey().set(null, entry.getValue());
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException("Couldn't restore ComponentsConfiguration state", e);
+        }
+      }
     }
   }
 }
