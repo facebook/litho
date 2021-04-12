@@ -1018,7 +1018,7 @@ public class MountStateIncrementalMountTest {
     viewGroup.addView(lithoView);
 
     final Component root =
-        TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup).build();
+        TestViewComponent.create(mContext, true, true, true).testView(viewGroup).build();
     mLithoViewRule
         .setRoot(root)
         .attachToWindow()

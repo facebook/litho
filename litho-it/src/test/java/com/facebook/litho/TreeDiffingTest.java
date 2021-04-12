@@ -917,7 +917,7 @@ public class TreeDiffingTest {
     protected Component onCreateLayout(ComponentContext c) {
       return create(c)
           .paddingPx(ALL, 2)
-          .child(TestDrawableComponent.create(c, false, true, true, false))
+          .child(TestDrawableComponent.create(c, true, true, false))
           .child(
               TestSizeDependentComponent.create(c)
                   .setDelegate(false)

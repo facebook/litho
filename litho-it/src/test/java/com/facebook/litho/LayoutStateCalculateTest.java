@@ -1025,7 +1025,7 @@ public class LayoutStateCalculateTest {
 
     final Size size = new Size();
     final TestComponent innerComponent =
-        TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
+        TestDrawableComponent.create(c, 0, 0, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(100, EXACTLY);
     final int heightSpec = makeSizeSpec(100, EXACTLY);
     innerComponent.measure(c, widthSpec, heightSpec, size);
@@ -1068,7 +1068,7 @@ public class LayoutStateCalculateTest {
 
     final Size size = new Size();
     final TestComponent innerComponent =
-        TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
+        TestDrawableComponent.create(c, 0, 0, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(100, AT_MOST);
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
@@ -1111,7 +1111,7 @@ public class LayoutStateCalculateTest {
 
     final Size size = new Size();
     final TestComponent innerComponent =
-        TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
+        TestDrawableComponent.create(c, 0, 0, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(0, UNSPECIFIED);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     innerComponent.measure(c, widthSpec, heightSpec, size);
@@ -1152,7 +1152,7 @@ public class LayoutStateCalculateTest {
 
     final Size size = new Size();
     final TestComponent innerComponent =
-        TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
+        TestDrawableComponent.create(c, 0, 0, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(100, AT_MOST);
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
@@ -1690,7 +1690,7 @@ public class LayoutStateCalculateTest {
                 .contentDescription("This is root view")
                 .child(TestDrawableComponent.create(c).widthDip(30).heightDip(30))
                 .child(
-                    TestDrawableComponent.create(c, true, true, true, true)
+                    TestDrawableComponent.create(c, true, true, true)
                         .flex(1)
                         .flexBasisDip(0)
                         .backgroundColor(RED)
@@ -1706,7 +1706,7 @@ public class LayoutStateCalculateTest {
                                 .heightDip(30)
                                 .contentDescription("This is an image"))
                         .child(
-                            TestDrawableComponent.create(c, true, true, true, true)
+                            TestDrawableComponent.create(c, true, true, true)
                                 .flex(1)
                                 .flexBasisDip(0)
                                 .marginDip(HORIZONTAL, 10)))
@@ -1770,7 +1770,7 @@ public class LayoutStateCalculateTest {
                 .contentDescription("This is root view")
                 .child(TestDrawableComponent.create(c).widthDip(30).heightDip(30))
                 .child(
-                    TestDrawableComponent.create(c, true, true, true, true)
+                    TestDrawableComponent.create(c, true, true, true)
                         .flex(1)
                         .flexBasisDip(0)
                         .backgroundColor(RED)
@@ -2463,7 +2463,7 @@ public class LayoutStateCalculateTest {
     c.setLayoutStateContextForTesting();
 
     final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, false).build());
 
     Component.willRender(c, componentSpy);
 
@@ -2487,8 +2487,7 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component =
-        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
 
     Component.willRender(c, component);
 
@@ -2505,8 +2504,7 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component =
-        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
 
     Component.willRender(c, component);
 
@@ -2523,8 +2521,7 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component =
-        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
 
     Component.willRender(c, component);
 
@@ -2541,7 +2538,7 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
 
     final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, false).build());
 
     final Component root =
         new InlineLayoutSpec() {
@@ -2563,8 +2560,7 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component =
-        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
 
     Component.willRender(c, component);
 

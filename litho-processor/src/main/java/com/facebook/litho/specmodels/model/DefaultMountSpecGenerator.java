@@ -89,7 +89,6 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(MountSpecGenerator.generateCanPreallocate(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateHasChildLithoViews(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(mountSpecModel))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateCallsShouldUpdateOnMount(mountSpecModel))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(mountSpecModel))

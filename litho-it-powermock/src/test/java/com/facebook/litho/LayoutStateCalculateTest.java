@@ -125,7 +125,7 @@ public class LayoutStateCalculateTest {
     final int widthMeasuredComponent =
         makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
 
-    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, true, true).build();
+    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, true).build();
 
     final Size sizeOutput = new Size();
     component.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
@@ -337,7 +337,7 @@ public class LayoutStateCalculateTest {
         makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
 
     final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, false).build());
     final Size sizeOutput = new Size();
     componentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
 

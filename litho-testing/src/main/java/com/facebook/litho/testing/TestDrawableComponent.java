@@ -38,7 +38,6 @@ public class TestDrawableComponent extends TestComponent {
     void onPrepare();
   }
 
-  private static final long CALLS_SHOULD_UPDATE_ON_MOUNT = 1L << 0;
   private static final long IS_PURE_RENDER = 1L << 1;
   private static final long CAN_MEASURE = 1L << 2;
   private static final long IMPLEMENTS_ACCESSIBILITY = 1L << 4;
@@ -64,11 +63,6 @@ public class TestDrawableComponent extends TestComponent {
   private TestDrawableComponent(long properties) {
     super("TestDrawableComponent");
     mProperties = properties;
-  }
-
-  @Override
-  protected boolean callsShouldUpdateOnMount() {
-    return (mProperties & CALLS_SHOULD_UPDATE_ON_MOUNT) != 0;
   }
 
   @Override
@@ -162,29 +156,26 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   public static Builder create(ComponentContext context) {
-    return create(context, 0, 0, true, true, true, false, false);
+    return create(context, 0, 0, true, true, false, false);
   }
 
   public static Builder create(
       ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    return create(context, defStyleAttr, defStyleRes, true, true, true, false);
+    return create(context, defStyleAttr, defStyleRes, true, true, false);
   }
 
   public static Builder create(
       ComponentContext context,
-      boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
       boolean implementsAccessibility) {
-    return create(
-        context, 0, 0, callsShouldUpdateOnMount, isPureRender, canMeasure, implementsAccessibility);
+    return create(context, 0, 0, isPureRender, canMeasure, implementsAccessibility);
   }
 
   public static Builder create(
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
       boolean implementsAccessibility) {
@@ -192,7 +183,6 @@ public class TestDrawableComponent extends TestComponent {
         context,
         defStyleAttr,
         defStyleRes,
-        callsShouldUpdateOnMount,
         isPureRender,
         canMeasure,
         implementsAccessibility,
@@ -203,7 +193,6 @@ public class TestDrawableComponent extends TestComponent {
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
       boolean implementsAccessibility,
@@ -211,9 +200,6 @@ public class TestDrawableComponent extends TestComponent {
 
     long properties = 0;
 
-    if (callsShouldUpdateOnMount) {
-      properties |= CALLS_SHOULD_UPDATE_ON_MOUNT;
-    }
     if (isPureRender) {
       properties |= IS_PURE_RENDER;
     }

@@ -272,10 +272,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
-  protected boolean callsShouldUpdateOnMount() {
-    return false;
-  }
-
   /**
    * Whether this {@link ComponentLifecycle} is able to measure itself according to specific size
    * constraints.

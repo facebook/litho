@@ -25,27 +25,16 @@ import com.facebook.litho.Wrapper;
 
 public class TestLayoutComponent extends TestComponent {
 
-  private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mHasMountSpecChild;
   private final boolean mIsDelegate;
 
-  private TestLayoutComponent(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean hasMountSpecChild,
-      boolean isDelegate) {
+  private TestLayoutComponent(boolean isPureRender, boolean hasMountSpecChild, boolean isDelegate) {
     super();
 
-    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
     mHasMountSpecChild = hasMountSpecChild;
     mIsDelegate = isDelegate;
-  }
-
-  @Override
-  protected boolean callsShouldUpdateOnMount() {
-    return mCallsShouldUpdateOnMount;
   }
 
   @Override
@@ -56,8 +45,7 @@ public class TestLayoutComponent extends TestComponent {
   @Override
   protected Component onCreateLayout(ComponentContext c) {
     super.onCreateLayout(c);
-    final Component mountSpecComponent =
-        TestDrawableComponent.create(c, false, true, true, false).build();
+    final Component mountSpecComponent = TestDrawableComponent.create(c, true, true, false).build();
 
     if (mIsDelegate) {
       return Wrapper.create(c).delegate(mountSpecComponent).build();
@@ -79,14 +67,13 @@ public class TestLayoutComponent extends TestComponent {
 
   public static Builder create(
       ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    return create(context, defStyleAttr, defStyleRes, true, true, false, false);
+    return create(context, defStyleAttr, defStyleRes, true, false, false);
   }
 
   public static Builder create(
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean hasMountSpecChild,
       boolean isDelegate) {
@@ -94,17 +81,15 @@ public class TestLayoutComponent extends TestComponent {
         context,
         defStyleAttr,
         defStyleRes,
-        new TestLayoutComponent(
-            callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
+        new TestLayoutComponent(isPureRender, hasMountSpecChild, isDelegate));
   }
 
   public static Builder create(ComponentContext context) {
-    return create(context, 0, 0, true, true, false, false);
+    return create(context, 0, 0, true, false, false);
   }
 
-  public static Builder create(
-      ComponentContext context, boolean callsShouldUpdateOnMount, boolean isPureRender) {
-    return create(context, 0, 0, callsShouldUpdateOnMount, isPureRender, false, false);
+  public static Builder create(ComponentContext context, boolean isPureRender) {
+    return create(context, 0, 0, isPureRender, false, false);
   }
 
   private static Builder newBuilder(

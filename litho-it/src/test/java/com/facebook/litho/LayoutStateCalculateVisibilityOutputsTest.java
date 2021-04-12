@@ -134,7 +134,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
                 .child(
-                    TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
+                    TestLayoutComponent.create(c, 0, 0, true, false, isDelegate)
                         .visibleHandler(c.newEventHandler(1)))
                 .wrapInView()
                 .build();

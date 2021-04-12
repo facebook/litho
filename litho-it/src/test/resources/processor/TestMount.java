@@ -410,11 +410,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  public boolean callsShouldUpdateOnMount() {
-    return true;
-  }
-
-  @Override
   public boolean isPureRender() {
     return true;
   }

@@ -32,13 +32,11 @@ public class TestSizeDependentComponent extends Component {
       ComponentContext c, int widthSpec, int heightSpec) {
 
     final Component.Builder builder1 =
-        TestDrawableComponent.create(c, false, true, true, false)
+        TestDrawableComponent.create(c, true, true, false)
             .flexShrink(0)
             .backgroundColor(0xFFFF0000);
     final Component.Builder builder2 =
-        TestViewComponent.create(c, false, true, true, false)
-            .flexShrink(0)
-            .marginPx(YogaEdge.ALL, 3);
+        TestViewComponent.create(c, true, true, false).flexShrink(0).marginPx(YogaEdge.ALL, 3);
 
     if (hasFixedSizes) {
       builder1.widthPx(50).heightPx(50);

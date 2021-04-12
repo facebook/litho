@@ -60,8 +60,8 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testViewChildrenLayoutDirection() {
-    final TestComponent child1 = create(mContext, true, true, true, false).build();
-    final TestComponent child2 = create(mContext, true, true, true, false).build();
+    final TestComponent child1 = create(mContext, true, true, false).build();
+    final TestComponent child2 = create(mContext, true, true, false).build();
 
     final LithoView lithoView =
         mountComponent(

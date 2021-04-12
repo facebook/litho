@@ -29,28 +29,17 @@ import javax.annotation.Nullable;
 
 public class TestViewComponent extends TestComponent {
 
-  private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
   private final boolean mHasChildLithoViews;
   @Nullable private View mTestView;
 
-  private TestViewComponent(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean hasChildLithoViews) {
+  private TestViewComponent(boolean isPureRender, boolean canMeasure, boolean hasChildLithoViews) {
     super("TestViewComponent");
 
-    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
     mHasChildLithoViews = hasChildLithoViews;
-  }
-
-  @Override
-  protected boolean callsShouldUpdateOnMount() {
-    return mCallsShouldUpdateOnMount;
   }
 
   @Override
@@ -117,14 +106,13 @@ public class TestViewComponent extends TestComponent {
 
   public static Builder create(
       ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    return create(context, defStyleAttr, defStyleRes, true, true, true, true);
+    return create(context, defStyleAttr, defStyleRes, true, true, true);
   }
 
   public static Builder create(
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
       boolean canMountIncrementally) {
@@ -132,22 +120,19 @@ public class TestViewComponent extends TestComponent {
         context,
         defStyleAttr,
         defStyleRes,
-        new TestViewComponent(
-            callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
+        new TestViewComponent(isPureRender, canMeasure, canMountIncrementally));
   }
 
   public static Builder create(ComponentContext context) {
-    return create(context, 0, 0, true, true, true, true);
+    return create(context, 0, 0, true, true, true);
   }
 
   public static Builder create(
       ComponentContext context,
-      boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
       boolean canMountIncrementally) {
-    return create(
-        context, 0, 0, callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally);
+    return create(context, 0, 0, isPureRender, canMeasure, canMountIncrementally);
   }
 
   private static Builder newBuilder(

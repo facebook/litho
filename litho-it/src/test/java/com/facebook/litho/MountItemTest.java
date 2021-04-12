@@ -206,8 +206,7 @@ public class MountItemTest {
   public void testIsAccessibleWithAccessibleComponent() {
     final MountItem mountItem =
         MountItemTestHelper.create(
-            TestDrawableComponent.create(
-                    mContext, true, true, true, true /* implementsAccessibility */)
+            TestDrawableComponent.create(mContext, true, true, true /* implementsAccessibility */)
                 .build(),
             null,
             mComponentHost,
@@ -230,8 +229,7 @@ public class MountItemTest {
   public void testIsAccessibleWithDisabledAccessibleComponent() {
     final MountItem mountItem =
         MountItemTestHelper.create(
-            TestDrawableComponent.create(
-                    mContext, true, true, true, true /* implementsAccessibility */)
+            TestDrawableComponent.create(mContext, true, true, true /* implementsAccessibility */)
                 .build(),
             null,
             mComponentHost,
@@ -254,8 +252,7 @@ public class MountItemTest {
   public void testIsAccessibleWithAccessibilityEventHandler() {
     final MountItem mountItem =
         MountItemTestHelper.create(
-            TestDrawableComponent.create(
-                    mContext, true, true, true, true /* implementsAccessibility */)
+            TestDrawableComponent.create(mContext, true, true, true /* implementsAccessibility */)
                 .build(),
             null,
             mComponentHost,

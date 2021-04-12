@@ -156,7 +156,7 @@ public class MountStateRemountInPlaceTest {
 
     mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
     final TestComponent firstComponent =
-        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+        create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
@@ -169,7 +169,7 @@ public class MountStateRemountInPlaceTest {
 
     mContext.getResources().getConfiguration().orientation = ORIENTATION_LANDSCAPE;
     final TestComponent secondComponent =
-        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+        create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
@@ -186,7 +186,7 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testMountUnmountWithNoShouldUpdateAndDifferentSize() {
     final TestComponent firstComponent =
-        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+        create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
@@ -198,7 +198,7 @@ public class MountStateRemountInPlaceTest {
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+        create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
             .measuredHeight(11)
             .build();
 
@@ -212,7 +212,7 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testMountUnmountWithNoShouldUpdateAndSameSize() {
     final TestComponent firstComponent =
-        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+        create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
@@ -224,7 +224,7 @@ public class MountStateRemountInPlaceTest {
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+        create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
 
@@ -266,7 +266,7 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testMountUnmountWithNoShouldUpdateAndSameMeasures() {
     final TestComponent firstComponent =
-        create(mContext, 0, 0, true, true, true, false, true).color(Color.GRAY).build();
+        create(mContext, 0, 0, true, true, false, true).color(Color.GRAY).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -398,7 +398,7 @@ public class MountStateRemountInPlaceTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
     final TestComponent firstComponent =
-        TestDrawableComponent.create(scopedContext, false, true, true, false)
+        TestDrawableComponent.create(scopedContext, true, true, false)
             .widthPx(100)
             .heightPx(100)
             .build();
