@@ -87,14 +87,12 @@ public class ComponentTreeTest {
     final CountDownLatch unlockBgRunAndGet = new CountDownLatch(1);
     final CountDownLatch unlockUILayoutFinish = new CountDownLatch(1);
 
-    mainComponent.testId = 1;
     mainComponent.unlockWaitingOnCreateLayout = unlockBgRunAndGet;
     mainComponent.lockOnCreateLayoutFinish = unlockUILayoutFinish;
 
     final MyTestComponent bgComponent = new MyTestComponent("MyTestComponent");
     final CountDownLatch unlockUIThreadLayout = new CountDownLatch(1);
 
-    bgComponent.testId = 1;
     bgComponent.unlockWaitingOnCreateLayout = unlockUIThreadLayout;
 
     final CountDownLatch lockWaitForResults = new CountDownLatch(1);
@@ -176,7 +174,6 @@ public class ComponentTreeTest {
 
     CountDownLatch unlockWaitingOnCreateLayout;
     CountDownLatch lockOnCreateLayoutFinish;
-    int testId;
     boolean hasRunLayout;
 
     protected MyTestComponent(String simpleName) {
@@ -199,11 +196,6 @@ public class ComponentTreeTest {
 
       hasRunLayout = true;
       return Column.create(c).build();
-    }
-
-    @Override
-    protected int getId() {
-      return testId;
     }
   }
 }

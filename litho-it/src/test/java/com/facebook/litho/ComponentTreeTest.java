@@ -1817,7 +1817,6 @@ public class ComponentTreeTest {
   @Ignore
   public void testCreateOneLayoutStateFuture() {
     MyTestComponent root1 = new MyTestComponent("MyTestComponent");
-    root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
@@ -1832,7 +1831,6 @@ public class ComponentTreeTest {
     final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.testId = 2;
     root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
 
     componentTree.setRootAsync(root2);
@@ -1863,7 +1861,6 @@ public class ComponentTreeTest {
   @Test
   public void testLayoutStateFutureMainWaitingOnBg() {
     MyTestComponent root1 = new MyTestComponent("MyTestComponent");
-    root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
@@ -1879,12 +1876,10 @@ public class ComponentTreeTest {
     final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.testId = 2;
     root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
     root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
 
     MyTestComponent root3 = new MyTestComponent("MyTestComponent");
-    root3.testId = 2;
 
     componentTree.setRootAsync(root2);
 
@@ -1921,7 +1916,6 @@ public class ComponentTreeTest {
   @Test
   public void testRecalculateDifferentRoots() {
     MyTestComponent root1 = new MyTestComponent("MyTestComponent");
-    root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
@@ -1937,12 +1931,10 @@ public class ComponentTreeTest {
     final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.testId = 2;
     root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
     root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
 
     MyTestComponent root3 = new MyTestComponent("MyTestComponent");
-    root3.testId = 2;
 
     componentTree.setRootAsync(root2);
 
@@ -1981,30 +1973,26 @@ public class ComponentTreeTest {
   @Test
   public void testVersioningCalculate() {
     MyTestComponent root1 = new MyTestComponent("MyTestComponent");
-    root1.testId = 1;
 
     ComponentTree componentTree = ComponentTree.create(mContext).build();
 
     componentTree.setVersionedRootAndSizeSpec(root1, mWidthSpec, mHeightSpec, new Size(), null, 0);
 
     LayoutState layoutState = componentTree.getMainThreadLayoutState();
-    assertEquals(root1.testId, layoutState.getRootComponent().getId());
+    assertEquals(root1.getId(), layoutState.getRootComponent().getId());
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.testId = 2;
-
     MyTestComponent root3 = new MyTestComponent("MyTestComponent");
-    root3.testId = 3;
 
     componentTree.setVersionedRootAndSizeSpec(root3, mWidthSpec, mHeightSpec, new Size(), null, 2);
 
     layoutState = componentTree.getMainThreadLayoutState();
-    assertEquals(root3.testId, layoutState.getRootComponent().getId());
+    assertEquals(root3.getId(), layoutState.getRootComponent().getId());
 
     componentTree.setVersionedRootAndSizeSpec(root2, mWidthSpec, mHeightSpec, new Size(), null, 1);
 
     layoutState = componentTree.getMainThreadLayoutState();
-    assertEquals(root3.testId, layoutState.getRootComponent().getId());
+    assertEquals(root3.getId(), layoutState.getRootComponent().getId());
   }
 
   @Test
@@ -2051,7 +2039,6 @@ public class ComponentTreeTest {
 
     CountDownLatch unlockWaitingOnCreateLayout;
     CountDownLatch lockOnCreateLayoutFinish;
-    int testId;
     boolean hasRunLayout;
 
     protected MyTestComponent(String simpleName) {
@@ -2074,11 +2061,6 @@ public class ComponentTreeTest {
 
       hasRunLayout = true;
       return Column.create(c).build();
-    }
-
-    @Override
-    protected int getId() {
-      return testId;
     }
   }
 
