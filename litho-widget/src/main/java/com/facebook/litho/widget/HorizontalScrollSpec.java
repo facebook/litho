@@ -179,7 +179,8 @@ class HorizontalScrollSpec {
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
-      @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
+      @Prop(optional = true) @Nullable ScrollStateDetector scrollStateDetector,
+      @Prop(optional = true) @Nullable ScrollStateListener scrollStateListener,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
@@ -191,6 +192,7 @@ class HorizontalScrollSpec {
         childComponentTree,
         lastScrollPosition,
         onScrollChangeListener,
+        scrollStateDetector,
         scrollStateListener,
         componentWidth,
         componentHeight);
@@ -266,7 +268,7 @@ class HorizontalScrollSpec {
     public void fling(int velocityX) {
       super.fling(velocityX);
       if (mScrollStateDetector != null) {
-        mScrollStateDetector.fling();
+        mScrollStateDetector.fling(this);
       }
     }
 
@@ -274,7 +276,7 @@ class HorizontalScrollSpec {
     public void draw(Canvas canvas) {
       super.draw(canvas);
       if (mScrollStateDetector != null) {
-        mScrollStateDetector.onDraw();
+        mScrollStateDetector.onDraw(this);
       }
     }
 
@@ -290,8 +292,19 @@ class HorizontalScrollSpec {
       }
 
       if (mScrollStateDetector != null) {
-        mScrollStateDetector.onScrollChanged();
+        mScrollStateDetector.onScrollChanged(this);
       }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent motionEvent) {
+      boolean isConsumed = super.onInterceptTouchEvent(motionEvent);
+
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onInterceptTouchEvent(this, motionEvent);
+      }
+
+      return isConsumed;
     }
 
     @Override
@@ -299,7 +312,7 @@ class HorizontalScrollSpec {
       boolean isConsumed = super.onTouchEvent(motionEvent);
 
       if (mScrollStateDetector != null) {
-        mScrollStateDetector.onTouchEvent(motionEvent);
+        mScrollStateDetector.onTouchEvent(this, motionEvent);
       }
 
       return isConsumed;
@@ -329,6 +342,7 @@ class HorizontalScrollSpec {
         ComponentTree componentTree,
         ScrollPosition scrollPosition,
         @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
+        ScrollStateDetector scrollStateDetector,
         ScrollStateListener scrollStateListener,
         int width,
         int height) {
@@ -339,9 +353,8 @@ class HorizontalScrollSpec {
       mComponentHeight = height;
 
       if (scrollStateListener != null) {
-        if (mScrollStateDetector == null) {
-          mScrollStateDetector = new ScrollStateDetector(this);
-        }
+        mScrollStateDetector =
+            scrollStateDetector != null ? scrollStateDetector : new DefaultScrollStateDetector();
         mScrollStateDetector.setListener(scrollStateListener);
       }
     }
@@ -359,6 +372,7 @@ class HorizontalScrollSpec {
       setScrollX(0);
       if (mScrollStateDetector != null) {
         mScrollStateDetector.setListener(null);
+        mScrollStateDetector = null;
       }
     }
   }
