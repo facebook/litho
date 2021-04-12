@@ -24,7 +24,6 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 
@@ -1957,8 +1956,8 @@ public class ComponentTreeTest {
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
                 // TODO T62608123 This actually never runs
-                assertTrue(root3.hasRunLayout);
-                assertTrue(root2.hasRunLayout);
+                //                assertTrue(root3.hasRunLayout);
+                //                assertTrue(root2.hasRunLayout);
               }
             });
 
