@@ -22,7 +22,10 @@ import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -48,6 +51,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   private final boolean mShouldSavePropNames;
   private PropNameInterStageStore mPropNameInterStageStore;
   private final EnumSet<RunMode> mRunMode = RunMode.normal();
+  private boolean isAnnotatingGenerated;
 
   private final InterStageStore mInterStageStore =
       new InterStageStore() {
@@ -85,6 +89,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     if (Boolean.parseBoolean(options.getOrDefault("com.facebook.litho.testing", "false"))) {
       mRunMode.add(RunMode.TESTING);
     }
+
+    isAnnotatingGenerated =
+        Boolean.parseBoolean(options.getOrDefault("com.facebook.litho.generated", "false"));
   }
 
   @Override
@@ -138,7 +145,14 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   protected void generate(SpecModel specModel, EnumSet<RunMode> runMode) throws IOException {
     final String packageName = getPackageName(specModel.getComponentTypeName());
-    JavaFile.builder(packageName, specModel.generate(runMode))
+    TypeSpec typeSpec =  specModel.generate(runMode);
+    if (isAnnotatingGenerated) {
+      typeSpec = typeSpec.toBuilder().addAnnotation(
+          AnnotationSpec.builder(ClassName.get("javax.annotation","Generated"))
+              .addMember("value", "$S", this.getClass().getName())
+              .build()).build();
+    }
+    JavaFile.builder(packageName, typeSpec)
         .skipJavaLangImports(true)
         .build()
         .writeTo(processingEnv.getFiler());

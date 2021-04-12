@@ -39,6 +39,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
 import java.util.List;
+import javax.annotation.Generated;
 
 /**
  * @prop-required data java.util.List<T>
@@ -47,6 +48,7 @@ import java.util.List;
  * @prop-required prop3 com.facebook.litho.Component
  * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
+@Generated("com.facebook.litho.sections.specmodels.model.DefaultDiffSectionSpecGenerator")
 public final class FullDiffSection<T> extends Section implements TestTag {
   @Comparable(type = 14)
   private FullDiffSectionStateContainer mStateContainer;
