@@ -71,6 +71,7 @@ import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RenderCoreExtensionHost;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.UnmountDelegateExtension;
@@ -2071,6 +2072,8 @@ class MountState implements MountDelegateTarget {
           lithoView.notifyVisibleBoundsChanged();
         }
       }
+    } else if (view instanceof RenderCoreExtensionHost) {
+      ((RenderCoreExtensionHost) view).notifyVisibleBoundsChanged();
     } else if (view instanceof ViewGroup) {
       final ViewGroup viewGroup = (ViewGroup) view;
 
