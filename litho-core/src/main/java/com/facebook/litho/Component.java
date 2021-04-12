@@ -514,7 +514,7 @@ public abstract class Component extends ComponentLifecycle
    * passed as a prop and the same instance can be used in layout calculations on main and
    * background threads. https://github.com/facebook/litho/issues/360
    */
-  Component getThreadSafeInstance() {
+  final Component getThreadSafeInstance() {
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator == null) {
       return this;
@@ -544,14 +544,14 @@ public abstract class Component extends ComponentLifecycle
     return mHasManualKey;
   }
 
-  Component makeShallowCopyWithNewId() {
+  final Component makeShallowCopyWithNewId() {
     final Component component = makeShallowCopy();
     component.mId = sIdGenerator.incrementAndGet();
     return component;
   }
 
   /** Returns an updated shallow copy of this component with the same global key. */
-  Component makeUpdatedShallowCopy(
+  final Component makeUpdatedShallowCopy(
       final ComponentContext parentContext, final String globalKeyToReuse) {
     final Component clone = makeShallowCopy();
     final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
@@ -590,7 +590,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  protected synchronized void markLayoutStarted() {
+  final synchronized void markLayoutStarted() {
     if (mUseStatelessComponent) {
       return;
     }

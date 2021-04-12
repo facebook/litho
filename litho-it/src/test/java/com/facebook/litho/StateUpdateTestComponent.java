@@ -39,8 +39,6 @@ class StateUpdateTestComponent extends Component {
     return new StateContainer.StateUpdate(STATE_UPDATE_TYPE_MULTIPLY);
   }
 
-  private StateUpdateTestComponent shallowCopy;
-  private int mId;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private final AtomicInteger createInitialStateCount = new AtomicInteger(0);
   private static final AtomicInteger finalCounterValue = new AtomicInteger(0);
@@ -48,7 +46,6 @@ class StateUpdateTestComponent extends Component {
   StateUpdateTestComponent() {
     super("StateUpdateTestComponent");
     setStateContainer(new TestStateContainer());
-    mId = sIdGenerator.getAndIncrement();
   }
 
   @Override
@@ -80,33 +77,8 @@ class StateUpdateTestComponent extends Component {
     return finalCounterValue.get();
   }
 
-  @Override
-  protected synchronized void markLayoutStarted() {
-    // No-op because we override makeShallowCopy below :(
-  }
-
-  @Override
-  public Component makeShallowCopy() {
-    return this;
-  }
-
-  @Override
-  Component makeShallowCopyWithNewId() {
-    shallowCopy = (StateUpdateTestComponent) super.makeShallowCopy();
-    shallowCopy.mId = sIdGenerator.getAndIncrement();
-    return shallowCopy;
-  }
-
   StateUpdateTestComponent getComponentForStateUpdate() {
-    if (shallowCopy == null) {
-      return this;
-    }
-    return shallowCopy.getComponentForStateUpdate();
-  }
-
-  @Override
-  protected int getId() {
-    return mId;
+    return this;
   }
 
   @Nullable

@@ -212,13 +212,7 @@ public class StateUpdatesTest {
         mTestComponentKey, StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
     assertThat(getPendingStateUpdatesForComponent(mTestComponentKey)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    assertThat(
-            mTestComponent
-                .getComponentForStateUpdate()
-                .getScopedContext(mComponentTree.getLayoutStateContext(), mTestComponentKey)
-                .getStateHandler()
-                .getAppliedStateUpdates())
-        .hasSize(1);
+    assertThat(getPendingStateUpdatesForComponent(mTestComponentKey)).isNullOrEmpty();
   }
 
   @Test

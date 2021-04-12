@@ -265,12 +265,5 @@ public class LayoutStateFutureReleaseTest {
 
       return Column.create(c).build();
     }
-
-    @Override
-    Component makeShallowCopyWithNewId() {
-      final TestChildComponent component = (TestChildComponent) super.makeShallowCopyWithNewId();
-      component.hasRunLayout = false;
-      return component;
-    }
   }
 }
