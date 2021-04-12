@@ -85,6 +85,11 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
+  public LayoutProps getDebugLayoutEditor() {
+    return null;
+  }
+
+  @Override
   public @Nullable InternalNode background(@Nullable Drawable background) {
     return null;
   }

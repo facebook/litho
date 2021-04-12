@@ -79,7 +79,8 @@ import javax.annotation.Nullable;
 /** Default implementation of {@link InternalNode}. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Cloneable {
+public class DefaultInternalNode
+    implements InternalNode, LayoutProps, LithoLayoutResult, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
@@ -289,6 +290,11 @@ public class DefaultInternalNode implements InternalNode, LithoLayoutResult, Clo
   @Override
   public boolean areCachedMeasuresValid() {
     return mCachedMeasuresValid;
+  }
+
+  @Override
+  public LayoutProps getDebugLayoutEditor() {
+    return this;
   }
 
   @Override

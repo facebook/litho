@@ -86,9 +86,6 @@ public interface InternalNode extends Inputs, LayoutProps {
 
   InternalNode duplicateChildrenStates(boolean duplicateChildState);
 
-  /** Used by stetho to re-set auto value */
-  void flexBasisAuto();
-
   InternalNode flexDirection(YogaFlexDirection direction);
 
   InternalNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler);
@@ -112,9 +109,6 @@ public interface InternalNode extends Inputs, LayoutProps {
   void setNodeInfo(NodeInfo nodeInfo);
 
   NodeInfo getOrCreateNodeInfo();
-
-  /** Used by stetho to re-set auto value */
-  void heightAuto();
 
   InternalNode importantForAccessibility(int importantForAccessibility);
 
@@ -154,9 +148,6 @@ public interface InternalNode extends Inputs, LayoutProps {
   InternalNode visibleHeightRatio(float visibleHeightRatio);
 
   InternalNode visibleWidthRatio(float visibleWidthRatio);
-
-  // Used by stetho to re-set auto value
-  void widthAuto();
 
   InternalNode wrap(YogaWrap wrap);
 
@@ -355,6 +346,8 @@ public interface InternalNode extends Inputs, LayoutProps {
   boolean areCachedMeasuresValid();
 
   /* Testing a nd debugging related APIs */
+
+  LayoutProps getDebugLayoutEditor();
 
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
