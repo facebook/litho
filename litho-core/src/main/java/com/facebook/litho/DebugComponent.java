@@ -46,7 +46,7 @@ public final class DebugComponent {
 
     void applyStateOverrides(String key, StateContainer state);
 
-    void applyLayoutOverrides(String key, DebugLayoutNode node);
+    void applyLayoutOverrides(String key, DebugLayoutNodeEditor node);
   }
 
   private static final Map<String, Overrider> sOverriders = new HashMap<>();
@@ -147,7 +147,7 @@ public final class DebugComponent {
     final String key = generateGlobalKey(context, componentkey);
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
-      overrider.applyLayoutOverrides(key, new DebugLayoutNode(node));
+      overrider.applyLayoutOverrides(key, new DebugLayoutNodeEditor(node));
     }
   }
 
@@ -186,7 +186,7 @@ public final class DebugComponent {
 
     final LithoLayoutResult nestedTree =
         mResult instanceof NestedTreeHolderResult
-            ? ((NestedTreeHolderResult) mNode).getNestedResult()
+            ? ((NestedTreeHolderResult) mResult).getNestedResult()
             : null;
     if (nestedTree != null) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
@@ -409,7 +409,7 @@ public final class DebugComponent {
   @Nullable
   public DebugLayoutNode getLayoutNode() {
     if (isLayoutNode()) {
-      return new DebugLayoutNode(mNode);
+      return new DebugLayoutNode(mResult);
     }
     return null;
   }

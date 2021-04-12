@@ -39,6 +39,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugComponentTimeMachine;
 import com.facebook.litho.DebugLayoutNode;
+import com.facebook.litho.DebugLayoutNodeEditor;
 import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateContainer;
@@ -102,7 +103,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
         }
 
         @Override
-        public void applyLayoutOverrides(String key, DebugLayoutNode node) {
+        public void applyLayoutOverrides(String key, DebugLayoutNodeEditor node) {
           final List<Pair<String[], Pair<SetDataOperations.FlipperValueHint, FlipperDynamic>>>
               overrides = mOverrides.get(key);
           if (overrides == null) {
@@ -538,10 +539,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
     if (!node.isRoot()) {
       margin =
           new Rect(
-              hasNode ? (int) layout.getResultMargin(YogaEdge.START) : 0,
-              hasNode ? (int) layout.getResultMargin(YogaEdge.TOP) : 0,
-              hasNode ? (int) layout.getResultMargin(YogaEdge.END) : 0,
-              hasNode ? (int) layout.getResultMargin(YogaEdge.BOTTOM) : 0);
+              hasNode ? (int) layout.getLayoutMargin(YogaEdge.START) : 0,
+              hasNode ? (int) layout.getLayoutMargin(YogaEdge.TOP) : 0,
+              hasNode ? (int) layout.getLayoutMargin(YogaEdge.END) : 0,
+              hasNode ? (int) layout.getLayoutMargin(YogaEdge.BOTTOM) : 0);
     } else {
       // Margin not applied if you're at the root
       margin = new Rect();
@@ -549,10 +550,10 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
 
     final Rect padding =
         new Rect(
-            hasNode ? (int) layout.getResultPadding(YogaEdge.START) : 0,
-            hasNode ? (int) layout.getResultPadding(YogaEdge.TOP) : 0,
-            hasNode ? (int) layout.getResultPadding(YogaEdge.END) : 0,
-            hasNode ? (int) layout.getResultPadding(YogaEdge.BOTTOM) : 0);
+            hasNode ? (int) layout.getLayoutPadding(YogaEdge.START) : 0,
+            hasNode ? (int) layout.getLayoutPadding(YogaEdge.TOP) : 0,
+            hasNode ? (int) layout.getLayoutPadding(YogaEdge.END) : 0,
+            hasNode ? (int) layout.getLayoutPadding(YogaEdge.BOTTOM) : 0);
 
     final Rect contentBounds = node.getBoundsInLithoView();
     HighlightedOverlay.setHighlighted(lithoView, margin, padding, contentBounds, isAlignmentMode);
@@ -600,7 +601,7 @@ public class DebugComponentDescriptor extends NodeDescriptor<DebugComponent> {
   }
 
   private static void applyLayoutOverride(
-      DebugLayoutNode node, String[] path, FlipperDynamic value) {
+      DebugLayoutNodeEditor node, String[] path, FlipperDynamic value) {
     switch (path[0]) {
       case "background":
         node.setBackgroundColor(value.asInt());

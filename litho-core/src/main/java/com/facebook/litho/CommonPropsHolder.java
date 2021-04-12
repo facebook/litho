@@ -319,6 +319,7 @@ class CommonPropsHolder implements CommonProps {
     getOrCreateLayoutProps().flexBasisAuto();
   }
 
+  /** Used by {@link DebugLayoutNodeEditor} */
   @Override
   public void setBorderWidth(YogaEdge edge, float borderWidth) {
     getOrCreateLayoutProps().setBorderWidth(edge, borderWidth);
@@ -1046,6 +1047,7 @@ class CommonPropsHolder implements CommonProps {
     private boolean mWidthAuto;
     private boolean mFlexBasisAuto;
 
+    /** Used by {@link DebugLayoutNodeEditor} */
     private @Nullable Edges mBorderEdges;
 
     @Override

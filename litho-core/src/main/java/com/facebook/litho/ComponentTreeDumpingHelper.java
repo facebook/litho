@@ -71,9 +71,9 @@ public class ComponentTreeDumpingHelper {
     }
     if (layout != null) {
       sb.append(" ");
-      sb.append(layout.getLayoutWidth());
-      sb.append("x");
       sb.append(layout.getLayoutHeight());
+      sb.append("x");
+      sb.append(layout.getLayoutWidth());
     }
 
     sb.append('}');
