@@ -26,8 +26,10 @@ import java.util.Set;
 /**
  * Base class for test components which expose lifecycle information.
  *
- * @param <L>
+ * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
+ *     instead
  */
+@Deprecated
 public abstract class TestComponent extends Component {
 
   private final Map<EventHandler<?>, Object> mDispatchedEventHandlers = new HashMap<>();

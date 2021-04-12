@@ -23,6 +23,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Wrapper;
 
+/**
+ * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
+ *     instead
+ */
+@Deprecated
 public class TestLayoutComponent extends TestComponent {
 
   private final boolean mIsPureRender;

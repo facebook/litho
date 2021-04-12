@@ -25,6 +25,11 @@ import com.facebook.litho.Wrapper;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.Comparable;
 
+/**
+ * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
+ *     instead
+ */
+@Deprecated
 public class TestTransitionComponent extends TestComponent {
 
   @Comparable(type = Comparable.COMPONENT)

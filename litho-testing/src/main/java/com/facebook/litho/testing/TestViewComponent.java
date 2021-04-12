@@ -27,6 +27,11 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import javax.annotation.Nullable;
 
+/**
+ * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
+ *     instead
+ */
+@Deprecated
 public class TestViewComponent extends TestComponent {
 
   private final boolean mIsPureRender;

@@ -19,6 +19,11 @@ package com.facebook.litho.testing;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 
+/**
+ * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
+ *     instead
+ */
+@Deprecated
 public class TestNullLayoutComponent extends Component {
 
   public TestNullLayoutComponent() {

@@ -21,6 +21,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.yoga.YogaEdge;
 
+/**
+ * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
+ *     instead
+ */
+@Deprecated
 public class TestSizeDependentComponent extends Component {
 
   private TestSizeDependentComponent() {
