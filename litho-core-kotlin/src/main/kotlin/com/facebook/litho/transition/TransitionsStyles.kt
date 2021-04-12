@@ -17,21 +17,22 @@
 package com.facebook.litho.transition
 
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.Transition
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.getCommonPropsHolder
-import com.facebook.litho.getComponentOwnerGlobalKey
 
 private class TransitionKeyStyleItem(
+    val context: ComponentContext,
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType
 ) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
-    commonProps.transitionKey(transitionKey, component.getComponentOwnerGlobalKey())
+    commonProps.transitionKey(transitionKey, context.globalKey)
     commonProps.transitionKeyType(transitionKeyType)
   }
 }
@@ -42,6 +43,7 @@ private class TransitionKeyStyleItem(
  * wasn't going to already.
  */
 fun Style.transitionKey(
+    context: ComponentContext,
     transitionKey: String?,
     transitionKeyType: TransitionKeyType = TransitionKeyType.LOCAL
-): Style = this + TransitionKeyStyleItem(transitionKey, transitionKeyType)
+): Style = this + TransitionKeyStyleItem(context, transitionKey, transitionKeyType)

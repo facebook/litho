@@ -75,7 +75,8 @@ class TransitionsComponent : KComponent() {
                     Style.width(50.dp)
                         .height(50.dp)
                         .margin(all = 5.dp)
-                        .transitionKey(TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
+                        .transitionKey(
+                            context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
                         .background(buildRoundedRect(context, Color.parseColor("#666699"), 8)))
           })
       child(
@@ -84,7 +85,8 @@ class TransitionsComponent : KComponent() {
                   Style.width(if (shouldExpand.value) 75.dp else 50.dp)
                       .height(if (shouldExpand.value) 75.dp else 50.dp)
                       .margin(all = 5.dp)
-                      .transitionKey(TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
+                      .transitionKey(
+                          context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
                       .background(buildRoundedRect(context, Color.parseColor("#ba7bb5"), 8))))
     }
   }
