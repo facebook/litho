@@ -40,6 +40,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Layout.Alignment;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -81,6 +82,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
+import com.facebook.widget.accessibility.delegates.ContentDescriptionSpan;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -703,7 +705,14 @@ class TextSpec {
         boolean isAlignedLeft = isRtl ^ (finalLayoutAlignment == Alignment.ALIGN_NORMAL);
         final CharSequence truncated =
             truncateText(
-                text, customEllipsisText, textLayout.get(), customEllipsisLayout, ellipsizedLineNumber, layoutWidth, isAlignedLeft, isRtl);
+                text,
+                customEllipsisText,
+                textLayout.get(),
+                customEllipsisLayout,
+                ellipsizedLineNumber,
+                layoutWidth,
+                isAlignedLeft,
+                isRtl);
 
         Layout newLayout =
             createTextLayout(
@@ -785,7 +794,8 @@ class TextSpec {
     } else if (!isRtl /* && !isAlignedLeft */) {
       final float gap = layoutWidth - newLayout.getLineWidth(ellipsizedLineNumber);
       ellipsisTarget = layoutWidth - customEllipsisTextWidth + gap;
-    } else if (/* isRtl && */ isAlignedLeft) {
+    } else if (
+    /* isRtl && */ isAlignedLeft) {
       final float gap = layoutWidth - newLayout.getLineWidth(ellipsizedLineNumber);
       ellipsisTarget = customEllipsisTextWidth - gap;
     } else /* isRtl && !isAlignedLeft */ {
@@ -917,9 +927,12 @@ class TextSpec {
         == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       ViewCompat.setImportantForAccessibility(host, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
+
     CharSequence contentDescription = node.getContentDescription();
-    node.setText(contentDescription != null ? contentDescription : text);
-    node.setContentDescription(contentDescription != null ? contentDescription : text);
+    CharSequence textWithContentDescriptions = replaceContentDescriptionSpans(text);
+    node.setText(contentDescription != null ? contentDescription : textWithContentDescriptions);
+    node.setContentDescription(
+        contentDescription != null ? contentDescription : textWithContentDescriptions);
 
     node.addAction(AccessibilityNodeInfoCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
     node.addAction(AccessibilityNodeInfoCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
@@ -931,6 +944,42 @@ class TextSpec {
     if (!isSingleLine) {
       node.setMultiLine(true);
     }
+  }
+
+  /**
+   * Takes a text input, searches through it for any ContentDescriptionSpans, and if any are found
+   * replaces the text at the spanned location with the text defined in the content description.
+   * This is meant to generate text to set directly on the AccessibilityNodeInfo, not text for
+   * display.
+   *
+   * @param text Text to modify.
+   * @return The input text with the content of all ContentDescriptionSpans included.
+   */
+  private static CharSequence replaceContentDescriptionSpans(CharSequence text) {
+    if (!(text instanceof Spanned)) {
+      return text;
+    }
+
+    final Spanned spanned = (Spanned) text;
+    ContentDescriptionSpan[] contentDescriptionSpans =
+        spanned.getSpans(0, text.length(), ContentDescriptionSpan.class);
+
+    if (contentDescriptionSpans.length == 0) {
+      return text;
+    }
+
+    SpannableStringBuilder spannable = new SpannableStringBuilder(text);
+    for (ContentDescriptionSpan span : contentDescriptionSpans) {
+      CharSequence replacementText = span.getContentDescription();
+      if (TextUtils.isEmpty(replacementText)) {
+        continue;
+      }
+      int spanReplaceStart = spannable.getSpanStart(span);
+      int spanReplaceEnd = spannable.getSpanEnd(span);
+      spannable.replace(spanReplaceStart, spanReplaceEnd, replacementText);
+    }
+
+    return spannable.toString();
   }
 
   @GetExtraAccessibilityNodesCount
@@ -1069,9 +1118,10 @@ class TextSpec {
   private static TextDirectionHeuristicCompat getTextDirection(
       TextDirectionHeuristicCompat textDirection, YogaDirection layoutDirection) {
     if (textDirection == null) {
-      textDirection = layoutDirection == YogaDirection.RTL
-          ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
-          : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
+      textDirection =
+          layoutDirection == YogaDirection.RTL
+              ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
+              : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
     }
     return textDirection;
   }
@@ -1083,7 +1133,7 @@ class TextSpec {
       YogaDirection layoutDirection) {
     final Alignment alignment;
     final boolean layoutRtl, textRtl;
-    switch(textAlignment) {
+    switch (textAlignment) {
       default:
       case TEXT_START:
         alignment = Alignment.ALIGN_NORMAL;
@@ -1102,14 +1152,16 @@ class TextSpec {
         alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_OPPOSITE : Alignment.ALIGN_NORMAL;
         break;
       case LEFT:
-        alignment = textDirection.isRtl(text, 0, text.length())
-            ? Alignment.ALIGN_OPPOSITE
-            : Alignment.ALIGN_NORMAL;
+        alignment =
+            textDirection.isRtl(text, 0, text.length())
+                ? Alignment.ALIGN_OPPOSITE
+                : Alignment.ALIGN_NORMAL;
         break;
       case RIGHT:
-        alignment = textDirection.isRtl(text, 0, text.length())
-            ? Alignment.ALIGN_NORMAL
-            : Alignment.ALIGN_OPPOSITE;
+        alignment =
+            textDirection.isRtl(text, 0, text.length())
+                ? Alignment.ALIGN_NORMAL
+                : Alignment.ALIGN_OPPOSITE;
         break;
       case CENTER:
         alignment = Alignment.ALIGN_CENTER;
