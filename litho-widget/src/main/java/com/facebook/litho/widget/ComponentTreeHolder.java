@@ -24,6 +24,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
@@ -51,6 +52,7 @@ public class ComponentTreeHolder {
   public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final int mRecyclingMode;
   private final boolean mIgnoreNullLayoutStateError;
+  private final @Nullable LithoLifecycleProvider mParentLifecycle;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -126,6 +128,7 @@ public class ComponentTreeHolder {
     private int recyclingMode;
     private boolean visibilityProcessingEnabled = true;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
+    private @Nullable LithoLifecycleProvider parentLifecycle;
 
     private Builder() {}
 
@@ -201,6 +204,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder parentLifecycleProvider(LithoLifecycleProvider parentLifecycle) {
+      this.parentLifecycle = parentLifecycle;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -230,6 +238,7 @@ public class ComponentTreeHolder {
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    mParentLifecycle = builder.parentLifecycle;
     mRecyclingMode = builder.recyclingMode;
   }
 

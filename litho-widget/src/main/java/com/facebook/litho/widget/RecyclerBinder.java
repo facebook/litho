@@ -57,6 +57,7 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
@@ -377,7 +378,8 @@ public class RecyclerBinder
         int recyclingMode,
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
-        boolean preallocatePerMountSpec);
+        boolean preallocatePerMountSpec,
+        @Nullable LithoLifecycleProvider lifecycleProvider);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -396,7 +398,8 @@ public class RecyclerBinder
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
             @Nullable LithoHandler preallocateHandler,
-            boolean preallocatePerMountSpec) {
+            boolean preallocatePerMountSpec,
+            @Nullable LithoLifecycleProvider lifecycleProvider) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -411,6 +414,7 @@ public class RecyclerBinder
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
+              .parentLifecycleProvider(lifecycleProvider)
               .build();
         }
       };
@@ -3852,7 +3856,8 @@ public class RecyclerBinder
         mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
-        mPreallocatePerMountSpec);
+        mPreallocatePerMountSpec,
+        null);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

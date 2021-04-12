@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.Size;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
@@ -39,6 +40,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nullable;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,7 +88,8 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec) {
+              boolean preallocatePerMountSpec,
+              @Nullable LithoLifecycleProvider lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

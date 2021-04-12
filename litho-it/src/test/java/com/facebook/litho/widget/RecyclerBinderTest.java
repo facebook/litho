@@ -59,6 +59,7 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
@@ -180,7 +181,8 @@ public class RecyclerBinderTest {
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec) {
+              boolean preallocatePerMountSpec,
+              @Nullable LithoLifecycleProvider lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
@@ -207,7 +209,8 @@ public class RecyclerBinderTest {
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec) {
+              boolean preallocatePerMountSpec,
+              @Nullable LithoLifecycleProvider lifecycleProvider) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
