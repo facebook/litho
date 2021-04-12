@@ -24,6 +24,8 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
+import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
+import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -51,6 +53,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoHandler.DefaultLithoHandler;
+import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
@@ -82,7 +85,7 @@ import javax.annotation.concurrent.GuardedBy;
  * </code>
  */
 @ThreadSafe
-public class ComponentTree {
+public class ComponentTree implements LithoLifecycleListener {
 
   private static final boolean DEBUG_LOGS = false;
 
@@ -104,6 +107,7 @@ public class ComponentTree {
   private static final String STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD =
       "ComponentTree:StateUpdatesWhenLayoutInProgressExceedsThreshold";
   private static boolean sBoostPerfLayoutStateFuture = false;
+  @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
   private final boolean mUseStatelessComponent;
   private final boolean mIgnoreNullLayoutStateError;
@@ -125,6 +129,56 @@ public class ComponentTree {
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
 
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
+
+  boolean isSubscribedToLifecycleProvider() {
+    return mLifecycleProvider != null;
+  }
+
+  @Override
+  public void onMovedToState(LithoLifecycle state) {
+    switch (state) {
+      case HINT_VISIBLE:
+        onMoveToStateHintVisible();
+        return;
+      case HINT_INVISIBLE:
+        onMoveToStateHintInvisible();
+        return;
+      case DESTROYED:
+        onMoveToStateDestroy();
+        return;
+      default:
+        throw new IllegalStateException("Illegal state: " + state);
+    }
+  }
+
+  private void onMoveToStateHintVisible() {
+    if (mLithoView != null) {
+      mLithoView.setVisibilityHintNonRecursive(true);
+    }
+  }
+
+  private void onMoveToStateHintInvisible() {
+    if (mLithoView != null) {
+      mLithoView.setVisibilityHintNonRecursive(false);
+    }
+  }
+
+  private void onMoveToStateDestroy() {
+    // This will call setComponentTree(null) on the LithoView if any.
+    release();
+    if (mLifecycleProvider != null) {
+      mLifecycleProvider.removeListener(this);
+      mLifecycleProvider = null;
+    }
+  }
+
+  private void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+    if (mLifecycleProvider != null) {
+      throw new IllegalStateException("Already subscribed");
+    }
+    mLifecycleProvider = lifecycleProvider;
+    mLifecycleProvider.addListener(this);
+  }
 
   public interface MeasureListener {
 
@@ -326,12 +380,25 @@ public class ComponentTree {
   }
 
   public static Builder create(ComponentContext context, Component root) {
-    return new ComponentTree.Builder(context).withRoot(root);
+    return create(context, root, null);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      Component root,
+      @Nullable LithoLifecycleProvider lifecycleProvider) {
+    // TODO T88511125: Enforce non-null lithoLifecycleOwner here.
+    return new ComponentTree.Builder(context)
+        .withRoot(root)
+        .withLithoLifecycleProvider(lifecycleProvider);
   }
 
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = builder.root;
+    if (builder.mLifecycleProvider != null) {
+      subscribeToLifecycleProvider(builder.mLifecycleProvider);
+    }
     mIncrementalMountEnabled =
         builder.incrementalMountEnabled && !incrementalMountGloballyDisabled();
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
@@ -931,6 +998,17 @@ public class ComponentTree {
 
     if (mLithoView == view) {
       return;
+    }
+
+    if (mLifecycleProvider != null && view != null) {
+      final LithoLifecycle currentStatus = mLifecycleProvider.getLifecycleStatus();
+      if (currentStatus == HINT_VISIBLE) {
+        view.setVisibilityHintNonRecursive(true);
+      }
+
+      if (currentStatus == HINT_INVISIBLE) {
+        view.setVisibilityHintNonRecursive(false);
+      }
     }
 
     if (mLithoView != null) {
@@ -3130,6 +3208,7 @@ public class ComponentTree {
     private boolean shouldForceAsyncStateUpdate =
         ComponentsConfiguration.shouldForceAsyncStateUpdate;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
+    private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3147,6 +3226,11 @@ public class ComponentTree {
       }
 
       this.root = root;
+      return this;
+    }
+
+    public Builder withLithoLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+      this.mLifecycleProvider = lifecycleProvider;
       return this;
     }
 

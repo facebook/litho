@@ -66,6 +66,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
   private boolean mSkipMountingIfNotVisible;
   private final boolean mRebindWhenVisibilityChanges;
+  private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
   public interface OnDirtyMountListener {
     /**
@@ -141,7 +142,12 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
   public static LithoView create(Context context, Component component) {
-    return create(new ComponentContext(context), component);
+    return create(context, component, null);
+  }
+
+  public static LithoView create(
+      Context context, Component component, LithoLifecycleProvider lifecycleProvider) {
+    return create(new ComponentContext(context), component, lifecycleProvider);
   }
   /**
    * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
@@ -175,8 +181,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
   public static LithoView create(ComponentContext context, Component component) {
+    return create(context, component, null);
+  }
+
+  public static LithoView create(
+      ComponentContext context,
+      Component component,
+      @Nullable LithoLifecycleProvider lifecycleProvider) {
     final LithoView lithoView = new LithoView(context);
-    lithoView.setComponentTree(ComponentTree.create(context, component).build());
+    lithoView.setComponentTree(ComponentTree.create(context, component, lifecycleProvider).build());
     return lithoView;
   }
 
@@ -860,11 +873,54 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mSkipMountingIfNotVisible = skipMountingIfNotVisible;
   }
 
+  void setVisibilityHintNonRecursive(boolean isVisible) {
+    assertMainThread();
+
+    if (mComponentTree == null) {
+      return;
+    }
+
+    // If the LithoView previously had the visibility hint set to false, then when it's set back
+    // to true we should trigger a mount, in case the visible bounds changed while mounting was
+    // paused.
+    mHasVisibilityHint = true;
+    mPauseMountingWhileVisibilityHintFalse = true;
+
+    final boolean forceMount = shouldPauseMountingWithVisibilityHintFalse();
+    mVisibilityHintIsVisible = isVisible;
+
+    if (isVisible) {
+      if (forceMount) {
+        notifyVisibleBoundsChanged();
+      } else if (getLocalVisibleRect(mRect)) {
+        if (mRebindWhenVisibilityChanges) {
+          rebind();
+        }
+        processVisibilityOutputs(mRect);
+      }
+      // if false: no-op, doesn't have visible area, is not ready or not attached
+    } else {
+      if (mRebindWhenVisibilityChanges) {
+        unbind();
+      }
+      clearVisibilityItems();
+    }
+  }
+
+  private void checkLifecycleOwner() {
+    if (mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider()) {
+      throw new IllegalStateException(
+          "Cannot manually change the lifecycle state when subscribed to a LifecycleOwner.");
+    }
+  }
+
   /**
-   * Call this to tell the LithoView whether it is visible or not. In general, you shouldn't require
-   * this as the system will do this for you. However, when a new activity/fragment is added on top
-   * of the one hosting this view, the LithoView remains in the backstack but receives no callback
-   * to indicate that it is no longer visible.
+   * Deprecated: Consider subscribing the LithoView to a LithoLifecycleOwner instead.
+   *
+   * <p>Call this to tell the LithoView whether it is visible or not. In general, you shouldn't
+   * require this as the system will do this for you. However, when a new activity/fragment is added
+   * on top of the one hosting this view, the LithoView remains in the backstack but receives no
+   * callback to indicate that it is no longer visible.
    *
    * <p>While the LithoView has the visibility hint set to false, it will be treated by the
    * framework as not in the viewport, so no new mounting events will be processed until the
@@ -873,6 +929,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
    * @param isVisible if true, this will find the current visible rect and process visibility
    *     outputs using it. If false, any invisible and unfocused events will be called.
    */
+  @Deprecated
   public void setVisibilityHint(boolean isVisible) {
     setVisibilityHintInternal(isVisible, true);
   }
@@ -898,6 +955,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void setVisibilityHintInternal(boolean isVisible, boolean skipMountingIfNotVisible) {
     assertMainThread();
+    checkLifecycleOwner();
 
     if (mComponentTree == null) {
       return;
@@ -1135,8 +1193,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return (mComponentTree != null && mComponentTree.isIncrementalMountEnabled());
   }
 
+  /** Deprecated: Consider subscribing the LithoView to a LithoLifecycleOwner instead. */
+  @Deprecated
   public void release() {
     assertMainThread();
+    checkLifecycleOwner();
 
     final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
     if (childrenLithoViews != null) {
@@ -1357,6 +1418,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mPreviousMountVisibleRectBounds.set(currentVisibleArea);
   }
 
+  /** Deprecated: Consider subscribing the LithoView to a LithoLifecycleOwner instead. */
+  @Deprecated
   public void unmountAllItems() {
     if (mUseExtensions) {
       mMountDelegateTarget.unmountAllItems();
