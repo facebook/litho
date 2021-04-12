@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.DESTROYED;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -24,7 +26,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
+import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
@@ -53,6 +57,7 @@ public class ComponentTreeHolder {
   private final int mRecyclingMode;
   private final boolean mIgnoreNullLayoutStateError;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
+  private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -455,8 +460,12 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
+      if (mParentLifecycle != null) {
+        mComponentTreeHolderLifecycleProvider = new ComponentTreeHolderLifecycleProvider();
+      }
       final ComponentTree.Builder builder =
-          ComponentTree.create(context, mRenderInfo.getComponent());
+          ComponentTree.create(
+              context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
 
       final Object isReconciliationEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
@@ -498,6 +507,7 @@ public class ComponentTreeHolder {
               .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
+
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
       }
@@ -506,6 +516,12 @@ public class ComponentTreeHolder {
 
   @UiThread
   public synchronized void releaseTree() {
+    if (mComponentTreeHolderLifecycleProvider != null) {
+      mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
+
+      return;
+    }
+
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
@@ -549,5 +565,58 @@ public class ComponentTreeHolder {
     }
 
     mHasMounted = mComponentTree.hasMounted();
+  }
+
+  /** Lifecycle controlled by a ComponentTreeHolder. */
+  private class ComponentTreeHolderLifecycleProvider
+      implements LithoLifecycleProvider, LithoLifecycleListener {
+    public LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
+
+    public ComponentTreeHolderLifecycleProvider() {
+      mParentLifecycle.addListener(this);
+      mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
+    }
+
+    @Override
+    public LithoLifecycle getLifecycleStatus() {
+      return mLithoLifecycleProviderDelegate.getLifecycleStatus();
+    }
+
+    @Override
+    public void onMovedToState(LithoLifecycle state) {
+      switch (state) {
+        case HINT_VISIBLE:
+          moveToLifecycle(LithoLifecycle.HINT_VISIBLE);
+          return;
+        case HINT_INVISIBLE:
+          moveToLifecycle(LithoLifecycle.HINT_INVISIBLE);
+          return;
+        case DESTROYED:
+          moveToLifecycle(DESTROYED);
+          return;
+        default:
+          throw new IllegalStateException("Illegal state: " + state);
+      }
+    }
+
+    @Override
+    public void moveToLifecycle(LithoLifecycle lithoLifecycle) {
+      mLithoLifecycleProviderDelegate.moveToLifecycle(lithoLifecycle);
+      if (lithoLifecycle == DESTROYED) {
+        mParentLifecycle.removeListener(this);
+        mComponentTree = null;
+        mIsTreeValid = false;
+      }
+    }
+
+    @Override
+    public void addListener(LithoLifecycleListener listener) {
+      mLithoLifecycleProviderDelegate.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(LithoLifecycleListener listener) {
+      mLithoLifecycleProviderDelegate.removeListener(listener);
+    }
   }
 }

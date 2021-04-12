@@ -135,6 +135,7 @@ public class RecyclerBinder
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
   private final boolean mIgnoreNullLayoutStateError;
+  private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -461,6 +462,7 @@ public class RecyclerBinder
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
+    private @Nullable LithoLifecycleProvider lifecycleProvider;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -779,6 +781,7 @@ public class RecyclerBinder
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = ComponentContext.makeCopyForNestedTree(c);
+      lifecycleProvider = ComponentTree.getLifecycleProvider(c);
 
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
@@ -816,6 +819,10 @@ public class RecyclerBinder
 
   @Override
   public void detach() {
+    if (mParentLifecycle != null) {
+      return;
+    }
+
     // Since ComponentTree#release() can only be called on main thread, release the trees
     // immediately if we're on main thread, or post a runnable on main thread.
     if (ThreadUtils.isMainThread()) {
@@ -887,6 +894,8 @@ public class RecyclerBinder
 
   private RecyclerBinder(Builder builder) {
     mComponentContext = builder.componentContext;
+    mParentLifecycle = builder.lifecycleProvider;
+
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
     mEnableStableIds = builder.enableStableIds;
     mInternalAdapter =
@@ -3857,7 +3866,7 @@ public class RecyclerBinder
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
         mPreallocatePerMountSpec,
-        null);
+        mParentLifecycle);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {
