@@ -1821,6 +1821,33 @@ public class ComponentTree implements LithoLifecycleListener {
     return StateHandler.createNewInstance(mStateHandler);
   }
 
+  /**
+   * Creates a ComponentTree nested inside the ComponentTree of the provided parentContext. If the
+   * parent ComponentTree is subscribed to a LithoLifecycleProvider, the nested ComponentTree will
+   * also subscribe to a {@link SimpleNestedTreeLifecycleProvider} hooked with the parent's
+   * lifecycle provider.
+   *
+   * @param parentContext context associated with the parent ComponentTree.
+   * @param component root of the new nested ComponentTree.
+   * @return builder for a nested ComponentTree.
+   */
+  public static ComponentTree.Builder createNestedComponentTree(
+      final ComponentContext parentContext, Component component) {
+    final ComponentTree parentComponentTree = parentContext.getComponentTree();
+    if (parentComponentTree == null) {
+      throw new IllegalStateException(
+          "Cannot create a nested ComponentTree with a null parent ComponentTree.");
+    }
+
+    final SimpleNestedTreeLifecycleProvider lifecycleProvider =
+        parentComponentTree.mLifecycleProvider == null
+            ? null
+            : new SimpleNestedTreeLifecycleProvider(parentComponentTree);
+
+    return ComponentTree.create(
+        ComponentContext.makeCopyForNestedTree(parentContext), component, lifecycleProvider);
+  }
+
   synchronized void consumeStateUpdateTransitions(
       List<Transition> outList, @Nullable String logContext) {
     if (mStateHandler != null) {

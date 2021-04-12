@@ -86,7 +86,7 @@ public class VerticalScrollSpec {
     scrollPosition.set(initialScrollPosition);
 
     childComponentTree.set(
-        ComponentTree.create(ComponentContext.makeCopyForNestedTree(context), childComponent)
+        ComponentTree.createNestedComponentTree(context, childComponent)
             .incrementalMount(incrementalMountEnabled)
             .build());
   }

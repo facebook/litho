@@ -242,9 +242,7 @@ class HorizontalScrollSpec {
 
     lastScrollPosition.set(new ScrollPosition(initialScrollPosition));
     childComponentTree.set(
-        ComponentTree.create(ComponentContext.makeCopyForNestedTree(c), contentProps)
-            .incrementalMount(false)
-            .build());
+        ComponentTree.createNestedComponentTree(c, contentProps).incrementalMount(false).build());
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView
