@@ -38,7 +38,6 @@ public abstract class TestComponent extends Component {
   private boolean mOnBindCalled;
   private boolean mBound;
   private boolean mOnUnbindCalled;
-  protected boolean mIsUnique;
   private boolean mOnMeasureCalled;
   private boolean mOnAttachedCalled;
   private boolean mOnDetachedCalled;
@@ -138,26 +137,9 @@ public abstract class TestComponent extends Component {
   }
 
   @Override
-  public int hashCode() {
-    return mIsUnique ? 1 : 0;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (o instanceof TestComponent) {
-      TestComponent c = (TestComponent) o;
-      return !(mIsUnique || c.mIsUnique);
-    }
-    return false;
-  }
-
-  @Override
   public boolean isEquivalentTo(Component other) {
     mIsEquivalentToCalled = true;
-    return this == other;
+    return super.isEquivalentTo(other);
   }
 
   /** Reset the tracking of which methods have been called on this component. */

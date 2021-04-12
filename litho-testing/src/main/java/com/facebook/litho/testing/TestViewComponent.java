@@ -25,7 +25,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.StateContainer;
 import javax.annotation.Nullable;
 
 public class TestViewComponent extends TestComponent {
@@ -47,15 +46,6 @@ public class TestViewComponent extends TestComponent {
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
     mHasChildLithoViews = hasChildLithoViews;
-  }
-
-  @Override
-  public boolean shouldUpdate(
-      final @Nullable Component previous,
-      final @Nullable StateContainer previousStateContainer,
-      final @Nullable Component next,
-      final @Nullable StateContainer nextStateContainer) {
-    return !next.equals(previous);
   }
 
   @Override
@@ -170,25 +160,6 @@ public class TestViewComponent extends TestComponent {
     return builder;
   }
 
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    if (o instanceof TestViewComponent) {
-      return true;
-    }
-    return false;
-  }
-
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestViewComponent mState;
 
@@ -204,11 +175,6 @@ public class TestViewComponent extends TestComponent {
     @Override
     protected void setComponent(Component component) {
       mState = (TestViewComponent) component;
-    }
-
-    public Builder unique() {
-      mState.mIsUnique = true;
-      return this;
     }
 
     public Builder testView(View testView) {

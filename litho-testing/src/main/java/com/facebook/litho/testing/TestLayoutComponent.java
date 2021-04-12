@@ -17,12 +17,10 @@
 package com.facebook.litho.testing;
 
 import androidx.annotation.AttrRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.StateContainer;
 import com.facebook.litho.Wrapper;
 
 public class TestLayoutComponent extends TestComponent {
@@ -43,15 +41,6 @@ public class TestLayoutComponent extends TestComponent {
     mIsPureRender = isPureRender;
     mHasMountSpecChild = hasMountSpecChild;
     mIsDelegate = isDelegate;
-  }
-
-  @Override
-  public boolean shouldUpdate(
-      final @Nullable Component previous,
-      final @Nullable StateContainer previousStateContainer,
-      final @Nullable Component next,
-      final @Nullable StateContainer nextStateContainer) {
-    return !next.equals(previous);
   }
 
   @Override
@@ -128,25 +117,6 @@ public class TestLayoutComponent extends TestComponent {
     return builder;
   }
 
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    if (o instanceof TestLayoutComponent) {
-      return true;
-    }
-    return false;
-  }
-
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestLayoutComponent mState;
 
@@ -162,11 +132,6 @@ public class TestLayoutComponent extends TestComponent {
     @Override
     protected void setComponent(Component component) {
       mState = (TestLayoutComponent) component;
-    }
-
-    public Builder unique() {
-      mState.mIsUnique = true;
-      return this;
     }
 
     @Override

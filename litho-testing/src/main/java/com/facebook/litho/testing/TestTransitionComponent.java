@@ -17,32 +17,23 @@
 package com.facebook.litho.testing;
 
 import androidx.annotation.AttrRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.StateContainer;
 import com.facebook.litho.Transition;
 import com.facebook.litho.Wrapper;
 import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.annotations.Comparable;
 
 public class TestTransitionComponent extends TestComponent {
 
+  @Comparable(type = Comparable.COMPONENT)
   private final Component mComponent;
 
   private TestTransitionComponent(Component component) {
     super();
 
     mComponent = component;
-  }
-
-  @Override
-  public boolean shouldUpdate(
-      final @Nullable Component previous,
-      final @Nullable StateContainer previousStateContainer,
-      final @Nullable Component next,
-      final @Nullable StateContainer nextStateContainer) {
-    return !next.equals(previous);
   }
 
   @Override
@@ -93,22 +84,6 @@ public class TestTransitionComponent extends TestComponent {
     return builder;
   }
 
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    return o instanceof TestTransitionComponent;
-  }
-
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestTransitionComponent mState;
 
@@ -124,11 +99,6 @@ public class TestTransitionComponent extends TestComponent {
     @Override
     protected void setComponent(Component component) {
       mState = (TestTransitionComponent) component;
-    }
-
-    public Builder unique() {
-      mState.mIsUnique = true;
-      return this;
     }
 
     @Override

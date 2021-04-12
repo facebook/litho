@@ -20,14 +20,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import androidx.annotation.AttrRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.StateContainer;
+import com.facebook.litho.annotations.Comparable;
 
 /**
  * @deprecated Use MountSpecLifecycleTester if lifecycle assertions are needed or
@@ -47,24 +46,24 @@ public class TestDrawableComponent extends TestComponent {
 
   private final long mProperties;
 
+  @Comparable(type = Comparable.PRIMITIVE)
   private int color = Color.BLACK;
+
+  @Comparable(type = Comparable.PRIMITIVE)
   private int measuredWidth = -1;
+
+  @Comparable(type = Comparable.PRIMITIVE)
   private int measuredHeight = -1;
+
+  @Comparable(type = Comparable.PRIMITIVE)
   private boolean mReturnSelfInMakeShallowCopy;
+
+  @Comparable(type = Comparable.OTHER)
   private TestComponentListener mTestComponentListener;
 
   private TestDrawableComponent(long properties) {
     super("TestDrawableComponent");
     mProperties = properties;
-  }
-
-  @Override
-  public boolean shouldUpdate(
-      final @Nullable Component previous,
-      final @Nullable StateContainer previousStateContainer,
-      final @Nullable Component next,
-      final @Nullable StateContainer nextStateContainer) {
-    return !next.equals(previous);
   }
 
   @Override
@@ -241,30 +240,6 @@ public class TestDrawableComponent extends TestComponent {
     return builder;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
-
-    TestDrawableComponent that = (TestDrawableComponent) o;
-
-    if (color != that.color) return false;
-    if (measuredWidth != that.measuredWidth) return false;
-    if (measuredHeight != that.measuredHeight) return false;
-    return mReturnSelfInMakeShallowCopy == that.mReturnSelfInMakeShallowCopy;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    result = 31 * result + color;
-    result = 31 * result + measuredWidth;
-    result = 31 * result + measuredHeight;
-    result = 31 * result + (mReturnSelfInMakeShallowCopy ? 1 : 0);
-    return result;
-  }
-
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestDrawableComponent mComponent;
 
@@ -294,11 +269,6 @@ public class TestDrawableComponent extends TestComponent {
 
     public Builder color(int color) {
       mComponent.color = color;
-      return this;
-    }
-
-    public Builder unique() {
-      mComponent.mIsUnique = true;
       return this;
     }
 

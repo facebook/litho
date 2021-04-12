@@ -1073,6 +1073,21 @@ public abstract class Component extends ComponentLifecycle
     return true;
   }
 
+  @Override
+  public final int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public final boolean equals(@Nullable Object obj) {
+    return super.equals(obj);
+  }
+
+  @Override
+  protected final Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
+
   @Nullable
   Context getBuilderContext() {
     return mBuilderContext;

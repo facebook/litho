@@ -25,6 +25,7 @@ import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -48,6 +49,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -153,7 +155,15 @@ public class LayoutStateCalculateTest {
     calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
 
     // Make sure we reused the cached layout and it wasn't released.
-    verify(layoutStateSpy, times(1)).clearCachedLayout(component);
+    verify(layoutStateSpy, times(1))
+        .clearCachedLayout(
+            argThat(
+                new ArgumentMatcher<Component>() {
+                  @Override
+                  public boolean matches(Component argument) {
+                    return component.getId() == argument.getId();
+                  }
+                }));
 
     // Check total layout outputs.
     assertThat(layoutStateSpy.getMountableOutputCount()).isEqualTo(2);

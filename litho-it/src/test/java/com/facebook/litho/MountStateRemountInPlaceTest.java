@@ -62,7 +62,7 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountWithShouldUpdate() {
-    final TestComponent firstComponent = create(mContext).unique().build();
+    final TestComponent firstComponent = create(mContext).color(Color.RED).build();
 
     final LithoView lithoView =
         mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
@@ -71,7 +71,7 @@ public class MountStateRemountInPlaceTest {
     assertThat(firstComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
-    final TestComponent secondComponent = create(mContext).unique().build();
+    final TestComponent secondComponent = create(mContext).color(Color.BLUE).build();
 
     lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
 
@@ -362,7 +362,7 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountDoesNotSkipShouldUpdateAndRemount() {
-    final TestComponent firstComponent = create(mContext).unique().build();
+    final TestComponent firstComponent = create(mContext).color(Color.RED).build();
 
     final LithoView firstLithoView =
         mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
@@ -371,7 +371,7 @@ public class MountStateRemountInPlaceTest {
     assertThat(firstComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
-    final TestComponent secondComponent = create(mContext).unique().build();
+    final TestComponent secondComponent = create(mContext).color(Color.BLUE).build();
 
     final ComponentTree secondTree =
         ComponentTree.create(mContext, Column.create(mContext).child(secondComponent).build())
@@ -390,34 +390,6 @@ public class MountStateRemountInPlaceTest {
 
     assertThat(thirdComponent.wasOnMountCalled()).isTrue();
     assertThat(thirdComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
-  }
-
-  @Test
-  public void testSkipShouldUpdateAndRemountForUnsupportedComponent() {
-    final TestComponent firstComponent = create(mContext, false, true, true, false).build();
-
-    final LithoView firstLithoView =
-        mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
-
-    assertThat(firstComponent.wasOnMountCalled()).isTrue();
-    assertThat(firstComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    final TestComponent secondComponent = spy(create(mContext, false, true, true, false).build());
-    doReturn(secondComponent).when(secondComponent).makeShallowCopy();
-
-    final ComponentTree secondTree =
-        ComponentTree.create(mContext, Column.create(mContext).child(secondComponent).build())
-            .build();
-    secondTree.setSizeSpec(100, 100);
-
-    mountComponent(firstLithoView, secondTree);
-
-    verify(secondComponent).makeShallowCopy();
-
-    assertThat(secondComponent.wasOnMountCalled()).isTrue();
-    assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
   }
 

@@ -126,8 +126,8 @@ public class MountStateRemountTest {
   public void testRemountNewLayoutState() {
     final TestComponent component1 = create(mContext).color(Color.RED).build();
     final TestComponent component2 = create(mContext).color(Color.BLUE).build();
-    final TestComponent component3 = create(mContext).unique().build();
-    final TestComponent component4 = create(mContext).unique().build();
+    final TestComponent component3 = create(mContext).color(Color.GREEN).build();
+    final TestComponent component4 = create(mContext).color(Color.YELLOW).build();
 
     final LithoView lithoView =
         mountComponent(
