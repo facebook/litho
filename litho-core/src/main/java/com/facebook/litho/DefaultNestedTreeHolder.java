@@ -121,9 +121,6 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
         mNodeInfo.copyInto(target.getOrCreateNodeInfo());
       }
     }
-    if (target.isLayoutDirectionInherit()) {
-      target.layoutDirection(getResolvedLayoutDirection());
-    }
     if (target.isImportantForAccessibilityIsSet()) {
       target.importantForAccessibility(mImportantForAccessibility);
     }

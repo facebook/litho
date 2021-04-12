@@ -339,6 +339,8 @@ public interface InternalNode extends Inputs, LayoutProps {
 
   float getStyleWidth();
 
+  void layoutDirection(YogaDirection direction);
+
   boolean isLayoutDirectionInherit();
 
   YogaDirection getStyleDirection();

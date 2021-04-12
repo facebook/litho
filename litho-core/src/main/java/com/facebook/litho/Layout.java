@@ -377,13 +377,17 @@ class Layout {
           // Create a new layout.
           final InternalNode newNode = create(context, component, true, true, componentGlobalKey);
 
-          // TODO: Avoid this hard cast, after splitting is complete.
           holder.getInternalNode().copyInto(newNode);
+
+          // If the resolved tree inherits the layout direction, then set it now.
+          if (newNode.isLayoutDirectionInherit()) {
+            newNode.layoutDirection(holder.getResolvedLayoutDirection());
+          }
 
           layout =
               measure(
                   parentContext,
-                  newNode, // TODO: Avoid this hard cast, after splitting is complete.
+                  newNode,
                   widthSpec,
                   heightSpec,
                   prevLayoutStateContext,

@@ -27,6 +27,7 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.yoga.YogaDirection;
 import java.util.List;
 
 @LayoutSpec
@@ -51,10 +52,16 @@ public class NestedTreeComponentSpec {
       props.steps.add(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
     }
 
-    return Row.create(c)
-        .key("Row")
-        .child(NestedTreeChildComponent.create(c).key("NestedTreeChildComponent"))
-        .build();
+    Row.Builder row =
+        Row.create(c)
+            .key("Row")
+            .child(NestedTreeChildComponent.create(c).key("NestedTreeChildComponent"));
+
+    if (props != null && props.mDirection != null) {
+      row.layoutDirection(props.mDirection);
+    }
+
+    return row.build();
   }
 
   @OnShouldCreateLayoutWithNewSizeSpec
@@ -75,5 +82,6 @@ public class NestedTreeComponentSpec {
   public static class ExtraProps {
     public boolean shouldCreateNewLayout;
     public @Nullable List<LifecycleStep> steps;
+    public @Nullable YogaDirection mDirection;
   }
 }

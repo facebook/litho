@@ -27,7 +27,6 @@ import static com.facebook.litho.it.R.drawable.background_without_padding;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaAlign.STRETCH;
 import static com.facebook.yoga.YogaDirection.INHERIT;
-import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -310,45 +309,6 @@ public class InternalNodeTest {
   }
 
   @Test
-  public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
-    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
-    InternalNode nestedTree = acquireInternalNode();
-
-    nestedTree.layoutDirection(RTL);
-    holderNode.calculateLayout();
-    ((LithoLayoutResult.NestedTreeHolderResult) holderNode)
-        .setNestedResult((LithoLayoutResult) nestedTree);
-
-    assertThat(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isFalse();
-    assertThat(holderNode.getStyleDirection()).isEqualTo(INHERIT);
-    assertThat(nestedTree.getStyleDirection()).isEqualTo(RTL);
-  }
-
-  @Test
-  public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
-    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
-    InternalNode nestedTree = acquireInternalNode();
-
-    holderNode.calculateLayout();
-    holderNode.copyInto(nestedTree);
-
-    assertThat(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isFalse();
-    assertThat(isFlagSet(nestedTree, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
-  }
-
-  @Test
-  public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
-    InternalNode.NestedTreeHolder holderNode = acquireNestedTreeHolder();
-    InternalNode nestedTree = acquireInternalNode();
-
-    holderNode.layoutDirection(RTL);
-    holderNode.calculateLayout();
-    holderNode.copyInto(nestedTree);
-
-    assertThat(nestedTree.getStyleDirection()).isEqualTo(RTL);
-  }
-
-  @Test
   public void testCopyIntoNodeSetFlags() {
     InternalNode.NestedTreeHolder orig = acquireNestedTreeHolder();
     InternalNode dest = acquireInternalNode();
@@ -529,7 +489,7 @@ public class InternalNodeTest {
                 makeSizeSpec(0, UNSPECIFIED))
             .mResult;
 
-    InternalNode cloned = layout.getInternalNode().deepClone();
+    DefaultInternalNode cloned = (DefaultInternalNode) layout.getInternalNode().deepClone();
 
     assertThat(cloned).isNotNull();
 

@@ -29,6 +29,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.NestedTreeComponentSpec.ExtraProps;
 import com.facebook.litho.widget.RootComponentWithTreeProps;
+import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
 import org.junit.After;
@@ -144,5 +145,93 @@ public class NestedTreeResolutionTest {
 
     NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
     verify(holder.getInternalNode()).copyInto(any(InternalNode.class));
+  }
+
+  @Test
+  public void onRenderComponentWithSizeSpec_shouldNotTransferLayoutDirectionIfExplicitlySet() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final RootComponentWithTreeProps component =
+        RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
+
+    final ExtraProps props = new ExtraProps();
+    props.shouldCreateNewLayout = true;
+    props.steps = new ArrayList<>();
+    props.mDirection = YogaDirection.RTL;
+
+    mLithoViewRule
+        .setTreeProp(ExtraProps.class, props)
+        .attachToWindow()
+        .setSizePx(100, 100)
+        .measure()
+        .setRoot(component)
+        .layout();
+
+    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+
+    assertThat(root).isNotNull();
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
+
+    assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.LTR);
+    verify(holder.getNestedResult().getInternalNode()).layoutDirection(YogaDirection.RTL);
+  }
+
+  @Test
+  public void onRenderComponentWithSizeSpec_shouldTransferLayoutDirectionIfNotExplicitlySet() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final RootComponentWithTreeProps component =
+        RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
+
+    final ExtraProps props = new ExtraProps();
+    props.shouldCreateNewLayout = true;
+    props.steps = new ArrayList<>();
+
+    mLithoViewRule
+        .setTreeProp(ExtraProps.class, props)
+        .attachToWindow()
+        .setSizePx(100, 100)
+        .measure()
+        .setRoot(component)
+        .layout();
+
+    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+
+    assertThat(root).isNotNull();
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
+
+    assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.LTR);
+    verify(holder.getNestedResult().getInternalNode(), times(1)).layoutDirection(YogaDirection.LTR);
+  }
+
+  @Test
+  public void onRenderComponentWithSizeSpec_shouldInheritLayoutDirectionIfExplicitlySetOnParent() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final RootComponentWithTreeProps component =
+        RootComponentWithTreeProps.create(c)
+            .shouldNotUpdateState(true)
+            .layoutDirection(YogaDirection.RTL)
+            .build();
+
+    final ExtraProps props = new ExtraProps();
+    props.shouldCreateNewLayout = true;
+    props.steps = new ArrayList<>();
+
+    mLithoViewRule
+        .setTreeProp(ExtraProps.class, props)
+        .attachToWindow()
+        .setSizePx(100, 100)
+        .measure()
+        .setRoot(component)
+        .layout();
+
+    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
+
+    assertThat(root).isNotNull();
+    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
+    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
+
+    assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.RTL);
+    verify(holder.getNestedResult().getInternalNode(), times(1)).layoutDirection(YogaDirection.RTL);
   }
 }
