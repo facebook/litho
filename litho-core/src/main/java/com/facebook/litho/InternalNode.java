@@ -158,9 +158,6 @@ public interface InternalNode extends Inputs {
 
   String getSimpleName();
 
-  @Nullable
-  InternalNode getParent();
-
   InternalNode getChildAt(int index);
 
   int getChildCount();
