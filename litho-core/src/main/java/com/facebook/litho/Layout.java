@@ -477,7 +477,8 @@ class Layout {
 
     if (diff != null) {
       ComponentsSystrace.beginSection("applyDiffNode");
-      applyDiffNodeToUnchangedNodes(c.getLayoutStateContext(), root, prevLayoutStateContext, diff);
+      applyDiffNodeToUnchangedNodes(
+          c.getLayoutStateContext(), root, true, prevLayoutStateContext, diff);
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
@@ -567,11 +568,11 @@ class Layout {
   static void applyDiffNodeToUnchangedNodes(
       final LayoutStateContext layoutStateContext,
       final InternalNode layoutNode,
+      final boolean isTreeRoot,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diffNode) {
     try {
       // Root of the main tree or of a nested tree.
-      final boolean isTreeRoot = layoutNode.getParent() == null;
       if (isLayoutSpecWithSizeSpec(layoutNode.getTailComponent()) && !isTreeRoot) {
         layoutNode.setDiffNode(diffNode);
         return;
@@ -591,6 +592,7 @@ class Layout {
           applyDiffNodeToUnchangedNodes(
               layoutStateContext,
               layoutNode.getChildAt(i),
+              false,
               prevLayoutStateContext,
               diffNode.getChildAt(i));
         }

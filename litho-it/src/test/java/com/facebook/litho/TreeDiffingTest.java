@@ -242,6 +242,7 @@ public class TreeDiffingTest {
     Layout.applyDiffNodeToUnchangedNodes(
         LayoutStateContext.getTestInstance(mContext),
         layoutTreeRoot,
+        true,
         prevLayoutState.getLayoutStateContext(),
         node);
     checkAllComponentsHaveMeasureCache(layoutTreeRoot);
@@ -267,6 +268,7 @@ public class TreeDiffingTest {
     Layout.applyDiffNodeToUnchangedNodes(
         LayoutStateContext.getTestInstance(mContext),
         layoutTreeRoot,
+        true,
         prevLayoutState.getLayoutStateContext(),
         node);
     InternalNode child_1 = (InternalNode) layoutTreeRoot.getChildAt(0);
