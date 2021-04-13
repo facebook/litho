@@ -577,6 +577,11 @@ public class DefaultInternalNode
   }
 
   @Override
+  public void addChild(LithoLayoutResult child) {
+    throw new UnsupportedOperationException("This supported by DefaultInternalNode");
+  }
+
+  @Override
   public int getChildCount() {
     return mYogaNode.getChildCount();
   }

@@ -32,6 +32,8 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   LithoLayoutResult getChildAt(int i);
 
+  void addChild(LithoLayoutResult child);
+
   @Nullable
   LithoLayoutResult getParent();
 
