@@ -150,7 +150,7 @@ public class TreeDiffingTest {
   }
 
   private long measureInternalNode(
-      InternalNode node, float widthConstranint, float heightConstraint) {
+      DefaultInternalNode node, float widthConstranint, float heightConstraint) {
 
     final YogaMeasureFunction measureFunc =
         Whitebox.getInternalState(node.getYogaNode(), "mMeasureFunction");
@@ -163,7 +163,7 @@ public class TreeDiffingTest {
   public void testCachedMeasureFunction() {
     final Component component = TestDrawableComponent.create(mContext).key("global_key").build();
 
-    InternalNode node = createInternalNodeForMeasurableComponent(component);
+    DefaultInternalNode node = createInternalNodeForMeasurableComponent(component);
     DiffNode diffNode = new DefaultDiffNode();
     diffNode.setLastHeightSpec(mUnspecifiedSpec);
     diffNode.setLastWidthSpec(mUnspecifiedSpec);

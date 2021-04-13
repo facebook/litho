@@ -23,6 +23,7 @@ import static com.facebook.litho.it.R.style.PaddingStyle;
 import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.litho.it.R.style.TextSizeStyle;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
+import static com.facebook.yoga.YogaConstants.UNDEFINED;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -32,6 +33,7 @@ import com.facebook.litho.it.R;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,8 +72,8 @@ public class ComponentStyleTest {
   public void testStyleLayout() {
     Component component = Text.create(mContext, 0, PaddingStyle).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
-    node.calculateLayout();
-    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(mDimen);
+    LithoLayoutResult result = node.calculateLayout(UNDEFINED, UNDEFINED);
+    assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mDimen);
   }
 
   @Test
@@ -79,8 +81,8 @@ public class ComponentStyleTest {
     Component component =
         Text.create(mContext, 0, PaddingStyle).text("text").paddingPx(ALL, mDimen * 2).build();
     InternalNode node = (InternalNode) component.resolve(mContext);
-    node.calculateLayout();
-    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
+    LithoLayoutResult result = node.calculateLayout(UNDEFINED, UNDEFINED);
+    assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
   @Test
@@ -100,8 +102,8 @@ public class ComponentStyleTest {
   public void testAttributeStyleLayout() {
     Component component = Text.create(mContext, testAttrLargePadding, 0).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
-    node.calculateLayout();
-    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
+    LithoLayoutResult result = node.calculateLayout(UNDEFINED, UNDEFINED);
+    assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 
   @Test
@@ -112,8 +114,8 @@ public class ComponentStyleTest {
             .paddingPx(ALL, mDimen * 2)
             .build();
     InternalNode node = (InternalNode) component.resolve(mContext);
-    node.calculateLayout();
-    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
+    LithoLayoutResult result = node.calculateLayout(UNDEFINED, UNDEFINED);
+    assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
   @Test
@@ -128,7 +130,7 @@ public class ComponentStyleTest {
     Component component =
         Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
-    node.calculateLayout();
-    assertThat(node.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
+    LithoLayoutResult result = node.calculateLayout(UNDEFINED, UNDEFINED);
+    assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 }

@@ -211,7 +211,9 @@ public class DefaultInternalNode
 
   @Override
   public void addChildAt(InternalNode child, int index) {
-    mYogaNode.addChildAt(child.getYogaNode(), index);
+    if (child instanceof DefaultInternalNode) {
+      mYogaNode.addChildAt(((DefaultInternalNode) child).getYogaNode(), index);
+    }
   }
 
   @Override
@@ -561,7 +563,7 @@ public class DefaultInternalNode
   @Override
   public int getChildIndex(InternalNode child) {
     for (int i = 0, count = mYogaNode.getChildCount(); i < count; i++) {
-      if (mYogaNode.getChildAt(i) == child.getYogaNode()) {
+      if (mYogaNode.getChildAt(i).getData() == child) {
         return i;
       }
     }

@@ -33,7 +33,6 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNode.Inputs;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
@@ -158,8 +157,6 @@ public interface InternalNode extends Inputs, LayoutProps {
   /* InternalNode related APIs */
 
   ComponentContext getContext();
-
-  YogaNode getYogaNode();
 
   String getSimpleName();
 

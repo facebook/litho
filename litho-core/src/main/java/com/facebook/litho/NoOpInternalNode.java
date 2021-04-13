@@ -255,11 +255,6 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
-  @Override
-  public YogaNode getYogaNode() {
-    return null;
-  }
-
   @Nullable
   @Override
   public DiffNode getDiffNode() {
