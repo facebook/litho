@@ -176,7 +176,7 @@ public abstract class Component extends ComponentLifecycle
    * Only use if absolutely needed! This removes the cached layout so this component will be
    * remeasured even if it has alread been measured with the same size specs.
    */
-  public void clearCachedLayout(ComponentContext c) {
+  public final void clearCachedLayout(ComponentContext c) {
     final LayoutState layoutState = c.getLayoutState();
     if (layoutState == null) {
       throw new IllegalStateException(
@@ -188,16 +188,17 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  public CommonProps getCommonProps() {
+  public final CommonProps getCommonProps() {
     return mCommonProps;
   }
 
   @Deprecated
   @Override
-  public EventDispatcher getEventDispatcher() {
+  public final EventDispatcher getEventDispatcher() {
     return this;
   }
 
+  /** This shouldn't be overridden, but is not final because it's mocked in unit tests. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   @Nullable
   protected ComponentContext getScopedContext(
@@ -214,7 +215,7 @@ public abstract class Component extends ComponentLifecycle
     return mScopedContext;
   }
 
-  public void setScopedContext(ComponentContext scopedContext) {
+  public final void setScopedContext(ComponentContext scopedContext) {
     if (mUseStatelessComponent) {
       return;
     }
@@ -227,7 +228,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Should only be used by logging to provide more readable messages. */
-  public String getSimpleName() {
+  public final String getSimpleName() {
     final Component delegate = getSimpleNameDelegate();
     if (delegate == null) {
       return mSimpleName;
@@ -236,7 +237,7 @@ public abstract class Component extends ComponentLifecycle
     return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
   }
 
-  public boolean hasClickHandlerSet() {
+  public final boolean hasClickHandlerSet() {
     return mCommonProps != null
         && mCommonProps.getNullableNodeInfo() != null
         && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
@@ -294,7 +295,7 @@ public abstract class Component extends ComponentLifecycle
    * @param heightSpec Height {@link SizeSpec} constrain.
    * @param outputSize Size object that will be set with the measured dimensions.
    */
-  public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+  public final void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
     final LayoutState layoutState = c.getLayoutState();
     if (layoutState == null) {
       throw new IllegalStateException(
@@ -351,7 +352,7 @@ public abstract class Component extends ComponentLifecycle
    * measurement result for the duration of this LayoutState.
    */
   @Deprecated
-  public void measureMightNotCacheInternalNode(
+  public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
     final ComponentContext contextForLayout =
         c.getStateHandler() == null
@@ -386,7 +387,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
+  final InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
     if (layout != null && mUseStatelessComponent) {
       assertSameBaseContext(context, layout.getContext());
@@ -405,7 +406,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  CommonPropsCopyable getCommonPropsCopyable() {
+  final CommonPropsCopyable getCommonPropsCopyable() {
     return mCommonProps;
   }
 
@@ -415,7 +416,7 @@ public abstract class Component extends ComponentLifecycle
    */
   @Override
   @Nullable
-  EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
+  final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
     if (mUseStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
@@ -431,11 +432,11 @@ public abstract class Component extends ComponentLifecycle
     return mErrorEventHandler;
   }
 
-  protected @Nullable EventHandler<ErrorEvent> getErrorHandler() {
+  protected final @Nullable EventHandler<ErrorEvent> getErrorHandler() {
     return mErrorEventHandler;
   }
 
-  boolean isStateless() {
+  final boolean isStateless() {
     return mUseStatelessComponent;
   }
 
@@ -456,7 +457,7 @@ public abstract class Component extends ComponentLifecycle
   /** Set a key for this component that is unique within its tree. */
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
-  void setGlobalKey(String key) {
+  final void setGlobalKey(String key) {
     if (mUseStatelessComponent) {
       return;
     }
@@ -465,7 +466,7 @@ public abstract class Component extends ComponentLifecycle
 
   /** @return a handle that is unique to this component. */
   @Nullable
-  Handle getHandle() {
+  final Handle getHandle() {
     return mHandle;
   }
 
@@ -474,12 +475,12 @@ public abstract class Component extends ComponentLifecycle
    *
    * @param handle handle
    */
-  void setHandle(@Nullable Handle handle) {
+  final void setHandle(@Nullable Handle handle) {
     mHandle = handle;
   }
 
   /** @return a key that is local to the component's parent. */
-  String getKey() {
+  final String getKey() {
     if (mKey == null && !mHasManualKey) {
       mKey = Integer.toString(getTypeId());
     }
@@ -491,19 +492,19 @@ public abstract class Component extends ComponentLifecycle
    *
    * @param key key
    */
-  void setKey(String key) {
+  final void setKey(String key) {
     mHasManualKey = true;
     mKey = key;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  InternalNode getLayoutCreatedInWillRenderForTesting() {
+  final InternalNode getLayoutCreatedInWillRenderForTesting() {
     return mLayoutCreatedInWillRender;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   @Nullable
-  String getOwnerGlobalKey() {
+  final String getOwnerGlobalKey() {
     return mOwnerGlobalKey;
   }
 
@@ -535,12 +536,12 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** @return if has a handle set */
-  boolean hasHandle() {
+  final boolean hasHandle() {
     return mHandle != null;
   }
 
   /** @return if has a manually set key */
-  boolean hasManualKey() {
+  final boolean hasManualKey() {
     return mHasManualKey;
   }
 
@@ -608,7 +609,7 @@ public abstract class Component extends ComponentLifecycle
    * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
    * instead of going through {@link #render(ComponentContext)}.
    */
-  protected boolean canResolve() {
+  boolean canResolve() {
     return false;
   }
 
@@ -652,7 +653,7 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  StateContainer getStateContainer(
+  final StateContainer getStateContainer(
       final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
     if (mUseStatelessComponent) {
       if (layoutStateContext == null) {
@@ -673,14 +674,15 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  protected void setStateContainer(StateContainer stateContainer) {
+  protected final void setStateContainer(StateContainer stateContainer) {
     if (mUseStatelessComponent) {
       return;
     }
     mStateContainer = stateContainer;
   }
 
-  protected void setInterStagePropsContainer(InterStagePropsContainer interStagePropsContainer) {
+  protected final void setInterStagePropsContainer(
+      InterStagePropsContainer interStagePropsContainer) {
     if (mUseStatelessComponent) {
       return;
     }
@@ -692,11 +694,11 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Override
-  public String toString() {
+  public final String toString() {
     return getSimpleName();
   }
 
-  protected @Nullable InterStagePropsContainer getInterStagePropsContainer(
+  protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
     if (mUseStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
@@ -714,7 +716,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  InterStagePropsContainer getInterStagePropsContainer(
+  final InterStagePropsContainer getInterStagePropsContainer(
       LayoutStateContext layoutStateContext, String globalKey) {
     if (mUseStatelessComponent) {
       if (layoutStateContext.getScopedComponentInfo(globalKey) == null) {
@@ -732,7 +734,7 @@ public abstract class Component extends ComponentLifecycle
 
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected ComponentContext updateInternalChildState(
+  protected final ComponentContext updateInternalChildState(
       ComponentContext parentContext, @Nullable String existingGlobalKey) {
 
     String globalKey = ComponentUtils.getGlobalKey(this, existingGlobalKey);
@@ -767,7 +769,7 @@ public abstract class Component extends ComponentLifecycle
    * the component requires from its parent, setting a scoped component context and applies the
    * pending state updates.
    */
-  private void applyStateUpdates(
+  private final void applyStateUpdates(
       final ComponentContext parentContext,
       final ComponentContext scopedContext,
       final String globalKey) {
@@ -779,7 +781,7 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  private void generateErrorEventHandler(
+  private final void generateErrorEventHandler(
       final ComponentContext parentContext, final ComponentContext scopedContext) {
     if (hasOwnErrorHandler()) {
       mErrorEventHandler =
@@ -796,7 +798,7 @@ public abstract class Component extends ComponentLifecycle
    * @param component the child component
    * @return the number of children of {@param component} type
    */
-  private synchronized int getChildCountAndIncrement(Component component) {
+  private final synchronized int getChildCountAndIncrement(Component component) {
     if (mChildCounters == null) {
       mChildCounters = new SparseIntArray();
     }
@@ -835,7 +837,7 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  private synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
+  private final synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
     if (mManualKeysCounter == null) {
       mManualKeysCounter = new HashMap<>();
     }
@@ -877,14 +879,14 @@ public abstract class Component extends ComponentLifecycle
    *     needed
    * @see DynamicPropsManager
    */
-  SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+  final SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
     if (mCommonDynamicProps == null) {
       mCommonDynamicProps = new SparseArray<>();
     }
     return mCommonDynamicProps;
   }
 
-  CommonProps getOrCreateCommonProps() {
+  final CommonProps getOrCreateCommonProps() {
     if (mCommonProps == null) {
       mCommonProps = new CommonPropsHolder();
     }
@@ -892,7 +894,7 @@ public abstract class Component extends ComponentLifecycle
     return mCommonProps;
   }
 
-  private boolean hasCachedLayout(ComponentContext c) {
+  private final boolean hasCachedLayout(ComponentContext c) {
     if (c != null) {
       final LayoutState layoutState = c.getLayoutState();
 
@@ -1021,7 +1023,7 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  boolean canUsePreviousLayout(ComponentContext parentContext, String globalKey) {
+  final boolean canUsePreviousLayout(ComponentContext parentContext, String globalKey) {
     return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
         && !onShouldCreateLayoutWithNewSizeSpec(
             getScopedContext(parentContext.getLayoutStateContext(), globalKey),
@@ -1089,11 +1091,11 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  Context getBuilderContext() {
+  final Context getBuilderContext() {
     return mBuilderContext;
   }
 
-  void setBuilderContext(Context context) {
+  final void setBuilderContext(Context context) {
     mBuilderContext = context;
   }
 

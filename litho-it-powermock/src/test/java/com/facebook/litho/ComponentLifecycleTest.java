@@ -396,6 +396,7 @@ public class ComponentLifecycleTest {
       mNode = node;
       mIsLayoutSpecWithSizeSpecCheck = isLayoutSpecWithSizeSpecCheck;
       mHasState = hasState;
+      setKey(KEY);
     }
 
     @Override
@@ -432,11 +433,6 @@ public class ComponentLifecycleTest {
     @Override
     protected boolean isLayoutSpecWithSizeSpecCheck() {
       return mIsLayoutSpecWithSizeSpecCheck;
-    }
-
-    @Override
-    public String getKey() {
-      return KEY;
     }
   }
 

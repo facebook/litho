@@ -2479,7 +2479,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(componentSpy.getLayoutCreatedInWillRenderForTesting()).isNull();
 
-    verify(componentSpy, times(1)).updateInternalChildState((ComponentContext) any(), any());
+    verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
   }
 
   @Test
@@ -2552,7 +2552,7 @@ public class LayoutStateCalculateTest {
 
     calculateLayoutState(
         c.getAndroidContext(), root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
-    verify(componentSpy, times(1)).updateInternalChildState((ComponentContext) any(), any());
+    verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
   }
 
   @Test

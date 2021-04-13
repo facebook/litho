@@ -16,30 +16,29 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.assertj.core.api.Condition;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-@RunWith(JUnit4.class)
+@RunWith(LithoTestRunner.class)
 public class BaseMatcherTest {
   @Mock InspectableComponent mInspectableComponent;
-  @Mock Component mComponent;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    when(mInspectableComponent.getComponent()).thenReturn(mComponent);
-    when(mComponent.getCommonProps()).thenReturn(mock(CommonProps.class));
+    when(mInspectableComponent.getComponent())
+        .thenReturn(Row.create(new ComponentContext(getApplicationContext())).wrapInView().build());
   }
 
   @Test
