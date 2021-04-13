@@ -771,7 +771,7 @@ public class DefaultInternalNode
   }
 
   @Override
-  public void setParent(LithoLayoutResult parent) {
+  public void setParent(@Nullable LithoLayoutResult parent) {
     mParent = parent;
   }
 
