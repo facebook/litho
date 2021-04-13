@@ -29,7 +29,6 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.List;
@@ -307,26 +306,6 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
-  @Override
-  public float getMaxHeight() {
-    return 0;
-  }
-
-  @Override
-  public float getMaxWidth() {
-    return 0;
-  }
-
-  @Override
-  public float getMinHeight() {
-    return 0;
-  }
-
-  @Override
-  public float getMinWidth() {
-    return 0;
-  }
-
   @Nullable
   @Override
   public NodeInfo getNodeInfo() {
@@ -367,21 +346,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public int getStateListAnimatorRes() {
-    return 0;
-  }
-
-  @Override
-  public @Nullable YogaDirection getStyleDirection() {
-    return null;
-  }
-
-  @Override
-  public float getStyleHeight() {
-    return 0;
-  }
-
-  @Override
-  public float getStyleWidth() {
     return 0;
   }
 
@@ -539,12 +503,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {}
-
-  @Override
-  public void setStyleHeightFromSpec(int heightSpec) {}
-
-  @Override
-  public void setStyleWidthFromSpec(int widthSpec) {}
 
   @Override
   public @Nullable InternalNode stateListAnimator(@Nullable StateListAnimator stateListAnimator) {

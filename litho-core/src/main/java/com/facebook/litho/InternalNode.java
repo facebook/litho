@@ -121,10 +121,6 @@ public interface InternalNode extends Inputs {
 
   void setMeasureFunction(YogaMeasureFunction measureFunction);
 
-  void setStyleHeightFromSpec(int heightSpec);
-
-  void setStyleWidthFromSpec(int widthSpec);
-
   InternalNode stateListAnimator(@Nullable StateListAnimator stateListAnimator);
 
   InternalNode stateListAnimatorRes(@DrawableRes int resId);
@@ -324,23 +320,9 @@ public interface InternalNode extends Inputs {
 
   /* Layout and measurement related APIs */
 
-  float getMaxHeight();
-
-  float getMaxWidth();
-
-  float getMinHeight();
-
-  float getMinWidth();
-
-  float getStyleHeight();
-
-  float getStyleWidth();
-
   void layoutDirection(YogaDirection direction);
 
   boolean isLayoutDirectionInherit();
-
-  YogaDirection getStyleDirection();
 
   boolean areCachedMeasuresValid();
 

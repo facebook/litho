@@ -746,26 +746,6 @@ public class DefaultInternalNode
   }
 
   @Override
-  public float getMaxHeight() {
-    return mYogaNode.getMaxHeight().value;
-  }
-
-  @Override
-  public float getMaxWidth() {
-    return mYogaNode.getMaxWidth().value;
-  }
-
-  @Override
-  public float getMinHeight() {
-    return mYogaNode.getMinHeight().value;
-  }
-
-  @Override
-  public float getMinWidth() {
-    return mYogaNode.getMinWidth().value;
-  }
-
-  @Override
   public @Nullable NodeInfo getNodeInfo() {
     return mNodeInfo;
   }
@@ -818,21 +798,6 @@ public class DefaultInternalNode
   @Override
   public @DrawableRes int getStateListAnimatorRes() {
     return mStateListAnimatorRes;
-  }
-
-  @Override
-  public YogaDirection getStyleDirection() {
-    return mYogaNode.getStyleDirection();
-  }
-
-  @Override
-  public float getStyleHeight() {
-    return mYogaNode.getHeight().value;
-  }
-
-  @Override
-  public float getStyleWidth() {
-    return mYogaNode.getWidth().value;
   }
 
   /**
@@ -1217,36 +1182,6 @@ public class DefaultInternalNode
   @Override
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mYogaNode.setMeasureFunction(measureFunction);
-  }
-
-  @Override
-  public void setStyleHeightFromSpec(int heightSpec) {
-    switch (SizeSpec.getMode(heightSpec)) {
-      case SizeSpec.UNSPECIFIED:
-        mYogaNode.setHeight(YogaConstants.UNDEFINED);
-        break;
-      case SizeSpec.AT_MOST:
-        mYogaNode.setMaxHeight(SizeSpec.getSize(heightSpec));
-        break;
-      case SizeSpec.EXACTLY:
-        mYogaNode.setHeight(SizeSpec.getSize(heightSpec));
-        break;
-    }
-  }
-
-  @Override
-  public void setStyleWidthFromSpec(int widthSpec) {
-    switch (SizeSpec.getMode(widthSpec)) {
-      case SizeSpec.UNSPECIFIED:
-        mYogaNode.setWidth(YogaConstants.UNDEFINED);
-        break;
-      case SizeSpec.AT_MOST:
-        mYogaNode.setMaxWidth(SizeSpec.getSize(widthSpec));
-        break;
-      case SizeSpec.EXACTLY:
-        mYogaNode.setWidth(SizeSpec.getSize(widthSpec));
-        break;
-    }
   }
 
   @Override
