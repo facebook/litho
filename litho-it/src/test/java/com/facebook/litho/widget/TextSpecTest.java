@@ -30,8 +30,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
-import android.text.style.ClickableSpan;
 import android.text.TextUtils.TruncateAt;
+import android.text.style.ClickableSpan;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -631,15 +631,15 @@ public class TextSpecTest {
       TextDirectionHeuristicCompat textDirection) {
     return (TextDrawable)
         ComponentTestHelper.mountComponent(
-            mContext,
-            Text.create(mContext)
-                .ellipsize(TruncateAt.END)
-                .textDirection(textDirection)
-                .text(text)
-                .alignment(alignment)
-                .maxLines(maxLines)
-                .customEllipsisText(customEllipsisText)
-                .build())
+                mContext,
+                Text.create(mContext)
+                    .ellipsize(TruncateAt.END)
+                    .textDirection(textDirection)
+                    .text(text)
+                    .alignment(alignment)
+                    .maxLines(maxLines)
+                    .customEllipsisText(customEllipsisText)
+                    .build())
             .getDrawables()
             .get(0);
   }
