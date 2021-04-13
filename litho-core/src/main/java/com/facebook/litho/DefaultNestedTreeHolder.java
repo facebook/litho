@@ -19,12 +19,12 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
 import android.graphics.PathEffect;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.yoga.YogaEdge;
-import javax.annotation.Nullable;
 
 /**
  * This class is a placeholder for the unresolved layout and result of a {@link Component}s which

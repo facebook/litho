@@ -47,7 +47,6 @@ public class NodeConfig {
 
   private static final YogaConfig sYogaConfig = LithoYogaFactory.createYogaConfig();
 
-  @Nullable
   static YogaNode createYogaNode() {
     final InternalYogaNodeFactory factory = sYogaNodeFactory;
     return factory != null
