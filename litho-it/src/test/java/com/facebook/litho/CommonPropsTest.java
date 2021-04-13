@@ -55,14 +55,14 @@ import org.mockito.Mockito;
 @RunWith(LithoTestRunner.class)
 public class CommonPropsTest {
 
-  private InternalNode mNode;
+  private DefaultInternalNode mNode;
   private NodeInfo mNodeInfo;
   private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
-    mNode = mock(InternalNode.class);
+    mNode = mock(DefaultInternalNode.class);
     mNodeInfo = mock(NodeInfo.class);
     when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
     mCommonProps = new CommonPropsHolder();
@@ -391,7 +391,7 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawable() {
-    final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
+    final DefaultInternalNode node = spy(new DefaultInternalNode(mComponentContext));
 
     mCommonProps.background(
         ContextCompat.getDrawable(mComponentContext.getAndroidContext(), background_with_padding));
@@ -406,7 +406,7 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawableIsOverwritten() {
-    final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
+    final DefaultInternalNode node = spy(new DefaultInternalNode(mComponentContext));
 
     mCommonProps.background(
         ContextCompat.getDrawable(mComponentContext.getAndroidContext(), background_with_padding));

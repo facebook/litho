@@ -18,7 +18,9 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -460,7 +462,7 @@ public class LayoutStateCreateTreeTest {
 
     component.setScopedContext(mComponentContext);
 
-    InternalNode node = Layout.create(mComponentContext, component);
+    DefaultInternalNode node = (DefaultInternalNode) Layout.create(mComponentContext, component);
     NodeInfo nodeInfo = node.getOrCreateNodeInfo();
 
     verify(node).layoutDirection(YogaDirection.INHERIT);
@@ -589,7 +591,7 @@ public class LayoutStateCreateTreeTest {
 
     final LithoLayoutResult root =
         Layout.createAndMeasureComponent(mComponentContext, component, 800, 600).mResult;
-    verify(root.getInternalNode()).flexGrow(anyFloat());
+    verify((DefaultInternalNode) root.getInternalNode()).flexGrow(anyFloat());
   }
 
   private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
@@ -601,7 +603,7 @@ public class LayoutStateCreateTreeTest {
 
     protected InternalNode resolve(ComponentContext c) {
       LithoLayoutResult result = mock(LithoLayoutResult.class);
-      InternalNode node = mock(InternalNode.class);
+      DefaultInternalNode node = mock(DefaultInternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
       when(node.calculateLayout(anyFloat(), anyFloat())).thenReturn(result);

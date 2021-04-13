@@ -41,7 +41,7 @@ import java.util.Map;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode extends Inputs, LayoutProps {
+public interface InternalNode extends Inputs {
 
   void addChildAt(InternalNode child, int index);
 

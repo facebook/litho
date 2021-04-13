@@ -165,10 +165,11 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
         float value = mNestedTreePadding.getRaw(i);
         if (!YogaConstants.isUndefined(value)) {
           final YogaEdge edge = YogaEdge.fromInt(i);
+          // TODO: Remove hard cast when InternalNode split progresses.
           if (isPaddingPercent(edge)) {
-            target.paddingPercent(edge, value);
+            ((LayoutProps) target).paddingPercent(edge, value);
           } else {
-            target.paddingPx(edge, (int) value);
+            ((LayoutProps) target).paddingPx(edge, (int) value);
           }
         }
       }

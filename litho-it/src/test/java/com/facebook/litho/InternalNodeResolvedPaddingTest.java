@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.utils.MeasureSpecUtils.exactly;
 import static com.facebook.yoga.YogaDirection.LTR;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.END;
@@ -38,27 +39,29 @@ public class InternalNodeResolvedPaddingTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
-  private InternalNode mInternalNode;
+  private Component.Builder builder;
 
   @Before
   public void setup() {
     final ComponentContext context = mLithoViewRule.getContext();
     context.setLayoutStateContextForTesting();
-    mInternalNode = Column.create(context).build().resolve(context);
+    builder = Column.create(context);
   }
 
   private InternalNodeResolvedPaddingTest padding(YogaEdge edge, int padding) {
-    mInternalNode.paddingPx(edge, padding);
+    builder.paddingPx(edge, padding);
     return this;
   }
 
   private InternalNodeResolvedPaddingTest direction(YogaDirection direction) {
-    mInternalNode.layoutDirection(direction);
+    builder.layoutDirection(direction);
     return this;
   }
 
   private LithoLayoutResult calculateLayout() {
-    return mInternalNode.calculateLayout(100, 100);
+    return Layout.createAndMeasureComponent(
+            mLithoViewRule.getContext(), builder.build(), exactly(100), exactly(100))
+        .mResult;
   }
 
   @Test

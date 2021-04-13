@@ -80,7 +80,7 @@ import javax.annotation.Nullable;
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
 public class DefaultInternalNode
-    implements InternalNode, LayoutProps, LithoLayoutResult, Cloneable {
+    implements InternalNode, LithoLayoutResult, LayoutProps, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";

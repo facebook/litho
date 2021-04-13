@@ -693,8 +693,9 @@ class CommonPropsHolder implements CommonProps {
       node.wrapInView();
     }
 
-    if (mLayoutProps != null) {
-      mLayoutProps.copyInto(node);
+    // InternalNode which implement LayoutProps should greedily transfer layout props
+    if (mLayoutProps != null && node instanceof LayoutProps) {
+      mLayoutProps.copyInto((LayoutProps) node);
     }
 
     if (mOtherProps != null) {

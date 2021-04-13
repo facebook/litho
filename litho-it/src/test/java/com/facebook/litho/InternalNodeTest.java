@@ -121,7 +121,7 @@ public class InternalNodeTest {
 
   @Test
   public void testAlignSelfFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.alignSelf(STRETCH);
     assertThat(isFlagSet(node, "PFLAG_ALIGN_SELF_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_ALIGN_SELF_IS_SET");
@@ -130,7 +130,7 @@ public class InternalNodeTest {
 
   @Test
   public void testPositionTypeFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.positionType(ABSOLUTE);
     assertThat(isFlagSet(node, "PFLAG_POSITION_TYPE_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_POSITION_TYPE_IS_SET");
@@ -139,7 +139,7 @@ public class InternalNodeTest {
 
   @Test
   public void testFlexFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.flex(1.5f);
     assertThat(isFlagSet(node, "PFLAG_FLEX_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FLEX_IS_SET");
@@ -148,7 +148,7 @@ public class InternalNodeTest {
 
   @Test
   public void testFlexGrowFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.flexGrow(1.5f);
     assertThat(isFlagSet(node, "PFLAG_FLEX_GROW_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FLEX_GROW_IS_SET");
@@ -157,7 +157,7 @@ public class InternalNodeTest {
 
   @Test
   public void testFlexShrinkFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.flexShrink(1.5f);
     assertThat(isFlagSet(node, "PFLAG_FLEX_SHRINK_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FLEX_SHRINK_IS_SET");
@@ -166,7 +166,7 @@ public class InternalNodeTest {
 
   @Test
   public void testFlexBasisFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.flexBasisPx(1);
     assertThat(isFlagSet(node, "PFLAG_FLEX_BASIS_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FLEX_BASIS_IS_SET");
@@ -175,7 +175,7 @@ public class InternalNodeTest {
 
   @Test
   public void testImportantForAccessibilityFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     assertThat(isFlagSet(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
@@ -184,7 +184,7 @@ public class InternalNodeTest {
 
   @Test
   public void testDuplicateParentStateFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.duplicateParentState(false);
     assertThat(isFlagSet(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
@@ -193,7 +193,7 @@ public class InternalNodeTest {
 
   @Test
   public void testMarginFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.marginPx(ALL, 3);
     assertThat(isFlagSet(node, "PFLAG_MARGIN_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_MARGIN_IS_SET");
@@ -202,7 +202,7 @@ public class InternalNodeTest {
 
   @Test
   public void testPaddingFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.paddingPx(ALL, 3);
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_PADDING_IS_SET");
@@ -211,7 +211,7 @@ public class InternalNodeTest {
 
   @Test
   public void testPositionFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.positionPx(ALL, 3);
     assertThat(isFlagSet(node, "PFLAG_POSITION_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_POSITION_IS_SET");
@@ -220,7 +220,7 @@ public class InternalNodeTest {
 
   @Test
   public void testWidthFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.widthPx(4);
     assertThat(isFlagSet(node, "PFLAG_WIDTH_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_WIDTH_IS_SET");
@@ -229,7 +229,7 @@ public class InternalNodeTest {
 
   @Test
   public void testMinWidthFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.minWidthPx(4);
     assertThat(isFlagSet(node, "PFLAG_MIN_WIDTH_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_MIN_WIDTH_IS_SET");
@@ -238,7 +238,7 @@ public class InternalNodeTest {
 
   @Test
   public void testMaxWidthFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.maxWidthPx(4);
     assertThat(isFlagSet(node, "PFLAG_MAX_WIDTH_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_MAX_WIDTH_IS_SET");
@@ -247,7 +247,7 @@ public class InternalNodeTest {
 
   @Test
   public void testHeightFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.heightPx(4);
     assertThat(isFlagSet(node, "PFLAG_HEIGHT_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_HEIGHT_IS_SET");
@@ -256,7 +256,7 @@ public class InternalNodeTest {
 
   @Test
   public void testMinHeightFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.minHeightPx(4);
     assertThat(isFlagSet(node, "PFLAG_MIN_HEIGHT_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_MIN_HEIGHT_IS_SET");
@@ -265,7 +265,7 @@ public class InternalNodeTest {
 
   @Test
   public void testMaxHeightFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.maxHeightPx(4);
     assertThat(isFlagSet(node, "PFLAG_MAX_HEIGHT_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_MAX_HEIGHT_IS_SET");
@@ -274,7 +274,7 @@ public class InternalNodeTest {
 
   @Test
   public void testBackgroundFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.backgroundColor(0xFFFF0000);
     assertThat(isFlagSet(node, "PFLAG_BACKGROUND_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_BACKGROUND_IS_SET");
@@ -283,7 +283,7 @@ public class InternalNodeTest {
 
   @Test
   public void testForegroundFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.foregroundColor(0xFFFF0000);
     assertThat(isFlagSet(node, "PFLAG_FOREGROUND_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_FOREGROUND_IS_SET");
@@ -292,7 +292,7 @@ public class InternalNodeTest {
 
   @Test
   public void testAspectRatioFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.aspectRatio(1);
     assertThat(isFlagSet(node, "PFLAG_ASPECT_RATIO_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_ASPECT_RATIO_IS_SET");
@@ -301,7 +301,7 @@ public class InternalNodeTest {
 
   @Test
   public void testTransitionKeyFlag() {
-    final InternalNode node = acquireInternalNode();
+    final DefaultInternalNode node = (DefaultInternalNode) acquireInternalNode();
     node.transitionKey("key", "");
     assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
@@ -462,8 +462,8 @@ public class InternalNodeTest {
         .thenReturn(perfEvent);
 
     LithoLayoutResult node = acquireInternalNodeWithLogger(componentsLogger);
-    node.getInternalNode().alignSelf(YogaAlign.AUTO);
-    node.getInternalNode().flex(1f);
+    ((DefaultInternalNode) node.getInternalNode()).alignSelf(YogaAlign.AUTO);
+    ((DefaultInternalNode) node.getInternalNode()).flex(1f);
 
     node.getInternalNode().assertContextSpecificStyleNotSet();
     assertThat(mComponentsReporter.getLoggedMessages())
