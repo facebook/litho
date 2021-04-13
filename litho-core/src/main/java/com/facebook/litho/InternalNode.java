@@ -326,6 +326,8 @@ public interface InternalNode extends Inputs {
 
   boolean areCachedMeasuresValid();
 
+  void setNestedPadding(@Nullable Edges padding, @Nullable boolean[] isPercentage);
+
   /* Testing a nd debugging related APIs */
 
   LayoutProps getDebugLayoutEditor();

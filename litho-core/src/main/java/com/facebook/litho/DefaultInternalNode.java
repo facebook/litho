@@ -150,7 +150,6 @@ public class DefaultInternalNode
   protected @Nullable Drawable mForeground;
   protected @Nullable PathEffect mBorderPathEffect;
   protected @Nullable StateListAnimator mStateListAnimator;
-  private @Nullable boolean[] mIsPaddingPercent;
   private @Nullable Edges mTouchExpansion;
   protected @Nullable String mTransitionKey;
   protected @Nullable String mTransitionOwnerKey;
@@ -291,6 +290,21 @@ public class DefaultInternalNode
   @Override
   public boolean areCachedMeasuresValid() {
     return mCachedMeasuresValid;
+  }
+
+  @Override
+  public void setNestedPadding(@Nullable Edges padding, @Nullable boolean[] isPercentage) {
+    for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+      float value = padding.getRaw(i);
+      if (!YogaConstants.isUndefined(value)) {
+        final YogaEdge edge = YogaEdge.fromInt(i);
+        if (isPercentage != null && isPercentage[edge.intValue()]) {
+          paddingPercent(edge, value);
+        } else {
+          paddingPx(edge, (int) value);
+        }
+      }
+    }
   }
 
   @Override
@@ -1575,10 +1589,6 @@ public class DefaultInternalNode
     return node;
   }
 
-  protected boolean isPaddingPercent(YogaEdge edge) {
-    return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
-  }
-
   private void applyOverridesRecursive(@Nullable InternalNode node) {
     if (ComponentsConfiguration.isDebugModeEnabled && node != null) {
       DebugComponent.applyOverrides(mComponentContext, node);
@@ -1619,15 +1629,6 @@ public class DefaultInternalNode
     }
 
     return result;
-  }
-
-  protected void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
-    if (mIsPaddingPercent == null && isPaddingPercent) {
-      mIsPaddingPercent = new boolean[YogaEdge.ALL.intValue() + 1];
-    }
-    if (mIsPaddingPercent != null) {
-      mIsPaddingPercent[edge.intValue()] = isPaddingPercent;
-    }
   }
 
   private void setPaddingFromBackground(@Nullable Drawable drawable) {

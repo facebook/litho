@@ -23,7 +23,6 @@ import androidx.annotation.Px;
 import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
 import javax.annotation.Nullable;
 
@@ -41,6 +40,7 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
 
   @Nullable int[] mNestedBorderEdges;
   @Nullable Edges mNestedTreePadding;
+  @Nullable boolean[] mNestedIsPaddingPercent;
 
   /* OUTPUTS */
   @Nullable LithoLayoutResult mNestedTree;
@@ -163,18 +163,7 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
       target.testKey(mTestKey);
     }
     if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-      for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
-        float value = mNestedTreePadding.getRaw(i);
-        if (!YogaConstants.isUndefined(value)) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          // TODO: Remove hard cast when InternalNode split progresses.
-          if (isPaddingPercent(edge)) {
-            ((LayoutProps) target).paddingPercent(edge, value);
-          } else {
-            ((LayoutProps) target).paddingPx(edge, (int) value);
-          }
-        }
-      }
+      target.setNestedPadding(mNestedTreePadding, mNestedIsPaddingPercent);
     }
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       target.border(mNestedBorderEdges, mBorderColors, mBorderRadius, mBorderPathEffect);
@@ -199,6 +188,15 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
     }
     if (mLayerType != LayerType.LAYER_TYPE_NOT_SET) {
       target.layerType(mLayerType, mLayerPaint);
+    }
+  }
+
+  protected void setIsPaddingPercent(YogaEdge edge, boolean isPaddingPercent) {
+    if (mNestedIsPaddingPercent == null && isPaddingPercent) {
+      mNestedIsPaddingPercent = new boolean[YogaEdge.ALL.intValue() + 1];
+    }
+    if (mNestedIsPaddingPercent != null) {
+      mNestedIsPaddingPercent[edge.intValue()] = isPaddingPercent;
     }
   }
 }

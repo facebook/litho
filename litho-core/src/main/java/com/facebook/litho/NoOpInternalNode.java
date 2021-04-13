@@ -84,6 +84,9 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
+  public void setNestedPadding(@Nullable Edges padding, @Nullable boolean[] isPercentage) {}
+
+  @Override
   public LayoutProps getDebugLayoutEditor() {
     return null;
   }
