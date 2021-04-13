@@ -90,8 +90,6 @@ public interface LithoLayoutResult extends ComponentLayout {
    */
   void setLastMeasuredWidth(float lastMeasuredWidth);
 
-  void resetResolvedLayoutProperties();
-
   /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
   interface NestedTreeHolderResult extends LithoLayoutResult {
 

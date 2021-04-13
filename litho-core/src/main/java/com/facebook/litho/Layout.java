@@ -544,7 +544,6 @@ class Layout {
       return;
     }
 
-    layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
     measure(
         layout.getInternalNode().getContext(),
         layout.getInternalNode(),

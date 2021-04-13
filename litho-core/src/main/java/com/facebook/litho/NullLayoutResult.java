@@ -101,9 +101,6 @@ public final class NullLayoutResult implements LithoLayoutResult {
   public void setLastMeasuredWidth(float lastMeasuredWidth) {}
 
   @Override
-  public void resetResolvedLayoutProperties() {}
-
-  @Override
   public LithoLayoutResult getChildAt(int i) {
     return null;
   }

@@ -177,12 +177,6 @@ public class DefaultInternalNode
 
   protected float mVisibleHeightRatio;
   protected float mVisibleWidthRatio;
-  private float mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
-  private float mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
-  private float mResolvedX = YogaConstants.UNDEFINED;
-  private float mResolvedY = YogaConstants.UNDEFINED;
-  private float mResolvedWidth = YogaConstants.UNDEFINED;
-  private float mResolvedHeight = YogaConstants.UNDEFINED;
 
   private int mLastWidthSpec = DiffNode.UNSPECIFIED;
   private int mLastHeightSpec = DiffNode.UNSPECIFIED;
@@ -831,11 +825,7 @@ public class DefaultInternalNode
       return 0;
     }
 
-    if (YogaConstants.isUndefined(mResolvedTouchExpansionLeft)) {
-      mResolvedTouchExpansionLeft = resolveHorizontalEdges(mTouchExpansion, YogaEdge.LEFT);
-    }
-
-    return FastMath.round(mResolvedTouchExpansionLeft);
+    return FastMath.round(resolveHorizontalEdges(mTouchExpansion, YogaEdge.LEFT));
   }
 
   @Override
@@ -844,11 +834,7 @@ public class DefaultInternalNode
       return 0;
     }
 
-    if (YogaConstants.isUndefined(mResolvedTouchExpansionRight)) {
-      mResolvedTouchExpansionRight = resolveHorizontalEdges(mTouchExpansion, YogaEdge.RIGHT);
-    }
-
-    return FastMath.round(mResolvedTouchExpansionRight);
+    return FastMath.round(resolveHorizontalEdges(mTouchExpansion, YogaEdge.RIGHT));
   }
 
   @Override
@@ -1161,17 +1147,6 @@ public class DefaultInternalNode
     return (InternalNode) mYogaNode.removeChildAt(index).getData();
   }
 
-  /** This method marks all resolved layout property values to undefined. */
-  @Override
-  public void resetResolvedLayoutProperties() {
-    mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
-    mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
-    mResolvedX = YogaConstants.UNDEFINED;
-    mResolvedY = YogaConstants.UNDEFINED;
-    mResolvedWidth = YogaConstants.UNDEFINED;
-    mResolvedHeight = YogaConstants.UNDEFINED;
-  }
-
   @Override
   public void setBorderWidth(YogaEdge edge, float borderWidth) {
     mYogaNode.setBorder(edge, borderWidth);
@@ -1329,41 +1304,25 @@ public class DefaultInternalNode
   @Px
   @Override
   public int getX() {
-    if (YogaConstants.isUndefined(mResolvedX)) {
-      mResolvedX = mYogaNode.getLayoutX();
-    }
-
-    return (int) mResolvedX;
+    return (int) mYogaNode.getLayoutX();
   }
 
   @Px
   @Override
   public int getY() {
-    if (YogaConstants.isUndefined(mResolvedY)) {
-      mResolvedY = mYogaNode.getLayoutY();
-    }
-
-    return (int) mResolvedY;
+    return (int) mYogaNode.getLayoutY();
   }
 
   @Px
   @Override
   public int getWidth() {
-    if (YogaConstants.isUndefined(mResolvedWidth)) {
-      mResolvedWidth = mYogaNode.getLayoutWidth();
-    }
-
-    return (int) mResolvedWidth;
+    return (int) mYogaNode.getLayoutWidth();
   }
 
   @Px
   @Override
   public int getHeight() {
-    if (YogaConstants.isUndefined(mResolvedHeight)) {
-      mResolvedHeight = mYogaNode.getLayoutHeight();
-    }
-
-    return (int) mResolvedHeight;
+    return (int) mYogaNode.getLayoutHeight();
   }
 
   @Px
@@ -1560,8 +1519,6 @@ public class DefaultInternalNode
       copy.child(getChildAt(i).deepClone());
     }
 
-    copy.resetResolvedLayoutProperties();
-
     return copy;
   }
 
@@ -1670,9 +1627,6 @@ public class DefaultInternalNode
 
     mDiffNode = null;
     mDebugComponents = null;
-
-    // 2. reset resolved layout properties.
-    resetResolvedLayoutProperties();
   }
 
   void updateWith(
