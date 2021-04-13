@@ -208,4 +208,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalen
   NodeInfo getNullableNodeInfo();
 
   NodeInfo getOrCreateNodeInfo();
+
+  @Nullable
+  CopyableLayoutProps getLayoutProps();
 }

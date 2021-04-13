@@ -668,12 +668,16 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public @Nullable CopyableLayoutProps getLayoutProps() {
+    return mLayoutProps;
+  }
+
+  @Override
   public void copyInto(ComponentContext c, InternalNode node) {
     if (node == NULL_LAYOUT) {
       return;
     }
 
-    // TODO: (T55170222) Use InternalNodeUtils#applyStyles(InternalNode, int, int)} instead.
     if (c != null) {
       c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
     }
