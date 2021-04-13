@@ -588,8 +588,8 @@ public class DefaultInternalNode
 
   @Override
   public int getChildIndex(InternalNode child) {
-    for (int i = 0, count = mYogaNode.getChildCount(); i < count; i++) {
-      if (mYogaNode.getChildAt(i).getData() == child) {
+    for (int i = 0, count = getChildCount(); i < count; i++) {
+      if (getChildAt(i) == child) {
         return i;
       }
     }
