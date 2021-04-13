@@ -42,6 +42,7 @@ import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Comparable;
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.annotations.RequiredProp;
@@ -67,6 +68,7 @@ import java.util.List;
  * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
 @TargetApi(17)
+@Generated
 public final class TestLayout<S extends View> extends Component implements TestTag {
   private TestLayoutRenderData mPreviousRenderData;
 
@@ -532,6 +534,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @VisibleForTesting(otherwise = 2)
+  @Generated
   static class TestLayoutStateContainer<S extends View> extends StateContainer {
     @State
     @Comparable(type = 3)
@@ -567,6 +570,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
+  @Generated
   private static class TestLayoutRenderData<S extends View>
       implements ComponentLifecycle.RenderData {
     @State int state3;
@@ -580,6 +584,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
+  @Generated
   public static final class Builder<S extends View> extends Component.Builder<Builder<S>> {
     TestLayout mTestLayout;
 
@@ -874,6 +879,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
+  @Generated
   private static class CachedInputs {
     private final String globalKey;
 

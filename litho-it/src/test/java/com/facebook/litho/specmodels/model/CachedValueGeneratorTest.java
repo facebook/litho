@@ -156,7 +156,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
-            "private static class ExpensiveValueInputs {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class ExpensiveValueInputs {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  ExpensiveValueInputs(String globalKey) {\n"
@@ -234,7 +235,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
-            "private static class ExpensiveValueWithContextInputs {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class ExpensiveValueWithContextInputs {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  ExpensiveValueWithContextInputs(String globalKey) {\n"
@@ -313,7 +315,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
-            "private static class ExpensiveValueWithGenericInputs<E extends java.lang.CharSequence> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class ExpensiveValueWithGenericInputs<E extends java.lang.CharSequence> {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final E genericArg;\n"
@@ -397,7 +400,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
-            "private static class ExpensiveValueWithMoreGenericsInputs<E extends java.lang.CharSequence> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class ExpensiveValueWithMoreGenericsInputs<E extends java.lang.CharSequence> {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final E genericArg;\n"
@@ -488,7 +492,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
-            "private static class ExpensiveValueWithMoreGenericsAndContextInputs<E extends java.lang.CharSequence> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class ExpensiveValueWithMoreGenericsAndContextInputs<E extends java.lang.CharSequence> {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final E genericArg;\n"
@@ -579,7 +584,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
-            "private static class MoreExpensiveValueInputs {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class MoreExpensiveValueInputs {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final boolean arg0;\n"
@@ -669,7 +675,8 @@ public class CachedValueGeneratorTest {
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
-            "private static class MoreExpensiveValueWithContextInputs {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class MoreExpensiveValueWithContextInputs {\n"
                 + "  private final String globalKey;\n"
                 + "\n"
                 + "  private final boolean arg0;\n"

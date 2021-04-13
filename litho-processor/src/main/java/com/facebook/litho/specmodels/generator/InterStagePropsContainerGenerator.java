@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
@@ -30,6 +31,7 @@ public class InterStagePropsContainerGenerator {
     final TypeSpec.Builder interStagePropsContainerBuilder =
         TypeSpec.classBuilder(getInterStagePropsContainerClassName(specModel))
             .addSuperinterface(ClassNames.INTER_STAGE_PROPS_CONTAINER)
+            .addAnnotation(Generated.class)
             .addModifiers(Modifier.STATIC);
 
     final ImmutableList<InterStageInputParamModel> interStageInputs =

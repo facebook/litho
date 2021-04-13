@@ -88,6 +88,7 @@ class BuilderGeneratorKtTest {
     assertThat(dataHolder.typeSpecs.get(0).toString())
         .isEqualTo(
             """
+                    @com.facebook.litho.annotations.Generated
                     public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
                       WildcardOutPropTest mWildcardOutPropTest;
 
@@ -151,6 +152,7 @@ class BuilderGeneratorKtTest {
     assertThat(dataHolder.typeSpecs.get(0).toString())
         .isEqualTo(
             """
+                    @com.facebook.litho.annotations.Generated
                     public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {
                       VarArgsWildcardPropTest mVarArgsWildcardPropTest;
 

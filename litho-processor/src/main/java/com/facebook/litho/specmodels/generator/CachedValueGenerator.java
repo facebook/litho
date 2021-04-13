@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -194,6 +195,7 @@ public class CachedValueGenerator {
       List<CachedValueInput> inputParams, String cachedValueName, EnumSet<RunMode> runMode) {
     TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getInputsClassName(cachedValueName))
+            .addAnnotation(Generated.class)
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
 
     MethodSpec.Builder constructor = MethodSpec.constructorBuilder();

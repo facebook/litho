@@ -23,6 +23,7 @@ import static com.facebook.litho.specmodels.generator.StateGenerator.hasUpdateSt
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Comparable;
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.RunMode;
@@ -61,6 +62,7 @@ public class StateContainerGenerator {
                 AnnotationSpec.builder(VisibleForTesting.class)
                     .addMember("otherwise", "$L", VisibleForTesting.PRIVATE)
                     .build())
+            .addAnnotation(Generated.class)
             .addModifiers(Modifier.STATIC)
             .addTypeVariables(specModel.getTypeVariables());
 

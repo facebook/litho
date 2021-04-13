@@ -25,6 +25,7 @@ import static com.facebook.litho.specmodels.generator.StateContainerGenerator.ge
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Comparable;
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -152,7 +153,9 @@ public class ComponentBodyGenerator {
   static TypeSpec generatePreviousRenderDataContainerImpl(SpecModel specModel) {
     final String className = RenderDataGenerator.getRenderDataImplClassName(specModel);
     final TypeSpec.Builder renderInfoClassBuilder =
-        TypeSpec.classBuilder(className).addSuperinterface(ClassNames.RENDER_DATA);
+        TypeSpec.classBuilder(className)
+            .addSuperinterface(ClassNames.RENDER_DATA)
+            .addAnnotation(Generated.class);
 
     if (!specModel.hasInjectedDependencies()) {
       renderInfoClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);

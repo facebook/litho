@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
@@ -49,7 +50,8 @@ public class ClassAnnotationsGeneratorTest {
     final TypeSpecDataHolder dataHolder = ClassAnnotationsGenerator.generate(specModel);
 
     assertThat(dataHolder.getAnnotationSpecs())
-        .hasSize(2)
+        .hasSize(3)
+        .contains(AnnotationSpec.builder(Generated.class).build())
         .contains(AnnotationSpec.builder(Deprecated.class).build())
         .contains(AnnotationSpec.builder(OnEvent.class).build());
   }

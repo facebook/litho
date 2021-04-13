@@ -18,6 +18,7 @@ package com.facebook.litho.sections.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.CachedValueGenerator;
+import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
@@ -71,6 +72,7 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
 
     TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(JavadocGenerator.generate(specModel))
+        .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(specModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(specModel))
         .addTypeSpecDataHolder(
             ComponentBodyGenerator.generate(specModel, specModel.getServiceParam(), runMode))

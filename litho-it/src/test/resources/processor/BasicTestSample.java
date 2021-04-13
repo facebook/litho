@@ -27,6 +27,7 @@ import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Condition;
@@ -40,11 +41,13 @@ import org.assertj.core.description.TextDescription;
  * @prop-required myStringProp java.lang.String
  * @see com.facebook.litho.processor.integration.resources.BasicTestSampleSpec
  */
+@Generated
 public final class BasicTestSample implements BasicTestSampleSpec {
   public static Matcher matcher(ComponentContext c) {
     return new Matcher(c);
   }
 
+  @Generated
   public static class Matcher extends BaseMatcher<Matcher> {
     protected ResourceResolver mResourceResolver;
 

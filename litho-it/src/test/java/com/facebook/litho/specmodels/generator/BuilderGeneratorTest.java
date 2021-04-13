@@ -202,7 +202,8 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  Test mTest;\n"
                 + "\n"
                 + "  com.facebook.litho.ComponentContext mContext;\n"
@@ -332,7 +333,8 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  TestResTypeWithVarArgs mTestResTypeWithVarArgs;\n"
                 + "\n"
                 + "  com.facebook.litho.ComponentContext mContext;\n"
@@ -556,7 +558,8 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  TestDimenResTypeWithBoxFloatArg mTestDimenResTypeWithBoxFloatArg;\n"
                 + "\n"
                 + "  com.facebook.litho.ComponentContext mContext;\n"
@@ -666,7 +669,8 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  TestVarArgsWithDefaultValue mTestVarArgsWithDefaultValue;\n"
                 + "\n"
                 + "  com.facebook.litho.ComponentContext mContext;\n"
@@ -733,7 +737,8 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "public static final class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  TestKotlinVarArg mTestKotlinVarArg;\n"
                 + "\n"
                 + "  com.facebook.litho.ComponentContext mContext;\n"

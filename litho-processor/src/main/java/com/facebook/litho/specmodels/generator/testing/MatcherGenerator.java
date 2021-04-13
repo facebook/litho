@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator.testing;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.annotation;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -98,6 +99,7 @@ public final class MatcherGenerator {
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .superclass(
                 ParameterizedTypeName.get(ClassNames.BASE_MATCHER, getMatcherType(specModel)))
+            .addAnnotation(Generated.class)
             .addField(
                 FieldSpec.builder(
                         ClassNames.RESOURCE_RESOLVER, RESOURCE_RESOLVER, Modifier.PROTECTED)

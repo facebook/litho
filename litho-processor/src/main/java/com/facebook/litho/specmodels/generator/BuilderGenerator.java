@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.annotation;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -187,6 +188,7 @@ public class BuilderGenerator {
 
     final TypeSpec.Builder propsBuilderClassBuilder =
         TypeSpec.classBuilder(BUILDER)
+            .addAnnotation(Generated.class)
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
             .superclass(
                 ParameterizedTypeName.get(

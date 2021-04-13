@@ -46,6 +46,7 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Comparable;
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropSetter;
 import com.facebook.litho.annotations.RequiredProp;
@@ -68,6 +69,7 @@ import javax.annotation.Nullable;
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
+@Generated
 public final class TestMount<S extends View> extends Component implements TestTag {
   @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
@@ -659,6 +661,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     return cached;
   }
 
+  @Generated
   static class TestMountInterStagePropsContainer implements InterStagePropsContainer {
     Integer boundsDefinedOutput;
 
@@ -666,6 +669,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @VisibleForTesting(otherwise = 2)
+  @Generated
   static class TestMountStateContainer<S extends View> extends StateContainer {
     @State
     @Comparable(type = 3)
@@ -696,6 +700,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
   }
 
+  @Generated
   public static final class Builder<S extends View> extends Component.Builder<Builder<S>> {
     TestMount mTestMount;
 
@@ -859,6 +864,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
   }
 
+  @Generated
   private static class CachedInputs {
     private final String globalKey;
 

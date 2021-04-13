@@ -88,7 +88,8 @@ public class InterStagePropsGeneratorTest {
 
     assertThat(container.toString())
         .isEqualTo(
-            "static class MountTestInterStagePropsContainer implements com.facebook.litho.InterStagePropsContainer {\n"
+            "@com.facebook.litho.annotations.Generated\n"
+                + "static class MountTestInterStagePropsContainer implements com.facebook.litho.InterStagePropsContainer {\n"
                 + "  java.lang.Integer color;\n"
                 + "}\n");
   }

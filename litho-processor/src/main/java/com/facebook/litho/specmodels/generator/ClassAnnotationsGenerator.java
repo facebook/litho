@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.annotations.Generated;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.AnnotationSpec;
@@ -40,6 +41,8 @@ public class ClassAnnotationsGenerator {
     } else {
       holder.addAnnotations(specModel.getClassAnnotations());
     }
+
+    holder.addAnnotation(AnnotationSpec.builder(Generated.class).build());
 
     return holder.build();
   }
