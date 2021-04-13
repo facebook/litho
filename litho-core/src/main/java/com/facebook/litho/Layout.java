@@ -34,8 +34,8 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaNode;
 import java.util.List;
 
 class Layout {
@@ -475,32 +475,13 @@ class Layout {
       ComponentsSystrace.beginSection("measureTree:" + root.getSimpleName());
     }
 
-    if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && isLayoutDirectionRTL(c.getAndroidContext())) {
-      root.layoutDirection(YogaDirection.RTL);
-    }
-
-    if (YogaConstants.isUndefined(root.getStyleWidth())) {
-      root.setStyleWidthFromSpec(widthSpec);
-    }
-    if (YogaConstants.isUndefined(root.getStyleHeight())) {
-      root.setStyleHeightFromSpec(heightSpec);
-    }
-
     if (diff != null) {
       ComponentsSystrace.beginSection("applyDiffNode");
       applyDiffNodeToUnchangedNodes(c.getLayoutStateContext(), root, prevLayoutStateContext, diff);
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
-    LithoLayoutResult result =
-        root.calculateLayout(
-            SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
-                ? YogaConstants.UNDEFINED
-                : SizeSpec.getSize(widthSpec),
-            SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
-                ? YogaConstants.UNDEFINED
-                : SizeSpec.getSize(heightSpec));
+    LithoLayoutResult result = root.calculateLayout(c, widthSpec, heightSpec);
 
     if (isTracing) {
       ComponentsSystrace.endSection(/* measureTree */ );
@@ -833,7 +814,6 @@ class Layout {
         ComponentUtils.getGlobalKey(diffNodeComponent, diffNode.getComponentGlobalKey()));
   }
 
-  @VisibleForTesting
   static boolean isLayoutDirectionRTL(final Context context) {
     ApplicationInfo applicationInfo = context.getApplicationInfo();
 
@@ -850,5 +830,33 @@ class Layout {
   @TargetApi(JELLY_BEAN_MR1)
   private static int getLayoutDirection(final Context context) {
     return context.getResources().getConfiguration().getLayoutDirection();
+  }
+
+  static void setStyleWidthFromSpec(YogaNode node, int widthSpec) {
+    switch (SizeSpec.getMode(widthSpec)) {
+      case SizeSpec.UNSPECIFIED:
+        node.setWidth(YogaConstants.UNDEFINED);
+        break;
+      case SizeSpec.AT_MOST:
+        node.setMaxWidth(SizeSpec.getSize(widthSpec));
+        break;
+      case SizeSpec.EXACTLY:
+        node.setWidth(SizeSpec.getSize(widthSpec));
+        break;
+    }
+  }
+
+  static void setStyleHeightFromSpec(YogaNode node, int heightSpec) {
+    switch (SizeSpec.getMode(heightSpec)) {
+      case SizeSpec.UNSPECIFIED:
+        node.setHeight(YogaConstants.UNDEFINED);
+        break;
+      case SizeSpec.AT_MOST:
+        node.setMaxHeight(SizeSpec.getSize(heightSpec));
+        break;
+      case SizeSpec.EXACTLY:
+        node.setHeight(SizeSpec.getSize(heightSpec));
+        break;
+    }
   }
 }

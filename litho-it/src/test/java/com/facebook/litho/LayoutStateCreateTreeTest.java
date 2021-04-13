@@ -606,7 +606,8 @@ public class LayoutStateCreateTreeTest {
       DefaultInternalNode node = mock(DefaultInternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
-      when(node.calculateLayout(anyFloat(), anyFloat())).thenReturn(result);
+      when(node.calculateLayout(any(ComponentContext.class), anyInt(), anyInt()))
+          .thenReturn(result);
       when(result.getInternalNode()).thenReturn(node);
       return node;
     }

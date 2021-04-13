@@ -71,7 +71,7 @@ public interface InternalNode extends Inputs {
 
   void border(Edges width, int[] colors, float[] radii);
 
-  LithoLayoutResult calculateLayout(float width, float height);
+  LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec);
 
   void calculateLayout();
 

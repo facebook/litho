@@ -22,6 +22,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.Layout.isLayoutDirectionRTL;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
@@ -386,8 +387,31 @@ public class DefaultInternalNode
   }
 
   @Override
-  public LithoLayoutResult calculateLayout(float width, float height) {
+  public LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec) {
+
+    if (mYogaNode.getStyleDirection() == YogaDirection.INHERIT
+        && isLayoutDirectionRTL(c.getAndroidContext())) {
+      mYogaNode.setDirection(YogaDirection.RTL);
+    }
+
+    if (YogaConstants.isUndefined(mYogaNode.getWidth().value)) {
+      Layout.setStyleWidthFromSpec(mYogaNode, widthSpec);
+    }
+    if (YogaConstants.isUndefined(mYogaNode.getHeight().value)) {
+      Layout.setStyleHeightFromSpec(mYogaNode, heightSpec);
+    }
+
+    float width =
+        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(widthSpec);
+    float height =
+        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(heightSpec);
+
     applyOverridesRecursive(this);
+
     mYogaNode.calculateLayout(width, height);
 
     return this;
@@ -395,7 +419,7 @@ public class DefaultInternalNode
 
   @Override
   public void calculateLayout() {
-    calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
+    calculateLayout(mComponentContext, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED);
   }
 
   @Override

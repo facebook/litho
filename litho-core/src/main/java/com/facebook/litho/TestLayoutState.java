@@ -47,11 +47,6 @@ public class TestLayoutState {
       return root;
     }
 
-    if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && Layout.isLayoutDirectionRTL(c.getAndroidContext())) {
-      root.layoutDirection(YogaDirection.RTL);
-    }
-
     Layout.measure(c, root, widthSpec, heightSpec, null, null);
 
     return root;
