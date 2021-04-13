@@ -36,7 +36,6 @@ private enum class FlexboxDimenField {
   MAX_WIDTH,
   MIN_HEIGHT,
   MAX_HEIGHT,
-  FLEX_BASIS,
   PADDING_START,
   PADDING_TOP,
   PADDING_END,
@@ -51,10 +50,6 @@ private enum class FlexboxDimenField {
   MARGIN_HORIZONTAL,
   MARGIN_VERTICAL,
   MARGIN_ALL,
-  POSITION_START,
-  POSITION_TOP,
-  POSITION_END,
-  POSITION_BOTTOM,
 }
 
 /** Enums for [FlexboxFloatStyleItem]. */
@@ -65,16 +60,6 @@ private enum class FlexboxFloatField {
   MAX_WIDTH_PERCENT,
   MIN_HEIGHT_PERCENT,
   MAX_HEIGHT_PERCENT,
-  FLEX,
-  FLEX_GROW,
-  FLEX_SHRINK,
-  ASPECT_RATIO,
-}
-
-/** Enums for [FlexboxObjectStyleItem]. */
-private enum class FlexboxObjectField {
-  ALIGN_SELF,
-  POSITION_TYPE,
 }
 
 /** Common style item for all dimen styles. See note on [FlexboxDimenField] about this pattern. */
@@ -90,7 +75,6 @@ private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dim
       FlexboxDimenField.MAX_WIDTH -> commonProps.maxWidthPx(pixelValue)
       FlexboxDimenField.MIN_HEIGHT -> commonProps.minHeightPx(pixelValue)
       FlexboxDimenField.MAX_HEIGHT -> commonProps.maxHeightPx(pixelValue)
-      FlexboxDimenField.FLEX_BASIS -> commonProps.flexBasisPx(pixelValue)
       FlexboxDimenField.PADDING_START -> commonProps.paddingPx(YogaEdge.START, pixelValue)
       FlexboxDimenField.PADDING_TOP -> commonProps.paddingPx(YogaEdge.TOP, pixelValue)
       FlexboxDimenField.PADDING_END -> commonProps.paddingPx(YogaEdge.END, pixelValue)
@@ -105,10 +89,6 @@ private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dim
       FlexboxDimenField.MARGIN_HORIZONTAL -> commonProps.marginPx(YogaEdge.HORIZONTAL, pixelValue)
       FlexboxDimenField.MARGIN_VERTICAL -> commonProps.marginPx(YogaEdge.VERTICAL, pixelValue)
       FlexboxDimenField.MARGIN_ALL -> commonProps.marginPx(YogaEdge.ALL, pixelValue)
-      FlexboxDimenField.POSITION_START -> commonProps.positionPx(YogaEdge.START, pixelValue)
-      FlexboxDimenField.POSITION_END -> commonProps.positionPx(YogaEdge.END, pixelValue)
-      FlexboxDimenField.POSITION_TOP -> commonProps.positionPx(YogaEdge.TOP, pixelValue)
-      FlexboxDimenField.POSITION_BOTTOM -> commonProps.positionPx(YogaEdge.BOTTOM, pixelValue)
     }.exhaustive
   }
 }
@@ -124,22 +104,6 @@ private class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : S
       FlexboxFloatField.MAX_WIDTH_PERCENT -> commonProps.maxWidthPercent(value)
       FlexboxFloatField.MIN_HEIGHT_PERCENT -> commonProps.minHeightPercent(value)
       FlexboxFloatField.MAX_HEIGHT_PERCENT -> commonProps.maxHeightPercent(value)
-      FlexboxFloatField.FLEX -> commonProps.flex(value)
-      FlexboxFloatField.FLEX_GROW -> commonProps.flexGrow(value)
-      FlexboxFloatField.FLEX_SHRINK -> commonProps.flexShrink(value)
-      FlexboxFloatField.ASPECT_RATIO -> commonProps.aspectRatio(value)
-    }.exhaustive
-  }
-}
-
-/** Common style item for all object styles. See note on [FlexboxDimenField] about this pattern. */
-private class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: Any?) : StyleItem {
-  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
-    val commonProps = component.getCommonPropsHolder()
-    when (field) {
-      FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
-      FlexboxObjectField.POSITION_TYPE ->
-          value?.let { commonProps.positionType(it as YogaPositionType) }
     }.exhaustive
   }
 }
