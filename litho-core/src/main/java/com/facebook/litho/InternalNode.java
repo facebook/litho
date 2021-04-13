@@ -17,14 +17,16 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
-import android.content.res.TypedArray;
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.yoga.YogaAlign;
@@ -148,7 +150,7 @@ public interface InternalNode extends Inputs {
 
   InternalNode wrapInView();
 
-  void applyAttributes(TypedArray a);
+  void applyAttributes(Context c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes);
 
   /* InternalNode related APIs */
 

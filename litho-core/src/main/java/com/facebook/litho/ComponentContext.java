@@ -551,19 +551,10 @@ public class ComponentContext {
     return mStateHandler;
   }
 
-  /**
-   * TODO: (T55170222) Remove, use {@link InternalNodeUtils#applyStyles(InternalNode, int, int)}.
-   */
   void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
-
-      final TypedArray typedArray =
-          mContext.obtainStyledAttributes(
-              null, R.styleable.ComponentLayout, defStyleAttr, defStyleRes);
-      node.applyAttributes(typedArray);
-      typedArray.recycle();
-
+      node.applyAttributes(mContext, defStyleAttr, defStyleRes);
       setDefStyle(0, 0);
     }
   }

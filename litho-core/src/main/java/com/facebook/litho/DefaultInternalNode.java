@@ -36,6 +36,7 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -43,10 +44,12 @@ import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
@@ -1403,7 +1406,11 @@ public class DefaultInternalNode
   }
 
   @Override
-  public void applyAttributes(TypedArray a) {
+  public void applyAttributes(Context c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+
+    TypedArray a =
+        c.obtainStyledAttributes(null, R.styleable.ComponentLayout, defStyleAttr, defStyleRes);
+
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
 
@@ -1500,6 +1507,8 @@ public class DefaultInternalNode
         layoutDirection(YogaDirection.fromInt(layoutDirection));
       }
     }
+
+    a.recycle();
   }
 
   /** Crash if the given node has context specific style set. */

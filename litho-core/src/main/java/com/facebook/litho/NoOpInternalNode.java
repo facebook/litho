@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
-import android.content.res.TypedArray;
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
@@ -584,7 +584,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void applyAttributes(TypedArray a) {}
+  public void applyAttributes(Context c, int defStyleAttr, int defStyleRes) {}
 
   @Override
   public void assertContextSpecificStyleNotSet() {}
