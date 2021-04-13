@@ -103,9 +103,9 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         if (component != head) { // If the head and tail are different, use the head.
           parent = head;
           parentKey = headKey;
-        } else if (node.getParent() != null) { // Otherwise use the tail of the parent node.
-          parent = node.getParent().getTailComponent();
-          parentKey = node.getParent().getTailComponentKey();
+        } else if (result.getParent() != null) { // Otherwise use the tail of the parent node.
+          parent = result.getParent().getInternalNode().getTailComponent();
+          parentKey = result.getParent().getInternalNode().getTailComponentKey();
         } else {
           parent = null;
           parentKey = null;

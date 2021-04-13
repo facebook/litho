@@ -458,7 +458,7 @@ public final class DebugComponent {
   }
 
   public boolean isRoot() {
-    return mComponentIndex == 0 && mNode.getParent() == null;
+    return mComponentIndex == 0 && mResult.getParent() == null;
   }
 
   @Nullable
