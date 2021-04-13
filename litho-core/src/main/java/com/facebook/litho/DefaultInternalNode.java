@@ -30,12 +30,10 @@ import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaEdge.VERTICAL;
 
 import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
@@ -150,7 +148,7 @@ public class DefaultInternalNode
   protected @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   protected @Nullable Drawable mBackground;
   protected @Nullable Drawable mForeground;
-  private @Nullable PathEffect mBorderPathEffect;
+  protected @Nullable PathEffect mBorderPathEffect;
   protected @Nullable StateListAnimator mStateListAnimator;
   private @Nullable boolean[] mIsPaddingPercent;
   private @Nullable Edges mTouchExpansion;
@@ -330,32 +328,20 @@ public class DefaultInternalNode
 
   @Override
   public InternalNode border(Border border) {
-    mPrivateFlags |= PFLAG_BORDER_IS_SET;
-    for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
-      setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i]);
-    }
-    System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
-    System.arraycopy(border.mRadius, 0, mBorderRadius, 0, mBorderRadius.length);
-    mBorderPathEffect = border.mPathEffect;
+    border(border.mEdgeWidths, border.mEdgeColors, border.mRadius, border.mPathEffect);
     return this;
   }
 
   @Override
-  public void border(Edges width, int[] colors, float[] radii) {
+  public void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect) {
     mPrivateFlags |= PFLAG_BORDER_IS_SET;
-
-    mYogaNode.setBorder(LEFT, width.getRaw(YogaEdge.LEFT));
-    mYogaNode.setBorder(TOP, width.getRaw(YogaEdge.TOP));
-    mYogaNode.setBorder(RIGHT, width.getRaw(YogaEdge.RIGHT));
-    mYogaNode.setBorder(BOTTOM, width.getRaw(YogaEdge.BOTTOM));
-    mYogaNode.setBorder(VERTICAL, width.getRaw(YogaEdge.VERTICAL));
-    mYogaNode.setBorder(HORIZONTAL, width.getRaw(YogaEdge.HORIZONTAL));
-    mYogaNode.setBorder(START, width.getRaw(YogaEdge.START));
-    mYogaNode.setBorder(END, width.getRaw(YogaEdge.END));
-    mYogaNode.setBorder(ALL, width.getRaw(YogaEdge.ALL));
-
+    setBorderWidth(LEFT, widths[Border.EDGE_LEFT]);
+    setBorderWidth(TOP, widths[Border.EDGE_TOP]);
+    setBorderWidth(RIGHT, widths[Border.EDGE_RIGHT]);
+    setBorderWidth(BOTTOM, widths[Border.EDGE_BOTTOM]);
     System.arraycopy(colors, 0, mBorderColors, 0, colors.length);
     System.arraycopy(radii, 0, mBorderRadius, 0, radii.length);
+    mBorderPathEffect = effect;
   }
 
   @Override

@@ -69,7 +69,7 @@ public interface InternalNode extends Inputs {
 
   InternalNode border(Border border);
 
-  void border(Edges width, int[] colors, float[] radii);
+  void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect);
 
   LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec);
 

@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
+import android.graphics.PathEffect;
 import androidx.annotation.Px;
 import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
@@ -38,8 +39,8 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   /* INPUTS */
   final @Nullable TreeProps mPendingTreeProps;
 
+  @Nullable int[] mNestedBorderEdges;
   @Nullable Edges mNestedTreePadding;
-  @Nullable Edges mNestedTreeBorderWidth;
 
   /* OUTPUTS */
   @Nullable LithoLayoutResult mNestedTree;
@@ -87,12 +88,13 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   }
 
   @Override
-  public void setBorderWidth(YogaEdge edge, float borderWidth) {
-    if (mNestedTreeBorderWidth == null) {
-      mNestedTreeBorderWidth = new Edges();
-    }
-
-    mNestedTreeBorderWidth.set(edge, borderWidth);
+  public void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect) {
+    mPrivateFlags |= PFLAG_BORDER_IS_SET;
+    mNestedBorderEdges = new int[Border.EDGE_COUNT];
+    System.arraycopy(widths, 0, mNestedBorderEdges, 0, mNestedBorderEdges.length);
+    System.arraycopy(colors, 0, mBorderColors, 0, colors.length);
+    System.arraycopy(radii, 0, mBorderRadius, 0, radii.length);
+    mBorderPathEffect = effect;
   }
 
   private Edges getNestedTreePadding() {
@@ -175,7 +177,7 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
       }
     }
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-      target.border(mNestedTreeBorderWidth, mBorderColors, mBorderRadius);
+      target.border(mNestedBorderEdges, mBorderColors, mBorderRadius, mBorderPathEffect);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       target.transitionKey(mTransitionKey, mTransitionOwnerKey);

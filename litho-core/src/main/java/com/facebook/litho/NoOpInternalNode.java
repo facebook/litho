@@ -109,7 +109,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void border(Edges width, int[] colors, float[] radii) {}
+  public void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect) {}
 
   @Override
   public LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec) {
