@@ -389,6 +389,28 @@ public class TransitionsExtension
         }
       }
     }
+    if (extensionState.getState().mDebugTag != null) {
+      for (int i = 0, size = input.getMountableOutputCount(); i < size; i++) {
+        final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
+        if (extensionState.ownsReference(renderTreeNode.getRenderUnit().getId())) {
+          final AnimatableItem animatableItem =
+              input.getAnimatableItem(renderTreeNode.getRenderUnit());
+          Log.d(
+              extensionState.getState().mDebugTag,
+              ""
+                  + i
+                  + " ["
+                  + animatableItem.getId()
+                  + "] ("
+                  + animatableItem.getTransitionId()
+                  + ") host => ("
+                  + (renderTreeNode.getParent() == null
+                      ? "root"
+                      : renderTreeNode.getParent().getRenderUnit().getId())
+                  + ")");
+        }
+      }
+    }
   }
 
   /** @return whether we should animate transitions. */
