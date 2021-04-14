@@ -20,8 +20,6 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
-import com.facebook.yoga.YogaDirection;
-
 /**
  * This should be only used with the deprecated DiffNode based testing infrastructure. This class
  * hosts a test implementation of create and resolve layout. The implementation only resolves the
