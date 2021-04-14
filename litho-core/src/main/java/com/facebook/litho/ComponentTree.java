@@ -1827,6 +1827,10 @@ public class ComponentTree implements LithoLifecycleListener {
         : context.getComponentTree().mLifecycleProvider;
   }
 
+  public @Nullable LithoLifecycleProvider getLifecycleProvider() {
+    return mLifecycleProvider;
+  }
+
   /**
    * Creates a ComponentTree nested inside the ComponentTree of the provided parentContext. If the
    * parent ComponentTree is subscribed to a LithoLifecycleProvider, the nested ComponentTree will

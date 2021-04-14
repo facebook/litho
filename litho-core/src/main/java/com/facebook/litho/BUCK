@@ -63,6 +63,7 @@ litho_android_library(
         LITHO_YOGA_FACTORY_TARGET,
     ],
     exported_deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_CONFIG_TARGET,
         LITHO_PERFBOOST_TARGET,
