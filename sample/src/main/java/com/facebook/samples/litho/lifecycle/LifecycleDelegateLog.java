@@ -105,12 +105,14 @@ public class LifecycleDelegateLog {
   }
 
   public static void onDelegateMethodCalled(
-      DelegateListener delegateListener,
+      @Nullable DelegateListener delegateListener,
       @Nullable DelegateListener consoleDelegateListener,
       int type,
       String id) {
-    delegateListener.onDelegateMethodCalled(
-        type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
+    if (delegateListener != null) {
+      delegateListener.onDelegateMethodCalled(
+          type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);
+    }
     if (consoleDelegateListener != null) {
       consoleDelegateListener.onDelegateMethodCalled(
           type, Thread.currentThread(), SystemClock.elapsedRealtime(), id);

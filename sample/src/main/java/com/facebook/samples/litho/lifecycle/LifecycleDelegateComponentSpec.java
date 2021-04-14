@@ -78,8 +78,8 @@ class LifecycleDelegateComponentSpec {
       ComponentContext c,
       StateValue<Random> random,
       StateValue<Integer> colorIndex,
-      @Prop DelegateListener delegateListener,
       @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     final Random rand = new Random();
     random.set(rand);
@@ -90,8 +90,8 @@ class LifecycleDelegateComponentSpec {
   @OnCreateTreeProp
   static DummyTreeProp onCreateTreeProp(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
       @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_TREE_PROP, id);
     return sDummyTreeProp;
@@ -100,8 +100,8 @@ class LifecycleDelegateComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
       @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
       @State Integer colorIndex) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_LAYOUT, id);
@@ -125,8 +125,8 @@ class LifecycleDelegateComponentSpec {
   @OnCreateTransition
   static Transition onCreateTransition(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
       @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_TRANSITION, id);
     return Transition.allLayout().animator(Transition.SPRING_WITH_OVERSHOOT);
@@ -135,7 +135,7 @@ class LifecycleDelegateComponentSpec {
   @OnAttached
   static void onAttached(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
       @Prop String id) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_ATTACHED, id);
@@ -144,7 +144,7 @@ class LifecycleDelegateComponentSpec {
   @OnDetached
   static void onDetached(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
       @Prop String id) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_DETACHED, id);
@@ -158,8 +158,8 @@ class LifecycleDelegateComponentSpec {
   @OnEvent(VisibleEvent.class)
   static void onVisible(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
       @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_VISIBLE, id);
   }
@@ -167,8 +167,8 @@ class LifecycleDelegateComponentSpec {
   @OnEvent(InvisibleEvent.class)
   static void onInvisible(
       ComponentContext c,
-      @Prop DelegateListener delegateListener,
       @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_INVISIBLE, id);
   }
@@ -184,7 +184,9 @@ class LifecycleDelegateComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClickResetRootComponent(
-      ComponentContext c, @Prop DelegateListener delegateListener, @Param boolean isSync) {
+      ComponentContext c,
+      @Prop(optional = true) DelegateListener delegateListener,
+      @Param boolean isSync) {
     delegateListener.setRootComponent(isSync);
   }
 
