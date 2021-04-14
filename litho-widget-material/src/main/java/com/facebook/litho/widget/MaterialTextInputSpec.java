@@ -73,6 +73,7 @@ import javax.annotation.Nullable;
     events = {
       TextChangedEvent.class,
       SelectionChangedEvent.class,
+      InputFocusChangedEvent.class,
       KeyUpEvent.class,
       KeyPreImeEvent.class,
       EditorActionEvent.class,
@@ -459,6 +460,7 @@ class MaterialTextInputSpec {
         textWatchers,
         MaterialTextInput.getTextChangedEventHandler(c),
         MaterialTextInput.getSelectionChangedEventHandler(c),
+        MaterialTextInput.getInputFocusChangedEventHandler(c),
         MaterialTextInput.getKeyUpEventHandler(c),
         MaterialTextInput.getKeyPreImeEventHandler(c),
         MaterialTextInput.getEditorActionEventHandler(c),

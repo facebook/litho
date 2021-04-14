@@ -181,6 +181,7 @@ import javax.annotation.Nullable;
     events = {
       TextChangedEvent.class,
       SelectionChangedEvent.class,
+      InputFocusChangedEvent.class,
       KeyUpEvent.class,
       KeyPreImeEvent.class,
       EditorActionEvent.class,
@@ -814,6 +815,7 @@ class TextInputSpec {
         textWatchers,
         TextInput.getTextChangedEventHandler(c),
         TextInput.getSelectionChangedEventHandler(c),
+        TextInput.getInputFocusChangedEventHandler(c),
         TextInput.getKeyUpEventHandler(c),
         TextInput.getKeyPreImeEventHandler(c),
         TextInput.getEditorActionEventHandler(c),
@@ -826,6 +828,7 @@ class TextInputSpec {
       @Nullable List<TextWatcher> textWatchers,
       EventHandler textChangedEventHandler,
       EventHandler selectionChangedEventHandler,
+      EventHandler inputFocusChangedEventHandler,
       EventHandler keyUpEventHandler,
       EventHandler keyPreImeEventHandler,
       EventHandler EditorActionEventHandler,
@@ -835,6 +838,7 @@ class TextInputSpec {
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(textChangedEventHandler);
     editText.setSelectionChangedEventHandler(selectionChangedEventHandler);
+    editText.setInputFocusChangedEventHandler(inputFocusChangedEventHandler);
     editText.setKeyUpEventHandler(keyUpEventHandler);
     editText.setKeyPreImeEventEventHandler(keyPreImeEventHandler);
     editText.setEditorActionEventHandler(EditorActionEventHandler);
@@ -862,6 +866,7 @@ class TextInputSpec {
     editText.setComponentContext(null);
     editText.setTextChangedEventHandler(null);
     editText.setSelectionChangedEventHandler(null);
+    editText.setInputFocusChangedEventHandler(null);
     editText.setKeyUpEventHandler(null);
     editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
@@ -979,6 +984,7 @@ class TextInputSpec {
 
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
+    @Nullable private EventHandler<InputFocusChangedEvent> mInputFocusChangedEventHandler;
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
     @Nullable private EventHandler<KeyPreImeEvent> mKeyPreImeEventEventHandler;
     @Nullable private EventHandler<EditorActionEvent> mEditorActionEventHandler;
@@ -1041,6 +1047,14 @@ class TextInputSpec {
     }
 
     @Override
+    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+      super.onFocusChanged(focused, direction, previouslyFocusedRect);
+      if (mInputFocusChangedEventHandler != null) {
+        TextInput.dispatchInputFocusChangedEvent(mInputFocusChangedEventHandler, focused);
+      }
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
       if (mKeyUpEventHandler != null) {
         return TextInput.dispatchKeyUpEvent(mKeyUpEventHandler, keyCode, event);
@@ -1082,6 +1096,11 @@ class TextInputSpec {
     void setSelectionChangedEventHandler(
         @Nullable EventHandler<SelectionChangedEvent> selectionChangedEventHandler) {
       mSelectionChangedEventHandler = selectionChangedEventHandler;
+    }
+
+    void setInputFocusChangedEventHandler(
+        @Nullable EventHandler<InputFocusChangedEvent> inputFocusChangedEventHandler) {
+      mInputFocusChangedEventHandler = inputFocusChangedEventHandler;
     }
 
     void setKeyUpEventHandler(@Nullable EventHandler<KeyUpEvent> keyUpEventHandler) {
