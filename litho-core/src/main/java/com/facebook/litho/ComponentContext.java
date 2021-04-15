@@ -189,7 +189,7 @@ public class ComponentContext {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
 
-    if (scope.mUseStatelessComponent
+    if (componentContext.isStatelessComponentEnabled()
         && globalKey != null
         && componentContext.getLayoutStateContext() != null) {
       componentContext.mGlobalKey = globalKey;
@@ -298,7 +298,7 @@ public class ComponentContext {
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
-      if (mComponentScope.mUseStatelessComponent) {
+      if (isStatelessComponentEnabled()) {
         EventHandler<ErrorEvent> errorEventHandler =
             getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
 
