@@ -216,7 +216,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   public final void setScopedContext(ComponentContext scopedContext) {
-    if (mUseStatelessComponent) {
+    if (scopedContext.isStatelessComponentEnabled()) {
       return;
     }
 
@@ -389,7 +389,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   final InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     final InternalNode layout = mLayoutCreatedInWillRender;
-    if (layout != null && mUseStatelessComponent) {
+    if (layout != null && context.isStatelessComponentEnabled()) {
       assertSameBaseContext(context, layout.getContext());
     }
     mLayoutCreatedInWillRender = null;
@@ -562,7 +562,7 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    if (!mUseStatelessComponent) {
+    if (!parentContext.isStatelessComponentEnabled()) {
       clone.copyInterStageImpl(
           clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
           getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
@@ -919,7 +919,7 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    if (!component.mUseStatelessComponent) {
+    if (!c.isStatelessComponentEnabled()) {
       final ComponentContext scopedContext =
           component.getScopedContext(
               c.getLayoutStateContext(), Component.getGlobalKey(null, component));

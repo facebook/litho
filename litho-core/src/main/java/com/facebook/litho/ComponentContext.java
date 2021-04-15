@@ -289,7 +289,7 @@ public class ComponentContext {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
-    if (mComponentScope.isStateless()) {
+    if (isStatelessComponentEnabled()) {
       return mGlobalKey;
     }
 

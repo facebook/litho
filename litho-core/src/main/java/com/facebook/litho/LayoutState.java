@@ -1088,7 +1088,7 @@ public class LayoutState
         if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
-            if (delegate.isStateless()) {
+            if (delegateScopedContext.isStatelessComponentEnabled()) {
               if (layoutState.mComponentKeys == null) {
                 layoutState.mComponentKeys = new ArrayList<>();
               }
@@ -1539,7 +1539,7 @@ public class LayoutState
       Component.markLayoutStarted(component, layoutStateContext);
 
       if (isReconcilable && currentLayoutState != null) {
-        if (component.isStateless()) {
+        if (c.isStatelessComponentEnabled()) {
           layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
         }
       }
