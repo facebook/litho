@@ -201,7 +201,7 @@ public class DefaultInternalNode
     mDebugComponents = new HashSet<>();
 
     mComponentGlobalKeys =
-        ComponentsConfiguration.useStatelessComponent ? new ArrayList<String>(1) : null;
+        componentContext.isStatelessComponentEnabled() ? new ArrayList<String>(1) : null;
   }
 
   @Override

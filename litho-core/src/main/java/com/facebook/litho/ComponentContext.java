@@ -605,4 +605,10 @@ public class ComponentContext {
     }
     return mComponentTree.getRecyclingMode();
   }
+
+  boolean isStatelessComponentEnabled() {
+    return mComponentTree == null
+        ? ComponentsConfiguration.useStatelessComponent
+        : mComponentTree.isStatelessComponentEnabled();
+  }
 }

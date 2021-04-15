@@ -455,6 +455,10 @@ public class ComponentTree implements LithoLifecycleListener {
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
   }
 
+  public boolean isStatelessComponentEnabled() {
+    return mUseStatelessComponent;
+  }
+
   private static boolean incrementalMountGloballyDisabled() {
     return ComponentsConfiguration.isIncrementalMountGloballyDisabled;
   }
