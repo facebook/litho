@@ -32,7 +32,6 @@ import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -54,10 +53,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
   static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
       "ComponentLifecycle:WrongContextForEventHandler";
-  private static final @Nullable YogaMeasureFunction sMeasureFunction =
-      ComponentsConfiguration.useStatelessComponent
-          ? null
-          : new LithoYogaMeasureFunction(null, null);
+  private static @Nullable YogaMeasureFunction sMeasureFunction;
 
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
@@ -83,10 +79,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  static YogaMeasureFunction getYogaMeasureFunction(
-      final Component component, @Nullable LayoutStateContext layoutStateContext) {
-    if (component.isStateless()) {
-      return layoutStateContext.getLithoYogaMeasureFunction();
+  static YogaMeasureFunction getYogaMeasureFunction(final ComponentContext context) {
+    if (context.isStatelessComponentEnabled()) {
+      return context.getLayoutStateContext().getLithoYogaMeasureFunction();
+    }
+
+    if (sMeasureFunction == null) {
+      sMeasureFunction = new LithoYogaMeasureFunction(null, null, false);
     }
 
     return sMeasureFunction;

@@ -171,7 +171,9 @@ public class LayoutStateContext {
     if (mLithoYogaMeasureFunction == null) {
       mLithoYogaMeasureFunction =
           new LithoYogaMeasureFunction(
-              this, mLayoutStateRef == null ? null : mLayoutStateRef.getPrevLayoutStateContext());
+              this,
+              mLayoutStateRef == null ? null : mLayoutStateRef.getPrevLayoutStateContext(),
+              true);
     }
 
     return mLithoYogaMeasureFunction;

@@ -117,8 +117,7 @@ public class TestLayoutState {
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure) {
-        node.setMeasureFunction(
-            ComponentLifecycle.getYogaMeasureFunction(component, c.getLayoutStateContext()));
+        node.setMeasureFunction(ComponentLifecycle.getYogaMeasureFunction(c));
       }
     }
 

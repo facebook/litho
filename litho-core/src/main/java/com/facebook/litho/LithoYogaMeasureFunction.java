@@ -19,7 +19,6 @@ package com.facebook.litho;
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -37,8 +36,9 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
   public LithoYogaMeasureFunction(
       @Nullable LayoutStateContext layoutStateContext,
-      @Nullable LayoutStateContext prevLayoutStateContext) {
-    if (ComponentsConfiguration.useStatelessComponent && layoutStateContext == null) {
+      @Nullable LayoutStateContext prevLayoutStateContext,
+      final boolean isStatelessComponentEnabled) {
+    if (isStatelessComponentEnabled && layoutStateContext == null) {
       throw new IllegalStateException("You must pass a non-null LayoutStateContext instance");
     }
 
