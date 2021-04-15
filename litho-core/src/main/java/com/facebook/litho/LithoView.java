@@ -55,6 +55,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
+  private static final String LITHO_LIFECYCLE_FOUND = "lithoView:LithoLifecycleProviderFound";
   private static final String TAG = LithoView.class.getSimpleName();
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
@@ -907,11 +908,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
   }
 
-  private void checkLifecycleOwner() {
-    if (mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider()) {
-      throw new IllegalStateException(
-          "Cannot manually change the lifecycle state when subscribed to a LifecycleOwner.");
-    }
+  private boolean hasLifecycleOwner() {
+    return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
   }
 
   /**
@@ -955,7 +953,14 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void setVisibilityHintInternal(boolean isVisible, boolean skipMountingIfNotVisible) {
     assertMainThread();
-    checkLifecycleOwner();
+    if (hasLifecycleOwner()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          LITHO_LIFECYCLE_FOUND,
+          "Setting visibility hint but a LithoLifecycleProvider was found, ignoring.");
+
+      return;
+    }
 
     if (mComponentTree == null) {
       return;
@@ -1197,7 +1202,14 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   @Deprecated
   public void release() {
     assertMainThread();
-    checkLifecycleOwner();
+    if (hasLifecycleOwner()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          LITHO_LIFECYCLE_FOUND,
+          "Trying to release a LithoView but a LithoLifecycleProvider was found, ignoring.");
+
+      return;
+    }
 
     final List<LithoView> childrenLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
     if (childrenLithoViews != null) {
