@@ -51,6 +51,9 @@ public final class DebugSection {
     final Section renderInfoSection =
         (Section) RenderInfoDebugInfoRegistry.getRenderInfoSectionDebugInfo(lithoViews.get(0));
 
+    if (renderInfoSection == null) {
+      return null;
+    }
     return getRootDebugSection(renderInfoSection, lithoViews);
   }
 
