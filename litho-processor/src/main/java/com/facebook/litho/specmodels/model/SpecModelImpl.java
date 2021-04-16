@@ -122,8 +122,8 @@ public final class SpecModelImpl implements SpecModel {
     mWorkingRangeMethods = workingRangeMethods;
     mUpdateStateMethods = updateStateMethods;
     mUpdateStateWithTransitionMethods = updateStateWithTransitionMethods;
-    mRawProps =
-        getRawProps(
+    ImmutableList<PropModel> rawPropsWithoutDiffProps =
+        getRawPropsWithoutDiffProps(
             delegateMethods,
             eventMethods,
             triggerMethods,
@@ -131,7 +131,12 @@ public final class SpecModelImpl implements SpecModel {
             workingRangeMethods,
             updateStateMethods,
             bindDynamicValueMethods);
-    mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
+
+    mRawProps = getRawProps(rawPropsWithoutDiffProps, delegateMethods);
+    mProps =
+        props.isEmpty()
+            ? getProps(rawPropsWithoutDiffProps, cachedPropNames, delegateMethods)
+            : props;
     mRawInjectProps =
         getRawInjectProps(
             delegateMethods,
@@ -510,6 +515,25 @@ public final class SpecModelImpl implements SpecModel {
 
   /** Extract props without taking deduplication and name caching into account. */
   private static ImmutableList<PropModel> getRawProps(
+      ImmutableList<PropModel> rawPropsWithoutDiffProps,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
+    final List<PropModel> props = new ArrayList<>();
+
+    props.addAll(rawPropsWithoutDiffProps);
+
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof DiffPropModel) {
+          props.add(((DiffPropModel) param).getUnderlyingPropModel());
+        }
+      }
+    }
+
+    return ImmutableList.copyOf(props);
+  }
+
+  /** Extract PropModel props without taking deduplication and name caching into account. */
+  private static ImmutableList<PropModel> getRawPropsWithoutDiffProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
@@ -576,14 +600,6 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
-      for (MethodParamModel param : delegateMethod.methodParams) {
-        if (param instanceof DiffPropModel) {
-          props.add(((DiffPropModel) param).getUnderlyingPropModel());
-        }
-      }
-    }
-
     for (SpecMethodModel<BindDynamicValueMethod, Void> bindDynamicValueMethod :
         bindDynamicValueMethods) {
       for (MethodParamModel param : bindDynamicValueMethod.methodParams) {
@@ -592,12 +608,11 @@ public final class SpecModelImpl implements SpecModel {
         }
       }
     }
-
     return ImmutableList.copyOf(props);
   }
 
   private static ImmutableList<PropModel> getProps(
-      ImmutableList<PropModel> rawProps,
+      ImmutableList<PropModel> baseProps,
       ImmutableList<String> cachedPropNames,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
 
@@ -610,9 +625,8 @@ public final class SpecModelImpl implements SpecModel {
             .map(f -> (DiffPropModel) f)
             .collect(Collectors.toList());
 
-    // Get list of props without potential diffProps.
-    final int basePropsSize = rawProps.size() - diffPropModels.size();
-    final List<PropModel> baseProps = rawProps.subList(0, basePropsSize);
+    // Get list of props size without potential diffProps.
+    final int basePropsSize = baseProps.size();
 
     // Update names from cache.
     final List<PropModel> renamedBaseProps =
