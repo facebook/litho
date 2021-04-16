@@ -30,7 +30,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.flexboxParams
+import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.margin
 import com.facebook.litho.flexbox.width
@@ -68,17 +68,15 @@ class TransitionsComponent : KComponent() {
               shouldExpand.update(!shouldExpand.value)
             }) {
       child(
-          flexboxParams(
-              alignSelf = if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START) {
-            Column(
-                style =
-                    Style.width(50.dp)
-                        .height(50.dp)
-                        .margin(all = 5.dp)
-                        .transitionKey(
-                            context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
-                        .background(buildRoundedRect(context, Color.parseColor("#666699"), 8)))
-          })
+          Column(
+              style =
+                  Style.width(50.dp)
+                      .height(50.dp)
+                      .margin(all = 5.dp)
+                      .transitionKey(
+                          context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
+                      .alignSelf(if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START)
+                      .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
       child(
           Column(
               style =

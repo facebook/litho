@@ -38,7 +38,7 @@ import com.facebook.litho.animated.scaleY
 import com.facebook.litho.animated.translationY
 import com.facebook.litho.animated.useBinding
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.flexboxParams
+import com.facebook.litho.flexbox.alignSelf
 import com.facebook.litho.flexbox.height
 import com.facebook.litho.flexbox.margin
 import com.facebook.litho.flexbox.width
@@ -159,78 +159,71 @@ class AnimatedComponent : KComponent() {
                             .background(buildRoundedRect(context, Color.parseColor("#9fdfbf"), 8))))
           })
       child(
-          flexboxParams(alignSelf = YogaAlign.CENTER) {
-            Row(
-                style =
-                    Style.width(150.dp)
-                        .height(70.dp)
-                        .margin(all = 50.dp)
-                        .scaleX(
-                            if (isScaleTransitionComplete.value) {
-                              scale
-                            } else {
-                              scale2
-                            })
-                        .scaleY(
-                            if (isScaleTransitionComplete.value) {
-                              scale
-                            } else {
-                              scale2
-                            })
-                        .background(buildRoundedRect(context, Color.parseColor("#d9d9d9"), 8))) {
-              child(
-                  Row(
-                      style =
-                          Style.margin(30.dp)
-                              .width(90.dp)
-                              .height(20.dp)
-                              .background(
-                                  buildRoundedRect(context, Color.parseColor("#999999"), 12))))
-            }
+          Row(
+              style =
+                  Style.width(150.dp)
+                      .height(70.dp)
+                      .margin(all = 50.dp)
+                      .alignSelf(YogaAlign.CENTER)
+                      .scaleX(
+                          if (isScaleTransitionComplete.value) {
+                            scale
+                          } else {
+                            scale2
+                          })
+                      .scaleY(
+                          if (isScaleTransitionComplete.value) {
+                            scale
+                          } else {
+                            scale2
+                          })
+                      .background(buildRoundedRect(context, Color.parseColor("#d9d9d9"), 8))) {
+            child(
+                Row(
+                    style =
+                        Style.margin(30.dp)
+                            .width(90.dp)
+                            .height(20.dp)
+                            .background(
+                                buildRoundedRect(context, Color.parseColor("#999999"), 12))))
           })
       child(
-          flexboxParams(alignSelf = YogaAlign.CENTER) {
-            Row(style = Style.wrapInView()) {
-              child(
-                  Column(
-                      style =
-                          Style.width(50.dp)
-                              .height(50.dp)
-                              .margin(all = 5.dp)
-                              .background(
-                                  buildRoundedRect(context, Color.parseColor("#666699"), 8))))
-              child(
-                  Column(
-                      style =
-                          Style.width(50.dp)
-                              .height(50.dp)
-                              .margin(all = 5.dp)
-                              .translationY(
-                                  if (isYProgressCompleted.value) {
-                                    y2Progress
-                                  } else {
-                                    yProgress
-                                  })
-                              .alpha(alphaProgress)
-                              .background(
-                                  buildRoundedRect(context, Color.parseColor("#666699"), 8))))
-              child(
-                  Column(
-                      style =
-                          Style.width(50.dp)
-                              .height(50.dp)
-                              .margin(all = 5.dp)
-                              .background(
-                                  buildRoundedRect(context, Color.parseColor("#666699"), 8))))
-              child(
-                  Column(
-                      style =
-                          Style.width(50.dp)
-                              .height(50.dp)
-                              .margin(all = 5.dp)
-                              .background(
-                                  buildRoundedRect(context, Color.parseColor("#666699"), 8))))
-            }
+          Row(style = Style.alignSelf(YogaAlign.CENTER).wrapInView()) {
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .translationY(
+                                if (isYProgressCompleted.value) {
+                                  y2Progress
+                                } else {
+                                  yProgress
+                                })
+                            .alpha(alphaProgress)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+            child(
+                Column(
+                    style =
+                        Style.width(50.dp)
+                            .height(50.dp)
+                            .margin(all = 5.dp)
+                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
           })
     }
   }
