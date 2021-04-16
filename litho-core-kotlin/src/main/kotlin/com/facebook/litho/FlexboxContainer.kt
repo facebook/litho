@@ -16,7 +16,6 @@
 
 package com.facebook.litho
 
-import com.facebook.litho.flexbox.FlexboxParams
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
@@ -40,7 +39,7 @@ inline fun ComponentScope.Column(
     style: Style? = null,
     init: FlexboxContainerScope.() -> Unit,
 ): Column {
-  val containerScope = FlexboxContainerScope(context)
+  val containerScope = FlexboxContainerScope()
   containerScope.init()
   return createColumn(
       alignContent, alignItems, justifyContent, wrap, isReversed, style, containerScope)
@@ -95,7 +94,7 @@ inline fun ComponentScope.Row(
     style: Style? = null,
     init: FlexboxContainerScope.() -> Unit,
 ): Row {
-  val containerScope = FlexboxContainerScope(context)
+  val containerScope = FlexboxContainerScope()
   containerScope.init()
   return createRow(
       alignContent, alignItems, justifyContent, wrap, isReversed, style, containerScope)
@@ -136,7 +135,7 @@ fun ComponentScope.createRow(
  * The receiver gives the ability to add children to this container.
  */
 @ContainerDsl
-class FlexboxContainerScope(private val context: ComponentContext) {
+class FlexboxContainerScope {
 
   internal val children: MutableList<Component?> = mutableListOf()
 
@@ -148,14 +147,5 @@ class FlexboxContainerScope(private val context: ComponentContext) {
   /** Adds a list of Components as children to the Row or Column being initialized. */
   fun children(components: List<out Component?>) {
     children.addAll(components)
-  }
-
-  /**
-   * Adds a child component with flexbox properties defined by the given [FlexboxParams]. Use this
-   * method in combination with the [flexboxParams] call wrapping a component to apply properties
-   * that are only available in a flexbox container, e.g. alignSelf and flexGrow.
-   */
-  fun child(componentWithParams: FlexboxParams?) {
-    componentWithParams?.let { children.add(it.getComponentWithAppliedParams(context)) }
   }
 }
