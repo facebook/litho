@@ -418,8 +418,9 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   @Nullable
-  private InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
+  public InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
     if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
@@ -545,11 +546,6 @@ public abstract class Component extends ComponentLifecycle
   final void setKey(String key) {
     mHasManualKey = true;
     mKey = key;
-  }
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  final InternalNode getLayoutCreatedInWillRenderForTesting() {
-    return mLayoutCreatedInWillRender;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
