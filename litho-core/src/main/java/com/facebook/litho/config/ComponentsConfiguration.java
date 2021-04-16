@@ -245,6 +245,8 @@ public class ComponentsConfiguration {
 
   public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
 
+  public static boolean useWillRenderCachedLayoutFromLSC = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;

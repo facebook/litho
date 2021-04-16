@@ -1544,6 +1544,8 @@ public class LayoutState
         }
       }
 
+      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
+
       layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);
 
@@ -1559,8 +1561,6 @@ public class LayoutState
       layoutState.mHeightSpec = heightSpec;
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
-
-      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
 
       // Release the current InternalNode tree if it is not reconcilable.
       if (!isReconcilable && currentLayoutState != null) {

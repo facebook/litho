@@ -36,6 +36,7 @@ public class LayoutStateContext {
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
   private @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
+  private @Nullable Map<Integer, InternalNode> mComponentIdToWillRenderLayout;
   private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction;
 
   private static @Nullable LayoutState sTestLayoutState;
@@ -69,6 +70,13 @@ public class LayoutStateContext {
 
     if (mGlobalKeyToScopedInfo != null && layoutStateContext.mGlobalKeyToScopedInfo != null) {
       mGlobalKeyToScopedInfo.putAll(layoutStateContext.mGlobalKeyToScopedInfo);
+    }
+
+    if (layoutStateContext.mComponentIdToWillRenderLayout != null) {
+      if (mComponentIdToWillRenderLayout == null) {
+        mComponentIdToWillRenderLayout = new HashMap<>();
+      }
+      mComponentIdToWillRenderLayout.putAll(layoutStateContext.mComponentIdToWillRenderLayout);
     }
   }
 
@@ -147,6 +155,29 @@ public class LayoutStateContext {
   @Nullable
   ComponentContext getScopedContext(String globalKey) {
     return mGlobalKeyToScopedContext == null ? null : mGlobalKeyToScopedContext.get(globalKey);
+  }
+
+  @Nullable
+  InternalNode consumeLayoutCreatedInWillRender(int componentId) {
+    return mComponentIdToWillRenderLayout == null
+        ? null
+        : mComponentIdToWillRenderLayout.remove(componentId);
+  }
+
+  @Nullable
+  InternalNode getLayoutCreatedInWillRender(int componentId) {
+    return mComponentIdToWillRenderLayout == null
+        ? null
+        : mComponentIdToWillRenderLayout.get(componentId);
+  }
+
+  @Nullable
+  void setLayoutCreatedInWillRender(int componentId, final @Nullable InternalNode node) {
+    if (mComponentIdToWillRenderLayout == null) {
+      mComponentIdToWillRenderLayout = new HashMap<>();
+    }
+
+    mComponentIdToWillRenderLayout.put(componentId, node);
   }
 
   void releaseReference() {

@@ -2463,7 +2463,9 @@ public class LayoutStateCalculateTest {
     c.setLayoutStateContextForTesting();
 
     final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, false).build());
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build());
+
+    c = ComponentContext.withComponentScope(c, componentSpy, "global_key");
 
     Component.willRender(c, componentSpy);
 
@@ -2471,11 +2473,7 @@ public class LayoutStateCalculateTest {
     assertThat(cachedLayout).isNotNull();
 
     calculateLayoutState(
-        c.getAndroidContext(),
-        componentSpy,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+        c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(componentSpy.getLayoutCreatedInWillRenderForTesting()).isNull();
 
@@ -2734,6 +2732,22 @@ public class LayoutStateCalculateTest {
             (AccessibilityManager) getApplicationContext().getSystemService(ACCESSIBILITY_SERVICE));
     manager.setEnabled(true);
     manager.setTouchExplorationEnabled(true);
+  }
+
+  private LayoutState calculateLayoutState(
+      final ComponentContext context,
+      final Component component,
+      final int componentTreeId,
+      final int widthSpec,
+      final int heightSpec) {
+
+    return LayoutState.calculate(
+        context,
+        component,
+        componentTreeId,
+        widthSpec,
+        heightSpec,
+        LayoutState.CalculateLayoutSource.TEST);
   }
 
   private LayoutState calculateLayoutState(

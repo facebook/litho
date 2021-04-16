@@ -388,11 +388,22 @@ public abstract class Component extends ComponentLifecycle
 
   @Nullable
   final InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
-    final InternalNode layout = mLayoutCreatedInWillRender;
+    InternalNode layout;
+
+    if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
+      if (context == null || context.getLayoutStateContext() == null) {
+        return null;
+      }
+
+      layout = context.getLayoutStateContext().consumeLayoutCreatedInWillRender(mId);
+    } else {
+      layout = mLayoutCreatedInWillRender;
+      mLayoutCreatedInWillRender = null;
+    }
+
     if (layout != null && context.isStatelessComponentEnabled()) {
       assertSameBaseContext(context, layout.getContext());
     }
-    mLayoutCreatedInWillRender = null;
 
     if (!ComponentsConfiguration.useCachedLayoutOnlyWhenGlobalKeysMatchesParent) {
       return layout;
@@ -404,6 +415,34 @@ public abstract class Component extends ComponentLifecycle
       return layout;
     } else {
       return null;
+    }
+  }
+
+  @Nullable
+  private InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
+    if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access layout created in will render outside of a layout state calculation.");
+      }
+
+      return scopedContext.getLayoutStateContext().getLayoutCreatedInWillRender(mId);
+    } else {
+      return mLayoutCreatedInWillRender;
+    }
+  }
+
+  private void setLayoutCreatedInWillRender(
+      final ComponentContext scopedContext, final @Nullable InternalNode newValue) {
+    if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
+      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+        throw new IllegalStateException(
+            "Cannot access layout created in will render outside of a layout state calculation.");
+      }
+
+      scopedContext.getLayoutStateContext().setLayoutCreatedInWillRender(mId, newValue);
+    } else {
+      mLayoutCreatedInWillRender = newValue;
     }
   }
 
@@ -939,8 +978,10 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    if (component.mLayoutCreatedInWillRender != null) {
-      return willRender(component, component.mLayoutCreatedInWillRender);
+    final InternalNode componentLayoutCreatedInWillRender =
+        component.getLayoutCreatedInWillRender(c);
+    if (componentLayoutCreatedInWillRender != null) {
+      return willRender(c, component, componentLayoutCreatedInWillRender);
     }
 
     // Missing StateHandler is only expected in tests
@@ -948,8 +989,10 @@ public abstract class Component extends ComponentLifecycle
         c.getStateHandler() == null
             ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
             : c;
-    component.mLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
-    return willRender(component, component.mLayoutCreatedInWillRender);
+
+    final InternalNode newLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
+    component.setLayoutCreatedInWillRender(c, newLayoutCreatedInWillRender);
+    return willRender(c, component, newLayoutCreatedInWillRender);
   }
 
   static boolean isHostSpec(@Nullable Component component) {
@@ -1068,7 +1111,8 @@ public abstract class Component extends ComponentLifecycle
     return current;
   }
 
-  private static boolean willRender(Component component, InternalNode node) {
+  private static boolean willRender(
+      ComponentContext context, Component component, InternalNode node) {
     if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
       return false;
     }
@@ -1077,7 +1121,8 @@ public abstract class Component extends ComponentLifecycle
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
-      component.mLayoutCreatedInWillRender = null; // Clear the layout created in will render
+      component.consumeLayoutCreatedInWillRender(
+          context); // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
