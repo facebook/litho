@@ -2487,7 +2487,10 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
+
+    c = ComponentContext.withComponentScope(c, component, "global_key");
 
     Component.willRender(c, component);
 
@@ -2504,7 +2507,10 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
+
+    c = ComponentContext.withComponentScope(c, component, "global_key");
 
     Component.willRender(c, component);
 
@@ -2521,7 +2527,10 @@ public class LayoutStateCalculateTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
-    final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
+
+    c = ComponentContext.withComponentScope(c, component, "global_key");
 
     Component.willRender(c, component);
 

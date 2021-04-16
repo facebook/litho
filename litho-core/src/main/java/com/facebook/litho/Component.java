@@ -393,7 +393,18 @@ public abstract class Component extends ComponentLifecycle
       assertSameBaseContext(context, layout.getContext());
     }
     mLayoutCreatedInWillRender = null;
-    return layout;
+
+    if (!ComponentsConfiguration.useCachedLayoutOnlyWhenGlobalKeysMatchesParent) {
+      return layout;
+    }
+
+    if (layout != null
+        && context.getComponentScope() != null
+        && layout.getContext().getGlobalKey().startsWith(context.getGlobalKey())) {
+      return layout;
+    } else {
+      return null;
+    }
   }
 
   /**
