@@ -673,6 +673,16 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public int getDefStyleAttr() {
+    return mDefStyleAttr;
+  }
+
+  @Override
+  public int getDefStyleRes() {
+    return mDefStyleRes;
+  }
+
+  @Override
   public void copyInto(ComponentContext c, InternalNode node) {
     if (node == NULL_LAYOUT) {
       return;
@@ -985,7 +995,7 @@ class CommonPropsHolder implements CommonProps {
     }
   }
 
-  static class DefaultLayoutProps implements CopyableLayoutProps {
+  public static class DefaultLayoutProps implements CopyableLayoutProps {
     private static final int PFLAG_WIDTH_IS_SET = 1 << 0;
     private static final int PFLAG_WIDTH_PERCENT_IS_SET = 1 << 1;
     private static final int PFLAG_MIN_WIDTH_IS_SET = 1 << 2;

@@ -125,7 +125,7 @@ public class Border implements Equivalence<Border> {
     return true;
   }
 
-  private static void setEdgeValue(int[] edges, YogaEdge edge, int value) {
+  public static void setEdgeValue(int[] edges, YogaEdge edge, int value) {
     switch (edge) {
       case ALL:
         for (int i = 0; i < EDGE_COUNT; ++i) {

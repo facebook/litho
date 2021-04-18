@@ -611,4 +611,10 @@ public class ComponentContext {
         ? ComponentsConfiguration.useStatelessComponent
         : mComponentTree.isStatelessComponentEnabled();
   }
+
+  boolean isInputOnlyInternalNodeEnabled() {
+    return mComponentTree == null
+        ? ComponentsConfiguration.useInputOnlyInternalNodes
+        : mComponentTree.isInputOnlyInternalNodeEnabled();
+  }
 }

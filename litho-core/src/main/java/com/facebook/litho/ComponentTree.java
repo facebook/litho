@@ -110,6 +110,7 @@ public class ComponentTree implements LithoLifecycleListener {
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
   private final boolean mUseStatelessComponent;
+  private final boolean mUseInputOnlyInternalNodes;
   private final boolean mIgnoreNullLayoutStateError;
 
   @GuardedBy("this")
@@ -178,6 +179,10 @@ public class ComponentTree implements LithoLifecycleListener {
     }
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
+  }
+
+  public boolean isInputOnlyInternalNodeEnabled() {
+    return mUseInputOnlyInternalNodes;
   }
 
   public interface MeasureListener {
@@ -419,6 +424,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
     mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+    mUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =

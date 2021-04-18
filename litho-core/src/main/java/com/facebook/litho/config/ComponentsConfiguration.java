@@ -241,6 +241,12 @@ public class ComponentsConfiguration {
    */
   public static boolean useStatelessComponent = false;
 
+  /**
+   * When true, Litho will use the InputOnlyInternalNode and DefaultLayoutResult for layout
+   * calculations.
+   */
+  public static boolean useInputOnlyInternalNodes = false;
+
   public static boolean throwExceptionInterStagePropsContainerNull = false;
 
   public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;

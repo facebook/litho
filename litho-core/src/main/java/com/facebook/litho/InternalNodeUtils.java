@@ -26,7 +26,9 @@ public class InternalNodeUtils {
     if (factory != null) {
       return factory.create(context);
     } else {
-      return new DefaultInternalNode(context);
+      return context.isInputOnlyInternalNodeEnabled()
+          ? new InputOnlyInternalNode<>(context)
+          : new DefaultInternalNode(context);
     }
   }
 
@@ -36,7 +38,9 @@ public class InternalNodeUtils {
     if (factory != null) {
       return factory.createNestedTreeHolder(context, props);
     } else {
-      return new DefaultNestedTreeHolder(context, props);
+      return context.isInputOnlyInternalNodeEnabled()
+          ? new InputOnlyNestedTreeHolder(context, props)
+          : new DefaultNestedTreeHolder(context, props);
     }
   }
 

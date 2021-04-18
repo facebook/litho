@@ -211,4 +211,8 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalen
 
   @Nullable
   CopyableLayoutProps getLayoutProps();
+
+  int getDefStyleAttr();
+
+  int getDefStyleRes();
 }
