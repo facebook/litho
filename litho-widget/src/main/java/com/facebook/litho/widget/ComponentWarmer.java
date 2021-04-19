@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget;
 
+import android.os.Handler;
+import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
@@ -23,6 +25,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
+import com.facebook.litho.ThreadUtils;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.annotation.Nullable;
@@ -171,6 +174,7 @@ public class ComponentWarmer {
   private boolean mIsReady;
   private @Nullable ComponentWarmerReadyListener mReadyListener;
   private BlockingQueue<ComponentRenderInfo> mPendingRenderInfos;
+  private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
   private volatile boolean mReleaseEvictedEntries;
 
   /**
@@ -256,9 +260,19 @@ public class ComponentWarmer {
     CacheListener cacheListener =
         new CacheListener() {
           @Override
-          public void onEntryEvicted(String tag, ComponentTreeHolder holder) {
+          public void onEntryEvicted(String tag, final ComponentTreeHolder holder) {
             if (mReleaseEvictedEntries) {
-              holder.releaseTree();
+              if (ThreadUtils.isMainThread()) {
+                holder.releaseTree();
+              } else {
+                mMainThreadHandler.post(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        holder.releaseTree();
+                      }
+                    });
+              }
             }
           }
         };
