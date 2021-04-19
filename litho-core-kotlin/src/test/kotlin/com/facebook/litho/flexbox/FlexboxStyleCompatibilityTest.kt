@@ -22,6 +22,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.LithoView
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
@@ -29,7 +31,6 @@ import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
-import com.facebook.litho.view.wrapInView
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -29,11 +29,11 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.Transition
 import com.facebook.litho.animation.AnimatedProperties
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.flexbox.height
-import com.facebook.litho.flexbox.margin
-import com.facebook.litho.flexbox.width
 import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.transition.useTransition
 import com.facebook.litho.useState

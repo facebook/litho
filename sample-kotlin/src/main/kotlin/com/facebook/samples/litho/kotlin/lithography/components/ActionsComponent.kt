@@ -21,9 +21,9 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
-import com.facebook.litho.flexbox.padding
 import com.facebook.litho.view.background
 
 class ActionsComponent(val style: Style? = null) : KComponent() {

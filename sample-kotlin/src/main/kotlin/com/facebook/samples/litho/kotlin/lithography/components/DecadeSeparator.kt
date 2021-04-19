@@ -21,12 +21,12 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.flexbox.height
-import com.facebook.litho.flexbox.margin
-import com.facebook.litho.flexbox.padding
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text

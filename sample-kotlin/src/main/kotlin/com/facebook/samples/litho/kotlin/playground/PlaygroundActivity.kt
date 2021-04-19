@@ -23,8 +23,8 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.padding
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
 import com.facebook.litho.useState

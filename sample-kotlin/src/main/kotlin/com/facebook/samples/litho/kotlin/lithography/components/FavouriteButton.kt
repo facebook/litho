@@ -23,10 +23,10 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
-import com.facebook.litho.flexbox.height
-import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick

@@ -24,8 +24,8 @@ import com.facebook.litho.DynamicValue
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
-import com.facebook.litho.flexbox.height
-import com.facebook.litho.flexbox.width
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.px
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.setRoot

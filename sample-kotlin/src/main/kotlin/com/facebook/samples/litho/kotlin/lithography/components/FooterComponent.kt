@@ -22,8 +22,8 @@ import com.facebook.litho.Column
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
+import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.padding
 import com.facebook.litho.widget.Text
 
 class FooterComponent(val text: String) : KComponent() {

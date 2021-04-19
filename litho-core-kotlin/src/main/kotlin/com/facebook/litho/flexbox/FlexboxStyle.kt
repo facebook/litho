@@ -29,27 +29,7 @@ import com.facebook.yoga.YogaPositionType
 
 /** Enums for [FlexboxDimenStyleItem]. */
 private enum class FlexboxDimenField {
-  WIDTH,
-  HEIGHT,
-  MIN_WIDTH,
-  MAX_WIDTH,
-  MIN_HEIGHT,
-  MAX_HEIGHT,
   FLEX_BASIS,
-  PADDING_START,
-  PADDING_TOP,
-  PADDING_END,
-  PADDING_BOTTOM,
-  PADDING_HORIZONTAL,
-  PADDING_VERTICAL,
-  PADDING_ALL,
-  MARGIN_START,
-  MARGIN_TOP,
-  MARGIN_END,
-  MARGIN_BOTTOM,
-  MARGIN_HORIZONTAL,
-  MARGIN_VERTICAL,
-  MARGIN_ALL,
   POSITION_START,
   POSITION_TOP,
   POSITION_END,
@@ -58,12 +38,6 @@ private enum class FlexboxDimenField {
 
 /** Enums for [FlexboxFloatStyleItem]. */
 private enum class FlexboxFloatField {
-  WIDTH_PERCENT,
-  HEIGHT_PERCENT,
-  MIN_WIDTH_PERCENT,
-  MAX_WIDTH_PERCENT,
-  MIN_HEIGHT_PERCENT,
-  MAX_HEIGHT_PERCENT,
   FLEX,
   FLEX_GROW,
   FLEX_SHRINK,
@@ -82,28 +56,7 @@ private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dim
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(resourceResolver)
     when (field) {
-      FlexboxDimenField.WIDTH -> commonProps.widthPx(if (value == Dimen.Hairline) 1 else pixelValue)
-      FlexboxDimenField.HEIGHT ->
-          commonProps.heightPx(if (value == Dimen.Hairline) 1 else pixelValue)
-      FlexboxDimenField.MIN_WIDTH -> commonProps.minWidthPx(pixelValue)
-      FlexboxDimenField.MAX_WIDTH -> commonProps.maxWidthPx(pixelValue)
-      FlexboxDimenField.MIN_HEIGHT -> commonProps.minHeightPx(pixelValue)
-      FlexboxDimenField.MAX_HEIGHT -> commonProps.maxHeightPx(pixelValue)
       FlexboxDimenField.FLEX_BASIS -> commonProps.flexBasisPx(pixelValue)
-      FlexboxDimenField.PADDING_START -> commonProps.paddingPx(YogaEdge.START, pixelValue)
-      FlexboxDimenField.PADDING_TOP -> commonProps.paddingPx(YogaEdge.TOP, pixelValue)
-      FlexboxDimenField.PADDING_END -> commonProps.paddingPx(YogaEdge.END, pixelValue)
-      FlexboxDimenField.PADDING_BOTTOM -> commonProps.paddingPx(YogaEdge.BOTTOM, pixelValue)
-      FlexboxDimenField.PADDING_HORIZONTAL -> commonProps.paddingPx(YogaEdge.HORIZONTAL, pixelValue)
-      FlexboxDimenField.PADDING_VERTICAL -> commonProps.paddingPx(YogaEdge.VERTICAL, pixelValue)
-      FlexboxDimenField.PADDING_ALL -> commonProps.paddingPx(YogaEdge.ALL, pixelValue)
-      FlexboxDimenField.MARGIN_START -> commonProps.marginPx(YogaEdge.START, pixelValue)
-      FlexboxDimenField.MARGIN_TOP -> commonProps.marginPx(YogaEdge.TOP, pixelValue)
-      FlexboxDimenField.MARGIN_END -> commonProps.marginPx(YogaEdge.END, pixelValue)
-      FlexboxDimenField.MARGIN_BOTTOM -> commonProps.marginPx(YogaEdge.BOTTOM, pixelValue)
-      FlexboxDimenField.MARGIN_HORIZONTAL -> commonProps.marginPx(YogaEdge.HORIZONTAL, pixelValue)
-      FlexboxDimenField.MARGIN_VERTICAL -> commonProps.marginPx(YogaEdge.VERTICAL, pixelValue)
-      FlexboxDimenField.MARGIN_ALL -> commonProps.marginPx(YogaEdge.ALL, pixelValue)
       FlexboxDimenField.POSITION_START -> commonProps.positionPx(YogaEdge.START, pixelValue)
       FlexboxDimenField.POSITION_END -> commonProps.positionPx(YogaEdge.END, pixelValue)
       FlexboxDimenField.POSITION_TOP -> commonProps.positionPx(YogaEdge.TOP, pixelValue)
@@ -117,12 +70,6 @@ private class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : S
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
-      FlexboxFloatField.WIDTH_PERCENT -> commonProps.widthPercent(value)
-      FlexboxFloatField.HEIGHT_PERCENT -> commonProps.heightPercent(value)
-      FlexboxFloatField.MIN_WIDTH_PERCENT -> commonProps.minWidthPercent(value)
-      FlexboxFloatField.MAX_WIDTH_PERCENT -> commonProps.maxWidthPercent(value)
-      FlexboxFloatField.MIN_HEIGHT_PERCENT -> commonProps.minHeightPercent(value)
-      FlexboxFloatField.MAX_HEIGHT_PERCENT -> commonProps.maxHeightPercent(value)
       FlexboxFloatField.FLEX -> commonProps.flex(value)
       FlexboxFloatField.FLEX_GROW -> commonProps.flexGrow(value)
       FlexboxFloatField.FLEX_SHRINK -> commonProps.flexShrink(value)
@@ -142,36 +89,6 @@ private class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: A
     }.exhaustive
   }
 }
-
-/** Sets a specific preferred width for this component when its parent lays it out. */
-fun Style.width(width: Dimen) = this + FlexboxDimenStyleItem(FlexboxDimenField.WIDTH, width)
-
-/** Sets a specific preferred height for this component when its parent lays it out. */
-fun Style.height(height: Dimen) = this + FlexboxDimenStyleItem(FlexboxDimenField.HEIGHT, height)
-
-/** Sets a specific preferred percent width for this component when its parent lays it out. */
-fun Style.widthPercent(widthPercent: Float) =
-    this + FloatStyleItem(FlexboxFloatField.WIDTH_PERCENT, widthPercent)
-
-/** Sets a specific preferred percent height for this component when its parent lays it out. */
-fun Style.heightPercent(heightPercent: Float) =
-    this + FloatStyleItem(FlexboxFloatField.HEIGHT_PERCENT, heightPercent)
-
-/** Sets a preferred minimum width for this component when its parent lays it out. */
-fun Style.minWidth(minWidth: Dimen) =
-    this + FlexboxDimenStyleItem(FlexboxDimenField.MIN_WIDTH, minWidth)
-
-/** Sets a preferred maximum width for this component when its parent lays it out. */
-fun Style.maxWidth(maxWidth: Dimen) =
-    this + FlexboxDimenStyleItem(FlexboxDimenField.MAX_WIDTH, maxWidth)
-
-/** Sets a preferred minimum height for this component when its parent lays it out. */
-fun Style.minHeight(minHeight: Dimen) =
-    this + FlexboxDimenStyleItem(FlexboxDimenField.MIN_HEIGHT, minHeight)
-
-/** Sets a preferred maximum height for this component when its parent lays it out. */
-fun Style.maxHeight(maxHeight: Dimen) =
-    this + FlexboxDimenStyleItem(FlexboxDimenField.MAX_HEIGHT, maxHeight)
 
 /**
  * Flex allows you to define how this component should take up space within its parent. It's
@@ -220,44 +137,6 @@ fun Style.alignSelf(align: YogaAlign) =
  */
 fun Style.aspectRatio(aspectRatio: Float) =
     this + FloatStyleItem(FlexboxFloatField.ASPECT_RATIO, aspectRatio)
-
-/** Defines padding on the component on a per-edge basis. */
-fun Style.padding(
-    all: Dimen? = null,
-    horizontal: Dimen? = null,
-    vertical: Dimen? = null,
-    start: Dimen? = null,
-    top: Dimen? = null,
-    end: Dimen? = null,
-    bottom: Dimen? = null
-) =
-    this +
-        all?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_ALL, it) } +
-        horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_HORIZONTAL, it) } +
-        vertical?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_VERTICAL, it) } +
-        start?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_START, it) } +
-        top?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_TOP, it) } +
-        end?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_END, it) } +
-        bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.PADDING_BOTTOM, it) }
-
-/** Defines margin around the component on a per-edge basis. */
-fun Style.margin(
-    all: Dimen? = null,
-    horizontal: Dimen? = null,
-    vertical: Dimen? = null,
-    start: Dimen? = null,
-    top: Dimen? = null,
-    end: Dimen? = null,
-    bottom: Dimen? = null
-) =
-    this +
-        all?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_ALL, it) } +
-        horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_HORIZONTAL, it) } +
-        vertical?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_VERTICAL, it) } +
-        start?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_START, it) } +
-        top?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_TOP, it) } +
-        end?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_END, it) } +
-        bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.MARGIN_BOTTOM, it) }
 
 /**
  * Used in conjunction with [positionType] to define how a component should be positioned in its

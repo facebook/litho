@@ -37,11 +37,11 @@ import com.facebook.litho.animated.scaleX
 import com.facebook.litho.animated.scaleY
 import com.facebook.litho.animated.translationY
 import com.facebook.litho.animated.useBinding
+import com.facebook.litho.core.height
+import com.facebook.litho.core.margin
+import com.facebook.litho.core.width
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.flexbox.height
-import com.facebook.litho.flexbox.margin
-import com.facebook.litho.flexbox.width
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
