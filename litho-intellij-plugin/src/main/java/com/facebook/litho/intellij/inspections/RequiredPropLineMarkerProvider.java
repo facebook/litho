@@ -74,8 +74,4 @@ public class RequiredPropLineMarkerProvider implements LineMarkerProvider {
         null,
         GutterIconRenderer.Alignment.CENTER);
   }
-
-  @Override
-  public void collectSlowLineMarkers(
-      List<PsiElement> elements, Collection<LineMarkerInfo> result) {}
 }
