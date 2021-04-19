@@ -1758,9 +1758,7 @@ public class RecyclerBinder
               && toPosition
                   >= mCurrentFirstVisiblePosition - (mEstimatedViewportCount * mRangeRatio)
               && toPosition
-                  <= mCurrentFirstVisiblePosition
-                      + mEstimatedViewportCount
-                      + (mEstimatedViewportCount * mRangeRatio);
+                  <= mCurrentLastVisiblePosition + (mEstimatedViewportCount * mRangeRatio);
     }
     final boolean isTreeValid = holder.isTreeValid();
 
@@ -1771,7 +1769,9 @@ public class RecyclerBinder
 
     mViewportManager.setShouldUpdate(
         mViewportManager.moveAffectsVisibleRange(
-            fromPosition, toPosition, mEstimatedViewportCount));
+            fromPosition,
+            toPosition,
+            (mCurrentLastVisiblePosition - mCurrentFirstVisiblePosition + 1)));
   }
 
   /** Removes an item from index position. */
