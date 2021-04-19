@@ -22,7 +22,6 @@ import android.os.Build
 import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
-import com.facebook.litho.Border
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.LongClickEvent
@@ -38,7 +37,6 @@ import com.facebook.litho.getCommonPropsHolder
 /** Enums for [ObjectStyleItem]. */
 private enum class ObjectField {
   BACKGROUND,
-  BORDER,
   CLICKABLE,
   CLIP_CHILDREN,
   CLIP_TO_OUTLINE,
@@ -71,7 +69,6 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       ObjectField.BACKGROUND -> commonProps.background(value as Drawable?)
-      ObjectField.BORDER -> commonProps.border(value as Border?)
       ObjectField.CLICKABLE -> commonProps.clickable(value as Boolean)
       ObjectField.CLIP_CHILDREN -> commonProps.clipChildren(value as Boolean)
       ObjectField.CLIP_TO_OUTLINE -> commonProps.clipToOutline(value as Boolean)
@@ -134,12 +131,6 @@ fun Style.background(background: Drawable?) =
  */
 fun Style.backgroundColor(@ColorInt backgroundColor: Int) =
     this + ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
-
-/**
- * Describes how a [Border] should be drawn around this component. Setting this property will cause
- * the Component to be represented as a View at mount time if it wasn't going to already.
- */
-fun Style.border(border: Border) = this + ObjectStyleItem(ObjectField.BORDER, border)
 
 /**
  * Sets if the View this Component mounts to should be clickable. Setting this property will cause

@@ -16,8 +16,14 @@
 
 package com.facebook.litho.flexbox
 
+import android.graphics.Color
+import android.text.Layout
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.Border
+import com.facebook.litho.Component
 import com.facebook.litho.ComponentHost
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
 import com.facebook.litho.LithoView
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -32,6 +38,7 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.px
+import com.facebook.litho.resolveComponentToNodeForTest
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -40,7 +47,9 @@ import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
+import org.assertj.core.api.Java6Assertions
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -349,5 +358,37 @@ class FlexboxStylesTest {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
             })
+  }
+
+  /**
+   * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so
+   * already loaded in another classloader exception' caused by multiple ClassLoaders trying to load
+   * Yoga when using @Config to specify a different target sdk. See:
+   * https://www.internalfb.com/intern/staticdocs/litho/docs/testing/unit-testing/
+   */
+  @Test
+  fun border_whenSet_isRespected() {
+    class ComponentWithBorder : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(
+            style =
+                Style.border(
+                    Border.create(context)
+                        .color(YogaEdge.LEFT, Color.BLUE)
+                        .color(YogaEdge.TOP, Color.RED)
+                        .color(YogaEdge.RIGHT, Color.BLACK)
+                        .color(YogaEdge.BOTTOM, Color.WHITE)
+                        .radiusDip(Border.Corner.TOP_LEFT, 5f)
+                        .radiusDip(Border.Corner.TOP_RIGHT, 6f)
+                        .radiusDip(Border.Corner.BOTTOM_RIGHT, 7f)
+                        .radiusDip(Border.Corner.BOTTOM_LEFT, 8f)
+                        .build()))
+      }
+    }
+
+    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithBorder())
+    Java6Assertions.assertThat(node.borderColors)
+        .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
+    Java6Assertions.assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
   }
 }

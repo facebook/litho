@@ -16,6 +16,7 @@
 
 package com.facebook.litho.flexbox
 
+import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.Dimen
 import com.facebook.litho.ResourceResolver
@@ -47,6 +48,7 @@ private enum class FlexboxFloatField {
 /** Enums for [FlexboxObjectStyleItem]. */
 private enum class FlexboxObjectField {
   ALIGN_SELF,
+  BORDER,
   POSITION_TYPE,
 }
 
@@ -84,6 +86,7 @@ private class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: A
     val commonProps = component.getCommonPropsHolder()
     when (field) {
       FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
+      FlexboxObjectField.BORDER -> commonProps.border(value as Border?)
       FlexboxObjectField.POSITION_TYPE ->
           value?.let { commonProps.positionType(it as YogaPositionType) }
     }.exhaustive
@@ -167,3 +170,9 @@ fun Style.position(
 /** See docs in [position]. */
 fun Style.positionType(positionType: YogaPositionType) =
     this + FlexboxObjectStyleItem(FlexboxObjectField.POSITION_TYPE, positionType)
+
+/**
+ * Describes how a [Border] should be drawn around this component. Setting this property will cause
+ * the Component to be represented as a View at mount time if it wasn't going to already.
+ */
+fun Style.border(border: Border) = this + FlexboxObjectStyleItem(FlexboxObjectField.BORDER, border)

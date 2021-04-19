@@ -22,7 +22,6 @@ import android.text.Layout
 import android.util.SparseArray
 import android.view.ViewOutlineProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.Border
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentHost
 import com.facebook.litho.ComponentScope
@@ -41,7 +40,6 @@ import com.facebook.litho.testing.child
 import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
-import com.facebook.yoga.YogaEdge
 import java.util.concurrent.atomic.AtomicBoolean
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.Rule
@@ -339,33 +337,6 @@ class ViewStylesTest {
     val node = resolveComponentToNodeForTest(lithoViewRule.context, OutlineProviderComponent())
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
-  }
-
-  /** See comment on [elevation_whenSet_isRespected] above. */
-  @Test
-  fun border_whenSet_isRespected() {
-    class ComponentWithBorder : KComponent() {
-      override fun ComponentScope.render(): Component? {
-        return Row(
-            style =
-                Style.border(
-                    Border.create(context)
-                        .color(YogaEdge.LEFT, Color.BLUE)
-                        .color(YogaEdge.TOP, Color.RED)
-                        .color(YogaEdge.RIGHT, Color.BLACK)
-                        .color(YogaEdge.BOTTOM, Color.WHITE)
-                        .radiusDip(Border.Corner.TOP_LEFT, 5f)
-                        .radiusDip(Border.Corner.TOP_RIGHT, 6f)
-                        .radiusDip(Border.Corner.BOTTOM_RIGHT, 7f)
-                        .radiusDip(Border.Corner.BOTTOM_LEFT, 8f)
-                        .build()))
-      }
-    }
-
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithBorder())
-    assertThat(node.borderColors)
-        .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
-    assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
   }
 
   /** See comment on [elevation_whenSet_isRespected] above. */
