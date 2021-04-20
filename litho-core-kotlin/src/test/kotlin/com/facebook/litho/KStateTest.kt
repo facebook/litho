@@ -159,6 +159,7 @@ class KStateTest {
         .isEmpty()
   }
 
+  @Test
   fun useState_counterIncrementedTwiceBeforeStateCommit_bothIncrementsAreApplied() {
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
