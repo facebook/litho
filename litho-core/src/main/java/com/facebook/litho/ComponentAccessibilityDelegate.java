@@ -30,6 +30,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItem;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -78,7 +79,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
   private static ComponentContext getScopedContext(
       final Component component, final LayoutOutput layoutOutput) {
-    return component.isStateless()
+    return ComponentsConfiguration.useStatelessComponent
         ? layoutOutput.getScopedContext()
         : component.getScopedContext(null, null);
   }

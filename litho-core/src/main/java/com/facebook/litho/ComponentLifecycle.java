@@ -32,6 +32,7 @@ import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -80,7 +81,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   static YogaMeasureFunction getYogaMeasureFunction(final ComponentContext context) {
-    if (context.isStatelessComponentEnabled()) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return context.getLayoutStateContext().getLithoYogaMeasureFunction();
     }
 
@@ -602,16 +603,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       final @Nullable Component previous,
       final @Nullable ComponentContext nextScopedContext,
       final @Nullable Component next) {
+    final boolean isComponentStateless = ComponentsConfiguration.useStatelessComponent;
     final StateContainer prevStateContainer =
         previous == null
             ? null
-            : (previous.isStateless() && previousScopedContext == null
+            : (isComponentStateless && previousScopedContext == null
                 ? null
                 : Component.getStateContainer(previousScopedContext, previous));
     final StateContainer nextStateContainer =
         next == null
             ? null
-            : (next.isStateless() && nextScopedContext == null
+            : (isComponentStateless && nextScopedContext == null
                 ? null
                 : Component.getStateContainer(nextScopedContext, next));
 

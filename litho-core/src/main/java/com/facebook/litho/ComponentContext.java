@@ -189,7 +189,7 @@ public class ComponentContext {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
 
-    if (componentContext.isStatelessComponentEnabled()
+    if (ComponentsConfiguration.useStatelessComponent
         && globalKey != null
         && componentContext.getLayoutStateContext() != null) {
       componentContext.mGlobalKey = globalKey;
@@ -289,7 +289,7 @@ public class ComponentContext {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
-    if (isStatelessComponentEnabled()) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return mGlobalKey;
     }
 
@@ -298,7 +298,7 @@ public class ComponentContext {
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
-      if (isStatelessComponentEnabled()) {
+      if (ComponentsConfiguration.useStatelessComponent) {
         EventHandler<ErrorEvent> errorEventHandler =
             getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
 
@@ -604,12 +604,6 @@ public class ComponentContext {
       return ComponentTree.RecyclingMode.DEFAULT;
     }
     return mComponentTree.getRecyclingMode();
-  }
-
-  boolean isStatelessComponentEnabled() {
-    return mComponentTree == null
-        ? ComponentsConfiguration.useStatelessComponent
-        : mComponentTree.isStatelessComponentEnabled();
   }
 
   boolean isInputOnlyInternalNodeEnabled() {

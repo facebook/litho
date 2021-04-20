@@ -39,7 +39,7 @@ public class ComponentUtils {
       return null;
     }
 
-    if (component.isStateless()) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return availableGlobalKey;
     }
 

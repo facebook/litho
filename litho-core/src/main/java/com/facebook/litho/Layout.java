@@ -751,7 +751,7 @@ class Layout {
           component.getScopedContext(layoutStateContext, globalKey);
 
       try {
-        if (component.isStateless()) {
+        if (ComponentsConfiguration.useStatelessComponent) {
           Component diffNodeComponent = diffNode.getComponent();
 
           return component.shouldUpdate(
@@ -790,7 +790,7 @@ class Layout {
     }
 
     final LayoutStateContext committedContext;
-    if (diffNodeComponent.isStateless()) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       committedContext = prevLayoutStateContext;
     } else {
       if (currentLayoutStateContext == null) {

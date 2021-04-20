@@ -242,6 +242,7 @@ public class LayoutState
     mOrientation = context.getResources().getConfiguration().orientation;
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
+    mComponentKeys = new ArrayList<>();
 
     if (context.getComponentTree() != null) {
       mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
@@ -1088,12 +1089,7 @@ public class LayoutState
         if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
-            if (delegateScopedContext.isStatelessComponentEnabled()) {
-              if (layoutState.mComponentKeys == null) {
-                layoutState.mComponentKeys = new ArrayList<>();
-              }
-              layoutState.mComponentKeys.add(delegateKey);
-            }
+            layoutState.mComponentKeys.add(delegateKey);
           }
         }
         if (delegateKey != null || delegate.hasHandle()) {
@@ -1224,7 +1220,7 @@ public class LayoutState
     boolean isOutputUpdated;
     if (recycle != null) {
       try {
-        if (drawableComponent.isStateless()) {
+        if (ComponentsConfiguration.useStatelessComponent) {
           isOutputUpdated =
               !drawableComponent.shouldUpdate(
                   recycle.getComponent(),
@@ -1539,9 +1535,7 @@ public class LayoutState
       Component.markLayoutStarted(component, layoutStateContext);
 
       if (isReconcilable && currentLayoutState != null) {
-        if (c.isStatelessComponentEnabled()) {
-          layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
-        }
+        layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
       }
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);

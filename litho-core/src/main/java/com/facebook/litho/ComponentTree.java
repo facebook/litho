@@ -109,7 +109,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
-  private final boolean mUseStatelessComponent;
   private final boolean mUseInputOnlyInternalNodes;
   private final boolean mIgnoreNullLayoutStateError;
 
@@ -423,7 +422,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
-    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     mUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
@@ -459,10 +457,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = AnimationsDebug.areTransitionsEnabled(mContext.getAndroidContext());
-  }
-
-  public boolean isStatelessComponentEnabled() {
-    return mUseStatelessComponent;
   }
 
   private static boolean incrementalMountGloballyDisabled() {
@@ -2402,9 +2396,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
-      final String globalKey =
-          ComponentUtils.getGlobalKey(
-              component, componentKeys == null ? null : componentKeys.get(i));
+      final String globalKey = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
       final ComponentContext scopedContext =
           component.getScopedContext(layoutStateContext, globalKey);
       mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);

@@ -56,19 +56,19 @@ public class LayoutStateContext {
   void copyScopedInfoFrom(LayoutStateContext layoutStateContext) {
     mIsScopedInfoCopiedFromLSCInstance = true;
 
-    if (mGlobalKeyToScopedContext == null) {
-      mGlobalKeyToScopedContext = new HashMap<>();
-    }
+    if (layoutStateContext.mGlobalKeyToScopedContext != null) {
+      if (mGlobalKeyToScopedContext == null) {
+        mGlobalKeyToScopedContext = new HashMap<>();
+      }
 
-    if (mGlobalKeyToScopedInfo == null) {
-      mGlobalKeyToScopedInfo = new HashMap<>();
-    }
-
-    if (mGlobalKeyToScopedContext != null && layoutStateContext.mGlobalKeyToScopedContext != null) {
       mGlobalKeyToScopedContext.putAll(layoutStateContext.mGlobalKeyToScopedContext);
     }
 
-    if (mGlobalKeyToScopedInfo != null && layoutStateContext.mGlobalKeyToScopedInfo != null) {
+    if (layoutStateContext.mGlobalKeyToScopedInfo != null) {
+      if (mGlobalKeyToScopedInfo == null) {
+        mGlobalKeyToScopedInfo = new HashMap<>();
+      }
+
       mGlobalKeyToScopedInfo.putAll(layoutStateContext.mGlobalKeyToScopedInfo);
     }
 

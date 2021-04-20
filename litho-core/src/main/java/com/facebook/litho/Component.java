@@ -87,8 +87,6 @@ public abstract class Component extends ComponentLifecycle
   /** Holds an identifying name of the component, set at construction time. */
   private final String mSimpleName;
 
-  final boolean mUseStatelessComponent;
-
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
    * LayoutState#mWorkingRangeContainer} when calculate method is finished.
@@ -141,8 +139,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected Component() {
     mSimpleName = getClass().getSimpleName();
-    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    if (!mUseStatelessComponent) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       mStateContainer = createStateContainer();
       mInterStagePropsContainer = createInterStagePropsContainer();
     }
@@ -150,11 +147,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected Component(String simpleName) {
     mSimpleName = simpleName;
-    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    if (!mUseStatelessComponent) {
-      mStateContainer = createStateContainer();
-      mInterStagePropsContainer = createInterStagePropsContainer();
-    }
+    init();
   }
 
   /**
@@ -165,8 +158,11 @@ public abstract class Component extends ComponentLifecycle
   protected Component(String simpleName, int identityHashCode) {
     super(identityHashCode);
     mSimpleName = simpleName;
-    mUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
-    if (!mUseStatelessComponent) {
+    init();
+  }
+
+  private void init() {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       mStateContainer = createStateContainer();
       mInterStagePropsContainer = createInterStagePropsContainer();
     }
@@ -203,7 +199,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   protected ComponentContext getScopedContext(
       @Nullable LayoutStateContext layoutStateContext, String globalKey) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (layoutStateContext == null) {
         throw new IllegalStateException(
             "Should not attempt to get a scoped context outside of a LayoutStateContext");
@@ -216,7 +212,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   public final void setScopedContext(ComponentContext scopedContext) {
-    if (scopedContext.isStatelessComponentEnabled()) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
 
@@ -273,7 +269,7 @@ public abstract class Component extends ComponentLifecycle
       final Component component = (Component) super.clone();
 
       component.mLayoutVersionGenerator = new AtomicBoolean();
-      if (!mUseStatelessComponent) {
+      if (!ComponentsConfiguration.useStatelessComponent) {
         component.mGlobalKey = null;
         component.mIsLayoutStarted = false;
         component.mScopedContext = null;
@@ -401,7 +397,7 @@ public abstract class Component extends ComponentLifecycle
       mLayoutCreatedInWillRender = null;
     }
 
-    if (layout != null && context.isStatelessComponentEnabled()) {
+    if (layout != null && ComponentsConfiguration.useStatelessComponent) {
       assertSameBaseContext(context, layout.getContext());
     }
 
@@ -468,7 +464,7 @@ public abstract class Component extends ComponentLifecycle
   @Override
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access error event handler outside of a layout state calculation.");
@@ -487,14 +483,10 @@ public abstract class Component extends ComponentLifecycle
     return mErrorEventHandler;
   }
 
-  final boolean isStateless() {
-    return mUseStatelessComponent;
-  }
-
   /** Get a key that is unique to this component within its tree. */
   @Nullable
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
-    if (component.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null) {
         throw new IllegalStateException(
             "Trying to access layout scoped information with a scoped context.");
@@ -509,7 +501,7 @@ public abstract class Component extends ComponentLifecycle
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
   final void setGlobalKey(String key) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
     mGlobalKey = key;
@@ -608,7 +600,7 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    if (!parentContext.isStatelessComponentEnabled()) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       clone.copyInterStageImpl(
           clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
           getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
@@ -629,7 +621,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
-    if (component.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       layoutStateContext.markLayoutStarted();
     } else {
       component.markLayoutStarted();
@@ -638,7 +630,7 @@ public abstract class Component extends ComponentLifecycle
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   final synchronized void markLayoutStarted() {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
     if (mIsLayoutStarted) {
@@ -683,7 +675,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
-    if (component.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
 
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
@@ -701,7 +693,7 @@ public abstract class Component extends ComponentLifecycle
 
   final StateContainer getStateContainer(
       final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (layoutStateContext == null) {
         throw new IllegalStateException(
             "Cannot access a state container outside of a layout state calculation.");
@@ -721,7 +713,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   protected final void setStateContainer(StateContainer stateContainer) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
     mStateContainer = stateContainer;
@@ -729,7 +721,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected final void setInterStagePropsContainer(
       InterStagePropsContainer interStagePropsContainer) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
     mInterStagePropsContainer = interStagePropsContainer;
@@ -746,7 +738,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access a inter-stage props outside of a layout state calculation.");
@@ -764,7 +756,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   final InterStagePropsContainer getInterStagePropsContainer(
       LayoutStateContext layoutStateContext, String globalKey) {
-    if (mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (layoutStateContext.getScopedComponentInfo(globalKey) == null) {
         return null;
       }
@@ -798,7 +790,7 @@ public abstract class Component extends ComponentLifecycle
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext, globalKey);
-    if (!mUseStatelessComponent) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       generateErrorEventHandler(parentContext, scopedContext);
     }
 
@@ -866,7 +858,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext parentContext,
       final Component parentComponent,
       final Component childComponent) {
-    if (parentComponent.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (parentContext == null || parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment child counter outside of a layout state calculation.");
@@ -903,7 +895,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext parentContext,
       final Component parentComponent,
       final String manualKey) {
-    if (parentComponent.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (parentContext == null || parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment manual key usages counter outside of a layout state calculation.");
@@ -965,7 +957,7 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    if (!c.isStatelessComponentEnabled()) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       final ComponentContext scopedContext =
           component.getScopedContext(
               c.getLayoutStateContext(), Component.getGlobalKey(null, component));
@@ -1037,7 +1029,7 @@ public abstract class Component extends ComponentLifecycle
       WorkingRange workingRange,
       Component component,
       String globalKey) {
-    if (component.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot register WorkingRange outside of a layout state calculation.");
@@ -1055,7 +1047,7 @@ public abstract class Component extends ComponentLifecycle
 
   static void addWorkingRangeToNode(
       InternalNode node, ComponentContext scopedContext, Component component) {
-    if (component.mUseStatelessComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot add working ranges to InternalNode outside of a layout state calculation.");

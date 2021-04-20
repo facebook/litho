@@ -979,7 +979,7 @@ class MountState implements MountDelegateTarget {
     ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
 
     try {
-      if (currentComponent.isStateless()) {
+      if (ComponentsConfiguration.useStatelessComponent) {
         return currentComponent.shouldUpdate(
             currentComponent,
             currentScopedContext == null
@@ -1212,7 +1212,7 @@ class MountState implements MountDelegateTarget {
       mMountStats.mountedCount++;
 
       final ComponentContext scopedContext =
-          component.isStateless()
+          ComponentsConfiguration.useStatelessComponent
               ? layoutOutput.getScopedContext()
               : component.getScopedContext(null, null);
 
@@ -2725,7 +2725,7 @@ class MountState implements MountDelegateTarget {
    */
   private ComponentContext getContextForComponent(Component component, LayoutOutput layoutOutput) {
     ComponentContext c;
-    if (component.isStateless()) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       c = layoutOutput.getScopedContext();
     } else {
       c = component.getScopedContext(null, null);
