@@ -366,11 +366,7 @@ public class ComponentContext {
     mComponentTree.updateStateLazy(getGlobalKey(), stateUpdate);
   }
 
-  /**
-   * EXPERIMENTAL - called to enqueue a HookUpdater that will update State that was created via
-   * useState.
-   */
-  public void updateHookStateAsync(HookUpdater updateBlock) {
+  final void updateHookStateAsync(HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -379,6 +375,18 @@ public class ComponentContext {
 
     final Component scope = getComponentScope();
     mComponentTree.updateHookStateAsync(
+        updateBlock, scope != null ? scope.getSimpleName() : "hook", isCreateLayoutInProgress());
+  }
+
+  final void updateHookStateSync(HookUpdater updateBlock) {
+    checkIfNoStateUpdatesMethod();
+
+    if (mComponentTree == null) {
+      return;
+    }
+
+    final Component scope = getComponentScope();
+    mComponentTree.updateHookStateSync(
         updateBlock, scope != null ? scope.getSimpleName() : "hook", isCreateLayoutInProgress());
   }
 

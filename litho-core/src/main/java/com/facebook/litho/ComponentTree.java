@@ -1413,6 +1413,65 @@ public class ComponentTree implements LithoLifecycleListener {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
+    ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
+  }
+
+  void updateStateAsync(
+      String componentKey,
+      StateUpdate stateUpdate,
+      String attribution,
+      boolean isCreateLayoutInProgress) {
+    if (!mIsAsyncUpdateStateEnabled) {
+      throw new RuntimeException(
+          "Triggering async state updates on this component tree is "
+              + "disabled, use sync state updates.");
+    }
+
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
+    }
+
+    LithoStats.incrementComponentStateUpdateAsyncCount();
+    updateStateInternal(true, attribution, isCreateLayoutInProgress);
+  }
+
+  final void updateHookStateSync(
+      HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
+    if (mForceAsyncStateUpdate && mIsAsyncUpdateStateEnabled) {
+      updateHookStateAsync(updater, attribution, isCreateLayoutInProgress);
+      return;
+    }
+
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueHookStateUpdate(updater);
+    }
+
+    ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
+  }
+
+  final void updateHookStateAsync(
+      HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueHookStateUpdate(updater);
+    }
+
+    LithoStats.incrementComponentStateUpdateAsyncCount();
+    updateStateInternal(true, attribution, isCreateLayoutInProgress);
+  }
+
+  private void ensureSyncStateUpdateRunnable(String attribution, boolean isCreateLayoutInProgress) {
     LithoStats.incrementComponentStateUpdateSyncCount();
     final Looper looper = Looper.myLooper();
 
@@ -1457,43 +1516,6 @@ public class ComponentTree implements LithoLifecycleListener {
       }
       handler.post(mUpdateStateSyncRunnable, tag);
     }
-  }
-
-  void updateStateAsync(
-      String componentKey,
-      StateUpdate stateUpdate,
-      String attribution,
-      boolean isCreateLayoutInProgress) {
-    if (!mIsAsyncUpdateStateEnabled) {
-      throw new RuntimeException(
-          "Triggering async state updates on this component tree is "
-              + "disabled, use sync state updates.");
-    }
-
-    synchronized (this) {
-      if (mRoot == null) {
-        return;
-      }
-
-      mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
-    }
-
-    LithoStats.incrementComponentStateUpdateAsyncCount();
-    updateStateInternal(true, attribution, isCreateLayoutInProgress);
-  }
-
-  void updateHookStateAsync(
-      HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
-    synchronized (this) {
-      if (mRoot == null) {
-        return;
-      }
-
-      mStateHandler.queueHookStateUpdate(updater);
-    }
-
-    LithoStats.incrementComponentStateUpdateAsyncCount();
-    updateStateInternal(true, attribution, isCreateLayoutInProgress);
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {

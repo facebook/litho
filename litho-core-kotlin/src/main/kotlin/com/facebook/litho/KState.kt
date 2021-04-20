@@ -40,12 +40,63 @@ fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
 /** Interface with which a component gets the value from a state or updates it. */
 class State<T>(private val context: ComponentContext, private val hookKey: String, val value: T) {
 
+  /**
+   * Updates this state value and enqueues a new layout calculation reflecting it to execute in the
+   * background.
+   */
   fun update(newValue: T) {
     context.updateHookStateAsync { stateHandler -> stateHandler.hookState[hookKey] = newValue }
   }
 
+  /**
+   * Uses [newValueFunction] to update this state value using the previous state value, and enqueues
+   * a new layout calculation reflecting it to execute in the background.
+   *
+   * [newValueFunction] receives the current state value and can use it to compute the update: this
+   * is useful when there could be other enqueued updates that may not have been applied yet.
+   *
+   * For example, if your state update should increment a counter, using the function version of
+   * [update] with `count -> count + 1` will allow you to account for updates that are in flight but
+   * not yet applied (e.g. if the user has tapped a button triggering the update multiple times in
+   * succession).
+   */
   fun update(newValueFunction: (T) -> T) {
     context.updateHookStateAsync { stateHandler ->
+      stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
+    }
+  }
+
+  /**
+   * Updates this state value and enqueues a new layout calculation reflecting it to execute on the
+   * current thread. If called on the main thread, this means that the UI will be updated for the
+   * current frame.
+   *
+   * Note: If [updateSync] is used on the main thread, it can easily cause dropped frames and
+   * degrade user experience. Therefore it should only be used in exceptional circumstances or when
+   * it's known to be executed off the main thread.
+   */
+  fun updateSync(newValue: T) {
+    context.updateHookStateSync { stateHandler -> stateHandler.hookState[hookKey] = newValue }
+  }
+
+  /**
+   * Uses [newValueFunction] to update this state value using the previous state value, and enqueues
+   * a new layout calculation reflecting it to execute on the current thread.
+   *
+   * [newValueFunction] receives the current state value and can use it to compute the update: this
+   * is useful when there could be other enqueued updates that may not have been applied yet.
+   *
+   * For example, if your state update should increment a counter, using the function version of
+   * [update] with `count -> count + 1` will allow you to account for updates that are in flight but
+   * not yet applied (e.g. if the user has tapped a button triggering the update multiple times in
+   * succession).
+   *
+   * Note: If [updateSync] is used on the main thread, it can easily cause dropped frames and
+   * degrade user experience. Therefore it should only be used in exceptional circumstances or when
+   * it's known to be executed off the main thread.
+   */
+  fun updateSync(newValueFunction: (T) -> T) {
+    context.updateHookStateSync { stateHandler ->
       stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
     }
   }

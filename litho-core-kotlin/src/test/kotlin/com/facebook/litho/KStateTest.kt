@@ -54,12 +54,12 @@ class KStateTest {
 
   @Test
   fun useState_updateState_stateIsUpdated() {
-    lateinit var stateRef: AtomicReference<State<String>>
+    lateinit var stateRef: AtomicReference<String>
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
         val state = useState { "hello" }
-        stateRef = AtomicReference(state)
+        stateRef = AtomicReference(state.value)
 
         return Row(style = Style.viewTag("test_view").onClick { state.update("world") })
       }
@@ -72,12 +72,12 @@ class KStateTest {
         .measure()
         .layout()
 
-    assertThat(stateRef.get().value).isEqualTo("hello")
+    assertThat(stateRef.get()).isEqualTo("hello")
 
     lithoViewRule.findViewWithTag("test_view").performClick()
     backgroundLayoutLooperRule.runToEndOfTasksSync()
 
-    assertThat(stateRef.get().value).describedAs("String state is updated").isEqualTo("world")
+    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
   }
 
   @Test
@@ -192,6 +192,31 @@ class KStateTest {
         match<LithoView> { child<ComponentHost> { prop("tag", "Counter: 2") } })
   }
 
+  @Test
+  fun useState_synchronousUpdate_stateIsUpdatedSynchronously() {
+    lateinit var stateRef: AtomicReference<String>
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        val state = useState { "hello" }
+        stateRef = AtomicReference(state.value)
+
+        return Row(style = Style.viewTag("test_view").onClick { state.updateSync("world") })
+      }
+    }
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot { TestComponent() }
+        .attachToWindow()
+        .measure()
+        .layout()
+
+    assertThat(stateRef.get()).isEqualTo("hello")
+
+    lithoViewRule.findViewWithTag("test_view").performClick()
+    assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
+  }
   private class CountDownLatchComponent(
       val countDownLatch: CountDownLatch,
       val awaitable: CountDownLatch?,
