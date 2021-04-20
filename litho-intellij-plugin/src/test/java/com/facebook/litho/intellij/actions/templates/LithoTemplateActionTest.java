@@ -33,7 +33,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void createFile_noDoubleSuffix() throws IOException {
+  public void createJavaFile_noDoubleSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
@@ -54,7 +54,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void createFile_addedSuffix() throws IOException {
+  public void createJavaFile_addedSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
@@ -69,6 +69,46 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
                   templateAction.createFile(
                       nameWithoutSuffix, "GroupSectionSpec.java", specCls.getContainingDirectory());
               assertThat(created.getName()).isEqualTo("AnySectionSpec.java");
+            });
+  }
+
+  @Test
+  public void createKotlinFile_noDoubleSuffix() throws IOException {
+    final PsiFile specCls = testHelper.configure("LayoutSpec.kt");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final TestTemplateAction templateAction = new TestTemplateAction();
+              final String nameWithProvidedSuffix = "AnySectionSpec";
+              templateAction.buildDialog(
+                  testHelper.getFixture().getProject(),
+                  null,
+                  Mockito.mock(CreateFileFromTemplateDialog.Builder.class));
+              final PsiFile created =
+                  templateAction.createFile(
+                      nameWithProvidedSuffix,
+                      "GroupSectionSpec.kt",
+                      specCls.getContainingDirectory());
+              assertThat(created.getName()).isEqualTo("AnySectionSpec.kt");
+            });
+  }
+
+  @Test
+  public void createKotlinFile_addedSuffix() throws IOException {
+    final PsiFile specCls = testHelper.configure("LayoutSpec.kt");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final TestTemplateAction templateAction = new TestTemplateAction();
+              final String nameWithoutSuffix = "Any";
+              templateAction.buildDialog(
+                  testHelper.getFixture().getProject(),
+                  null,
+                  Mockito.mock(CreateFileFromTemplateDialog.Builder.class));
+              final PsiFile created =
+                  templateAction.createFile(
+                      nameWithoutSuffix, "GroupSectionSpec.kt", specCls.getContainingDirectory());
+              assertThat(created.getName()).isEqualTo("AnySectionSpec.kt");
             });
   }
 

@@ -26,6 +26,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
@@ -86,7 +87,17 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
       name = LithoPluginUtils.getLithoComponentNameFromSpec(name);
     }
     // templateMap is populated in #buildDialog step
-    return super.createFileFromTemplate(name, templateMap.get(templateName), dir);
+    final PsiFile file = super.createFileFromTemplate(name, templateMap.get(templateName), dir);
+    // Kotlin class isn't adjusted to be the same as Kotlin filename, which Java is. Hence, we need
+    // to make the class and file names the same
+    if (templateName.endsWith(".kt")) {
+      final String nameWithoutSuffix = name;
+      WriteAction.run(
+          () -> {
+            file.setName(nameWithoutSuffix.concat(classNameSuffix).concat(".kt"));
+          });
+    }
+    return file;
   }
 
   /** Generates component for createdElement */
