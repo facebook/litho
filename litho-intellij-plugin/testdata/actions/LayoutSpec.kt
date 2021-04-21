@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-@com.facebook.litho.annotations.LayoutSpec
-object LayoutSpec {}
+@com.facebook.litho.annotations.LayoutSpec object LayoutSpec {}
