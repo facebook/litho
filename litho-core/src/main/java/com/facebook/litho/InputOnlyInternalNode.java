@@ -1438,7 +1438,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return new DefaultLayoutResult(this, node, parent);
   }
 
-  protected void setPaddingFromDrawable(Writer target, Drawable drawable) {
+  protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {
     final Rect rect = getPaddingFromDrawable(drawable);
     if (rect != null) {
       target.paddingPx(LEFT, rect.left);
