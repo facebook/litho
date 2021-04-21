@@ -56,6 +56,10 @@ litho_robolectric4_test(
     ],
     source = "8",
     target = "8",
+    target_sdk_levels = [
+        "16",
+        "29",
+    ],
     deps = [
         ":testutil",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
