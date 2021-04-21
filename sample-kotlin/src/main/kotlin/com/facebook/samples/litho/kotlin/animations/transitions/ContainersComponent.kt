@@ -27,66 +27,48 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.Transition
-import com.facebook.litho.animation.AnimatedProperties
 import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
-import com.facebook.litho.flexbox.alignSelf
-import com.facebook.litho.transition.transitionKey
-import com.facebook.litho.transition.useTransition
+import com.facebook.litho.transition.ExpandToReveal
 import com.facebook.litho.useState
-import com.facebook.litho.view.alpha
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
-import com.facebook.yoga.YogaAlign
 import java.util.Arrays
 
-private const val TRANSITION_KEY_TEXT = "key"
-private const val TRANSITION_KEY2_TEXT = "key2"
-
-class TransitionsComponent : KComponent() {
+class ContainersComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    useTransition(
-        Transition.parallel<Transition.BaseTransitionUnitsBuilder>(
-            Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
-                .animate(AnimatedProperties.X),
-            Transition.create(TRANSITION_KEY_TEXT).animate(AnimatedProperties.ALPHA),
-            Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY2_TEXT)
-                .animate(AnimatedProperties.HEIGHT, AnimatedProperties.WIDTH)))
 
-    val alphaValue = useState { 1f }
-    val shouldExpand = useState { false }
-    val toRight = useState { true }
-    return Column(
-        style =
-            Style.width(200.dp).alpha(alphaValue.value).onClick {
-              toRight.update(!toRight.value)
-              alphaValue.update(if (alphaValue.value == 1f) 0.5f else 1f)
-              shouldExpand.update(!shouldExpand.value)
-            }) {
+    val isExpanded = useState { true }
+
+    return Column(style = Style.width(200.dp)) {
+      child(
+          Column(
+              style =
+                  Style.width(100.dp)
+                      .height(50.dp)
+                      .margin(all = 5.dp)
+                      .background(buildRoundedRect(context, Color.parseColor("#6ab071"), 8))
+                      .onClick { isExpanded.update(!isExpanded.value) }))
+
+      child(
+          ExpandToReveal(
+              isExpanded.value,
+              Column(
+                  style =
+                      Style.width(50.dp)
+                          .height(50.dp)
+                          .margin(all = 5.dp)
+                          .background(buildRoundedRect(context, Color.parseColor("#bf678d"), 8)))))
       child(
           Column(
               style =
                   Style.width(50.dp)
                       .height(50.dp)
                       .margin(all = 5.dp)
-                      .transitionKey(
-                          context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
-                      .alignSelf(if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START)
-                      .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
-      child(
-          Column(
-              style =
-                  Style.width(if (shouldExpand.value) 75.dp else 50.dp)
-                      .height(if (shouldExpand.value) 75.dp else 50.dp)
-                      .margin(all = 5.dp)
-                      .transitionKey(
-                          context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
-                      .background(buildRoundedRect(context, Color.parseColor("#ba7bb5"), 8))))
-      child(ContainersComponent())
+                      .background(buildRoundedRect(context, Color.parseColor("#a4dece"), 8))))
     }
   }
 
