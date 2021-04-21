@@ -370,6 +370,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected void freeze(@Nullable InternalNode parent) {
     if (parent == null) {
       mFrozen = true;
+      return;
     }
 
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
