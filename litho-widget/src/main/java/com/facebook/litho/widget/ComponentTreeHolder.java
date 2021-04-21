@@ -516,13 +516,13 @@ public class ComponentTreeHolder {
 
   @UiThread
   public synchronized void releaseTree() {
-    if (mComponentTreeHolderLifecycleProvider != null) {
-      mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
-
-      return;
-    }
-
     if (mComponentTree != null) {
+      if (mComponentTreeHolderLifecycleProvider != null) {
+        mComponentTreeHolderLifecycleProvider.moveToLifecycle(DESTROYED);
+
+        return;
+      }
+
       mComponentTree.release();
       mComponentTree = null;
     }
