@@ -23,6 +23,7 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.ComponentLifecycle.sMeasureFunction;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -236,7 +237,7 @@ class Layout {
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure || (isNestedTree(c, component) && !resolveNestedTree)) {
-        node.setMeasureFunction(ComponentLifecycle.getYogaMeasureFunction(c));
+        node.setMeasureFunction(sMeasureFunction);
       }
     }
 

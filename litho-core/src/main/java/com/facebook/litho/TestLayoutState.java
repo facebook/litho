@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.ComponentLifecycle.sMeasureFunction;
 
 /**
  * This should be only used with the deprecated DiffNode based testing infrastructure. This class
@@ -117,7 +118,7 @@ public class TestLayoutState {
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
       if (isMountSpecWithMeasure) {
-        node.setMeasureFunction(ComponentLifecycle.getYogaMeasureFunction(c));
+        node.setMeasureFunction(sMeasureFunction);
       }
     }
 

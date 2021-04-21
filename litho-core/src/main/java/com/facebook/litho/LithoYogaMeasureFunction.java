@@ -26,24 +26,8 @@ import com.facebook.yoga.YogaNode;
 
 public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
-  private final @Nullable LayoutStateContext mLayoutStateContext;
-
-  private final @Nullable LayoutStateContext mPrevLayoutStateContext;
-
   private Size acquireSize(int initialValue) {
     return new Size(initialValue, initialValue);
-  }
-
-  public LithoYogaMeasureFunction(
-      @Nullable LayoutStateContext layoutStateContext,
-      @Nullable LayoutStateContext prevLayoutStateContext,
-      final boolean isStatelessComponentEnabled) {
-    if (isStatelessComponentEnabled && layoutStateContext == null) {
-      throw new IllegalStateException("You must pass a non-null LayoutStateContext instance");
-    }
-
-    mLayoutStateContext = layoutStateContext;
-    mPrevLayoutStateContext = prevLayoutStateContext;
   }
 
   @Override
@@ -57,10 +41,12 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode heightMode) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final InternalNode node = result.getInternalNode();
+    final LayoutStateContext layoutStateContext = node.getContext().getLayoutStateContext();
+
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
     final ComponentContext componentScopedContext =
-        component.getScopedContext(mLayoutStateContext, componentGlobalKey);
+        component.getScopedContext(layoutStateContext, componentGlobalKey);
 
     try {
       if (componentScopedContext != null && componentScopedContext.wasLayoutCanceled()) {
@@ -112,8 +98,13 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         }
 
         if (parent != null) {
-          context = parent.getScopedContext(mLayoutStateContext, parentKey);
+          context = parent.getScopedContext(layoutStateContext, parentKey);
         }
+
+        final LayoutStateContext prevLayoutStateContext =
+            layoutStateContext == null || layoutStateContext.getLayoutState() == null
+                ? null
+                : layoutStateContext.getLayoutState().getPrevLayoutStateContext();
 
         final LithoLayoutResult nestedTree =
             Layout.create(
@@ -121,7 +112,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
                 (NestedTreeHolderResult) result,
                 widthSpec,
                 heightSpec,
-                mPrevLayoutStateContext);
+                prevLayoutStateContext);
 
         outputWidth = nestedTree.getWidth();
         outputHeight = nestedTree.getHeight();

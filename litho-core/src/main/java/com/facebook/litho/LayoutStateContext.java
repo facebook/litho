@@ -37,7 +37,6 @@ public class LayoutStateContext {
   private @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
   private @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
   private @Nullable Map<Integer, InternalNode> mComponentIdToWillRenderLayout;
-  private @Nullable LithoYogaMeasureFunction mLithoYogaMeasureFunction;
 
   private static @Nullable LayoutState sTestLayoutState;
 
@@ -198,19 +197,6 @@ public class LayoutStateContext {
   @Nullable
   ComponentTree getComponentTree() {
     return mComponentTree;
-  }
-
-  @Nullable
-  LithoYogaMeasureFunction getLithoYogaMeasureFunction() {
-    if (mLithoYogaMeasureFunction == null) {
-      mLithoYogaMeasureFunction =
-          new LithoYogaMeasureFunction(
-              this,
-              mLayoutStateRef == null ? null : mLayoutStateRef.getPrevLayoutStateContext(),
-              true);
-    }
-
-    return mLithoYogaMeasureFunction;
   }
 
   public @Nullable LayoutStateFuture getLayoutStateFuture() {

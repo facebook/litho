@@ -365,7 +365,7 @@ public class ComponentLifecycleTest {
     when(mNode.getTailComponent()).thenReturn(component);
     when(mNode.getTailComponentKey()).thenReturn(KEY);
 
-    return ComponentLifecycle.getYogaMeasureFunction(mContext);
+    return ComponentLifecycle.sMeasureFunction;
   }
 
   private static Component createSpyComponent(
