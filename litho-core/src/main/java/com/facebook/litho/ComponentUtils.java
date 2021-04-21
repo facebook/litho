@@ -429,7 +429,7 @@ public class ComponentUtils {
         continue;
       }
 
-      if (node != root) {
+      if (result != root) {
         builder.append('\n');
         boolean isLast;
         final Iterator<LithoLayoutResult> iterator = stack.iterator();
@@ -461,7 +461,7 @@ public class ComponentUtils {
         builder.append(']');
       }
 
-      if (node.getChildCount() == 0) {
+      if (result.getChildCount() == 0) {
         continue;
       }
 
