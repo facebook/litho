@@ -197,6 +197,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   private @Nullable CommonPropsHolder.DefaultLayoutProps mDebugLayoutProps;
 
+  private boolean mFrozen;
+
   protected long mPrivateFlags;
 
   protected InputOnlyInternalNode(ComponentContext componentContext) {
@@ -317,26 +319,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     if (parent != null) {
 
       final LithoLayoutResult parentResult = (LithoLayoutResult) parent.getData();
-      final InternalNode parentInternalNode = parentResult.getInternalNode();
 
-      // If parents important for A11Y is YES_HIDE_DESCENDANTS then
-      // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
-      if (parentInternalNode.getImportantForAccessibility()
-          == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
-        importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-      }
-
-      // If the parent of this node is disabled, this node has to be disabled too.
-      final @NodeInfo.EnabledState int parentEnabledState;
-      if (parentInternalNode.getNodeInfo() != null) {
-        parentEnabledState = parentInternalNode.getNodeInfo().getEnabledState();
-      } else {
-        parentEnabledState = ENABLED_UNSET;
-      }
-
-      // If the parent of this node is disabled, this node has to be disabled too.
-      if (parentEnabledState == ENABLED_SET_FALSE) {
-        getOrCreateNodeInfo().setEnabled(false);
+      if (!mFrozen) {
+        freeze(parentResult.getInternalNode());
       }
 
       // Create a LayoutProps object to write to.
@@ -352,6 +337,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       parentResult.addChild(result);
 
     } else {
+
+      if (!mFrozen) {
+        freeze(null);
+      }
 
       if (isLayoutDirectionInherit()
           && isLayoutDirectionRTL(mComponentContext.getAndroidContext())) {
@@ -376,6 +365,34 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       child.setData(getChildAt(i)); // Set the InternalNode as input
       node.addChildAt(child, i); // Add the child YogaNode to NodeYoga of this result.
     }
+  }
+
+  protected void freeze(@Nullable InternalNode parent) {
+    if (parent == null) {
+      mFrozen = true;
+    }
+
+    // If parents important for A11Y is YES_HIDE_DESCENDANTS then
+    // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
+    if (parent.getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+      importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    }
+
+    // If the parent of this node is disabled, this node has to be disabled too.
+    final @NodeInfo.EnabledState int parentEnabledState;
+    if (parent.getNodeInfo() != null) {
+      parentEnabledState = parent.getNodeInfo().getEnabledState();
+    } else {
+      parentEnabledState = ENABLED_UNSET;
+    }
+
+    // If the parent of this node is disabled, this node has to be disabled too.
+    if (parentEnabledState == ENABLED_SET_FALSE) {
+      getOrCreateNodeInfo().setEnabled(false);
+    }
+
+    // Sets mFrozen as true to avoid anymore mutation.
+    mFrozen = true;
   }
 
   @Override
@@ -1195,6 +1212,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     mDiffNode = null;
     mDebugComponents = null;
+    mFrozen = false;
   }
 
   void updateWith(
