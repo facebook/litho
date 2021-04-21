@@ -17,13 +17,8 @@
 package com.facebook.samples.litho.kotlin.animations.transitions
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import android.util.TypedValue
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
@@ -36,7 +31,7 @@ import com.facebook.litho.transition.ExpandToReveal
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
-import java.util.Arrays
+import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 class ContainersComponent : KComponent() {
 
@@ -51,14 +46,14 @@ class ContainersComponent : KComponent() {
                 Style.width(100.dp)
                     .height(50.dp)
                     .margin(all = 5.dp)
-                    .background(buildRoundedRect(context, Color.parseColor("#6ab071"), 8)))
+                    .background(RoundedRect.build(context, Color.parseColor("#6ab071"), 8)))
     val secondComponent =
         Column(
             style =
                 Style.width(50.dp)
                     .height(50.dp)
                     .margin(all = 5.dp)
-                    .background(buildRoundedRect(context, Color.parseColor("#bf678d"), 8)))
+                    .background(RoundedRect.build(context, Color.parseColor("#bf678d"), 8)))
 
     return Column(style = Style.width(200.dp)) {
       child(
@@ -67,7 +62,7 @@ class ContainersComponent : KComponent() {
                   Style.width(100.dp)
                       .height(50.dp)
                       .margin(all = 5.dp)
-                      .background(buildRoundedRect(context, Color.parseColor("#6ab071"), 8))
+                      .background(RoundedRect.build(context, Color.parseColor("#6ab071"), 8))
                       .onClick { isExpanded.update(!isExpanded.value) }))
 
       child(
@@ -78,28 +73,16 @@ class ContainersComponent : KComponent() {
                       Style.width(50.dp)
                           .height(50.dp)
                           .margin(all = 5.dp)
-                          .background(buildRoundedRect(context, Color.parseColor("#bf678d"), 8)))))
+                          .background(RoundedRect.build(context, Color.parseColor("#bf678d"), 8)))))
       child(
           Column(
               style =
                   Style.width(150.dp)
                       .height(50.dp)
                       .margin(all = 5.dp)
-                      .background(buildRoundedRect(context, Color.parseColor("#a4dece"), 8))
+                      .background(RoundedRect.build(context, Color.parseColor("#a4dece"), 8))
                       .onClick { showSecondComponent.update(!showSecondComponent.value) }))
       child(CrossFade(showSecondComponent.value, firstComponent, secondComponent))
     }
-  }
-
-  private fun buildRoundedRect(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {
-    val cornerRadiusPx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp.toFloat(), c.resources.displayMetrics)
-
-    val radii = FloatArray(8)
-    Arrays.fill(radii, cornerRadiusPx)
-    val roundedRectShape = RoundRectShape(radii, null, radii)
-
-    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
   }
 }

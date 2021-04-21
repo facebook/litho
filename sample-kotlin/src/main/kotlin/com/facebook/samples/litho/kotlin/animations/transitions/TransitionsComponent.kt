@@ -17,13 +17,8 @@
 package com.facebook.samples.litho.kotlin.animations.transitions
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import android.util.TypedValue
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
@@ -40,8 +35,8 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.alpha
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
+import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
-import java.util.Arrays
 
 private const val TRANSITION_KEY_TEXT = "key"
 private const val TRANSITION_KEY2_TEXT = "key2"
@@ -76,7 +71,7 @@ class TransitionsComponent : KComponent() {
                       .transitionKey(
                           context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
                       .alignSelf(if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START)
-                      .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+                      .background(RoundedRect.build(context, Color.parseColor("#666699"), 8))))
       child(
           Column(
               style =
@@ -85,20 +80,8 @@ class TransitionsComponent : KComponent() {
                       .margin(all = 5.dp)
                       .transitionKey(
                           context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
-                      .background(buildRoundedRect(context, Color.parseColor("#ba7bb5"), 8))))
+                      .background(RoundedRect.build(context, Color.parseColor("#ba7bb5"), 8))))
       child(ContainersComponent())
     }
-  }
-
-  private fun buildRoundedRect(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {
-    val cornerRadiusPx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp.toFloat(), c.resources.displayMetrics)
-
-    val radii = FloatArray(8)
-    Arrays.fill(radii, cornerRadiusPx)
-    val roundedRectShape = RoundRectShape(radii, null, radii)
-
-    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
   }
 }

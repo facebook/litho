@@ -17,13 +17,8 @@
 package com.facebook.samples.litho.kotlin.animations.animatedapi
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import android.util.TypedValue
 import com.facebook.litho.Column
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DynamicValue
 import com.facebook.litho.KComponent
@@ -46,8 +41,8 @@ import com.facebook.litho.useState
 import com.facebook.litho.view.background
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.wrapInView
+import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
-import java.util.Arrays
 
 class AnimatedComponent : KComponent() {
 
@@ -132,7 +127,8 @@ class AnimatedComponent : KComponent() {
                         Style.width(100.dp)
                             .height(150.dp)
                             .margin(all = 5.dp)
-                            .background(buildRoundedRect(context, Color.parseColor("#99b3ff"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#99b3ff"), 8))))
             child(
                 Column(
                     style =
@@ -140,7 +136,8 @@ class AnimatedComponent : KComponent() {
                             .height(150.dp)
                             .margin(all = 5.dp)
                             .alpha(alpha)
-                            .background(buildRoundedRect(context, Color.parseColor("#ffd480"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#ffd480"), 8))))
             child(
                 Column(
                     style =
@@ -148,7 +145,8 @@ class AnimatedComponent : KComponent() {
                             .height(150.dp)
                             .margin(all = 5.dp)
                             .alpha(alpha2)
-                            .background(buildRoundedRect(context, Color.parseColor("#e699cc"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#e699cc"), 8))))
             child(
                 Column(
                     style =
@@ -156,7 +154,8 @@ class AnimatedComponent : KComponent() {
                             .height(150.dp)
                             .margin(all = 5.dp)
                             .alpha(alpha3)
-                            .background(buildRoundedRect(context, Color.parseColor("#9fdfbf"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#9fdfbf"), 8))))
           })
       child(
           Row(
@@ -177,7 +176,7 @@ class AnimatedComponent : KComponent() {
                           } else {
                             scale2
                           })
-                      .background(buildRoundedRect(context, Color.parseColor("#d9d9d9"), 8))) {
+                      .background(RoundedRect.build(context, Color.parseColor("#d9d9d9"), 8))) {
             child(
                 Row(
                     style =
@@ -185,7 +184,7 @@ class AnimatedComponent : KComponent() {
                             .width(90.dp)
                             .height(20.dp)
                             .background(
-                                buildRoundedRect(context, Color.parseColor("#999999"), 12))))
+                                RoundedRect.build(context, Color.parseColor("#999999"), 12))))
           })
       child(
           Row(style = Style.alignSelf(YogaAlign.CENTER).wrapInView()) {
@@ -195,7 +194,8 @@ class AnimatedComponent : KComponent() {
                         Style.width(50.dp)
                             .height(50.dp)
                             .margin(all = 5.dp)
-                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
             child(
                 Column(
                     style =
@@ -209,34 +209,25 @@ class AnimatedComponent : KComponent() {
                                   yProgress
                                 })
                             .alpha(alphaProgress)
-                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
             child(
                 Column(
                     style =
                         Style.width(50.dp)
                             .height(50.dp)
                             .margin(all = 5.dp)
-                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
             child(
                 Column(
                     style =
                         Style.width(50.dp)
                             .height(50.dp)
                             .margin(all = 5.dp)
-                            .background(buildRoundedRect(context, Color.parseColor("#666699"), 8))))
+                            .background(
+                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
           })
     }
-  }
-
-  private fun buildRoundedRect(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {
-    val cornerRadiusPx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp.toFloat(), c.resources.displayMetrics)
-
-    val radii = FloatArray(8)
-    Arrays.fill(radii, cornerRadiusPx)
-    val roundedRectShape = RoundRectShape(radii, null, radii)
-
-    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
   }
 }

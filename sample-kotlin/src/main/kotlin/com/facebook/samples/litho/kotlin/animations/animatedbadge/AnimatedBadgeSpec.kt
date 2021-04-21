@@ -18,10 +18,6 @@ package com.facebook.samples.litho.kotlin.animations.animatedbadge
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import android.util.TypedValue
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Column
 import com.facebook.litho.Component
@@ -38,10 +34,10 @@ import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.OnUpdateState
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.Text
+import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
-import java.util.Arrays
 
 @LayoutSpec
 object AnimatedBadgeSpec {
@@ -83,7 +79,7 @@ object AnimatedBadgeSpec {
                               Column.create(c)
                                   .heightDip(18f)
                                   .widthDip(18f)
-                                  .background(buildRoundedRect(c, -0x48b5, 9)))
+                                  .background(RoundedRect.build(c, -0x48b5, 9)))
                           .child(
                               if (!expanded) {
                                 null
@@ -107,9 +103,9 @@ object AnimatedBadgeSpec {
                                   .textSizeDip(12f)
                                   .textColor(Color.BLUE)
                                   .text("+1"))
-                          .background(buildRoundedRect(c, Color.WHITE, 12))))
+                          .background(RoundedRect.build(c, Color.WHITE, 12))))
           .child(Text.create(c).textSizeSp(18f).text("So awesome!"))
-          .background(buildRoundedRect(c, -0x222223, 20))
+          .background(RoundedRect.build(c, -0x222223, 20))
           .build()
 
   private fun buildComment2(c: ComponentContext, expanded: Boolean): Component =
@@ -135,22 +131,22 @@ object AnimatedBadgeSpec {
                                   .positionDip(YogaEdge.LEFT, (if (expanded) 27 else 3).toFloat())
                                   .heightDip(18f)
                                   .widthDip(18f)
-                                  .background(buildRoundedRect(c, 0xFFB2CFE5.toInt(), 9)))
+                                  .background(RoundedRect.build(c, 0xFFB2CFE5.toInt(), 9)))
                           .child(
                               Column.create(c)
                                   .positionType(YogaPositionType.ABSOLUTE)
                                   .positionDip(YogaEdge.LEFT, (if (expanded) 15 else 3).toFloat())
                                   .heightDip(18f)
                                   .widthDip(18f)
-                                  .background(buildRoundedRect(c, 0xFF4B8C61.toInt(), 9)))
+                                  .background(RoundedRect.build(c, 0xFF4B8C61.toInt(), 9)))
                           .child(
                               Column.create(c)
                                   .heightDip(18f)
                                   .widthDip(18f)
-                                  .background(buildRoundedRect(c, 0xFFFFB74B.toInt(), 9)))
-                          .background(buildRoundedRect(c, Color.WHITE, 12))))
+                                  .background(RoundedRect.build(c, 0xFFFFB74B.toInt(), 9)))
+                          .background(RoundedRect.build(c, Color.WHITE, 12))))
           .child(Text.create(c).textSizeSp(18f).text("So awesome!"))
-          .background(buildRoundedRect(c, 0xFFDDDDDD.toInt(), 20))
+          .background(RoundedRect.build(c, 0xFFDDDDDD.toInt(), 20))
           .build()
 
   @OnEvent(ClickEvent::class)
@@ -177,16 +173,4 @@ object AnimatedBadgeSpec {
               .appearFrom(0f)
               .disappearTo(0f)
               .animator(ANIMATOR))
-
-  private fun buildRoundedRect(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {
-    val cornerRadiusPx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp.toFloat(), c.resources.displayMetrics)
-
-    val radii = FloatArray(8)
-    Arrays.fill(radii, cornerRadiusPx)
-    val roundedRectShape = RoundRectShape(radii, null, radii)
-
-    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
-  }
 }
