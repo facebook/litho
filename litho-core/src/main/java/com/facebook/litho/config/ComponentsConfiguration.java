@@ -253,6 +253,8 @@ public class ComponentsConfiguration {
 
   public static boolean useWillRenderCachedLayoutFromLSC = false;
 
+  public static boolean useInterStagePropsFromContext = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;

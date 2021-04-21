@@ -48,11 +48,14 @@ public class InterStagePropsTest {
   private ComponentContext mContext;
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   private boolean mUseStatelessComponentConfig;
+  private boolean useInterstagePropsFromLSCConfig;
 
   @Before
   public void setUp() {
     mUseStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+    useInterstagePropsFromLSCConfig = ComponentsConfiguration.useInterStagePropsFromContext;
     ComponentsConfiguration.useStatelessComponent = true;
+    ComponentsConfiguration.useInterStagePropsFromContext = true;
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(new LithoView(mContext));
   }
@@ -60,6 +63,7 @@ public class InterStagePropsTest {
   @After
   public void after() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentConfig;
+    ComponentsConfiguration.useInterStagePropsFromContext = useInterstagePropsFromLSCConfig;
   }
 
   @Test

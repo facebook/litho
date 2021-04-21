@@ -139,10 +139,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected Component() {
     mSimpleName = getClass().getSimpleName();
-    if (!ComponentsConfiguration.useStatelessComponent) {
-      mStateContainer = createStateContainer();
-      mInterStagePropsContainer = createInterStagePropsContainer();
-    }
+    init();
   }
 
   protected Component(String simpleName) {
@@ -164,6 +161,9 @@ public abstract class Component extends ComponentLifecycle
   private void init() {
     if (!ComponentsConfiguration.useStatelessComponent) {
       mStateContainer = createStateContainer();
+    }
+
+    if (!ComponentsConfiguration.useInterStagePropsFromContext) {
       mInterStagePropsContainer = createInterStagePropsContainer();
     }
   }
@@ -600,7 +600,7 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    if (!ComponentsConfiguration.useStatelessComponent) {
+    if (!ComponentsConfiguration.useInterStagePropsFromContext) {
       clone.copyInterStageImpl(
           clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
           getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
@@ -721,7 +721,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected final void setInterStagePropsContainer(
       InterStagePropsContainer interStagePropsContainer) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useInterStagePropsFromContext) {
       return;
     }
     mInterStagePropsContainer = interStagePropsContainer;
@@ -738,7 +738,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useInterStagePropsFromContext) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access a inter-stage props outside of a layout state calculation.");
@@ -756,7 +756,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   final InterStagePropsContainer getInterStagePropsContainer(
       LayoutStateContext layoutStateContext, String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useInterStagePropsFromContext) {
       if (layoutStateContext.getScopedComponentInfo(globalKey) == null) {
         return null;
       }

@@ -111,9 +111,12 @@ public class LayoutStateContext {
     }
 
     InterStagePropsContainer newInterStagePropsContainer =
-        component.createInterStagePropsContainer();
+        ComponentsConfiguration.useInterStagePropsFromContext
+            ? component.createInterStagePropsContainer()
+            : null;
 
-    if (mGlobalKeyToScopedInfo.containsKey(globalKey)) {
+    if (ComponentsConfiguration.useInterStagePropsFromContext
+        && mGlobalKeyToScopedInfo.containsKey(globalKey)) {
       InterStagePropsContainer prevInterStagePropsContainer =
           mGlobalKeyToScopedInfo.get(globalKey).getInterStagePropsContainer();
 
