@@ -33,8 +33,10 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.LooperMode;
 
 /** Tests that Mount events are only logged when tracing is enabled. */
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class MountStateBetterLoggingTest {
   private ComponentContext mContext;

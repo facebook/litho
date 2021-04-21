@@ -53,7 +53,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.annotation.LooperMode;
 
+@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class VisibilityEventsTest {
   private static final int LEFT = 0;
