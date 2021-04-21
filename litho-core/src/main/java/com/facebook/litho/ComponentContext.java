@@ -366,7 +366,7 @@ public class ComponentContext {
     mComponentTree.updateStateLazy(getGlobalKey(), stateUpdate);
   }
 
-  final void updateHookStateAsync(HookUpdater updateBlock) {
+  final void updateHookStateAsync(String globalKey, HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -375,10 +375,13 @@ public class ComponentContext {
 
     final Component scope = getComponentScope();
     mComponentTree.updateHookStateAsync(
-        updateBlock, scope != null ? scope.getSimpleName() : "hook", isCreateLayoutInProgress());
+        globalKey,
+        updateBlock,
+        scope != null ? scope.getSimpleName() : "hook",
+        isCreateLayoutInProgress());
   }
 
-  final void updateHookStateSync(HookUpdater updateBlock) {
+  final void updateHookStateSync(String globalKey, HookUpdater updateBlock) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -387,7 +390,10 @@ public class ComponentContext {
 
     final Component scope = getComponentScope();
     mComponentTree.updateHookStateSync(
-        updateBlock, scope != null ? scope.getSimpleName() : "hook", isCreateLayoutInProgress());
+        globalKey,
+        updateBlock,
+        scope != null ? scope.getSimpleName() : "hook",
+        isCreateLayoutInProgress());
   }
 
   public void applyLazyStateUpdatesForContainer(StateContainer container) {

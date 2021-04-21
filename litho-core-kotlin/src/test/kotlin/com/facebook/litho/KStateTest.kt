@@ -19,6 +19,8 @@ package com.facebook.litho
 import android.os.Looper.getMainLooper
 import android.view.View.MeasureSpec.EXACTLY
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.core.height
+import com.facebook.litho.core.width
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
@@ -28,6 +30,7 @@ import com.facebook.litho.testing.match
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.view.onClick
 import com.facebook.litho.view.viewTag
+import com.facebook.litho.view.wrapInView
 import com.facebook.litho.widget.Text
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
@@ -217,6 +220,89 @@ class KStateTest {
     lithoViewRule.findViewWithTag("test_view").performClick()
     assertThat(stateRef.get()).describedAs("String state is updated").isEqualTo("world")
   }
+
+  @Test
+  fun useState_reconciliation_stateIsUpdatedWithoutCallingRenderOnSibling() {
+    val siblingRenderCount = AtomicInteger()
+
+    class RootComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.wrapInView()) {
+          child(ClickableComponentWithState(tag = "test_view"))
+          child(CountRendersComponent(renderCount = siblingRenderCount))
+        }
+      }
+    }
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot { RootComponent() }
+        .attachToWindow()
+        .measure()
+        .layout()
+
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    lithoViewRule.findViewWithTag("test_view").performClick()
+
+    // Using viewTag because Text is currently a drawable and harder to access directly
+    lithoViewRule.assertMatches(
+        match<LithoView> {
+          child<ComponentHost> { child<ComponentHost> { prop("tag", "Counter: 1") } }
+        })
+
+    // Assert that the state update didn't cause the sibling to re-render
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+  }
+
+  /**
+   * While it's not exactly desired that the parent needs render() called on it again, this test is
+   * to detect unexpected changes in that behavior.
+   */
+  @Test
+  fun useState_reconciliation_renderCalledOnParentOfUpdatedComponent() {
+    val siblingRenderCount = AtomicInteger()
+    val parentRenderCount = AtomicInteger()
+
+    class ParentOfComponentWithStateUpdate(private val renderCount: AtomicInteger) : KComponent() {
+      override fun ComponentScope.render(): Component {
+        renderCount.incrementAndGet()
+        return ClickableComponentWithState(tag = "test_view")
+      }
+    }
+
+    class RootComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.wrapInView()) {
+          child(ParentOfComponentWithStateUpdate(renderCount = parentRenderCount))
+          child(CountRendersComponent(renderCount = siblingRenderCount))
+        }
+      }
+    }
+
+    lithoViewRule
+        .setSizeSpecs(exactly(100), exactly(100))
+        .setRoot { RootComponent() }
+        .attachToWindow()
+        .measure()
+        .layout()
+
+    assertThat(parentRenderCount.get()).isEqualTo(1)
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+
+    lithoViewRule.findViewWithTag("test_view").performClick()
+
+    // Using viewTag because Text is currently a drawable and harder to access directly
+    lithoViewRule.assertMatches(
+        match<LithoView> {
+          child<ComponentHost> { child<ComponentHost> { prop("tag", "Counter: 1") } }
+        })
+
+    // Assert that the state update still causes parent to re-render but not sibling
+    assertThat(parentRenderCount.get()).isEqualTo(2)
+    assertThat(siblingRenderCount.get()).isEqualTo(1)
+  }
+
   private class CountDownLatchComponent(
       val countDownLatch: CountDownLatch,
       val awaitable: CountDownLatch?,
@@ -228,6 +314,26 @@ class KStateTest {
 
       val state = useState { initCounter.incrementAndGet() }
       return Text("stateValue is ${state.value}")
+    }
+  }
+
+  class ClickableComponentWithState(private val tag: String) : KComponent() {
+    override fun ComponentScope.render(): Component? {
+      val counter = useState { 0 }
+
+      return Row(style = Style.viewTag(tag).onClick { counter.updateSync { value -> value + 1 } }) {
+        child(
+            Text(
+                style = Style.viewTag("Counter: ${counter.value}"),
+                text = "Counter: ${counter.value}"))
+      }
+    }
+  }
+
+  private class CountRendersComponent(private val renderCount: AtomicInteger) : KComponent() {
+    override fun ComponentScope.render(): Component? {
+      renderCount.incrementAndGet()
+      return Row(style = Style.width(100.px).height(100.px))
     }
   }
 }

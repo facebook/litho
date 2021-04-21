@@ -45,7 +45,9 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    * background.
    */
   fun update(newValue: T) {
-    context.updateHookStateAsync { stateHandler -> stateHandler.hookState[hookKey] = newValue }
+    context.updateHookStateAsync(context.globalKey) { stateHandler ->
+      stateHandler.hookState[hookKey] = newValue
+    }
   }
 
   /**
@@ -61,7 +63,7 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    * succession).
    */
   fun update(newValueFunction: (T) -> T) {
-    context.updateHookStateAsync { stateHandler ->
+    context.updateHookStateAsync(context.globalKey) { stateHandler ->
       stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
     }
   }
@@ -76,7 +78,9 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    * it's known to be executed off the main thread.
    */
   fun updateSync(newValue: T) {
-    context.updateHookStateSync { stateHandler -> stateHandler.hookState[hookKey] = newValue }
+    context.updateHookStateSync(context.globalKey) { stateHandler ->
+      stateHandler.hookState[hookKey] = newValue
+    }
   }
 
   /**
@@ -96,7 +100,7 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    * it's known to be executed off the main thread.
    */
   fun updateSync(newValueFunction: (T) -> T) {
-    context.updateHookStateSync { stateHandler ->
+    context.updateHookStateSync(context.globalKey) { stateHandler ->
       stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
     }
   }

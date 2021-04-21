@@ -31,7 +31,7 @@ public class HooksStateHandlerTest {
     final StateHandler first = new StateHandler();
     final StateHandler second = new StateHandler(first);
 
-    assertThat(second.hasPendingUpdates()).isFalse();
+    assertThat(second.hasUncommittedUpdates()).isFalse();
     assertThat(second.isEmpty()).isTrue();
   }
 
@@ -45,7 +45,7 @@ public class HooksStateHandlerTest {
 
     final StateHandler second = new StateHandler(first);
 
-    assertThat(second.hasPendingUpdates()).isFalse();
+    assertThat(second.hasUncommittedUpdates()).isFalse();
     assertThat(second.isEmpty()).isFalse();
     assertThat(second.getHookState())
         .hasSize(3)
@@ -62,6 +62,7 @@ public class HooksStateHandlerTest {
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
+        "globalKey",
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
@@ -70,12 +71,12 @@ public class HooksStateHandlerTest {
           }
         });
 
-    assertThat(first.hasPendingUpdates()).isTrue();
+    assertThat(first.hasUncommittedUpdates()).isTrue();
 
     final StateHandler second = new StateHandler(first);
 
-    assertThat(first.hasPendingUpdates()).isTrue();
-    assertThat(second.hasPendingUpdates()).isFalse();
+    assertThat(first.hasUncommittedUpdates()).isTrue();
+    assertThat(second.hasUncommittedUpdates()).isTrue();
 
     assertThat(second.getHookState())
         .hasSize(4)
@@ -84,7 +85,7 @@ public class HooksStateHandlerTest {
 
     first.commit(second);
 
-    assertThat(first.hasPendingUpdates()).isFalse();
+    assertThat(first.hasUncommittedUpdates()).isFalse();
     assertThat(first.getHookState())
         .hasSize(4)
         .extracting("foo", "bar", "baz", "newKey")
@@ -100,6 +101,7 @@ public class HooksStateHandlerTest {
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
+        "globalKey",
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
@@ -109,6 +111,7 @@ public class HooksStateHandlerTest {
         });
 
     first.queueHookStateUpdate(
+        "globalKey",
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
@@ -118,12 +121,12 @@ public class HooksStateHandlerTest {
           }
         });
 
-    assertThat(first.hasPendingUpdates()).isTrue();
+    assertThat(first.hasUncommittedUpdates()).isTrue();
 
     final StateHandler second = new StateHandler(first);
 
-    assertThat(first.hasPendingUpdates()).isTrue();
-    assertThat(second.hasPendingUpdates()).isFalse();
+    assertThat(first.hasUncommittedUpdates()).isTrue();
+    assertThat(second.hasUncommittedUpdates()).isTrue();
 
     assertThat(second.getHookState())
         .hasSize(4)
@@ -132,7 +135,7 @@ public class HooksStateHandlerTest {
 
     first.commit(second);
 
-    assertThat(first.hasPendingUpdates()).isFalse();
+    assertThat(first.hasUncommittedUpdates()).isFalse();
     assertThat(first.getHookState())
         .hasSize(4)
         .extracting("foo", "bar", "baz", "newKey")
@@ -148,6 +151,7 @@ public class HooksStateHandlerTest {
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
+        "globalKey",
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
@@ -157,6 +161,7 @@ public class HooksStateHandlerTest {
         });
 
     first.queueHookStateUpdate(
+        "globalKey",
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
@@ -169,6 +174,7 @@ public class HooksStateHandlerTest {
     final StateHandler second = new StateHandler(first);
 
     first.queueHookStateUpdate(
+        "globalKey",
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
@@ -187,7 +193,7 @@ public class HooksStateHandlerTest {
 
     first.commit(second);
 
-    assertThat(first.hasPendingUpdates()).isTrue();
+    assertThat(first.hasUncommittedUpdates()).isTrue();
     assertThat(first.getHookState())
         .hasSize(4)
         .extracting("foo", "bar", "baz", "newKey")
@@ -195,7 +201,7 @@ public class HooksStateHandlerTest {
 
     first.commit(third);
 
-    assertThat(first.hasPendingUpdates()).isFalse();
+    assertThat(first.hasUncommittedUpdates()).isFalse();
     assertThat(first.getHookState())
         .hasSize(4)
         .extracting("foo", "bar", "baz", "newKey")

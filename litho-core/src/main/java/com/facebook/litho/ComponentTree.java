@@ -1440,9 +1440,9 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   final void updateHookStateSync(
-      HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
+      String globalKey, HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
     if (mForceAsyncStateUpdate && mIsAsyncUpdateStateEnabled) {
-      updateHookStateAsync(updater, attribution, isCreateLayoutInProgress);
+      updateHookStateAsync(globalKey, updater, attribution, isCreateLayoutInProgress);
       return;
     }
 
@@ -1451,20 +1451,20 @@ public class ComponentTree implements LithoLifecycleListener {
         return;
       }
 
-      mStateHandler.queueHookStateUpdate(updater);
+      mStateHandler.queueHookStateUpdate(globalKey, updater);
     }
 
     ensureSyncStateUpdateRunnable(attribution, isCreateLayoutInProgress);
   }
 
   final void updateHookStateAsync(
-      HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
+      String globalKey, HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
     synchronized (this) {
       if (mRoot == null) {
         return;
       }
 
-      mStateHandler.queueHookStateUpdate(updater);
+      mStateHandler.queueHookStateUpdate(globalKey, updater);
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
@@ -2104,7 +2104,7 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       if (root != null) {
-        if (mStateHandler.hasPendingUpdates()) {
+        if (mStateHandler.hasUncommittedUpdates()) {
           root = root.makeShallowCopyWithNewId();
         }
       }

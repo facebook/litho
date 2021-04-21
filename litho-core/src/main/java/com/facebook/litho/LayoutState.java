@@ -1897,7 +1897,7 @@ public class LayoutState
     }
 
     StateHandler stateHandler = c.getStateHandler();
-    if (stateHandler == null || !stateHandler.hasPendingUpdates()) {
+    if (stateHandler == null || !stateHandler.hasUncommittedUpdates()) {
       return false;
     }
 

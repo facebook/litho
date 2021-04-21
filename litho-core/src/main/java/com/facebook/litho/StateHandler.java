@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.StateContainer.StateUpdate;
 
+import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -73,9 +74,13 @@ public class StateHandler {
   @Nullable
   private Map<Object, Object> mCachedValues;
 
+  /** Hook key (global key + hook index) -> state object */
   private Map<String, Object> mHookState;
-  private List<HookUpdater> mPendingHookUpdates;
-  private List<HookUpdater> mAppliedHookUpdates;
+
+  // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
+  // of the component the update applies to
+  private List<Pair<String, HookUpdater>> mPendingHookUpdates;
+  private List<Pair<String, HookUpdater>> mAppliedHookUpdates;
 
   public StateHandler() {
     this(null);
@@ -114,9 +119,16 @@ public class StateHandler {
         && (mHookState == null || mHookState.isEmpty());
   }
 
-  synchronized boolean hasPendingUpdates() {
+  /**
+   * @return whether this StateHandler has updates that haven't been committed to the
+   *     source-of-truth StateHandler on the ComponentTree.
+   */
+  synchronized boolean hasUncommittedUpdates() {
     return (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty())
-        || (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty());
+        || (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty())
+        // Because we immediately apply Kotlin state updates at the beginning of layout, we need to
+        // also check applied state updates to see if this StateHandler has uncommitted updates.
+        || (mAppliedHookUpdates != null && !mAppliedHookUpdates.isEmpty());
   }
 
   /**
@@ -277,6 +289,16 @@ public class StateHandler {
     }
     if (mPendingStateUpdates != null) {
       keys.addAll(mPendingStateUpdates.keySet());
+    }
+    if (mPendingHookUpdates != null) {
+      for (Pair<String, HookUpdater> hookUpdates : mPendingHookUpdates) {
+        keys.add(hookUpdates.first);
+      }
+    }
+    if (mAppliedHookUpdates != null) {
+      for (Pair<String, HookUpdater> hookUpdates : mAppliedHookUpdates) {
+        keys.add(hookUpdates.first);
+      }
     }
 
     return keys;
@@ -538,11 +560,11 @@ public class StateHandler {
   /**
    * Registers the given block to be run before the next layout calculation to update hook state.
    */
-  void queueHookStateUpdate(HookUpdater updater) {
+  void queueHookStateUpdate(String key, HookUpdater updater) {
     if (mPendingHookUpdates == null) {
       mPendingHookUpdates = new ArrayList<>();
     }
-    mPendingHookUpdates.add(updater);
+    mPendingHookUpdates.add(new Pair<>(key, updater));
   }
 
   /**
@@ -561,11 +583,11 @@ public class StateHandler {
     }
 
     if (other.mPendingHookUpdates != null) {
-      List<HookUpdater> updaters = new ArrayList<>(other.mPendingHookUpdates);
-      for (HookUpdater updater : updaters) {
-        updater.apply(this);
+      List<Pair<String, HookUpdater>> updates = new ArrayList<>(other.mPendingHookUpdates);
+      for (Pair<String, HookUpdater> hookUpdate : updates) {
+        hookUpdate.second.apply(this);
       }
-      mAppliedHookUpdates = updaters;
+      mAppliedHookUpdates = updates;
     }
   }
 
