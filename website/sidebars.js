@@ -156,6 +156,7 @@ module.exports = {
         },
         {
           'Error Handling': [
+            'fb/error-boundaries',
             'fb/error-handling',
             'fb/error-handling-setting-a-default-error-event-handler',
           ],
@@ -195,7 +196,6 @@ module.exports = {
             'architecture-overview',
             'recycler-component',
             'custom-layout',
-            'error-boundaries',
             'onattached-ondetached',
           ],
           'Architecture': [
