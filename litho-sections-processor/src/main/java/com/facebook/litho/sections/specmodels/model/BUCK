@@ -54,5 +54,6 @@ fb_java_library(
     target = "8",
     visibility = [
         make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib-bare4idea"),
+        make_dep_path("litho-intellij-plugin/src/main:main"),
     ],
 )
