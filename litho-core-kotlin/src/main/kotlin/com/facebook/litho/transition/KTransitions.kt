@@ -21,7 +21,8 @@ import com.facebook.litho.Transition
 import com.facebook.rendercore.transitions.TransitionUtils
 
 /** Defines single or multiple [Transition] animations for the given component */
-fun ComponentScope.useTransition(transition: Transition) {
+fun ComponentScope.useTransition(transition: Transition?) {
+  transition ?: return
   TransitionUtils.setOwnerKey(transition, context.globalKey)
   val transitionsList = transitions ?: ArrayList<Transition>()
   transitionsList.add(transition)
