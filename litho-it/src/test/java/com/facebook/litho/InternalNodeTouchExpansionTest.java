@@ -37,17 +37,19 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTouchExpansionTest {
+
   private DefaultInternalNode mInternalNode;
+  ComponentContext mContext;
 
   @Before
   public void setup() {
-    final ComponentContext context = new ComponentContext(getApplicationContext());
-    context.setLayoutStateContextForTesting();
+    mContext = new ComponentContext(getApplicationContext());
+    mContext.setLayoutStateContextForTesting();
     mInternalNode =
         (DefaultInternalNode)
             createAndMeasureComponent(
-                    context,
-                    Column.create(context).build(),
+                    mContext,
+                    Column.create(mContext).build(),
                     makeSizeSpec(0, UNSPECIFIED),
                     makeSizeSpec(0, UNSPECIFIED))
                 .mResult;
@@ -55,9 +57,9 @@ public class InternalNodeTouchExpansionTest {
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
-  private static void setDirection(InternalNode node, YogaDirection direction) {
+  private static void setDirection(ComponentContext c, InternalNode node, YogaDirection direction) {
     node.layoutDirection(direction);
-    node.calculateLayout();
+    node.calculateLayout(c, UNSPECIFIED, UNSPECIFIED);
   }
 
   @Test
@@ -110,7 +112,7 @@ public class InternalNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionLeftWithDefinedStartInRtl() {
-    setDirection(mInternalNode, RTL);
+    setDirection(mContext, mInternalNode, RTL);
     mInternalNode.touchExpansionPx(START, 5);
     mInternalNode.touchExpansionPx(LEFT, 10);
     assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(10);
@@ -118,7 +120,7 @@ public class InternalNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionLeftWithDefinedEndInRtl() {
-    setDirection(mInternalNode, RTL);
+    setDirection(mContext, mInternalNode, RTL);
     mInternalNode.touchExpansionPx(END, 5);
     mInternalNode.touchExpansionPx(LEFT, 10);
     assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(5);
@@ -146,7 +148,7 @@ public class InternalNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionRightWithDefinedStartInRtl() {
-    setDirection(mInternalNode, RTL);
+    setDirection(mContext, mInternalNode, RTL);
     mInternalNode.touchExpansionPx(START, 5);
     mInternalNode.touchExpansionPx(RIGHT, 10);
     assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(5);
@@ -154,7 +156,7 @@ public class InternalNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionRightWithDefinedEndInRtl() {
-    setDirection(mInternalNode, RTL);
+    setDirection(mContext, mInternalNode, RTL);
     mInternalNode.touchExpansionPx(END, 5);
     mInternalNode.touchExpansionPx(RIGHT, 10);
     assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(10);

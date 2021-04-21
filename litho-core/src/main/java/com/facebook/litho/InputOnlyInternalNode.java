@@ -436,11 +436,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public void calculateLayout() {
-    calculateLayout(mComponentContext, SizeSpec.UNSPECIFIED, SizeSpec.UNSPECIFIED);
-  }
-
-  @Override
   public InternalNode child(Component child) {
     if (child != null) {
       return child(Layout.create(mComponentContext, child));

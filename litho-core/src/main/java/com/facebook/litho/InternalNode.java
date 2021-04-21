@@ -75,8 +75,6 @@ public interface InternalNode extends Inputs {
 
   LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec);
 
-  void calculateLayout();
-
   InternalNode child(Component child);
 
   InternalNode child(Component.Builder<?> child);

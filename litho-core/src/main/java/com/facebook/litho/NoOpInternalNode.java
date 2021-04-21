@@ -120,9 +120,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void calculateLayout() {}
-
-  @Override
   public @Nullable InternalNode child(Component child) {
     return null;
   }
