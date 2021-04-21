@@ -31,6 +31,7 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.width
 import com.facebook.litho.dp
+import com.facebook.litho.transition.CrossFade
 import com.facebook.litho.transition.ExpandToReveal
 import com.facebook.litho.useState
 import com.facebook.litho.view.background
@@ -42,6 +43,22 @@ class ContainersComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
 
     val isExpanded = useState { true }
+    val showSecondComponent = useState { false }
+
+    val firstComponent =
+        Column(
+            style =
+                Style.width(100.dp)
+                    .height(50.dp)
+                    .margin(all = 5.dp)
+                    .background(buildRoundedRect(context, Color.parseColor("#6ab071"), 8)))
+    val secondComponent =
+        Column(
+            style =
+                Style.width(50.dp)
+                    .height(50.dp)
+                    .margin(all = 5.dp)
+                    .background(buildRoundedRect(context, Color.parseColor("#bf678d"), 8)))
 
     return Column(style = Style.width(200.dp)) {
       child(
@@ -65,10 +82,12 @@ class ContainersComponent : KComponent() {
       child(
           Column(
               style =
-                  Style.width(50.dp)
+                  Style.width(150.dp)
                       .height(50.dp)
                       .margin(all = 5.dp)
-                      .background(buildRoundedRect(context, Color.parseColor("#a4dece"), 8))))
+                      .background(buildRoundedRect(context, Color.parseColor("#a4dece"), 8))
+                      .onClick { showSecondComponent.update(!showSecondComponent.value) }))
+      child(CrossFade(showSecondComponent.value, firstComponent, secondComponent))
     }
   }
 

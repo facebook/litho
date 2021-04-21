@@ -28,6 +28,8 @@ import com.facebook.litho.core.height
 import com.facebook.litho.dp
 import com.facebook.litho.view.alpha
 
+private const val CMPONENT_A_KEY = "componentAKey"
+private const val COMPONENT_B_KEY = "componentBKey"
 private const val EXPAND_TO_REVEAL_KEY = "expandToReveal"
 
 /**
@@ -53,4 +55,40 @@ class ExpandToReveal(
             Transition.allLayout()))
     return Column(style = if (isExpanded) collapsedStyle else normalStyle) { child(component) }
   }
+}
+
+class CrossFade(
+    private val showComponentB: Boolean,
+    private val componentA: Component,
+    private val componentB: Component,
+    private val transitionType: TransitionType = TransitionType.FADE_IN_FADE_OUT
+) : KComponent() {
+  override fun ComponentScope.render(): Component? {
+    useTransition(getAppearDisappearTransition(transitionType))
+
+    return if (showComponentB) {
+      Column(style = Style.transitionKey(context, COMPONENT_B_KEY)) { child(componentB) }
+    } else {
+      Column(style = Style.transitionKey(context, CMPONENT_A_KEY)) { child(componentA) }
+    }
+  }
+
+  private fun getAppearDisappearTransition(transitionType: TransitionType): Transition =
+      when (transitionType) {
+        TransitionType.FADE_IN_FADE_OUT ->
+            Transition.parallel<Transition.BaseTransitionUnitsBuilder>(
+                Transition.create(CMPONENT_A_KEY)
+                    .animate(AnimatedProperties.ALPHA)
+                    .appearFrom(0f)
+                    .disappearTo(0f),
+                Transition.create(COMPONENT_B_KEY)
+                    .animate(AnimatedProperties.ALPHA)
+                    .appearFrom(0f)
+                    .disappearTo(0f),
+                Transition.allLayout())
+      }
+}
+
+enum class TransitionType {
+  FADE_IN_FADE_OUT,
 }
