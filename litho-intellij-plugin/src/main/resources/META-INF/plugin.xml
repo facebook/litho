@@ -69,6 +69,7 @@
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.MountSpecTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.GroupSectionSpecTemplateProvider"/>
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.EventTemplateProvider"/>
+    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.KotlinComponentTemplateProvider"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
