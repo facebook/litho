@@ -22,28 +22,59 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.AttachDetachTester;
 import com.facebook.litho.widget.AttachDetachTesterSpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class AttachDetachHandlerTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
+
+  private final boolean mUseStatelessComponent;
+  private final boolean mInitialUseStatelessComponentValue;
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
+
+  public AttachDetachHandlerTest(boolean useStatelessComponent) {
+    mUseStatelessComponent = useStatelessComponent;
+    mInitialUseStatelessComponentValue = ComponentsConfiguration.useStatelessComponent;
+  }
+
+  @Before
+  public void setup() {
+    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsConfiguration.useStatelessComponent = mInitialUseStatelessComponentValue;
+  }
 
   @Test
   public void component_setRootWithLayout_onAttachedIsCalled() {
@@ -61,6 +92,27 @@ public class AttachDetachHandlerTest {
     final AttachDetachHandler attachDetachHandler =
         mLithoViewRule.getComponentTree().getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
+  }
+
+  @Test
+  public void component_setEmptyRootAfterAttach_onDetachedIsCalled() {
+    final List<String> steps = new ArrayList<>();
+    final Component root =
+        AttachDetachTester.create(mLithoViewRule.getContext()).name("root").steps(steps).build();
+    mLithoViewRule.setRoot(root);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(steps)
+        .describedAs("Should call @OnAttached method")
+        .containsExactly("root:" + AttachDetachTesterSpec.ON_ATTACHED);
+    steps.clear();
+
+    mLithoViewRule.setRoot(Column.create(mLithoViewRule.getContext()).build());
+
+    assertThat(steps)
+        .describedAs("Should call @OnDetached method")
+        .containsExactly("root:" + AttachDetachTesterSpec.ON_DETACHED);
   }
 
   @Test

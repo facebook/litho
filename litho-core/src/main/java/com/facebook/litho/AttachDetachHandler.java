@@ -63,7 +63,9 @@ public class AttachDetachHandler {
     mLayoutStateContext = layoutStateContext;
 
     if (attachables == null) {
-      detachAll(Preconditions.checkNotNull(mAttached));
+      detachAll(
+          Preconditions.checkNotNull(previousLayoutStateContext),
+          Preconditions.checkNotNull(mAttached));
       mAttached = null;
       return;
     }
@@ -111,7 +113,7 @@ public class AttachDetachHandler {
     if (mAttached == null) {
       return;
     }
-    detachAll(mAttached);
+    detachAll(Preconditions.checkNotNull(mLayoutStateContext), mAttached);
     mAttached = null;
   }
 
@@ -122,8 +124,7 @@ public class AttachDetachHandler {
     }
   }
 
-  private void detachAll(Map<String, Attachable> toDetach) {
-    final LayoutStateContext layoutStateContext = Preconditions.checkNotNull(mLayoutStateContext);
+  private void detachAll(LayoutStateContext layoutStateContext, Map<String, Attachable> toDetach) {
     for (Attachable entry : toDetach.values()) {
       entry.detach(layoutStateContext);
     }
