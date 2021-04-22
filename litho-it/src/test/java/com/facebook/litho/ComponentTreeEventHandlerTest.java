@@ -37,6 +37,7 @@ public class ComponentTreeEventHandlerTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
+    mContext.setLayoutStateContextForTesting();
   }
 
   @Test
