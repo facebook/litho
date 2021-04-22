@@ -50,11 +50,14 @@ public class ComponentGlobalKeyTest {
   private ComponentContext mContext;
   private TestComponentsReporter mComponentsReporter;
   private boolean mUseStatelessComponentDefault;
+  private boolean mUseInterStagePropsFromContextDefault;
 
   @Before
   public void setup() {
     mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
+    mUseInterStagePropsFromContextDefault = ComponentsConfiguration.useInterStagePropsFromContext;
     ComponentsConfiguration.useStatelessComponent = false;
+    ComponentsConfiguration.useInterStagePropsFromContext = false;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);
@@ -63,6 +66,7 @@ public class ComponentGlobalKeyTest {
   @After
   public void cleanup() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
+    ComponentsConfiguration.useInterStagePropsFromContext = mUseInterStagePropsFromContextDefault;
   }
 
   @Test
