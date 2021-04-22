@@ -293,7 +293,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean canMeasureRecycler,
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
-      @Prop(optional = true) LithoStartupLogger startupLogger,
+      @Prop(optional = true) @Nullable LithoStartupLogger startupLogger,
       @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory) {
 
     RecyclerBinderConfiguration binderConfiguration =
