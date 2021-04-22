@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Version 1.8.0
+
+_2021-04-21
+
+* New: Method auto completion for `GroupSectionSpec` (OnCreateService, OnCreateTreeProp, OnCreateChildren, OnUnbindService, OnBindService, OnDataBound, OnDataRendered, OnViewportChanged, OnRefresh)
+* Fix: Incorrect filename when creating Kotlin Litho files from templates
+
 ## Version 1.7.0
 
 _2021-01-22_
