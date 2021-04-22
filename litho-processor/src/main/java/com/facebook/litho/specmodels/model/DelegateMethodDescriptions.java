@@ -46,6 +46,7 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.annotations.OnLayoutCalculated;
 import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
@@ -160,6 +161,18 @@ public final class DelegateMethodDescriptions {
                       .returns(TypeName.BOOLEAN)
                       .addStatement("return true")
                       .build()))
+          .build();
+
+  public static final DelegateMethodDescription ON_LAYOUT_CALCULATED =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("onLayoutCalculated")
+          .definedParameterTypes(
+              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
+          .optionalParameterTypes(
+              ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_INITIAL_STATE =
@@ -521,6 +534,7 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
     layoutSpecDelegateMethodsMap.put(OnAttached.class, ON_ATTACHED);
     layoutSpecDelegateMethodsMap.put(OnDetached.class, ON_DETACHED);
+    layoutSpecDelegateMethodsMap.put(OnLayoutCalculated.class, ON_LAYOUT_CALCULATED);
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, DelegateMethodDescription> mountSpecDelegateMethodsMap =

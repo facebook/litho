@@ -395,6 +395,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
 
   /**
+   * Called after the layout calculation is finished.
+   *
+   * @param c The {@link Context} used by this component.
+   */
+  protected void onLayoutCalculated(ComponentContext c) {}
+
+  /**
    * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
    * Component} and its sub-components.
    *
