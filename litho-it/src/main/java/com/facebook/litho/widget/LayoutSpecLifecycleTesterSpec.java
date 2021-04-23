@@ -42,6 +42,7 @@ import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.OnLayoutCalculated;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
@@ -111,6 +112,11 @@ public class LayoutSpecLifecycleTesterSpec {
   @OnDetached
   static void onDetached(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_DETACHED));
+  }
+
+  @OnLayoutCalculated
+  static void onLayoutCalculated(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_LAYOUT_CALCULATED));
   }
 
   @OnUpdateState
