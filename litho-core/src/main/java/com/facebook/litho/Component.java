@@ -405,13 +405,14 @@ public abstract class Component extends ComponentLifecycle
       return layout;
     }
 
-    if (layout != null
-        && context.getComponentScope() != null
-        && layout.getContext().getGlobalKey().startsWith(context.getGlobalKey())) {
-      return layout;
-    } else {
+    if (layout == null || context == null || context.getComponentScope() == null) {
       return null;
     }
+
+    return ComponentUtils.getGlobalKey(layout.getHeadComponent(), layout.getHeadComponentKey())
+            .startsWith(context.getGlobalKey())
+        ? layout
+        : null;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
