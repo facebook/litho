@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -54,7 +53,6 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     PsiClass choose(PsiClass context, Project project);
   }
 
-  @Nullable
   public interface OnEventRefactorer {
     PsiMethod changeSignature(Project project, PsiMethod originalOnEventMethod, PsiClass context);
   }
