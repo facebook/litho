@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.annotation.SuppressLint;
-import androidx.annotation.Nullable;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
