@@ -919,6 +919,14 @@ class TextInputSpec {
     return view == null ? savedText.get() : view.getText();
   }
 
+  @OnTrigger(GetLineCountEvent.class)
+  @Nullable
+  static Integer getLineCount(
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    return view != null ? view.getLineCount() : null;
+  }
+
   @OnTrigger(SetTextEvent.class)
   static void setText(
       ComponentContext c,
