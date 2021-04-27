@@ -59,7 +59,6 @@ litho_robolectric4_test(
     target_sdk_levels = [
         "16",
         "21",
-        "29",
     ],
     deps = [
         ":testutil",
