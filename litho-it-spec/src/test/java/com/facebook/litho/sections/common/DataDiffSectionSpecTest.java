@@ -54,8 +54,9 @@ public class DataDiffSectionSpecTest {
       ComponentTestHelper.mountComponent(mComponentContext, component);
       fail("Should crash when creating 'RenderInfo' for an empty string");
     } catch (RuntimeException e) {
-      assertThat(e.getCause())
-          .hasMessageEndingWith("'@OnEvent(RenderEvent.class)' is not allowed to return 'null'.");
+      assertThat(e.getCause().getMessage())
+          .contains(
+              "'@OnEvent(RenderEvent.class)' is not allowed to return 'null'. EventDispatcher: com.facebook.litho.sections.common.GroupSectionWithNullableRenderInfo");
     }
   }
 }

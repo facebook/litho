@@ -327,7 +327,8 @@ public class DataDiffSectionSpec<T> {
 
       if (renderInfo == null) {
         throw new IllegalStateException(
-            "Method annotated with '@OnEvent(RenderEvent.class)' is not allowed to return 'null'.");
+            "Method annotated with '@OnEvent(RenderEvent.class)' is not allowed to return 'null'. EventDispatcher: "
+                + mRenderEventEventHandler.toString());
       }
 
       if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
