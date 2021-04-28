@@ -57,7 +57,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop disableClipBottomRight If set, opt out of clipping the bottom-right corner, elevation will
  *     force to 0 in this case.
  */
-@LayoutSpec(isPureRender = true)
+@LayoutSpec
 class CardSpec {
 
   private static final int DEFAULT_CORNER_RADIUS_DP = 2;

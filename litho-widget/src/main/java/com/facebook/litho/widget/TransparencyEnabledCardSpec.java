@@ -59,7 +59,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop shadowBottomOverride Override of size of shadow at bottom of card.
  */
 @Deprecated
-@LayoutSpec(isPureRender = true)
+@LayoutSpec
 class TransparencyEnabledCardSpec {
 
   private static final int DEFAULT_CORNER_RADIUS_DP = 2;
