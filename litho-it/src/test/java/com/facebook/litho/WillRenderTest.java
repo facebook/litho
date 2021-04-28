@@ -17,13 +17,25 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.LifecycleStep.ON_ATTACHED;
+import static com.facebook.litho.LifecycleStep.ON_CALCULATE_CACHED_VALUE;
+import static com.facebook.litho.LifecycleStep.ON_CREATE_INITIAL_STATE;
+import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT;
+import static com.facebook.litho.LifecycleStep.ON_CREATE_TREE_PROP;
+import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.View;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentWithState;
+import com.facebook.litho.widget.LayoutSpecWillRenderReuseTester;
+import com.facebook.litho.widget.LayoutSpecWillRenderTester;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,6 +43,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class WillRenderTest {
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private final InlineLayoutSpec mNullSpec =
       new InlineLayoutSpec() {
@@ -99,5 +113,72 @@ public class WillRenderTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(Component.willRender(c, ComponentWithState.create(c).build())).isTrue();
+  }
+
+  @Test
+  public void testWillRender_cachedLayoutUsedInDifferentComponentHierarchy() {
+    ComponentsConfiguration.useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
+
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWillRenderTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_ATTACHED);
+  }
+
+  @Test
+  public void testWillRender_cachedLayoutNotUsedInDifferentComponentHierarchy() {
+    ComponentsConfiguration.useCachedLayoutOnlyWhenGlobalKeysMatchesParent = true;
+
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWillRenderTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_ATTACHED);
+  }
+
+  @Test
+  public void testWillRender_cachedLayoutUsedInSameComponentHierarchy() {
+    ComponentsConfiguration.useCachedLayoutOnlyWhenGlobalKeysMatchesParent = true;
+
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWillRenderReuseTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            ON_CREATE_INITIAL_STATE,
+            ON_CREATE_TREE_PROP,
+            ON_CALCULATE_CACHED_VALUE,
+            ON_CREATE_LAYOUT,
+            ON_ATTACHED);
   }
 }
