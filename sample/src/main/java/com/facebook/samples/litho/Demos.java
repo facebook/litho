@@ -58,6 +58,7 @@ import com.facebook.samples.litho.hscroll.HorizontalScrollWithDynamicItemHeight;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomViewContainerActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
+import com.facebook.samples.litho.lifecycle.ViewPagerLifecycleActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity;
 import com.facebook.samples.litho.onboarding.HelloWorldActivity;
@@ -223,7 +224,9 @@ public class Demos {
                       "Lifecycle",
                       Arrays.asList(
                           new SingleDemo("Error Boundaries", ErrorHandlingActivity.class),
-                          new SingleDemo("Lifecycle Callbacks", LifecycleDelegateActivity.class))),
+                          new SingleDemo("Lifecycle Callbacks", LifecycleDelegateActivity.class),
+                          new SingleDemo(
+                              "ViewPager Lifecycle Callbacks", ViewPagerLifecycleActivity.class))),
                   new DemoGrouping(
                       "Other Widgets",
                       Arrays.asList(
