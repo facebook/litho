@@ -119,13 +119,6 @@ public @interface LayoutSpec {
   boolean isPublic() default true;
 
   /**
-   * @return Boolean indicating Whether the component implements a pure render function. If this is
-   *     true and the Component didn't change during an update of the ComponentTree measurements and
-   *     LayoutOutputs will be reused instead of being calculated again.
-   */
-  boolean isPureRender() default false;
-
-  /**
    * @return List of event POJOs this component can dispatch. Used to generate event dispatch
    *     methods.
    */
