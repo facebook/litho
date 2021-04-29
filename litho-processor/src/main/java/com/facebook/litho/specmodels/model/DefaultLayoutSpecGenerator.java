@@ -24,7 +24,6 @@ import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
-import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.RenderDataGenerator;
 import com.facebook.litho.specmodels.generator.SimpleNameDelegateGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
@@ -72,7 +71,6 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
                 layoutSpecModel,
                 DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP,
                 runMode))
-        .addTypeSpecDataHolder(PureRenderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(WorkingRangeGenerator.generate(layoutSpecModel))

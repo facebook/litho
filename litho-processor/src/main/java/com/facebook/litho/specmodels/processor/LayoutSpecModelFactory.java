@@ -134,7 +134,6 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(LayoutSpec.class).isPublic(),
         dependencyInjectionHelper,
-        element.getAnnotation(LayoutSpec.class).isPureRender(),
         SpecElementTypeDeterminator.determine(element),
         element,
         mLayoutSpecGenerator,

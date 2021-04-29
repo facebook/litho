@@ -66,7 +66,6 @@ public class SpecModelValidation {
   public static List<SpecModelValidationError> validateLayoutSpecModel(
       LayoutSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
     validationErrors.addAll(SimpleNameDelegateValidation.validate(specModel));
     validationErrors.addAll(

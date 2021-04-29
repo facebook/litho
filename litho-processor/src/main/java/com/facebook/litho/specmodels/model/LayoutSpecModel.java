@@ -30,9 +30,8 @@ import javax.annotation.Nullable;
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.LayoutSpec}.
  */
-public class LayoutSpecModel implements SpecModel, HasPureRender {
+public class LayoutSpecModel implements SpecModel {
   private final SpecModelImpl mSpecModel;
-  private final boolean mIsPureRender;
   private final String mSimpleNameDelegate;
   private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
 
@@ -55,7 +54,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
-      boolean isPureRender,
       SpecElementType specElementType,
       Object representedObject,
       SpecGenerator<LayoutSpecModel> layoutSpecGenerator,
@@ -88,7 +86,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .representedObject(representedObject)
             .fields(fields)
             .build();
-    mIsPureRender = isPureRender;
     mLayoutSpecGenerator = layoutSpecGenerator;
     mSimpleNameDelegate = simpleNameDelegate;
   }
@@ -331,11 +328,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public boolean isPureRender() {
-    return mIsPureRender;
-  }
-
-  @Override
   public boolean shouldGenerateIsEquivalentTo() {
     return false;
   }
@@ -349,8 +341,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
     return "LayoutSpecModel{"
         + "mSpecModel="
         + mSpecModel
-        + ", mIsPureRender="
-        + mIsPureRender
         + ", mLayoutSpecGenerator="
         + mLayoutSpecGenerator
         + '}';

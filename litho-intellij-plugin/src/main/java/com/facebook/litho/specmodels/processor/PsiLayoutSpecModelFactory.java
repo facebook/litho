@@ -104,7 +104,6 @@ public class PsiLayoutSpecModelFactory {
         propJavadocs,
         layoutSpecAnnotation.isPublic(),
         dependencyInjectionHelper,
-        layoutSpecAnnotation.isPureRender(),
         SpecElementType.JAVA_CLASS,
         psiClass,
         mLayoutSpecGenerator,
