@@ -52,7 +52,7 @@ public final class EventDispatcherInstrumenter {
   @Nullable
   public static Object onBeginWork(EventHandler eventHandler, Object eventState) {
     final Instrumenter instrumenter = sInstance;
-    if (!isTracing() || instrumenter == null) {
+    if (instrumenter == null) {
       return null;
     }
     return instrumenter.onBeginWork(eventHandler, eventState);
@@ -60,7 +60,7 @@ public final class EventDispatcherInstrumenter {
 
   public static void onEndWork(@Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
-    if (!isTracing() || instrumenter == null || token == null) {
+    if (instrumenter == null || token == null) {
       return;
     }
     instrumenter.onEndWork(token);
