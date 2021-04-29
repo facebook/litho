@@ -369,6 +369,19 @@ class ViewStylesTest {
     assertThat(nodeInfo.transitionName).isEqualTo("test")
   }
 
+  /** See comment on [elevation_whenSet_isRespected] above. */
+  @Test
+  fun testKey_whenSet_isRespected() {
+    class TestKeyComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = Style.testKey("test"))
+      }
+    }
+
+    val node = resolveComponentToNodeForTest(lithoViewRule.context, TestKeyComponent())
+    assertThat(node.testKey).isEqualTo("test")
+  }
+
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {
     assertThat(componentHost.drawables).hasSize(1).first().isInstanceOf(MatrixDrawable::class.java)
     assertThat((componentHost.drawables[0] as MatrixDrawable<ColorDrawable>).mountedDrawable)

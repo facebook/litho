@@ -47,6 +47,7 @@ private enum class ObjectField {
   OUTLINE_PROVIDER,
   SELECTED,
   STATE_LIST_ANIMATOR,
+  TEST_KEY,
   TRANSITION_NAME,
   WRAP_IN_VIEW,
   VIEW_TAG,
@@ -81,6 +82,7 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
       ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
+      ObjectField.TEST_KEY -> commonProps.testKey(value as String?)
       ObjectField.TRANSITION_NAME -> commonProps.transitionName(value as String?)
       ObjectField.WRAP_IN_VIEW -> commonProps.wrapInView()
       ObjectField.VIEW_TAG -> commonProps.viewTag(value)
@@ -263,6 +265,12 @@ fun Style.stateListAnimator(stateListAnimator: StateListAnimator?) =
     } else {
       this
     }
+
+/**
+ * Sets testKey on the View this Component mounts to. Setting this property will cause the Component
+ * to be represented as a View at mount time if it wasn't going to already.
+ */
+fun Style.testKey(testKey: String?) = this + ObjectStyleItem(ObjectField.TEST_KEY, testKey)
 
 /**
  * Sets Activity transition name on the View this Component mounts to. Setting this property will
