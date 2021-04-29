@@ -143,9 +143,4 @@ class FlexboxContainerScope {
   fun child(component: Component?) {
     component?.let { children.add(component) }
   }
-
-  /** Adds a list of Components as children to the Row or Column being initialized. */
-  fun children(components: List<out Component?>) {
-    children.addAll(components)
-  }
 }
