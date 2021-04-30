@@ -1030,7 +1030,7 @@ public abstract class Component extends ComponentLifecycle
       WorkingRange workingRange,
       Component component,
       String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useWorkingRangeFromContext) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot register WorkingRange outside of a layout state calculation.");
@@ -1048,7 +1048,7 @@ public abstract class Component extends ComponentLifecycle
 
   static void addWorkingRangeToNode(
       InternalNode node, ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useWorkingRangeFromContext) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot add working ranges to InternalNode outside of a layout state calculation.");

@@ -58,6 +58,7 @@ public class ComponentGlobalKeyTest {
     mUseInterStagePropsFromContextDefault = ComponentsConfiguration.useInterStagePropsFromContext;
     ComponentsConfiguration.useStatelessComponent = false;
     ComponentsConfiguration.useInterStagePropsFromContext = false;
+    ComponentsConfiguration.useWorkingRangeFromContext = false;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);

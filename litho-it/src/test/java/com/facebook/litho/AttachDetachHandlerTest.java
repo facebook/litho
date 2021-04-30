@@ -52,28 +52,33 @@ public class AttachDetachHandlerTest {
 
   private final boolean mUseStatelessComponent;
   private final boolean mInitialUseStatelessComponentValue;
+  private final boolean mUseWorkingRangeFromContext;
+  private final boolean mInitialUseWorkingRangeFromContextValue;
 
-  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
+  @ParameterizedRobolectricTestRunner.Parameters(
+      name = "useStatelessComponent={0} useWorkingRangeFromContext={1}")
   public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false}, {true},
-        });
+    return Arrays.asList(new Object[][] {{false, false}, {true, false}, {true, true}});
   }
 
-  public AttachDetachHandlerTest(boolean useStatelessComponent) {
+  public AttachDetachHandlerTest(
+      boolean useStatelessComponent, boolean useWorkingRangeFromContext) {
     mUseStatelessComponent = useStatelessComponent;
     mInitialUseStatelessComponentValue = ComponentsConfiguration.useStatelessComponent;
+    mUseWorkingRangeFromContext = useWorkingRangeFromContext;
+    mInitialUseWorkingRangeFromContextValue = ComponentsConfiguration.useWorkingRangeFromContext;
   }
 
   @Before
   public void setup() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
+    ComponentsConfiguration.useWorkingRangeFromContext = mUseWorkingRangeFromContext;
   }
 
   @After
   public void tearDown() {
     ComponentsConfiguration.useStatelessComponent = mInitialUseStatelessComponentValue;
+    ComponentsConfiguration.useWorkingRangeFromContext = mInitialUseWorkingRangeFromContextValue;
   }
 
   @Test
