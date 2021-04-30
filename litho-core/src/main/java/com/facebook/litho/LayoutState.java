@@ -1653,9 +1653,6 @@ public class LayoutState
       throw new IllegalStateException("Can not resume a finished LayoutState calculation");
     }
 
-    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, null);
-    c.setLayoutStateContext(layoutStateContext);
-
     final Component component = layoutState.mComponent;
     final int componentTreeId = layoutState.mComponentTreeId;
     final int widthSpec = layoutState.mWidthSpec;
@@ -1707,7 +1704,7 @@ public class LayoutState
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      layoutStateContext.releaseReference();
+      c.getLayoutStateContext().releaseReference();
 
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);
