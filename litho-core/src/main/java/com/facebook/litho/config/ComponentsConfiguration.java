@@ -251,6 +251,8 @@ public class ComponentsConfiguration {
 
   public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
 
+  public static boolean throwExceptionWillRenderGlobalKeyNull = false;
+
   public static boolean useWillRenderCachedLayoutFromLSC = false;
 
   public static boolean useInterStagePropsFromContext = false;

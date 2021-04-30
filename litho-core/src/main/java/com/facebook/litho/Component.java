@@ -409,10 +409,22 @@ public abstract class Component extends ComponentLifecycle
       return null;
     }
 
-    return ComponentUtils.getGlobalKey(layout.getHeadComponent(), layout.getHeadComponentKey())
-            .startsWith(context.getGlobalKey())
-        ? layout
-        : null;
+    try {
+      return ComponentUtils.getGlobalKey(layout.getHeadComponent(), layout.getHeadComponentKey())
+              .startsWith(context.getGlobalKey())
+          ? layout
+          : null;
+    } catch (NullPointerException ex) {
+      if (ComponentsConfiguration.throwExceptionWillRenderGlobalKeyNull) {
+        throw new IllegalStateException(
+            "layout's head component globalKey is null, headComponent: "
+                + layout.getHeadComponent()
+                + " ,head component key: "
+                + layout.getHeadComponentKey(),
+            ex);
+      }
+      return null;
+    }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
