@@ -255,6 +255,8 @@ public class ComponentsConfiguration {
 
   public static boolean useInterStagePropsFromContext = false;
 
+  public static boolean useErrorEventHandlerFromContext = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;

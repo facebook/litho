@@ -465,7 +465,7 @@ public abstract class Component extends ComponentLifecycle
   @Override
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useErrorEventHandlerFromContext) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access error event handler outside of a layout state calculation.");
@@ -791,7 +791,7 @@ public abstract class Component extends ComponentLifecycle
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext, globalKey);
-    if (!ComponentsConfiguration.useStatelessComponent) {
+    if (!ComponentsConfiguration.useErrorEventHandlerFromContext) {
       generateErrorEventHandler(parentContext, scopedContext);
     }
 

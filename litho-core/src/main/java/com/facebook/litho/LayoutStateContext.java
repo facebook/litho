@@ -146,7 +146,10 @@ public class LayoutStateContext {
         new ScopedComponentInfo(
             component,
             newInterStagePropsContainer,
-            ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext)));
+            ComponentsConfiguration.useErrorEventHandlerFromContext
+                ? ComponentUtils.createOrGetErrorEventHandler(
+                    component, parentContext, scopedContext)
+                : null));
   }
 
   @Nullable

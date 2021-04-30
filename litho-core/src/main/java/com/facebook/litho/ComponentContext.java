@@ -298,7 +298,7 @@ public class ComponentContext {
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
-      if (ComponentsConfiguration.useStatelessComponent) {
+      if (ComponentsConfiguration.useErrorEventHandlerFromContext) {
         EventHandler<ErrorEvent> errorEventHandler =
             getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
 
