@@ -259,6 +259,8 @@ public class ComponentsConfiguration {
 
   public static boolean useWorkingRangeFromContext = false;
 
+  public static boolean useStateContainerFromContext = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;

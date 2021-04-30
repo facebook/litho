@@ -159,7 +159,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private void init() {
-    if (!ComponentsConfiguration.useStatelessComponent) {
+    if (!ComponentsConfiguration.useStateContainerFromContext) {
       mStateContainer = createStateContainer();
     }
 
@@ -676,7 +676,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useStateContainerFromContext) {
 
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
@@ -694,7 +694,7 @@ public abstract class Component extends ComponentLifecycle
 
   final StateContainer getStateContainer(
       final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useStateContainerFromContext) {
       if (layoutStateContext == null) {
         throw new IllegalStateException(
             "Cannot access a state container outside of a layout state calculation.");
@@ -714,7 +714,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   protected final void setStateContainer(StateContainer stateContainer) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useStateContainerFromContext) {
       return;
     }
     mStateContainer = stateContainer;

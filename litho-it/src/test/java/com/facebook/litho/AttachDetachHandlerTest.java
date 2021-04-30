@@ -55,30 +55,51 @@ public class AttachDetachHandlerTest {
   private final boolean mUseWorkingRangeFromContext;
   private final boolean mInitialUseWorkingRangeFromContextValue;
 
+  private final boolean mUseStateContainerFromContext;
+  private final boolean mInitialUseStateContainerFromContextValue;
+
   @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useStatelessComponent={0} useWorkingRangeFromContext={1}")
+      name =
+          "useStatelessComponent={0} useWorkingRangeFromContext={1} useStateContainerFromContext={2}")
   public static Collection data() {
-    return Arrays.asList(new Object[][] {{false, false}, {true, false}, {true, true}});
+    return Arrays.asList(
+        new Object[][] {
+          {false, false, false},
+          {true, false, false},
+          {true, true, false},
+          {true, false, true},
+          {true, true, true}
+        });
   }
 
   public AttachDetachHandlerTest(
-      boolean useStatelessComponent, boolean useWorkingRangeFromContext) {
+      boolean useStatelessComponent,
+      boolean useWorkingRangeFromContext,
+      boolean useStateContainerFromContext) {
     mUseStatelessComponent = useStatelessComponent;
     mInitialUseStatelessComponentValue = ComponentsConfiguration.useStatelessComponent;
+
     mUseWorkingRangeFromContext = useWorkingRangeFromContext;
     mInitialUseWorkingRangeFromContextValue = ComponentsConfiguration.useWorkingRangeFromContext;
+
+    mUseStateContainerFromContext = useStateContainerFromContext;
+    mInitialUseStateContainerFromContextValue =
+        ComponentsConfiguration.useStateContainerFromContext;
   }
 
   @Before
   public void setup() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
     ComponentsConfiguration.useWorkingRangeFromContext = mUseWorkingRangeFromContext;
+    ComponentsConfiguration.useStateContainerFromContext = mUseStateContainerFromContext;
   }
 
   @After
   public void tearDown() {
     ComponentsConfiguration.useStatelessComponent = mInitialUseStatelessComponentValue;
     ComponentsConfiguration.useWorkingRangeFromContext = mInitialUseWorkingRangeFromContextValue;
+    ComponentsConfiguration.useStateContainerFromContext =
+        mInitialUseStateContainerFromContextValue;
   }
 
   @Test
