@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Controller that handles sticky header logic. Depending on where the sticky item is located in the
@@ -151,7 +152,10 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     } else {
 
       if (mSectionsRecyclerView.isStickyHeaderHidden()
-          || stickyHeaderPosition != previousStickyHeaderPosition) {
+          || stickyHeaderPosition != previousStickyHeaderPosition
+          || (mSectionsRecyclerView.getStickyHeader().getComponentTree() == null
+              && ComponentsConfiguration.initStickyHeaderWhenComponentTreeIsNull)
+          || ComponentsConfiguration.initStickyHeaderOnScroll) {
         initStickyHeader(stickyHeaderPosition);
         mSectionsRecyclerView.showStickyHeader();
       }

@@ -290,4 +290,9 @@ public class ComponentsConfiguration {
   public static boolean rebindWhenVisibilityChanges = false;
 
   public static boolean swallowUnhandledExceptions = false;
+
+  /** Initialize sticky header on scrolled on scrolled */
+  public static boolean initStickyHeaderOnScroll = false;
+  /** Initialize sticky header on scrolled when its component tree is null */
+  public static boolean initStickyHeaderWhenComponentTreeIsNull = false;
 }
