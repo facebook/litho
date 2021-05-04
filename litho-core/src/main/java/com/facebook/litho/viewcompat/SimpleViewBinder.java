@@ -17,11 +17,13 @@
 package com.facebook.litho.viewcompat;
 
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Empty implementation of {@link com.facebook.litho.viewcompat.ViewBinder}. This can be useful if
  * we need to override only one method.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class SimpleViewBinder<V extends View> implements ViewBinder<V> {
 
   @Override
