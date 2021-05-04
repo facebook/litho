@@ -99,7 +99,7 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
         mComponentTree != null
             ? mComponentTree
             : (mComponentContext != null ? mComponentContext.getComponentTree() : null);
-    if (componentTree != null) {
+    if (componentTree != null && componentTree.getRoot() != null) {
       msg.append("  tree_root: ").append(componentTree.getRoot().getSimpleName()).append("\n");
     }
 
