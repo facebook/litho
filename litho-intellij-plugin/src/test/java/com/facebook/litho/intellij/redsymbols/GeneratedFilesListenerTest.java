@@ -44,7 +44,7 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
   @After
   @Override
   public void tearDown() throws Exception {
-    PsiSearchUtils.clearMocks();
+    PsiSearchUtils.getInstance().clearMocks();
     ComponentsCacheService.getInstance(testHelper.getProject()).dispose();
     super.tearDown();
   }
@@ -66,7 +66,7 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
 
               // Mock file created and found on disk
               final VFileEvent mockEvent = mockEvent();
-              PsiSearchUtils.addMock("Layout", cls);
+              PsiSearchUtils.getInstance().addMock("Layout", cls);
               listener.after(Collections.singletonList(mockEvent));
               // Ensure cache is cleaned
               final PsiClass component2 = service.getComponent("Layout");

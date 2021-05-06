@@ -40,7 +40,7 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
   @After
   @Override
   public void tearDown() throws Exception {
-    PsiSearchUtils.clearMocks();
+    PsiSearchUtils.getInstance().clearMocks();
     super.tearDown();
   }
 
@@ -54,8 +54,8 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
         .invokeAndWait(
             () -> {
               // Search and highlights in test env are not populated, do it manually
-              PsiSearchUtils.addMock(
-                  "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
+              PsiSearchUtils.getInstance()
+                  .addMock("LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
               RedSymbolsResolverTest.parseDocument(
                   testHelper.getFixture().getEditor().getDocument(), fileUnderTest, project);
               new OnCodeAnalysisFinishedListener(project).daemonFinished();
@@ -78,8 +78,8 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
         .invokeAndWait(
             () -> {
               // Search and highlights in test env are not populated, do it manually
-              PsiSearchUtils.addMock(
-                  "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
+              PsiSearchUtils.getInstance()
+                  .addMock("LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
               RedSymbolsResolverTest.parseDocument(
                   testHelper.getFixture().getEditor().getDocument(), fileUnderTest, project);
               new OnCodeAnalysisFinishedListener(project).daemonFinished();

@@ -51,7 +51,7 @@ class FileGenerateUtils {
   @Nullable
   static PsiClass updateClass(String classFQN, String newContent, Project project) {
     final Optional<PsiClass> generatedClass =
-        Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, classFQN))
+        Optional.ofNullable(PsiSearchUtils.getInstance().findOriginalClass(project, classFQN))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
 
     if (generatedClass.isPresent()) {

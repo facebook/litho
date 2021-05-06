@@ -43,7 +43,7 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
-    PsiSearchUtils.clearMocks();
+    PsiSearchUtils.getInstance().clearMocks();
   }
 
   @Test
@@ -99,7 +99,7 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
       if (element instanceof PsiClass) {
         final PsiClass cls = (PsiClass) element;
         if (name.equals(cls.getName())) {
-          PsiSearchUtils.addMock(name, cls);
+          PsiSearchUtils.getInstance().addMock(name, cls);
           return cls;
         }
       }

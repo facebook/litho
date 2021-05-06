@@ -57,7 +57,8 @@ public class PsiAnnotationExtractor {
     if (text.startsWith("com.facebook.")) {
       return false;
     }
-    PsiClass annotationClass = PsiSearchUtils.findClass(project, psiAnnotation.getQualifiedName());
+    PsiClass annotationClass =
+        PsiSearchUtils.getInstance().findClass(project, psiAnnotation.getQualifiedName());
     if (annotationClass == null) {
       throw new RuntimeException("Annotation class not found, text is: " + text);
     }

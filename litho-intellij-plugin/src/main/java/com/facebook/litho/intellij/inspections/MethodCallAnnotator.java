@@ -109,7 +109,7 @@ public class MethodCallAnnotator implements Annotator {
                         methodCall, componentQualifiedName, methodName, elementFactory))
             .collect(Collectors.toList());
 
-    final PsiClass event = PsiSearchUtils.findClass(project, eventQualifiedName);
+    final PsiClass event = PsiSearchUtils.getInstance().findClass(project, eventQualifiedName);
     if (event != null) {
       fixes.add(
           AddArgumentFix.createNewMethodCallFix(

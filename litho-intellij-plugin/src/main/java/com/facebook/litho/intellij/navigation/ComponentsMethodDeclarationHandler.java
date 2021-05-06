@@ -122,8 +122,10 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
             ? containingCls.getName()
             : containingCls.getQualifiedName();
     final PsiClass specCls =
-        PsiSearchUtils.findOriginalClass(
-            project, LithoPluginUtils.getLithoComponentSpecNameFromComponent(containingClsName));
+        PsiSearchUtils.getInstance()
+            .findOriginalClass(
+                project,
+                LithoPluginUtils.getLithoComponentSpecNameFromComponent(containingClsName));
     return specCls;
   }
 

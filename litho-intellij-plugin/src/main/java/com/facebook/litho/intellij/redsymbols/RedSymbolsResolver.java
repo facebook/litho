@@ -199,7 +199,8 @@ class RedSymbolsResolver {
           .map(
               fqn -> {
                 // Red symbol might exist for present but not-bind class
-                final PsiClass existingComponent = PsiSearchUtils.findOriginalClass(project, fqn);
+                final PsiClass existingComponent =
+                    PsiSearchUtils.getInstance().findOriginalClass(project, fqn);
                 if (existingComponent != null) return existingComponent;
 
                 final String newContent =

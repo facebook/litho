@@ -50,7 +50,7 @@ public class GoToGeneratedClassAction extends AnAction {
         .map(LithoPluginUtils::getLithoComponentNameFromSpec)
         .map(
             qualifiedComponentName ->
-                PsiSearchUtils.findOriginalClass(project, qualifiedComponentName))
+                PsiSearchUtils.getInstance().findOriginalClass(project, qualifiedComponentName))
         // Copied from the GotoDeclarationAction#gotoTargetElement
         .filter(Navigatable::canNavigate);
   }

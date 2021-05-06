@@ -68,7 +68,7 @@ public class RedSymbolsResolverTest extends LithoPluginIntellijTest {
   @Before
   @Override
   public void setUp() throws Exception {
-    PsiSearchUtils.clearMocks();
+    PsiSearchUtils.getInstance().clearMocks();
     super.setUp();
 
     project = testHelper.getFixture().getProject();
@@ -80,7 +80,7 @@ public class RedSymbolsResolverTest extends LithoPluginIntellijTest {
   @After
   @Override
   public void tearDown() throws Exception {
-    PsiSearchUtils.clearMocks();
+    PsiSearchUtils.getInstance().clearMocks();
     ComponentsCacheService.getInstance(testHelper.getProject()).dispose();
     super.tearDown();
   }
@@ -136,7 +136,7 @@ public class RedSymbolsResolverTest extends LithoPluginIntellijTest {
             () -> {
               // Search and highlights in test env are not populated, do it manually
               PsiClass mockClass = PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class);
-              PsiSearchUtils.addMock(specType + "Spec", mockClass);
+              PsiSearchUtils.getInstance().addMock(specType + "Spec", mockClass);
               parseDocument(editor.getDocument(), pf, project);
 
               final Map<String, String> eventMetadata = new HashMap<>();

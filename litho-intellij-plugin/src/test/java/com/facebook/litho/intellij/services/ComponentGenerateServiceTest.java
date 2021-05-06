@@ -40,14 +40,14 @@ public class ComponentGenerateServiceTest extends LithoPluginIntellijTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    PsiSearchUtils.addMock("Layout", null);
+    PsiSearchUtils.getInstance().addMock("Layout", null);
   }
 
   @After
   @Override
   public void tearDown() throws Exception {
     super.tearDown();
-    PsiSearchUtils.clearMocks();
+    PsiSearchUtils.getInstance().clearMocks();
   }
 
   @Test

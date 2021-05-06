@@ -88,7 +88,8 @@ class ComponentsCacheService implements Disposable {
                   ReadAction.run(
                       () -> {
                         final boolean foundCls =
-                            Arrays.stream(PsiSearchUtils.findClasses(project, clsName))
+                            Arrays.stream(
+                                    PsiSearchUtils.getInstance().findClasses(project, clsName))
                                 .anyMatch(cls -> !ComponentScope.contains(cls.getContainingFile()));
                         found.set(foundCls);
                       });

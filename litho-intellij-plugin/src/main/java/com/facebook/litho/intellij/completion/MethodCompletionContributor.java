@@ -105,7 +105,7 @@ public class MethodCompletionContributor extends CompletionContributor {
   }
 
   static PsiClass getOrCreateClass(String qualifiedClassName, Project project) {
-    PsiClass cls = PsiSearchUtils.findClass(project, qualifiedClassName);
+    PsiClass cls = PsiSearchUtils.getInstance().findClass(project, qualifiedClassName);
     if (cls == null) {
       cls =
           JavaPsiFacade.getElementFactory(project)

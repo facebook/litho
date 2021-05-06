@@ -50,10 +50,11 @@ public class LithoGeneratedFileProvider {
       String shortName,
       Map<String, String> eventMetadata) {
     return Arrays.stream(
-            PsiSearchUtils.findClassesByShortName(
-                project,
-                searchScope,
-                LithoPluginUtils.getLithoComponentSpecNameFromComponent(shortName)))
+            PsiSearchUtils.getInstance()
+                .findClassesByShortName(
+                    project,
+                    searchScope,
+                    LithoPluginUtils.getLithoComponentSpecNameFromComponent(shortName)))
         .filter(
             cls -> {
               if (LithoPluginUtils.isLayoutSpec(cls)) {

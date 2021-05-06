@@ -49,7 +49,7 @@ class SpecLookupElement extends LookupElementDecorator<LookupElement> {
     if (CACHE.containsKey(qualifiedName)) {
       return CACHE.get(qualifiedName);
     }
-    PsiClass typeCls = PsiSearchUtils.findClass(project, qualifiedName);
+    PsiClass typeCls = PsiSearchUtils.getInstance().findClass(project, qualifiedName);
     if (typeCls != null) {
       SpecLookupElement lookupElement = new SpecLookupElement(typeCls, insertHandler);
       CACHE.put(qualifiedName, lookupElement);

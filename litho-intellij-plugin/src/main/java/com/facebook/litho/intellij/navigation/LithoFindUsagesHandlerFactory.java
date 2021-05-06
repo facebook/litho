@@ -39,7 +39,8 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
                       final String specFQN = specCls.getQualifiedName();
                       final String componentFQN =
                           LithoPluginUtils.getLithoComponentNameFromSpec(specFQN);
-                      return PsiSearchUtils.findOriginalClass(specCls.getProject(), componentFQN);
+                      return PsiSearchUtils.getInstance()
+                          .findOriginalClass(specCls.getProject(), componentFQN);
                     })
                 .orElse(null);
   }
