@@ -25,7 +25,10 @@ import androidx.annotation.ColorInt
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Sp
 import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
+
+const val SHOULD_INCLUDE_FONT_PADDING = TextSpec.shouldIncludeFontPadding
 
 /**
  * Temporary builder function for creating [TextSpec] components. In the future it will either be
@@ -43,7 +46,8 @@ inline fun ComponentScope.Text(
     isSingleLine: Boolean = false,
     ellipsize: TextUtils.TruncateAt? = null,
     minLines: Int = 0,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
 ): Text =
     Text.create(context)
         .text(text)
@@ -55,6 +59,7 @@ inline fun ComponentScope.Text(
         .isSingleLine(isSingleLine)
         .minLines(minLines)
         .maxLines(maxLines)
+        .shouldIncludeFontPadding(includeFontPadding)
         .apply { ellipsize?.let { ellipsize(it) } }
+        .kotlinStyle(style)
         .build()
-        .apply { applyStyle(style) }
