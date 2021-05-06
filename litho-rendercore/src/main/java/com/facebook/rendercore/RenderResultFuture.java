@@ -14,8 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RenderResultFuture<State, RenderContext> {
 
-  private final RenderState.LazyTree<State> mLazyTree;
-  private final RenderResult<State> mPreviousResult;
   private final int mSetRootId;
   private final int mWidthSpec;
   private final int mHeightSpec;
@@ -24,15 +22,13 @@ public class RenderResultFuture<State, RenderContext> {
 
   public RenderResultFuture(
       final Context context,
-      RenderState.LazyTree<State> lazyTree,
+      final RenderState.LazyTree<State> lazyTree,
       final @Nullable RenderContext renderContext,
       final @Nullable RenderCoreExtension<?, ?>[] extensions,
       final @Nullable RenderResult<State> previousResult,
       final int setRootId,
       final int widthSpec,
       final int heightSpec) {
-    mLazyTree = lazyTree;
-    mPreviousResult = previousResult;
     mSetRootId = setRootId;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
@@ -43,10 +39,10 @@ public class RenderResultFuture<State, RenderContext> {
               public RenderResult<State> call() {
                 return RenderResult.resolve(
                     context,
-                    mLazyTree,
+                    lazyTree,
                     renderContext,
                     extensions,
-                    mPreviousResult,
+                    previousResult,
                     mSetRootId,
                     mWidthSpec,
                     mHeightSpec);
