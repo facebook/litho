@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.sections.Children;
 
@@ -80,9 +81,9 @@ public class RenderSectionEvent {
   }
 
   public Object model;
-  public Object lastNonNullModel;
+  public @Nullable Object lastNonNullModel;
   public FetchState state;
   public Throwable error;
   public DataSource dataSource;
-  public FetchType fetchType;
+  public @Nullable FetchType fetchType;
 }
