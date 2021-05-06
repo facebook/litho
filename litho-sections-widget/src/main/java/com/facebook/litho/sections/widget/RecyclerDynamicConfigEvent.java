@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 
@@ -23,6 +24,7 @@ import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
  * An event that is triggered when a new set of configurations, which are allowed to be dynamic, is
  * applied to {@link com.facebook.litho.sections.SectionTree.Target}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class RecyclerDynamicConfigEvent {
   public @CommitPolicy int commitPolicy;

@@ -18,11 +18,13 @@ package com.facebook.litho.sections.widget;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * This implementation of {@link RecyclerView.ItemAnimator} disables all animations in a {@link
  * RecyclerView}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NotAnimatedItemAnimator extends SimpleItemAnimator {
 
   public NotAnimatedItemAnimator() {

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
  * A configuration object for {@link RecyclerCollectionComponent} that will create a {@link
  * androidx.recyclerview.widget.GridLayoutManager} for the {@link RecyclerView}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
   private final int mOrientation;

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -35,6 +36,7 @@ import com.facebook.litho.annotations.Event;
  * }
  * </pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Event
 public class ScrollEvent {
   public int position;
