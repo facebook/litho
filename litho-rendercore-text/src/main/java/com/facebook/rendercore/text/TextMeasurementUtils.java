@@ -63,8 +63,8 @@ public class TextMeasurementUtils {
 
   @VisibleForTesting public static DebugMeasureListener sDebugMeasureListener;
 
-  static class TextLayoutContext {
-    Layout layout;
+  public static class TextLayoutContext {
+    public Layout layout;
     CharSequence processedText;
     float textLayoutTranslationY;
     ClickableSpan[] clickableSpans;
