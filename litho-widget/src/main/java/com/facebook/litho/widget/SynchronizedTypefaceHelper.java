@@ -152,8 +152,9 @@ public class SynchronizedTypefaceHelper {
     private final Object mLock = new Object();
     private final SparseArray<Typeface> mDelegateSparseArray;
 
-    SynchronizedTypefaceSparseArray(SparseArray<Typeface> delegateSparseArray) {
-      mDelegateSparseArray = delegateSparseArray;
+    SynchronizedTypefaceSparseArray(@Nullable SparseArray<Typeface> delegateSparseArray) {
+      mDelegateSparseArray =
+          delegateSparseArray == null ? new SparseArray<Typeface>() : delegateSparseArray;
     }
 
     @Override
