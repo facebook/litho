@@ -76,7 +76,7 @@ public class RenderState<State, RenderContext> {
   @ThreadConfined(ThreadConfined.UI)
   private @Nullable HostListener mHostListener;
 
-  private @Nullable RenderResult<State> mUIRenderResult;
+  private @Nullable RenderTree mUIRenderTree;
   private @Nullable RenderResult<State> mCommittedRenderResult;
   private @Nullable LazyTree<State> mLatestLazyTree;
   private int mExternalRootVersion = -1;
@@ -204,11 +204,10 @@ public class RenderState<State, RenderContext> {
 
   @ThreadConfined(ThreadConfined.UI)
   public void measure(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
-    if (mUIRenderResult != null
-        && hasCompatibleSize(mUIRenderResult.getRenderTree(), widthSpec, heightSpec)) {
+    if (mUIRenderTree != null && hasCompatibleSize(mUIRenderTree, widthSpec, heightSpec)) {
       if (measureOutput != null) {
-        measureOutput[0] = mUIRenderResult.getRenderTree().getWidth();
-        measureOutput[1] = mUIRenderResult.getRenderTree().getHeight();
+        measureOutput[0] = mUIRenderTree.getWidth();
+        measureOutput[1] = mUIRenderTree.getHeight();
       }
       return;
     }
@@ -236,7 +235,7 @@ public class RenderState<State, RenderContext> {
 
   @ThreadConfined(ThreadConfined.UI)
   public @Nullable RenderTree getUIRenderTree() {
-    return mUIRenderResult != null ? mUIRenderResult.getRenderTree() : null;
+    return mUIRenderTree;
   }
 
   private void measureImpl(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
@@ -322,11 +321,11 @@ public class RenderState<State, RenderContext> {
       mDelegate.commitToUI(
           mCommittedRenderResult.getRenderTree(), mCommittedRenderResult.getState());
 
-      mUIRenderResult = mCommittedRenderResult;
+      mUIRenderTree = mCommittedRenderResult.getRenderTree();
     }
 
     if (mHostListener != null) {
-      mHostListener.onUIRenderTreeUpdated(mUIRenderResult.getRenderTree());
+      mHostListener.onUIRenderTreeUpdated(mUIRenderTree);
     }
   }
 
