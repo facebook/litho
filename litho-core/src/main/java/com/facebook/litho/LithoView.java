@@ -1149,28 +1149,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     notifyVisibleBoundsChanged(rect, true);
   }
 
-  /**
-   * Checks to make sure the main thread layout state is valid (and throws if it's both invalid and
-   * there's no layout requested to make it valid).
-   *
-   * @return whether the main thread layout state is ok to use
-   */
-  private boolean checkMainThreadLayoutStateForIncrementalMount() {
-    if (mComponentTree.getMainThreadLayoutState() != null) {
-      return true;
-    }
-
-    if (mComponentTree.isIncrementalMountEnabled() && !isLayoutRequested()) {
-      throw new RuntimeException(
-          "Trying to incrementally mount a component with a null main thread LayoutState on a "
-              + "LithoView that hasn't requested layout!");
-    }
-
-    return false;
-  }
-
   public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
-    if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
+    if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
     }
 
