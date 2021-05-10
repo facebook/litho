@@ -18,7 +18,9 @@ package com.facebook.litho;
 
 import android.content.res.TypedArray;
 import android.util.TypedValue;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class TypedArrayUtils {
   private static final TypedValue sTmpTypedValue = new TypedValue();
 

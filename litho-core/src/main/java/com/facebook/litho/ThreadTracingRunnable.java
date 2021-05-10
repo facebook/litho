@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -39,6 +40,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * ThreadTracingRunnable#tracedRun(ThreadTracingRunnable)}. Therefore, the crash can now be tracked
  * across boundaries of multiple threads.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ThreadTracingRunnable implements Runnable {
 
   private static final String MESSAGE_PART_1 = "Runnable instantiated on thread id: ";

@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Specify a position to anchor a {@link DeprecatedLithoTooltip} on a component. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public enum TooltipPosition {
   CENTER,
   BOTTOM_LEFT,

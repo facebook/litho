@@ -20,11 +20,13 @@ import android.os.Looper;
 import android.os.Process;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Thread assertion utilities. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThreadUtils {
   public static final int OVERRIDE_DISABLED = 0;
   public static final int OVERRIDE_MAIN_THREAD_TRUE = 1;

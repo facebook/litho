@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * LithoHandler implementation that uses a thread pool to calculate the layout. Enabled changing the
  * priority of the threads which execute the tasks.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThreadPoolDynamicPriorityLayoutHandler implements LithoHandler {
 
   private final ThreadPoolExecutor mLayoutThreadPoolExecutor;

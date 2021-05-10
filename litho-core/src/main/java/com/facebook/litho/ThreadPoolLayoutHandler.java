@@ -16,12 +16,14 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /** LithoHandler implementation that uses a thread pool to calculate the layout. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ThreadPoolLayoutHandler implements LithoHandler {
 
   public static final LayoutThreadPoolConfiguration DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION =

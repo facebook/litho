@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.TreeProp;
@@ -29,6 +30,7 @@ import java.util.Map;
  *
  * @see TreeProp
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadConfined(ThreadConfined.ANY)
 public class TreeProps {
 
