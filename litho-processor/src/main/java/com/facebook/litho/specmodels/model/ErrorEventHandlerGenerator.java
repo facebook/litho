@@ -68,6 +68,11 @@ public final class ErrorEventHandlerGenerator {
                 ImmutableList.of(
                     new FieldModel(
                         FieldSpec.builder(
+                                ClassNames.COMPONENT_CONTEXT, "componentContext", Modifier.PUBLIC)
+                            .build(),
+                        null),
+                    new FieldModel(
+                        FieldSpec.builder(
                                 ClassName.bestGuess("java.lang.Exception"),
                                 "exception",
                                 Modifier.PUBLIC)

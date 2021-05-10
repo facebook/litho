@@ -38,7 +38,8 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == ComponentLifecycle.ERROR_EVENT_HANDLER_ID) {
       final Exception e = ((ErrorEvent) eventState).exception;
-      onError(e);
+      final ComponentContext c = ((ErrorEvent) eventState).componentContext;
+      onError(c, e);
     }
     return null;
   }
@@ -54,5 +55,5 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   }
 
   /** Action performed when exception occurred. */
-  public abstract void onError(Exception e);
+  public abstract void onError(ComponentContext c, Exception e);
 }

@@ -112,10 +112,12 @@ public class ErrorEventHandlerGeneratorTest {
     assertThat(generatedErrorEventMethod.typeModel.name)
         .hasToString(localErrorEventMethod.typeModel.name.toString());
 
-    assertThat(generatedErrorEventMethod.typeModel.fields).hasSize(1);
+    assertThat(generatedErrorEventMethod.typeModel.fields).hasSize(2);
     // The Represented object refers to a javax model which we can't obtain here.
-    assertThat(generatedErrorEventMethod.typeModel.fields.get(0))
-        .isEqualToIgnoringGivenFields(
-            localErrorEventMethod.typeModel.fields.get(0), "representedObject");
+    for (int i = 0; i < generatedErrorEventMethod.typeModel.fields.size(); i++) {
+      assertThat(generatedErrorEventMethod.typeModel.fields.get(i))
+          .isEqualToIgnoringGivenFields(
+              localErrorEventMethod.typeModel.fields.get(i), "representedObject");
+    }
   }
 }

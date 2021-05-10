@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
+import android.util.Pair;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
@@ -40,6 +41,7 @@ import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec;
 import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CrashFromLayoutFromStyle;
 import com.facebook.litho.widget.CrashingMountable;
@@ -52,6 +54,7 @@ import com.facebook.litho.widget.RootComponentWithTreeProps;
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod;
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec;
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester;
+import com.facebook.rendercore.LogLevel;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,7 +199,33 @@ public class ComponentLifecycleErrorTest {
     mLithoViewRule.useComponentTree(componentTree);
     mLithoViewRule.attachToWindow().measure().layout();
 
-    verify(errorEventHandler).onError(any());
+    verify(errorEventHandler).onError(any(), any());
+  }
+
+  @Test
+  public void testDefaultErrorHandlerLoggingWhenUnhandledExceptionsSwallowed() {
+    ComponentsConfiguration.swallowUnhandledExceptions = true;
+    TestComponentsReporter componentsReporter = new TestComponentsReporter();
+    ComponentsReporter.provide(componentsReporter);
+
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    final Component component =
+        OnErrorPassUpParentTester.create(context)
+            .child(OnErrorNotPresentChild.create(context).build())
+            .info(new ArrayList<>())
+            .build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    // the component hierarchy is OnErrorPassUpParentTester -> OnErrorNotPresentChild ->
+    // ThrowExceptionGrandChildTester (exception thrown here) and we want to verify that the root
+    // (OnErrorPassUpParentTester) was logged in the category key
+    assertThat(componentsReporter.getLoggedCategoryKeys())
+        .contains(new Pair<>(LogLevel.ERROR, "DefaultErrorEventHandler:OnErrorPassUpParentTester"));
+
+    ComponentsReporter.provide(null);
+    ComponentsConfiguration.swallowUnhandledExceptions = false;
   }
 
   @Test

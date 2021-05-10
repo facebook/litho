@@ -24,6 +24,9 @@ import com.facebook.litho.annotations.Event;
  */
 @Event
 public class ErrorEvent {
+  /** The {@link ComponentContext} the Component was constructed with */
+  public ComponentContext componentContext;
+
   /** The exception that caused the error event to be raised. */
   public Exception exception;
 }

@@ -27,9 +27,14 @@ import java.util.Map;
 public class TestComponentsReporter extends DefaultComponentsReporter {
 
   private final List<Pair<LogLevel, String>> mLoggedMessages = new LinkedList<>();
+  private final List<Pair<LogLevel, String>> mLoggedCategoryKeys = new LinkedList<>();
 
   public List<Pair<LogLevel, String>> getLoggedMessages() {
     return mLoggedMessages;
+  }
+
+  public List<Pair<LogLevel, String>> getLoggedCategoryKeys() {
+    return mLoggedCategoryKeys;
   }
 
   @Override
@@ -42,6 +47,7 @@ public class TestComponentsReporter extends DefaultComponentsReporter {
       @Nullable Map<String, Object> metadata) {
     super.report(level, categoryKey, message, cause, samplingFrequency, metadata);
     mLoggedMessages.add(new Pair<>(level, message));
+    mLoggedCategoryKeys.add(new Pair<>(level, categoryKey));
   }
 
   public boolean hasMessageType(LogLevel logLevel) {
