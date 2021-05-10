@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,10 +84,10 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
     final DynamicValue[] dynamicProps = component.getDynamicProps();
     // Go through all the other dynamic props
     for (int i = 0; i < dynamicProps.length; i++) {
-      final DynamicValue<?> value = dynamicProps[i];
+      final @Nullable DynamicValue<?> value = dynamicProps[i];
 
       try {
-        component.bindDynamicProp(i, value.get(), content);
+        component.bindDynamicProp(i, value != null ? value.get() : null, content);
 
         addDependentComponentAndSubscribeIfNeeded(value, component);
         dynamicValues.add(value);
@@ -160,7 +161,10 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   }
 
   private void addDependentComponentAndSubscribeIfNeeded(
-      DynamicValue<?> value, Component component) {
+      @Nullable DynamicValue<?> value, Component component) {
+    if (value == null) {
+      return;
+    }
     Set<Component> dependentComponents = mDependentComponents.get(value);
 
     if (dependentComponents == null) {
@@ -174,7 +178,10 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   }
 
   private void removeDependentComponentAndUnsubscribeIfNeeded(
-      DynamicValue<?> value, Component component) {
+      @Nullable DynamicValue<?> value, Component component) {
+    if (value == null) {
+      return;
+    }
     final Set<Component> dependentComponents = mDependentComponents.get(value);
     dependentComponents.remove(component);
 

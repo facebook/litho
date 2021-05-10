@@ -652,7 +652,7 @@ public abstract class Component extends ComponentLifecycle
     mIsLayoutStarted = true;
   }
 
-  protected void bindDynamicProp(int dynamicPropIndex, Object value, Object content) {
+  protected void bindDynamicProp(int dynamicPropIndex, @Nullable Object value, Object content) {
     throw new RuntimeException("Components that have dynamic Props must override this method");
   }
 
@@ -1086,8 +1086,8 @@ public abstract class Component extends ComponentLifecycle
             parentContext.getHeightSpec());
   }
 
-  protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {
-    return dynamicValue.get();
+  protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {
+    return dynamicValue != null ? dynamicValue.get() : null;
   }
 
   private static void assertSameBaseContext(
