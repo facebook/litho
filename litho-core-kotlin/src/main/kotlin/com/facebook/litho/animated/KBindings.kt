@@ -19,6 +19,7 @@ package com.facebook.litho.animated
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.DerivedDynamicValue
 import com.facebook.litho.DynamicValue
+import com.facebook.litho.annotations.Hook
 import com.facebook.litho.useState
 
 /**
@@ -30,6 +31,7 @@ import com.facebook.litho.useState
  *
  * Note: You can only change or animate a DynamicValue on the main thread.
  */
+@Hook
 fun <T> ComponentScope.useBinding(initialValue: T) = useState { DynamicValue(initialValue) }.value
 
 /**
@@ -42,6 +44,7 @@ fun <T> ComponentScope.useBinding(initialValue: T) = useState { DynamicValue(ini
  * progress, 100f, 255f)) }
  * ```
  */
+@Hook
 fun <T, S> ComponentScope.useBinding(
     binding: DynamicValue<T>,
     transform: (T) -> S

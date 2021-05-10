@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadConfined
+import com.facebook.litho.annotations.Hook
 
 /**
  * Registers a callback to perform side-effects when this Component is attached/detached from the
@@ -37,6 +38,7 @@ import com.facebook.infer.annotation.ThreadConfined
  * should include that id so that if the id changes, we will unsubscribe from the old id and
  * subscribe with the new id.
  */
+@Hook
 fun ComponentScope.useEffect(vararg deps: Any, onAttach: () -> CleanupFunc?) {
   val entries = useEffectEntries ?: ArrayList()
   useEffectEntries = entries

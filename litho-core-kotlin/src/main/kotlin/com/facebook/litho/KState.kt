@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.annotations.Hook
+
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
  * it hasn't already been initialized in a previous lifecycle of the Component.
@@ -23,6 +25,7 @@ package com.facebook.litho
  * Assignments to the state variables are allowed only in [updateState] block to batch updates and
  * trigger a UI layout only once per batch.
  */
+@Hook
 fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
