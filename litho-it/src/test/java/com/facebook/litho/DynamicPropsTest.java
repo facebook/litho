@@ -191,6 +191,25 @@ public class DynamicPropsTest {
   }
 
   @Test
+  public void testNullDynamicValue() {
+    final DynamicValue<Integer> nullIntegerValue = null;
+    final DynamicValue<Float> nullFloatValue = null;
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            Column.create(mContext)
+                .widthPx(80)
+                .heightPx(80)
+                .backgroundColor(nullIntegerValue)
+                .rotation(nullFloatValue)
+                .build());
+
+    assertThat(lithoView.getBackground()).isEqualTo(null);
+    assertThat(lithoView.getRotation()).isEqualTo(0.0f);
+  }
+
+  @Test
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testDynamicElevationApplied() {
