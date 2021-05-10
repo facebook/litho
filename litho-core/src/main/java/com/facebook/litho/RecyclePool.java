@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadSafe;
 
@@ -25,6 +26,7 @@ import com.facebook.infer.annotation.ThreadSafe;
  * Used to recycle objects in Litho. Can be configured to be either syncronized or not. A {@link
  * RecyclePool} will keep track of its own size so that it can be queried to debug pool sizes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe(enableChecks = false)
 @OkToExtend
 public class RecyclePool<T> implements PoolWithDebugInfo {

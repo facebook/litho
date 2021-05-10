@@ -18,11 +18,13 @@ package com.facebook.litho;
 
 import android.os.Handler;
 import android.os.Looper;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * The Litho handler is responsible for scheduling computations on a {@link ComponentTree}. The
  * default implementation uses a {@link android.os.Handler} with a {@link android.os.Looper}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface LithoHandler {
 
   boolean isTracing();

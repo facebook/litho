@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import java.util.List;
  * public and should never be used in production. They are however useful when debugging and
  * building debugging tools.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class LithoDebugInfo {
 
   private LithoDebugInfo() {}

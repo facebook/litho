@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashSet;
 import javax.annotation.Nullable;
 
@@ -25,6 +26,7 @@ import javax.annotation.Nullable;
  * <p>The implementations decide how to log points (via {@link #onMarkPoint(String)}) and whether
  * this logger is enabled (via {@link #isEnabled()}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class LithoStartupLogger {
   public static final String LITHO_PREFIX = "litho";
 

@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Empty implementation of {@link PerfEvent} performing no actions. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NoOpPerfEvent implements PerfEvent {
   @Override
   public int getInstanceKey() {

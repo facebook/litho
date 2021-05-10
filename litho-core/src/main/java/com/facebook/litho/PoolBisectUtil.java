@@ -16,9 +16,11 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /** A utility to help with bisecting a problem with mount content pooling. See T43440735. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class PoolBisectUtil {
 
   static MountContentPool getPoolForComponent(Component component) {

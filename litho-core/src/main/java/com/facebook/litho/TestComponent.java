@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * A {@link Component} that wraps another component for testing purposes. This component has a
  * lifecycle that doesn't override any methods except for isEquivalentTo().
@@ -23,6 +25,7 @@ package com.facebook.litho;
  * @deprecated Use ComponentAssert APIs instead. Because this isn't generated with codegen, it can
  *     have subtle issues in tests.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public class TestComponent extends Component {
 

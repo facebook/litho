@@ -16,8 +16,11 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Used to represent the value of a Component's State. Must be used to pass State as parameter in
  * methods annotated with @OnUpdateState.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class StateValue<T> extends Output<T> {}

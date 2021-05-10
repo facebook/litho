@@ -18,8 +18,10 @@ package com.facebook.litho;
 
 import android.content.res.Configuration;
 import androidx.collection.LruCache;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class LruResourceCache extends ResourceCache {
   private final LruCache<Integer, Object> mCache =
       new LruCache<Integer, Object>(500) {

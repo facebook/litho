@@ -16,11 +16,13 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Collections;
 import java.util.List;
 
 /** A UI element that contains text. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public interface TextContent {
 

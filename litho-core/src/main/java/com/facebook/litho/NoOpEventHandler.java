@@ -17,8 +17,10 @@
 package com.facebook.litho;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NoOpEventHandler<E> extends EventHandler<E> {
 
   private static final int ID = -1;

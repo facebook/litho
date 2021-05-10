@@ -17,9 +17,11 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaNode;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class NestedTreeYogaLayoutProps extends YogaLayoutProps {
 
   private @Nullable int[] mBorderEdges;

@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Map;
 import javax.annotation.CheckReturnValue;
 
@@ -24,6 +25,7 @@ import javax.annotation.CheckReturnValue;
  * This class provides utilities for extracting information through {@link
  * ComponentsLogger#getExtraAnnotations(TreeProps)} and transforming them so they can be logged.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class LogTreePopulator {
   private LogTreePopulator() {}
 

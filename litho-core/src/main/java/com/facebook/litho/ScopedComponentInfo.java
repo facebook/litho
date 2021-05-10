@@ -17,12 +17,14 @@
 package com.facebook.litho;
 
 import android.util.SparseIntArray;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 final class ScopedComponentInfo {
 
   // Can be final if Component is stateless and cloning is not needed anymore.

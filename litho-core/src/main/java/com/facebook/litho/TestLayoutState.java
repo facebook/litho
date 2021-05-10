@@ -21,6 +21,8 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLifecycle.sMeasureFunction;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * This should be only used with the deprecated DiffNode based testing infrastructure. This class
  * hosts a test implementation of create and resolve layout. The implementation only resolves the
@@ -30,6 +32,7 @@ import static com.facebook.litho.ComponentLifecycle.sMeasureFunction;
  *
  * @deprecated Only to be used with the deprecated {@link ComponentTestHelper}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public class TestLayoutState {
 

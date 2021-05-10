@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.GestureDetector;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnCreateLayout;
 
 /**
@@ -30,6 +31,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
  * provide UI Thread {@link Handler} inside @{@link OnCreateLayout} or other lifecycle methods that
  * can be called from BG threads which would potentially cause the app crash.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoGestureDetector extends GestureDetector {
 
   public LithoGestureDetector(Context context, OnGestureListener listener) {

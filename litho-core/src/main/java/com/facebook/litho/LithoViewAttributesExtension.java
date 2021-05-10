@@ -17,12 +17,14 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import java.util.HashMap;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoViewAttributesExtension
     extends MountExtension<Void, LithoViewAttributesExtension.LithoViewAttributesState> {
 

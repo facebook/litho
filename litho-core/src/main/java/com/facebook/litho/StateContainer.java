@@ -16,9 +16,12 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Implemented by the class used to store state within both Components and Sections to store state.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class StateContainer {
   public abstract void applyStateUpdate(StateUpdate stateUpdate);
 

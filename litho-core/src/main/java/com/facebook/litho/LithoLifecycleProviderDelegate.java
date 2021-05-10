@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.IntDef;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import java.util.List;
  * state but delegate to this to handle the effects of the state change. See an example of how this
  * facilitates a custom lifecycle implementation in {@link AOSPLithoLifecycleProvider}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LithoLifecycleProviderDelegate implements LithoLifecycleProvider {
 
   private final List<LithoLifecycleListener> mLithoLifecycleListeners = new ArrayList<>(4);

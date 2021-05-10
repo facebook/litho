@@ -17,8 +17,10 @@
 package com.facebook.litho;
 
 import android.content.res.Configuration;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ResourceCache {
   private static ResourceCache latest;
 

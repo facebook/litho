@@ -20,10 +20,13 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * An utility class to verify that an old measured size is still compatible to be used with a new
  * measureSpec.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MeasureComparisonUtils {
   private static boolean newSizeIsExactAndMatchesOldMeasuredSize(
       int newSizeSpecMode, int newSizeSpecSize, int oldMeasuredSize) {

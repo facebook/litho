@@ -16,9 +16,11 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 
 /** Public API for MeasureOutput. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadConfined(ThreadConfined.ANY)
 public class Size {
 
