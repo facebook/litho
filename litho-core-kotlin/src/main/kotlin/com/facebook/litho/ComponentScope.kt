@@ -34,8 +34,4 @@ class ComponentScope(val context: ComponentContext) {
   internal var useEffectEntries: MutableList<Attachable>? = null
 
   inline fun Dimen.toPixels(): Int = this.toPixels(resourceResolver)
-
-  /*inline*/ fun Component.applyStyle(style: Style?) {
-    style?.applyToComponent(resourceResolver, this)
-  }
 }

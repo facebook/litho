@@ -19,8 +19,9 @@ package com.facebook.litho.widget
 import androidx.annotation.ColorInt
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
 
 /** Builder function for creating [SolidColorSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun ComponentScope.SolidColor(@ColorInt color: Int, style: Style? = null): SolidColor =
-    SolidColor.create(context).color(color).build().apply { applyStyle(style) }
+    SolidColor.create(context).color(color).kotlinStyle(style).build()

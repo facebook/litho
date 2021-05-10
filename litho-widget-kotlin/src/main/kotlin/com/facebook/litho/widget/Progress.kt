@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
 
 /** Builder function for creating [ProgressSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
@@ -31,5 +32,5 @@ inline fun ComponentScope.Progress(
     Progress.create(context)
         .color(color)
         .indeterminateDrawable(indeterminateDrawable)
+        .kotlinStyle(style)
         .build()
-        .apply { applyStyle(style) }

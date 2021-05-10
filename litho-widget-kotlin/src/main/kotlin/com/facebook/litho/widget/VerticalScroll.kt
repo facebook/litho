@@ -24,6 +24,7 @@ import com.facebook.litho.Dp
 import com.facebook.litho.Px
 import com.facebook.litho.Style
 import com.facebook.litho.dp
+import com.facebook.litho.kotlinStyle
 import com.facebook.litho.px
 
 /** Builder function for creating [VerticalScrollSpec] components. */
@@ -58,5 +59,5 @@ inline fun ComponentScope.VerticalScroll(
           }
         }
         .onInterceptTouchListener(onInterceptTouch)
+        .kotlinStyle(style)
         .build()
-        .apply { applyStyle(style) }

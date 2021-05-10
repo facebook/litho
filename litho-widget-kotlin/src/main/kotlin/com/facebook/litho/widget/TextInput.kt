@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.Sp
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
+import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
 
 /** Builder function for creating [TextInputSpec] components. */
@@ -65,9 +66,9 @@ inline fun ComponentScope.TextInput(
         .maxLines(maxLines)
         .inputType(inputType)
         .imeOptions(imeOptions)
+        .kotlinStyle(style)
         .apply {
           onTextChanged?.let { textChangedEventHandler(eventHandler(it)) }
           onSelectionChanged?.let { selectionChangedEventHandler(eventHandler(it)) }
         }
         .build()
-        .apply { applyStyle(style) }

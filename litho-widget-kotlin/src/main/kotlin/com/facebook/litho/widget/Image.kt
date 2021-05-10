@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Style
+import com.facebook.litho.kotlinStyle
 
 /** Builder function for creating [ImageSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
@@ -27,7 +28,4 @@ inline fun ComponentScope.Image(
     drawable: Drawable,
     style: Style? = null,
     scaleType: ScaleType = ScaleType.FIT_CENTER
-): Image =
-    Image.create(context).drawable(drawable).scaleType(scaleType).build().apply {
-      applyStyle(style)
-    }
+): Image = Image.create(context).drawable(drawable).scaleType(scaleType).kotlinStyle(style).build()
