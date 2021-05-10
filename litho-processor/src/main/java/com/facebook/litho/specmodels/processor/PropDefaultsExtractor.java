@@ -129,15 +129,27 @@ public class PropDefaultsExtractor {
 
     return element
         .map(
-            e ->
-                ImmutableList.of(
-                    new PropDefaultModel(
-                        TypeName.get(e.asType()),
-                        baseName,
-                        ImmutableList.copyOf(new ArrayList<>(methodElement.getModifiers())),
-                        methodElement,
-                        propDefaultResType,
-                        propDefaultResId)))
+            e -> {
+              final TypeName typeName;
+              try {
+                typeName = TypeName.get(e.asType());
+              } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(
+                    "Failed to get a type name from @PropDefault annotated field "
+                        + e
+                        + ". IF THIS IS A KOTLIN FILE, THIS IS A KNOWN PROBLEM WITH USING KAPT. Luckily, you can fix it by annotating with @get:PropDefault instead of @PropDefault.",
+                    ex);
+              }
+
+              return ImmutableList.of(
+                  new PropDefaultModel(
+                      typeName,
+                      baseName,
+                      ImmutableList.copyOf(new ArrayList<>(methodElement.getModifiers())),
+                      methodElement,
+                      propDefaultResType,
+                      propDefaultResId));
+            })
         .orElseGet(ImmutableList::of);
   }
 }
