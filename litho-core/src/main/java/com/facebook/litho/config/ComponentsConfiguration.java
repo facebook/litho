@@ -253,8 +253,6 @@ public class ComponentsConfiguration {
 
   public static boolean throwExceptionWillRenderGlobalKeyNull = false;
 
-  public static boolean useWillRenderCachedLayoutFromLSC = false;
-
   public static boolean useInterStagePropsFromContext = false;
 
   public static boolean useErrorEventHandlerFromContext = false;

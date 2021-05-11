@@ -127,10 +127,6 @@ public abstract class Component extends ComponentLifecycle
    */
   @Nullable private EventHandler<ErrorEvent> mErrorEventHandler;
 
-  // Keep hold of the layout that we resolved during will render
-  // in order to use it again in createLayout.
-  @Nullable private InternalNode mLayoutCreatedInWillRender;
-
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable Context mBuilderContext;
 
@@ -218,8 +214,12 @@ public abstract class Component extends ComponentLifecycle
 
     mScopedContext = scopedContext;
 
-    if (mLayoutCreatedInWillRender != null) {
-      assertSameBaseContext(scopedContext, mLayoutCreatedInWillRender.getContext());
+    final InternalNode layoutCreatedInWillRender =
+        scopedContext.getLayoutStateContext() != null
+            ? getLayoutCreatedInWillRender(scopedContext)
+            : null;
+    if (layoutCreatedInWillRender != null) {
+      assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getContext());
     }
   }
 
@@ -386,16 +386,11 @@ public abstract class Component extends ComponentLifecycle
   final InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
     InternalNode layout;
 
-    if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
-      if (context == null || context.getLayoutStateContext() == null) {
-        return null;
-      }
-
-      layout = context.getLayoutStateContext().consumeLayoutCreatedInWillRender(mId);
-    } else {
-      layout = mLayoutCreatedInWillRender;
-      mLayoutCreatedInWillRender = null;
+    if (context == null || context.getLayoutStateContext() == null) {
+      return null;
     }
+
+    layout = context.getLayoutStateContext().consumeLayoutCreatedInWillRender(mId);
 
     if (layout != null && ComponentsConfiguration.useStatelessComponent) {
       assertSameBaseContext(context, layout.getContext());
@@ -430,30 +425,22 @@ public abstract class Component extends ComponentLifecycle
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   @Nullable
   public InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access layout created in will render outside of a layout state calculation.");
-      }
-
-      return scopedContext.getLayoutStateContext().getLayoutCreatedInWillRender(mId);
-    } else {
-      return mLayoutCreatedInWillRender;
+    if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+      throw new IllegalStateException(
+          "Cannot access layout created in will render outside of a layout state calculation.");
     }
+
+    return scopedContext.getLayoutStateContext().getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
       final ComponentContext scopedContext, final @Nullable InternalNode newValue) {
-    if (ComponentsConfiguration.useWillRenderCachedLayoutFromLSC) {
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access layout created in will render outside of a layout state calculation.");
-      }
-
-      scopedContext.getLayoutStateContext().setLayoutCreatedInWillRender(mId, newValue);
-    } else {
-      mLayoutCreatedInWillRender = newValue;
+    if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+      throw new IllegalStateException(
+          "Cannot access layout created in will render outside of a layout state calculation.");
     }
+
+    scopedContext.getLayoutStateContext().setLayoutCreatedInWillRender(mId, newValue);
   }
 
   /**
