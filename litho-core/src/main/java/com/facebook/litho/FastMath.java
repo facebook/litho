@@ -16,11 +16,14 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Implements some math functions in a faster way than the java Math package. This will always have
  * the downside of not supporting all the edge cases which the java Math package does support so
  * please read up on those edge cases before using these methods.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class FastMath {
 
   /**

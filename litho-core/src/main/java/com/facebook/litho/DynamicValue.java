@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import java.util.Set;
  *
  * @param <T> type of value held
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DynamicValue<T> {
 
   private T mValue;

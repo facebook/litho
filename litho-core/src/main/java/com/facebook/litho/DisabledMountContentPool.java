@@ -17,11 +17,13 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * A MountContentPool that has no size and doesn't recycle objects. Return from
  * OnCreateMountContentPool to disable recycling.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DisabledMountContentPool implements MountContentPool {
 
   @Override

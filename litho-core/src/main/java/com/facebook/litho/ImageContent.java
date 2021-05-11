@@ -17,10 +17,12 @@
 package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Collections;
 import java.util.List;
 
 /** A UI element that contains simple resource drawables. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ImageContent {
 
   /** An empty instance of {@link ImageContent}. */

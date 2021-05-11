@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Allows a new DynamicValue to be derived from an existing DynamicValue, with modifications
  * applied.
@@ -23,6 +25,7 @@ package com.facebook.litho;
  * @param <I> The type provided
  * @param <O> The type held by the DynamicValue from which this is derived
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DerivedDynamicValue<I, O> extends DynamicValue<O> {
 
   public interface Modifier<I, O> {

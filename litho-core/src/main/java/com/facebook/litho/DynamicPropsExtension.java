@@ -17,10 +17,12 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DynamicPropsExtension
     extends MountExtension<Void, DynamicPropsExtension.DynamicPropsExtensionState> {
 

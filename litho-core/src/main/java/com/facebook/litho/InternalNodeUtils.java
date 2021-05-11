@@ -17,8 +17,10 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class InternalNodeUtils {
 
   static InternalNode create(ComponentContext context) {

@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
 /**
@@ -23,6 +24,7 @@ import javax.annotation.Nullable;
  * able to handle {@link com.facebook.litho.annotations.OnTrigger} events in order to accept an
  * EventTrigger.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class EventTrigger<E> {
 
   @Nullable public EventTriggerTarget mTriggerTarget;

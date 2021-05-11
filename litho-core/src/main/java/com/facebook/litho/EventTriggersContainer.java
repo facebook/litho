@@ -19,12 +19,14 @@ package com.facebook.litho;
 import android.util.SparseArray;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Keeps all valid instances of {@link EventTrigger} from the hierarchy when the layout is completed
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class EventTriggersContainer {
 
   @GuardedBy("this")

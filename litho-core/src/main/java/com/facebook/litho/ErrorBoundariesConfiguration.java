@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
 /**
@@ -23,6 +24,7 @@ import javax.annotation.Nullable;
  * This only exists to circumvent some circular dependency issues that arise by placing this in the
  * <code>.config</code> namespace. Please be aware that this will go away soon. (T30053822)
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ErrorBoundariesConfiguration {
   private ErrorBoundariesConfiguration() {}
 

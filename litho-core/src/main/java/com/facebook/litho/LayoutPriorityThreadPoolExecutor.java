@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -25,6 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /** A ThreadPoolExecutor that schedules tasks based on priority. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutPriorityThreadPoolExecutor extends ThreadPoolExecutor {
 
   public static class ComparableFutureTask<T> extends FutureTask<T>

@@ -20,9 +20,11 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
 /** Static class containing a factory method for creating a matrix to apply to a drawable. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class DrawableMatrix extends Matrix {
 
   private boolean mShouldClipRect;

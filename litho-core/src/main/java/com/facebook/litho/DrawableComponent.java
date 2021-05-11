@@ -18,8 +18,10 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.drawable.DrawableUtils;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class DrawableComponent<T extends Drawable> extends Component {
 
   private static final String SIMPLE_NAME = "DrawableComponent";

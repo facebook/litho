@@ -19,9 +19,11 @@ package com.facebook.litho;
 import android.content.Context;
 import android.os.Build;
 import android.util.SparseArray;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class HostComponent extends Component {
 
   private static final String SIMPLE_NAME = "HostComponent";

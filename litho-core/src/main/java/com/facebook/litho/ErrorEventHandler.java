@@ -19,12 +19,14 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentLifecycle.ERROR_EVENT_HANDLER_ID;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * This class is an error event handler that clients can optionally set on a {@link ComponentTree}
  * to gracefully handle uncaught/unhandled exceptions thrown from the framework while resolving a
  * layout.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
     implements HasEventDispatcher, EventDispatcher {
 

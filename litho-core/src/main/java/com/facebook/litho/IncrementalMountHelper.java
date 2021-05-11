@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.view.ViewParent;
 import androidx.core.view.ViewCompat;
 import androidx.viewpager.widget.ViewPager;
+import com.facebook.infer.annotation.Nullsafe;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -29,6 +30,7 @@ import java.util.List;
  * we have no reliable hook for knowing when they are changing their content (and we should
  * therefore potentially be mounting).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class IncrementalMountHelper {
   private final ComponentTree mComponentTree;
   private List<ViewPagerListener> mViewPagerListeners;

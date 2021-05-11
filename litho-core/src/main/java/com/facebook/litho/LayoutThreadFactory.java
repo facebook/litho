@@ -18,9 +18,11 @@ package com.facebook.litho;
 
 import android.os.Looper;
 import android.os.Process;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class LayoutThreadFactory implements ThreadFactory {
   private static final AtomicInteger threadPoolId = new AtomicInteger(1);
   private final AtomicInteger threadNumber = new AtomicInteger(1);

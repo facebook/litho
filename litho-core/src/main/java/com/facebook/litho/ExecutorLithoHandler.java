@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -26,6 +27,7 @@ import javax.annotation.concurrent.GuardedBy;
  * {@code Executor}. This {@code LithoHandler} can be used in apps that have a well established
  * threading model and need to run layout against one of their already available executors.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class ExecutorLithoHandler implements LithoHandler {
 
   @GuardedBy("pendingTasks")

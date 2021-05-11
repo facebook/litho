@@ -18,9 +18,11 @@ package com.facebook.litho;
 
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 
 /** Configures a thread pool used for layout calculations. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfiguration {
 
   private int mCorePoolSize;

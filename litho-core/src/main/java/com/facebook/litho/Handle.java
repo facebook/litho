@@ -16,10 +16,13 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Instances of this class are used to uniquely identify {@link Component}s for triggering external
  * events including showing a {@link LithoTooltip} or triggering an {@Link OnTrigger} event.
  *
  * @see {@link LithoTooltipController}
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Handle {}

@@ -16,12 +16,14 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.RunnableFuture;
 
 /**
  * Provides common instrumentation for {@link java.util.concurrent.Future}(s) and related
  * implementations.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class FutureInstrumenter {
 
   public interface Instrumenter {

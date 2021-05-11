@@ -16,11 +16,13 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /** Thread pool executor implementation used to calculate layout on multiple background threads. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
 
   public LayoutThreadPoolExecutor(int corePoolSize, int maxPoolSize, int priority) {

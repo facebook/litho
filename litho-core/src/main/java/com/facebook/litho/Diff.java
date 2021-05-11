@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -28,6 +29,7 @@ import javax.annotation.Nullable;
  * animations based on incoming changes. A Diff holds the previous and next value for a specific
  * {@link Prop} or {@link State} for a ComponentSpec.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class Diff<T> {
 
   private final @Nullable T mPrevious;

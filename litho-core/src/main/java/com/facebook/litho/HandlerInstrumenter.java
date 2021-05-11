@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class HandlerInstrumenter {
 
   public interface Instrumenter {
