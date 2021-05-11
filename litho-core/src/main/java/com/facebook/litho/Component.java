@@ -858,7 +858,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext parentContext,
       final Component parentComponent,
       final Component childComponent) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useChildKeyCountersFromContext) {
       if (parentContext == null || parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment child counter outside of a layout state calculation.");
@@ -895,7 +895,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext parentContext,
       final Component parentComponent,
       final String manualKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (ComponentsConfiguration.useChildKeyCountersFromContext) {
       if (parentContext == null || parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment manual key usages counter outside of a layout state calculation.");
