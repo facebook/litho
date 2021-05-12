@@ -154,7 +154,7 @@ public abstract class Component extends ComponentLifecycle
     init();
   }
 
-  private void init() {
+  private final void init() {
     if (!ComponentsConfiguration.useStateContainerFromContext) {
       mStateContainer = createStateContainer();
     }
@@ -422,9 +422,9 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  @VisibleForTesting
   @Nullable
-  public InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
+  final InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
     if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
       throw new IllegalStateException(
           "Cannot access layout created in will render outside of a layout state calculation.");
@@ -433,7 +433,7 @@ public abstract class Component extends ComponentLifecycle
     return scopedContext.getLayoutStateContext().getLayoutCreatedInWillRender(mId);
   }
 
-  private void setLayoutCreatedInWillRender(
+  private final void setLayoutCreatedInWillRender(
       final ComponentContext scopedContext, final @Nullable InternalNode newValue) {
     if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
       throw new IllegalStateException(
