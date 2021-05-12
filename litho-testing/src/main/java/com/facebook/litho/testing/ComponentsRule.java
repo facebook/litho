@@ -19,6 +19,7 @@ package com.facebook.litho.testing;
 import android.app.Activity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.assertj.LithoRepresentation;
+import javax.annotation.Nullable;
 import org.assertj.core.api.Assertions;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -27,7 +28,16 @@ import org.robolectric.Robolectric;
 
 public class ComponentsRule implements TestRule {
 
+  private final @Nullable Integer mThemeResId;
   private ComponentContext mContext;
+
+  public ComponentsRule() {
+    this(null);
+  }
+
+  public ComponentsRule(@Nullable Integer themeResId) {
+    mThemeResId = themeResId;
+  }
 
   @Override
   public Statement apply(final Statement base, final Description description) {
@@ -35,6 +45,9 @@ public class ComponentsRule implements TestRule {
       @Override
       public void evaluate() throws Throwable {
         final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        if (mThemeResId != null) {
+          activity.setTheme(mThemeResId);
+        }
         mContext = new ComponentContext(activity);
 
         Assertions.useRepresentation(new LithoRepresentation(mContext));
