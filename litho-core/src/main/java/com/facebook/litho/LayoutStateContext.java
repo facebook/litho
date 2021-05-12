@@ -52,30 +52,35 @@ public class LayoutStateContext {
     return new LayoutStateContext(sTestLayoutState, c.getComponentTree(), null);
   }
 
-  void copyScopedInfoFrom(LayoutStateContext layoutStateContext) {
+  void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
     mIsScopedInfoCopiedFromLSCInstance = true;
 
-    if (layoutStateContext.mGlobalKeyToScopedContext != null) {
+    if (from.mGlobalKeyToScopedContext != null) {
       if (mGlobalKeyToScopedContext == null) {
         mGlobalKeyToScopedContext = new HashMap<>();
       }
 
-      mGlobalKeyToScopedContext.putAll(layoutStateContext.mGlobalKeyToScopedContext);
+      for (Map.Entry<String, ComponentContext> e : from.mGlobalKeyToScopedContext.entrySet()) {
+        final String key = e.getKey();
+        final ComponentContext context =
+            e.getValue().createUpdatedComponentContext(this, stateHandler);
+        mGlobalKeyToScopedContext.put(key, context);
+      }
     }
 
-    if (layoutStateContext.mGlobalKeyToScopedInfo != null) {
+    if (from.mGlobalKeyToScopedInfo != null) {
       if (mGlobalKeyToScopedInfo == null) {
         mGlobalKeyToScopedInfo = new HashMap<>();
       }
 
-      mGlobalKeyToScopedInfo.putAll(layoutStateContext.mGlobalKeyToScopedInfo);
+      mGlobalKeyToScopedInfo.putAll(from.mGlobalKeyToScopedInfo);
     }
 
-    if (layoutStateContext.mComponentIdToWillRenderLayout != null) {
+    if (from.mComponentIdToWillRenderLayout != null) {
       if (mComponentIdToWillRenderLayout == null) {
         mComponentIdToWillRenderLayout = new HashMap<>();
       }
-      mComponentIdToWillRenderLayout.putAll(layoutStateContext.mComponentIdToWillRenderLayout);
+      mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
     }
   }
 

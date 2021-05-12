@@ -35,7 +35,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
-public class ComponentContext {
+public class ComponentContext implements Cloneable {
 
   public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
 
@@ -44,7 +44,7 @@ public class ComponentContext {
   // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
   private final @Nullable ComponentsLogger mLogger;
-  private final @Nullable StateHandler mStateHandler;
+  private @Nullable StateHandler mStateHandler;
 
   private @Nullable String mNoStateUpdatesMethod;
 
@@ -624,5 +624,23 @@ public class ComponentContext {
     return mComponentTree == null
         ? ComponentsConfiguration.useInputOnlyInternalNodes
         : mComponentTree.isInputOnlyInternalNodeEnabled();
+  }
+
+  @Override
+  protected ComponentContext clone() {
+    try {
+      return (ComponentContext) super.clone();
+    } catch (CloneNotSupportedException e) {
+      // Should not be possible!
+      throw new RuntimeException(e);
+    }
+  }
+
+  public ComponentContext createUpdatedComponentContext(
+      LayoutStateContext layoutStateContext, StateHandler stateHandler) {
+    final ComponentContext cloned = clone();
+    cloned.mLayoutStateContext = layoutStateContext;
+    cloned.mStateHandler = stateHandler;
+    return cloned;
   }
 }

@@ -1535,7 +1535,8 @@ public class LayoutState
       Component.markLayoutStarted(component, layoutStateContext);
 
       if (isReconcilable && currentLayoutState != null) {
-        layoutStateContext.copyScopedInfoFrom(currentLayoutState.getLayoutStateContext());
+        layoutStateContext.copyScopedInfoFrom(
+            currentLayoutState.getLayoutStateContext(), c.getStateHandler());
       }
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
