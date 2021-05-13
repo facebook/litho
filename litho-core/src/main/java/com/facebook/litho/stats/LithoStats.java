@@ -17,9 +17,11 @@
 package com.facebook.litho.stats;
 
 import androidx.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** Provides global counters about Litho internals. Useful for performance analyses. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class LithoStats {
   private static final AtomicLong sComponentAppliedStateUpdateCount = new AtomicLong(0);
   private static final AtomicLong sComponentTriggeredSyncStateUpdateCount = new AtomicLong(0);
