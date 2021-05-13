@@ -2832,6 +2832,20 @@ public class RecyclerBinder
       applyReadyBatches();
     }
 
+    // The first time we mount with a circular collection, offset its mCurrentFirstVisiblePosition
+    // by Integer.MAX_VALUE / 2. We only want to do this once if the position is invalid or hasn't
+    // been mounted before. This is so that the value saved in unmount doesn't keep getting the
+    // offset added to it.
+    if (mIsCircular) {
+      if (!mIsInitMounted || mCurrentFirstVisiblePosition < 0) {
+        final int jumpToMiddle = Integer.MAX_VALUE / 2;
+        final int offsetFirstItem =
+            mComponentTreeHolders.isEmpty() ? 0 : jumpToMiddle % mComponentTreeHolders.size();
+        mCurrentFirstVisiblePosition =
+            Math.max(0, mCurrentFirstVisiblePosition) + jumpToMiddle - offsetFirstItem;
+      }
+    }
+
     mMountedView = view;
     mIsInitMounted = true;
 
@@ -2879,17 +2893,7 @@ public class RecyclerBinder
       }
     } else if (mIsCircular) {
       // Initialize circular RecyclerView position
-      final int jumpToMiddle = Integer.MAX_VALUE / 2;
-      final int offsetFirstItem =
-          mComponentTreeHolders.isEmpty() ? 0 : jumpToMiddle % mComponentTreeHolders.size();
-      view.scrollToPosition(
-          jumpToMiddle
-              - offsetFirstItem
-              + (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
-                      && mCurrentFirstVisiblePosition >= 0
-                  ? mCurrentFirstVisiblePosition
-                  : 0));
-
+      view.scrollToPosition(mCurrentFirstVisiblePosition);
       // Circular RecyclerViews report their size as Integer.MAX_VALUE, which makes Talkback
       // actually announce "In List, 2147483674 items". This overrides the row/column count on the
       // AccessibilityNodeInfo to accurately reflect the real number of items in the list.

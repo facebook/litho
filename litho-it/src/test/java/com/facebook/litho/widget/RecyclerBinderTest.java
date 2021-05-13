@@ -93,6 +93,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Shadows;
@@ -2128,6 +2129,49 @@ public class RecyclerBinderTest {
     mCircularRecyclerBinder.mount(recyclerView);
 
     verify(recyclerView).scrollToPosition(Integer.MAX_VALUE / 2 + 1);
+  }
+
+  @Test
+  public void testCircularRecyclerItemFirstVisibleWithScrollToIndexAndBinder() {
+    int initialPosition = 1;
+    int binderCount = 10;
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    prepareLoadedBinder(mCircularRecyclerBinder, binderCount);
+    when(mCircularLayoutInfo.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+
+    mCircularRecyclerBinder.scrollToPosition(initialPosition);
+    mCircularRecyclerBinder.mount(recyclerView);
+    mCircularRecyclerBinder.unmount(recyclerView);
+    mCircularRecyclerBinder.mount(recyclerView);
+    int expectedIndex =
+        Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % binderCount) + initialPosition;
+    verify(recyclerView, times(2)).scrollToPosition(expectedIndex);
+  }
+
+  @Test
+  public void testCircularScrollRestoration() {
+    int initialPosition = 1;
+    int binderCount = 10;
+    int expectedFirstMountIndex =
+        Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % binderCount) + initialPosition;
+    int newRangePosition = expectedFirstMountIndex + 20;
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    when(mCircularLayoutInfo.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+    prepareLoadedBinder(mCircularRecyclerBinder, binderCount);
+
+    mCircularRecyclerBinder.scrollToPosition(initialPosition);
+    mCircularRecyclerBinder.mount(recyclerView);
+    // Simulate user scrolling by putting the binder into a new visible range.
+    mCircularRecyclerBinder.onNewVisibleRange(newRangePosition, newRangePosition);
+    mCircularRecyclerBinder.unmount(recyclerView);
+    mCircularRecyclerBinder.mount(recyclerView);
+
+    ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+    verify(recyclerView, times(2)).scrollToPosition((Integer) captor.capture());
+
+    List captured = captor.getAllValues();
+    Assert.assertEquals(expectedFirstMountIndex, (int) captured.get(0));
+    Assert.assertEquals(newRangePosition, (int) captured.get(1));
   }
 
   @Test
