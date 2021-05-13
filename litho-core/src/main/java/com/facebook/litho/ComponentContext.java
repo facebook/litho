@@ -511,6 +511,19 @@ public class ComponentContext implements Cloneable {
       warnNullScope();
       return NoOpEventHandler.getNoOpEventHandler();
     }
+
+    if (ComponentsConfiguration.useStatelessComponent) {
+      if (getLayoutStateContext() != null
+          && getLayoutStateContext().getScopedComponentInfo(mGlobalKey) == null) {
+        throw new IllegalStateException(
+            "No scoped info found for "
+                + mComponentScope.getSimpleName()
+                + "LSC copied: "
+                + getLayoutStateContext().mIsScopedInfoCopiedFromLSCInstance
+                + ". GlobalKey: "
+                + getGlobalKey());
+      }
+    }
     return new EventHandler<>(mComponentScope, id, params);
   }
 

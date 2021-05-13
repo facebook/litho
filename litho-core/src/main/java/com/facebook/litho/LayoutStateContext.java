@@ -42,7 +42,7 @@ public class LayoutStateContext {
 
   private boolean mIsLayoutStarted = false;
 
-  private boolean mIsScopedInfoCopiedFromLSCInstance = false;
+  boolean mIsScopedInfoCopiedFromLSCInstance = false;
 
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     if (sTestLayoutState == null) {
