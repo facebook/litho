@@ -21,9 +21,11 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoView;
 
 /** Provides methods for enabling incremental mount. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class IncrementalMountUtils {
 
   /**

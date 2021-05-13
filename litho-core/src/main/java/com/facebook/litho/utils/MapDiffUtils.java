@@ -17,9 +17,11 @@
 package com.facebook.litho.utils;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.CommonUtils;
 import java.util.Map;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class MapDiffUtils {
 
   /** Return whether the two maps have the same keys and values. */

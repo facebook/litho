@@ -24,10 +24,12 @@ import static com.facebook.litho.SizeSpec.getSize;
 
 import android.util.Log;
 import android.view.View.MeasureSpec;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class MeasureUtils {
 
   private static final String TAG = "MeasureUtils";

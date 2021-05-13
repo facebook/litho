@@ -16,11 +16,13 @@
 
 package com.facebook.litho.utils;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class StacktraceHelper {
 
   /**
