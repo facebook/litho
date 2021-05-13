@@ -19,12 +19,14 @@ package com.facebook.litho.widget;
 import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Arrays;
 
 /**
  * A {@link ColorStateList} for {@link EditText} properties that provides an {@code equals(..)}
  * method so that it can be used {@code MaterialTextInput.textColorStateList(..)}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MaterialTextInputColorStateList extends ColorStateList {
 
   private static final int[][] STATES =
