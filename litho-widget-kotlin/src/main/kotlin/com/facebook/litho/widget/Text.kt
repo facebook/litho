@@ -43,8 +43,10 @@ inline fun ComponentScope.Text(
     textStyle: Int = NORMAL,
     typeface: Typeface = DEFAULT,
     alignment: TextAlignment = TextAlignment.TEXT_START,
+    verticalGravity: VerticalGravity = VerticalGravity.TOP,
     isSingleLine: Boolean = false,
     ellipsize: TextUtils.TruncateAt? = null,
+    lineSpacingMultiplier: Float = 1f,
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
@@ -56,6 +58,8 @@ inline fun ComponentScope.Text(
         .textStyle(textStyle)
         .typeface(typeface)
         .alignment(alignment)
+        .verticalGravity(verticalGravity)
+        .spacingMultiplier(lineSpacingMultiplier)
         .isSingleLine(isSingleLine)
         .minLines(minLines)
         .maxLines(maxLines)
