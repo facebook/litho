@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,40 +50,33 @@ public class AttachDetachHandlerTest {
       new BackgroundLayoutLooperRule();
 
   private final boolean mUseStatelessComponent;
-  private final boolean mInitialUseStatelessComponentValue;
   private final boolean mUseWorkingRangeFromContext;
-  private final boolean mInitialUseWorkingRangeFromContextValue;
-
   private final boolean mUseStateContainerFromContext;
-  private final boolean mInitialUseStateContainerFromContextValue;
+  private final boolean mUseChildKeyCountersFromContext;
 
   @ParameterizedRobolectricTestRunner.Parameters(
       name =
-          "useStatelessComponent={0} useWorkingRangeFromContext={1} useStateContainerFromContext={2}")
+          "useStatelessComponent={0} useWorkingRangeFromContext={1} useStateContainerFromContext={2} useChildKeyCountersFromContext={3}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false, false},
-          {true, false, false},
-          {true, true, false},
-          {true, false, true},
-          {true, true, true}
+          {false, false, false, false},
+          {true, false, false, false},
+          {true, true, false, false},
+          {true, false, true, false},
+          {true, true, true, true}
         });
   }
 
   public AttachDetachHandlerTest(
       boolean useStatelessComponent,
       boolean useWorkingRangeFromContext,
-      boolean useStateContainerFromContext) {
+      boolean useStateContainerFromContext,
+      boolean useChildKeyCountersFromContext) {
     mUseStatelessComponent = useStatelessComponent;
-    mInitialUseStatelessComponentValue = ComponentsConfiguration.useStatelessComponent;
-
     mUseWorkingRangeFromContext = useWorkingRangeFromContext;
-    mInitialUseWorkingRangeFromContextValue = ComponentsConfiguration.useWorkingRangeFromContext;
-
     mUseStateContainerFromContext = useStateContainerFromContext;
-    mInitialUseStateContainerFromContextValue =
-        ComponentsConfiguration.useStateContainerFromContext;
+    mUseChildKeyCountersFromContext = useChildKeyCountersFromContext;
   }
 
   @Before
@@ -92,14 +84,7 @@ public class AttachDetachHandlerTest {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
     ComponentsConfiguration.useWorkingRangeFromContext = mUseWorkingRangeFromContext;
     ComponentsConfiguration.useStateContainerFromContext = mUseStateContainerFromContext;
-  }
-
-  @After
-  public void tearDown() {
-    ComponentsConfiguration.useStatelessComponent = mInitialUseStatelessComponentValue;
-    ComponentsConfiguration.useWorkingRangeFromContext = mInitialUseWorkingRangeFromContextValue;
-    ComponentsConfiguration.useStateContainerFromContext =
-        mInitialUseStateContainerFromContextValue;
+    ComponentsConfiguration.useChildKeyCountersFromContext = mUseChildKeyCountersFromContext;
   }
 
   @Test

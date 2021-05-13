@@ -60,6 +60,7 @@ public class ComponentGlobalKeyTest {
     ComponentsConfiguration.useInterStagePropsFromContext = false;
     ComponentsConfiguration.useWorkingRangeFromContext = false;
     ComponentsConfiguration.useStateContainerFromContext = false;
+    ComponentsConfiguration.useChildKeyCountersFromContext = false;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);
