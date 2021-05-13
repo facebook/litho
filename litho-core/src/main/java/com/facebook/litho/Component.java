@@ -457,6 +457,16 @@ public abstract class Component extends ComponentLifecycle
     return mCommonProps;
   }
 
+  private static void assertSameGlobalKey(
+      final String scopedContextGlobalKey, final String componentGlobalKey) {
+    if (componentGlobalKey == null || !componentGlobalKey.equals(scopedContextGlobalKey)) {
+      throw new IllegalStateException(
+          "Scoped context's global key and component mGlobalKey does not match "
+              + scopedContextGlobalKey
+              + "  mGlobalKey "
+              + componentGlobalKey);
+    }
+  }
   /**
    * @return The error handler dispatching to either the parent component if available, or reraising
    *     the exception. Null if the component isn't initialized.
@@ -472,6 +482,8 @@ public abstract class Component extends ComponentLifecycle
 
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
+
+      assertSameGlobalKey(globalKey, mGlobalKey);
 
       return layoutStateContext.getScopedComponentInfo(globalKey).getErrorEventHandler();
     }
@@ -501,9 +513,6 @@ public abstract class Component extends ComponentLifecycle
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
   final void setGlobalKey(String key) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return;
-    }
     mGlobalKey = key;
   }
 
@@ -685,6 +694,8 @@ public abstract class Component extends ComponentLifecycle
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
 
+      assertSameGlobalKey(globalKey, component.mGlobalKey);
+
       return layoutStateContext.getScopedComponentInfo(globalKey).getStateContainer();
     } else {
       return component.mStateContainer;
@@ -698,6 +709,8 @@ public abstract class Component extends ComponentLifecycle
         throw new IllegalStateException(
             "Cannot access a state container outside of a layout state calculation.");
       }
+
+      assertSameGlobalKey(globalKey, mGlobalKey);
 
       ScopedComponentInfo scopedComponentInfo =
           layoutStateContext.getScopedComponentInfo(globalKey);
@@ -746,6 +759,8 @@ public abstract class Component extends ComponentLifecycle
 
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
+
+      assertSameGlobalKey(globalKey, mGlobalKey);
 
       return layoutStateContext.getScopedComponentInfo(globalKey).getInterStagePropsContainer();
     }
@@ -867,6 +882,8 @@ public abstract class Component extends ComponentLifecycle
       final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
       final String globalKey = parentContext.getGlobalKey();
 
+      assertSameGlobalKey(globalKey, parentComponent.mGlobalKey);
+
       return layoutStateContext
           .getScopedComponentInfo(globalKey)
           .getChildCountAndIncrement(childComponent);
@@ -903,6 +920,8 @@ public abstract class Component extends ComponentLifecycle
 
       final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
       final String globalKey = parentContext.getGlobalKey();
+
+      assertSameGlobalKey(globalKey, parentComponent.mGlobalKey);
 
       return layoutStateContext
           .getScopedComponentInfo(globalKey)
@@ -1037,6 +1056,8 @@ public abstract class Component extends ComponentLifecycle
 
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
 
+      assertSameGlobalKey(globalKey, component.mGlobalKey);
+
       layoutStateContext
           .getScopedComponentInfo(globalKey)
           .registerWorkingRange(name, workingRange, component, globalKey);
@@ -1055,6 +1076,8 @@ public abstract class Component extends ComponentLifecycle
 
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
+
+      assertSameGlobalKey(globalKey, component.mGlobalKey);
 
       layoutStateContext.getScopedComponentInfo(globalKey).addWorkingRangeToNode(node);
     } else {
