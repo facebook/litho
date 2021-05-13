@@ -21,6 +21,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
 import java.util.Set;
@@ -32,6 +33,7 @@ import java.util.Set;
  *
  * <p>These values are safe defaults and should not require manual changes.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentsConfiguration {
 
   /**

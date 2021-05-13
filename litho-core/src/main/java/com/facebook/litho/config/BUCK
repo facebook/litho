@@ -23,4 +23,7 @@ litho_android_library(
         LITHO_YOGA_TARGET,
     ],
     visibility = ["PUBLIC"],
+    deps = [
+        "//fbandroid/third-party/java/infer-annotations:infer-annotations",
+    ],
 )
