@@ -25,46 +25,48 @@ import java.util.Map;
 /**
  * A Cache that can be used to reuse LayoutResults or parts of them across layout calculations. It's
  * responsibility of the implementer of the Layout function to put values in the cache for a given
- * node. Values put in the LayoutCache will only be available in the next layout pass.
+ * node. Values put in the LayoutCache (WriteCache) will be available for read in the next layout
+ * pass as ReadCache.
  */
-public class LayoutCache {
-  private final Map<Node<?>, Node.LayoutResult<?>> mWriteCacheByNode = new HashMap<>();
-  private final LongSparseArray<Object> mWriteCacheById = new LongSparseArray<>();
+public final class LayoutCache {
+  static final class CachedData {
+    private final Map<Node<?>, Node.LayoutResult<?>> mCacheByNode = new HashMap<>();
+    private final LongSparseArray<Object> mCacheById = new LongSparseArray<>();
+  }
 
-  private final Map<Node<?>, Node.LayoutResult<?>> mReadCacheByNode;
-  private final LongSparseArray<Object> mReadCacheById;
+  private final CachedData mWriteCache = new CachedData();
+  private final @Nullable CachedData mReadCache;
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public LayoutCache() {
     this(null);
   }
 
-  LayoutCache(@Nullable LayoutCache oldCache) {
-    if (oldCache == null) {
-      mReadCacheByNode = new HashMap<>();
-      mReadCacheById = new LongSparseArray<>();
-    } else {
-      mReadCacheByNode = oldCache.mWriteCacheByNode;
-      mReadCacheById = oldCache.mWriteCacheById;
-    }
+  LayoutCache(@Nullable CachedData oldWriteCache) {
+    mReadCache = oldWriteCache;
   }
 
   @Nullable
   public Node.LayoutResult<?> get(Node<?> node) {
-    return mReadCacheByNode.get(node);
+    return mReadCache == null ? null : mReadCache.mCacheByNode.get(node);
   }
 
   public void put(Node<?> node, Node.LayoutResult<?> layout) {
-    mWriteCacheByNode.put(node, layout);
+    mWriteCache.mCacheByNode.put(node, layout);
   }
 
   @Nullable
   public <T> T get(long uniqueId) {
     //noinspection unchecked
-    return (T) mReadCacheById.get(uniqueId);
+    return (T) (mReadCache == null ? null : mReadCache.mCacheById.get(uniqueId));
   }
 
   public void put(long uniqueId, Object value) {
-    mWriteCacheById.put(uniqueId, value);
+    mWriteCache.mCacheById.put(uniqueId, value);
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public CachedData getWriteCacheData() {
+    return mWriteCache;
   }
 }

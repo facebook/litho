@@ -33,7 +33,7 @@ public class RenderResult<State> {
   private final RenderTree mRenderTree;
   private final LazyTree mLazyTree;
   private final Node mNodeTree;
-  private final LayoutCache mLayoutCache;
+  private final LayoutCache.CachedData mLayoutCacheData;
   @Nullable private final State mState;
 
   public static <State, RenderContext> RenderResult<State> resolve(
@@ -64,13 +64,13 @@ public class RenderResult<State> {
               previousResult.getRenderTree(),
               lazyTree,
               result.first,
-              previousResult.getLayoutCache(),
+              previousResult.getLayoutCacheData(),
               result.second);
     } else {
       RenderCoreSystrace.beginSection("RC Layout");
 
       final LayoutCache layoutCache =
-          buildCache(previousResult == null ? null : previousResult.getLayoutCache());
+          buildCache(previousResult == null ? null : previousResult.getLayoutCacheData());
 
       final LayoutContext<RenderContext> layoutContext =
           new LayoutContext<>(context, renderContext, layoutVersion, layoutCache, extensions);
@@ -111,7 +111,7 @@ public class RenderResult<State> {
             c.getAndroidContext(), layoutResult, widthSpec, heightSpec, c.getExtensions()),
         lazyTree,
         node,
-        c.getLayoutCache(),
+        c.getLayoutCache().getWriteCacheData(),
         state);
   }
 
@@ -137,12 +137,12 @@ public class RenderResult<State> {
       RenderTree renderTree,
       LazyTree lazyTree,
       Node nodeTree,
-      LayoutCache layoutCache,
+      LayoutCache.CachedData layoutCacheData,
       @Nullable State state) {
     mRenderTree = renderTree;
     mLazyTree = lazyTree;
     mNodeTree = nodeTree;
-    mLayoutCache = layoutCache;
+    mLayoutCacheData = layoutCacheData;
     mState = state;
   }
 
@@ -158,8 +158,8 @@ public class RenderResult<State> {
     return mNodeTree;
   }
 
-  LayoutCache getLayoutCache() {
-    return mLayoutCache;
+  LayoutCache.CachedData getLayoutCacheData() {
+    return mLayoutCacheData;
   }
 
   @Nullable
@@ -168,7 +168,7 @@ public class RenderResult<State> {
   }
 
   @VisibleForTesting
-  public static LayoutCache buildCache(@Nullable LayoutCache previousCache) {
+  public static LayoutCache buildCache(@Nullable LayoutCache.CachedData previousCache) {
     return previousCache != null ? new LayoutCache(previousCache) : new LayoutCache(null);
   }
 
