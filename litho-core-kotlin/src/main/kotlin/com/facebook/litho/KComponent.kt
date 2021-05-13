@@ -24,6 +24,15 @@ import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
+  companion object {
+
+    /** Method that will ensure the KComponent class is loaded. */
+    @JvmStatic
+    fun preload() =
+        object : KComponent() {
+          override fun ComponentScope.render(): Component? = null
+        }
+  }
 
   final override fun onCreateLayout(c: ComponentContext) =
       error("Render components should call render() not onCreateLayout()")
