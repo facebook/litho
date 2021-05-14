@@ -27,8 +27,8 @@ As of December 2020 reconciliation is only implemented for state updates.
 It is important to remember that the reconciliation algorithm is an implementation detail. Litho
 could re-create the whole hierarchy on every action; the end result would be the same. Just to be
 clear, re-creation in this context means calling `OnCreateLayout` for the modified component, it
-doesn’t mean Litho will unmount and remount them. Litho will only mount and unmount items will
-which have changed.
+doesn’t mean Litho will unmount and remount them. Litho will only mount and unmount items which
+have changed.
 
 In order to reconcile changes, Litho keeps the previous component hierarchy in memory. This
 increases memory usage and can potentially increase OOMs.
