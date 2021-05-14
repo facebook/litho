@@ -998,8 +998,11 @@ public abstract class Component extends ComponentLifecycle
             : c;
 
     final InternalNode newLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
-    component.setLayoutCreatedInWillRender(c, newLayoutCreatedInWillRender);
-    return willRender(c, component, newLayoutCreatedInWillRender);
+    boolean willRender = willRender(c, component, newLayoutCreatedInWillRender);
+    if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
+      component.setLayoutCreatedInWillRender(c, newLayoutCreatedInWillRender);
+    }
+    return willRender;
   }
 
   static boolean isHostSpec(@Nullable Component component) {
