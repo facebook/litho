@@ -18,6 +18,7 @@ package com.facebook.widget.accessibility.delegates;
 
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
 /**
@@ -39,6 +40,7 @@ import javax.annotation.Nullable;
  * Text.create(c).text(sb).build();
  * }</pre>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ContentDescriptionSpan extends CharacterStyle {
   private @Nullable String mContentDescription;
 

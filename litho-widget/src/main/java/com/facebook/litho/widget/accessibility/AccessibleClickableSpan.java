@@ -17,6 +17,7 @@
 package com.facebook.widget.accessibility.delegates;
 
 import android.text.style.ClickableSpan;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.AccessibilityRole;
 import javax.annotation.Nullable;
 
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
  * easily obtainable from its actual contents. For example, the number of likers for a story might
  * want to set the accessibility label to the corresponding plurals resource.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class AccessibleClickableSpan extends ClickableSpan {
   private @Nullable String mAccessibilityDescription;
   private @Nullable String mRoleDescription;
