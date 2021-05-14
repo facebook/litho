@@ -1,4 +1,18 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.rendercore;
 
@@ -19,6 +33,7 @@ public class RenderResultFuture<State, RenderContext> {
   private final int mHeightSpec;
   private final FutureTask<RenderResult<State>> mFutureTask;
   private final AtomicInteger mRunningThreadId = new AtomicInteger(-1);
+  private volatile @Nullable RenderResult<State> mPreviousResult;
 
   public RenderResultFuture(
       final Context context,
@@ -29,6 +44,7 @@ public class RenderResultFuture<State, RenderContext> {
       final int setRootId,
       final int widthSpec,
       final int heightSpec) {
+    mPreviousResult = previousResult;
     mSetRootId = setRootId;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
@@ -42,7 +58,7 @@ public class RenderResultFuture<State, RenderContext> {
                     lazyTree,
                     renderContext,
                     extensions,
-                    previousResult,
+                    mPreviousResult,
                     mSetRootId,
                     mWidthSpec,
                     mHeightSpec);
@@ -64,10 +80,17 @@ public class RenderResultFuture<State, RenderContext> {
         } else {
           throw new RuntimeException(e.getCause());
         }
+      } finally {
+        mPreviousResult = null;
       }
     }
 
     return ThreadUtils.getResultInheritingPriority(mFutureTask, mRunningThreadId.get());
+  }
+
+  @Nullable
+  public RenderResult<State> getLatestAvailableRenderResult() {
+    return isDone() ? runAndGet() : mPreviousResult;
   }
 
   public boolean isDone() {
