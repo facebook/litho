@@ -155,7 +155,7 @@ public class ComponentTreeTest {
   @Test
   public void testCreate_ContextIsNotScoped() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
     ComponentTree componentTree = ComponentTree.create(scopedContext, mComponent).build();
 
     ComponentContext c = componentTree.getContext();
@@ -190,7 +190,7 @@ public class ComponentTreeTest {
   @Test
   public void testLayoutState_ContextIsNotScoped() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
     Component root = Column.create(scopedContext).key("key").build();
 
     ComponentTree componentTree = ComponentTree.create(scopedContext, root).build();

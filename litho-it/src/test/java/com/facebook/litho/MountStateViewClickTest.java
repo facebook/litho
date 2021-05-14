@@ -128,7 +128,7 @@ public class MountStateViewClickTest {
   @Test
   public void testRootHostClickableUnmount() {
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), null);
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
     final LithoView lithoView =
         mountComponent(
             scopedContext,

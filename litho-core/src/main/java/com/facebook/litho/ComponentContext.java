@@ -190,8 +190,18 @@ public class ComponentContext implements Cloneable {
     componentContext.mComponentTree = parentContext.mComponentTree;
 
     if (ComponentsConfiguration.useStatelessComponent
-        && globalKey != null
         && componentContext.getLayoutStateContext() != null) {
+
+      if (globalKey == null) {
+        throw new IllegalStateException(
+            "GlobalKey should not be null for component "
+                + scope.getSimpleName()
+                + ", parent global key: "
+                + ((parentContext.getComponentScope() == null)
+                    ? "NULL_COMPONENT_SCOPE"
+                    : parentContext.getGlobalKey()));
+      }
+
       componentContext.mGlobalKey = globalKey;
       componentContext
           .getLayoutStateContext()
