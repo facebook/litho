@@ -26,14 +26,11 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
   static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
 
   @Override
-  public void onError(ComponentContext c, Exception e) {
+  public void onError(ComponentTree ct, Exception e) {
     if (ComponentsConfiguration.swallowUnhandledExceptions) {
       String rootComponent = "";
-      if (c != null) {
-        ComponentTree ct = c.getComponentTree();
-        if (ct != null && ct.getRoot() != null) {
-          rootComponent = ":" + ct.getRoot().getSimpleName();
-        }
+      if (ct != null && ct.getRoot() != null) {
+        rootComponent = ":" + ct.getRoot().getSimpleName();
       }
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,

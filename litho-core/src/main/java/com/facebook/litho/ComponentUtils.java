@@ -490,7 +490,7 @@ public class ComponentUtils {
   static void dispatchErrorEvent(ComponentContext c, Exception e) {
     final ErrorEvent event = new ErrorEvent();
     event.exception = e;
-    event.componentContext = c;
+    event.componentTree = c != null ? c.getComponentTree() : null;
     dispatchErrorEvent(c, event);
   }
 
@@ -531,7 +531,8 @@ public class ComponentUtils {
       metadataWrapper.lastHandler = lastHandler;
       throw metadataWrapper;
     } else if (nextHandler instanceof ErrorEventHandler) { // at the root
-      ((ErrorEventHandler) nextHandler).onError(parent, metadataWrapper);
+      ((ErrorEventHandler) nextHandler)
+          .onError(parent != null ? parent.getComponentTree() : null, metadataWrapper);
     } else { // Handle again with new handler
       try {
         dispatchErrorEvent(parent, exceptionToThrow);

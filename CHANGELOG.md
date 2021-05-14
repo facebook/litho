@@ -4,7 +4,7 @@
 
 _release-date_
 
- * **Breaking:** `ErrorEventHandler.onError()` method has a new parameter `ComponentContext`.
+ * **Breaking:** `ErrorEventHandler.onError()` method has a new parameter `ComponentTree`.
  * **Breaking:** `ComponentTree.release()` method asserts that it is called on the UI thread.
  * **Breaking:** `getErrorHandler`, `getHandle`, `getId`, and `getKey` are now package-private for `Component` and `Section`. This is for compatibility with the Kotlin API.
  * **Breaking:** Removed `checkNeedsRemeasure`, `useVisibilityExtension` configuration parameters from `ComponentsConfiguration`.

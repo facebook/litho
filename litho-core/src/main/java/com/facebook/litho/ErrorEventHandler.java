@@ -30,7 +30,7 @@ import com.facebook.infer.annotation.Nullsafe;
 public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
     implements HasEventDispatcher, EventDispatcher {
 
-  ErrorEventHandler() {
+  public ErrorEventHandler() {
     // sets up HasEventDispatcher immediately after constructing EventHandler
     super(null, ERROR_EVENT_HANDLER_ID);
     this.mHasEventDispatcher = this;
@@ -40,8 +40,8 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == ComponentLifecycle.ERROR_EVENT_HANDLER_ID) {
       final Exception e = ((ErrorEvent) eventState).exception;
-      final ComponentContext c = ((ErrorEvent) eventState).componentContext;
-      onError(c, e);
+      final ComponentTree ct = ((ErrorEvent) eventState).componentTree;
+      onError(ct, e);
     }
     return null;
   }
@@ -57,5 +57,5 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   }
 
   /** Action performed when exception occurred. */
-  public abstract void onError(ComponentContext c, Exception e);
+  public abstract void onError(ComponentTree ct, Exception e);
 }

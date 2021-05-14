@@ -477,7 +477,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
     ErrorEvent errorEvent = new ErrorEvent();
     errorEvent.exception = e;
-    errorEvent.componentContext = c;
+    errorEvent.componentTree = c != null ? c.getComponentTree() : null;
     eventHandler.dispatchEvent(errorEvent);
   }
 
