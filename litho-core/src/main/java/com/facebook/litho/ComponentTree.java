@@ -3436,9 +3436,14 @@ public class ComponentTree implements LithoLifecycleListener {
       return this;
     }
 
-    /** Sets the ErrorEventHandler */
+    /**
+     * Sets the custom ErrorEventHandler. Ignores null values to never overwrite Litho's
+     * DefaultErrorEventHandler.
+     */
     public Builder errorHandler(ErrorEventHandler errorEventHandler) {
-      this.errorEventHandler = errorEventHandler;
+      if (errorEventHandler != null) {
+        this.errorEventHandler = errorEventHandler;
+      }
       return this;
     }
 

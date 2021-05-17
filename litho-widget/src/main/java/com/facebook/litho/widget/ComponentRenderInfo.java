@@ -29,6 +29,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
   public static final String LAYOUT_DIFFING_ENABLED = "layout_diffing_enabled";
   public static final String RECONCILIATION_ENABLED = "is_reconciliation_enabled";
+  public static final String ERROR_EVENT_HANDLER = "error_event_handler";
 
   private final Component mComponent;
   @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;

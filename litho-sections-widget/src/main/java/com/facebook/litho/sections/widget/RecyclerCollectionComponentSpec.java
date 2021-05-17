@@ -326,6 +326,7 @@ public class RecyclerCollectionComponentSpec {
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())
             .lithoViewFactory(binderConfiguration.getLithoViewFactory())
+            .errorEventHandler(binderConfiguration.getErrorEventHandler())
             .startupLogger(startupLogger);
 
     if (binderConfiguration.getEstimatedViewportCount()

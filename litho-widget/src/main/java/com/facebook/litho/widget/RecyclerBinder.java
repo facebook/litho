@@ -55,6 +55,7 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
+import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleProvider;
@@ -148,6 +149,7 @@ public class RecyclerBinder
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mRecyclerViewItemPrefetch;
+  private final @Nullable ErrorEventHandler mErrorEventHandler;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -380,7 +382,8 @@ public class RecyclerBinder
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
         boolean preallocatePerMountSpec,
-        @Nullable LithoLifecycleProvider lifecycleProvider);
+        @Nullable LithoLifecycleProvider lifecycleProvider,
+        @Nullable ErrorEventHandler errorEventHandler);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -400,7 +403,8 @@ public class RecyclerBinder
             boolean isLayoutDiffingEnabled,
             @Nullable LithoHandler preallocateHandler,
             boolean preallocatePerMountSpec,
-            @Nullable LithoLifecycleProvider lifecycleProvider) {
+            @Nullable LithoLifecycleProvider lifecycleProvider,
+            @Nullable ErrorEventHandler errorEventHandler) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -416,6 +420,7 @@ public class RecyclerBinder
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
               .parentLifecycleProvider(lifecycleProvider)
+              .errorEventHandler(errorEventHandler)
               .build();
         }
       };
@@ -463,6 +468,7 @@ public class RecyclerBinder
     private boolean recyclerViewItemPrefetch = false;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
+    private @Nullable ErrorEventHandler errorEventHandler;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -778,6 +784,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder errorEventHandler(@Nullable ErrorEventHandler errorEventHandler) {
+      this.errorEventHandler = errorEventHandler;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = ComponentContext.makeCopyForNestedTree(c);
@@ -994,6 +1005,7 @@ public class RecyclerBinder
     mComponentWarmer = builder.mComponentWarmer;
     mStartupLogger = builder.startupLogger;
     mRecyclingMode = builder.recyclingMode;
+    mErrorEventHandler = builder.errorEventHandler;
   }
 
   /**
@@ -3870,7 +3882,8 @@ public class RecyclerBinder
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
         mPreallocatePerMountSpec,
-        mParentLifecycle);
+        mParentLifecycle,
+        mErrorEventHandler);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

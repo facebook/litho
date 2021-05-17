@@ -25,6 +25,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
@@ -58,6 +59,7 @@ public class ComponentTreeHolder {
   private final boolean mIgnoreNullLayoutStateError;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
+  private final @Nullable ErrorEventHandler mErrorEventHandler;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -134,6 +136,7 @@ public class ComponentTreeHolder {
     private boolean visibilityProcessingEnabled = true;
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
     private @Nullable LithoLifecycleProvider parentLifecycle;
+    private @Nullable ErrorEventHandler errorEventHandler;
 
     private Builder() {}
 
@@ -214,6 +217,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder errorEventHandler(ErrorEventHandler errorEventHandler) {
+      this.errorEventHandler = errorEventHandler;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -245,6 +253,7 @@ public class ComponentTreeHolder {
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mParentLifecycle = builder.parentLifecycle;
     mRecyclingMode = builder.recyclingMode;
+    mErrorEventHandler = builder.errorEventHandler;
   }
 
   @VisibleForTesting
@@ -467,26 +476,8 @@ public class ComponentTreeHolder {
           ComponentTree.create(
               context, mRenderInfo.getComponent(), mComponentTreeHolderLifecycleProvider);
 
-      final Object isReconciliationEnabledAttr =
-          mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
-      final Object layoutDiffingEnabledAttr =
-          mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
-
-      // If the custom attribute is NOT set, defer to the value from the builder.
-
-      if (isReconciliationEnabledAttr != null) {
-        builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
-      } else {
-        builder.isReconciliationEnabled(mIsReconciliationEnabled);
-      }
-
-      builder.recyclingMode(mRecyclingMode);
-
-      if (layoutDiffingEnabledAttr != null) {
-        builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
-      } else {
-        builder.layoutDiffing(mIsLayoutDiffingEnabled);
-      }
+      // if custom attributes are provided on RenderInfo, they will be preferred over builder values
+      applyCustomAttributesIfProvided(builder);
 
       mComponentTree =
           builder
@@ -506,11 +497,40 @@ public class ComponentTreeHolder {
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
               .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
+              .recyclingMode(mRecyclingMode)
               .build();
 
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
       }
+    }
+  }
+
+  private void applyCustomAttributesIfProvided(ComponentTree.Builder builder) {
+    final Object isReconciliationEnabledAttr =
+        mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
+    final Object layoutDiffingEnabledAttr =
+        mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
+    final Object errorEventHandlerAttr =
+        mRenderInfo.getCustomAttribute(ComponentRenderInfo.ERROR_EVENT_HANDLER);
+
+    // If the custom attribute is NOT set, defer to the value from the builder.
+    if (isReconciliationEnabledAttr != null) {
+      builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
+    } else {
+      builder.isReconciliationEnabled(mIsReconciliationEnabled);
+    }
+
+    if (layoutDiffingEnabledAttr != null) {
+      builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
+    } else {
+      builder.layoutDiffing(mIsLayoutDiffingEnabled);
+    }
+
+    if (errorEventHandlerAttr instanceof ErrorEventHandler) {
+      builder.errorHandler((ErrorEventHandler) errorEventHandlerAttr);
+    } else if (mErrorEventHandler != null) {
+      builder.errorHandler(mErrorEventHandler);
     }
   }
 

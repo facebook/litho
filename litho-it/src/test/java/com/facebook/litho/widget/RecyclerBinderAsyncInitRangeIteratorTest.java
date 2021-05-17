@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.Size;
@@ -89,7 +90,8 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
               boolean preallocatePerMountSpec,
-              @Nullable LithoLifecycleProvider lifecycleProvider) {
+              @Nullable LithoLifecycleProvider lifecycleProvider,
+              @Nullable ErrorEventHandler errorEventHandler) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

@@ -19,6 +19,7 @@ package com.facebook.litho.sections.widget;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
@@ -56,6 +57,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
   private final int mEstimatedViewportCount;
+  private ErrorEventHandler mErrorEventHandler;
 
   public static Builder create() {
     return new Builder();
@@ -87,7 +89,8 @@ public class RecyclerBinderConfiguration {
       boolean postToFrontOfQueueForFirstChangeset,
       @Nullable ComponentWarmer componentWarmer,
       int estimatedViewportCount,
-      @Nullable LithoViewFactory lithoViewFactory) {
+      @Nullable LithoViewFactory lithoViewFactory,
+      @Nullable ErrorEventHandler errorEventHandler) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -110,6 +113,7 @@ public class RecyclerBinderConfiguration {
     mComponentWarmer = componentWarmer;
     mEstimatedViewportCount = estimatedViewportCount;
     mLithoViewFactory = lithoViewFactory;
+    mErrorEventHandler = errorEventHandler;
   }
 
   public float getRangeRatio() {
@@ -201,6 +205,10 @@ public class RecyclerBinderConfiguration {
     return mEstimatedViewportCount;
   }
 
+  public @Nullable ErrorEventHandler getErrorEventHandler() {
+    return mErrorEventHandler;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -232,6 +240,7 @@ public class RecyclerBinderConfiguration {
     private LithoViewFactory mLithoViewFactory;
     private boolean mIgnoreNullLayoutStateError =
         ComponentsConfiguration.ignoreNullLayoutStateError;
+    private ErrorEventHandler mErrorEventHandler;
 
     Builder() {}
 
@@ -258,6 +267,7 @@ public class RecyclerBinderConfiguration {
       this.mComponentWarmer = configuration.mComponentWarmer;
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
       this.mLithoViewFactory = configuration.mLithoViewFactory;
+      this.mErrorEventHandler = configuration.mErrorEventHandler;
     }
 
     /**
@@ -408,6 +418,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder errorEventHandler(ErrorEventHandler errorEventHandler) {
+      mErrorEventHandler = errorEventHandler;
+      return this;
+    }
+
     /**
      * This is a temporary hack that allows a surface to manually provide an estimated range. It
      * will go away so don't depend on it.
@@ -445,7 +460,8 @@ public class RecyclerBinderConfiguration {
           mPostToFrontOfQueueForFirstChangeset,
           mComponentWarmer,
           mEstimatedViewportCount,
-          mLithoViewFactory);
+          mLithoViewFactory,
+          mErrorEventHandler);
     }
   }
 }
