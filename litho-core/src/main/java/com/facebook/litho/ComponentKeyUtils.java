@@ -16,8 +16,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import javax.annotation.Nullable;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentKeyUtils {
   private static final String DUPLICATE_MANUAL_KEY = "ComponentKeyUtils:DuplicateManualKey";
   private static final String NULL_PARENT_KEY = "ComponentKeyUtils:NullParentKey";
