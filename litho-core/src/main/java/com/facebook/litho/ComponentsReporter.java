@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.ErrorReporterDelegate;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.Map;
  * android.util.Log} (see {@link DefaultComponentsReporter}). You may supply your own with {@link
  * ComponentsReporter#provide(com.facebook.rendercore.ErrorReporterDelegate)}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentsReporter {
 
   public enum LogLevel {
