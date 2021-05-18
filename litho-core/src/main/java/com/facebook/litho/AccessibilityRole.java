@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.StringDef;
+import com.facebook.infer.annotation.Nullsafe;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -28,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
  * @see <a
  *     href="https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java">https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java</a>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AccessibilityRole {
 
   private AccessibilityRole() {}
