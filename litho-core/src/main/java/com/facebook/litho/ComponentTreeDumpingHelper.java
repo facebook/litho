@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Helper class in charge of dumping the component hierarchy related to a provided {@link
@@ -28,6 +29,7 @@ import androidx.annotation.Nullable;
  *
  * <p>This will not provide a reliable representation of the hierarchy on non debug build of the app
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentTreeDumpingHelper {
 
   /** Dumps the tree related to the provided component context */
