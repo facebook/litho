@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.UiThread;
+import com.facebook.infer.annotation.Nullsafe;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import javax.annotation.Nullable;
 /**
  * This class provides the means to save and restore ComponentTrees for time-traveling debugging.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class DebugComponentTimeMachine {
 
   private DebugComponentTimeMachine() {}
