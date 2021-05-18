@@ -17,7 +17,9 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ArrayBatchAllocator {
 
   private static int batchSize = 200;
