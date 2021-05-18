@@ -16,11 +16,14 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * An implementation of working range that uses offset to define the upper bound and the lower
  * boundary. If the position is inside the boundary, it's in the range, otherwise it's out of the
  * range.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BoundaryWorkingRange implements WorkingRange {
 
   private static final int OFFSET = 1;
