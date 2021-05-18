@@ -22,9 +22,11 @@ import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /** Utilities for animations debug. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class AnimationsDebug {
 
   public static final boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
