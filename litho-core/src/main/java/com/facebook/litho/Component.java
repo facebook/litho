@@ -517,6 +517,12 @@ public abstract class Component extends ComponentLifecycle
     mGlobalKey = key;
   }
 
+  @Nullable
+  @Deprecated
+  final String getGlobalKeyForLogging() {
+    return mGlobalKey;
+  }
+
   /** @return a handle that is unique to this component. */
   @Nullable
   final Handle getHandle() {

@@ -530,8 +530,12 @@ public class ComponentContext implements Cloneable {
                 + mComponentScope.getSimpleName()
                 + "LSC copied: "
                 + getLayoutStateContext().mIsScopedInfoCopiedFromLSCInstance
-                + ". GlobalKey: "
-                + getGlobalKey());
+                + ". ScopedContext's GlobalKey: "
+                + (getGlobalKey() == null ? "NULL_VALUE" : getGlobalKey())
+                + ", componentScope's global key: "
+                + (mComponentScope.getGlobalKeyForLogging() == null
+                    ? "NULL_VALUE"
+                    : mComponentScope.getGlobalKeyForLogging()));
       }
     }
     return new EventHandler<>(mComponentScope, id, params);

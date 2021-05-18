@@ -160,6 +160,16 @@ class Layout {
       // 5. Get the scoped context of the updated component.
       c = update(parent, component, reuseGlobalKey, globalKeyToReuse);
       globalKey = c.getGlobalKey();
+      if (ComponentsConfiguration.useStatelessComponent && globalKey == null) {
+        throw new IllegalStateException(
+            "Global key null for component "
+                + component.getSimpleName()
+                + " component's global key: "
+                + (component.getGlobalKeyForLogging() == null
+                    ? "NULL_VALUE"
+                    : component.getGlobalKeyForLogging()));
+      }
+
       component = c.getComponentScope();
 
       // 6. Resolve the component into an InternalNode tree.
