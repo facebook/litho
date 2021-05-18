@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.reflect.Field;
@@ -32,6 +33,7 @@ import org.json.JSONObject;
  * com.facebook.litho.config.ComponentsConfiguration#isEndToEndTestRun} must be enabled in order for
  * this data to be collected.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebugComponentDescriptionHelper {
 
   /**
