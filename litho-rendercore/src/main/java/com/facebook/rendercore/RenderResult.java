@@ -176,7 +176,7 @@ public class RenderResult<State> {
     return new LazyTree<Void>() {
       @Override
       public Pair<Node, Void> resolve() {
-        return new Pair(node, null);
+        return new Pair<>(node, null);
       }
     };
   }
