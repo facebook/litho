@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -25,6 +26,7 @@ import javax.annotation.Nullable;
  * access to a linked list of {@link Class} objects representing the class of the {@link Component}
  * and each of it's hierarchy parents.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DebugHierarchy {
 
   public static class Node {
