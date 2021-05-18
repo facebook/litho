@@ -50,6 +50,7 @@ import androidx.core.content.ContextCompat;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.InternalNode.NestedTreeHolder;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
@@ -1131,7 +1132,7 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    if (node instanceof LithoLayoutResult.NestedTreeHolderResult) {
+    if (node instanceof NestedTreeHolder) {
       // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
