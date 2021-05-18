@@ -20,8 +20,10 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.view.animation.Interpolator;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class Animations {
 
   /** Create a new Flow to define how other DynamicProps may be derived from the input. */
