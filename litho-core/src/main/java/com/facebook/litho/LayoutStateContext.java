@@ -157,9 +157,17 @@ public class LayoutStateContext {
                 : null));
   }
 
-  @Nullable
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
-    return mGlobalKeyToScopedInfo == null ? null : mGlobalKeyToScopedInfo.get(globalKey);
+    if (mGlobalKeyToScopedInfo == null) {
+      throw new IllegalStateException("mGlobalKeyToScopedInfo map should not be null");
+    }
+
+    final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
+    if (scopedComponentInfo == null) {
+      throw new IllegalStateException("ScopedComponentInfo is null for globalKey: " + globalKey);
+    }
+
+    return scopedComponentInfo;
   }
 
   @Nullable

@@ -240,7 +240,7 @@ public class TreeDiffingTest {
 
     InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
     Layout.applyDiffNodeToUnchangedNodes(
-        LayoutStateContext.getTestInstance(mContext),
+        mContext.getLayoutStateContext(),
         layoutTreeRoot,
         true,
         prevLayoutState.getLayoutStateContext(),
@@ -266,7 +266,7 @@ public class TreeDiffingTest {
 
     InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
     Layout.applyDiffNodeToUnchangedNodes(
-        LayoutStateContext.getTestInstance(mContext),
+        mContext.getLayoutStateContext(),
         layoutTreeRoot,
         true,
         prevLayoutState.getLayoutStateContext(),
