@@ -977,15 +977,6 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
-    if (!ComponentsConfiguration.useStatelessComponent) {
-      final ComponentContext scopedContext =
-          component.getScopedContext(
-              c.getLayoutStateContext(), Component.getGlobalKey(null, component));
-      if (scopedContext != null) {
-        assertSameBaseContext(scopedContext, c);
-      }
-    }
-
     final InternalNode componentLayoutCreatedInWillRender =
         component.getLayoutCreatedInWillRender(c);
     if (componentLayoutCreatedInWillRender != null) {
