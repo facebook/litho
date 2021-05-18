@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /** Data class for params used to log error in LithoView. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentLogParams {
   public final String logProductId;
   public final String logType;
