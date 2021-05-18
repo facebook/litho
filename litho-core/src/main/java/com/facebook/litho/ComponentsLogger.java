@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Map;
 
 /**
@@ -24,6 +25,7 @@ import java.util.Map;
  * components. The ComponentsLogger is set on the {@link ComponentContext}. See {@link
  * FrameworkLogEvents} for a list of events and parameters logged internally by Litho.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ComponentsLogger {
 
   enum LogLevel {
