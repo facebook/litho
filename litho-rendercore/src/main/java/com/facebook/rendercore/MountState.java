@@ -768,7 +768,8 @@ public class MountState implements MountDelegateTarget {
     // size and content but a different position.
     updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem);
 
-    RenderCoreSystrace.endSection(); // UPDATE
-    RenderCoreSystrace.endSection(); // RenderUnit name
+    if (currentRenderUnit != renderUnit) {
+      RenderCoreSystrace.endSection(); // UPDATE
+    }
   }
 }
