@@ -22,15 +22,21 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.testing.treeprop.TreePropNumberType;
 import com.facebook.litho.testing.treeprop.TreePropStringType;
 import com.facebook.litho.testing.treeprop.TreePropTestParent;
 import com.facebook.litho.testing.treeprop.TreePropTestResult;
+import com.facebook.litho.widget.ComponentWithTreePropParent;
+import com.facebook.litho.widget.treeprops.SimpleTreeProp;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -41,6 +47,7 @@ import org.robolectric.annotation.LooperMode;
 @RunWith(LithoTestRunner.class)
 public class TreePropTest {
 
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   private ComponentContext mContext;
 
   @Before
@@ -86,5 +93,34 @@ public class TreePropTest {
     assertThat(probBLeaf2.mProp).isEqualTo(treePropB);
 
     assertThat(propAMount.mProp).isEqualTo(treePropA);
+  }
+
+  @Test
+  public void testTreePropChangeShouldUpdateMountSpec() {
+    SimpleTreeProp treeProp = new SimpleTreeProp("sampleTreeProp");
+    final Component component =
+        ComponentWithTreePropParent.create(mLithoViewRule.getContext()).propA(treeProp).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    View view = mLithoViewRule.getLithoView().getChildAt(0);
+    assertThat(view).isNotNull();
+    assertThat(view).isInstanceOf(TextView.class);
+
+    assertThat(((TextView) view).getText()).isEqualTo("sampleTreeProp");
+
+    SimpleTreeProp treePropChanged = new SimpleTreeProp("sampleTreeProp_changed");
+    final Component updatedComponent =
+        ComponentWithTreePropParent.create(mLithoViewRule.getContext())
+            .propA(treePropChanged)
+            .build();
+    mLithoViewRule.setRoot(updatedComponent);
+
+    view = mLithoViewRule.getLithoView().getChildAt(0);
+    assertThat(view).isNotNull();
+    assertThat(view).isInstanceOf(TextView.class);
+
+    assertThat(((TextView) view).getText()).isEqualTo("sampleTreeProp_changed");
   }
 }
