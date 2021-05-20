@@ -21,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -116,9 +117,7 @@ public class StartSnapHelper extends SnapHelper {
 
     int targetPos =
         forwardDirection
-            ? (reverseLayout
-                ? firstBeforeStartPosition - mFlingOffset
-                : firstBeforeStartPosition + mFlingOffset)
+            ? getForwardTargetPosition(layoutManager, reverseLayout, firstBeforeStartPosition)
             : firstBeforeStartPosition;
     if (targetPos < 0) {
       targetPos = 0;
@@ -127,6 +126,20 @@ public class StartSnapHelper extends SnapHelper {
       targetPos = itemCount - 1;
     }
     return targetPos;
+  }
+
+  private int getForwardTargetPosition(
+      LayoutManager layoutManager, boolean reverseLayout, int firstBeforeStartPosition) {
+    if (layoutManager instanceof GridLayoutManager) {
+      return reverseLayout
+          ? (firstBeforeStartPosition - ((GridLayoutManager) layoutManager).getSpanCount())
+              / mFlingOffset
+          : (firstBeforeStartPosition + ((GridLayoutManager) layoutManager).getSpanCount())
+              * mFlingOffset;
+    }
+    return reverseLayout
+        ? firstBeforeStartPosition - mFlingOffset
+        : firstBeforeStartPosition + mFlingOffset;
   }
 
   @Override
