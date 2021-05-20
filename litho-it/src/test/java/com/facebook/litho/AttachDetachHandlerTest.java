@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,9 +50,13 @@ public class AttachDetachHandlerTest {
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
 
+  private boolean mOriginalUseStatelessComponent;
   private final boolean mUseStatelessComponent;
+  private boolean mOriginalUseWorkingRangeFromContext;
   private final boolean mUseWorkingRangeFromContext;
+  private boolean mOriginalUseStateContainerFromContext;
   private final boolean mUseStateContainerFromContext;
+  private boolean mOriginalUseChildKeyCountersFromContext;
   private final boolean mUseChildKeyCountersFromContext;
 
   @ParameterizedRobolectricTestRunner.Parameters(
@@ -81,10 +86,27 @@ public class AttachDetachHandlerTest {
 
   @Before
   public void setup() {
+    mOriginalUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
+
+    mOriginalUseWorkingRangeFromContext = ComponentsConfiguration.useWorkingRangeFromContext;
     ComponentsConfiguration.useWorkingRangeFromContext = mUseWorkingRangeFromContext;
+
+    mOriginalUseStateContainerFromContext = ComponentsConfiguration.useStateContainerFromContext;
     ComponentsConfiguration.useStateContainerFromContext = mUseStateContainerFromContext;
+
+    mOriginalUseChildKeyCountersFromContext =
+        ComponentsConfiguration.useChildKeyCountersFromContext;
     ComponentsConfiguration.useChildKeyCountersFromContext = mUseChildKeyCountersFromContext;
+  }
+
+  @After
+  public void after() {
+    ComponentsConfiguration.useStatelessComponent = mOriginalUseStatelessComponent;
+    ComponentsConfiguration.useWorkingRangeFromContext = mOriginalUseWorkingRangeFromContext;
+    ComponentsConfiguration.useStateContainerFromContext = mOriginalUseStateContainerFromContext;
+    ComponentsConfiguration.useChildKeyCountersFromContext =
+        mOriginalUseChildKeyCountersFromContext;
   }
 
   @Test

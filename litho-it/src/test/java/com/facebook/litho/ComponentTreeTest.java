@@ -33,6 +33,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -81,8 +82,12 @@ public class ComponentTreeTest {
   private ComponentContext mContext;
   private RootWrapperComponentFactory mOldWrapperConfig;
 
+  private boolean mOriginalUseStatelessComponent;
+
   @Before
   public void setup() throws Exception {
+    mOriginalUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
     mContext = new ComponentContext(getApplicationContext());
     mComponent = SimpleMountSpecTester.create(mContext).build();
 
@@ -108,6 +113,7 @@ public class ComponentTreeTest {
 
   @After
   public void tearDown() {
+    ComponentsConfiguration.useStatelessComponent = mOriginalUseStatelessComponent;
     // Clear pending tasks in case test failed
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }

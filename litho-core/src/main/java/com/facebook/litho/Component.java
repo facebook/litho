@@ -209,12 +209,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   public final void setScopedContext(ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return;
-    }
-
     mScopedContext = scopedContext;
-
     final InternalNode layoutCreatedInWillRender =
         scopedContext.getLayoutStateContext() != null
             ? getLayoutCreatedInWillRender(scopedContext)
@@ -497,7 +492,6 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Get a key that is unique to this component within its tree. */
-  @Nullable
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
     if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null) {
@@ -553,6 +547,9 @@ public abstract class Component extends ComponentLifecycle
    */
   final void setKey(String key) {
     mHasManualKey = true;
+    if (key == null) {
+      throw new IllegalArgumentException("key must not be null");
+    }
     mKey = key;
   }
 

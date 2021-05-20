@@ -184,25 +184,27 @@ public class ComponentContext implements Cloneable {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      ComponentContext parentContext, Component scope, @Nullable String globalKey) {
+      final ComponentContext parentContext, final Component scope, final String globalKey) {
     ComponentContext componentContext = parentContext.makeNewCopy();
+    componentContext.mGlobalKey = null;
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
 
-    if (ComponentsConfiguration.useStatelessComponent
-        && componentContext.getLayoutStateContext() != null) {
+    if (ComponentsConfiguration.useGlobalKeys && globalKey == null) {
+      throw new IllegalStateException(
+          "GlobalKey should not be null for component "
+              + scope.getSimpleName()
+              + ", parent global key: "
+              + ((parentContext.getComponentScope() == null)
+                  ? "NULL_COMPONENT_SCOPE"
+                  : parentContext.getGlobalKey())
+              + " useStateless: "
+              + ComponentsConfiguration.useGlobalKeys);
+    }
 
-      if (globalKey == null) {
-        throw new IllegalStateException(
-            "GlobalKey should not be null for component "
-                + scope.getSimpleName()
-                + ", parent global key: "
-                + ((parentContext.getComponentScope() == null)
-                    ? "NULL_COMPONENT_SCOPE"
-                    : parentContext.getGlobalKey()));
-      }
+    componentContext.mGlobalKey = globalKey;
 
-      componentContext.mGlobalKey = globalKey;
+    if (ComponentsConfiguration.useStatelessComponent) {
       componentContext
           .getLayoutStateContext()
           .addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
