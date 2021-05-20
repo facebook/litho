@@ -1580,12 +1580,12 @@ public class ComponentTree implements LithoLifecycleListener {
         Component.getGlobalKey(scopedContext, scopedContext.getComponentScope()), eventHandler);
   }
 
+  @GuardedBy("mEventTriggersContainer")
   private void bindTriggerHandler(ComponentContext scopedContext, Component component) {
-    synchronized (mEventTriggersContainer) {
-      component.recordEventTrigger(scopedContext, mEventTriggersContainer);
-    }
+    component.recordEventTrigger(scopedContext, mEventTriggersContainer);
   }
 
+  @GuardedBy("mEventTriggersContainer")
   private void clearUnusedTriggerHandlers() {
     mEventTriggersContainer.clear();
   }
@@ -2414,15 +2414,17 @@ public class ComponentTree implements LithoLifecycleListener {
       LayoutStateContext layoutStateContext,
       List<Component> components,
       @Nullable List<String> componentKeys) {
-    clearUnusedTriggerHandlers();
+    synchronized (mEventTriggersContainer) {
+      clearUnusedTriggerHandlers();
 
-    for (int i = 0, size = components.size(); i < size; i++) {
-      final Component component = components.get(i);
-      final String globalKey = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
-      final ComponentContext scopedContext =
-          component.getScopedContext(layoutStateContext, globalKey);
-      mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
-      bindTriggerHandler(scopedContext, component);
+      for (int i = 0, size = components.size(); i < size; i++) {
+        final Component component = components.get(i);
+        final String globalKey = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
+        final ComponentContext scopedContext =
+            component.getScopedContext(layoutStateContext, globalKey);
+        mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
+        bindTriggerHandler(scopedContext, component);
+      }
     }
 
     mEventHandlersController.clearUnusedEventHandlers();
@@ -2530,13 +2532,13 @@ public class ComponentTree implements LithoLifecycleListener {
       mMeasureListeners = null;
     }
 
-    synchronized (mEventTriggersContainer) {
-      clearUnusedTriggerHandlers();
-    }
-
     if (mAttachDetachHandler != null) {
       // Execute detached callbacks if necessary.
       mAttachDetachHandler.onDetached();
+    }
+
+    synchronized (mEventTriggersContainer) {
+      clearUnusedTriggerHandlers();
     }
   }
 
