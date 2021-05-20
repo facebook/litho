@@ -78,6 +78,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private @Nullable Handler mLongClickHandler;
   private @Nullable LongClickRunnable mLongClickRunnable;
   private @Nullable ClickableSpanListener mSpanListener;
+  private @Nullable TouchableSpanListener mTouchableSpanListener;
   private @Nullable String mContextLogTag;
 
   @Override
@@ -205,6 +206,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         registerForLongClick((LongClickableSpan) clickedSpan, view);
       }
       setSelection(clickedSpan);
+      if (mTouchableSpanListener != null) {
+        mTouchableSpanListener.onTouchDown(clickedSpan, view);
+      }
     }
 
     return true;
@@ -291,6 +295,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         null,
         null,
+        null,
         -1,
         -1,
         0f,
@@ -306,6 +311,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         userColor,
         highlightColor,
+        null,
         null,
         null,
         null,
@@ -336,6 +342,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         null,
         null,
+        null,
         -1,
         -1,
         0f,
@@ -353,6 +360,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       @Nullable ClickableSpan[] clickableSpans,
       @Nullable ImageSpan[] imageSpans,
       @Nullable ClickableSpanListener spanListener,
+      @Nullable TouchableSpanListener touchableSpanListener,
       @Nullable TextOffsetOnTouchListener textOffsetOnTouchListener,
       int highlightStartOffset,
       int highlightEndOffset,
@@ -363,6 +371,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mClipToBounds = clipToBounds;
     mText = text;
     mClickableSpans = clickableSpans;
+    mTouchableSpanListener = touchableSpanListener;
     if (mLongClickHandler == null && containsLongClickableSpan(clickableSpans)) {
       mLongClickHandler = new Handler();
     }

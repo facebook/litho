@@ -147,6 +147,9 @@ import com.facebook.yoga.YogaDirection;
  * @prop spanListener Listener to override click and/or longclick actions of spannables extracted
  *     from text. This can be used to avoid memory leaks if the click/long click actions require a
  *     context, since spannables are stored statically in memory.
+ * @prop touchableSpanListener Listener to listen for touch down actions of spannables extracted
+ *     from text. This can be used to avoid memory leaks if the touch down actions require a
+ *     context, since spannables are stored statically in memory.
  * @prop clipToBounds If the text should be clipped inside component bounds. Default: {@code true}
  * @prop customEllipsisText Text used to replace the standard Android ... ellipsis at the end of
  *     truncated lines. Warning: specifying this prop causes measurement to run twice. This can have
@@ -864,6 +867,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float clickableSpanExpandedOffset,
       @Prop(optional = true) boolean clipToBounds,
       @Nullable @Prop(optional = true) ClickableSpanListener spanListener,
+      @Nullable @Prop(optional = true) TouchableSpanListener touchableSpanListener,
       final @FromBoundsDefined CharSequence processedText,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
@@ -893,6 +897,7 @@ class TextSpec {
         clickableSpans,
         imageSpans,
         spanListener,
+        touchableSpanListener,
         textOffsetOnTouchListener,
         highlightStartOffset,
         highlightEndOffset,
