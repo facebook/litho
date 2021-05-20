@@ -77,7 +77,6 @@ public class ComponentTreeHolder {
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
   private final LithoHandler mPreallocateMountContentHandler;
-  private final boolean mCanPreallocateOnDefaultHandler;
   private final boolean mShouldPreallocatePerMountSpec;
   private final boolean mIncrementalMount;
   private final boolean mVisibilityProcessingEnabled;
@@ -125,7 +124,6 @@ public class ComponentTreeHolder {
     private LithoHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable LithoHandler preallocateMountContentHandler;
-    private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
     private boolean useCancelableLayoutFutures;
@@ -159,11 +157,6 @@ public class ComponentTreeHolder {
     public Builder preallocateMountContentHandler(
         @Nullable LithoHandler preallocateMountContentHandler) {
       this.preallocateMountContentHandler = preallocateMountContentHandler;
-      return this;
-    }
-
-    public Builder canPreallocateOnDefaultHandler(boolean canPreallocateOnDefaultHandler) {
-      this.canPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
       return this;
     }
 
@@ -240,7 +233,6 @@ public class ComponentTreeHolder {
     mRenderInfo = builder.renderInfo;
     mLayoutHandler = builder.layoutHandler;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
-    mCanPreallocateOnDefaultHandler = builder.canPreallocateOnDefaultHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
@@ -484,7 +476,6 @@ public class ComponentTreeHolder {
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
-              .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
               .measureListener(
                   mComponentTreeMeasureListenerFactory == null

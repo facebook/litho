@@ -424,11 +424,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mErrorEventHandler = builder.errorEventHandler;
     mUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
 
-    if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
-      mPreAllocateMountContentHandler =
-          new DefaultLithoHandler(getDefaultPreallocateMountContentThreadLooper());
-    }
-
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
         builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
@@ -3260,7 +3255,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean isFirstMount = false;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
-    private boolean canPreallocateOnDefaultHandler;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
@@ -3351,16 +3345,6 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder shouldPreallocateMountContentPerMountSpec(boolean preallocatePerMountSpec) {
       shouldPreallocatePerMountSpec = preallocatePerMountSpec;
-      return this;
-    }
-
-    /**
-     * If true, mount content preallocation will use a default layout handler to preallocate mount
-     * content on a background thread if no other layout handler is provided through {@link
-     * ComponentTree.Builder#preAllocateMountContentHandler(LithoHandler)}.
-     */
-    public Builder preallocateOnDefaultHandler(boolean preallocateOnDefaultHandler) {
-      canPreallocateOnDefaultHandler = preallocateOnDefaultHandler;
       return this;
     }
 
