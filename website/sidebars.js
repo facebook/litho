@@ -137,6 +137,7 @@ module.exports = {
     ],
     ...fbInternalOnly({
       '[Internal]': [
+        'fb/litho-kotlin-api',
         'fb/internal-litho',
         'fb/video-lessons',
         {

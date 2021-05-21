@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.onboarding;
+package com.facebook.samples.litho.kotlin.documentation
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.widget.Text
 
 // start_example
-@LayoutSpec
-public class FirstComponentSpec {
+class KotlinApiComponent(private val name: String) : KComponent() {
 
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop String name) {
-    return Text.create(c).text("Hello " + name + "!").build();
+  override fun ComponentScope.render(): Component? {
+    return Text(text = "Hello $name!")
   }
 }
 // end_example
