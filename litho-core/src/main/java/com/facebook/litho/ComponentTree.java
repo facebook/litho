@@ -95,7 +95,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
-  private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
   private static final String EMPTY_STRING = "";
   private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
       "ComponentTree:ReentrantMountsExceedMaxAttempts";
@@ -2589,16 +2588,6 @@ public class ComponentTree implements LithoLifecycleListener {
     return sDefaultLayoutThreadLooper;
   }
 
-  private static synchronized Looper getDefaultPreallocateMountContentThreadLooper() {
-    if (sDefaultPreallocateMountContentThreadLooper == null) {
-      final HandlerThread defaultThread = new HandlerThread(DEFAULT_PMC_THREAD_NAME);
-      defaultThread.start();
-      sDefaultPreallocateMountContentThreadLooper = defaultThread.getLooper();
-    }
-
-    return sDefaultPreallocateMountContentThreadLooper;
-  }
-
   private static boolean isCompatibleSpec(LayoutState layoutState, int widthSpec, int heightSpec) {
     return layoutState != null
         && layoutState.isCompatibleSpec(widthSpec, heightSpec)
@@ -3335,6 +3324,12 @@ public class ComponentTree implements LithoLifecycleListener {
     /** Specify the handler for to preAllocateMountContent */
     public Builder preAllocateMountContentHandler(@Nullable LithoHandler handler) {
       preAllocateMountContentHandler = handler;
+      return this;
+    }
+
+    /** Enable Mount Content preallocation using the same thread we use to compute layouts */
+    public Builder useDefaultHandlerForContentPreallocation() {
+      preAllocateMountContentHandler = new DefaultLithoHandler(getDefaultLayoutThreadLooper());
       return this;
     }
 
