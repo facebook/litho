@@ -28,6 +28,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 
 sourceSets {
     test.java.srcDirs += project(':litho-processor').file("src/test/java")
+    test.java.srcDirs += project(':litho-sections-processor').file("src/test/java")
 }
 
 dependencies {

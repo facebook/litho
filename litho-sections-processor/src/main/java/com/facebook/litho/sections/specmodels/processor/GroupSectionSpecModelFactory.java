@@ -69,7 +69,7 @@ import javax.lang.model.util.Types;
 /** Factory for creating {@link GroupSectionSpecModel}s. */
 public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSectionSpecModel> {
 
-  private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
+  public static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
   public static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
