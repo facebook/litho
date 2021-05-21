@@ -97,4 +97,31 @@ public class SpecAnnotatorTest extends LithoPluginIntellijTest {
             "onCreateMountContent's return type should be either a View or a Drawable subclass.",
             "MountSpecAnnotatorSpec does not define @OnCreateMountContent method which is required for all @MountSpecs.");
   }
+
+  @Test
+  public void annotate_forFileWithGroupSectionSpec_showsErrorMessages() throws IOException {
+    final PsiFile file = testHelper.configure("GroupSectionSpecAnnotatorSpec.java");
+    ApplicationManager.getApplication().invokeAndWait(() -> specAnnotator.annotate(file, holder));
+    assertForGroupSectionSpecShowsErrorMessages(holder);
+  }
+
+  @Test
+  public void annotate_forGroupSectionSpec_showsErrorMessages() throws IOException {
+    final PsiFile file = testHelper.configure("GroupSectionSpecAnnotatorSpec.java");
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              final PsiClass cls =
+                  LithoPluginUtils.getFirstClass(
+                          file, LithoPluginUtils::hasLithoSectionSpecAnnotation)
+                      .get();
+              specAnnotator.annotate(cls, holder);
+            });
+    assertForGroupSectionSpecShowsErrorMessages(holder);
+  }
+
+  private static void assertForGroupSectionSpecShowsErrorMessages(TestHolder holder) {
+    assertThat(holder.errorMessages).hasSize(1);
+    assertThat(holder.errorMessages).containsExactly("Methods in a spec must be static.");
+  }
 }

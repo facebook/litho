@@ -63,6 +63,8 @@ public class SpecAnnotator implements Annotator {
       loggingType = "layout_spec";
     } else if (LithoPluginUtils.isMountSpec(spec)) {
       loggingType = "mount_spec";
+    } else if (LithoPluginUtils.hasLithoSectionSpecAnnotation(spec)) {
+      loggingType = "section_spec";
     } else {
       return;
     }

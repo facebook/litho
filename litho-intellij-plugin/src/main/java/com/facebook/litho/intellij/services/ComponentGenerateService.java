@@ -19,7 +19,9 @@ package com.facebook.litho.intellij.services;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.processor.PsiGroupSectionSpecModelFactory;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.PsiMountSpecModelFactory;
 import com.intellij.openapi.Disposable;
@@ -46,6 +48,8 @@ public class ComponentGenerateService {
       new PsiLayoutSpecModelFactory();
   private static final PsiMountSpecModelFactory MOUNT_SPEC_MODEL_FACTORY =
       new PsiMountSpecModelFactory();
+  private static final PsiGroupSectionSpecModelFactory GROUP_SECTION_SPEC_MODEL_FACTORY =
+      new PsiGroupSectionSpecModelFactory();
   private final Set<SpecUpdateNotifier> listeners = Collections.synchronizedSet(new HashSet<>());
   private final Map<String, SpecModel> specFqnToModelMap =
       Collections.synchronizedMap(createLRUMap(50));
@@ -122,7 +126,8 @@ public class ComponentGenerateService {
    *
    * @return new {@link SpecModel} or null if provided class is not a {@link
    *     com.facebook.litho.annotations.LayoutSpec} or {@link
-   *     com.facebook.litho.annotations.MountSpec} class.
+   *     com.facebook.litho.annotations.MountSpec} or {@link
+   *     com.facebook.litho.sections.annotations.GroupSectionSpec} class.
    */
   @Nullable
   private static SpecModel createModel(PsiClass specCls) {
@@ -131,7 +136,12 @@ public class ComponentGenerateService {
     if (layoutSpecModel != null) {
       return layoutSpecModel;
     }
-    return MOUNT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+    final MountSpecModel mountSpecModel =
+        MOUNT_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
+    if (mountSpecModel != null) {
+      return mountSpecModel;
+    }
+    return GROUP_SECTION_SPEC_MODEL_FACTORY.createWithPsi(specCls.getProject(), specCls, null);
   }
 
   private static String createFileContentFromModel(String clsQualifiedName, SpecModel specModel) {
