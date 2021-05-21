@@ -16,7 +16,10 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+
 import androidx.annotation.IntDef;
+import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +48,9 @@ public class LithoLifecycleProviderDelegate implements LithoLifecycleProvider {
   }
 
   @Override
+  @UiThread
   public void moveToLifecycle(LithoLifecycle newLifecycleState) {
+    assertMainThread();
     if (newLifecycleState == LithoLifecycle.DESTROYED
         && mCurrentState == LithoLifecycle.HINT_VISIBLE) {
       moveToLifecycle(LithoLifecycle.HINT_INVISIBLE);

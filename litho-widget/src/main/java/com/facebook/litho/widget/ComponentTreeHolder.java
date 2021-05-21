@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.DESTROYED;
+import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
@@ -611,7 +612,9 @@ public class ComponentTreeHolder {
     }
 
     @Override
+    @UiThread
     public void moveToLifecycle(LithoLifecycle lithoLifecycle) {
+      assertMainThread();
       mLithoLifecycleProviderDelegate.moveToLifecycle(lithoLifecycle);
       if (lithoLifecycle == DESTROYED) {
         mParentLifecycle.removeListener(this);
@@ -621,12 +624,12 @@ public class ComponentTreeHolder {
     }
 
     @Override
-    public void addListener(LithoLifecycleListener listener) {
+    public synchronized void addListener(LithoLifecycleListener listener) {
       mLithoLifecycleProviderDelegate.addListener(listener);
     }
 
     @Override
-    public void removeListener(LithoLifecycleListener listener) {
+    public synchronized void removeListener(LithoLifecycleListener listener) {
       mLithoLifecycleProviderDelegate.removeListener(listener);
     }
   }
