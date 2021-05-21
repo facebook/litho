@@ -21,6 +21,7 @@ fb_java_test(
     target = "8",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/sections/specmodels/processor:processor"),
     ],
     visibility = LITHO_VISIBILITY,
     deps = [

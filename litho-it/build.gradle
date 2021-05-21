@@ -73,6 +73,7 @@ android {
     }
 
     sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
+    sourceSets.test.java.srcDir project(':litho-sections-processor').file("src/test/java")
 }
 
 dependencies {

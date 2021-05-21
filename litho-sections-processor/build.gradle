@@ -29,6 +29,9 @@ dependencies {
 
     // Processor
     implementation deps.javapoet
+
+    testImplementation deps.junit
+    testImplementation deps.assertjCore
 }
 
 apply from: rootProject.file('gradle/release.gradle')
