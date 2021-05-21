@@ -17,6 +17,8 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.intellij.services.ComponentGenerateService;
+import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
+import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.intellij.codeInsight.generation.ClassMember;
@@ -126,7 +128,8 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
                   psiElement, new TextExpression(getFirstStateTypeAndName(specClass).second));
             } else if (psiElement instanceof PsiTypeElement
                 && psiElement.getText().equals("placeholder_service_type")) {
-              templateBuilder.replaceElement(psiElement, "ServiceType");
+              templateBuilder.replaceElement(
+                  psiElement, new TextExpression(getServiceType(specClass)));
             } else if (psiElement instanceof PsiTypeElement
                 && psiElement.getText().equals("placeholder_tree_prop_type")) {
               templateBuilder.replaceElement(psiElement, "TreePropType");
@@ -154,5 +157,18 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
       return new Pair<>(stateParamModel.getTypeName().toString(), stateParamModel.getName());
     }
     return new Pair<>("StateType", "stateName");
+  }
+
+  private static String getServiceType(PsiClass specClass) {
+    final SpecModel specModel =
+        ComponentGenerateService.getInstance().getOrCreateSpecModel(specClass, false);
+    if (specModel != null && specModel instanceof GroupSectionSpecModel) {
+      final GroupSectionSpecModel groupSectionSpecModel = (GroupSectionSpecModel) specModel;
+      final MethodParamModel serviceParam = groupSectionSpecModel.getServiceParam();
+      if (serviceParam != null) {
+        return serviceParam.getTypeName().toString();
+      }
+    }
+    return "ServiceType";
   }
 }
