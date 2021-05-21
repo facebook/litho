@@ -159,6 +159,14 @@ module.exports = {
         fromExtensions: ['html', 'htm'],
         redirects: [
           {
+            to: '/',
+            from: ['/docs'],
+          },
+          {
+            to: '/docs/mainconcepts/coordinate-state-actions/dynamic-props',
+            from: ['/docs/dynamic-props'],
+          },
+          {
             to: '/docs/sections/start',
             from: ['/docs/sections-intro'],
           },
