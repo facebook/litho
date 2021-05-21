@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.util.SparseIntArray;
-import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
