@@ -139,7 +139,7 @@ public final class Row extends Component {
         if (c.wasLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
-          node.child(child);
+          node.child(c, child);
         }
       }
     }

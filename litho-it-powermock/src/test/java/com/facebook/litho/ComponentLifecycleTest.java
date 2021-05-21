@@ -330,6 +330,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testMountSpecYogaMeasureOutputSet() {
+    final boolean value = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
     Component component = new TestMountSpecSettingSizesInOnMeasure(mNode);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
@@ -337,6 +339,7 @@ public class ComponentLifecycleTest {
 
     assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(A_WIDTH);
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(A_HEIGHT);
+    ComponentsConfiguration.useStatelessComponent = value;
   }
 
   private Component setUpSpyComponentForCreateLayout(boolean isMountSpec, boolean canMeasure) {

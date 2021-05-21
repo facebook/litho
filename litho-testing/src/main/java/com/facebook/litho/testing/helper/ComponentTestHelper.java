@@ -631,7 +631,7 @@ public final class ComponentTestHelper {
     }
 
     @Override
-    public InternalNode child(Component child) {
+    public InternalNode child(ComponentContext c, Component child) {
       if (child != null) {
         return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
       }
@@ -647,7 +647,7 @@ public final class ComponentTestHelper {
     }
 
     @Override
-    public InternalNode child(Component child) {
+    public InternalNode child(ComponentContext c, Component child) {
       if (child != null) {
         return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
       }

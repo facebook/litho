@@ -537,7 +537,7 @@ class Layout {
 
     if (unresolved != null) {
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(unresolved.get(i));
+        root.child(root.getContext(), unresolved.get(i));
       }
       root.getUnresolvedComponents().clear();
     }

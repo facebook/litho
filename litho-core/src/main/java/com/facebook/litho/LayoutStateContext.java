@@ -56,10 +56,7 @@ public class LayoutStateContext {
     mIsScopedInfoCopiedFromLSCInstance = true;
 
     if (from.mGlobalKeyToScopedContext != null) {
-      if (mGlobalKeyToScopedContext == null) {
-        mGlobalKeyToScopedContext = new HashMap<>();
-      }
-
+      mGlobalKeyToScopedContext = new HashMap<>(from.mGlobalKeyToScopedContext.size());
       for (Map.Entry<String, ComponentContext> e : from.mGlobalKeyToScopedContext.entrySet()) {
         final String key = e.getKey();
         final ComponentContext context =
@@ -69,17 +66,16 @@ public class LayoutStateContext {
     }
 
     if (from.mGlobalKeyToScopedInfo != null) {
-      if (mGlobalKeyToScopedInfo == null) {
-        mGlobalKeyToScopedInfo = new HashMap<>();
+      mGlobalKeyToScopedInfo = new HashMap<>(from.mGlobalKeyToScopedInfo.size());
+      for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
+        final String key = e.getKey();
+        final ScopedComponentInfo info = e.getValue().copy();
+        mGlobalKeyToScopedInfo.put(key, info);
       }
-
-      mGlobalKeyToScopedInfo.putAll(from.mGlobalKeyToScopedInfo);
     }
 
     if (from.mComponentIdToWillRenderLayout != null) {
-      if (mComponentIdToWillRenderLayout == null) {
-        mComponentIdToWillRenderLayout = new HashMap<>();
-      }
+      mComponentIdToWillRenderLayout = new HashMap<>(from.mComponentIdToWillRenderLayout.size());
       mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
     }
   }
@@ -114,47 +110,17 @@ public class LayoutStateContext {
       mGlobalKeyToScopedInfo = new HashMap<>();
     }
 
-    InterStagePropsContainer newInterStagePropsContainer =
-        ComponentsConfiguration.useInterStagePropsFromContext
-            ? component.createInterStagePropsContainer()
+    final EventHandler<ErrorEvent> errorEventHandler =
+        ComponentsConfiguration.useErrorEventHandlerFromContext
+            ? ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext)
             : null;
 
-    if (ComponentsConfiguration.useInterStagePropsFromContext
-        && mGlobalKeyToScopedInfo.containsKey(globalKey)) {
-      InterStagePropsContainer prevInterStagePropsContainer =
-          mGlobalKeyToScopedInfo.get(globalKey).getInterStagePropsContainer();
+    final ScopedComponentInfo info = new ScopedComponentInfo(component, errorEventHandler);
 
-      try {
-        component.copyInterStageImpl(newInterStagePropsContainer, prevInterStagePropsContainer);
-      } catch (NullPointerException ex) {
-        if (ComponentsConfiguration.throwExceptionInterStagePropsContainerNull) {
-          throw new IllegalStateException(
-              "Encountered NPE while copying ISPContainer: "
-                  + component
-                  + " ,globalKey: "
-                  + globalKey
-                  + " ,newISPContainer: "
-                  + newInterStagePropsContainer
-                  + " ,prevISPContainer: "
-                  + prevInterStagePropsContainer
-                  + " ,scopedInfoCopiedFromLSC: "
-                  + mIsScopedInfoCopiedFromLSCInstance
-                  + " ,hasCachedLayout: "
-                  + (mLayoutStateRef == null ? "null" : mLayoutStateRef.hasCachedLayout(component)),
-              ex);
-        }
-      }
+    final ScopedComponentInfo previous = mGlobalKeyToScopedInfo.put(globalKey, info);
+    if (previous != null) {
+      previous.transferInto(info);
     }
-
-    mGlobalKeyToScopedInfo.put(
-        globalKey,
-        new ScopedComponentInfo(
-            component,
-            newInterStagePropsContainer,
-            ComponentsConfiguration.useErrorEventHandlerFromContext
-                ? ComponentUtils.createOrGetErrorEventHandler(
-                    component, parentContext, scopedContext)
-                : null));
   }
 
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
@@ -170,9 +136,20 @@ public class LayoutStateContext {
     return scopedComponentInfo;
   }
 
-  @Nullable
   ComponentContext getScopedContext(String globalKey) {
-    return mGlobalKeyToScopedContext == null ? null : mGlobalKeyToScopedContext.get(globalKey);
+    if (globalKey == null) {
+      return null;
+    }
+
+    if (mGlobalKeyToScopedContext == null) {
+      throw new IllegalStateException("mGlobalKeyToScopedContext map should not be null");
+    }
+
+    final ComponentContext context = mGlobalKeyToScopedContext.get(globalKey);
+    if (context == null) {
+      throw new IllegalStateException("ComponentContext is null for globalKey: " + globalKey);
+    }
+    return context;
   }
 
   @Nullable

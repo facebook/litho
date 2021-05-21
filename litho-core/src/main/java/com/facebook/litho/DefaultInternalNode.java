@@ -415,9 +415,9 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode child(Component child) {
+  public InternalNode child(ComponentContext c, Component child) {
     if (child != null) {
-      return child(Layout.create(mComponentContext, child));
+      return child(Layout.create(c, child));
     }
 
     return this;
@@ -426,7 +426,7 @@ public class DefaultInternalNode
   @Override
   public InternalNode child(Component.Builder<?> child) {
     if (child != null) {
-      child(child.build());
+      child(mComponentContext, child.build());
     }
     return this;
   }

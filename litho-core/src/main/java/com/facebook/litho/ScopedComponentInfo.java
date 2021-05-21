@@ -18,16 +18,17 @@ package com.facebook.litho;
 
 import android.util.SparseIntArray;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-@Nullsafe(Nullsafe.Mode.LOCAL)
-final class ScopedComponentInfo {
+final class ScopedComponentInfo implements Cloneable {
 
   // Can be final if Component is stateless and cloning is not needed anymore.
+  private final Component mComponent;
   private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
@@ -53,11 +54,13 @@ final class ScopedComponentInfo {
   private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
 
   ScopedComponentInfo(
-      final Component component,
-      final @Nullable InterStagePropsContainer interStagePropsContainer,
-      final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
+      final Component component, final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
+    mComponent = component;
     mStateContainer = component.createStateContainer();
-    mInterStagePropsContainer = interStagePropsContainer;
+    mInterStagePropsContainer =
+        ComponentsConfiguration.useInterStagePropsFromContext
+            ? component.createInterStagePropsContainer()
+            : null;
     mErrorEventHandler = errorEventHandler;
   }
 
@@ -133,5 +136,44 @@ final class ScopedComponentInfo {
   @Nullable
   EventHandler<ErrorEvent> getErrorEventHandler() {
     return mErrorEventHandler;
+  }
+
+  @Override
+  protected ScopedComponentInfo clone() {
+    try {
+      return (ScopedComponentInfo) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Create a copy of this ScopedInfo, in which the StateContainer and InterStagePropsContainer are
+   * copied.
+   */
+  ScopedComponentInfo copy() {
+    final ScopedComponentInfo clone = clone();
+
+    clone.mStateContainer = mComponent.createStateContainer();
+    clone.mComponent.transferState(mStateContainer, clone.mStateContainer);
+
+    if (ComponentsConfiguration.useInterStagePropsFromContext) {
+      clone.mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
+      clone.mComponent.copyInterStageImpl(
+          clone.mInterStagePropsContainer, mInterStagePropsContainer);
+    }
+
+    return clone;
+  }
+
+  /**
+   * Transfer the contents of this ScopedInfo to {@param info}. This should only be used when
+   * replacing an existing ScopedInfo with a new instance during the same layout pass. Currently,
+   * the only unknown usecase is during reconciliation.
+   *
+   * @param info The destination ScopedInfo.
+   */
+  void transferInto(ScopedComponentInfo info) {
+    info.mInterStagePropsContainer = mInterStagePropsContainer;
   }
 }
