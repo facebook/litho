@@ -360,7 +360,11 @@ class Layout {
 
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null
-            && component.canUsePreviousLayout(parentContext, componentGlobalKey)) {
+            && currentLayout != NullLayoutResult.INSTANCE
+            && currentLayout
+                .getInternalNode()
+                .getHeadComponent()
+                .canUsePreviousLayout(parentContext, componentGlobalKey)) {
           remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;
         } else {
