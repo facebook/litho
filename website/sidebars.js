@@ -135,6 +135,9 @@ module.exports = {
       },
       'deep-dive/incremental-mount',
     ],
+    'Contributing Documentation': [
+      'contributing-documentation',
+    ],
     ...fbInternalOnly({
       '[Internal]': [
         'fb/litho-kotlin-api',
