@@ -21,21 +21,20 @@ import com.facebook.litho.config.ComponentsConfiguration;
 /** Default implementation of ErrorEvent handler. */
 public class DefaultErrorEventHandler extends ErrorEventHandler {
 
-  private static final String SWALLOW_UNHANLED_EXCEPTIONS = "DefaultErrorEventHandler";
+  private static final String DEFAULT_ERROR_EVENT_HANDLER = "DefaultErrorEventHandler";
 
   static final DefaultErrorEventHandler INSTANCE = new DefaultErrorEventHandler();
 
   @Override
   public void onError(ComponentTree ct, Exception e) {
-    if (ComponentsConfiguration.swallowUnhandledExceptions) {
-      String rootComponent = "";
-      if (ct != null && ct.getRoot() != null) {
-        rootComponent = ":" + ct.getRoot().getSimpleName();
-      }
+    if (ct != null && ct.getRoot() != null) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
-          SWALLOW_UNHANLED_EXCEPTIONS + rootComponent,
-          "Swallowing exception in experiment: " + e.getMessage());
+          DEFAULT_ERROR_EVENT_HANDLER + ":" + ct.getRoot().getSimpleName(),
+          e.getMessage());
+    }
+
+    if (ComponentsConfiguration.swallowUnhandledExceptions) {
       return;
     }
     ComponentUtils.rethrow(e);
