@@ -41,6 +41,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 dependencies {
     implementation project(':litho-core-kotlin')
     api project(':litho-widget')
+    api project(':litho-sections-core')
+    api project(':litho-sections-widget')
 
     // Annotations
     compileOnly deps.jsr305
@@ -48,6 +50,7 @@ dependencies {
 
     implementation deps.supportCore
     implementation deps.kotlinStandardLib
+    implementation deps.supportRecyclerView
 
     // Android Support Library
     compileOnly deps.supportAnnotations
