@@ -596,5 +596,5 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void freeze(YogaNode node, @Nullable YogaNode parent) {}
+  public void freeze(LayoutStateContext c, YogaNode node, @Nullable YogaNode parent) {}
 }

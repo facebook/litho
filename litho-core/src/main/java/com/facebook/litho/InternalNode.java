@@ -35,7 +35,7 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode.Inputs;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.Map;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode extends Inputs {
+public interface InternalNode {
 
   void addChildAt(InternalNode child, int index);
 
@@ -72,6 +72,8 @@ public interface InternalNode extends Inputs {
   InternalNode border(Border border);
 
   void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect);
+
+  void freeze(LayoutStateContext c, YogaNode node, @Nullable YogaNode parent);
 
   LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec);
 

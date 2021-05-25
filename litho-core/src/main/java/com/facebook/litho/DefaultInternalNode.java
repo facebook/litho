@@ -82,7 +82,7 @@ import java.util.Set;
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
 public class DefaultInternalNode
-    implements InternalNode, LithoLayoutResult, LayoutProps, Cloneable {
+    implements InternalNode, LithoLayoutResult, YogaNode.Inputs, LayoutProps, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
@@ -356,7 +356,15 @@ public class DefaultInternalNode
   }
 
   @Override
-  public void freeze(final YogaNode node, final @Nullable YogaNode parentYogaNode) {
+  public void freeze(final YogaNode node, final @Nullable YogaNode parent) {
+    freeze(mComponentContext.getLayoutStateContext(), node, parent);
+  }
+
+  @Override
+  public void freeze(
+      final LayoutStateContext context,
+      final YogaNode node,
+      final @Nullable YogaNode parentYogaNode) {
 
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
     // child's important for A11Y needs to be NO_HIDE_DESCENDANTS

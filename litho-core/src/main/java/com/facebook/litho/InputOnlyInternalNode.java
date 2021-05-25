@@ -312,7 +312,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public void freeze(final YogaNode node, final @Nullable YogaNode parent) {
+  public void freeze(LayoutStateContext c, final YogaNode node, final @Nullable YogaNode parent) {
 
     final LithoLayoutResult result;
 
@@ -362,7 +362,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     final int size = getChildCount();
     for (int i = 0; i < size; i++) {
       final YogaNode child = NodeConfig.createYogaNode();
-      child.setData(getChildAt(i)); // Set the InternalNode as input
+      // Set the InternalNode as input
+      child.setData(new LayoutContextContainer(c, getChildAt(i)));
       node.addChildAt(child, i); // Add the child YogaNode to NodeYoga of this result.
     }
   }
@@ -429,7 +430,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec);
 
-    node.setData(this);
+    node.setData(new LayoutContextContainer(c.getLayoutStateContext(), this));
 
     node.calculateLayout(width, height);
 
@@ -1689,6 +1690,26 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
         applyOverridesRecursive(node.getChildAt(i));
       }
+    }
+  }
+
+  /**
+   * Container to hold the current {@link LayoutStateContext} and the {@link InternalNode} to
+   * measure.
+   */
+  private static class LayoutContextContainer implements YogaNode.Inputs {
+
+    final LayoutStateContext context;
+    final InternalNode node;
+
+    public LayoutContextContainer(LayoutStateContext context, InternalNode node) {
+      this.context = context;
+      this.node = node;
+    }
+
+    @Override
+    public void freeze(YogaNode node, @Nullable YogaNode parent) {
+      this.node.freeze(context, node, parent);
     }
   }
 
