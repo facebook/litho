@@ -956,7 +956,7 @@ public class LayoutState
     for (int i = 0, size = result.getChildCount(); i < size; i++) {
       final LithoLayoutResult child = result.getChildAt(i);
       collectResults(
-          node.getContext(),
+          result.getContext(),
           child,
           child.getInternalNode(),
           layoutState,
@@ -1606,8 +1606,8 @@ public class LayoutState
 
       // Null check for tests.
       final InternalNode node = root.getInternalNode();
-      if (node.getContext() != null) {
-        node.getContext().setLayoutStateContext(layoutStateContext);
+      if (root.getContext() != null) {
+        root.getContext().setLayoutStateContext(layoutStateContext);
       }
 
       layoutState.mLayoutRoot = root;

@@ -29,6 +29,11 @@ public final class NullLayoutResult implements LithoLayoutResult {
   private NullLayoutResult() {}
 
   @Override
+  public ComponentContext getContext() {
+    return null;
+  }
+
+  @Override
   public InternalNode getInternalNode() {
     return ComponentContext.NULL_LAYOUT;
   }

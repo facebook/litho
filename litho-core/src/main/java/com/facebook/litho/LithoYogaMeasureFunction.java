@@ -75,7 +75,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       int outputWidth = 0;
       int outputHeight = 0;
 
-      ComponentContext context = node.getContext();
+      ComponentContext context = result.getContext();
 
       if (Component.isNestedTree(context, component) || result instanceof NestedTreeHolderResult) {
 

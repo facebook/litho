@@ -62,7 +62,7 @@ public final class DebugComponent {
       LithoLayoutResult result, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
     final InternalNode node = result.getInternalNode();
-    final ComponentContext context = node.getContext();
+    final ComponentContext context = result.getContext();
 
     if (componentIndex >= node.getComponents().size()) {
       return null;
@@ -227,7 +227,7 @@ public final class DebugComponent {
   /** @return The litho view hosting this component. */
   @Nullable
   public LithoView getLithoView() {
-    final ComponentContext c = mNode.getContext();
+    final ComponentContext c = mResult.getContext();
     final ComponentTree tree = c == null ? null : c.getComponentTree();
     return tree == null ? null : tree.getLithoView();
   }
@@ -257,7 +257,7 @@ public final class DebugComponent {
 
   /** @return the {@link ComponentContext} for this component. */
   public ComponentContext getContext() {
-    return mNode.getContext();
+    return mResult.getContext();
   }
 
   /** @return True if this not has layout information attached to it (backed by a Yoga node) */
@@ -467,7 +467,7 @@ public final class DebugComponent {
       return null;
     }
 
-    final ComponentContext context = mNode.getContext();
+    final ComponentContext context = mResult.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
     final LithoView view = tree == null ? null : tree.getLithoView();
     final MountDelegateTarget mountDelegateTarget =

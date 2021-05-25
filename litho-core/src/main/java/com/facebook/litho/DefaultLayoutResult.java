@@ -62,6 +62,11 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
     mParent = parent;
   }
 
+  @Override
+  public ComponentContext getContext() {
+    return mContext;
+  }
+
   @Px
   @Override
   public int getX() {

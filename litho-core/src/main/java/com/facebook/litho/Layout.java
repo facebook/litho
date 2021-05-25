@@ -562,7 +562,7 @@ class Layout {
     }
 
     measure(
-        layout.getInternalNode().getContext(),
+        layout.getContext(),
         layout.getInternalNode(),
         widthSpec,
         heightSpec,
