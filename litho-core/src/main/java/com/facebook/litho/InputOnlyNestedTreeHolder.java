@@ -64,8 +64,8 @@ public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeY
   }
 
   @Override
-  void writeToYogaNode(NestedTreeYogaLayoutProps target, YogaNode node) {
-    super.writeToYogaNode(target, node);
+  void writeToYogaNode(LayoutStateContext c, NestedTreeYogaLayoutProps target, YogaNode node) {
+    super.writeToYogaNode(c, target, node);
     mNestedBorderEdges = target.getBorderWidth();
     mNestedTreePadding = target.getPadding();
     mNestedIsPaddingPercentage = target.getIsPaddingPercentage();

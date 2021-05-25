@@ -328,7 +328,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final Writer writer = (Writer) createYogaNodeWriter(node);
 
       // Transfer the layout props to YogaNode
-      writeToYogaNode(writer, node);
+      writeToYogaNode(c, writer, node);
 
       // Create the layout result of 'this' InternalNode.
       result = createLayoutResult(c, node, parentResult);
@@ -409,7 +409,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     final Writer writer = (Writer) createYogaNodeWriter(node);
 
     // Transfer the layout props to YogaNode
-    writeToYogaNode(writer, node);
+    writeToYogaNode(c.getLayoutStateContext(), writer, node);
 
     applyOverridesRecursive(this);
 
@@ -1356,7 +1356,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return new YogaLayoutProps(node);
   }
 
-  void writeToYogaNode(final Writer target, final YogaNode node) {
+  void writeToYogaNode(LayoutStateContext c, final Writer target, final YogaNode node) {
 
     // Apply the extra layout props
     if (mLayoutDirection != null) {
@@ -1396,7 +1396,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
           final int styleAttr = props.getDefStyleAttr();
           final int styleRes = props.getDefStyleRes();
           if (styleAttr != 0 || styleRes != 0) {
-            final Context context = mComponentContext.getAndroidContext();
+            final Context context = getContext(c, this).getAndroidContext();
             final TypedArray a =
                 context.obtainStyledAttributes(
                     null, com.facebook.litho.R.styleable.ComponentLayout, styleAttr, styleRes);
