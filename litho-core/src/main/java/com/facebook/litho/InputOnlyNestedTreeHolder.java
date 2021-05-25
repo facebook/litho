@@ -73,9 +73,10 @@ public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeY
 
   @Override
   protected DefaultLayoutResult createLayoutResult(
-      final YogaNode node, final @Nullable LithoLayoutResult parent) {
-
-    return new DefaultNestedTreeHolderResult(this, node, parent);
+      final LayoutStateContext context,
+      final YogaNode node,
+      final @Nullable LithoLayoutResult parent) {
+    return new DefaultNestedTreeHolderResult(getContext(context, this), this, node, parent);
   }
 
   @Override

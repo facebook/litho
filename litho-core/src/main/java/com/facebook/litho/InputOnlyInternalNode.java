@@ -331,7 +331,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       writeToYogaNode(writer, node);
 
       // Create the layout result of 'this' InternalNode.
-      result = createLayoutResult(node, parentResult);
+      result = createLayoutResult(c, node, parentResult);
 
       // Add the result to the parent result
       parentResult.addChild(result);
@@ -348,7 +348,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       }
 
       // Create the layout result of 'this' InternalNode.
-      result = createLayoutResult(node, null);
+      result = createLayoutResult(c, node, null);
     }
 
     // Replace input with the output
@@ -373,7 +373,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       mFrozen = true;
       return;
     }
-
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
     // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
     if (parent.getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
@@ -683,7 +682,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public @Nullable String getTailComponentKey() {
     return mComponentGlobalKeys == null || mComponentGlobalKeys.isEmpty()
-        ? null
+        ? Component.getGlobalKey(null, getTailComponent())
         : mComponentGlobalKeys.get(0);
   }
 
@@ -1449,8 +1448,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   protected DefaultLayoutResult createLayoutResult(
-      final YogaNode node, final @Nullable LithoLayoutResult parent) {
-    return new DefaultLayoutResult(this, node, parent);
+      final LayoutStateContext context,
+      final YogaNode node,
+      final @Nullable LithoLayoutResult parent) {
+    return new DefaultLayoutResult(getContext(context, this), this, node, parent);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {
@@ -1682,6 +1683,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     }
 
     return ReconciliationMode.COPY;
+  }
+
+  protected static ComponentContext getContext(LayoutStateContext c, InternalNode node) {
+    return node.getTailComponent().getScopedContext(c, node.getTailComponentKey());
   }
 
   private static void applyOverridesRecursive(InternalNode node) {
