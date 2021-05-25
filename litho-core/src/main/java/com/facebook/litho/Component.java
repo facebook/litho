@@ -834,7 +834,8 @@ public abstract class Component extends ComponentLifecycle
     if (hasState()) {
       parentContext
           .getStateHandler()
-          .applyStateUpdatesForComponent(parentContext.getLayoutStateContext(), this, globalKey);
+          .applyStateUpdatesForComponent(
+              parentContext.getLayoutStateContext(), scopedContext, this, globalKey);
     }
   }
 
