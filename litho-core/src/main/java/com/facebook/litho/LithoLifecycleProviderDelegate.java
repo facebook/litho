@@ -60,8 +60,12 @@ public class LithoLifecycleProviderDelegate implements LithoLifecycleProvider {
         getTransitionStatus(mCurrentState, newLifecycleState);
 
     if (transitionStatus == LifecycleTransitionStatus.INVALID) {
-      throw new IllegalStateException(
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          "LithoLifecycleProvider",
           "Cannot move from state " + mCurrentState + " to state " + newLifecycleState);
+
+      return;
     }
 
     if (transitionStatus == LifecycleTransitionStatus.VALID) {
