@@ -411,7 +411,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // Transfer the layout props to YogaNode
     writeToYogaNode(c.getLayoutStateContext(), writer, node);
 
-    applyOverridesRecursive(this);
+    applyOverridesRecursive(c.getLayoutStateContext(), this);
 
     if (YogaConstants.isUndefined(node.getWidth().value)) {
       Layout.setStyleWidthFromSpec(node, widthSpec);
@@ -1689,11 +1689,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return node.getTailComponent().getScopedContext(c, node.getTailComponentKey());
   }
 
-  private static void applyOverridesRecursive(InternalNode node) {
+  private static void applyOverridesRecursive(LayoutStateContext c, InternalNode node) {
     if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(node.getContext(), node);
+      DebugComponent.applyOverrides(getContext(c, node), node);
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
-        applyOverridesRecursive(node.getChildAt(i));
+        applyOverridesRecursive(c, node.getChildAt(i));
       }
     }
   }
