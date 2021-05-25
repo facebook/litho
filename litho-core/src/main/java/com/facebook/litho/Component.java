@@ -346,10 +346,15 @@ public abstract class Component extends ComponentLifecycle
   @Deprecated
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    final ComponentContext contextForLayout =
-        c.getStateHandler() == null
-            ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
-            : c;
+    final ComponentContext contextForLayout;
+
+    if (c.getStateHandler() == null) {
+      contextForLayout =
+          new ComponentContext(c, new StateHandler(), c.getTreeProps(), c.getLayoutStateContext());
+    } else {
+      contextForLayout = c.makeNewCopy();
+    }
+
     if (contextForLayout.hasLayoutState()) {
       measure(contextForLayout, widthSpec, heightSpec, outputSize);
       return;
