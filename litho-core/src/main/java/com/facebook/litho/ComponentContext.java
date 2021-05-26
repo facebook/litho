@@ -480,6 +480,10 @@ public class ComponentContext implements Cloneable {
     return mTreeProps;
   }
 
+  public @Nullable TreeProps getParentTreeProps() {
+    return mParentTreeProps;
+  }
+
   /**
    * @return true if parent's TreeProps are cloned and assigned to mTreeProps. Notice this method
    *     should be accessed by Kotlin API only.

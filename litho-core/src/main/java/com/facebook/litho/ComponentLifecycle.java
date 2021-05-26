@@ -596,23 +596,34 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       Component currentComponent,
       final @Nullable ComponentContext nextScopedContext,
       Component nextComponent) {
+    final boolean shouldUpdate;
     if (ComponentsConfiguration.useStatelessComponent) {
-      return shouldUpdate(
-          currentComponent,
-          currentComponent == null || previousScopedContext == null
-              ? null
-              : currentComponent.getStateContainer(
-                  previousScopedContext.getLayoutStateContext(),
-                  previousScopedContext.getGlobalKey()),
-          nextComponent,
-          nextComponent == null || nextScopedContext == null
-              ? null
-              : nextComponent.getStateContainer(
-                  nextScopedContext.getLayoutStateContext(), nextScopedContext.getGlobalKey()));
+      shouldUpdate =
+          shouldUpdate(
+              currentComponent,
+              currentComponent == null || previousScopedContext == null
+                  ? null
+                  : currentComponent.getStateContainer(
+                      previousScopedContext.getLayoutStateContext(),
+                      previousScopedContext.getGlobalKey()),
+              nextComponent,
+              nextComponent == null || nextScopedContext == null
+                  ? null
+                  : nextComponent.getStateContainer(
+                      nextScopedContext.getLayoutStateContext(), nextScopedContext.getGlobalKey()));
     } else {
-      return shouldUpdate(
-          previousScopedContext, currentComponent, nextScopedContext, nextComponent);
+      shouldUpdate =
+          shouldUpdate(previousScopedContext, currentComponent, nextScopedContext, nextComponent);
     }
+
+    if (ComponentsConfiguration.useTreePropsfromContext) {
+      return shouldUpdate
+          || !CommonUtils.equals(
+              previousScopedContext == null ? null : previousScopedContext.getParentTreeProps(),
+              nextScopedContext == null ? null : nextScopedContext.getParentTreeProps());
+    }
+
+    return shouldUpdate;
   }
 
   final boolean shouldUpdate(
