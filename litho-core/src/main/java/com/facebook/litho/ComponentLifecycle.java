@@ -591,6 +591,30 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
+  final boolean shouldComponentUpdate(
+      final @Nullable ComponentContext previousScopedContext,
+      Component currentComponent,
+      final @Nullable ComponentContext nextScopedContext,
+      Component nextComponent) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      return shouldUpdate(
+          currentComponent,
+          currentComponent == null || previousScopedContext == null
+              ? null
+              : currentComponent.getStateContainer(
+                  previousScopedContext.getLayoutStateContext(),
+                  previousScopedContext.getGlobalKey()),
+          nextComponent,
+          nextComponent == null || nextScopedContext == null
+              ? null
+              : nextComponent.getStateContainer(
+                  nextScopedContext.getLayoutStateContext(), nextScopedContext.getGlobalKey()));
+    } else {
+      return shouldUpdate(
+          previousScopedContext, currentComponent, nextScopedContext, nextComponent);
+    }
+  }
+
   final boolean shouldUpdate(
       final @Nullable ComponentContext previousScopedContext,
       final @Nullable Component previous,

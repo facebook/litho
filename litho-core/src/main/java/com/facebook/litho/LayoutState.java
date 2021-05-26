@@ -1220,23 +1220,9 @@ public class LayoutState
     boolean isOutputUpdated;
     if (recycle != null) {
       try {
-        if (ComponentsConfiguration.useStatelessComponent) {
-          isOutputUpdated =
-              !drawableComponent.shouldUpdate(
-                  recycle.getComponent(),
-                  recycleScopedContext == null
-                      ? null
-                      : recycle
-                          .getComponent()
-                          .getStateContainer(
-                              recycleScopedContext.getLayoutStateContext(), recycle.getKey()),
-                  drawableComponent,
-                  null);
-        } else {
-          isOutputUpdated =
-              !drawableComponent.shouldUpdate(
-                  recycleScopedContext, recycle.getComponent(), null, drawableComponent);
-        }
+        isOutputUpdated =
+            !drawableComponent.shouldComponentUpdate(
+                recycleScopedContext, recycle.getComponent(), null, drawableComponent);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(recycleScopedContext, drawableComponent, e);
         isOutputUpdated = false;

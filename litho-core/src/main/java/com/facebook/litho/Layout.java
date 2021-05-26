@@ -771,26 +771,11 @@ class Layout {
           component.getScopedContext(layoutStateContext, globalKey);
 
       try {
-        if (ComponentsConfiguration.useStatelessComponent) {
-          Component diffNodeComponent = diffNode.getComponent();
-
-          return component.shouldUpdate(
-              diffNodeComponent,
-              diffNodeComponent == null || prevLayoutStateContext == null
-                  ? null
-                  : diffNodeComponent.getStateContainer(
-                      prevLayoutStateContext,
-                      ComponentUtils.getGlobalKey(
-                          diffNodeComponent, diffNode.getComponentGlobalKey())),
-              component,
-              component.getStateContainer(layoutStateContext, globalKey));
-        } else {
-          return component.shouldUpdate(
-              getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
-              diffNode.getComponent(),
-              scopedContext,
-              component);
-        }
+        return component.shouldComponentUpdate(
+            getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
+            diffNode.getComponent(),
+            scopedContext,
+            component);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       }

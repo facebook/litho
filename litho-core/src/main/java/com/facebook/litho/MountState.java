@@ -979,22 +979,8 @@ class MountState implements MountDelegateTarget {
     ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
 
     try {
-      if (ComponentsConfiguration.useStatelessComponent) {
-        return currentComponent.shouldUpdate(
-            currentComponent,
-            currentScopedContext == null
-                ? null
-                : currentComponent.getStateContainer(
-                    currentScopedContext.getLayoutStateContext(), currentLayoutOutput.getKey()),
-            nextComponent,
-            nextScopedContext == null
-                ? null
-                : nextComponent.getStateContainer(
-                    nextScopedContext.getLayoutStateContext(), nextLayoutOutput.getKey()));
-      } else {
-        return currentComponent.shouldUpdate(
-            currentScopedContext, currentComponent, nextScopedContext, nextComponent);
-      }
+      return currentComponent.shouldComponentUpdate(
+          currentScopedContext, currentComponent, nextScopedContext, nextComponent);
     } catch (Exception e) {
       ComponentUtils.handle(nextScopedContext, e);
       return true;
