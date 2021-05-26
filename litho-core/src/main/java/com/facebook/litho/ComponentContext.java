@@ -471,7 +471,7 @@ public class ComponentContext implements Cloneable {
     mTreeProps = treeProps;
   }
 
-  void setParentTreeProps(@Nullable TreeProps treeProps) {
+  public void setParentTreeProps(@Nullable TreeProps treeProps) {
     mParentTreeProps = treeProps;
   }
 

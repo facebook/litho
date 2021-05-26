@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.generator;
 
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
@@ -108,6 +109,17 @@ public class TreePropGenerator {
           block.add(
               "$L.$L",
               GeneratorConstants.STATE_CONTAINER_IMPL_GETTER + "(c)",
+              onCreateTreePropsMethod.methodParams.get(i).getName());
+        } else if (MethodParamModelUtils.isAnnotatedWith(
+            onCreateTreePropsMethod.methodParams.get(i), TreeProp.class)) {
+          block.add(
+              "useTreePropsFromContext() ? (($T) $T.getTreePropFromParent(parentTreeProps,"
+                  + TreePropGenerator.findTypeByTypeName(
+                      onCreateTreePropsMethod.methodParams.get(i).getTypeName())
+                  + ".class"
+                  + ")) : $L",
+              onCreateTreePropsMethod.methodParams.get(i).getTypeName(),
+              ClassNames.COMPONENT,
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else {
           block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());

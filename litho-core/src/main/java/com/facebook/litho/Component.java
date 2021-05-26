@@ -834,8 +834,9 @@ public abstract class Component extends ComponentLifecycle
       final ComponentContext scopedContext,
       final String globalKey) {
     if (!ComponentsConfiguration.useTreePropsfromContext) {
-      populateTreeProps(scopedContext.getTreeProps());
+      populateTreeProps(parentContext.getTreeProps());
     }
+    scopedContext.setParentTreeProps(parentContext.getTreeProps());
     if (hasState()) {
       parentContext
           .getStateHandler()
@@ -2498,5 +2499,10 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaWrap#NO_WRAP}
      */
     public abstract T wrap(@Nullable YogaWrap wrap);
+  }
+
+  @Nullable
+  public static <T> T getTreePropFromParent(TreeProps parentTreeProps, Class<T> key) {
+    return parentTreeProps == null ? null : parentTreeProps.get(key);
   }
 }
