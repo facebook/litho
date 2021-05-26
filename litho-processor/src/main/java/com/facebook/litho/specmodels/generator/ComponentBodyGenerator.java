@@ -485,10 +485,14 @@ public class ComponentBodyGenerator {
           getCompareStatement("isEquivalentTo", specModel, instanceRefName, prop, runMode));
     }
 
+    isEquivalentBuilder.beginControlFlow("if (!useTreePropsFromContext())");
+
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       isEquivalentBuilder.addCode(
           getCompareStatement("isEquivalentTo", specModel, instanceRefName, treeProp, runMode));
     }
+
+    isEquivalentBuilder.endControlFlow();
 
     isEquivalentBuilder.addStatement("return true");
 

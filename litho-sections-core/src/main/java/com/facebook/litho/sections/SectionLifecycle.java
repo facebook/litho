@@ -103,6 +103,10 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     }
   }
 
+  protected final boolean useTreePropsFromContext() {
+    return false;
+  }
+
   protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
     return null;

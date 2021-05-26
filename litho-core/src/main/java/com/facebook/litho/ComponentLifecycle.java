@@ -579,6 +579,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return Layout.create(c, (Component) this, false);
   }
 
+  protected final boolean useTreePropsFromContext() {
+    return ComponentsConfiguration.useTreePropsfromContext;
+  }
+
   /**
    * @return true if the Component should always be measured when receiving a remeasure event, false
    *     otherwise.

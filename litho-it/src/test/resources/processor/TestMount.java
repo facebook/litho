@@ -167,10 +167,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
     if (prop8 != testMountRef.prop8) {
       return false;
     }
-    if (treeProp != null
-        ? !treeProp.equals(testMountRef.treeProp)
-        : testMountRef.treeProp != null) {
-      return false;
+    if (!useTreePropsFromContext()) {
+      if (treeProp != null
+          ? !treeProp.equals(testMountRef.treeProp)
+          : testMountRef.treeProp != null) {
+        return false;
+      }
     }
     return true;
   }
