@@ -52,61 +52,25 @@ public class AttachDetachHandlerTest {
 
   private boolean mOriginalUseStatelessComponent;
   private final boolean mUseStatelessComponent;
-  private boolean mOriginalUseWorkingRangeFromContext;
-  private final boolean mUseWorkingRangeFromContext;
-  private boolean mOriginalUseStateContainerFromContext;
-  private final boolean mUseStateContainerFromContext;
-  private boolean mOriginalUseChildKeyCountersFromContext;
-  private final boolean mUseChildKeyCountersFromContext;
 
-  @ParameterizedRobolectricTestRunner.Parameters(
-      name =
-          "useStatelessComponent={0} useWorkingRangeFromContext={1} useStateContainerFromContext={2} useChildKeyCountersFromContext={3}")
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
   public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false, false, false, false},
-          {true, false, false, false},
-          {true, true, false, false},
-          {true, false, true, false},
-          {true, true, true, true}
-        });
+    return Arrays.asList(new Object[][] {{false}, {true}});
   }
 
-  public AttachDetachHandlerTest(
-      boolean useStatelessComponent,
-      boolean useWorkingRangeFromContext,
-      boolean useStateContainerFromContext,
-      boolean useChildKeyCountersFromContext) {
+  public AttachDetachHandlerTest(boolean useStatelessComponent) {
     mUseStatelessComponent = useStatelessComponent;
-    mUseWorkingRangeFromContext = useWorkingRangeFromContext;
-    mUseStateContainerFromContext = useStateContainerFromContext;
-    mUseChildKeyCountersFromContext = useChildKeyCountersFromContext;
   }
 
   @Before
   public void setup() {
     mOriginalUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponent;
-
-    mOriginalUseWorkingRangeFromContext = ComponentsConfiguration.useWorkingRangeFromContext;
-    ComponentsConfiguration.useWorkingRangeFromContext = mUseWorkingRangeFromContext;
-
-    mOriginalUseStateContainerFromContext = ComponentsConfiguration.useStateContainerFromContext;
-    ComponentsConfiguration.useStateContainerFromContext = mUseStateContainerFromContext;
-
-    mOriginalUseChildKeyCountersFromContext =
-        ComponentsConfiguration.useChildKeyCountersFromContext;
-    ComponentsConfiguration.useChildKeyCountersFromContext = mUseChildKeyCountersFromContext;
   }
 
   @After
   public void after() {
     ComponentsConfiguration.useStatelessComponent = mOriginalUseStatelessComponent;
-    ComponentsConfiguration.useWorkingRangeFromContext = mOriginalUseWorkingRangeFromContext;
-    ComponentsConfiguration.useStateContainerFromContext = mOriginalUseStateContainerFromContext;
-    ComponentsConfiguration.useChildKeyCountersFromContext =
-        mOriginalUseChildKeyCountersFromContext;
   }
 
   @Test

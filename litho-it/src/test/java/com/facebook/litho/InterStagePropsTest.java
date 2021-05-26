@@ -27,35 +27,48 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecInterStagePropsTester;
 import com.facebook.litho.widget.RootComponentInterStageProps;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class InterStagePropsTest {
 
   private ComponentContext mContext;
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-  private boolean mUseStatelessComponentConfig;
-  private boolean useInterstagePropsFromLSCConfig;
+  private final boolean useStatelessComponent;
+  private final boolean mUseStatelessComponentConfig;
+
+  public InterStagePropsTest(boolean useStatelessComponent) {
+    this.useStatelessComponent = useStatelessComponent;
+    mUseStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+  }
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
 
   @Before
   public void setUp() {
-    mUseStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
-    useInterstagePropsFromLSCConfig = ComponentsConfiguration.useInterStagePropsFromContext;
-    ComponentsConfiguration.useStatelessComponent = true;
-    ComponentsConfiguration.useInterStagePropsFromContext = true;
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
+
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(new LithoView(mContext));
   }
@@ -63,7 +76,6 @@ public class InterStagePropsTest {
   @After
   public void after() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentConfig;
-    ComponentsConfiguration.useInterStagePropsFromContext = useInterstagePropsFromLSCConfig;
   }
 
   @Test

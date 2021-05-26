@@ -249,21 +249,9 @@ public class ComponentsConfiguration {
    */
   public static boolean useInputOnlyInternalNodes = false;
 
-  public static boolean throwExceptionInterStagePropsContainerNull = false;
-
   public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
 
   public static boolean throwExceptionWillRenderGlobalKeyNull = false;
-
-  public static boolean useInterStagePropsFromContext = false;
-
-  public static boolean useErrorEventHandlerFromContext = false;
-
-  public static boolean useWorkingRangeFromContext = false;
-
-  public static boolean useStateContainerFromContext = false;
-
-  public static boolean useChildKeyCountersFromContext = false;
 
   public static boolean hostHasOverlappingRendering = true;
 

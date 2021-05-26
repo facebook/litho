@@ -19,7 +19,6 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,9 +110,7 @@ public class LayoutStateContext {
     }
 
     final EventHandler<ErrorEvent> errorEventHandler =
-        ComponentsConfiguration.useErrorEventHandlerFromContext
-            ? ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext)
-            : null;
+        ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
 
     final ScopedComponentInfo info = new ScopedComponentInfo(component, errorEventHandler);
 

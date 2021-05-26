@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.util.SparseIntArray;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,10 +55,7 @@ final class ScopedComponentInfo implements Cloneable {
       final Component component, final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
     mComponent = component;
     mStateContainer = component.createStateContainer();
-    mInterStagePropsContainer =
-        ComponentsConfiguration.useInterStagePropsFromContext
-            ? component.createInterStagePropsContainer()
-            : null;
+    mInterStagePropsContainer = component.createInterStagePropsContainer();
     mErrorEventHandler = errorEventHandler;
   }
 
@@ -156,11 +152,8 @@ final class ScopedComponentInfo implements Cloneable {
     clone.mStateContainer = mComponent.createStateContainer();
     clone.mComponent.transferState(mStateContainer, clone.mStateContainer);
 
-    if (ComponentsConfiguration.useInterStagePropsFromContext) {
-      clone.mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
-      clone.mComponent.copyInterStageImpl(
-          clone.mInterStagePropsContainer, mInterStagePropsContainer);
-    }
+    clone.mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
+    clone.mComponent.copyInterStageImpl(clone.mInterStagePropsContainer, mInterStagePropsContainer);
 
     return clone;
   }

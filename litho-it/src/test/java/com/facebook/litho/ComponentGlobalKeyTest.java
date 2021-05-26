@@ -27,7 +27,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -35,32 +34,42 @@ import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
 import com.facebook.rendercore.LogLevel;
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class ComponentGlobalKeyTest {
 
   private static final String mLogTag = "logTag";
 
   private ComponentContext mContext;
   private TestComponentsReporter mComponentsReporter;
-  private boolean mUseStatelessComponentDefault;
-  private boolean mUseInterStagePropsFromContextDefault;
+  private final boolean useStatelessComponent;
+  private final boolean mUseStatelessComponentDefault;
+
+  public ComponentGlobalKeyTest(boolean useStatelessComponent) {
+    this.useStatelessComponent = useStatelessComponent;
+    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
+  }
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false},
+        });
+  }
 
   @Before
   public void setup() {
-    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
-    mUseInterStagePropsFromContextDefault = ComponentsConfiguration.useInterStagePropsFromContext;
-    ComponentsConfiguration.useStatelessComponent = false;
-    ComponentsConfiguration.useInterStagePropsFromContext = false;
-    ComponentsConfiguration.useWorkingRangeFromContext = false;
-    ComponentsConfiguration.useStateContainerFromContext = false;
-    ComponentsConfiguration.useChildKeyCountersFromContext = false;
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);
@@ -69,7 +78,6 @@ public class ComponentGlobalKeyTest {
   @After
   public void cleanup() {
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
-    ComponentsConfiguration.useInterStagePropsFromContext = mUseInterStagePropsFromContextDefault;
   }
 
   @Test

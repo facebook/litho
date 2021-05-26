@@ -156,11 +156,8 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private final void init() {
-    if (!ComponentsConfiguration.useStateContainerFromContext) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       mStateContainer = createStateContainer();
-    }
-
-    if (!ComponentsConfiguration.useInterStagePropsFromContext) {
       mInterStagePropsContainer = createInterStagePropsContainer();
     }
   }
@@ -475,7 +472,7 @@ public abstract class Component extends ComponentLifecycle
   @Override
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useErrorEventHandlerFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access error event handler outside of a layout state calculation.");
@@ -618,7 +615,7 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    if (!ComponentsConfiguration.useInterStagePropsFromContext) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       clone.copyInterStageImpl(
           clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
           getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
@@ -693,7 +690,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useStateContainerFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
 
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
@@ -713,7 +710,7 @@ public abstract class Component extends ComponentLifecycle
 
   final StateContainer getStateContainer(
       final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
-    if (ComponentsConfiguration.useStateContainerFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (layoutStateContext == null) {
         throw new IllegalStateException(
             "Cannot access a state container outside of a layout state calculation.");
@@ -735,7 +732,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   protected final void setStateContainer(StateContainer stateContainer) {
-    if (ComponentsConfiguration.useStateContainerFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
     mStateContainer = stateContainer;
@@ -743,7 +740,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected final void setInterStagePropsContainer(
       InterStagePropsContainer interStagePropsContainer) {
-    if (ComponentsConfiguration.useInterStagePropsFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       return;
     }
     mInterStagePropsContainer = interStagePropsContainer;
@@ -760,7 +757,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useInterStagePropsFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access a inter-stage props outside of a layout state calculation.");
@@ -780,7 +777,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   final InterStagePropsContainer getInterStagePropsContainer(
       LayoutStateContext layoutStateContext, String globalKey) {
-    if (ComponentsConfiguration.useInterStagePropsFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (layoutStateContext.getScopedComponentInfo(globalKey) == null) {
         return null;
       }
@@ -814,7 +811,7 @@ public abstract class Component extends ComponentLifecycle
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext, globalKey);
-    if (!ComponentsConfiguration.useErrorEventHandlerFromContext) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       generateErrorEventHandler(parentContext, scopedContext);
     }
 
@@ -883,7 +880,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext parentContext,
       final Component parentComponent,
       final Component childComponent) {
-    if (ComponentsConfiguration.useChildKeyCountersFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (parentContext == null || parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment child counter outside of a layout state calculation.");
@@ -922,7 +919,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext parentContext,
       final Component parentComponent,
       final String manualKey) {
-    if (ComponentsConfiguration.useChildKeyCountersFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (parentContext == null || parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment manual key usages counter outside of a layout state calculation.");
@@ -1052,7 +1049,7 @@ public abstract class Component extends ComponentLifecycle
       WorkingRange workingRange,
       Component component,
       String globalKey) {
-    if (ComponentsConfiguration.useWorkingRangeFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot register WorkingRange outside of a layout state calculation.");
@@ -1072,7 +1069,7 @@ public abstract class Component extends ComponentLifecycle
 
   static void addWorkingRangeToNode(
       InternalNode node, ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useWorkingRangeFromContext) {
+    if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot add working ranges to InternalNode outside of a layout state calculation.");

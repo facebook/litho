@@ -310,7 +310,7 @@ public class ComponentContext implements Cloneable {
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
-      if (ComponentsConfiguration.useErrorEventHandlerFromContext) {
+      if (ComponentsConfiguration.useStatelessComponent) {
         EventHandler<ErrorEvent> errorEventHandler =
             getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
 
