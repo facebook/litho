@@ -61,10 +61,7 @@ public class ComponentGlobalKeyTest {
 
   @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
   public static Collection data() {
-    return Arrays.asList(
-        new Object[][] {
-          {false},
-        });
+    return Arrays.asList(new Object[][] {{false}, {true}});
   }
 
   @Before
@@ -101,7 +98,9 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
-        Component.getGlobalKey(null, getLayoutOutput(lithoView.getMountItemAt(0)).getComponent()),
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getLayoutOutput(lithoView.getMountItemAt(0)).getComponent()),
         component.getKey());
   }
 
@@ -112,7 +111,9 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
-        Component.getGlobalKey(null, getLayoutOutput(lithoView.getMountItemAt(0)).getComponent()),
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getLayoutOutput(lithoView.getMountItemAt(0)).getComponent()),
         "someKey");
   }
 
@@ -131,14 +132,21 @@ public class ComponentGlobalKeyTest {
     // Text
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[Text2]"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0)));
     // TestViewComponent in child layout
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[TestViewComponent1]"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
+            getComponentAt(lithoView, 1)));
     // background in child
-    Assert.assertNull(Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
+    Assert.assertNull(
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(2)).getScopedContext(),
+            getComponentAt(lithoView, 2)));
     // CardClip in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
@@ -148,23 +156,34 @@ public class ComponentGlobalKeyTest {
             columnSpecId,
             columnSpecId,
             "[CardClip1]"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
+            getComponentAt(lithoView, 3)));
     // Text in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[Text1]"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 4)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(4)).getScopedContext(),
+            getComponentAt(lithoView, 4)));
     // background
-    Assert.assertNull(Component.getGlobalKey(null, getComponentAt(lithoView, 5)));
+    Assert.assertNull(
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(5)).getScopedContext(),
+            getComponentAt(lithoView, 5)));
     // CardClip
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, columnSpecId, "[CardClip2]"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 6)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(6)).getScopedContext(),
+            getComponentAt(lithoView, 6)));
     // TestViewComponent
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[TestViewComponent2]"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 7)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(7)).getScopedContext(),
+            getComponentAt(lithoView, 7)));
   }
 
   @Test
@@ -217,15 +236,21 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!1"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(2)).getScopedContext(),
+            getComponentAt(lithoView, 2)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
+            getComponentAt(lithoView, 3)));
   }
 
   @Test
@@ -253,15 +278,21 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!1"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(2)).getScopedContext(),
+            getComponentAt(lithoView, 2)));
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
+            getComponentAt(lithoView, 3)));
   }
 
   @Test
@@ -314,10 +345,14 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
+            getComponentAt(lithoView, 1)));
   }
 
   @Test
@@ -338,9 +373,18 @@ public class ComponentGlobalKeyTest {
 
     final LithoView lithoView = getLithoView(component);
 
-    final String firstKey = Component.getGlobalKey(null, getComponentAt(lithoView, 0));
-    final String secondKey = Component.getGlobalKey(null, getComponentAt(lithoView, 1));
-    final String fourthKey = Component.getGlobalKey(null, getComponentAt(lithoView, 3));
+    final String firstKey =
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0));
+    final String secondKey =
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
+            getComponentAt(lithoView, 1));
+    final String fourthKey =
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
+            getComponentAt(lithoView, 3));
 
     assertThat(firstKey).isNotBlank();
     assertThat(secondKey).isEqualTo(firstKey + "!1");
@@ -376,11 +420,15 @@ public class ComponentGlobalKeyTest {
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, columnTypeId, textSpecId),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnTypeId, columnTypeId + "!1", textSpecId),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
+            getComponentAt(lithoView, 1)));
   }
 
   @Test
@@ -422,17 +470,25 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 0)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
+            getComponentAt(lithoView, 0)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId + "!1"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 1)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
+            getComponentAt(lithoView, 1)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 2)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(2)).getScopedContext(),
+            getComponentAt(lithoView, 2)));
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
-        Component.getGlobalKey(null, getComponentAt(lithoView, 3)));
+        Component.getGlobalKey(
+            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
+            getComponentAt(lithoView, 3)));
   }
 
   @Test

@@ -497,8 +497,7 @@ public abstract class Component extends ComponentLifecycle
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
     if (ComponentsConfiguration.useStatelessComponent) {
       if (scopedContext == null) {
-        throw new IllegalStateException(
-            "Trying to access layout scoped information with a scoped context.");
+        return null;
       }
       return scopedContext.getGlobalKey();
     }
