@@ -28,10 +28,15 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
   @Override
   public void onError(ComponentTree ct, Exception e) {
     if (ct != null && ct.getRoot() != null) {
+      String categoryKey = DEFAULT_ERROR_EVENT_HANDLER + ":" + ct.getRoot().getSimpleName();
+      if (e instanceof LithoMetadataExceptionWrapper) {
+        Component crashingComponent = ((LithoMetadataExceptionWrapper) e).getCrashingComponent();
+        if (crashingComponent != null) {
+          categoryKey = categoryKey + ":" + crashingComponent.getSimpleName();
+        }
+      }
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          DEFAULT_ERROR_EVENT_HANDLER + ":" + ct.getRoot().getSimpleName(),
-          e.getMessage());
+          ComponentsReporter.LogLevel.ERROR, categoryKey, e.getMessage());
     }
 
     if (ComponentsConfiguration.swallowUnhandledExceptions) {

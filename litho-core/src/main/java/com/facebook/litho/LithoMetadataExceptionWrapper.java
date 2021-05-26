@@ -64,6 +64,12 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     mComponentLayoutStack.add(c);
   }
 
+  @Nullable
+  Component getCrashingComponent() {
+    // the crashing component is always the first in the mComponentLayoutStack, if it exists
+    return !mComponentLayoutStack.isEmpty() ? mComponentLayoutStack.get(0) : null;
+  }
+
   void addCustomMetadata(String key, String value) {
     mCustomMetadata.put(key, value);
   }

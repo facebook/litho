@@ -219,10 +219,13 @@ public class ComponentLifecycleErrorTest {
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
     // the component hierarchy is OnErrorPassUpParentTester -> OnErrorNotPresentChild ->
-    // ThrowExceptionGrandChildTester (exception thrown here) and we want to verify that the root
-    // (OnErrorPassUpParentTester) was logged in the category key
+    // ThrowExceptionGrandChildTester (exception thrown here) and we want to verify that both root
+    // and the crashing component were logged in the categoryKey
     assertThat(componentsReporter.getLoggedCategoryKeys())
-        .contains(new Pair<>(LogLevel.ERROR, "DefaultErrorEventHandler:OnErrorPassUpParentTester"));
+        .contains(
+            new Pair<>(
+                LogLevel.ERROR,
+                "DefaultErrorEventHandler:OnErrorPassUpParentTester:ThrowExceptionGrandChildTester"));
 
     ComponentsReporter.provide(null);
     ComponentsConfiguration.swallowUnhandledExceptions = false;
