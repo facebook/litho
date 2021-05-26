@@ -37,6 +37,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModelUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
+import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -261,6 +262,17 @@ public class EventGenerator {
       } else if (hasLazyStateParams && methodParamModel instanceof StateParamModel) {
         delegation.add(
             "($T) stateContainer.$L", methodParamModel.getTypeName(), methodParamModel.getName());
+      } else if (methodParamModel instanceof TreePropModel) {
+        delegation.add(
+            "useTreePropsFromContext() ? (($T) $L) : (($T) $L.$L)",
+            methodParamModel.getTypeName(),
+            contextParamName
+                + ".getParentTreeProp("
+                + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+                + ".class)",
+            methodParamModel.getTypeName(),
+            REF_VARIABLE_NAME,
+            methodParamModel.getName());
       } else {
         delegation.add(
             "($T) $L.$L",

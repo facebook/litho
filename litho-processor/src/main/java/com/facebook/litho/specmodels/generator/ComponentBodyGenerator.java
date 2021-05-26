@@ -364,6 +364,7 @@ public class ComponentBodyGenerator {
       if (runMode.contains(RunMode.TESTING)) {
         MethodSpec getter =
             GeneratorUtils.getter(field)
+                .addParameter(specModel.getContextClass(), "c")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotations(field.annotations)
                 .build();
@@ -933,6 +934,18 @@ public class ComponentBodyGenerator {
           + contextParamName
           + ")."
           + methodParamModel.getName();
+    } else if (methodParamModel instanceof TreePropModel) {
+      if (contextParamName == null) {
+        return methodParamModel.getName();
+      }
+      return "(useTreePropsFromContext() ? "
+          + contextParamName
+          + ".getParentTreeProp("
+          + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+          + ".class"
+          + ") : "
+          + methodParamModel.getName()
+          + ")";
     }
 
     return methodParamModel.getName();

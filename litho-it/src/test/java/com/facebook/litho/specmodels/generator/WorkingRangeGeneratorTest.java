@@ -138,7 +138,7 @@ public class WorkingRangeGeneratorTest {
                 + "  TestSpec.testExitedRangeMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (T) arg2,\n"
-                + "    (int) arg3);\n"
+                + "    (int) (useTreePropsFromContext() ? c.getParentTreeProp(int.class) : arg3));\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
@@ -156,7 +156,7 @@ public class WorkingRangeGeneratorTest {
                 + "  TestSpec.testExitedPrefetchMethod(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (T) arg2,\n"
-                + "    (int) arg3);\n"
+                + "    (int) (useTreePropsFromContext() ? c.getParentTreeProp(int.class) : arg3));\n"
                 + "}\n");
   }
 

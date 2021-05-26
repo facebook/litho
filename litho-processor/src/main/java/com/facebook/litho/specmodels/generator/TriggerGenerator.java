@@ -33,6 +33,7 @@ import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
+import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -214,6 +215,16 @@ public class TriggerGenerator {
         delegation.add(methodParamModel.getName());
       } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
         delegation.add("c", methodParamModel.getTypeName());
+      } else if (methodParamModel instanceof TreePropModel) {
+        delegation.add(
+            "useTreePropsFromContext() ? (($T) $L) : (($T) $L.$L)",
+            methodParamModel.getTypeName(),
+            "c.getParentTreeProp("
+                + TreePropGenerator.findTypeByTypeName(methodParamModel.getTypeName())
+                + ".class)",
+            methodParamModel.getTypeName(),
+            REF_VARIABLE_NAME,
+            methodParamModel.getName());
       } else {
         delegation.add(
             "($T) $L.$L",

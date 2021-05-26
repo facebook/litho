@@ -138,7 +138,7 @@ public class TreePropGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }
 
-  private static TypeName findTypeByTypeName(final TypeName typeName) {
+  public static TypeName findTypeByTypeName(final TypeName typeName) {
     if (typeName instanceof ParameterizedTypeName) {
       return ((ParameterizedTypeName) typeName).rawType;
     }

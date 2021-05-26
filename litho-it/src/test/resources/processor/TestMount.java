@@ -288,7 +288,11 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (long) getStateContainerImpl(c).state1,
         (S) getStateContainerImpl(c).state2,
         (Long) getInterStagePropsContainerImpl(c).measureOutput,
-        (TestTreeProp) treeProp);
+        (TestTreeProp)
+            (useTreePropsFromContext()
+                ? c.getParentTreeProp(
+                    com.facebook.litho.processor.integration.resources.TestTreeProp.class)
+                : treeProp));
   }
 
   @Override

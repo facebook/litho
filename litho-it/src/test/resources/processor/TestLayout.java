@@ -203,7 +203,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
                 (long) getStateContainerImpl(context).state1,
                 (S) getStateContainerImpl(context).state2,
                 (int) getStateContainerImpl(context).state3,
-                (TestTreeProp) treeProp,
+                (TestTreeProp)
+                    (useTreePropsFromContext()
+                        ? context.getParentTreeProp(
+                            com.facebook.litho.processor.integration.resources.TestTreeProp.class)
+                        : treeProp),
                 (int) getCached(context));
     return _result;
   }
