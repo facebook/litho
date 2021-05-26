@@ -34,30 +34,60 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.widget.SolidColor;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.LayoutSpecConditionalReParenting;
+import com.facebook.litho.widget.TextInput;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateRemountInPlaceTest {
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  private final boolean useStatelessComponent;
+  private final boolean useStatelessComponentDefault;
+
   private ComponentContext mContext;
   private TestComponentsLogger mComponentsLogger;
 
+  public MountStateRemountInPlaceTest(boolean useStatelessComponent) {
+    this.useStatelessComponent = useStatelessComponent;
+    useStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
+  }
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
+
   @Before
   public void setup() {
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponentDefault;
   }
 
   @Test
@@ -395,61 +425,34 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testRemountSameSubTreeWithDifferentParentHost() {
-    ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
-    final TestComponent firstComponent =
-        TestDrawableComponent.create(scopedContext, true, true, false)
-            .widthPx(100)
-            .heightPx(100)
-            .build();
+    ComponentContext c = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
+    mLithoViewRule.useContext(c);
 
-    final Component firstLayout =
-        Column.create(scopedContext)
-            .child(
-                Column.create(scopedContext)
-                    .clickHandler(scopedContext.newEventHandler(3))
-                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test")))
-            .child(
-                Column.create(scopedContext)
-                    .clickHandler(scopedContext.newEventHandler(2))
-                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test2"))
-                    .child(
-                        Column.create(scopedContext)
-                            .clickHandler(scopedContext.newEventHandler(1))
-                            .child(firstComponent)
-                            .child(
-                                SolidColor.create(scopedContext)
-                                    .widthPx(100)
-                                    .heightPx(100)
-                                    .color(Color.GREEN))))
-            .build();
+    Component component = TextInput.create(c).heightDip(100).widthDip(100).build();
 
-    final Component secondLayout =
-        Column.create(scopedContext)
-            .child(
-                Column.create(scopedContext)
-                    .clickHandler(scopedContext.newEventHandler(3))
-                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test"))
-                    .child(
-                        Column.create(scopedContext)
-                            .clickHandler(scopedContext.newEventHandler(1))
-                            .child(firstComponent)
-                            .child(
-                                SolidColor.create(scopedContext)
-                                    .widthPx(100)
-                                    .heightPx(100)
-                                    .color(Color.GREEN))))
-            .child(
-                Column.create(scopedContext)
-                    .clickHandler(scopedContext.newEventHandler(2))
-                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test2")))
-            .build();
+    mLithoViewRule
+        .attachToWindow()
+        .setRootAndSizeSpec(
+            LayoutSpecConditionalReParenting.create(c)
+                .firstComponent(component)
+                .reParent(false)
+                .build(),
+            MeasureSpecUtils.exactly(1000),
+            MeasureSpecUtils.exactly(1000))
+        .measure()
+        .layout();
 
-    ComponentTree tree = ComponentTree.create(scopedContext, firstLayout).build();
-    LithoView cv = new LithoView(scopedContext);
-
-    ComponentTestHelper.mountComponent(cv, tree);
-    tree.setRoot(secondLayout);
+    mLithoViewRule
+        .attachToWindow()
+        .setRootAndSizeSpec(
+            LayoutSpecConditionalReParenting.create(c)
+                .firstComponent(component)
+                .reParent(true)
+                .build(),
+            MeasureSpecUtils.exactly(1000),
+            MeasureSpecUtils.exactly(1000))
+        .measure()
+        .layout();
 
     final List<TestPerfEvent> events =
         mComponentsLogger.getLoggedPerfEvents().stream()

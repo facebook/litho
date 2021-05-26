@@ -16,70 +16,79 @@
 
 package com.facebook.litho.triggers;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Handle;
-import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoViewRule;
+import java.util.Arrays;
+import java.util.Collection;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class EventTriggerTest {
 
-  private ComponentContext mComponentContext;
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  private final boolean useStatelessComponent;
+  private final boolean mUseStatelessComponentDefault;
+
+  public EventTriggerTest(boolean useStatelessComponent) {
+    this.useStatelessComponent = useStatelessComponent;
+    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
+  }
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "useStatelessComponent={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
 
   @Before
   public void setup() {
-    mComponentContext = new ComponentContext(getApplicationContext());
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
   }
 
   @Test
   public void testCanTriggerEvent() {
-    Handle handle = new Handle();
-    ComponentWithTrigger component =
+    final ComponentContext mComponentContext = mLithoViewRule.getContext();
+    final Handle handle = new Handle();
+    final ComponentWithTrigger component =
         ComponentWithTrigger.create(mComponentContext).handle(handle).uniqueString("A").build();
 
-    LithoView lithoView = ComponentTestHelper.mountComponent(mComponentContext, component);
+    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+    final ComponentTree tree = mLithoViewRule.getComponentTree();
 
-    // The EventTriggers have been correctly applied to lithoView's ComponentTree
-    // (EventTriggersContainer),
-    // but this hasn't been applied to the ComponentTree inside mComponentContext.
-    mComponentContext =
-        ComponentContext.withComponentScope(
-            ComponentContext.withComponentTree(
-                lithoView.getComponentContext(), lithoView.getComponentTree()),
-            component,
-            "globalKey");
-
-    assertThat(ComponentWithTrigger.testTriggerMethod(mComponentContext, handle)).isEqualTo("A");
+    assertThat(ComponentWithTrigger.testTriggerMethod(tree.getContext(), handle)).isEqualTo("A");
   }
 
   @Test
   public void testCanTriggerEventOnNestedComponent() {
-    Handle handle = new Handle();
-    ComponentContainer component =
+    final ComponentContext mComponentContext = mLithoViewRule.getContext();
+    final Handle handle = new Handle();
+    final ComponentContainer component =
         ComponentContainer.create(mComponentContext)
             .componentWithTriggerHandle(handle)
             .uniqueString("A")
             .build();
 
-    LithoView lithoView = ComponentTestHelper.mountComponent(mComponentContext, component);
+    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+    final ComponentTree tree = mLithoViewRule.getComponentTree();
 
-    // The EventTriggers have been correctly applied to lithoView's ComponentTree
-    // (EventTriggersContainer),
-    // but this hasn't been applied to the ComponentTree inside mComponentContext.
-    mComponentContext =
-        ComponentContext.withComponentScope(
-            ComponentContext.withComponentTree(
-                lithoView.getComponentContext(), lithoView.getComponentTree()),
-            component,
-            "globalKey");
-
-    assertThat(ComponentWithTrigger.testTriggerMethod(mComponentContext, handle)).isEqualTo("A");
+    assertThat(ComponentWithTrigger.testTriggerMethod(tree.getContext(), handle)).isEqualTo("A");
   }
 }
