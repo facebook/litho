@@ -21,7 +21,6 @@ import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.facebook.litho.specmodels.model.WorkingRangeMethodModel;
 import com.intellij.ide.structureView.StructureViewTreeElement;
@@ -105,9 +104,9 @@ class SpecTreeElementFactory {
         Collections.emptyList());
   }
 
-  private static TreeElement create(StateParamModel stateModel) {
+  private static TreeElement create(MethodParamModel model) {
     return new PresentableTreeElement(
-        getName(stateModel), stateModel.getRepresentedObject(), Collections.emptyList());
+        getName(model), model.getRepresentedObject(), Collections.emptyList());
   }
 
   private static TreeElement create(SpecMethodModel<?, ?> methodModel) {

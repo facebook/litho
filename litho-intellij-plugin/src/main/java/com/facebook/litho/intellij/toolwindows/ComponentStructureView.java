@@ -63,7 +63,7 @@ class ComponentStructureView implements Disposable {
   static {
     final JTextArea text =
         new JTextArea(
-            "Spec structure will be shown here for a valid ComponentSpec file (LayoutSpec, MountSpec)");
+            "Spec structure will be shown here for a valid ComponentSpec file (LayoutSpec, MountSpec, GroupSectionSpec)");
     text.setLineWrap(true);
     text.setEditable(false);
     text.setBackground(null);
@@ -111,8 +111,6 @@ class ComponentStructureView implements Disposable {
         new FileEditorManagerListener() {
           @Override
           public void selectionChanged(FileEditorManagerEvent event) {
-            if (event.getNewFile() == null) return;
-
             updateViewLater(null);
           }
         });
@@ -152,7 +150,9 @@ class ComponentStructureView implements Disposable {
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, cls -> true))
             .orElse(null);
 
-    if (updatedClass != null && updatedClass != selectedClass) return;
+    if (updatedClass != null && updatedClass != selectedClass) {
+      return;
+    }
 
     // assumes Litho Spec is always the first top level class in the file
     String loggingType;
@@ -160,6 +160,9 @@ class ComponentStructureView implements Disposable {
       loggingType = "layout_spec";
     } else if (LithoPluginUtils.isMountSpec(selectedClass)) {
       loggingType = "mount_spec";
+    } else if (selectedClass != null
+        && LithoPluginUtils.hasLithoSectionSpecAnnotation(selectedClass)) {
+      loggingType = "section_spec";
     } else {
       loggingType = "not_spec";
     }

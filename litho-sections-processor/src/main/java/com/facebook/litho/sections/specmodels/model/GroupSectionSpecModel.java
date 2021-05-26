@@ -91,6 +91,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .componentClass(SectionClassNames.SECTION)
             .delegateMethods(delegateMethods)
             .updateStateMethods(updateStateMethods)
+            .updateStateWithTransitionMethods(ImmutableList.of())
             .typeVariables(typeVariables)
             .eventMethods(eventMethods)
             .triggerMethods(triggerMethods)

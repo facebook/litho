@@ -77,6 +77,13 @@ public class ComponentStructureViewTest extends LithoPluginIntellijTest {
   }
 
   @Test
+  public void updateView_forSectionSpec_setStructureView() throws IOException {
+    verifyUpdateViewCallForFile(
+        "SectionSpec.java",
+        structureView -> assertThat(structureView).isInstanceOf(StructureView.class));
+  }
+
+  @Test
   public void updateView_forNotSpec_emptyStructureView() throws IOException {
     verifyUpdateViewCallForFile(
         "NotSpec.java", structureView -> assertThat(structureView).isNull());
