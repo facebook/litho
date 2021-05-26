@@ -628,6 +628,8 @@ public abstract class Component extends ComponentLifecycle
     final TreeProps treeProps =
         getTreePropsForChildren(scopedContext, parentContext.getTreeProps());
 
+    scopedContext.setParentTreeProps(parentContext.getTreeProps());
+
     // set updated tree props on the component.
     scopedContext.setTreeProps(treeProps);
 
@@ -831,7 +833,9 @@ public abstract class Component extends ComponentLifecycle
       final ComponentContext parentContext,
       final ComponentContext scopedContext,
       final String globalKey) {
-    populateTreeProps(scopedContext.getTreeProps());
+    if (!ComponentsConfiguration.useTreePropsfromContext) {
+      populateTreeProps(scopedContext.getTreeProps());
+    }
     if (hasState()) {
       parentContext
           .getStateHandler()

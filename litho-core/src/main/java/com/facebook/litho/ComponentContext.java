@@ -71,6 +71,9 @@ public class ComponentContext implements Cloneable {
   private @Nullable TreeProps mTreeProps;
 
   @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable TreeProps mParentTreeProps;
+
+  @ThreadConfined(ThreadConfined.ANY)
   private boolean mIsParentTreePropsCloned;
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -468,6 +471,10 @@ public class ComponentContext implements Cloneable {
     mTreeProps = treeProps;
   }
 
+  void setParentTreeProps(@Nullable TreeProps treeProps) {
+    mParentTreeProps = treeProps;
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
   public @Nullable TreeProps getTreeProps() {
     return mTreeProps;
@@ -488,6 +495,11 @@ public class ComponentContext implements Cloneable {
   @Nullable
   public <T> T getTreeProp(Class<T> key) {
     return mTreeProps == null ? null : mTreeProps.get(key);
+  }
+
+  @Nullable
+  public <T> T getParentTreeProp(Class<T> key) {
+    return mParentTreeProps == null ? null : mParentTreeProps.get(key);
   }
 
   /** Obtain a copy of the tree props currently held by this context. */

@@ -253,6 +253,8 @@ public class ComponentsConfiguration {
 
   public static boolean throwExceptionWillRenderGlobalKeyNull = false;
 
+  public static boolean useTreePropsfromContext = false;
+
   public static boolean hostHasOverlappingRendering = true;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
