@@ -21,11 +21,15 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.view.ViewGroup;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleLayoutSpecWithClickHandlersTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,6 +37,7 @@ import org.junit.runner.RunWith;
 public class MountStateViewClickTest {
 
   private ComponentContext mContext;
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
@@ -127,25 +132,36 @@ public class MountStateViewClickTest {
 
   @Test
   public void testRootHostClickableUnmount() {
-    ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build(), "global_key");
-    final LithoView lithoView =
-        mountComponent(
-            scopedContext,
-            Column.create(scopedContext)
-                .clickHandler(scopedContext.newEventHandler(1))
-                .longClickHandler(scopedContext.newEventHandler(2))
-                .child(SimpleMountSpecTester.create(scopedContext))
-                .build(),
-            true,
-            true);
+    final Component component =
+        SimpleLayoutSpecWithClickHandlersTester.create(mLithoViewRule.getContext()).build();
 
-    assertThat(lithoView.isClickable()).isTrue();
-    assertThat(lithoView.isLongClickable()).isTrue();
+    mLithoViewRule.setRoot(component);
 
-    lithoView.unmountAllItems();
+    final ViewGroup parent =
+        new ViewGroup(mLithoViewRule.getLithoView().getContext()) {
+          @Override
+          protected void onLayout(boolean changed, int l, int t, int r, int b) {}
+        };
 
-    assertThat(lithoView.isClickable()).isFalse();
-    assertThat(lithoView.isLongClickable()).isFalse();
+    parent.addView(mLithoViewRule.getLithoView());
+
+    mLithoViewRule
+        .getLithoView()
+        .setComponentTree(
+            ComponentTree.create(mLithoViewRule.getContext(), component)
+                .incrementalMount(false)
+                .layoutDiffing(false)
+                .visibilityProcessing(false)
+                .build());
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(mLithoViewRule.getLithoView().isClickable()).isTrue();
+    assertThat(mLithoViewRule.getLithoView().isLongClickable()).isTrue();
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    assertThat(mLithoViewRule.getLithoView().isClickable()).isFalse();
+    assertThat(mLithoViewRule.getLithoView().isLongClickable()).isFalse();
   }
 }
