@@ -38,17 +38,20 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
           assertNotNull(psiClasses);
           PsiClass layoutSpec = psiClasses.get(0);
           PsiClass otherSpec = psiClasses.get(1);
-          PsiClass notSpec = psiClasses.get(2);
+          PsiClass sectionSpec = psiClasses.get(2);
+          PsiClass notSpec = psiClasses.get(3);
 
           LithoFindUsagesHandlerFactory factory = new LithoFindUsagesHandlerFactory();
           assertTrue(factory.canFindUsages(layoutSpec));
           assertTrue(factory.canFindUsages(otherSpec));
+          assertTrue(factory.canFindUsages(sectionSpec));
           assertFalse(factory.canFindUsages(notSpec));
 
           return true;
         },
         "LayoutSpec.java",
         "MountSpec.java",
+        "SectionSpec.java",
         "NotSpec.java");
   }
 

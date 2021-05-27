@@ -47,15 +47,33 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
   }
 
   @Test
-  public void getGotoDeclarationTargets_findMethods_found() {
+  public void getGotoDeclarationTargets_findMethodsForLayoutSpec_found() {
+    testFindMethodsForClassNameInFile("ComponentsMethodDeclarationHandlerTest.java", "TestSpec");
+  }
+
+  @Test
+  public void getGotoDeclarationTargets_findPropsForLayoutSpec_found() {
+    testFindPropsForClassNameInFile("ComponentsMethodDeclarationHandlerTest.java", "TestSpec");
+  }
+
+  @Test
+  public void getGotoDeclarationTargets_findMethodsForGroupSectionSpec_found() {
+    testFindMethodsForClassNameInFile(
+        "GroupSectionSpecMethodDeclarationHandlerTest.java", "TestGroupSectionSpec");
+  }
+
+  @Test
+  public void getGotoDeclarationTargets_findPropsForGroupSectionSpec_found() {
+    testFindPropsForClassNameInFile(
+        "GroupSectionSpecMethodDeclarationHandlerTest.java", "TestGroupSectionSpec");
+  }
+
+  private void testFindMethodsForClassNameInFile(String filePath, String clsName) {
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              final PsiFile file =
-                  testHelper
-                      .getFixture()
-                      .configureByFile("ComponentsMethodDeclarationHandlerTest.java");
-              PsiClass testSpecClass = findClass("TestSpec", file);
+              final PsiFile file = testHelper.getFixture().configureByFile(filePath);
+              PsiClass testSpecClass = findClass(clsName, file);
               final PsiIdentifier componentMethodCall =
                   findIdentifier(testSpecClass.findMethodsByName("test1", false)[0], "method1");
 
@@ -70,16 +88,12 @@ public class ComponentsMethodDeclarationHandlerTest extends LithoPluginIntellijT
             });
   }
 
-  @Test
-  public void getGotoDeclarationTargets_findProps_found() {
+  private void testFindPropsForClassNameInFile(String filePath, String clsName) {
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              final PsiFile file =
-                  testHelper
-                      .getFixture()
-                      .configureByFile("ComponentsMethodDeclarationHandlerTest.java");
-              PsiClass testSpecClass = findClass("TestSpec", file);
+              final PsiFile file = testHelper.getFixture().configureByFile(filePath);
+              PsiClass testSpecClass = findClass(clsName, file);
               final PsiIdentifier componentMethodCall =
                   findIdentifier(testSpecClass.findMethodsByName("test2", false)[0], "prop");
 
