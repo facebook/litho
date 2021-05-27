@@ -38,6 +38,7 @@ import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -114,6 +115,9 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecDelegate() throws Exception {
+    final boolean useStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
+
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
@@ -177,10 +181,15 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
+
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasureDelegate() throws Exception {
+    final boolean useStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
+
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
@@ -246,10 +255,15 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
+
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasure() throws Exception {
+    final boolean useStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
+
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
@@ -321,10 +335,15 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(28, 8, 272, 8));
 
     validateMockitoUsage();
+
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpec() throws Exception {
+    final boolean useStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
+
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
@@ -383,6 +402,8 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
+
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
 
   private static LayoutState calculateLayoutState(

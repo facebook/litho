@@ -60,6 +60,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -2459,6 +2460,9 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testWillRenderLayoutsOnce() {
+    final boolean useStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
+    ComponentsConfiguration.useStatelessComponent = false;
+
     ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContextForTesting();
 
@@ -2479,6 +2483,8 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.getLayoutCreatedInWillRender(c)).isNull();
 
     verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
+
+    ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
 
   @Test
