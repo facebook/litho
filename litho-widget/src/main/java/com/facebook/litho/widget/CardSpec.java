@@ -48,6 +48,8 @@ import com.facebook.litho.annotations.ResType;
  * @prop cornerRadius Corner radius for the card.
  * @prop elevation Elevation of the card.
  * @prop shadowBottomOverride Override of size of shadow at bottom of card.
+ * @prop shadowLeftOverride Override of size of shadow at left of card.
+ * @prop shadowRightOverride Override of size of shadow at right of card.
  * @prop disableClipTopLeft If set, opt out of clipping the top-left corner, elevation will force to
  *     0 in this case.
  * @prop disableClipTopRight If set, opt out of clipping the top-right corner, elevation will force
@@ -73,6 +75,8 @@ class CardSpec {
   @PropDefault static final float elevation = -1;
   @PropDefault static final int shadowTopOverride = -1;
   @PropDefault static final int shadowBottomOverride = -1;
+  @PropDefault static final float shadowLeftOverride = CardShadowDrawable.UNDEFINED;
+  @PropDefault static final float shadowRightOverride = CardShadowDrawable.UNDEFINED;
   @PropDefault static final boolean transparencyEnabled = false;
 
   private static float pixels(Resources resources, int dips) {
@@ -92,6 +96,8 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowTopOverride,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowLeftOverride,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRightOverride,
       @Prop(
               optional = true,
               docString =
@@ -120,8 +126,14 @@ class CardSpec {
     final int shadowTop = shadowTopOverride == -1 ? getShadowTop(elevation) : shadowTopOverride;
     final int shadowBottom =
         shadowBottomOverride == -1 ? getShadowBottom(elevation) : shadowBottomOverride;
-    final int shadowLeft = getShadowLeft(elevation);
-    final int shadowRight = getShadowRight(elevation);
+    final int shadowLeft =
+        shadowLeftOverride == CardShadowDrawable.UNDEFINED
+            ? getShadowLeft(elevation)
+            : (int) Math.ceil(shadowLeftOverride);
+    final int shadowRight =
+        shadowRightOverride == CardShadowDrawable.UNDEFINED
+            ? getShadowRight(elevation)
+            : (int) Math.ceil(shadowRightOverride);
 
     Column.Builder columnBuilder =
         Column.create(c)
@@ -155,21 +167,26 @@ class CardSpec {
                       disableClipBottomRight));
     }
 
-    return Column.create(c)
-        .child(columnBuilder)
-        .child(
-            elevation > 0
-                ? CardShadow.create(c)
-                    .shadowStartColor(shadowStartColor)
-                    .shadowEndColor(shadowEndColor)
-                    .cornerRadiusPx(cornerRadius)
-                    .shadowSizePx(elevation)
-                    .hideTopShadow(disableClipTopLeft && disableClipTopRight)
-                    .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
-                    .positionType(ABSOLUTE)
-                    .positionPx(ALL, 0)
-                : null)
-        .build();
+    Component.Builder shadow = null;
+
+    if (elevation > 0) {
+      CardShadow.Builder cardShadowBuilder =
+          CardShadow.create(c)
+              .shadowStartColor(shadowStartColor)
+              .shadowEndColor(shadowEndColor)
+              .cornerRadiusPx(cornerRadius)
+              .shadowSizePx(elevation)
+              .hideTopShadow(disableClipTopLeft && disableClipTopRight)
+              .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
+              .positionType(ABSOLUTE)
+              .positionPx(ALL, 0)
+              .shadowLeftSizeOverridePx(shadowLeftOverride)
+              .shadowRightSizeOverridePx(shadowRightOverride);
+
+      shadow = cardShadowBuilder;
+    }
+
+    return Column.create(c).child(columnBuilder).child(shadow).build();
   }
 
   private static Component.Builder makeTransparencyEnabledCardClip(

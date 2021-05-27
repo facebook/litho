@@ -42,10 +42,13 @@ public class CardShadowDrawable extends Drawable {
   private final Path mCornerShadowTopRightPath = new Path();
   private final Path mCornerShadowBottomRightPath = new Path();
 
-  private final Paint mCornerShadowPaint;
+  private final Paint mCornerShadowLeftPaint;
+  private final Paint mCornerShadowRightPaint;
 
   private float mCornerRadius;
   private float mShadowSize;
+  private float mShadowLeftSizeOverride = UNDEFINED;
+  private float mShadowRightSizeOverride = UNDEFINED;
   private float mShadowDx = UNDEFINED;
   private float mShadowDy = UNDEFINED;
 
@@ -55,16 +58,20 @@ public class CardShadowDrawable extends Drawable {
   private boolean mDirty = true;
 
   CardShadowDrawable() {
-    mCornerShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-    mCornerShadowPaint.setStyle(Paint.Style.FILL);
+    mCornerShadowLeftPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+    mCornerShadowLeftPaint.setStyle(Paint.Style.FILL);
 
-    mEdgeShadowPaint = new Paint(mCornerShadowPaint);
+    mCornerShadowRightPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+    mCornerShadowRightPaint.setStyle(Paint.Style.FILL);
+
+    mEdgeShadowPaint = new Paint(mCornerShadowLeftPaint);
     mEdgeShadowPaint.setAntiAlias(false);
   }
 
   @Override
   public void setAlpha(int alpha) {
-    mCornerShadowPaint.setAlpha(alpha);
+    mCornerShadowLeftPaint.setAlpha(alpha);
+    mCornerShadowRightPaint.setAlpha(alpha);
     mEdgeShadowPaint.setAlpha(alpha);
   }
 
@@ -162,7 +169,8 @@ public class CardShadowDrawable extends Drawable {
 
   @Override
   public void setColorFilter(ColorFilter cf) {
-    mCornerShadowPaint.setColorFilter(cf);
+    mCornerShadowLeftPaint.setColorFilter(cf);
+    mCornerShadowRightPaint.setColorFilter(cf);
     mEdgeShadowPaint.setColorFilter(cf);
   }
 
@@ -264,6 +272,14 @@ public class CardShadowDrawable extends Drawable {
     mHideBottomShadow = hideBottomShadow;
   }
 
+  void setShadowLeftSizeOverride(float shadowLeftSize) {
+    mShadowLeftSizeOverride = shadowLeftSize;
+  }
+
+  void setShadowRightSizeOverride(float shadowRightSizeOverride) {
+    mShadowRightSizeOverride = shadowRightSizeOverride;
+  }
+
   private static void setPath(Path path, int shadowX, int shadowY, float cornerRadius) {
 
     final RectF innerBounds =
@@ -285,13 +301,28 @@ public class CardShadowDrawable extends Drawable {
 
   private void buildShadow() {
 
-    final float shadowCornerRadius = mShadowSize + mCornerRadius;
+    final float shadowLeftSideUnadjusted =
+        mShadowLeftSizeOverride == UNDEFINED ? mShadowSize : mShadowLeftSizeOverride;
+    final float shadowRightSideUnadjusted =
+        mShadowRightSizeOverride == UNDEFINED ? mShadowSize : mShadowRightSizeOverride;
 
-    mCornerShadowPaint.setShader(
+    final float shadowCornerLeftRadius = shadowLeftSideUnadjusted + mCornerRadius;
+    final float shadowCornerRightRadius = shadowRightSideUnadjusted + mCornerRadius;
+
+    mCornerShadowLeftPaint.setShader(
         new RadialGradient(
-            shadowCornerRadius,
-            shadowCornerRadius,
-            shadowCornerRadius,
+            shadowCornerLeftRadius,
+            shadowCornerLeftRadius,
+            shadowCornerLeftRadius,
+            new int[] {mShadowStartColor, mShadowStartColor, mShadowEndColor},
+            new float[] {0f, .2f, 1f},
+            Shader.TileMode.CLAMP));
+
+    mCornerShadowRightPaint.setShader(
+        new RadialGradient(
+            shadowCornerRightRadius,
+            shadowCornerRightRadius,
+            shadowCornerRightRadius,
             new int[] {mShadowStartColor, mShadowStartColor, mShadowEndColor},
             new float[] {0f, .2f, 1f},
             Shader.TileMode.CLAMP));
@@ -299,8 +330,8 @@ public class CardShadowDrawable extends Drawable {
     final float shadowDx = mShadowDx == UNDEFINED ? 0 : mShadowDx;
     final float shadowDy = mShadowDy == UNDEFINED ? getDefaultShadowDy(mShadowSize) : mShadowDy;
 
-    final int shadowLeft = getShadowLeft(mShadowSize, shadowDx);
-    final int shadowRight = getShadowRight(mShadowSize, shadowDx);
+    final int shadowLeft = getShadowLeft(shadowLeftSideUnadjusted, shadowDx);
+    final int shadowRight = getShadowRight(shadowRightSideUnadjusted, shadowDx);
     final int shadowTop = getShadowTop(mShadowSize, shadowDy);
     final int shadowBottom = getShadowBottom(mShadowSize, shadowDy);
 
@@ -315,7 +346,7 @@ public class CardShadowDrawable extends Drawable {
     mEdgeShadowPaint.setShader(
         new LinearGradient(
             0,
-            shadowCornerRadius,
+            shadowCornerLeftRadius,
             0,
             0,
             new int[] {mShadowStartColor, mShadowStartColor, mShadowEndColor},
@@ -330,14 +361,14 @@ public class CardShadowDrawable extends Drawable {
     if (!mHideTopShadow) {
       // left-top
       canvas.translate(bounds.left, bounds.top);
-      canvas.drawPath(mCornerShadowTopLeftPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowTopLeftPath, mCornerShadowLeftPaint);
       canvas.restoreToCount(saved);
 
       // right-top
       saved = canvas.save();
       canvas.translate(bounds.right, bounds.top);
       canvas.scale(-1f, 1f);
-      canvas.drawPath(mCornerShadowTopRightPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowTopRightPath, mCornerShadowLeftPaint);
       canvas.restoreToCount(saved);
     }
 
@@ -346,14 +377,14 @@ public class CardShadowDrawable extends Drawable {
       saved = canvas.save();
       canvas.translate(bounds.right, bounds.bottom);
       canvas.scale(-1f, -1f);
-      canvas.drawPath(mCornerShadowBottomRightPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowBottomRightPath, mCornerShadowRightPaint);
       canvas.restoreToCount(saved);
 
       // left-bottom
       saved = canvas.save();
       canvas.translate(bounds.left, bounds.bottom);
       canvas.scale(1f, -1f);
-      canvas.drawPath(mCornerShadowBottomLeftPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowBottomLeftPath, mCornerShadowRightPaint);
       canvas.restoreToCount(saved);
     }
   }
@@ -363,9 +394,14 @@ public class CardShadowDrawable extends Drawable {
     final float shadowDx = mShadowDx == UNDEFINED ? 0 : mShadowDx;
     final float shadowDy = mShadowDy == UNDEFINED ? getDefaultShadowDy(mShadowSize) : mShadowDy;
 
-    final int paddingLeft = getShadowLeft(mShadowSize, shadowDx);
+    float shadowLeftSideNonAdjusted =
+        mShadowLeftSizeOverride == UNDEFINED ? mShadowSize : mShadowLeftSizeOverride;
+    float shadowRightSideNonAdjusted =
+        mShadowRightSizeOverride == UNDEFINED ? mShadowSize : mShadowRightSizeOverride;
+    final int paddingLeft = getShadowLeft(shadowLeftSideNonAdjusted, shadowDx);
+    final int paddingRight = getShadowRight(shadowRightSideNonAdjusted, shadowDx);
+
     final int paddingTop = getShadowTop(mShadowSize, shadowDy);
-    final int paddingRight = getShadowRight(mShadowSize, shadowDx);
     final int paddingBottom = getShadowBottom(mShadowSize, shadowDy);
 
     int saved = canvas.save();

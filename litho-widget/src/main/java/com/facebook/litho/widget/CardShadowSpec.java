@@ -41,6 +41,8 @@ class CardShadowSpec {
 
   @PropDefault static final float shadowDx = CardShadowDrawable.UNDEFINED;
   @PropDefault static final float shadowDy = CardShadowDrawable.UNDEFINED;
+  @PropDefault static final float shadowLeftSizeOverride = CardShadowDrawable.UNDEFINED;
+  @PropDefault static final float shadowRightSizeOverride = CardShadowDrawable.UNDEFINED;
 
   @OnCreateMountContent
   static CardShadowDrawable onCreateMountContent(Context c) {
@@ -58,7 +60,9 @@ class CardShadowSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
       @Prop(optional = true) boolean hideTopShadow,
-      @Prop(optional = true) boolean hideBottomShadow) {
+      @Prop(optional = true) boolean hideBottomShadow,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowLeftSizeOverride,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowRightSizeOverride) {
 
     cardShadowDrawable.setShadowStartColor(shadowStartColor);
     cardShadowDrawable.setShadowEndColor(shadowEndColor);
@@ -66,6 +70,8 @@ class CardShadowSpec {
     cardShadowDrawable.setShadowSize(shadowSize);
     cardShadowDrawable.setHideTopShadow(hideTopShadow);
     cardShadowDrawable.setHideBottomShadow(hideBottomShadow);
+    cardShadowDrawable.setShadowLeftSizeOverride(shadowLeftSizeOverride);
+    cardShadowDrawable.setShadowRightSizeOverride(shadowRightSizeOverride);
     cardShadowDrawable.setShadowDx(shadowDx);
     cardShadowDrawable.setShadowDy(shadowDy);
   }
