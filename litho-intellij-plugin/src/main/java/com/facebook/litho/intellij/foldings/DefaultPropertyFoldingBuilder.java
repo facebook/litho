@@ -75,7 +75,11 @@ public class DefaultPropertyFoldingBuilder extends FoldingBuilderEx {
   }
 
   private static Map<String, PsiField> getPropDefaults(PsiFile root) {
-    return LithoPluginUtils.getFirstClass(root, LithoPluginUtils::hasLithoComponentSpecAnnotation)
+    return LithoPluginUtils.getFirstClass(
+            root,
+            cls ->
+                LithoPluginUtils.hasLithoComponentSpecAnnotation(cls)
+                    || LithoPluginUtils.hasLithoSectionSpecAnnotation(cls))
         .map(cls -> ComponentGenerateService.getInstance().getOrCreateSpecModel(cls))
         .map(
             model ->

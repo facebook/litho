@@ -29,9 +29,16 @@ public class DefaultPropertyFoldingBuilderTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void testFolding() {
-    String clsName = "DefaultPropertyFoldingTest.java";
+  public void folding_forLayoutSpec_matchingTemplate() {
+    testFoldingForClassname("FoldingTestLayoutSpec.java");
+  }
 
+  @Test
+  public void folding_forGroupSectionSpec_matchingTemplate() {
+    testFoldingForClassname("FoldingTestGroupSectionSpec.java");
+  }
+
+  private void testFoldingForClassname(String clsName) {
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
