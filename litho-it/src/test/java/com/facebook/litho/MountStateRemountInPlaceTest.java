@@ -37,7 +37,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecConditionalReParenting;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
