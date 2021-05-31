@@ -260,6 +260,7 @@ public class IncrementalMountExtension
       // If not root host or if no reference was acquired, acquire it.
       acquireMountReferenceEnsureHostIsMounted(
           localVisibleRect, extensionState, host, true, ownsHostRef, recursionSource);
+      extensionState.getState().mComponentIdsMountedInThisFrame.add(host.getId());
     }
 
     try {
@@ -446,32 +447,40 @@ public class IncrementalMountExtension
       while (state.mPreviousBottomsIndex < count
           && localVisibleRect.top
               >= byBottomBounds.get(state.mPreviousBottomsIndex).getBounds().bottom) {
+
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex);
         final long id = node.getId();
+
         if (extensionState.ownsReference(id)) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;
           }
         }
+
         state.mPreviousBottomsIndex++;
       }
 
       while (state.mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              <= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom
-          && localVisibleRect.bottom
-              > byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().top) {
-        state.mPreviousBottomsIndex--;
-        final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex);
+              <= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom) {
+
+        final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex - 1);
         final long id = node.getId();
-        if (!extensionState.ownsReference(id)) {
-          acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
-          state.mComponentIdsMountedInThisFrame.add(id);
-          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
-            itemsMounted++;
+
+        // Item should still be in the view port.
+        if (localVisibleRect.bottom
+            >= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().top) {
+          if (!extensionState.ownsReference(id)) {
+            acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
+            state.mComponentIdsMountedInThisFrame.add(id);
+            if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+              itemsMounted++;
+            }
           }
         }
+
+        state.mPreviousBottomsIndex--;
       }
     }
 
@@ -481,32 +490,40 @@ public class IncrementalMountExtension
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (state.mPreviousTopsIndex < count
-          && localVisibleRect.bottom >= byTopBounds.get(state.mPreviousTopsIndex).getBounds().top
-          && localVisibleRect.top <= byTopBounds.get(state.mPreviousTopsIndex).getBounds().bottom) {
+          && localVisibleRect.bottom >= byTopBounds.get(state.mPreviousTopsIndex).getBounds().top) {
+
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex);
         final long id = node.getId();
-        if (!extensionState.ownsReference(id)) {
-          acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
-          state.mComponentIdsMountedInThisFrame.add(id);
-          if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
-            itemsMounted++;
+
+        // Item should still be in the view port.
+        if (localVisibleRect.top <= byTopBounds.get(state.mPreviousTopsIndex).getBounds().bottom) {
+          if (!extensionState.ownsReference(id)) {
+            acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
+            state.mComponentIdsMountedInThisFrame.add(id);
+            if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
+              itemsMounted++;
+            }
           }
         }
+
         state.mPreviousTopsIndex++;
       }
 
       while (state.mPreviousTopsIndex > 0
           && localVisibleRect.bottom
               < byTopBounds.get(state.mPreviousTopsIndex - 1).getBounds().top) {
-        state.mPreviousTopsIndex--;
-        final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex);
+
+        final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex - 1);
         final long id = node.getId();
+
         if (extensionState.ownsReference(id)) {
           extensionState.releaseMountReference(id, true);
           if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
             itemsUnmounted++;
           }
         }
+
+        state.mPreviousTopsIndex--;
       }
     }
 

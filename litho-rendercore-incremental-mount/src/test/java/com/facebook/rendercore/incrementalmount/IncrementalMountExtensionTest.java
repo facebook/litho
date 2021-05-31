@@ -193,6 +193,59 @@ public class IncrementalMountExtensionTest {
   }
 
   @Test
+  public void whenVisibleBoundsChangeWithItemWindowSkipped_shouldMountAndUnMountCorrectly() {
+    final Context c = mRenderCoreTestRule.getContext();
+
+    final FrameLayout parent = new FrameLayout(c);
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(10, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 10, 300);
+
+    final RootHostView host = new RootHostView(c);
+    parent.addView(host);
+
+    final RenderCoreExtension[] extensions =
+        new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
+
+    final LayoutResult<?> root =
+        SimpleLayoutResult.create()
+            .renderUnit(new SimpleViewUnit(new HostView(c), 0))
+            .width(100)
+            .height(300)
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 1))
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 2))
+                    .y(100)
+                    .width(100)
+                    .height(100))
+            .child(
+                SimpleLayoutResult.create()
+                    .renderUnit(new SimpleViewUnit(new TextView(c), 3))
+                    .y(200)
+                    .width(100)
+                    .height(100))
+            .build();
+
+    mRenderCoreTestRule
+        .useRootHost(host)
+        .useExtensions(extensions)
+        .useRootNode(new SimpleWrapperNode(root))
+        .setSizePx(100, 300)
+        .render();
+
+    assertThat(host.getChildCount()).isEqualTo(3);
+
+    host.offsetTopAndBottom(250); // visible window skips over item id 1 and 2
+    assertThat(host.getChildCount()).describedAs("Should unmount item id 1 and 2").isEqualTo(1);
+  }
+
+  @Test
   public void whenVisibleBoundsChangeHorizontally_shouldMountAndUnMountCorrectly() {
     final Context c = mRenderCoreTestRule.getContext();
 
