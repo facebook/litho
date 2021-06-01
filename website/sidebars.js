@@ -59,6 +59,14 @@ module.exports = {
       'sections/diff-sections',
       'sections/architecture',
     ],
+    ...fbInternalOnly({
+      'Kotlin API': [
+        'fb/kotlin/kotlin-intro',
+        'fb/kotlin/kotlin-api-basics',
+        'fb/kotlin/kotlin-flexbox-containers',
+        'fb/kotlin/kotlin-hooks',
+      ],
+    }),
     'Widgets': [
       'widgets/builtin-widgets',
       ...fbInternalOnly(['fb/widgets/design-components']),
@@ -140,7 +148,6 @@ module.exports = {
     ],
     ...fbInternalOnly({
       '[Internal]': [
-        'fb/litho-kotlin-api',
         'fb/internal-litho',
         'fb/video-lessons',
         {
