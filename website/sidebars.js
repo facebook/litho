@@ -63,6 +63,12 @@ module.exports = {
       'Kotlin API': [
         'fb/kotlin/kotlin-intro',
         'fb/kotlin/kotlin-api-basics',
+        {
+          'Hooks and State': [
+            'fb/kotlin/hooks-intro',
+            'fb/kotlin/use-state',
+          ],
+        },
         'fb/kotlin/kotlin-flexbox-containers',
         'fb/kotlin/kotlin-hooks',
       ],
