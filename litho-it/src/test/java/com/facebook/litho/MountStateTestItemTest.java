@@ -43,16 +43,18 @@ public class MountStateTestItemTest {
   private static final String MY_TEST_STRING_2 = "My second test string";
 
   private ComponentContext mContext;
+  private boolean originalE2ETestRun;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
+    originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
     ComponentsConfiguration.isEndToEndTestRun = true;
   }
 
   @After
   public void teardown() {
-    ComponentsConfiguration.isEndToEndTestRun = false;
+    ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
   }
 
   @Test
