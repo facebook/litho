@@ -61,7 +61,6 @@ litho_robolectric4_test(
         "21",
     ],
     deps = [
-        ":testutil",
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
