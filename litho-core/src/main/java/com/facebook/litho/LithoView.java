@@ -639,7 +639,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return mComponentTree;
   }
 
-  public void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
+  public synchronized void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
     mOnDirtyMountListener = onDirtyMountListener;
   }
 
@@ -648,8 +648,12 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   void onDirtyMountComplete() {
-    if (mOnDirtyMountListener != null) {
-      mOnDirtyMountListener.onDirtyMount(this);
+    final OnDirtyMountListener onDirtyMountListener;
+    synchronized (this) {
+      onDirtyMountListener = mOnDirtyMountListener;
+    }
+    if (onDirtyMountListener != null) {
+      onDirtyMountListener.onDirtyMount(this);
     }
   }
 
