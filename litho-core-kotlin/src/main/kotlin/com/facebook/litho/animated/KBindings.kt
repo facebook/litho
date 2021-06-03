@@ -32,7 +32,8 @@ import com.facebook.litho.useState
  * Note: You can only change or animate a DynamicValue on the main thread.
  */
 @Hook
-fun <T> ComponentScope.useBinding(initialValue: T) = useState { DynamicValue(initialValue) }.value
+fun <T> ComponentScope.useBinding(initialValue: T): DynamicValue<T> =
+    useState { DynamicValue(initialValue) }.value
 
 /**
  * Creates a [DynamicValue] deriving from an existing binding param, with modifications applied by

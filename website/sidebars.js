@@ -67,6 +67,7 @@ module.exports = {
           'Hooks and State': [
             'fb/kotlin/hooks-intro',
             'fb/kotlin/use-state',
+            'fb/kotlin/use-effect',
           ],
         },
         'fb/kotlin/kotlin-flexbox-containers',

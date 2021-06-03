@@ -19,6 +19,7 @@ package com.facebook.samples.litho.kotlin.demo
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedActivity
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeActivity
 import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsActivity
+import com.facebook.samples.litho.kotlin.animations.bouncingcounter.AnimatedCounterActivity
 import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationActivity
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementActivity
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsActivity
@@ -52,6 +53,8 @@ object DataModels {
                           name = "Bounds Animation", klass = BoundsAnimationActivity::class.java),
                       DemoListDataModel(
                           name = "Animated API Demo", klass = AnimatedActivity::class.java),
+                      DemoListDataModel(
+                          name = "Animated Counter", klass = AnimatedCounterActivity::class.java),
                       DemoListDataModel(
                           name = "Transitions", klass = TransitionsActivity::class.java))),
           DemoListDataModel(name = "Logging", klass = LoggingActivity::class.java))

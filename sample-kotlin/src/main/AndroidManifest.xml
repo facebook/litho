@@ -48,6 +48,7 @@
     <activity android:name=".animations.bounds.BoundsAnimationActivity" />
     <activity android:name=".animations.animatedapi.AnimatedActivity" />
     <activity android:name=".animations.transitions.TransitionsActivity" />
+    <activity android:name=".animations.bouncingcounter.AnimatedCounterActivity" />
     <activity android:name=".logging.LoggingActivity" />
   </application>
 </manifest>

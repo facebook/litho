@@ -25,7 +25,7 @@ import com.facebook.litho.annotations.Hook
  * tree.
  *
  * The [onAttach] callback will be invoked when the owning Component first becomes part of a
- * committed layout on the ComponentTree on the main thread. It should return a []CleanupFunc]
+ * committed layout on the ComponentTree on the main thread. It should return a [CleanupFunc]
  * callback to be invoked when the owning Component is detached, e.g. the ComponentTree is released
  * or the Component is no longer part of the tree.
  *
