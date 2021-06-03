@@ -20,7 +20,7 @@ import com.facebook.litho.annotations.Hook
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
- * it hasn't already been initialized in a previous lifecycle of the Component.
+ * it hasn't already been initialized in a previous render of the Component.
  *
  * Assignments to the state variables are allowed only in [updateState] block to batch updates and
  * trigger a UI layout only once per batch.
