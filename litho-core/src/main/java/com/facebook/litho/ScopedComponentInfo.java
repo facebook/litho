@@ -17,16 +17,17 @@
 package com.facebook.litho;
 
 import android.util.SparseIntArray;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 final class ScopedComponentInfo implements Cloneable {
 
   // Can be final if Component is stateless and cloning is not needed anymore.
   final Component mComponent;
+  private ComponentContext mContext;
   private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
@@ -52,11 +53,18 @@ final class ScopedComponentInfo implements Cloneable {
   private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
 
   ScopedComponentInfo(
-      final Component component, final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
+      final Component component,
+      final ComponentContext context,
+      final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
     mComponent = component;
+    mContext = context;
     mStateContainer = component.createStateContainer();
     mInterStagePropsContainer = component.createInterStagePropsContainer();
     mErrorEventHandler = errorEventHandler;
+  }
+
+  public ComponentContext getContext() {
+    return mContext;
   }
 
   @Nullable
@@ -146,7 +154,7 @@ final class ScopedComponentInfo implements Cloneable {
    * Create a copy of this ScopedInfo, in which the StateContainer and InterStagePropsContainer are
    * copied.
    */
-  ScopedComponentInfo copy() {
+  ScopedComponentInfo copy(final LayoutStateContext context, final StateHandler handler) {
     final ScopedComponentInfo clone = clone();
 
     clone.mStateContainer = mComponent.createStateContainer();
@@ -154,6 +162,8 @@ final class ScopedComponentInfo implements Cloneable {
 
     clone.mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
     clone.mComponent.copyInterStageImpl(clone.mInterStagePropsContainer, mInterStagePropsContainer);
+
+    clone.mContext = mContext.createUpdatedComponentContext(context, handler);
 
     return clone;
   }

@@ -33,7 +33,6 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private final Map<String, ComponentContext> mGlobalKeyToScopedContext = new HashMap<>();
   private final Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo = new HashMap<>();
   private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
 
@@ -54,18 +53,10 @@ public class LayoutStateContext {
   void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
     mIsScopedInfoCopiedFromLSCInstance = true;
 
-    mGlobalKeyToScopedContext.clear();
-    for (Map.Entry<String, ComponentContext> e : from.mGlobalKeyToScopedContext.entrySet()) {
-      final String key = e.getKey();
-      final ComponentContext context =
-          e.getValue().createUpdatedComponentContext(this, stateHandler);
-      mGlobalKeyToScopedContext.put(key, context);
-    }
-
     mGlobalKeyToScopedInfo.clear();
     for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
       final String key = e.getKey();
-      final ScopedComponentInfo info = e.getValue().copy();
+      final ScopedComponentInfo info = e.getValue().copy(this, stateHandler);
       mGlobalKeyToScopedInfo.put(key, info);
     }
 
@@ -94,15 +85,27 @@ public class LayoutStateContext {
       final ComponentContext scopedContext,
       final ComponentContext parentContext) {
 
-    mGlobalKeyToScopedContext.put(globalKey, scopedContext);
-
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
 
-    final ScopedComponentInfo info = new ScopedComponentInfo(component, errorEventHandler);
+    final ScopedComponentInfo info =
+        new ScopedComponentInfo(component, scopedContext, errorEventHandler);
 
     final ScopedComponentInfo previous = mGlobalKeyToScopedInfo.put(globalKey, info);
     if (previous != null) {
+      if (info.mComponent.getClass() != previous.mComponent.getClass()) {
+        throw new IllegalStateException(
+            "Component mismatch for same key."
+                + "\nprev: "
+                + previous.mComponent
+                + "\nkey: "
+                + previous.mComponent.getGlobalKeyForLogging()
+                + "\nnew: "
+                + info.mComponent.getSimpleName()
+                + "\nkey:"
+                + info.mComponent.getGlobalKeyForLogging()
+                + scopedContext.getDebugString());
+      }
       previous.transferInto(info);
     }
   }
@@ -125,15 +128,15 @@ public class LayoutStateContext {
       return null;
     }
 
-    final ComponentContext context = mGlobalKeyToScopedContext.get(globalKey);
-    if (context == null) {
+    final ScopedComponentInfo info = mGlobalKeyToScopedInfo.get(globalKey);
+    if (info == null) {
       throw new IllegalStateException(
           "ComponentContext is null for globalKey: "
               + globalKey
               + "\nsize: "
-              + mGlobalKeyToScopedContext.size());
+              + mGlobalKeyToScopedInfo.size());
     }
-    return context;
+    return info.getContext();
   }
 
   @Nullable
