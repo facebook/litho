@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
@@ -110,6 +111,9 @@ public final class Column extends Component {
 
   @Override
   protected InternalNode resolve(ComponentContext c) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      c.validate();
+    }
     InternalNode node =
         InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);

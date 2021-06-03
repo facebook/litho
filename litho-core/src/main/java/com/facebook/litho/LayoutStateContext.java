@@ -110,7 +110,11 @@ public class LayoutStateContext {
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
     final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
     if (scopedComponentInfo == null) {
-      throw new IllegalStateException("ScopedComponentInfo is null for globalKey: " + globalKey);
+      throw new IllegalStateException(
+          "ScopedComponentInfo is null for globalKey: "
+              + globalKey
+              + "\nsize: "
+              + mGlobalKeyToScopedInfo.size());
     }
 
     return scopedComponentInfo;
@@ -123,7 +127,11 @@ public class LayoutStateContext {
 
     final ComponentContext context = mGlobalKeyToScopedContext.get(globalKey);
     if (context == null) {
-      throw new IllegalStateException("ComponentContext is null for globalKey: " + globalKey);
+      throw new IllegalStateException(
+          "ComponentContext is null for globalKey: "
+              + globalKey
+              + "\nsize: "
+              + mGlobalKeyToScopedContext.size());
     }
     return context;
   }

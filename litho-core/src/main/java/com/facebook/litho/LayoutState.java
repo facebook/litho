@@ -1579,11 +1579,7 @@ public class LayoutState
                 diffTreeRoot);
       }
 
-      // Null check for tests.
       final InternalNode node = root.getInternalNode();
-      if (root.getContext() != null) {
-        root.getContext().setLayoutStateContext(layoutStateContext);
-      }
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);

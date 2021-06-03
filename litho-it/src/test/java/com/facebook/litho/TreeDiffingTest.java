@@ -309,7 +309,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component1,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -317,7 +317,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component2,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -338,7 +338,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             new TestSimpleContainerLayout(component1, 0),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -346,7 +346,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             new TestSimpleContainerLayout(component2, 0),
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -382,14 +382,14 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component1,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
             null);
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component2,
             SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -623,7 +623,7 @@ public class TreeDiffingTest {
 
     LayoutState firstLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             layoutComponent,
             makeSizeSpec(100, SizeSpec.EXACTLY),
             makeSizeSpec(100, SizeSpec.EXACTLY),
@@ -637,7 +637,7 @@ public class TreeDiffingTest {
     final Component secondLayoutComponent = new TestSimpleContainerLayout2(secondComponent);
 
     calculateLayoutStateWithDiffing(
-        mContext,
+        new ComponentContext(getApplicationContext()),
         secondLayoutComponent,
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(90, SizeSpec.EXACTLY),
@@ -654,7 +654,7 @@ public class TreeDiffingTest {
 
     LayoutState firstLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             layoutComponent,
             makeSizeSpec(100, SizeSpec.EXACTLY),
             makeSizeSpec(100, SizeSpec.EXACTLY),
@@ -668,7 +668,7 @@ public class TreeDiffingTest {
     final Component secondLayoutComponent = new TestSimpleContainerLayout(secondComponent, 0);
 
     calculateLayoutStateWithDiffing(
-        mContext,
+        new ComponentContext(getApplicationContext()),
         secondLayoutComponent,
         makeSizeSpec(100, SizeSpec.EXACTLY),
         makeSizeSpec(100, SizeSpec.EXACTLY),
@@ -684,7 +684,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component1,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -692,7 +692,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component2,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -715,7 +715,7 @@ public class TreeDiffingTest {
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component1,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),
@@ -723,7 +723,7 @@ public class TreeDiffingTest {
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
-            mContext,
+            new ComponentContext(getApplicationContext()),
             component2,
             makeSizeSpec(350, SizeSpec.EXACTLY),
             makeSizeSpec(200, SizeSpec.EXACTLY),

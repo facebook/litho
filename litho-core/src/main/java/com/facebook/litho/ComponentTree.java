@@ -3244,7 +3244,9 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean isFirstMount = false;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
-    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean isReconciliationEnabled =
+        ComponentsConfiguration.keepReconciliationEnabledWhenStateless
+            && ComponentsConfiguration.isReconciliationEnabled;
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;

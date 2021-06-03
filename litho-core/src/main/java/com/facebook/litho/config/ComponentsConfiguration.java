@@ -243,6 +243,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useStatelessComponent = false;
 
+  public static boolean keepReconciliationEnabledWhenStateless = true;
+
   /**
    * When true, Litho will use the InputOnlyInternalNode and DefaultLayoutResult for layout
    * calculations.

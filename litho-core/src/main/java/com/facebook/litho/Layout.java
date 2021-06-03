@@ -94,8 +94,13 @@ class Layout {
       }
 
     } else {
-      ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
-      Component updated = updatedScopedContext.getComponentScope();
+      final ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
+      final Component updated = updatedScopedContext.getComponentScope();
+
+      if (ComponentsConfiguration.useStatelessComponent) {
+        updatedScopedContext.validate();
+      }
+
       layout =
           current
               .getInternalNode()
@@ -153,24 +158,23 @@ class Layout {
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
+        if (ComponentsConfiguration.useStatelessComponent) {
+          final ComponentContext context =
+              cached
+                  .getTailComponent()
+                  .getScopedContext(parent.getLayoutStateContext(), cached.getTailComponentKey());
+          context.validate();
+        }
         return cached;
       }
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
       c = update(parent, component, reuseGlobalKey, globalKeyToReuse);
-      globalKey = c.getGlobalKey();
-      if (ComponentsConfiguration.useGlobalKeys && globalKey == null) {
-        throw new IllegalStateException(
-            "Global key null for component "
-                + component.getSimpleName()
-                + " component's global key: "
-                + (component.getGlobalKeyForLogging() == null
-                    ? "NULL_VALUE"
-                    : component.getGlobalKeyForLogging())
-                + " useStateless: "
-                + ComponentsConfiguration.useGlobalKeys);
+      if (ComponentsConfiguration.useStatelessComponent) {
+        c.validate();
       }
+      globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
 
@@ -447,6 +451,10 @@ class Layout {
       final boolean reuseGlobalKey,
       @Nullable final String globalKeyToReuse) {
 
+    if (ComponentsConfiguration.useStatelessComponent) {
+      parent.validate();
+    }
+
     final Component component = original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
@@ -463,6 +471,10 @@ class Layout {
     // 2. Update the internal state of the component wrt the parent.
     // 3. Get the scoped context from the updated component.
     final ComponentContext c = component.updateInternalChildState(parent, globalKeyToReuse);
+
+    if (ComponentsConfiguration.useStatelessComponent) {
+      c.validate();
+    }
 
     // 4. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
@@ -671,6 +683,18 @@ class Layout {
     final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
 
     if (cachedLayout != null) {
+
+      if (ComponentsConfiguration.useStatelessComponent) {
+        final ComponentContext context =
+            cachedLayout
+                .getInternalNode()
+                .getTailComponent()
+                .getScopedContext(
+                    c.getLayoutStateContext(),
+                    cachedLayout.getInternalNode().getTailComponentKey());
+        context.validate();
+      }
+
       layoutState.clearCachedLayout(component);
 
       final boolean hasValidDirection =

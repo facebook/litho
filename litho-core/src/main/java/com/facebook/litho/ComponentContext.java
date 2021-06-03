@@ -39,6 +39,9 @@ public class ComponentContext implements Cloneable {
 
   public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
 
+  private final boolean mWasStatelessWhenCreated;
+  private final @Nullable Boolean mCreatedFromStatelessStatelessContext;
+
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
   // TODO: T48229786 move to CT
@@ -117,6 +120,9 @@ public class ComponentContext implements Cloneable {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
+    mWasStatelessWhenCreated = ComponentsConfiguration.useStatelessComponent;
+    mCreatedFromStatelessStatelessContext = null;
+
     mContext = context;
     mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
     mResourceResolver = new ResourceResolver(this);
@@ -153,6 +159,8 @@ public class ComponentContext implements Cloneable {
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mGlobalKey = context.mGlobalKey;
+    mWasStatelessWhenCreated = ComponentsConfiguration.useStatelessComponent;
+    mCreatedFromStatelessStatelessContext = context.mWasStatelessWhenCreated;
   }
 
   ComponentContext makeNewCopy() {
@@ -230,11 +238,22 @@ public class ComponentContext implements Cloneable {
   }
 
   void setLayoutStateContext(LayoutStateContext layoutStateContext) {
+    if (mLayoutStateContext != null) {
+      throw new IllegalStateException(
+          "LayoutStateContext must not be overridden. " + getDebugString());
+    } else {
+      mLayoutStateContext = layoutStateContext;
+    }
+  }
+
+  @Deprecated
+  public void setLayoutStateContextSafely(LayoutStateContext layoutStateContext) {
     mLayoutStateContext = layoutStateContext;
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public void setLayoutStateContextForTesting() {
-    setLayoutStateContext(LayoutStateContext.getTestInstance(this));
+    setLayoutStateContextSafely(LayoutStateContext.getTestInstance(this));
   }
 
   /**
@@ -314,11 +333,17 @@ public class ComponentContext implements Cloneable {
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
       if (ComponentsConfiguration.useStatelessComponent) {
-        EventHandler<ErrorEvent> errorEventHandler =
-            getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
-
-        if (errorEventHandler != null) {
-          return errorEventHandler;
+        try {
+          final EventHandler<ErrorEvent> errorEventHandler =
+              getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
+          if (errorEventHandler != null) {
+            return errorEventHandler;
+          }
+        } catch (IllegalStateException e) {
+          if (mComponentTree != null) {
+            return mComponentTree.getErrorEventHandler();
+          }
+          return DefaultErrorEventHandler.INSTANCE;
         }
       } else if (mComponentScope.getErrorHandler() != null) {
         return mComponentScope.getErrorHandler();
@@ -541,21 +566,27 @@ public class ComponentContext implements Cloneable {
     }
 
     if (ComponentsConfiguration.useStatelessComponent) {
-      if (getLayoutStateContext() != null
-          && getLayoutStateContext().getScopedComponentInfo(mGlobalKey) == null) {
-        throw new IllegalStateException(
-            "No scoped info found for "
-                + mComponentScope.getSimpleName()
-                + "LSC copied: "
-                + getLayoutStateContext().mIsScopedInfoCopiedFromLSCInstance
-                + ". ScopedContext's GlobalKey: "
-                + (getGlobalKey() == null ? "NULL_VALUE" : getGlobalKey())
-                + ", componentScope's global key: "
-                + (mComponentScope.getGlobalKeyForLogging() == null
-                    ? "NULL_VALUE"
-                    : mComponentScope.getGlobalKeyForLogging()));
+      if (getLayoutStateContext() != null) {
+        try {
+          getLayoutStateContext().getScopedComponentInfo(mGlobalKey);
+        } catch (IllegalStateException e) {
+          String thisGlobalKey = mGlobalKey != null ? mGlobalKey : "t-null";
+          String componentGlobalKey =
+              mComponentScope.getGlobalKeyForLogging() != null
+                  ? mComponentScope.getGlobalKeyForLogging()
+                  : "c-null";
+
+          throw new IllegalStateException(
+              "No scoped info found. "
+                  + getDebugString()
+                  + "\nglobal-key-mismatch: "
+                  + thisGlobalKey.equals(componentGlobalKey)
+                  + "\ncomponent-global-key: "
+                  + componentGlobalKey);
+        }
       }
     }
+
     return new EventHandler<>(mComponentScope, id, params);
   }
 
@@ -687,5 +718,41 @@ public class ComponentContext implements Cloneable {
     cloned.mLayoutStateContext = layoutStateContext;
     cloned.mStateHandler = stateHandler;
     return cloned;
+  }
+
+  public void validate() {
+    if (mLayoutStateContext == null) {
+      throw new IllegalStateException("Using an uninitialised context. " + getDebugString());
+    }
+
+    if (mComponentScope != null && (mGlobalKey == null || mGlobalKey.equals("null"))) {
+      throw new IllegalStateException("Global key must not be null. " + getDebugString());
+    }
+
+    if (mComponentScope != null) {
+      final ComponentContext context = mLayoutStateContext.getScopedContext(mGlobalKey);
+      if (context != this) {
+        throw new IllegalStateException("Context mismatched. " + getDebugString());
+      }
+    }
+  }
+
+  String getDebugString() {
+    return String.format(
+        "\n  "
+            + "component: %s\n  "
+            + "globalKey: %s\n  "
+            + "wasStatelessWhenCreated: %b\n  "
+            + "createdFromStatelessStatelessContext: %s\n  "
+            + "copied: %s",
+        mComponentScope,
+        mGlobalKey != null ? "'" + mGlobalKey + "'" : "NULL",
+        mWasStatelessWhenCreated,
+        mCreatedFromStatelessStatelessContext != null
+            ? String.valueOf(mCreatedFromStatelessStatelessContext)
+            : "'NULL'",
+        mLayoutStateContext != null
+            ? String.valueOf(mLayoutStateContext.mIsScopedInfoCopiedFromLSCInstance)
+            : "'NULL'");
   }
 }

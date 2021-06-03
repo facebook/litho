@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.RequiredProp;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.BitSet;
 import javax.annotation.Nullable;
 
@@ -57,6 +58,10 @@ public final class Wrapper extends Component {
   protected InternalNode resolve(ComponentContext c) {
     if (delegate == null) {
       return ComponentContext.NULL_LAYOUT;
+    }
+
+    if (ComponentsConfiguration.useStatelessComponent) {
+      c.validate();
     }
 
     return Layout.create(c, delegate);

@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 final class ScopedComponentInfo implements Cloneable {
 
   // Can be final if Component is stateless and cloning is not needed anymore.
-  private final Component mComponent;
+  final Component mComponent;
   private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
 
