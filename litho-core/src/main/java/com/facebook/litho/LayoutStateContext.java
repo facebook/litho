@@ -33,9 +33,9 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private @Nullable Map<String, ComponentContext> mGlobalKeyToScopedContext;
-  private @Nullable Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo;
-  private @Nullable Map<Integer, InternalNode> mComponentIdToWillRenderLayout;
+  private final Map<String, ComponentContext> mGlobalKeyToScopedContext = new HashMap<>();
+  private final Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo = new HashMap<>();
+  private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
 
   private static @Nullable LayoutState sTestLayoutState;
 
@@ -54,29 +54,23 @@ public class LayoutStateContext {
   void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
     mIsScopedInfoCopiedFromLSCInstance = true;
 
-    if (from.mGlobalKeyToScopedContext != null) {
-      mGlobalKeyToScopedContext = new HashMap<>(from.mGlobalKeyToScopedContext.size());
-      for (Map.Entry<String, ComponentContext> e : from.mGlobalKeyToScopedContext.entrySet()) {
-        final String key = e.getKey();
-        final ComponentContext context =
-            e.getValue().createUpdatedComponentContext(this, stateHandler);
-        mGlobalKeyToScopedContext.put(key, context);
-      }
+    mGlobalKeyToScopedContext.clear();
+    for (Map.Entry<String, ComponentContext> e : from.mGlobalKeyToScopedContext.entrySet()) {
+      final String key = e.getKey();
+      final ComponentContext context =
+          e.getValue().createUpdatedComponentContext(this, stateHandler);
+      mGlobalKeyToScopedContext.put(key, context);
     }
 
-    if (from.mGlobalKeyToScopedInfo != null) {
-      mGlobalKeyToScopedInfo = new HashMap<>(from.mGlobalKeyToScopedInfo.size());
-      for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
-        final String key = e.getKey();
-        final ScopedComponentInfo info = e.getValue().copy();
-        mGlobalKeyToScopedInfo.put(key, info);
-      }
+    mGlobalKeyToScopedInfo.clear();
+    for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
+      final String key = e.getKey();
+      final ScopedComponentInfo info = e.getValue().copy();
+      mGlobalKeyToScopedInfo.put(key, info);
     }
 
-    if (from.mComponentIdToWillRenderLayout != null) {
-      mComponentIdToWillRenderLayout = new HashMap<>(from.mComponentIdToWillRenderLayout.size());
-      mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
-    }
+    mComponentIdToWillRenderLayout.clear();
+    mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
   }
 
   @VisibleForTesting
@@ -99,15 +93,8 @@ public class LayoutStateContext {
       Component component,
       ComponentContext scopedContext,
       ComponentContext parentContext) {
-    if (mGlobalKeyToScopedContext == null) {
-      mGlobalKeyToScopedContext = new HashMap<>();
-    }
 
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
-
-    if (mGlobalKeyToScopedInfo == null) {
-      mGlobalKeyToScopedInfo = new HashMap<>();
-    }
 
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
@@ -121,10 +108,6 @@ public class LayoutStateContext {
   }
 
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
-    if (mGlobalKeyToScopedInfo == null) {
-      throw new IllegalStateException("mGlobalKeyToScopedInfo map should not be null");
-    }
-
     final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
     if (scopedComponentInfo == null) {
       throw new IllegalStateException("ScopedComponentInfo is null for globalKey: " + globalKey);
@@ -138,10 +121,6 @@ public class LayoutStateContext {
       return null;
     }
 
-    if (mGlobalKeyToScopedContext == null) {
-      throw new IllegalStateException("mGlobalKeyToScopedContext map should not be null");
-    }
-
     final ComponentContext context = mGlobalKeyToScopedContext.get(globalKey);
     if (context == null) {
       throw new IllegalStateException("ComponentContext is null for globalKey: " + globalKey);
@@ -151,24 +130,15 @@ public class LayoutStateContext {
 
   @Nullable
   InternalNode consumeLayoutCreatedInWillRender(int componentId) {
-    return mComponentIdToWillRenderLayout == null
-        ? null
-        : mComponentIdToWillRenderLayout.remove(componentId);
+    return mComponentIdToWillRenderLayout.remove(componentId);
   }
 
   @Nullable
   InternalNode getLayoutCreatedInWillRender(int componentId) {
-    return mComponentIdToWillRenderLayout == null
-        ? null
-        : mComponentIdToWillRenderLayout.get(componentId);
+    return mComponentIdToWillRenderLayout.get(componentId);
   }
 
-  @Nullable
   void setLayoutCreatedInWillRender(int componentId, final @Nullable InternalNode node) {
-    if (mComponentIdToWillRenderLayout == null) {
-      mComponentIdToWillRenderLayout = new HashMap<>();
-    }
-
     mComponentIdToWillRenderLayout.put(componentId, node);
   }
 
