@@ -38,6 +38,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.sections.TestDataDiffSection;
+import com.facebook.litho.testing.sections.TestDataDiffSectionNull;
 import com.facebook.litho.testing.sections.TestGroupSection;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.sections.TestTarget.Operation;
@@ -88,6 +89,18 @@ public class DataDiffSectionSpecTest {
     final Operation operation = executedOperations.get(0);
     assertRangeOperation(operation, INSERT_RANGE, 0, 100);
     assertOperation(operation, INSERT_RANGE, 0, -1, 100, null, data);
+  }
+
+  @Test
+  public void testOnEventReturnNull() {
+    final List<String> data = generateData(100);
+    RecordingComponentsReporter reporter = new RecordingComponentsReporter();
+    ComponentsReporter.provide(reporter);
+    final TestDataDiffSectionNull section =
+        TestDataDiffSectionNull.create(mSectionContext).data(data).build();
+    mSectionTree.setRoot(section);
+    ComponentsReporter.provide(null);
+    assertThat(reporter.containsMessage(DataDiffSectionSpec.RENDER_INFO_RETURNS_NULL_MSG)).isTrue();
   }
 
   @Test

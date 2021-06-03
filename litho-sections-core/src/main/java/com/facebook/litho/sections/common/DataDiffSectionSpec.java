@@ -39,6 +39,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
@@ -113,6 +114,9 @@ public class DataDiffSectionSpec<T> {
 
   public static final String DUPLICATES_EXIST_MSG =
       "Detected duplicates in data passed to DataDiffSection. Read more here: https://bit.ly/2WPviOR";
+
+  public static final String RENDER_INFO_RETURNS_NULL_MSG =
+      "RenderInfo has returned null. Returning ComponentRenderInfo.createEmpty() as default.";
 
   @OnDiff
   public static <T> void onCreateChangeSet(
@@ -322,13 +326,16 @@ public class DataDiffSectionSpec<T> {
 
     @Override
     public RenderInfo render(Object o, int index) {
-      final RenderInfo renderInfo =
+      RenderInfo renderInfo =
           DataDiffSection.dispatchRenderEvent(mRenderEventEventHandler, index, o, null);
 
       if (renderInfo == null) {
-        throw new IllegalStateException(
-            "Method annotated with '@OnEvent(RenderEvent.class)' is not allowed to return 'null'. EventDispatcher: "
-                + mRenderEventEventHandler.toString());
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            "DataDiffSection:RenderInfoNull",
+            RENDER_INFO_RETURNS_NULL_MSG);
+
+        renderInfo = ComponentRenderInfo.createEmpty();
       }
 
       if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
