@@ -9,7 +9,7 @@ docs/_site/
 /.lsp.buckd
 /.lsp-buck-out
 /gentest/test.html
-.buckversion
+.buck-java11
 
 .cxx
 .externalNativeBuild
