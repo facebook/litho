@@ -315,7 +315,7 @@ class Layout {
 
     final InternalNode node = holder.getInternalNode();
     final Component component = node.getTailComponent();
-    final String componentGlobalKey = node.getTailComponentKey();
+    final String globalKey = node.getTailComponentKey();
     final LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // Find the immediate parent context
@@ -364,34 +364,29 @@ class Layout {
             && currentLayout
                 .getInternalNode()
                 .getHeadComponent()
-                .canUsePreviousLayout(parentContext, componentGlobalKey)) {
+                .canUsePreviousLayout(parentContext, globalKey)) {
           remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
           layout = currentLayout;
         } else {
 
-          /* INCLUDES LEGACY LOGIC */
+          final int prevWidthSpec = parentContext.getWidthSpec();
+          final int prevHeightSpec = parentContext.getHeightSpec();
 
-          /*
-           Copy the context so that it can have its own set of tree props. Robolectric tests
-           need to original context of that tree props can be set externally.
-           TODO: (T56146833) Do not copy the component context.
-          */
-          final ComponentContext context;
-          if (!IS_TEST) {
-            context = parentContext;
-          } else {
-            context = parentContext.makeNewCopy();
+          if (!ComponentsConfiguration.useStatelessComponent) {
+            parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
           }
 
-          context.setTreeProps(holder.getInternalNode().getPendingTreeProps());
-
           // Set the size specs in ComponentContext for the nested tree
-          // TODO: (T48229905) size specs should be passed in as arguments.
-          context.setWidthSpec(widthSpec);
-          context.setHeightSpec(heightSpec);
+          parentContext.setWidthSpec(widthSpec);
+          parentContext.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          final InternalNode newNode = create(context, component, true, true, componentGlobalKey);
+          final InternalNode newNode = create(parentContext, component, true, true, globalKey);
+
+          if (ComponentsConfiguration.useStatelessComponent) {
+            parentContext.setWidthSpec(prevWidthSpec);
+            parentContext.setHeightSpec(prevHeightSpec);
+          }
 
           holder.getInternalNode().copyInto(newNode);
 
