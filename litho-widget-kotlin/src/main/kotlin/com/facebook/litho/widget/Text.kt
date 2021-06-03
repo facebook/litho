@@ -29,6 +29,7 @@ import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
 
 const val SHOULD_INCLUDE_FONT_PADDING = TextSpec.shouldIncludeFontPadding
+const val CLIP_TO_BOUNDS = TextSpec.clipToBounds
 
 /**
  * Temporary builder function for creating [TextSpec] components. In the future it will either be
@@ -50,6 +51,7 @@ inline fun ComponentScope.Text(
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
+    clipToBounds: Boolean = CLIP_TO_BOUNDS,
 ): Text =
     Text.create(context)
         .text(text)
@@ -64,6 +66,7 @@ inline fun ComponentScope.Text(
         .minLines(minLines)
         .maxLines(maxLines)
         .shouldIncludeFontPadding(includeFontPadding)
+        .clipToBounds(clipToBounds)
         .apply { ellipsize?.let { ellipsize(it) } }
         .kotlinStyle(style)
         .build()
