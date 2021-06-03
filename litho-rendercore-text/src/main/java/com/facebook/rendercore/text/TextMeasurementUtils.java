@@ -66,6 +66,7 @@ public class TextMeasurementUtils {
   public static class TextLayoutContext {
     public Layout layout;
     CharSequence processedText;
+    float textLayoutTranslationX;
     float textLayoutTranslationY;
     ClickableSpan[] clickableSpans;
     ImageSpan[] imageSpans;
@@ -157,7 +158,11 @@ public class TextMeasurementUtils {
       if (ellipsizedLineNumber != -1) {
         final CharSequence truncated =
             truncateText(
-                text, textStyle.customEllipsisText, layout, ellipsizedLineNumber, layoutWidth);
+                text,
+                textStyle.customEllipsisText,
+                layout,
+                ellipsizedLineNumber,
+                layoutWidth - textStyle.extraSpacingLeft - textStyle.extraSpacingRight);
 
         Layout newLayout =
             TextMeasurementUtils.createTextLayout(
@@ -174,6 +179,7 @@ public class TextMeasurementUtils {
 
     textLayoutContext.processedText = processedText;
     textLayoutContext.layout = layout;
+    textLayoutContext.textLayoutTranslationX = textStyle.extraSpacingLeft;
     textLayoutContext.textLayoutTranslationY = textLayoutTranslationY;
     if (processedText instanceof Spanned) {
       Spanned spanned = (Spanned) processedText;
@@ -228,7 +234,10 @@ public class TextMeasurementUtils {
         .setSingleLine(textStyle.isSingleLine)
         .setText(text)
         .setTextSize(textStyle.textSize)
-        .setWidth(View.MeasureSpec.getSize(widthSpec), textMeasureMode)
+        .setWidth(
+            View.MeasureSpec.getSize(widthSpec)
+                - Math.round(textStyle.extraSpacingLeft + textStyle.extraSpacingRight),
+            textMeasureMode)
         .setIncludeFontPadding(includeFontPadding)
         .setTextSpacingExtra(textStyle.extraSpacing)
         .setTextSpacingMultiplier(textStyle.spacingMultiplier)

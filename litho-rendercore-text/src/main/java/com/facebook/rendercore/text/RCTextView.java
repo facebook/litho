@@ -55,6 +55,7 @@ public class RCTextView extends View {
   private CharSequence mText;
   private ClickableSpan[] mClickableSpans;
   private Layout mLayout;
+  private float mLayoutTranslationX;
   private float mLayoutTranslationY;
   private boolean mClipToBounds;
   private ColorStateList mColorStateList;
@@ -92,7 +93,7 @@ public class RCTextView extends View {
     boolean shouldRestore = false;
     if (mLayoutTranslationY != 0 || getPaddingTop() != 0 || getPaddingLeft() != 0) {
       saveCount = canvas.save();
-      canvas.translate(0, mLayoutTranslationY);
+      canvas.translate(mLayoutTranslationX, mLayoutTranslationY);
       canvas.translate(getPaddingLeft(), getPaddingTop());
       shouldRestore = true;
     }
@@ -107,6 +108,7 @@ public class RCTextView extends View {
   public void mount(
       CharSequence text,
       Layout layout,
+      float layoutTranslationX,
       float layoutTranslationY,
       boolean clipToBounds,
       ColorStateList colorStateList,
@@ -118,6 +120,7 @@ public class RCTextView extends View {
       int highlightEndOffset) {
     mText = text;
     mLayout = layout;
+    mLayoutTranslationX = layoutTranslationX;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
     mHighlightColor = highlightColor;
@@ -160,6 +163,7 @@ public class RCTextView extends View {
   public void unmount() {
     mText = null;
     mLayout = null;
+    mLayoutTranslationX = 0;
     mLayoutTranslationY = 0;
     mHighlightColor = 0;
     mColorStateList = null;

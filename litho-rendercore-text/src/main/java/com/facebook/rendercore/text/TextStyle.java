@@ -65,6 +65,8 @@ public class TextStyle implements Copyable {
   boolean shouldLayoutEmptyText = false;
   int manualBaselineSpacing = Integer.MIN_VALUE;
   int manualCapSpacing = Integer.MIN_VALUE;
+  float extraSpacingLeft = 0;
+  float extraSpacingRight = 0;
 
   public void setShouldLayoutEmptyText(boolean shouldLayoutEmptyText) {
     this.shouldLayoutEmptyText = shouldLayoutEmptyText;
@@ -152,6 +154,14 @@ public class TextStyle implements Copyable {
 
   public void setIncludeFontPadding(boolean includeFontPadding) {
     this.includeFontPadding = includeFontPadding;
+  }
+
+  public void setExtraSpacingLeft(float extraSpacingLeft) {
+    this.extraSpacingLeft = extraSpacingLeft;
+  }
+
+  public void setExtraSpacingRight(float extraSpacingRight) {
+    this.extraSpacingRight = extraSpacingRight;
   }
 
   public void setShadowRadius(float shadowRadius) {

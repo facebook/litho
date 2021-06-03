@@ -67,6 +67,7 @@ public class TextRenderUnit extends RenderUnit<RCTextView> {
           textView.mount(
               textLayoutContext.processedText,
               textLayoutContext.layout,
+              textLayoutContext.textLayoutTranslationX,
               textLayoutContext.textLayoutTranslationY,
               textLayoutContext.textStyle.clipToBounds,
               textLayoutContext.textStyle.textColorStateList,
