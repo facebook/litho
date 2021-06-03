@@ -255,6 +255,14 @@ public class RenderState<State, RenderContext> {
         return;
       }
 
+      if (mLatestLazyTree == null) {
+        if (measureOutput != null) {
+          measureOutput[0] = 0;
+          measureOutput[1] = 0;
+        }
+        return;
+      }
+
       if (mRenderResultFuture != null && hasSameSpecs(mRenderResultFuture, widthSpec, heightSpec)) {
         future = mRenderResultFuture;
         setRootId = future.getSetRootId();
