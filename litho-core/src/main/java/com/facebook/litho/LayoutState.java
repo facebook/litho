@@ -294,6 +294,7 @@ public class LayoutState
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
+      ComponentContext context,
       LithoLayoutResult result,
       InternalNode node,
       LayoutState layoutState,
@@ -314,6 +315,7 @@ public class LayoutState
     return createLayoutOutput(
         component,
         componentKey,
+        context,
         hostMarker,
         layoutState,
         result,
@@ -362,6 +364,7 @@ public class LayoutState
         createLayoutOutput(
             hostComponent,
             null,
+            null,
             hostMarker,
             layoutState,
             result,
@@ -387,7 +390,6 @@ public class LayoutState
   /* TODO: (T81557408) Fix @Nullable issue */
   private static LayoutOutput createDrawableLayoutOutput(
       Component component,
-      @Nullable String componentKey,
       LayoutState layoutState,
       LithoLayoutResult result,
       InternalNode node,
@@ -398,7 +400,8 @@ public class LayoutState
 
     return createLayoutOutput(
         component,
-        componentKey,
+        null,
+        null,
         hostMarker,
         layoutState,
         result,
@@ -413,6 +416,7 @@ public class LayoutState
   private static LayoutOutput createLayoutOutput(
       Component component,
       @Nullable String componentKey,
+      @Nullable ComponentContext context,
       long hostMarker,
       LayoutState layoutState,
       LithoLayoutResult result,
@@ -521,7 +525,7 @@ public class LayoutState
     }
 
     return new LayoutOutput(
-        layoutState.getLayoutStateContext(),
+        context,
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
         component,
@@ -723,8 +727,9 @@ public class LayoutState
     }
 
     final Component component = node.getTailComponent();
-    final String componentGlobalKey =
-        ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
+    final String componentGlobalKey = node.getTailComponentKey();
+    final ComponentContext scopedContext =
+        component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey);
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy;
@@ -834,7 +839,8 @@ public class LayoutState
 
     // Generate the layoutOutput for the given node.
     final LayoutOutput layoutOutput =
-        createGenericLayoutOutput(result, node, layoutState, hierarchy, needsHostView);
+        createGenericLayoutOutput(
+            scopedContext, result, node, layoutState, hierarchy, needsHostView);
 
     if (layoutOutput != null) {
       final long previousId =
@@ -886,8 +892,7 @@ public class LayoutState
       if (isTracing) {
         ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
       }
-      final ComponentContext scopedContext =
-          component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey);
+
       try {
         component.onBoundsDefined(scopedContext, result);
       } catch (Exception e) {
@@ -914,10 +919,7 @@ public class LayoutState
     }
 
     // 4. Extract the Transitions.
-    if (Layout.areTransitionsEnabled(
-        component != null
-            ? component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey)
-            : null)) {
+    if (Layout.areTransitionsEnabled(scopedContext)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -956,13 +958,7 @@ public class LayoutState
     for (int i = 0, size = result.getChildCount(); i < size; i++) {
       final LithoLayoutResult child = result.getChildAt(i);
       collectResults(
-          result.getContext(),
-          child,
-          child.getInternalNode(),
-          layoutState,
-          parent,
-          diffNode,
-          hierarchy);
+          scopedContext, child, child.getInternalNode(), layoutState, parent, diffNode, hierarchy);
     }
 
     layoutState.mCurrentX -= result.getX();
@@ -1236,7 +1232,6 @@ public class LayoutState
         addDrawableLayoutOutput(
             parent,
             drawableComponent,
-            null,
             layoutState,
             hierarchy,
             result,
@@ -1337,7 +1332,6 @@ public class LayoutState
   private static LayoutOutput addDrawableLayoutOutput(
       final @Nullable RenderTreeNode parent,
       Component drawableComponent,
-      @Nullable String drawableComponentKey,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
       LithoLayoutResult result,
@@ -1364,12 +1358,7 @@ public class LayoutState
 
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
-            drawableComponent,
-            drawableComponentKey,
-            layoutState,
-            result,
-            node,
-            matchHostBoundsTransitions);
+            drawableComponent, layoutState, result, node, matchHostBoundsTransitions);
 
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
@@ -1491,7 +1480,7 @@ public class LayoutState
     final DiffNode diffTreeRoot =
         currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
     final LayoutState layoutState;
-    LayoutStateContext layoutStateContext = null;
+    final LayoutStateContext layoutStateContext;
 
     try {
       final PerfEvent logLayoutState =
@@ -1520,7 +1509,7 @@ public class LayoutState
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
 
-      if (isReconcilable && currentLayoutState != null) {
+      if (isReconcilable) {
         layoutStateContext.copyScopedInfoFrom(
             currentLayoutState.getLayoutStateContext(), c.getStateHandler());
       }
@@ -1606,9 +1595,7 @@ public class LayoutState
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      if (layoutStateContext != null) {
-        layoutStateContext.releaseReference();
-      }
+      layoutStateContext.releaseReference();
 
       if (logLayoutState != null) {
         logLayoutState.markerPoint("end_collect_results");
@@ -1716,7 +1703,7 @@ public class LayoutState
       final ComponentContext scopedContext = component.updateInternalChildState(mContext, null);
       final LayoutOutput output =
           new LayoutOutput(
-              getLayoutStateContext(),
+              scopedContext,
               null,
               null,
               component,

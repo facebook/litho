@@ -134,7 +134,7 @@ public class DefaultInternalNode
   private List<Component> mComponents = new ArrayList<>(1);
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable List<String> mComponentGlobalKeys;
+  private List<String> mComponentGlobalKeys = new ArrayList<>(1);
 
   private @Nullable LithoLayoutResult mParent;
 
@@ -199,9 +199,6 @@ public class DefaultInternalNode
     mYogaNode = yogaNode;
 
     mDebugComponents = new HashSet<>();
-
-    mComponentGlobalKeys =
-        ComponentsConfiguration.useStatelessComponent ? new ArrayList<String>(1) : null;
   }
 
   @Override
@@ -269,10 +266,7 @@ public class DefaultInternalNode
   @Override
   public void appendComponent(Component component, String key) {
     mComponents.add(component);
-
-    if (mComponentGlobalKeys != null) {
-      mComponentGlobalKeys.add(key);
-    }
+    mComponentGlobalKeys.add(key);
   }
 
   @Override
@@ -615,7 +609,6 @@ public class DefaultInternalNode
    * will only contain the root component if running in production mode.
    */
   @Override
-  @Nullable
   public List<String> getComponentKeys() {
     return mComponentGlobalKeys;
   }
@@ -672,9 +665,9 @@ public class DefaultInternalNode
 
   @Override
   public @Nullable String getHeadComponentKey() {
-    return mComponentGlobalKeys == null || mComponentGlobalKeys.isEmpty()
-        ? null
-        : mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1);
+    return ComponentsConfiguration.useStatelessComponent
+        ? mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1)
+        : Component.getGlobalKey(null, getHeadComponent());
   }
 
   @Override
@@ -790,9 +783,9 @@ public class DefaultInternalNode
 
   @Override
   public @Nullable String getTailComponentKey() {
-    return mComponentGlobalKeys == null || mComponentGlobalKeys.isEmpty()
-        ? null
-        : mComponentGlobalKeys.get(0);
+    return ComponentsConfiguration.useStatelessComponent
+        ? mComponentGlobalKeys.get(0)
+        : Component.getGlobalKey(null, getTailComponent());
   }
 
   @Override
@@ -1628,11 +1621,7 @@ public class DefaultInternalNode
   protected void clean() {
     // 1. Release or clone props.
     mComponents = new ArrayList<>();
-
-    if (mComponentGlobalKeys != null) {
-      mComponentGlobalKeys = new ArrayList<>();
-    }
-
+    mComponentGlobalKeys = new ArrayList<>();
     mDiffNode = null;
     mDebugComponents = null;
   }
@@ -1690,13 +1679,11 @@ public class DefaultInternalNode
       final LayoutStateContext layoutStateContext, Component head, @Nullable String headKey) {
     int size = mComponents.size();
     List<Component> updated = new ArrayList<>(size);
-    List<String> updatedKeys = mComponentGlobalKeys == null ? null : new ArrayList<String>(size);
+    List<String> updatedKeys = new ArrayList<>(size);
 
     // 1. Add the updated head component to the list.
     updated.add(head);
-    if (updatedKeys != null) {
-      updatedKeys.add(headKey);
-    }
+    updatedKeys.add(headKey);
 
     // 2. Set parent context for descendants.
     ComponentContext parentContext = head.getScopedContext(layoutStateContext, headKey);
@@ -1706,12 +1693,12 @@ public class DefaultInternalNode
       final String key =
           ComponentUtils.getGlobalKey(
               mComponents.get(i),
-              mComponentGlobalKeys == null ? null : mComponentGlobalKeys.get(i));
+              ComponentsConfiguration.useStatelessComponent
+                  ? mComponentGlobalKeys.get(i)
+                  : Component.getGlobalKey(null, mComponents.get(i)));
       final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
       updated.add(component);
-      if (mComponentGlobalKeys != null) {
-        updatedKeys.add(key);
-      }
+      updatedKeys.add(key);
 
       parentContext =
           component.getScopedContext(layoutStateContext, key); // set parent context for descendant
@@ -1719,11 +1706,9 @@ public class DefaultInternalNode
 
     // 4. Reverse the list so that the root component is at index 0.
     Collections.reverse(updated);
-    if (updatedKeys != null) {
-      Collections.reverse(updatedKeys);
-    }
+    Collections.reverse(updatedKeys);
 
-    return new Pair(updated, updatedKeys);
+    return new Pair<>(updated, updatedKeys);
   }
 
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(

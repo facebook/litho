@@ -196,7 +196,6 @@ public interface InternalNode {
    * Return the list of keys of components contributing to this InternalNode. This exists in both
    * debug and production mode.
    */
-  @Nullable
   List<String> getComponentKeys();
 
   @Nullable

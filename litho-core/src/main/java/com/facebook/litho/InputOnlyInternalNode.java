@@ -138,7 +138,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected List<Component> mComponents = new ArrayList<>(1);
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable List<String> mComponentGlobalKeys;
+  private List<String> mComponentGlobalKeys = new ArrayList<>(1);
 
   protected final int[] mBorderEdgeWidths = new int[Border.EDGE_COUNT];
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
@@ -204,8 +204,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected InputOnlyInternalNode(ComponentContext componentContext) {
     mComponentContext = componentContext;
     mDebugComponents = new HashSet<>();
-    mComponentGlobalKeys =
-        ComponentsConfiguration.useStatelessComponent ? new ArrayList<String>(1) : null;
   }
 
   @Override
@@ -260,10 +258,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public void appendComponent(Component component, String key) {
     mComponents.add(component);
-
-    if (mComponentGlobalKeys != null) {
-      mComponentGlobalKeys.add(key);
-    }
+    mComponentGlobalKeys.add(key);
   }
 
   @Override
@@ -588,7 +583,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
    * will only contain the root component if running in production mode.
    */
   @Override
-  @Nullable
   public List<String> getComponentKeys() {
     return mComponentGlobalKeys;
   }
@@ -640,9 +634,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   @Override
   public @Nullable String getHeadComponentKey() {
-    return mComponentGlobalKeys == null || mComponentGlobalKeys.isEmpty()
-        ? null
-        : mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1);
+    return ComponentsConfiguration.useStatelessComponent
+        ? mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1)
+        : Component.getGlobalKey(null, getHeadComponent());
   }
 
   @Override
@@ -681,9 +675,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   @Override
   public @Nullable String getTailComponentKey() {
-    return mComponentGlobalKeys == null || mComponentGlobalKeys.isEmpty()
-        ? Component.getGlobalKey(null, getTailComponent())
-        : mComponentGlobalKeys.get(0);
+    return ComponentsConfiguration.useStatelessComponent
+        ? mComponentGlobalKeys.get(0)
+        : Component.getGlobalKey(null, getTailComponent());
   }
 
   @Nullable
@@ -1201,11 +1195,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 1. Release or clone props.
     mComponents = new ArrayList<>();
     mChildren = new ArrayList<>(1);
-
-    if (mComponentGlobalKeys != null) {
-      mComponentGlobalKeys = new ArrayList<>();
-    }
-
+    mComponentGlobalKeys = new ArrayList<>();
     mDiffNode = null;
     mDebugComponents = null;
     mFrozen = false;
@@ -1261,7 +1251,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final LayoutStateContext layoutStateContext, Component head, @Nullable String headKey) {
     int size = mComponents.size();
     List<Component> updated = new ArrayList<>(size);
-    List<String> updatedKeys = mComponentGlobalKeys == null ? null : new ArrayList<String>(size);
+    List<String> updatedKeys = new ArrayList<String>(size);
 
     // 1. Add the updated head component to the list.
     updated.add(head);
@@ -1277,12 +1267,12 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final String key =
           ComponentUtils.getGlobalKey(
               mComponents.get(i),
-              mComponentGlobalKeys == null ? null : mComponentGlobalKeys.get(i));
+              ComponentsConfiguration.useStatelessComponent
+                  ? mComponentGlobalKeys.get(i)
+                  : Component.getGlobalKey(null, mComponents.get(i)));
       final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
       updated.add(component);
-      if (mComponentGlobalKeys != null) {
-        updatedKeys.add(key);
-      }
+      updatedKeys.add(key);
 
       parentContext =
           component.getScopedContext(layoutStateContext, key); // set parent context for descendant
@@ -1290,11 +1280,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     // 4. Reverse the list so that the root component is at index 0.
     Collections.reverse(updated);
-    if (updatedKeys != null) {
-      Collections.reverse(updatedKeys);
-    }
+    Collections.reverse(updatedKeys);
 
-    return new Pair(updated, updatedKeys);
+    return new Pair<>(updated, updatedKeys);
   }
 
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(

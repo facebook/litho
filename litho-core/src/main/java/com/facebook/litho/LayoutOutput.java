@@ -23,7 +23,6 @@ import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
@@ -70,7 +69,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mUpdateState = STATE_UNKNOWN;
   /* TODO: (T81557408) Fix @Nullable issue */
   public LayoutOutput(
-      @Nullable LayoutStateContext layoutStateContext,
+      @Nullable ComponentContext context,
       @Nullable NodeInfo nodeInfo,
       @Nullable ViewNodeInfo viewNodeInfo,
       Component component,
@@ -91,13 +90,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
     mKey = key;
-    if (ComponentsConfiguration.useStatelessComponent && layoutStateContext == null) {
-      // The LayoutOutput for the root host is created by MountState before a LayoutState is
-      // calculated.
-      mScopedContext = null;
-    } else {
-      mScopedContext = mComponent.getScopedContext(layoutStateContext, key);
-    }
+    mScopedContext = context;
     mBounds = bounds;
     mHostTranslationX = hostTranslationX;
     mHostTranslationY = hostTranslationY;

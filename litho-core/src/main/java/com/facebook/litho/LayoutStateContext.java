@@ -81,7 +81,7 @@ public class LayoutStateContext {
   @VisibleForTesting
   LayoutStateContext(
       final LayoutState layoutState,
-      @Nullable final ComponentTree componentTree,
+      final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture) {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
@@ -89,10 +89,10 @@ public class LayoutStateContext {
   }
 
   void addScopedComponentInfo(
-      String globalKey,
-      Component component,
-      ComponentContext scopedContext,
-      ComponentContext parentContext) {
+      final String globalKey,
+      final Component component,
+      final ComponentContext scopedContext,
+      final ComponentContext parentContext) {
 
     mGlobalKeyToScopedContext.put(globalKey, scopedContext);
 
@@ -165,14 +165,14 @@ public class LayoutStateContext {
 
   boolean isLayoutInterrupted() {
     boolean isInterruptRequested =
-        mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterruptRequested();
-    boolean isInterruptible = mLayoutStateRef == null ? false : mLayoutStateRef.isInterruptible();
+        mLayoutStateFuture != null && mLayoutStateFuture.isInterruptRequested();
+    boolean isInterruptible = mLayoutStateRef != null && mLayoutStateRef.isInterruptible();
 
     return isInterruptible && isInterruptRequested;
   }
 
   boolean isLayoutReleased() {
-    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
+    return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
   }
 
   public void markLayoutUninterruptible() {
