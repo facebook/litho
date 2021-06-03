@@ -29,6 +29,9 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
   public void onError(ComponentTree ct, Exception e) {
     if (ct != null && ct.getRoot() != null) {
       String categoryKey = DEFAULT_ERROR_EVENT_HANDLER + ":" + ct.getRoot().getSimpleName();
+      if (e instanceof ReThrownException) {
+        e = ((ReThrownException) e).original;
+      }
       if (e instanceof LithoMetadataExceptionWrapper) {
         Component crashingComponent = ((LithoMetadataExceptionWrapper) e).getCrashingComponent();
         if (crashingComponent != null) {
