@@ -28,7 +28,7 @@ fb_java_test(
     source = "1.8",
     target = "1.8",
     deps = [
-        "//fbandroid/third-party/java/robolectric/android-all:android-all-10",
+        "//fbandroid/third-party/java/robolectric/android-all:latest",
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_COMPILE_TESTING_TARGET,
