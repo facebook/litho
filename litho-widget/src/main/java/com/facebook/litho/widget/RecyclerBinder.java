@@ -789,10 +789,17 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder lithoLifecycleProvider(LithoLifecycleProvider lithoLifecycleProvider) {
+      this.lifecycleProvider = lithoLifecycleProvider;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = ComponentContext.makeCopyForNestedTree(c);
-      lifecycleProvider = ComponentTree.getLifecycleProvider(c);
+      if (lifecycleProvider == null) {
+        lifecycleProvider = ComponentTree.getLifecycleProvider(c);
+      }
 
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
