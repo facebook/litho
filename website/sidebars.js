@@ -68,10 +68,11 @@ module.exports = {
             'fb/kotlin/hooks-intro',
             'fb/kotlin/use-state',
             'fb/kotlin/use-effect',
+            'fb/kotlin/use-transition',
           ],
         },
         'fb/kotlin/kotlin-flexbox-containers',
-        'fb/kotlin/kotlin-hooks',
+        'fb/kotlin/kotlin-api-cheatsheet',
       ],
     }),
     'Widgets': [
