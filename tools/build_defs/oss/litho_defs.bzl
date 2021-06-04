@@ -59,6 +59,8 @@ LITHO_KOTLIN_TARGET = make_dep_path("litho-core-kotlin/src/main/kotlin/com/faceb
 
 LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget:widget-kotlin")
 
+LITHO_SECTIONS_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/sections/widget:widget")
+
 LITHO_FRESCO_KOTLIN_TARGET = make_dep_path("litho-fresco-kotlin/src/main/kotlin/com/facebook/litho/fresco:fresco-kotlin")
 
 # Testing targets

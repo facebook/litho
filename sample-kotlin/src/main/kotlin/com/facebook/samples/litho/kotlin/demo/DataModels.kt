@@ -24,6 +24,7 @@ import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationActivi
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementActivity
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsActivity
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsActivity
+import com.facebook.samples.litho.kotlin.collection.CollectionActivity
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
@@ -57,7 +58,9 @@ object DataModels {
                           name = "Animated Counter", klass = AnimatedCounterActivity::class.java),
                       DemoListDataModel(
                           name = "Transitions", klass = TransitionsActivity::class.java))),
-          DemoListDataModel(name = "Logging", klass = LoggingActivity::class.java))
+          DemoListDataModel(name = "Logging", klass = LoggingActivity::class.java),
+          DemoListDataModel(name = "Collection", klass = CollectionActivity::class.java),
+      )
 
   fun getDataModels(indices: IntArray?): List<DemoListDataModel> {
     if (indices == null) {
