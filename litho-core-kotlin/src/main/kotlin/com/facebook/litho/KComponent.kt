@@ -20,7 +20,6 @@ import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import java.lang.Exception
-import java.lang.reflect.Modifier
 
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
@@ -70,15 +69,18 @@ abstract class KComponent : Component() {
   /** Compare all private final fields in the components. */
   private fun hasEquivalentFields(other: KComponent): Boolean {
     for (field in javaClass.declaredFields) {
-      if (Modifier.isPrivate(field.modifiers) && Modifier.isFinal(field.modifiers)) {
+      val wasAccessible = field.isAccessible
+      if (!wasAccessible) {
         field.isAccessible = true
-        val field1 = field.get(this)
-        val field2 = field.get(other)
+      }
+      val field1 = field.get(this)
+      val field2 = field.get(other)
+      if (!wasAccessible) {
         field.isAccessible = false
+      }
 
-        if (!EquivalenceUtils.areObjectsEquivalent(field1, field2)) {
-          return false
-        }
+      if (!EquivalenceUtils.areObjectsEquivalent(field1, field2)) {
+        return false
       }
     }
 
