@@ -277,13 +277,12 @@ public abstract class Component extends ComponentLifecycle
       final Component component = (Component) super.clone();
 
       component.mLayoutVersionGenerator = new AtomicBoolean();
-      if (!ComponentsConfiguration.useStatelessComponent) {
-        component.mGlobalKey = null;
-        component.mIsLayoutStarted = false;
-        component.mScopedContext = null;
-        component.mChildCounters = null;
-        component.mManualKeysCounter = null;
-      }
+      component.mGlobalKey = null;
+      component.mIsLayoutStarted = false;
+      component.mScopedContext = null;
+      component.mChildCounters = null;
+      component.mManualKeysCounter = null;
+
       return component;
     } catch (CloneNotSupportedException e) {
       // This class implements Cloneable, so this is impossible
@@ -823,7 +822,7 @@ public abstract class Component extends ComponentLifecycle
   protected final ComponentContext updateInternalChildState(
       ComponentContext parentContext, @Nullable String existingGlobalKey) {
 
-    String globalKey = ComponentUtils.getGlobalKey(this, existingGlobalKey);
+    String globalKey = existingGlobalKey;
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (globalKey == null) {

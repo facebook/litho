@@ -458,7 +458,10 @@ class Layout {
     final Component component = original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
-      component.setGlobalKey(ComponentUtils.getGlobalKey(original, globalKeyToReuse));
+      if (ComponentsConfiguration.useGlobalKeys && globalKeyToReuse == null) {
+        throw new IllegalStateException("Cannot reuse a null global key");
+      }
+      component.setGlobalKey(globalKeyToReuse);
     }
 
     final TreeProps ancestor = parent.getTreeProps();
