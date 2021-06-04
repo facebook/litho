@@ -83,14 +83,12 @@ public class ComponentKeyUtils {
     if (parentComponent == null) {
       globalKey = key;
     } else {
-      if (Component.getGlobalKey(parentContext, parentComponent) == null) {
+      final String parentGlobalKey = Component.getGlobalKey(parentContext, parentComponent);
+      if (parentGlobalKey == null) {
         logParentHasNullGlobalKey(parentComponent, childComponent);
-
         globalKey = "null" + key;
-
       } else {
-        final String childKey =
-            getKeyWithSeparator(Component.getGlobalKey(parentContext, parentComponent), key);
+        final String childKey = getKeyWithSeparator(parentGlobalKey, key);
         final int index;
 
         if (childComponent.hasManualKey()) {
