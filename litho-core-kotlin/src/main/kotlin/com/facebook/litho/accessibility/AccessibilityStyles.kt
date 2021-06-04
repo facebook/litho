@@ -18,6 +18,7 @@ package com.facebook.litho.accessibility
 
 import com.facebook.litho.AccessibilityRole.AccessibilityRoleType
 import com.facebook.litho.Component
+import com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
@@ -26,6 +27,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_AC
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
+import com.facebook.litho.eventHandler
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 
@@ -36,6 +38,7 @@ private enum class AccessibilityField {
   ACCESSIBILITY_ROLE_DESCRIPTION,
   CONTENT_DESCRIPTION,
   IMPORTANT_FOR_ACCESSIBILITY,
+  ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
 }
 
 private class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) : StyleItem {
@@ -50,6 +53,9 @@ private class AccessibilityStyleItem(val field: AccessibilityField, val value: A
           commonProps.contentDescription(value as CharSequence)
       AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY ->
           commonProps.importantForAccessibility((value as ImportantForAccessibility).asInt)
+      AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO ->
+          commonProps.onInitializeAccessibilityNodeInfoHandler(
+              eventHandler(value as (OnInitializeAccessibilityNodeInfoEvent) -> Unit))
     }.exhaustive
   }
 }
@@ -100,6 +106,19 @@ fun Style.importantForAccessibility(importantForAccessibility: ImportantForAcces
     this +
         AccessibilityStyleItem(
             AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility)
+
+/**
+ * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.
+ *
+ * See [android.view.View.AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo].
+ */
+fun Style.onInitializeAccessibilityNodeInfo(
+    onInitializeAccessibilityNodeInfoHandler: (OnInitializeAccessibilityNodeInfoEvent) -> Unit
+) =
+    this +
+        AccessibilityStyleItem(
+            AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
+            onInitializeAccessibilityNodeInfoHandler)
 
 /** Enum values for [importantForAccessibility]. */
 enum class ImportantForAccessibility(internal val asInt: Int) {
