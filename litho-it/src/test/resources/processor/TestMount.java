@@ -178,6 +178,26 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
+  protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
+    if (current.getParentTreeProp(
+                com.facebook.litho.processor.integration.resources.TestTreeProp.class)
+            != null
+        ? !current
+            .getParentTreeProp(
+                com.facebook.litho.processor.integration.resources.TestTreeProp.class)
+            .equals(
+                next.getParentTreeProp(
+                    com.facebook.litho.processor.integration.resources.TestTreeProp.class))
+        : next.getParentTreeProp(
+                com.facebook.litho.processor.integration.resources.TestTreeProp.class)
+            != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
   protected void copyInterStageImpl(
       InterStagePropsContainer copyIntoInterStagePropsContainer,
       InterStagePropsContainer copyFromInterStagePropsContainer) {

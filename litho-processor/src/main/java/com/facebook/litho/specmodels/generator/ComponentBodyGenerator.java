@@ -121,6 +121,13 @@ public class ComponentBodyGenerator {
       builder.addMethod(generateIsEquivalentMethod(specModel, runMode));
     }
 
+    if (specModel.shouldGenerateIsEquivalentTo()
+        && specModel.getTreeProps() != null
+        && !specModel.getTreeProps().isEmpty()
+        && specModel.getContextClass().equals(ClassNames.COMPONENT_CONTEXT)) {
+      builder.addMethod(generateIsEqualivalentTreePropsMethod(specModel, runMode));
+    }
+
     if (hasInterstageProps) {
       builder.addTypeSpecDataHolder(
           generateCopyInterStageImpl(specModel, interstagepropsContainerClass));
@@ -454,6 +461,35 @@ public class ComponentBodyGenerator {
     return eventTriggerName.substring(0, 1).toLowerCase(Locale.ROOT)
         + eventTriggerName.substring(1)
         + "Trigger";
+  }
+
+  static MethodSpec generateIsEqualivalentTreePropsMethod(
+      SpecModel specModel, EnumSet<RunMode> runMode) {
+    MethodSpec.Builder isEquivalentBuilder =
+        MethodSpec.methodBuilder("isEqualivalentTreeProps")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PROTECTED)
+            .returns(TypeName.BOOLEAN)
+            .addParameter(specModel.getContextClass(), "current")
+            .addParameter(specModel.getContextClass(), "next");
+    for (TreePropModel treeProp : specModel.getTreeProps()) {
+      isEquivalentBuilder.addCode(
+          getCompareStatement(
+              "isEqualivalentTreeProps",
+              treeProp,
+              "current.getParentTreeProp("
+                  + TreePropGenerator.findTypeByTypeName(treeProp.getTypeName())
+                  + ".class"
+                  + ")",
+              "next.getParentTreeProp("
+                  + TreePropGenerator.findTypeByTypeName(treeProp.getTypeName())
+                  + ".class"
+                  + ")",
+              runMode));
+    }
+
+    isEquivalentBuilder.addStatement("return true");
+    return isEquivalentBuilder.build();
   }
 
   static MethodSpec generateIsEquivalentMethod(SpecModel specModel, EnumSet<RunMode> runMode) {

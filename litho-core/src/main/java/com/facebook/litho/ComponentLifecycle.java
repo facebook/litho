@@ -591,6 +591,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
+  protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
+    return true;
+  }
+
   final boolean shouldComponentUpdate(
       final @Nullable ComponentContext previousScopedContext,
       Component currentComponent,
@@ -618,9 +622,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
     if (ComponentsConfiguration.useTreePropsfromContext) {
       return shouldUpdate
-          || !CommonUtils.equals(
-              previousScopedContext == null ? null : previousScopedContext.getParentTreeProps(),
-              nextScopedContext == null ? null : nextScopedContext.getParentTreeProps());
+          || (previousScopedContext != null
+              && nextScopedContext != null
+              && currentComponent != null
+              && !currentComponent.isEqualivalentTreeProps(
+                  previousScopedContext, nextScopedContext));
     }
 
     return shouldUpdate;
