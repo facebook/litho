@@ -16,12 +16,15 @@
 
 package com.facebook.litho.widget;
 
+import android.graphics.Color;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.Output;
+import com.facebook.litho.Row;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.FromPreviousCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
@@ -42,7 +45,19 @@ public class LayoutSpecInterStagePropsTesterSpec {
       Output<Boolean> shouldLayoutWithSizeSpec) {
     shouldLayoutWithSizeSpec.set(true);
     steps.add(new LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC));
-    return Column.create(c).widthPx(SizeSpec.getSize(widthSpec)).build();
+    return Column.create(c)
+        .child(
+            Wrapper.create(c)
+                .delegate(
+                    DelegatingLayout.create(c)
+                        .delegate(
+                            SolidColor.create(c)
+                                .color(Color.BLACK)
+                                .widthPx(SizeSpec.getSize(widthSpec)))
+                        .build())
+                .build())
+        .child(Row.create(c).heightPx(SizeSpec.getSize(heightSpec)))
+        .build();
   }
 
   @OnShouldCreateLayoutWithNewSizeSpec

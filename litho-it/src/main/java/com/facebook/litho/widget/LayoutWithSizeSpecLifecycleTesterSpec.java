@@ -16,12 +16,16 @@
 
 package com.facebook.litho.widget;
 
+import android.graphics.Color;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
+import com.facebook.litho.Row;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
@@ -51,6 +55,16 @@ class LayoutWithSizeSpecLifecycleTesterSpec {
     if (state == null) {
       throw new IllegalStateException("OnCreateLayout called without initialised state.");
     }
-    return Column.create(c).build();
+    return Column.create(c)
+        .child(
+            Wrapper.create(c)
+                .delegate(
+                    DelegatingLayout.create(c)
+                        .delegate(
+                            SolidColor.create(c).color(Color.BLACK).widthPx(SizeSpec.getSize(w)))
+                        .build())
+                .build())
+        .child(Row.create(c).heightPx(SizeSpec.getSize(h)))
+        .build();
   }
 }

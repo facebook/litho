@@ -40,6 +40,7 @@ public class RootComponentWithTreePropsSpec {
       @Prop(optional = true) LifecycleStep crashFromStep) {
     return Row.create(c)
         .key("Row")
+        .flexGrow(1)
         .child(
             shouldNotUpdateState
                 ? Text.create(c).text("hello world")

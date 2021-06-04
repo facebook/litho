@@ -154,7 +154,7 @@ public class InterStagePropsTest {
     final RootComponentInterStageProps component =
         RootComponentInterStageProps.create(c).steps(info).build();
 
-    mLithoViewRule.setRoot(component).attachToWindow().setSizePx(100, 100).measure().layout();
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
     assertThat(getSteps(info))
         .containsExactly(

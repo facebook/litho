@@ -356,9 +356,9 @@ public class ComponentLifecycleErrorTest {
     Component component =
         TestErrorBoundary.create(context).errorOutput(errorOutput).child(crashingComponent).build();
 
-    mLithoViewRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout();
+    mLithoViewRule.attachToWindow().measure().setRoot(component).layout();
 
-    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    Exception error = errorOutput.size() > 0 ? errorOutput.get(0) : null;
     assertThat(error).isInstanceOf(RuntimeException.class);
     assertThat(error).hasMessage("onShouldCreateLayoutWithSizeSpec crash");
   }

@@ -103,7 +103,6 @@ public class NestedTreeResolutionTest {
     mLithoViewRule
         .setTreeProp(ExtraProps.class, props)
         .attachToWindow()
-        .setSizePx(100, 100)
         .measure()
         .setRoot(component)
         .layout();

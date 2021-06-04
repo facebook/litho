@@ -25,6 +25,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester;
 import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -88,12 +89,9 @@ public class LayoutWithSizeSpecLifecycleTest {
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Row.create(c)
-            .child(SolidColor.create(c).color(Color.BLACK).widthDip(100).heightDip(100))
-            .child(
-                LayoutWithSizeSpecLifecycleTester.create(c)
-                    .steps(info)
-                    .widthPercent(50)
-                    .heightPercent(50))
+            .flexGrow(1)
+            .child(LayoutWithSizeSpecLifecycleTester.create(c).flexGrow(1).steps(info))
+            .child(Text.create(c).text("Hello World"))
             .build();
 
     mLithoViewRule.setRoot(component);
