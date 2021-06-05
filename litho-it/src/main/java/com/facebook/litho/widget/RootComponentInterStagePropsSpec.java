@@ -20,7 +20,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.Row;
-import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -38,23 +37,13 @@ public class RootComponentInterStagePropsSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
     return Row.create(c)
-        .flexGrow(1)
         .key("Row")
-        .child(
-            DelegatingLayout.create(c)
-                .delegate(
-                    DelegatingLayout.create(c)
-                        .delegate(
-                            Wrapper.create(c)
-                                .delegate(
-                                    LayoutSpecInterStagePropsTester.create(c)
-                                        .flexGrow(1)
-                                        .steps(steps)
-                                        .key("LayoutSpecInterStagePropsTester")
-                                        .build())
-                                .build())
-                        .build()))
         .child(Text.create(c).text("hello world"))
+        .child(
+            LayoutSpecInterStagePropsTester.create(c)
+                .steps(steps)
+                .key("LayoutSpecInterStagePropsTester")
+                .flexGrow(1))
         .build();
   }
 

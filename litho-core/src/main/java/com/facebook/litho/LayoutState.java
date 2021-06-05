@@ -751,19 +751,13 @@ public class LayoutState
             .arg("rootComponentId", node.getTailComponent().getId())
             .flush();
       }
-
-      LithoLayoutResult nestedTree = ((NestedTreeHolderResult) result).getNestedResult();
-
-      if (nestedTree == null) {
-        nestedTree =
-            Layout.create(
-                parentContext,
-                (NestedTreeHolderResult) result,
-                SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
-                SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
-                layoutState.mPrevLayoutStateContext);
-      }
-
+      LithoLayoutResult nestedTree =
+          Layout.create(
+              parentContext,
+              (NestedTreeHolderResult) result,
+              SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
+              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
+              layoutState.mPrevLayoutStateContext);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
