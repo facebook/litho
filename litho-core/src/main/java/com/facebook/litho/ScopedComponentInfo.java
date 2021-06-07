@@ -35,22 +35,22 @@ final class ScopedComponentInfo implements Cloneable {
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  private @Nullable SparseIntArray mChildCounters;
+  private final SparseIntArray mChildCounters;
 
   /** Count the times a manual key is used so that clashes can be resolved. */
-  private @Nullable Map<String, Integer> mManualKeysCounter;
+  private final Map<String, Integer> mManualKeysCounter;
+
+  /**
+   * Holds an event handler with its dispatcher set to the parent component, or - in case that this
+   * is a root component - a default handler that reraises the exception.
+   */
+  private final @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
    * LayoutState#mWorkingRangeContainer} when calculate method is finished.
    */
   private @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
-
-  /**
-   * Holds an event handler with its dispatcher set to the parent component, or - in case that this
-   * is a root component - a default handler that reraises the exception.
-   */
-  private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
 
   ScopedComponentInfo(
       final Component component,
@@ -60,7 +60,41 @@ final class ScopedComponentInfo implements Cloneable {
     mContext = context;
     mStateContainer = component.createStateContainer();
     mInterStagePropsContainer = component.createInterStagePropsContainer();
+    mChildCounters = new SparseIntArray(1);
+    mManualKeysCounter = new HashMap<>(1);
     mErrorEventHandler = errorEventHandler;
+  }
+
+  /** Copy constructor */
+  private ScopedComponentInfo(
+      final ScopedComponentInfo info,
+      final LayoutStateContext context,
+      final StateHandler handler) {
+
+    mComponent = info.mComponent;
+
+    mStateContainer = mComponent.createStateContainer();
+    mComponent.transferState(info.mStateContainer, mStateContainer);
+
+    mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
+    mComponent.copyInterStageImpl(mInterStagePropsContainer, info.mInterStagePropsContainer);
+
+    mContext = info.mContext.createUpdatedComponentContext(context, handler);
+
+    mChildCounters = new SparseIntArray(info.mChildCounters.size());
+    for (int i = 0; i < info.mChildCounters.size(); i++) {
+      mChildCounters.put(info.mChildCounters.keyAt(i), info.mChildCounters.valueAt(i));
+    }
+
+    mManualKeysCounter = new HashMap<>(info.mManualKeysCounter.size());
+    mManualKeysCounter.putAll(info.mManualKeysCounter);
+
+    if (info.mWorkingRangeRegistrations != null) {
+      mWorkingRangeRegistrations = new ArrayList<>(info.mWorkingRangeRegistrations.size());
+      mWorkingRangeRegistrations.addAll(info.mWorkingRangeRegistrations);
+    }
+
+    mErrorEventHandler = info.mErrorEventHandler;
   }
 
   public ComponentContext getContext() {
@@ -72,10 +106,6 @@ final class ScopedComponentInfo implements Cloneable {
     return mStateContainer;
   }
 
-  void setStateContainer(StateContainer stateContainer) {
-    mStateContainer = stateContainer;
-  }
-
   /**
    * Returns the number of children of a given type {@param component} component has and then
    * increments it by 1.
@@ -84,9 +114,6 @@ final class ScopedComponentInfo implements Cloneable {
    * @return the number of children components of type {@param component}
    */
   int getChildCountAndIncrement(final Component component) {
-    if (mChildCounters == null) {
-      mChildCounters = new SparseIntArray();
-    }
     final int count = mChildCounters.get(component.getTypeId(), 0);
     mChildCounters.put(component.getTypeId(), count + 1);
 
@@ -101,9 +128,6 @@ final class ScopedComponentInfo implements Cloneable {
    * @return
    */
   int getManualKeyUsagesCountAndIncrement(String manualKey) {
-    if (mManualKeysCounter == null) {
-      mManualKeysCounter = new HashMap<>();
-    }
     int manualKeyIndex =
         mManualKeysCounter.containsKey(manualKey) ? mManualKeysCounter.get(manualKey) : 0;
     mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
@@ -155,17 +179,7 @@ final class ScopedComponentInfo implements Cloneable {
    * copied.
    */
   ScopedComponentInfo copy(final LayoutStateContext context, final StateHandler handler) {
-    final ScopedComponentInfo clone = clone();
-
-    clone.mStateContainer = mComponent.createStateContainer();
-    clone.mComponent.transferState(mStateContainer, clone.mStateContainer);
-
-    clone.mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
-    clone.mComponent.copyInterStageImpl(clone.mInterStagePropsContainer, mInterStagePropsContainer);
-
-    clone.mContext = mContext.createUpdatedComponentContext(context, handler);
-
-    return clone;
+    return new ScopedComponentInfo(this, context, handler);
   }
 
   /**
