@@ -63,6 +63,9 @@ public class LithoGeneratedFileProvider {
               } else if (LithoPluginUtils.isMountSpec(cls)) {
                 eventMetadata.put(EventLogger.KEY_CLASS, "mount_spec");
                 return true;
+              } else if (LithoPluginUtils.hasLithoSectionSpecAnnotation(cls)) {
+                eventMetadata.put(EventLogger.KEY_CLASS, "section_spec");
+                return true;
               } else {
                 return false;
               }

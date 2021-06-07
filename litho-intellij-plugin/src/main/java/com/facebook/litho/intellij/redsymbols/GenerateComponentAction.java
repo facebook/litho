@@ -22,6 +22,7 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentGenerateService;
+import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -36,7 +37,8 @@ import java.util.Optional;
 
 /**
  * Updates Component file for the given Spec file. Update logic is defined by the {@link
- * ComponentGenerateService}. Works with {@link LayoutSpec} and {@link MountSpec}.
+ * ComponentGenerateService}. Works with {@link LayoutSpec}, {@link MountSpec}, and {@link
+ * GroupSectionSpec}.
  */
 class GenerateComponentAction extends AnAction {
 
@@ -78,11 +80,6 @@ class GenerateComponentAction extends AnAction {
   static Optional<PsiClass> getValidSpec(AnActionEvent e) {
     return Optional.of(e)
         .map(event -> event.getData(CommonDataKeys.PSI_FILE))
-        .flatMap(
-            psiFile ->
-                LithoPluginUtils.getFirstClass(
-                    psiFile,
-                    cls ->
-                        LithoPluginUtils.isLayoutSpec(cls) || LithoPluginUtils.isMountSpec(cls)));
+        .flatMap(psiFile -> LithoPluginUtils.getFirstClass(psiFile, LithoPluginUtils::isLithoSpec));
   }
 }

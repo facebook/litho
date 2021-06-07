@@ -61,6 +61,19 @@ public class GenerateComponentActionTest extends LithoPluginIntellijTest {
   }
 
   @Test
+  public void getValidSpec_whenFileHasSectionSpec_returnsSpec() throws IOException {
+    final PsiFile psiFile = testHelper.configure("SectionSpec.java");
+    final AnActionEvent mock = mockEvent(psiFile);
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              assertThat(GenerateComponentAction.getValidSpec(mock).isPresent()).isTrue();
+              assertThat(GenerateComponentAction.getValidSpec(mock).get().getQualifiedName())
+                  .isEqualTo("SectionSpec");
+            });
+  }
+
+  @Test
   public void getValidSpec_whenFileHasNoSpecs_returnsNothing() throws IOException {
     final PsiFile psiFile = testHelper.configure("NotSpec.java");
     final AnActionEvent mock = mockEvent(psiFile);
