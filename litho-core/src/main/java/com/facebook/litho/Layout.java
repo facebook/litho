@@ -322,18 +322,6 @@ class Layout {
     final String globalKey = node.getTailComponentKey();
     final LithoLayoutResult currentLayout = holder.getNestedResult();
 
-    // Find the immediate parent context
-    List<Component> components = node.getComponents();
-    List<String> componentKeys = node.getComponentKeys();
-    if (components.size() > 1) {
-      int index = components.size() - 2;
-      final Component parent = components.get(index);
-      final String parentGlobalKey = ComponentUtils.getGlobalKey(parent, componentKeys.get(index));
-
-      parentContext =
-          parent.getScopedContext(parentContext.getLayoutStateContext(), parentGlobalKey);
-    }
-
     if (component == null) {
       throw new IllegalArgumentException("A component is required to resolve a nested tree.");
     }

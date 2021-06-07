@@ -725,6 +725,7 @@ public class LayoutState
       return;
     }
 
+    final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
     final ComponentContext scopedContext =
@@ -750,13 +751,26 @@ public class LayoutState
             .arg("rootComponentId", node.getTailComponent().getId())
             .flush();
       }
+
+      final int size = node.getComponents().size();
+      final ComponentContext immediateParentContext;
+      if (size == 1) {
+        immediateParentContext = parentContext;
+      } else {
+        immediateParentContext =
+            node.getComponents()
+                .get(1)
+                .getScopedContext(layoutStateContext, node.getComponentKeys().get(1));
+      }
+
       LithoLayoutResult nestedTree =
           Layout.create(
-              parentContext,
+              immediateParentContext,
               (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
               layoutState.mPrevLayoutStateContext);
+
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -1067,7 +1081,6 @@ public class LayoutState
       }
 
       final List<String> componentKeys = node.getComponentKeys();
-      final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
       for (int i = 0, size = node.getComponents().size(); i < size; i++) {
         final Component delegate = node.getComponents().get(i);
         final String delegateKey = ComponentUtils.getGlobalKey(delegate, componentKeys.get(i));

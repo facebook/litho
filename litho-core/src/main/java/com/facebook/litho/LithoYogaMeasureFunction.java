@@ -79,25 +79,21 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
       if (Component.isNestedTree(context, component) || result instanceof NestedTreeHolderResult) {
 
-        // Find the nearest parent component context.
-        final Component head = node.getHeadComponent();
-        final String headKey = node.getHeadComponentKey();
-        final Component parent;
-        final String parentKey;
-
-        if (component != head) { // If the head and tail are different, use the head.
-          parent = head;
-          parentKey = headKey;
-        } else if (result.getParent() != null) { // Otherwise use the tail of the parent node.
-          parent = result.getParent().getInternalNode().getTailComponent();
-          parentKey = result.getParent().getInternalNode().getTailComponentKey();
+        final int size = node.getComponents().size();
+        final ComponentContext parentContext;
+        if (size == 1) {
+          final String parentKey = result.getParent().getInternalNode().getTailComponentKey();
+          parentContext =
+              result
+                  .getParent()
+                  .getInternalNode()
+                  .getTailComponent()
+                  .getScopedContext(context.getLayoutStateContext(), parentKey);
         } else {
-          parent = null;
-          parentKey = null;
-        }
-
-        if (parent != null) {
-          context = parent.getScopedContext(layoutStateContext, parentKey);
+          parentContext =
+              node.getComponents()
+                  .get(1)
+                  .getScopedContext(layoutStateContext, node.getComponentKeys().get(1));
         }
 
         final LayoutStateContext prevLayoutStateContext =
@@ -107,7 +103,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
         final LithoLayoutResult nestedTree =
             Layout.create(
-                context,
+                parentContext,
                 (NestedTreeHolderResult) result,
                 widthSpec,
                 heightSpec,
