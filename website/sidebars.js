@@ -72,6 +72,7 @@ module.exports = {
           ],
         },
         'fb/kotlin/kotlin-flexbox-containers',
+        'fb/kotlin/event-handling',
         'fb/kotlin/kotlin-api-cheatsheet',
       ],
     }),
