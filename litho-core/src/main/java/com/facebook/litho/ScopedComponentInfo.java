@@ -128,11 +128,14 @@ final class ScopedComponentInfo implements Cloneable {
    * @return
    */
   int getManualKeyUsagesCountAndIncrement(String manualKey) {
-    int manualKeyIndex =
-        mManualKeysCounter.containsKey(manualKey) ? mManualKeysCounter.get(manualKey) : 0;
-    mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
+    Integer count = mManualKeysCounter.get(manualKey);
+    if (count == null) {
+      count = 0;
+    }
 
-    return manualKeyIndex;
+    mManualKeysCounter.put(manualKey, count + 1);
+
+    return count;
   }
 
   @Nullable
