@@ -328,9 +328,7 @@ class Layout {
     if (components.size() > 1) {
       int index = components.size() - 2;
       final Component parent = components.get(index);
-      final String parentGlobalKey =
-          ComponentUtils.getGlobalKey(
-              parent, componentKeys == null ? null : componentKeys.get(index));
+      final String parentGlobalKey = ComponentUtils.getGlobalKey(parent, componentKeys.get(index));
 
       parentContext =
           parent.getScopedContext(parentContext.getLayoutStateContext(), parentGlobalKey);
@@ -653,8 +651,7 @@ class Layout {
       final LayoutStateContext diffNodeLayoutStateContext,
       final DiffNode diffNode) {
     final Component component = layoutNode.getTailComponent();
-    final String componentKey =
-        ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
+    final String componentKey = layoutNode.getTailComponentKey();
     if (component != null) {
       component.copyInterStageImpl(
           component.getInterStagePropsContainer(nextLayoutStateContext, componentKey),
@@ -787,8 +784,7 @@ class Layout {
     final Component component = layoutNode.getTailComponent();
 
     if (component != null) {
-      final String globalKey =
-          ComponentUtils.getGlobalKey(component, layoutNode.getTailComponentKey());
+      final String globalKey = layoutNode.getTailComponentKey();
       final ComponentContext scopedContext =
           component.getScopedContext(layoutStateContext, globalKey);
 

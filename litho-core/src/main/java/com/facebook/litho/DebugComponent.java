@@ -70,9 +70,7 @@ public final class DebugComponent {
 
     final Component component = node.getComponents().get(componentIndex);
     final String componentKey =
-        ComponentUtils.getGlobalKey(
-            component,
-            node.getComponentKeys() == null ? null : node.getComponentKeys().get(componentIndex));
+        ComponentUtils.getGlobalKey(component, node.getComponentKeys().get(componentIndex));
 
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mResult = result;
@@ -141,8 +139,7 @@ public final class DebugComponent {
 
     final Component component = node.getComponents().get(0);
     final String componentkey =
-        ComponentUtils.getGlobalKey(
-            component, node.getComponentKeys() == null ? null : node.getComponentKeys().get(0));
+        ComponentUtils.getGlobalKey(component, node.getComponentKeys().get(0));
 
     final String key = generateGlobalKey(context, componentkey);
     final Overrider overrider = sOverriders.get(key);
@@ -401,8 +398,8 @@ public final class DebugComponent {
     return mNode.getComponents().get(mComponentIndex);
   }
 
-  private @Nullable String getGlobalKeyFromNode() {
-    return mNode.getComponentKeys() == null ? null : mNode.getComponentKeys().get(mComponentIndex);
+  private String getGlobalKeyFromNode() {
+    return mNode.getComponentKeys().get(mComponentIndex);
   }
 
   /** @return If this debug component represents a layout node, return it. */

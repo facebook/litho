@@ -417,10 +417,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     try {
-      return ComponentUtils.getGlobalKey(layout.getHeadComponent(), layout.getHeadComponentKey())
-              .startsWith(context.getGlobalKey())
-          ? layout
-          : null;
+      return layout.getHeadComponentKey().startsWith(context.getGlobalKey()) ? layout : null;
     } catch (NullPointerException ex) {
       if (ComponentsConfiguration.throwExceptionWillRenderGlobalKeyNull) {
         throw new IllegalStateException(

@@ -564,8 +564,7 @@ public class LayoutState
     final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
         node.getVisibilityChangedHandler();
     final Component component = node.getTailComponent();
-    final String componentGlobalKey =
-        ComponentUtils.getGlobalKey(component, node.getTailComponentKey());
+    final String componentGlobalKey = node.getTailComponentKey();
 
     return new VisibilityOutput(
         component != null ? componentGlobalKey : "null",
@@ -1071,9 +1070,7 @@ public class LayoutState
       final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
       for (int i = 0, size = node.getComponents().size(); i < size; i++) {
         final Component delegate = node.getComponents().get(i);
-        final String delegateKey =
-            ComponentUtils.getGlobalKey(
-                delegate, componentKeys == null ? null : componentKeys.get(i));
+        final String delegateKey = ComponentUtils.getGlobalKey(delegate, componentKeys.get(i));
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
         // previous ComponentTree with the new component dispatched, otherwise Section children

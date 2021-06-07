@@ -750,9 +750,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public @Nullable String getTransitionGlobalKey() {
-    final Component component = getTailComponent();
-    return component != null ? ComponentUtils.getGlobalKey(component, getTailComponentKey()) : null;
+  public String getTransitionGlobalKey() {
+    return getTailComponentKey();
   }
 
   @Override
@@ -1218,9 +1217,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mComponentsNeedingPreviousRenderData = null;
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
-      final String key =
-          ComponentUtils.getGlobalKey(
-              component, componentKeys == null ? null : componentKeys.get(i));
+      final String key = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
       if (component.needsPreviousRenderData()) {
         addComponentNeedingPreviousRenderData(key, component);
       }
@@ -1654,16 +1651,14 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 1.1 Check if any component has mutations
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
-      final String key =
-          ComponentUtils.getGlobalKey(
-              component, componentKeys == null ? null : componentKeys.get(i));
+      final String key = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
       if (keys.contains(key)) {
         return ReconciliationMode.RECREATE;
       }
     }
 
     // 2.0 Check if any descendants have mutations
-    final String rootKey = ComponentUtils.getGlobalKey(root, current.getHeadComponentKey());
+    final String rootKey = current.getHeadComponentKey();
     for (String key : keys) {
       if (key.startsWith(rootKey)) {
         return ReconciliationMode.RECONCILE;
