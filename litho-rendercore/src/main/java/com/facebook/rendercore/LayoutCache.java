@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public final class LayoutCache {
   static final class CachedData {
-    private final Map<Node<?>, Node.LayoutResult<?>> mCacheByNode = new HashMap<>();
+    private final Map<Node<?>, Node.LayoutResult> mCacheByNode = new HashMap<>();
     private final LongSparseArray<Object> mCacheById = new LongSparseArray<>();
   }
 
@@ -47,11 +47,11 @@ public final class LayoutCache {
   }
 
   @Nullable
-  public Node.LayoutResult<?> get(Node<?> node) {
+  public Node.LayoutResult get(Node<?> node) {
     return mReadCache == null ? null : mReadCache.mCacheByNode.get(node);
   }
 
-  public void put(Node<?> node, Node.LayoutResult<?> layout) {
+  public void put(Node<?> node, Node.LayoutResult layout) {
     mWriteCache.mCacheByNode.put(node, layout);
   }
 

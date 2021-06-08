@@ -57,7 +57,7 @@ public class RendercoreTestDriver {
     /** Supply the root Node of the tree. */
     LayoutBuilderPart withNode(Node rootNode);
 
-    LayoutBuilderPart withLayoutResult(Node.LayoutResult<?> result);
+    LayoutBuilderPart withLayoutResult(Node.LayoutResult result);
   }
 
   public interface LayoutBuilderPart {
@@ -102,7 +102,7 @@ public class RendercoreTestDriver {
     }
 
     @Override
-    public LayoutBuilderPart withLayoutResult(Node.LayoutResult<?> result) {
+    public LayoutBuilderPart withLayoutResult(Node.LayoutResult result) {
       mRootNode = new SimpleWrapperNode(result);
       return this;
     }

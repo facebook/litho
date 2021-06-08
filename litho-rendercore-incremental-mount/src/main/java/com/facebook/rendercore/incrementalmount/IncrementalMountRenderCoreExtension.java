@@ -1,4 +1,18 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.rendercore.incrementalmount;
 
@@ -185,7 +199,7 @@ public class IncrementalMountRenderCoreExtension
     @Override
     public void visit(
         final @Nullable RenderTreeNode parent,
-        final Node.LayoutResult<?> result,
+        final Node.LayoutResult result,
         final Rect bounds,
         final int x,
         final int y,
@@ -223,7 +237,7 @@ public class IncrementalMountRenderCoreExtension
    * enable the extension to collect the required data from the {@link LayoutResult} during the
    * layout pass.
    */
-  public interface InputProvider<R extends LayoutResult<?>> {
+  public interface InputProvider<R extends LayoutResult> {
 
     /** Return {@code true} if the {@param result} will host any {@link RenderTreeHost}. */
     boolean hasRenderTreeHosts(R result);

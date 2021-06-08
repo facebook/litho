@@ -93,7 +93,7 @@ public class VisibilityExtension
     @Override
     public void visit(
         final @Nullable RenderTreeNode parent,
-        final Node.LayoutResult<?> layoutResult,
+        final Node.LayoutResult layoutResult,
         final Rect bounds,
         final int x,
         final int y,

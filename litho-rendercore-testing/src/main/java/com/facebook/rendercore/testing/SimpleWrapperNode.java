@@ -22,14 +22,14 @@ import com.facebook.rendercore.RenderState.LayoutContext;
 
 public class SimpleWrapperNode implements Node {
 
-  private final LayoutResult<?> mLayoutResult;
+  private final LayoutResult mLayoutResult;
 
-  public SimpleWrapperNode(LayoutResult<?> layoutResult) {
+  public SimpleWrapperNode(LayoutResult layoutResult) {
     mLayoutResult = layoutResult;
   }
 
   @Override
-  public LayoutResult<?> calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
+  public LayoutResult calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
     return mLayoutResult;
   }
 

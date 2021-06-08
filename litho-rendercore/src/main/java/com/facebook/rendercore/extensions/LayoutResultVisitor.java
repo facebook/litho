@@ -45,7 +45,7 @@ public interface LayoutResultVisitor<State> {
    */
   void visit(
       final @Nullable RenderTreeNode parent,
-      final LayoutResult<?> result,
+      final LayoutResult result,
       final Rect bounds,
       final int x,
       final int y,

@@ -52,7 +52,7 @@ public class SimpleLayoutResult implements LayoutResult {
   private final int paddingRight;
   private final int paddingBottom;
   private final int paddingLeft;
-  private final List<LayoutResult<?>> mChildren;
+  private final List<LayoutResult> mChildren;
   private final Object mLayoutData;
 
   public SimpleLayoutResult(
@@ -64,7 +64,7 @@ public class SimpleLayoutResult implements LayoutResult {
       int paddingRight,
       int paddingBottom,
       int paddingLeft,
-      List<LayoutResult<?>> children,
+      List<LayoutResult> children,
       @Nullable RenderUnit<?> renderUnit,
       @Nullable Object layoutData) {
     mX = x;
@@ -82,7 +82,7 @@ public class SimpleLayoutResult implements LayoutResult {
 
   public SimpleLayoutResult(
       @Nullable RenderUnit<?> renderUnit, Object layoutData, int x, int y, int width, int height) {
-    this(x, y, width, height, 0, 0, 0, 0, new ArrayList<LayoutResult<?>>(), renderUnit, layoutData);
+    this(x, y, width, height, 0, 0, 0, 0, new ArrayList<LayoutResult>(), renderUnit, layoutData);
   }
 
   public SimpleLayoutResult(RenderUnit<?> renderUnit, int x, int y, int width, int height) {
@@ -106,7 +106,7 @@ public class SimpleLayoutResult implements LayoutResult {
   }
 
   @Override
-  public LayoutResult<?> getChildAt(int index) {
+  public LayoutResult getChildAt(int index) {
     return mChildren.get(index);
   }
 
@@ -164,7 +164,7 @@ public class SimpleLayoutResult implements LayoutResult {
     return new Builder();
   }
 
-  public List<LayoutResult<?>> getChildren() {
+  public List<LayoutResult> getChildren() {
     return mChildren;
   }
 
@@ -179,7 +179,7 @@ public class SimpleLayoutResult implements LayoutResult {
     private int paddingBottom;
     private int paddingLeft;
 
-    private List<LayoutResult<?>> children = new ArrayList<>();
+    private List<LayoutResult> children = new ArrayList<>();
 
     private @Nullable RenderUnit<?> renderUnit;
     private @Nullable Object layoutData;
@@ -212,7 +212,7 @@ public class SimpleLayoutResult implements LayoutResult {
       return this;
     }
 
-    public Builder child(LayoutResult<?> child) {
+    public Builder child(LayoutResult child) {
       this.children.add(child);
       return this;
     }

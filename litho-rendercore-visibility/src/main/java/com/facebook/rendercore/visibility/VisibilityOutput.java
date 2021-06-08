@@ -223,7 +223,7 @@ public class VisibilityOutput {
    * create a {@link VisibilityOutput} for every visited {@link LayoutResult} during the layout
    * pass.
    */
-  public interface Factory<R extends LayoutResult<?>> {
+  public interface Factory<R extends LayoutResult> {
 
     /**
      * @param result The {@link LayoutResult} for which a {@link VisibilityOutput} is required

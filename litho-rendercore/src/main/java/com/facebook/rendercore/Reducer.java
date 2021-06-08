@@ -47,7 +47,7 @@ public class Reducer {
 
   private static void reduceTree(
       final Context context,
-      final LayoutResult<?> layoutResult,
+      final LayoutResult layoutResult,
       final RenderTreeNode parent,
       final int x,
       final int y,
@@ -127,7 +127,7 @@ public class Reducer {
   }
 
   private static RenderTreeNode createRenderTreeNode(
-      final LayoutResult<?> layoutResult,
+      final LayoutResult layoutResult,
       final RenderUnit<?> renderUnit,
       final Rect bounds,
       final @Nullable RenderTreeNode parent) {
@@ -160,7 +160,7 @@ public class Reducer {
 
   public static RenderTree getReducedTree(
       final Context context,
-      final LayoutResult<?> layoutResult,
+      final LayoutResult layoutResult,
       final int widthSpec,
       final int heightSpec,
       final @Nullable RenderCoreExtension<?, ?>[] extensions) {
@@ -203,7 +203,7 @@ public class Reducer {
 
   private static void visit(
       final @Nullable RenderTreeNode parent,
-      final LayoutResult<?> result,
+      final LayoutResult result,
       final Rect bounds,
       final int absoluteX,
       final int absoluteY,

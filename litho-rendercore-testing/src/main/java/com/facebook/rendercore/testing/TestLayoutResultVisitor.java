@@ -29,7 +29,7 @@ public class TestLayoutResultVisitor implements LayoutResultVisitor<List<Result>
   @Override
   public void visit(
       final @Nullable RenderTreeNode parent,
-      final LayoutResult<?> result,
+      final LayoutResult result,
       final Rect bounds,
       final int x,
       final int y,
@@ -46,7 +46,7 @@ public class TestLayoutResultVisitor implements LayoutResultVisitor<List<Result>
     public final int x;
     public final int y;
 
-    public Result(LayoutResult<?> result, Rect bounds, int x, int y) {
+    public Result(LayoutResult result, Rect bounds, int x, int y) {
       this.result = result;
       this.bounds = bounds;
       this.x = x;

@@ -58,7 +58,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new TextView(c), 1))
             .width(100)
@@ -83,7 +83,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new TextView(c), 1))
             .width(100)
@@ -108,7 +108,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new TextView(c), 1))
             .width(100)
@@ -142,7 +142,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new HostView(c), 0))
             .width(100)
@@ -208,7 +208,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new HostView(c), 0))
             .width(100)
@@ -261,7 +261,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new HostView(c), 0))
             .width(300)
@@ -327,7 +327,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .width(100)
             .height(201)
@@ -366,7 +366,7 @@ public class IncrementalMountExtensionTest {
     assertThat(host.getChildCount()).isEqualTo(2);
     assertThat(((HostView) host.getChildAt(0)).getChildCount()).isEqualTo(1);
 
-    final LayoutResult<?> newRoot =
+    final LayoutResult newRoot =
         SimpleLayoutResult.create()
             .width(100)
             .height(201)
@@ -424,7 +424,7 @@ public class IncrementalMountExtensionTest {
     final RenderCoreExtension[] extensions =
         new RenderCoreExtension[] {new IncrementalMountRenderCoreExtension(TestProvider.INSTANCE)};
 
-    final LayoutResult<?> root =
+    final LayoutResult root =
         SimpleLayoutResult.create()
             .renderUnit(new SimpleViewUnit(new HostView(c), 1))
             .width(100)

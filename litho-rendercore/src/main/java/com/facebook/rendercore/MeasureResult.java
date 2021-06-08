@@ -1,20 +1,34 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 
-public class MeasureResult<T> implements Node.LayoutResult<T> {
+public class MeasureResult implements Node.LayoutResult {
 
-  private final @Nullable RenderUnit mRenderUnit;
+  private final @Nullable RenderUnit<?> mRenderUnit;
   private final int mMeasuredWidth;
   private final int mMeasuredHeight;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final T mLayoutData;
+  private final Object mLayoutData;
 
   public MeasureResult(
-      @Nullable RenderUnit renderUnit,
+      @Nullable RenderUnit<?> renderUnit,
       int widthSpec,
       int heightSpec,
       int measuredWidth,
@@ -23,12 +37,12 @@ public class MeasureResult<T> implements Node.LayoutResult<T> {
   }
 
   public MeasureResult(
-      @Nullable RenderUnit renderUnit,
+      @Nullable RenderUnit<?> renderUnit,
       int widthSpec,
       int heightSpec,
       int measuredWidth,
       int measuredHeight,
-      T layoutData) {
+      Object layoutData) {
     mRenderUnit = renderUnit;
     mMeasuredWidth = measuredWidth;
     mMeasuredHeight = measuredHeight;
@@ -45,7 +59,7 @@ public class MeasureResult<T> implements Node.LayoutResult<T> {
 
   @Nullable
   @Override
-  public final T getLayoutData() {
+  public final Object getLayoutData() {
     return mLayoutData;
   }
 

@@ -62,18 +62,18 @@ public interface Node<RenderContext> extends Copyable {
    * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
    * and all the layout information needed to position the content of such Node.
    */
-  interface LayoutResult<T> {
+  interface LayoutResult {
 
     /** @return the RenderUnit that should be rendered by this layout result. */
     @Nullable
-    RenderUnit getRenderUnit();
+    RenderUnit<?> getRenderUnit();
 
     /**
      * @return layout specific data that was generated during the layout pass that created this
      *     LayoutResult.
      */
     @Nullable
-    T getLayoutData();
+    Object getLayoutData();
 
     /** @return the number of children of this LayoutResult. */
     int getChildrenCount();
