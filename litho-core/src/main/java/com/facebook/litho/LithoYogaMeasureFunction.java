@@ -52,7 +52,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         return 0;
       }
 
-      final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
+      final DiffNode diffNode = result.areCachedMeasuresValid() ? result.getDiffNode() : null;
 
       final int widthSpec;
       final int heightSpec;
@@ -143,11 +143,11 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         outputWidth = size.width;
         outputHeight = size.height;
 
-        if (node.getDiffNode() != null) {
-          node.getDiffNode().setLastWidthSpec(widthSpec);
-          node.getDiffNode().setLastHeightSpec(heightSpec);
-          node.getDiffNode().setLastMeasuredWidth(outputWidth);
-          node.getDiffNode().setLastMeasuredHeight(outputHeight);
+        if (result.getDiffNode() != null) {
+          result.getDiffNode().setLastWidthSpec(widthSpec);
+          result.getDiffNode().setLastHeightSpec(heightSpec);
+          result.getDiffNode().setLastMeasuredWidth(outputWidth);
+          result.getDiffNode().setLastMeasuredHeight(outputHeight);
         }
       }
 
