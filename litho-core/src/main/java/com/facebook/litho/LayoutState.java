@@ -1554,7 +1554,9 @@ public class LayoutState
             Layout.createAndMeasureComponent(
                 c,
                 component,
-                isReconcilable ? component.getKey() : null,
+                isReconcilable
+                    ? currentLayoutState.mLayoutRoot.getInternalNode().getHeadComponentKey()
+                    : null,
                 widthSpec,
                 heightSpec,
                 isReconcilable ? currentLayoutState.mLayoutRoot : null,
@@ -1869,6 +1871,7 @@ public class LayoutState
 
     if (currentLayoutState == null
         || currentLayoutState.mLayoutRoot == null
+        || currentLayoutState.mLayoutRoot == NullLayoutResult.INSTANCE
         || !c.isReconciliationEnabled()) {
       return false;
     }
@@ -1878,12 +1881,18 @@ public class LayoutState
       return false;
     }
 
-    final Component previous = currentLayoutState.mComponent;
-    if (!ComponentUtils.isSameComponentType(previous, nextRootComponent)) {
+    final Component previousRootComponent =
+        currentLayoutState.mLayoutRoot.getInternalNode().getHeadComponent();
+
+    if (!nextRootComponent.getKey().equals(previousRootComponent.getKey())) {
       return false;
     }
 
-    if (!ComponentUtils.isEquivalent(previous, nextRootComponent)) {
+    if (!ComponentUtils.isSameComponentType(previousRootComponent, nextRootComponent)) {
+      return false;
+    }
+
+    if (!ComponentUtils.isEquivalent(previousRootComponent, nextRootComponent)) {
       return false;
     }
 

@@ -58,6 +58,12 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   private static final int STATE_VALUE_INITIAL_COUNT = 4;
 
+  private String root;
+  private String A;
+  private String B;
+  private String C;
+  private String D;
+
   @Before
   public void before() {
     originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
@@ -92,6 +98,11 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
     NodeConfig.sInternalNodeFactory = null;
     NodeConfig.sYogaNodeFactory = null;
+    root = null;
+    A = null;
+    B = null;
+    C = null;
+    D = null;
   }
 
   @Test
@@ -118,13 +129,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateSync("root,B,C", createStateUpdate(), "test", false);
+    mComponentTree.updateStateSync(join(root, B, C), createStateUpdate(), "test", false);
 
     Set<String> set = new HashSet<>();
-    set.add("root");
-    set.add("root,A");
-    set.add("root,B");
-    set.add("root,B,D");
+    set.add(root);
+    set.add(join(root, A));
+    set.add(join(root, B));
+    set.add(join(root, B, D));
     assertCloneCalledForOnly(layout, set);
   }
 
@@ -144,14 +155,14 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test", false);
+    mComponentTree.updateStateAsync(join(root, B, C), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
-    set.add("root");
-    set.add("root,A");
-    set.add("root,B");
-    set.add("root,B,D");
+    set.add(join(root));
+    set.add(join(root, A));
+    set.add(join(root, B));
+    set.add(join(root, B, D));
     assertCloneCalledForOnly(layout, set);
   }
 
@@ -171,13 +182,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateSync("root,B,D", createStateUpdate(), "test", false);
+    mComponentTree.updateStateSync(join(root, B, D), createStateUpdate(), "test", false);
 
     Set<String> set = new HashSet<>();
-    set.add("root");
-    set.add("root,A");
-    set.add("root,B");
-    set.add("root,B,C");
+    set.add(join(root));
+    set.add(join(root, A));
+    set.add(join(root, B));
+    set.add(join(root, B, C));
     assertCloneCalledForOnly(layout, set);
   }
 
@@ -197,14 +208,14 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test", false);
+    mComponentTree.updateStateAsync(join(root, B, D), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
-    set.add("root");
-    set.add("root,A");
-    set.add("root,B");
-    set.add("root,B,C");
+    set.add(join(root));
+    set.add(join(root, A));
+    set.add(join(root, B));
+    set.add(join(root, B, C));
     assertCloneCalledForOnly(layout, set);
   }
 
@@ -224,14 +235,14 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test-0", false);
-    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test-1", false);
+    mComponentTree.updateStateAsync(join(root, B, C), createStateUpdate(), "test-0", false);
+    mComponentTree.updateStateAsync(join(root, B, D), createStateUpdate(), "test-1", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
-    set.add("root");
-    set.add("root,A");
-    set.add("root,B");
+    set.add(join(root));
+    set.add(join(root, A));
+    set.add(join(root, B));
     assertCloneCalledForOnly(layout, set);
   }
 
@@ -260,6 +271,12 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     B = Row.create(c).key("B").child(C).child(D).build();
 
     root = Column.create(c).key("root").child(A).child(B).build();
+
+    this.root = "$root";
+    this.A = "A";
+    this.B = "B";
+    this.C = "C";
+    this.D = "D";
 
     return root;
   }
@@ -379,5 +396,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   private StateContainer.StateUpdate createStateUpdate() {
     return new StateContainer.StateUpdate(0);
+  }
+
+  static String join(String... elements) {
+    StringJoiner joiner = new StringJoiner(",$");
+    for (String e : elements) {
+      joiner.add(e);
+    }
+    return joiner.toString();
   }
 }

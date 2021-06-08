@@ -171,10 +171,10 @@ public class StateUpdatesTest {
     mLithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(mLithoView);
     mComponentTree.updateStateSync(
-        "key", StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
+        "$key", StateUpdateTestComponent.createIncrementStateUpdate(), "test", false);
 
     assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
-    assertThat(getStateContainersMap().keySet().contains("key")).isTrue();
+    assertThat(getStateContainersMap().keySet().contains("$key")).isTrue();
   }
 
   @Test

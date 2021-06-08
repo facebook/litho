@@ -83,7 +83,8 @@ public class DeprecatedLithoTooltipTest {
     mLithoView = getLithoView(mComponentTree);
 
     mAnchorGlobalKey =
-        ComponentKeyUtils.getKeyWithSeparator(Row.create(mContext).build().getTypeId(), KEY_ANCHOR);
+        ComponentKeyUtils.getKeyWithSeparatorForTest(
+            Row.create(mContext).build().getTypeId(), "$" + KEY_ANCHOR);
   }
 
   @Test

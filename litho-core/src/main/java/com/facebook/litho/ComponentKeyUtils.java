@@ -24,7 +24,9 @@ public class ComponentKeyUtils {
   private static final String DUPLICATE_MANUAL_KEY = "ComponentKeyUtils:DuplicateManualKey";
   private static final String NULL_PARENT_KEY = "ComponentKeyUtils:NullParentKey";
 
+  private static final String PREFIX_FOR_MANUAL_KEY = "$";
   private static final String SEPARATOR = ",";
+  private static final String SEPARATOR_FOR_MANUAL_KEY = ",$";
 
   /**
    * @param keyParts a list of objects that will be concatenated to form another component's key
@@ -32,15 +34,15 @@ public class ComponentKeyUtils {
    */
   public static String getKeyWithSeparator(Object... keyParts) {
     final StringBuilder sb = new StringBuilder();
-    sb.append(keyParts[0]);
+    sb.append(PREFIX_FOR_MANUAL_KEY).append(keyParts[0]);
     for (int i = 1; i < keyParts.length; i++) {
-      sb.append(SEPARATOR).append(keyParts[i]);
+      sb.append(SEPARATOR_FOR_MANUAL_KEY).append(keyParts[i]);
     }
 
     return sb.toString();
   }
 
-  public static String getKeyWithSeparator(String parentGlobalKey, String key) {
+  static String getKeyWithSeparator(String parentGlobalKey, String key) {
     int parentLength = parentGlobalKey.length();
     int keyLength = key.length();
     return new StringBuilder(parentLength + keyLength + 1)
@@ -77,7 +79,8 @@ public class ComponentKeyUtils {
       final @Nullable ComponentContext parentContext,
       final @Nullable Component parentComponent,
       final Component childComponent) {
-    final String key = childComponent.getKey();
+    final boolean hasManualKey = childComponent.hasManualKey();
+    final String key = hasManualKey ? "$" + childComponent.getKey() : childComponent.getKey();
     final String globalKey;
 
     if (parentComponent == null) {
@@ -91,13 +94,13 @@ public class ComponentKeyUtils {
         final String childKey = getKeyWithSeparator(parentGlobalKey, key);
         final int index;
 
-        if (childComponent.hasManualKey()) {
+        if (hasManualKey) {
           index =
               Component.getManualKeyUsagesCountAndIncrement(
                   parentContext, parentComponent, childKey);
 
           if (index != 0) {
-            logDuplicateManualKeyWarning(childComponent, key);
+            logDuplicateManualKeyWarning(childComponent, key.substring(1));
           }
 
         } else {
@@ -136,5 +139,15 @@ public class ComponentKeyUtils {
             + component.getSimpleName()
             + " is a duplicate and will be changed into a unique one. "
             + "This will result in unexpected behavior if you don't change it.");
+  }
+
+  public static String getKeyWithSeparatorForTest(Object... keyParts) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(keyParts[0]);
+    for (int i = 1; i < keyParts.length; i++) {
+      sb.append(SEPARATOR).append(keyParts[i]);
+    }
+
+    return sb.toString();
   }
 }
