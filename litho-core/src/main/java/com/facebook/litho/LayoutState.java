@@ -799,9 +799,9 @@ public class LayoutState
     }
 
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
-    final DiffNode currentDiffNode = result.getDiffNode();
+    final DiffNode currentDiffNode = node.getDiffNode();
     final boolean shouldUseCachedOutputs = isMountSpec(component) && currentDiffNode != null;
-    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && result.areCachedMeasuresValid();
+    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {

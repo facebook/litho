@@ -144,6 +144,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
   protected final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
 
+  private @Nullable DiffNode mDiffNode;
   protected @Nullable NodeInfo mNodeInfo;
   protected @Nullable EventHandler<VisibleEvent> mVisibleHandler;
   protected @Nullable EventHandler<FocusedVisibleEvent> mFocusedHandler;
@@ -172,6 +173,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected boolean mDuplicateParentState;
   protected boolean mDuplicateChildrenStates;
   protected boolean mForceViewWrapping;
+  private boolean mCachedMeasuresValid;
 
   protected int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
   protected int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -601,6 +603,16 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
+  public @Nullable DiffNode getDiffNode() {
+    return mDiffNode;
+  }
+
+  @Override
+  public void setDiffNode(@Nullable DiffNode diffNode) {
+    mDiffNode = diffNode;
+  }
+
+  @Override
   public @Nullable EventHandler<FocusedVisibleEvent> getFocusedHandler() {
     return mFocusedHandler;
   }
@@ -682,6 +694,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public @DrawableRes int getStateListAnimatorRes() {
     return mStateListAnimatorRes;
+  }
+
+  @Override
+  public boolean areCachedMeasuresValid() {
+    return mCachedMeasuresValid;
   }
 
   @Override
@@ -904,15 +921,14 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mDebugComponents.add(debugComponent);
   }
 
-  @Deprecated
-  @Override
-  public boolean implementsLayoutDiffing() {
-    return false;
-  }
-
   @Override
   public InternalNode removeChildAt(int index) {
     return mChildren.remove(index);
+  }
+
+  @Override
+  public void setCachedMeasuresValid(boolean valid) {
+    mCachedMeasuresValid = valid;
   }
 
   @Override
@@ -1179,6 +1195,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mComponents = new ArrayList<>();
     mChildren = new ArrayList<>(1);
     mComponentGlobalKeys = new ArrayList<>();
+    mDiffNode = null;
     mDebugComponents = null;
     mFrozen = false;
   }
@@ -1193,6 +1210,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mComponentContext = c;
     mComponents = components;
     mComponentGlobalKeys = componentKeys;
+
+    mDiffNode = diffNode;
 
     // 2. Update props.
     mComponentsNeedingPreviousRenderData = null;

@@ -238,14 +238,7 @@ public class TreeDiffingTest {
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
 
-    LithoLayoutResult layoutTreeRoot =
-        Layout.measure(
-            mContext,
-            createInternalNodeForMeasurableComponent(component2),
-            SizeSpec.UNSPECIFIED,
-            SizeSpec.UNSPECIFIED,
-            null,
-            node);
+    InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
     Layout.applyDiffNodeToUnchangedNodes(
         mContext.getLayoutStateContext(),
         layoutTreeRoot,
@@ -271,29 +264,22 @@ public class TreeDiffingTest {
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
 
-    LithoLayoutResult layoutTreeRoot =
-        Layout.measure(
-            mContext,
-            createInternalNodeForMeasurableComponent(component2),
-            SizeSpec.UNSPECIFIED,
-            SizeSpec.UNSPECIFIED,
-            null,
-            node);
+    InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
     Layout.applyDiffNodeToUnchangedNodes(
         mContext.getLayoutStateContext(),
         layoutTreeRoot,
         true,
         prevLayoutState.getLayoutStateContext(),
         node);
-    LithoLayoutResult child_1 = layoutTreeRoot.getChildAt(0);
+    InternalNode child_1 = (InternalNode) layoutTreeRoot.getChildAt(0);
     assertCachedMeasurementsDefined(child_1);
 
-    LithoLayoutResult child_2 = layoutTreeRoot.getChildAt(1);
+    InternalNode child_2 = (InternalNode) layoutTreeRoot.getChildAt(1);
     assertCachedMeasurementsNotDefined(child_2);
-    LithoLayoutResult child_3 = child_2.getChildAt(0);
+    InternalNode child_3 = (InternalNode) child_2.getChildAt(0);
     assertCachedMeasurementsDefined(child_3);
 
-    LithoLayoutResult child_4 = layoutTreeRoot.getChildAt(2);
+    InternalNode child_4 = (InternalNode) layoutTreeRoot.getChildAt(2);
     assertCachedMeasurementsNotDefined(child_4);
   }
 
@@ -417,18 +403,17 @@ public class TreeDiffingTest {
     }
   }
 
-  private void assertCachedMeasurementsNotDefined(LithoLayoutResult node) {
+  private void assertCachedMeasurementsNotDefined(InternalNode node) {
     assertThat(node.areCachedMeasuresValid()).isFalse();
   }
 
-  private void checkAllComponentsHaveMeasureCache(LithoLayoutResult node) {
-    if (node.getInternalNode().getTailComponent() != null
-        && node.getInternalNode().getTailComponent().canMeasure()) {
+  private void checkAllComponentsHaveMeasureCache(InternalNode node) {
+    if (node.getTailComponent() != null && node.getTailComponent().canMeasure()) {
       assertCachedMeasurementsDefined(node);
     }
     int numChildren = node.getChildCount();
     for (int i = 0; i < numChildren; i++) {
-      checkAllComponentsHaveMeasureCache(node.getChildAt(i));
+      checkAllComponentsHaveMeasureCache((InternalNode) node.getChildAt(i));
     }
   }
 
@@ -812,7 +797,7 @@ public class TreeDiffingTest {
     }
   }
 
-  private static void assertCachedMeasurementsDefined(LithoLayoutResult node) {
+  private static void assertCachedMeasurementsDefined(InternalNode node) {
     float diffHeight = node.getDiffNode() == null ? -1 : node.getDiffNode().getLastMeasuredHeight();
     float diffWidth = node.getDiffNode() == null ? -1 : node.getDiffNode().getLastMeasuredWidth();
     assertThat(diffHeight != -1).isTrue();

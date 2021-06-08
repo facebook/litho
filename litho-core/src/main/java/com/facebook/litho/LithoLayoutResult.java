@@ -76,11 +76,6 @@ public interface LithoLayoutResult extends ComponentLayout {
 
   int getLastWidthSpec();
 
-  boolean areCachedMeasuresValid();
-
-  @Nullable
-  DiffNode getDiffNode();
-
   /* Measurement related APIs for mutating the result */
 
   void setLastWidthSpec(int widthSpec);
@@ -98,10 +93,6 @@ public interface LithoLayoutResult extends ComponentLayout {
    * for the width.
    */
   void setLastMeasuredWidth(float lastMeasuredWidth);
-
-  void setCachedMeasuresValid(boolean valid);
-
-  void setDiffNode(@Nullable DiffNode diffNode);
 
   /** Holds the {@link LithoLayoutResult} for {@link NestedTreeHolder} */
   interface NestedTreeHolderResult extends LithoLayoutResult {
