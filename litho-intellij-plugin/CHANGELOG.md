@@ -1,8 +1,17 @@
 # CHANGELOG
 
+## Version 1.8.1
+
+_2021-06-08_
+
+* New: "Resolve Litho Red Symbol" and "Regenerate Component" actions for `GroupSectionSpec`
+* New: "Litho View" to inspect `GroupSectionSpec` on sidebar
+* New: Lint errors for `GroupSectionSpec`
+* New: Navigation and usage finder for methods in `GroupSectionSpec`
+
 ## Version 1.8.0
 
-_2021-04-21
+_2021-04-21_
 
 * New: Method auto completion for `GroupSectionSpec` (OnCreateService, OnCreateTreeProp, OnCreateChildren, OnUnbindService, OnBindService, OnDataBound, OnDataRendered, OnViewportChanged, OnRefresh)
 * Fix: Incorrect filename when creating Kotlin Litho files from templates

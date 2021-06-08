@@ -38,13 +38,15 @@
     </ul>
   ]]>
   </description>
-  <version>1.8.1-SNAPSHOT</version>
+  <version>1.8.1</version>
   <change-notes>
     <![CDATA[
-    <h3>1.8.0</h3>
+    <h3>1.8.1</h3>
       <ul>
-        <li>New: Method auto completion for `GroupSectionSpec` (OnCreateService, OnCreateTreeProp, OnCreateChildren, OnUnbindService, OnBindService, OnDataBound, OnDataRendered, OnViewportChanged, OnRefresh)</li>
-        <li>Fix: Incorrect filename when creating Kotlin Litho files from templates</li>
+	<li>New: "Resolve Litho Red Symbol" and "Regenerate Component" actions for `GroupSectionSpec`</li>      
+	<li>New: "Litho View" to inspect `GroupSectionSpec` on sidebar</li>
+	<li>New: Lint errors for `GroupSectionSpec`</li>
+	<li>New: Navigation and usage finder for methods in `GroupSectionSpec`</li>
       </ul>
     <h3>Older Versions</h3>
     <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
