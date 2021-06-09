@@ -39,7 +39,6 @@ import java.util.Collection;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -528,13 +527,12 @@ public class ComponentGlobalKeyTest {
   }
 
   @Test
-  @Ignore("T65213042") // Investigate, fix or remove
   public void nestedTreeRemeasureKeyStabilityTest() {
     final Component componentWithoutRemeasure = TreePropTestContainerComponentSpec.create(mContext);
     final LithoView lithoView = getLithoView(componentWithoutRemeasure);
     Assert.assertEquals(
         TreePropTestContainerComponentSpec.EXPECTED_GLOBAL_KEY,
-        getComponentAt(lithoView, 1).getOwnerGlobalKey());
+        getComponentAt(lithoView, 2).getOwnerGlobalKey());
   }
 
   private static Component getComponentAt(LithoView lithoView, int index) {

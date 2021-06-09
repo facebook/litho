@@ -27,14 +27,15 @@ public class TreePropTestContainerComponentSpec {
   public static final String KEY = "TreePropTestContainerComponent";
 
   public static final String EXPECTED_GLOBAL_KEY =
-      KEY
+      "$"
+          + KEY
           + ","
-          + "RootComponentWithTreeProps,"
-          + "Row,"
-          + "NestedTreeParentComponent,"
-          + "NestedTreeComponent,"
-          + "Row,"
-          + "NestedTreeChildComponent";
+          + "$RootComponentWithTreeProps,"
+          + "$Row,"
+          + "$NestedTreeParentComponent,"
+          + "$NestedTreeComponent,"
+          + "$Row,"
+          + "$NestedTreeChildComponent";
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
