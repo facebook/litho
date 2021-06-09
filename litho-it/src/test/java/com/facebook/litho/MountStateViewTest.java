@@ -20,7 +20,6 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.it.R.style;
-import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -34,13 +33,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
@@ -68,23 +65,24 @@ public class MountStateViewTest {
   @Test
   public void testViewPaddingAndBackground() {
     final int color = 0xFFFF0000;
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .child(
-                        TestViewComponent.create(c)
-                            .paddingPx(LEFT, 5)
-                            .paddingPx(TOP, 6)
-                            .paddingPx(RIGHT, 7)
-                            .paddingPx(BOTTOM, 8)
-                            .backgroundColor(color))
-                    .build();
-              }
-            });
+    final InlineLayoutSpec component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    TextInput.create(c)
+                        .paddingPx(LEFT, 5)
+                        .paddingPx(TOP, 6)
+                        .paddingPx(RIGHT, 7)
+                        .paddingPx(BOTTOM, 8)
+                        .backgroundColor(color))
+                .build();
+          }
+        };
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     final View child = lithoView.getChildAt(0);
     Drawable background = child.getBackground();
@@ -98,21 +96,23 @@ public class MountStateViewTest {
   }
 
   @Test
-  public void testSettingZeroPaddingOverridesDefaultBackgroundPadding() {
+  public void testSettingCustomPaddingOverridesDefaultBackgroundPadding() {
     final ComponentContext c =
         new ComponentContext(
             new ContextThemeWrapper(
                 getApplicationContext(), style.TestTheme_BackgroundWithPadding));
 
-    final LithoView lithoView =
-        mountComponent(c, TestViewComponent.create(c).paddingPx(ALL, 0).build());
+    final Component component = TextInput.create(c).paddingPx(ALL, 9).build();
+    mLithoViewRule.useContext(c);
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     final View child = lithoView.getChildAt(0);
 
-    assertThat(child.getPaddingLeft()).isZero();
-    assertThat(child.getPaddingTop()).isZero();
-    assertThat(child.getPaddingRight()).isZero();
-    assertThat(child.getPaddingBottom()).isZero();
+    assertThat(child.getPaddingLeft()).isEqualTo(9);
+    assertThat(child.getPaddingTop()).isEqualTo(9);
+    assertThat(child.getPaddingRight()).isEqualTo(9);
+    assertThat(child.getPaddingBottom()).isEqualTo(9);
   }
 
   @Test
@@ -122,8 +122,10 @@ public class MountStateViewTest {
             new ContextThemeWrapper(
                 getApplicationContext(), style.TestTheme_BackgroundWithPadding));
 
-    final LithoView lithoView =
-        mountComponent(c, TestViewComponent.create(c).paddingPx(LEFT, 12).build());
+    final Component component = TextInput.create(c).paddingPx(LEFT, 12).build();
+    mLithoViewRule.useContext(c);
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     final View child = lithoView.getChildAt(0);
 
@@ -135,52 +137,33 @@ public class MountStateViewTest {
 
   @Test
   public void testComponentDeepUnmount() {
-    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
-    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
-    final Component testComponent1 =
-        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
-    final Component testComponent2 =
-        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
+    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+    final Component testComponent =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker).build();
 
-    final Component mountedTestComponent1 =
+    final Component mountedTestComponent =
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Wrapper.create(c).delegate(testComponent1).widthPx(10).heightPx(10))
+                .child(Wrapper.create(c).delegate(testComponent).widthPx(10).heightPx(10))
                 .build();
           }
         };
-    final Component mountedTestComponent2 =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(Wrapper.create(c).delegate(testComponent2).widthPx(10).heightPx(10))
-                .build();
-          }
-        };
-    final LithoView child1 = mountComponent(mContext, mountedTestComponent1, true, true);
-    final LithoView child2 = mountComponent(mContext, mountedTestComponent2, true, true);
 
-    assertThat(lifecycleTracker1.isMounted()).isTrue();
-    assertThat(lifecycleTracker2.isMounted()).isTrue();
+    mLithoViewRule.setRoot(mountedTestComponent).attachToWindow().measure().layout();
+    assertThat(lifecycleTracker.isMounted()).isTrue();
 
     final ViewGroupWithLithoViewChildren viewGroup =
         new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
-    removeParent(child1);
-    removeParent(child2);
-    viewGroup.addView(child1);
-    viewGroup.addView(child2);
+    final View child = mLithoViewRule.getLithoView();
+    viewGroup.addView(child);
 
-    final LithoView parentView =
-        mountComponent(
-            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true, true);
+    mLithoViewRule.setRoot(TestViewComponent.create(mContext).testView(viewGroup).build());
+    assertThat(lifecycleTracker.isMounted()).isTrue();
 
-    ComponentTestHelper.unmountComponent(parentView);
-
-    assertThat(lifecycleTracker1.isMounted()).isFalse();
-    assertThat(lifecycleTracker2.isMounted()).isFalse();
+    mLithoViewRule.getLithoView().unmountAllItems();
+    assertThat(lifecycleTracker.isMounted()).isFalse();
   }
 
   @Test
@@ -246,10 +229,5 @@ public class MountStateViewTest {
     assertThat(mLithoViewRule.getLithoView().getPaddingLeft()).isEqualTo(0);
 
     ComponentsConfiguration.shouldDisableDrawableOutputs = cachedValue;
-  }
-
-  private void removeParent(View child) {
-    final ViewGroup parent = (ViewGroup) child.getParent();
-    parent.removeView(child);
   }
 }
