@@ -1487,8 +1487,29 @@ public class LayoutState
           .flush();
     }
 
-    final DiffNode diffTreeRoot =
-        currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
+    final @Nullable DiffNode diffTreeRoot;
+    final @Nullable LithoLayoutResult currentLayoutRoot;
+    final @Nullable LayoutStateContext currentLayoutStateContext;
+
+    final boolean isReconcilable;
+
+    if (currentLayoutState != null) {
+      synchronized (currentLayoutState) {
+        diffTreeRoot = currentLayoutState.mDiffTreeRoot;
+        currentLayoutRoot = currentLayoutState.mLayoutRoot;
+        currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
+        isReconcilable = isReconcilable(c, component, currentLayoutRoot);
+        if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
+          currentLayoutState.mLayoutRoot = null;
+        }
+      }
+    } else {
+      diffTreeRoot = null;
+      currentLayoutRoot = null;
+      currentLayoutStateContext = null;
+      isReconcilable = false;
+    }
+
     final LayoutState layoutState;
     final LayoutStateContext layoutStateContext;
 
@@ -1508,10 +1529,7 @@ public class LayoutState
 
       layoutState = new LayoutState(c, currentLayoutState);
 
-      layoutState.mPrevLayoutStateContext =
-          currentLayoutState != null ? currentLayoutState.getLayoutStateContext() : null;
-
-      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
+      layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
 
       layoutStateContext =
           new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
@@ -1520,8 +1538,7 @@ public class LayoutState
       Component.markLayoutStarted(component, layoutStateContext);
 
       if (isReconcilable) {
-        layoutStateContext.copyScopedInfoFrom(
-            currentLayoutState.getLayoutStateContext(), c.getStateHandler());
+        layoutStateContext.copyScopedInfoFrom(currentLayoutStateContext, c.getStateHandler());
       }
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
@@ -1542,11 +1559,6 @@ public class LayoutState
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
 
-      // Release the current InternalNode tree if it is not reconcilable.
-      if (!isReconcilable && currentLayoutState != null) {
-        currentLayoutState.mLayoutRoot = null;
-      }
-
       final LithoLayoutResult root;
       if (layoutCreatedInWillRender == null) {
 
@@ -1554,12 +1566,10 @@ public class LayoutState
             Layout.createAndMeasureComponent(
                 c,
                 component,
-                isReconcilable
-                    ? currentLayoutState.mLayoutRoot.getInternalNode().getHeadComponentKey()
-                    : null,
+                isReconcilable ? currentLayoutRoot.getInternalNode().getHeadComponentKey() : null,
                 widthSpec,
                 heightSpec,
-                isReconcilable ? currentLayoutState.mLayoutRoot : null,
+                isReconcilable ? currentLayoutRoot : null,
                 layoutState.mPrevLayoutStateContext,
                 diffTreeRoot,
                 logLayoutState);
@@ -1867,11 +1877,10 @@ public class LayoutState
   private static boolean isReconcilable(
       final ComponentContext c,
       final Component nextRootComponent,
-      final @Nullable LayoutState currentLayoutState) {
+      final @Nullable LithoLayoutResult currentLayoutResult) {
 
-    if (currentLayoutState == null
-        || currentLayoutState.mLayoutRoot == null
-        || currentLayoutState.mLayoutRoot == NullLayoutResult.INSTANCE
+    if (currentLayoutResult == null
+        || currentLayoutResult == NullLayoutResult.INSTANCE
         || !c.isReconciliationEnabled()) {
       return false;
     }
@@ -1881,18 +1890,17 @@ public class LayoutState
       return false;
     }
 
-    final Component previousRootComponent =
-        currentLayoutState.mLayoutRoot.getInternalNode().getHeadComponent();
+    final Component currentRootComponent = currentLayoutResult.getInternalNode().getHeadComponent();
 
-    if (!nextRootComponent.getKey().equals(previousRootComponent.getKey())) {
+    if (!nextRootComponent.getKey().equals(currentRootComponent.getKey())) {
       return false;
     }
 
-    if (!ComponentUtils.isSameComponentType(previousRootComponent, nextRootComponent)) {
+    if (!ComponentUtils.isSameComponentType(currentRootComponent, nextRootComponent)) {
       return false;
     }
 
-    if (!ComponentUtils.isEquivalent(previousRootComponent, nextRootComponent)) {
+    if (!ComponentUtils.isEquivalent(currentRootComponent, nextRootComponent)) {
       return false;
     }
 

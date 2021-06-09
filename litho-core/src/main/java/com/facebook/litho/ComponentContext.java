@@ -580,7 +580,7 @@ public class ComponentContext implements Cloneable {
               "No scoped info found. "
                   + getDebugString()
                   + "\nglobal-key-mismatch: "
-                  + thisGlobalKey.equals(componentGlobalKey)
+                  + !thisGlobalKey.equals(componentGlobalKey)
                   + "\ncomponent-global-key: "
                   + componentGlobalKey);
         }
