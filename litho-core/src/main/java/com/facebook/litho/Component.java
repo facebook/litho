@@ -322,6 +322,10 @@ public abstract class Component extends ComponentLifecycle
 
       lastMeasuredLayout = container.mResult;
 
+      if (lastMeasuredLayout == NullLayoutResult.INSTANCE) {
+        return;
+      }
+
       layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
