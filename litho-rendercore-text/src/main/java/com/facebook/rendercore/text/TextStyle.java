@@ -62,6 +62,7 @@ public class TextStyle implements Copyable {
   int highlightColor = Color.TRANSPARENT;
   int highlightStartOffset = UNSET;
   int highlightEndOffset = UNSET;
+  int highlightCornerRadius = 0;
   boolean shouldLayoutEmptyText = false;
   int manualBaselineSpacing = Integer.MIN_VALUE;
   int manualCapSpacing = Integer.MIN_VALUE;
@@ -120,6 +121,10 @@ public class TextStyle implements Copyable {
 
   public void setHighlightColor(int color) {
     this.highlightColor = color;
+  }
+
+  public void setHighlightCornerRadius(int radius) {
+    this.highlightCornerRadius = radius;
   }
 
   public void setEllipsize(TextUtils.TruncateAt end) {

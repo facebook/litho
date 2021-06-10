@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -61,6 +62,7 @@ public class RCTextView extends View {
   private ColorStateList mColorStateList;
   private int mLinkColor;
   private int mHighlightColor;
+  private int mHighlightCornerRadius;
   private ImageSpan[] mImageSpans;
 
   private int mSelectionStart;
@@ -117,13 +119,15 @@ public class RCTextView extends View {
       ImageSpan[] imageSpans,
       ClickableSpan[] clickableSpans,
       int highlightStartOffset,
-      int highlightEndOffset) {
+      int highlightEndOffset,
+      int highlightCornerRadius) {
     mText = text;
     mLayout = layout;
     mLayoutTranslationX = layoutTranslationX;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
     mHighlightColor = highlightColor;
+    mHighlightCornerRadius = highlightCornerRadius;
     if (linkColor != 0) {
       mColorStateList = null;
       mLinkColor = linkColor;
@@ -166,6 +170,7 @@ public class RCTextView extends View {
     mLayoutTranslationX = 0;
     mLayoutTranslationY = 0;
     mHighlightColor = 0;
+    mHighlightCornerRadius = 0;
     mColorStateList = null;
     mLinkColor = 0;
     if (mImageSpans != null) {
@@ -225,6 +230,12 @@ public class RCTextView extends View {
       mHighlightPaint = new Paint();
     }
     mHighlightPaint.setColor(mHighlightColor);
+
+    if (mHighlightCornerRadius != 0) {
+      mHighlightPaint.setPathEffect(new CornerPathEffect(mHighlightCornerRadius));
+    } else {
+      mHighlightPaint.setPathEffect(null);
+    }
 
     mSelectionPathNeedsUpdate = true;
     invalidate();

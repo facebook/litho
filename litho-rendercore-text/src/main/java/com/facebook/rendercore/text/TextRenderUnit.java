@@ -76,7 +76,8 @@ public class TextRenderUnit extends RenderUnit<RCTextView> {
               textLayoutContext.imageSpans,
               textLayoutContext.clickableSpans,
               textLayoutContext.textStyle.highlightStartOffset,
-              textLayoutContext.textStyle.highlightEndOffset);
+              textLayoutContext.textStyle.highlightEndOffset,
+              textLayoutContext.textStyle.highlightCornerRadius);
 
           if (textLayoutContext.processedText instanceof MountableCharSequence) {
             ((MountableCharSequence) textLayoutContext.processedText).onMount(textView);
