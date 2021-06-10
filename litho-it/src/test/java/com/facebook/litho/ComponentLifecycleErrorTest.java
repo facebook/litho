@@ -28,11 +28,13 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.util.Pair;
+import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;
@@ -40,7 +42,6 @@ import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec;
 import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CrashFromLayoutFromStyle;
@@ -105,38 +106,51 @@ public class ComponentLifecycleErrorTest {
 
   @Test
   public void testOnCreateLayoutErrorWithoutBoundaryWhenEnabled() {
-    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectCause(
-        ThrowableMatcher.forClassWithMessage(Exception.class, "onCreateLayout crash"));
 
-    ComponentTestHelper.mountComponent(
-        TestCrasherOnCreateLayout.create(mComponentsRule.getContext()));
+    Exception exception = null;
+    final ComponentContext context = mLithoViewRule.getContext();
+    try {
+      final Component component = TestCrasherOnCreateLayout.create(context).build();
+      mLithoViewRule.setRoot(component);
+      mLithoViewRule.attachToWindow().measure().layout();
+    } catch (Exception error) {
+      exception = error;
+    }
+    assertThat(exception).isNotNull();
+    assertThat(exception).hasStackTraceContaining("onCreateLayout crash");
   }
 
   @Test
   public void testOnCreateLayoutWithSizeSpecErrorWithoutBoundaryWhenEnabled() {
-    final ComponentContext c = mComponentsRule.getContext();
 
-    final TestCrasherOnCreateLayoutWithSizeSpec.Builder builder =
-        TestCrasherOnCreateLayoutWithSizeSpec.create(c);
-
-    RuntimeException exception = null;
+    Exception exception = null;
+    final ComponentContext context = mLithoViewRule.getContext();
     try {
-      ComponentTestHelper.mountComponent(builder);
-    } catch (RuntimeException e) {
-      exception = e;
+      final Component component = TestCrasherOnCreateLayoutWithSizeSpec.create(context).build();
+      mLithoViewRule.setRoot(component);
+      mLithoViewRule.attachToWindow().measure().layout();
+    } catch (Exception error) {
+      exception = error;
     }
-
-    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayoutWithSizeSpec crash");
+    assertThat(exception).isNotNull();
+    assertThat(exception).hasStackTraceContaining("onCreateLayoutWithSizeSpec crash");
   }
 
   @Test
   public void testOnMountErrorWithoutBoundaryWhenEnabled() {
-    mExpectedException.expect(LithoMetadataExceptionWrapper.class);
-    mExpectedException.expectCause(
-        ThrowableMatcher.forClassWithMessage(Exception.class, "onMount crash"));
 
-    ComponentTestHelper.mountComponent(TestCrasherOnMount.create(mComponentsRule.getContext()));
+    Exception exception = null;
+    final ComponentContext context = mLithoViewRule.getContext();
+    try {
+      final Component component = TestCrasherOnMount.create(context).build();
+      mLithoViewRule.setRoot(component);
+      mLithoViewRule.attachToWindow().setSizePx(100, 100);
+      mLithoViewRule.measure().layout();
+    } catch (Exception error) {
+      exception = error;
+    }
+    assertThat(exception).isNotNull();
+    assertThat(exception).hasStackTraceContaining("onMount crash");
   }
 
   @Test
