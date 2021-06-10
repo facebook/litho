@@ -39,6 +39,9 @@ import com.facebook.litho.widget.TriggerCallbackComponent;
 import com.facebook.litho.widget.TriggerCallbackComponentSpec;
 import java.util.ArrayList;
 import java.util.List;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -58,7 +61,23 @@ public class LithoMetadataExceptionWrapperTest {
   public void onCreateLayout_deepComponentStack_exceptionShowsComponentStack() {
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage(
-        "layout_stack: Wrapper(Row) -> Row -> Column -> TestHasDelegateThatCrashesOnCreateLayout -> TestCrasherOnCreateLayout");
+        new BaseMatcher<String>() {
+          @Override
+          public boolean matches(Object item) {
+            if (item instanceof String) {
+              String string = (String) item;
+              return string.contains("Wrapper(Row)")
+                  && string.contains("Row")
+                  && string.contains("Column")
+                  && string.contains("TestHasDelegateThatCrashesOnCreateLayout")
+                  && string.contains("TestCrasherOnCreateLayout");
+            }
+            return false;
+          }
+
+          @Override
+          public void describeTo(Description description) {}
+        });
 
     final ComponentContext c = mComponentsRule.getContext();
 
@@ -95,7 +114,21 @@ public class LithoMetadataExceptionWrapperTest {
 
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage(
-        "layout_stack: OnErrorPassUpParentTester -> OnErrorPassUpChildTester -> ThrowExceptionGrandChildTester");
+        new BaseMatcher<String>() {
+          @Override
+          public boolean matches(Object item) {
+            if (item instanceof String) {
+              String string = (String) item;
+              return string.contains("OnErrorPassUpParentTester")
+                  && string.contains("OnErrorPassUpChildTester")
+                  && string.contains("ThrowExceptionGrandChildTester");
+            }
+            return false;
+          }
+
+          @Override
+          public void describeTo(Description description) {}
+        });
 
     final List<String> info = new ArrayList<>();
     final ComponentContext context = mLithoViewRule.getContext();
@@ -117,7 +150,21 @@ public class LithoMetadataExceptionWrapperTest {
 
     mExpectedException.expect(LithoMetadataExceptionWrapper.class);
     mExpectedException.expectMessage(
-        "layout_stack: OnErrorPassUpParentTester -> OnErrorNotPresentChild -> ThrowExceptionGrandChildTester");
+        new BaseMatcher<String>() {
+          @Override
+          public boolean matches(Object item) {
+            if (item instanceof String) {
+              String string = (String) item;
+              return string.contains("OnErrorPassUpParentTester")
+                  && string.contains("OnErrorNotPresentChild")
+                  && string.contains("ThrowExceptionGrandChildTester");
+            }
+            return false;
+          }
+
+          @Override
+          public void describeTo(Description description) {}
+        });
 
     final List<String> info = new ArrayList<>();
     final ComponentContext context = mLithoViewRule.getContext();

@@ -39,7 +39,7 @@ public class ComponentContext implements Cloneable {
 
   public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
 
-  private final boolean mWasStatelessWhenCreated;
+  final boolean mWasStatelessWhenCreated;
   private final @Nullable Boolean mCreatedFromStatelessStatelessContext;
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";

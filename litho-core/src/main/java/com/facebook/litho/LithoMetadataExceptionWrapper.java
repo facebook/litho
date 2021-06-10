@@ -22,6 +22,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Exception class used to add additional Litho metadata to a crash. */
@@ -33,6 +34,7 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
   @Nullable EventHandler<ErrorEvent> lastHandler;
 
   private final ArrayList<Component> mComponentLayoutStack = new ArrayList<>();
+  private final List<String> mComponentStateConfigValueStack = new ArrayList<>();
   private final HashMap<String, String> mCustomMetadata = new HashMap<>();
   private final @Nullable ComponentContext mComponentContext;
   private final @Nullable ComponentTree mComponentTree;
@@ -64,6 +66,10 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     mComponentLayoutStack.add(c);
   }
 
+  public void addParentStateConfigValue(boolean wasStatelessWhenCreated) {
+    mComponentStateConfigValueStack.add(String.valueOf(wasStatelessWhenCreated));
+  }
+
   @Nullable
   Component getCrashingComponent() {
     // the crashing component is always the first in the mComponentLayoutStack, if it exists
@@ -88,6 +94,9 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
       msg.append("  layout_stack: ");
       for (int i = mComponentLayoutStack.size() - 1; i >= 0; i--) {
         msg.append(mComponentLayoutStack.get(i).getSimpleName());
+        if (i - 1 >= 0) {
+          msg.append("[stateless=").append(mComponentStateConfigValueStack.get(i - 1)).append("]");
+        }
         if (i != 0) {
           msg.append(" -> ");
         }
