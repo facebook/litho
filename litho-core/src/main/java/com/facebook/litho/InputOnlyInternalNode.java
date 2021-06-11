@@ -1213,7 +1213,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mComponentsNeedingPreviousRenderData = null;
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
-      final String key = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
+      final String key = componentKeys.get(i);
       if (component.needsPreviousRenderData()) {
         addComponentNeedingPreviousRenderData(key, component);
       }
@@ -1257,8 +1257,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
-      final String key =
-          ComponentUtils.getGlobalKey(mComponents.get(i), mComponentGlobalKeys.get(i));
+      final String key = mComponentGlobalKeys.get(i);
       final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
       updated.add(component);
       updatedKeys.add(key);
@@ -1642,8 +1641,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     // 1.1 Check if any component has mutations
     for (int i = 0, size = components.size(); i < size; i++) {
-      final Component component = components.get(i);
-      final String key = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
+      final String key = componentKeys.get(i);
       if (keys.contains(key)) {
         return ReconciliationMode.RECREATE;
       }
