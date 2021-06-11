@@ -634,9 +634,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   @Override
   public @Nullable String getHeadComponentKey() {
-    return ComponentsConfiguration.useStatelessComponent
-        ? mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1)
-        : Component.getGlobalKey(null, getHeadComponent());
+    return mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1);
   }
 
   @Override
@@ -675,9 +673,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   @Override
   public @Nullable String getTailComponentKey() {
-    return ComponentsConfiguration.useStatelessComponent
-        ? mComponentGlobalKeys.get(0)
-        : Component.getGlobalKey(null, getTailComponent());
+    return mComponentGlobalKeys.get(0);
   }
 
   @Nullable
@@ -1262,11 +1258,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
       final String key =
-          ComponentUtils.getGlobalKey(
-              mComponents.get(i),
-              ComponentsConfiguration.useStatelessComponent
-                  ? mComponentGlobalKeys.get(i)
-                  : Component.getGlobalKey(null, mComponents.get(i)));
+          ComponentUtils.getGlobalKey(mComponents.get(i), mComponentGlobalKeys.get(i));
       final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
       updated.add(component);
       updatedKeys.add(key);

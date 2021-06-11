@@ -665,9 +665,7 @@ public class DefaultInternalNode
 
   @Override
   public @Nullable String getHeadComponentKey() {
-    return ComponentsConfiguration.useStatelessComponent
-        ? mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1)
-        : Component.getGlobalKey(null, getHeadComponent());
+    return mComponentGlobalKeys.get(mComponentGlobalKeys.size() - 1);
   }
 
   @Override
@@ -783,9 +781,7 @@ public class DefaultInternalNode
 
   @Override
   public @Nullable String getTailComponentKey() {
-    return ComponentsConfiguration.useStatelessComponent
-        ? mComponentGlobalKeys.get(0)
-        : Component.getGlobalKey(null, getTailComponent());
+    return mComponentGlobalKeys.get(0);
   }
 
   @Override
