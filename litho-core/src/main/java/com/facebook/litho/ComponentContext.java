@@ -716,6 +716,10 @@ public class ComponentContext implements Cloneable {
   }
 
   public void validate() {
+    if (!useStatelessComponent()) {
+      return;
+    }
+
     if (mLayoutStateContext == null) {
       throw new IllegalStateException("Using an uninitialised context. " + getDebugString());
     }

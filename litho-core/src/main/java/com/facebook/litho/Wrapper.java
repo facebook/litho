@@ -60,9 +60,7 @@ public final class Wrapper extends Component {
       return ComponentContext.NULL_LAYOUT;
     }
 
-    if (ComponentsConfiguration.useStatelessComponent) {
-      c.validate();
-    }
+    c.validate();
 
     return Layout.create(c, delegate);
   }
