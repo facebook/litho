@@ -69,8 +69,7 @@ public final class DebugComponent {
     }
 
     final Component component = node.getComponents().get(componentIndex);
-    final String componentKey =
-        ComponentUtils.getGlobalKey(component, node.getComponentKeys().get(componentIndex));
+    final String componentKey = node.getComponentKeys().get(componentIndex);
 
     debugComponent.mGlobalKey = generateGlobalKey(context, componentKey);
     debugComponent.mResult = result;
@@ -137,9 +136,7 @@ public final class DebugComponent {
       return;
     }
 
-    final Component component = node.getComponents().get(0);
-    final String componentkey =
-        ComponentUtils.getGlobalKey(component, node.getComponentKeys().get(0));
+    final String componentkey = node.getComponentKeys().get(0);
 
     final String key = generateGlobalKey(context, componentkey);
     final Overrider overrider = sOverriders.get(key);
@@ -421,8 +418,7 @@ public final class DebugComponent {
   @Nullable
   public StateContainer getStateContainer() {
     final LayoutStateContext layoutStateContext = getContext().getLayoutStateContext();
-    final Component component = getComponent();
-    final String globalKey = ComponentUtils.getGlobalKey(component, getGlobalKeyFromNode());
+    final String globalKey = getGlobalKeyFromNode();
 
     return getComponent().getStateContainer(layoutStateContext, globalKey);
   }
