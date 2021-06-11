@@ -866,7 +866,7 @@ public class DefaultInternalNode
   @Override
   public @Nullable String getTransitionGlobalKey() {
     final Component component = getTailComponent();
-    return component != null ? ComponentUtils.getGlobalKey(component, getTailComponentKey()) : null;
+    return component != null ? getTailComponentKey() : null;
   }
 
   @Override
@@ -1626,7 +1626,7 @@ public class DefaultInternalNode
       final ComponentContext c,
       final YogaNode node,
       final List<Component> components,
-      final @Nullable List<String> componentKeys,
+      final List<String> componentKeys,
       final @Nullable DiffNode diffNode) {
     // 1. Set new ComponentContext, YogaNode, and components.
     mComponentContext = c;
@@ -1642,9 +1642,7 @@ public class DefaultInternalNode
     mComponentsNeedingPreviousRenderData = null;
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component component = components.get(i);
-      final String key =
-          ComponentUtils.getGlobalKey(
-              component, componentKeys == null ? null : componentKeys.get(i));
+      final String key = componentKeys.get(i);
       if (component.needsPreviousRenderData()) {
         addComponentNeedingPreviousRenderData(key, component);
       }
@@ -1686,12 +1684,7 @@ public class DefaultInternalNode
 
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
-      final String key =
-          ComponentUtils.getGlobalKey(
-              mComponents.get(i),
-              ComponentsConfiguration.useStatelessComponent
-                  ? mComponentGlobalKeys.get(i)
-                  : Component.getGlobalKey(null, mComponents.get(i)));
+      final String key = mComponentGlobalKeys.get(i);
       final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
       updated.add(component);
       updatedKeys.add(key);
@@ -1946,7 +1939,7 @@ public class DefaultInternalNode
     }
 
     // 2.0 Check if any descendants have mutations
-    final String rootKey = ComponentUtils.getGlobalKey(root, current.getHeadComponentKey());
+    final String rootKey = current.getHeadComponentKey();
     for (String key : keys) {
       if (key.startsWith(rootKey)) {
         return ReconciliationMode.RECONCILE;

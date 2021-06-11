@@ -1199,7 +1199,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   void updateWith(
       final ComponentContext c,
       final List<Component> components,
-      final @Nullable List<String> componentKeys,
+      final List<String> componentKeys,
       final @Nullable DiffNode diffNode) {
 
     // 1. Set new ComponentContext, YogaNode, and components.
