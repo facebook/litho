@@ -455,9 +455,7 @@ class Layout {
     // 3. Get the scoped context from the updated component.
     final ComponentContext c = component.updateInternalChildState(parent, globalKeyToReuse);
 
-    if (ComponentsConfiguration.useStatelessComponent) {
-      c.validate();
-    }
+    c.validate();
 
     // 4. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
@@ -666,7 +664,7 @@ class Layout {
 
     if (cachedLayout != null) {
 
-      if (ComponentsConfiguration.useStatelessComponent) {
+      if (c.useStatelessComponent()) {
         final ComponentContext context =
             cachedLayout
                 .getInternalNode()
@@ -795,7 +793,8 @@ class Layout {
     }
 
     final LayoutStateContext committedContext;
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (currentLayoutStateContext.getComponentTree() != null
+        && currentLayoutStateContext.getComponentTree().useStatelessComponent()) {
       committedContext = prevLayoutStateContext;
     } else {
       if (currentLayoutStateContext == null) {
