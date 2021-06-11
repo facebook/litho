@@ -105,7 +105,77 @@ When the Component's visible percentage changes to less than 80% of total height
 If not specified, the default width or height ratio is 1f.
 
 ### Changing LithoView visibility
-There are cases when you need to trigger visibility events on the LithoView components because the UI visibility changed, but the UI did not receive any callback to inform it of this change. An example is when a new activity is added to the back stack, covering the UI. In such cases you can call `setVisibilityHint` on the `LithoView` to tell the UI whether it is visible or not. You may want to do this when `Fragment#setUserVisibleHint` or `onResume/onPause` are called.
+
+There are cases when you need to trigger visibility events on the LithoView components because the UI visibility changed, but the UI did not receive any callback to inform it of this change. An example is when a new activity is added to the back stack, covering the UI. In such cases you need to inform the `LithoView` that its visibility status changed, to tell the UI whether it is visible or not. You may want to do this when `Fragment#setUserVisibleHint` or `onResume/onPause` are called.
+
+#### LithoLifecycleProvider API
+The `LithoLifecycleProvider` API can inform LithoViews which are registered to listen to lifecycle state changes that their visibility status changed.
+
+```java
+public interface LithoLifecycleProvider {
+  void moveToLifecycle(LithoLifecycle lithoLifecycle);
+
+  void addListener(LithoLifecycleListener listener);
+}
+```
+
+The following states are valid LithoLifecycleProvider states:
+- `HINT_INVISIBLE`: this state indicates that the lifecycle provider is considered to be not visible on screen. Lifecycle observers can perform operations which are associated with invisibility status. An example of moving to `HINT_INVISIBLE` state is when a fragment goes from `resumed` to `paused` because the app was backgrounded.
+- `HINT_VISIBLE`: this state indicates that the lifecycle provider is considered visible on screen. Lifecycle observers can perform operations which are associated with visibility status. An example of moving to `HINT_VISIBLE` state is when a fragment goes from `paused` to `resumed` because the app was foregrounded.
+- `DESTROYED`: this is the final state of a lifecycle provider. Lifecycle observers can perform operations associated with releasing resources. An example of moving to `DESTOYED` state is when the hosting Activity is destroyed.
+
+#### Listening to a `LithoLifecycleProvider` state changes
+You can register a `LithoView` to listen to state changes of a `LithoLifecycleProvider` instance when you create it:
+
+```java
+final LithoLifecycleProvider lifecycleProvider;
+final LithoView lithoView = LithoView.create(c, component, lithoLifecycleProvider);
+```
+
+These actions will be performed when moving to the following `LithoLifecycleProvider` states:
+- `HINT_INVISIBLE`: `InvisibleEvents` will be dispatched to all Components inside the `LithoView` which were visible.
+- `HINT_VISIBLE`: `VisibleEvents` will be dispatched to all Components inside the `LithoView` which meet the visibility criteria.
+- `DESTROYED`: The `ComponentTree` associated with the `LithoView` will be released, `InvisibleEvents` will be dispatched to all Components which were visible and all content will be unmounted.
+
+#### `AOSPLithoLifecycleProvider`
+This is an implementation of `LithoLifecycleProvider` which has the state tied to that of an AOSP [LifecycleOwner](https://developer.android.com/topic/libraries/architecture/lifecycle#lco).
+- `LifecycleOwner` in `ON_PAUSE` state will move the `AOSPLithoLifecycleProvider` to `HINT_INVISIBLE` state
+- `LifecycleOwner` in `ON_RESUME` state will move the `AOSPLithoLifecycleProvider` to `HINT_VISIBLE` state
+- `LifecycleOwner` in `ON_DESTROY` state will move the `AOSPLithoLifecycleProvider` to `DESTROYED` state
+
+You can use `AOSPLithoLifecycleProvider` when you want to associate a LithoView's visibility status with the lifecycle of a Fragment, Activity or custom LifecycleOwner, when `resumed` means the LithoView is on screen and `paused` means the LithoView is hidden.
+
+```java
+final AOSPLithoLifecycleProvider lifecycleProvider = new AOSPLithoLifecycleProvider(fragment);
+```
+
+#### Handling custom state changes: LithoLifecycleProviderDelegate
+`AOSPLithoLifecycleProvider` covers the most common cases, but there are scenarios where a LifecycleOwner's state doesn't match what we see on screen.
+Such examples are:
+- Fragments in a ViewPager, where the previous and next visible Fragments are prepared and in a `resumed` state before they're actually visible.
+- Adding a Fragment on top of another Fragment doesn't move the first Fragment to a `paused` state, and there's no indication that it's no longer visible to the user.
+
+When you need to handle these state changes manually, you can use `LithoLifecycleProviderDelegate`, a generic `LithoLifecycleProvider` implementation, to change state when appropriate.
+
+
+```java
+final LithoLifecycleProviderDelegate lifecycleProvider = new LithoLifecycleProviderDelegate();
+lifecycleProvider.moveToLifecycle(<new LithoLifecycle state>);
+```
+
+#### Nested ComponentTrees and `LithoLifecycleProvider`
+The Litho APIs for writing Lists (Sections, VerticalScrollSpec, HorizontalScrollSpec) will create hierarchies of nested ComponentTrees:
+- a ComponentTree at the root of the hierarchy, encapsulating the entire list (associated with a root LithoView)
+- a ComponentTree for each item in the List (associated with a LithoView child of the root LithoView)
+
+If the root LithoView is subscribed to listen to a `LithoLifecycleProvider`, then all nested ComponentTrees/child LithoViews will listen to the outer `LithoLifecycleProvider` too and will receive the correct information about visibility/destroyed state.
+
+Demo apps for showcasing `LithoLifecycleProvider` common case usages are coming soon to our sample app!
+
+:::info
+The section below contains information about deprecated APIs. Please consider using `LithoLifecycleProvider` for manually informing a `LithoView` about visibility changes.
+:::
+#### setVisibilityHint (Deprecated)
 
 Example usage:
 ```java
