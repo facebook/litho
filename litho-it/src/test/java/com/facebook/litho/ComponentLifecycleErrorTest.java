@@ -28,13 +28,11 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.util.Pair;
-import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.LithoViewRule;

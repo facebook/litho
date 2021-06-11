@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
