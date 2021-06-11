@@ -1197,10 +1197,7 @@ class MountState implements MountDelegateTarget {
       mMountStats.mountedNames.add(component.getSimpleName());
       mMountStats.mountedCount++;
 
-      final ComponentContext scopedContext =
-          ComponentsConfiguration.useStatelessComponent
-              ? layoutOutput.getScopedContext()
-              : component.getScopedContext(null, null);
+      final ComponentContext scopedContext = layoutOutput.getScopedContext();
 
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(scopedContext, context.getLogger()));
@@ -2710,13 +2707,7 @@ class MountState implements MountDelegateTarget {
    * that is passed to MountState from the LithoView, which is not scoped.
    */
   private ComponentContext getContextForComponent(Component component, LayoutOutput layoutOutput) {
-    ComponentContext c;
-    if (ComponentsConfiguration.useStatelessComponent) {
-      c = layoutOutput.getScopedContext();
-    } else {
-      c = component.getScopedContext(null, null);
-    }
-
+    ComponentContext c = layoutOutput.getScopedContext();
     return c == null ? mContext : c;
   }
 
