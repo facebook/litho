@@ -66,8 +66,9 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     mComponentLayoutStack.add(c);
   }
 
-  public void addParentStateConfigValue(boolean wasStatelessWhenCreated) {
-    mComponentStateConfigValueStack.add(String.valueOf(wasStatelessWhenCreated));
+  public void addParentStateConfigValue(Boolean wasStatelessWhenCreated) {
+    mComponentStateConfigValueStack.add(
+        wasStatelessWhenCreated != null ? String.valueOf(wasStatelessWhenCreated) : "'NULL'");
   }
 
   @Nullable

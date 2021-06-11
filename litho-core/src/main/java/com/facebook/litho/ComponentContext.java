@@ -39,8 +39,7 @@ public class ComponentContext implements Cloneable {
 
   public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
 
-  final boolean mWasStatelessWhenCreated;
-  private final @Nullable Boolean mCreatedFromStatelessStatelessContext;
+  final @Nullable Boolean mWasStatelessWhenCreated;
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
@@ -120,9 +119,7 @@ public class ComponentContext implements Cloneable {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
-    mWasStatelessWhenCreated = ComponentsConfiguration.useStatelessComponent;
-    mCreatedFromStatelessStatelessContext = null;
-
+    mWasStatelessWhenCreated = null;
     mContext = context;
     mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
     mResourceResolver = new ResourceResolver(this);
@@ -159,8 +156,7 @@ public class ComponentContext implements Cloneable {
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mGlobalKey = context.mGlobalKey;
-    mWasStatelessWhenCreated = ComponentsConfiguration.useStatelessComponent;
-    mCreatedFromStatelessStatelessContext = context.mWasStatelessWhenCreated;
+    mWasStatelessWhenCreated = mLayoutStateContext != null ? useStatelessComponent() : null;
   }
 
   ComponentContext makeNewCopy() {
@@ -215,10 +211,9 @@ public class ComponentContext implements Cloneable {
 
     componentContext.mGlobalKey = globalKey;
 
-    if (ComponentsConfiguration.useStatelessComponent) {
-      componentContext
-          .getLayoutStateContext()
-          .addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
+    final LayoutStateContext layoutContext = componentContext.getLayoutStateContext();
+    if (componentContext.useStatelessComponent()) {
+      layoutContext.addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
     }
 
     return componentContext;
@@ -323,7 +318,7 @@ public class ComponentContext implements Cloneable {
           "getGlobalKey cannot be accessed from a ComponentContext without a scope");
     }
 
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (useStatelessComponent()) {
       return mGlobalKey;
     }
 
@@ -332,7 +327,7 @@ public class ComponentContext implements Cloneable {
 
   public EventHandler<ErrorEvent> getErrorEventHandler() {
     if (mComponentScope != null) {
-      if (ComponentsConfiguration.useStatelessComponent) {
+      if (useStatelessComponent()) {
         try {
           final EventHandler<ErrorEvent> errorEventHandler =
               getLayoutStateContext().getScopedComponentInfo(getGlobalKey()).getErrorEventHandler();
@@ -742,17 +737,21 @@ public class ComponentContext implements Cloneable {
         "\n  "
             + "component: %s\n  "
             + "globalKey: %s\n  "
-            + "wasStatelessWhenCreated: %b\n  "
-            + "createdFromStatelessStatelessContext: %s\n  "
+            + "wasStatelessWhenCreated: %s\n  "
+            + "wasLayoutStateStateless: %s\n  "
             + "copied: %s",
         mComponentScope,
         mGlobalKey != null ? "'" + mGlobalKey + "'" : "NULL",
-        mWasStatelessWhenCreated,
-        mCreatedFromStatelessStatelessContext != null
-            ? String.valueOf(mCreatedFromStatelessStatelessContext)
-            : "'NULL'",
+        mWasStatelessWhenCreated != null ? String.valueOf(mWasStatelessWhenCreated) : "'NULL'",
+        mLayoutStateContext != null ? String.valueOf(useStatelessComponent()) : "'NULL'",
         mLayoutStateContext != null
             ? String.valueOf(mLayoutStateContext.mIsScopedInfoCopiedFromLSCInstance)
             : "'NULL'");
+  }
+
+  boolean useStatelessComponent() {
+    return mComponentTree != null
+        ? mComponentTree.useStatelessComponent()
+        : ComponentsConfiguration.useStatelessComponent;
   }
 }

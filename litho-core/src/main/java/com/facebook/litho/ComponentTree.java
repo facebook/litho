@@ -362,6 +362,8 @@ public class ComponentTree implements LithoLifecycleListener {
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
 
+  private final boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+
   private final boolean isReconciliationEnabled;
 
   private final boolean mMoveLayoutsBetweenThreads;
@@ -1207,6 +1209,10 @@ public class ComponentTree implements LithoLifecycleListener {
   /** Returns the recycling mode. Please see {@link RecyclingMode for details of different modes} */
   public @RecyclingMode int getRecyclingMode() {
     return mRecyclingMode;
+  }
+
+  public boolean useStatelessComponent() {
+    return useStatelessComponent;
   }
 
   public boolean isReconciliationEnabled() {
