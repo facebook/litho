@@ -97,9 +97,7 @@ class Layout {
       final ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
 
-      if (ComponentsConfiguration.useStatelessComponent) {
-        updatedScopedContext.validate();
-      }
+      updatedScopedContext.validate();
 
       layout =
           current
@@ -158,7 +156,7 @@ class Layout {
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
-        if (ComponentsConfiguration.useStatelessComponent) {
+        if (parent.useStatelessComponent()) {
           final ComponentContext context =
               cached
                   .getTailComponent()
@@ -171,9 +169,7 @@ class Layout {
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
       c = update(parent, component, reuseGlobalKey, globalKeyToReuse);
-      if (ComponentsConfiguration.useStatelessComponent) {
-        c.validate();
-      }
+      c.validate();
       globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
@@ -362,7 +358,7 @@ class Layout {
           final int prevWidthSpec = parentContext.getWidthSpec();
           final int prevHeightSpec = parentContext.getHeightSpec();
 
-          if (!ComponentsConfiguration.useStatelessComponent) {
+          if (!parentContext.useStatelessComponent()) {
             parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
           }
 
@@ -373,7 +369,7 @@ class Layout {
           // Create a new layout.
           final InternalNode newNode = create(parentContext, component, true, true, globalKey);
 
-          if (ComponentsConfiguration.useStatelessComponent) {
+          if (parentContext.useStatelessComponent()) {
             parentContext.setWidthSpec(prevWidthSpec);
             parentContext.setHeightSpec(prevHeightSpec);
           }
@@ -437,9 +433,7 @@ class Layout {
       final boolean reuseGlobalKey,
       @Nullable final String globalKeyToReuse) {
 
-    if (ComponentsConfiguration.useStatelessComponent) {
-      parent.validate();
-    }
+    parent.validate();
 
     final Component component = original.getThreadSafeInstance();
 
