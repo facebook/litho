@@ -2343,7 +2343,7 @@ public class ComponentTree implements LithoLifecycleListener {
                   (indexOfRoot >= 0 && componentKeys != null)
                       ? componentKeys.get(indexOfRoot)
                       : null;
-              final String globalKey = ComponentUtils.getGlobalKey(root, availableGlobalKey);
+              final String globalKey = availableGlobalKey;
               DebugComponentTimeMachine.saveTimelineSnapshot(
                   this, root, globalKey, stateHandler, treeProps, source, extraAttribution);
             }
@@ -2413,13 +2413,13 @@ public class ComponentTree implements LithoLifecycleListener {
   private void bindEventAndTriggerHandlers(
       LayoutStateContext layoutStateContext,
       List<Component> components,
-      @Nullable List<String> componentKeys) {
+      List<String> componentKeys) {
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
 
       for (int i = 0, size = components.size(); i < size; i++) {
         final Component component = components.get(i);
-        final String globalKey = ComponentUtils.getGlobalKey(component, componentKeys.get(i));
+        final String globalKey = componentKeys.get(i);
         final ComponentContext scopedContext =
             component.getScopedContext(layoutStateContext, globalKey);
         mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
