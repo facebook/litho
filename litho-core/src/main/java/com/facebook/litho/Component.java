@@ -408,7 +408,7 @@ public abstract class Component extends ComponentLifecycle
 
     layout = context.getLayoutStateContext().consumeLayoutCreatedInWillRender(mId);
 
-    if (layout != null && ComponentsConfiguration.useStatelessComponent) {
+    if (layout != null && context.useStatelessComponent()) {
       assertSameBaseContext(context, layout.getContext());
     }
 
@@ -630,7 +630,7 @@ public abstract class Component extends ComponentLifecycle
     clone.setGlobalKey(existingGlobalKey);
 
     // copy the inter-stage props so that they are set again.
-    if (!ComponentsConfiguration.useStatelessComponent) {
+    if (!parentContext.useStatelessComponent()) {
       clone.copyInterStageImpl(
           clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
           getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
@@ -838,7 +838,7 @@ public abstract class Component extends ComponentLifecycle
         ComponentContext.withComponentScope(parentContext, this, globalKey);
     setScopedContext(scopedContext);
     applyStateUpdates(parentContext, scopedContext, globalKey);
-    if (!ComponentsConfiguration.useStatelessComponent) {
+    if (!parentContext.useStatelessComponent()) {
       generateErrorEventHandler(parentContext, scopedContext);
     }
 
