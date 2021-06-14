@@ -2402,8 +2402,7 @@ public class LayoutState
       mountTimeTransitions = new ArrayList<>();
       for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
         final Component component = mComponentsNeedingPreviousRenderData.get(i);
-        final String globalKey =
-            ComponentUtils.getGlobalKey(component, mComponentKeysNeedingPreviousRenderData.get(i));
+        final String globalKey = mComponentKeysNeedingPreviousRenderData.get(i);
         final ComponentContext scopedContext =
             component.getScopedContext(getLayoutStateContext(), globalKey);
         try {

@@ -65,26 +65,24 @@ public class RenderState {
           "Trying to record previous render data for component that doesn't support it");
     }
 
-    final String key = ComponentUtils.getGlobalKey(component, globalKey);
-
     // Sanity check like in StateHandler
-    if (mSeenGlobalKeys.contains(key)) {
+    if (mSeenGlobalKeys.contains(globalKey)) {
       // We found two components with the same global key.
       throw new RuntimeException(
           "Cannot record previous render data for "
               + component.getSimpleName()
               + ", found another Component with the same key: "
-              + key);
+              + globalKey);
     }
-    mSeenGlobalKeys.add(key);
+    mSeenGlobalKeys.add(globalKey);
 
     final ComponentContext scopedContext =
         component.getScopedContext(layoutStateContext, globalKey);
-    final ComponentLifecycle.RenderData existingInfo = mRenderData.get(key);
+    final ComponentLifecycle.RenderData existingInfo = mRenderData.get(globalKey);
     final ComponentLifecycle.RenderData newInfo =
         component.recordRenderData(scopedContext, existingInfo);
 
-    mRenderData.put(key, newInfo);
+    mRenderData.put(globalKey, newInfo);
   }
 
   private void applyPreviousRenderData(Component component, String globalKey) {
@@ -93,8 +91,7 @@ public class RenderState {
           "Trying to apply previous render data to component that doesn't support it");
     }
 
-    final String key = ComponentUtils.getGlobalKey(component, globalKey);
-    final ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
+    final ComponentLifecycle.RenderData previousRenderData = mRenderData.get(globalKey);
     component.applyPreviousRenderData(previousRenderData);
   }
 }
