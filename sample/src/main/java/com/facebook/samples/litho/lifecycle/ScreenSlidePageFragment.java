@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoLifecycleProvider;
+import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.litho.R;
@@ -38,7 +40,10 @@ public class ScreenSlidePageFragment extends Fragment {
   private static final AtomicInteger mId = new AtomicInteger(0);
   private LithoView mLithoView;
   private ConsoleView mConsoleView;
+  private boolean wasVisible = false;
   private int mPosition = 0;
+  private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
+      new LithoLifecycleProviderDelegate();
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
   private final DelegateListener mDelegateListener =
       new DelegateListener() {
@@ -76,7 +81,6 @@ public class ScreenSlidePageFragment extends Fragment {
   @Override
   public View onCreateView(
       LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
     ViewGroup parent =
         (ViewGroup) inflater.inflate(R.layout.screen_slide_fragment, container, false);
 
@@ -92,7 +96,8 @@ public class ScreenSlidePageFragment extends Fragment {
                         .delegateListener((mDelegateListener))
                         .consoleDelegateListener(mConsoleDelegateListener)
                         .build())
-                .build());
+                .build(),
+            mLithoLifecycleProviderDelegate);
 
     final LinearLayout.LayoutParams params1 =
         new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
@@ -108,5 +113,24 @@ public class ScreenSlidePageFragment extends Fragment {
     parent.addView(mConsoleView);
 
     return parent;
+  }
+
+  @Override
+  public void setUserVisibleHint(boolean isVisibleToUser) {
+    super.setUserVisibleHint(isVisibleToUser);
+
+    if (wasVisible == isVisibleToUser) {
+      return;
+    }
+    if (isVisibleToUser) {
+      wasVisible = true;
+      mLithoLifecycleProviderDelegate.moveToLifecycle(
+          LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
+
+    } else {
+      wasVisible = false;
+      mLithoLifecycleProviderDelegate.moveToLifecycle(
+          LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
+    }
   }
 }
