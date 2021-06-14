@@ -1083,7 +1083,7 @@ public class LayoutState
       final List<String> componentKeys = node.getComponentKeys();
       for (int i = 0, size = node.getComponents().size(); i < size; i++) {
         final Component delegate = node.getComponents().get(i);
-        final String delegateKey = ComponentUtils.getGlobalKey(delegate, componentKeys.get(i));
+        final String delegateKey = componentKeys.get(i);
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
         // previous ComponentTree with the new component dispatched, otherwise Section children
@@ -2030,7 +2030,7 @@ public class LayoutState
     diffNode.setLastHeightSpec(result.getLastHeightSpec());
     diffNode.setLastMeasuredWidth(result.getLastMeasuredWidth());
     diffNode.setLastMeasuredHeight(result.getLastMeasuredHeight());
-    diffNode.setComponent(tail, ComponentUtils.getGlobalKey(tail, key));
+    diffNode.setComponent(tail, key);
     if (parent != null) {
       parent.addChild(diffNode);
     }
