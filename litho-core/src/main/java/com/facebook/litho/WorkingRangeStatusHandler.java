@@ -50,8 +50,7 @@ public class WorkingRangeStatusHandler {
   /** Components in the collection share same status, we can only check the first component. */
   @WorkingRangeStatus
   private int getStatus(String name, Component component, String componentGlobalKey) {
-    final String globalKey = ComponentUtils.getGlobalKey(component, componentGlobalKey);
-    final String key = generateKey(name, globalKey);
+    final String key = generateKey(name, componentGlobalKey);
     if (mStatus.containsKey(key)) {
       return mStatus.get(key);
     }
@@ -79,8 +78,7 @@ public class WorkingRangeStatusHandler {
   @VisibleForTesting
   void setStatus(
       String name, Component component, String componentGlobalKey, @WorkingRangeStatus int status) {
-    final String globalKey = ComponentUtils.getGlobalKey(component, componentGlobalKey);
-    mStatus.put(generateKey(name, globalKey), status);
+    mStatus.put(generateKey(name, componentGlobalKey), status);
   }
 
   private static String generateKey(String name, String globalKey) {
