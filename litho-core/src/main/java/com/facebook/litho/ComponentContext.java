@@ -754,8 +754,6 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean useStatelessComponent() {
-    return mComponentTree != null
-        ? mComponentTree.useStatelessComponent()
-        : ComponentsConfiguration.useStatelessComponent;
+    return mComponentTree != null && mComponentTree.useStatelessComponent();
   }
 }
