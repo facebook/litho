@@ -99,10 +99,7 @@ class Layout {
 
       updatedScopedContext.validate();
 
-      layout =
-          current
-              .getInternalNode()
-              .reconcile(c, updated, ComponentUtils.getGlobalKey(updated, globalKeyToReuse));
+      layout = current.getInternalNode().reconcile(c, updated, globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {
@@ -262,7 +259,7 @@ class Layout {
     }
 
     // 10. Add the component to the InternalNode.
-    node.appendComponent(component, ComponentUtils.getGlobalKey(component, globalKey));
+    node.appendComponent(component, globalKey);
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {
@@ -813,9 +810,7 @@ class Layout {
       return null;
     }
 
-    return diffNodeComponent.getScopedContext(
-        committedContext,
-        ComponentUtils.getGlobalKey(diffNodeComponent, diffNode.getComponentGlobalKey()));
+    return diffNodeComponent.getScopedContext(committedContext, diffNode.getComponentGlobalKey());
   }
 
   static boolean isLayoutDirectionRTL(final Context context) {
