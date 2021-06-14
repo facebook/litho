@@ -17,8 +17,8 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Class represents a DynamicValue, and provides users with ability to change the value, by exposing
@@ -31,7 +31,7 @@ import java.util.Set;
 public class DynamicValue<T> {
 
   private T mValue;
-  private final Set<OnValueChangeListener<T>> mListeners = new HashSet<>();
+  private final Set<OnValueChangeListener<T>> mListeners = new CopyOnWriteArraySet<>();
 
   public DynamicValue(T mValue) {
     this.mValue = mValue;
