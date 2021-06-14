@@ -154,7 +154,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column_0 = Column.create(mContext).child(new TestChildComponent()).build();
     final Column column = Column.create(mContext).child(child1).build();
 
-    ThreadPoolLayoutHandler handler =
+    LithoHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();

@@ -1824,7 +1824,7 @@ public class ComponentTreeTest {
   public void testCreateOneLayoutStateFuture() {
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
-    ThreadPoolLayoutHandler handler =
+    LithoHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
@@ -1870,7 +1870,7 @@ public class ComponentTreeTest {
   public void testLayoutStateFutureMainWaitingOnBg() {
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
-    ThreadPoolLayoutHandler handler =
+    LithoHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
@@ -1927,7 +1927,7 @@ public class ComponentTreeTest {
   public void testRecalculateDifferentRoots() {
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
-    ThreadPoolLayoutHandler handler =
+    LithoHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =

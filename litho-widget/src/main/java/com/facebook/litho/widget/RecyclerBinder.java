@@ -3972,10 +3972,6 @@ public class RecyclerBinder
     return holderForRangeInfo;
   }
 
-  private static ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
-    return ThreadPoolLayoutHandler.getDefaultInstance();
-  }
-
   /**
    * @return true if the given view is visible to user, false otherwise. The logic is leveraged from
    *     {@link View#isVisibleToUser()}.

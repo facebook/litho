@@ -497,10 +497,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private static LithoHandler ensureAndInstrumentLayoutThreadHandler(
       @Nullable LithoHandler handler) {
     if (handler == null) {
-      handler =
-          ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
-              ? new DefaultLithoHandler(getDefaultLayoutThreadLooper())
-              : ThreadPoolLayoutHandler.getDefaultInstance();
+      handler = new DefaultLithoHandler(getDefaultLayoutThreadLooper());
     } else {
       if (sDefaultLayoutThreadLooper != null
           && sBoostPerfLayoutStateFuture == false
@@ -2583,7 +2580,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mStateHandler.putCachedValue(cachedValueInputs, cachedValue);
   }
 
-  private static synchronized Looper getDefaultLayoutThreadLooper() {
+  static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
       final HandlerThread defaultThread =
           new HandlerThread(DEFAULT_LAYOUT_THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);

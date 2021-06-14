@@ -117,12 +117,6 @@ public class ComponentsConfiguration {
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 
   /**
-   * Configuration for creating a thread pool of threads used for background layout. If null, a
-   * single default thread will be used for background layout.
-   */
-  public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
-
-  /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration = null;
@@ -289,4 +283,16 @@ public class ComponentsConfiguration {
   public static boolean initStickyHeaderOnScroll = false;
   /** Initialize sticky header on scrolled when its component tree is null */
   public static boolean initStickyHeaderWhenComponentTreeIsNull = false;
+
+  /**
+   * If set to true a single thread will always be used for background layout calculation by
+   * ThreadPoolLayoutHandler.getNewInstance().
+   */
+  public static boolean layoutCalculationAlwaysUseSingleThread = false;
+
+  /**
+   * If set to true the default layout thread pool will always be used for background layout
+   * calculation by ThreadPoolLayoutHandler.getNewInstance().
+   */
+  public static boolean layoutCalculationAlwaysUseDefaultThreadPool = false;
 }

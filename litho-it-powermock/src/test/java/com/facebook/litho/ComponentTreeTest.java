@@ -97,7 +97,7 @@ public class ComponentTreeTest {
 
     final CountDownLatch lockWaitForResults = new CountDownLatch(1);
 
-    ThreadPoolLayoutHandler handler =
+    LithoHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     final ComponentTree componentTree =

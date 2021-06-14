@@ -7,7 +7,7 @@ _release-date_
  * **Breaking:** `ErrorEventHandler.onError()` method has a new parameter `ComponentTree`.
  * **Breaking:** `ComponentTree.release()` method asserts that it is called on the UI thread.
  * **Breaking:** `getErrorHandler`, `getHandle`, `getId`, and `getKey` are now package-private for `Component` and `Section`. This is for compatibility with the Kotlin API.
- * **Breaking:** Removed `checkNeedsRemeasure`, `useVisibilityExtension` configuration parameters from `ComponentsConfiguration`.
+ * **Breaking:** Removed `checkNeedsRemeasure`, `useVisibilityExtension`, and `threadPoolForBackgroundThreadsConfig` configuration parameters from `ComponentsConfiguration`.
  * **Breaking:** Removed `useInternalNodesForLayoutDiffing` configuration parameter from `ComponentsConfiguration`.
  * **Breaking:** Most methods on Component/ComponentLifecycle that are not lifecycle methods (e.g. onCreateLayout, onMount, etc) are now final as they are not meant to be overridden.
  * New: Almost all lifecycle methods are now covered by by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.

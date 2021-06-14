@@ -46,7 +46,10 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
    *
    * @return default {@code ThreadPoolLayoutHandler}.
    */
-  public static ThreadPoolLayoutHandler getDefaultInstance() {
+  public static LithoHandler getDefaultInstance() {
+    if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThread) {
+      return new DefaultLithoHandler(ComponentTree.getDefaultLayoutThreadLooper());
+    }
     if (sInstance == null) {
       synchronized (ThreadPoolLayoutHandler.class) {
         if (sInstance == null) {
@@ -65,9 +68,19 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
    *     core and max pool size, and thread priority
    * @return new instance with a separate {@code ThreadPoolExecutor} with specified configuration.
    */
-  public static ThreadPoolLayoutHandler getNewInstance(
-      LayoutThreadPoolConfiguration configuration) {
-    return new ThreadPoolLayoutHandler(configuration);
+  public static LithoHandler getNewInstance(LayoutThreadPoolConfiguration configuration) {
+    final boolean alwaysUseSingleThread =
+        ComponentsConfiguration.layoutCalculationAlwaysUseSingleThread;
+    final boolean alwaysUseDefaultThreadPool =
+        ComponentsConfiguration.layoutCalculationAlwaysUseDefaultThreadPool;
+
+    if (alwaysUseSingleThread && !alwaysUseDefaultThreadPool) {
+      return new DefaultLithoHandler(ComponentTree.getDefaultLayoutThreadLooper());
+    } else if (alwaysUseDefaultThreadPool && !alwaysUseSingleThread) {
+      return getDefaultInstance();
+    } else {
+      return new ThreadPoolLayoutHandler(configuration);
+    }
   }
 
   @Override
