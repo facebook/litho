@@ -78,6 +78,7 @@ public class ComponentLifecycleTest {
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
+  private ComponentTree mComponentTree;
   private boolean mPreviousOnErrorConfig;
   private LayoutStateContext mLayoutStateContext;
 
@@ -143,13 +144,15 @@ public class ComponentLifecycleTest {
 
     ComponentTree componentTree =
         ComponentTree.create(new ComponentContext(getApplicationContext())).build();
+    mComponentTree = spy(componentTree);
     final ComponentContext c = componentTree.getContext();
     c.setLayoutStateContextForTesting();
     mContext = spy(c);
-    mLayoutStateContext = c.getLayoutStateContext();
+    mLayoutStateContext = spy(c.getLayoutStateContext());
     when(mNode.getContext()).thenReturn(mContext);
     when(mNode.getInternalNode()).thenReturn(mNode);
-
+    when(mContext.getLayoutStateContext()).thenReturn(mLayoutStateContext);
+    when(mLayoutStateContext.getComponentTree()).thenReturn(mComponentTree);
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
   }
@@ -344,6 +347,7 @@ public class ComponentLifecycleTest {
   public void testMountSpecYogaMeasureOutputSet() {
     final boolean value = ComponentsConfiguration.useStatelessComponent;
     ComponentsConfiguration.useStatelessComponent = false;
+    when(mComponentTree.useStatelessComponent()).thenReturn(false);
     Component component = new TestMountSpecSettingSizesInOnMeasure(mNode);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 

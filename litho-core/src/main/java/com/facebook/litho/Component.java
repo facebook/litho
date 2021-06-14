@@ -193,11 +193,12 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   protected ComponentContext getScopedContext(
       @Nullable LayoutStateContext layoutStateContext, String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (layoutStateContext == null) {
-        throw new IllegalStateException(
-            "Should not attempt to get a scoped context outside of a LayoutStateContext");
-      }
+    if (layoutStateContext == null) {
+      throw new IllegalStateException(
+          "Should not attempt to get a scoped context outside of a LayoutStateContext");
+    }
+
+    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
 
       assertSameGlobalKey(globalKey, mGlobalKey);
 
@@ -653,7 +654,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   static void markLayoutStarted(Component component, LayoutStateContext layoutStateContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
       layoutStateContext.markLayoutStarted();
     } else {
       component.markLayoutStarted();
@@ -722,11 +723,12 @@ public abstract class Component extends ComponentLifecycle
 
   final StateContainer getStateContainer(
       final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (layoutStateContext == null) {
-        throw new IllegalStateException(
-            "Cannot access a state container outside of a layout state calculation.");
-      }
+    if (layoutStateContext == null) {
+      throw new IllegalStateException(
+          "Cannot access a state container outside of a layout state calculation.");
+    }
+
+    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
 
       final ScopedComponentInfo scopedComponentInfo = getScopedInfo(layoutStateContext, globalKey);
       return scopedComponentInfo.getStateContainer();
@@ -796,11 +798,17 @@ public abstract class Component extends ComponentLifecycle
     return mInterStagePropsContainer;
   }
 
+  private static boolean useStatelessComponent(ComponentTree componentTree) {
+    return componentTree != null
+        ? componentTree.useStatelessComponent()
+        : ComponentsConfiguration.useStatelessComponent;
+  }
+
   @Nullable
   final InterStagePropsContainer getInterStagePropsContainer(
       LayoutStateContext layoutStateContext, String globalKey) {
 
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
       if (globalKey == null) {
         return null;
       }

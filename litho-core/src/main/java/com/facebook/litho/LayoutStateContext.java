@@ -166,7 +166,8 @@ public class LayoutStateContext {
   }
 
   @Nullable
-  ComponentTree getComponentTree() {
+  @VisibleForTesting
+  public ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
