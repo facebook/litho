@@ -661,10 +661,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-  final synchronized void markLayoutStarted() {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      return;
-    }
+  private final synchronized void markLayoutStarted() {
     if (mIsLayoutStarted) {
       throw new IllegalStateException("Duplicate layout of a component: " + this);
     }
