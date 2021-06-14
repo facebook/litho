@@ -68,7 +68,6 @@ public class SimpleNestedTreeLifecycleProvider
         moveToLifecycle(LithoLifecycle.HINT_INVISIBLE);
         return;
       case DESTROYED:
-        moveToLifecycle(DESTROYED);
         return;
       default:
         throw new IllegalStateException("Illegal state: " + state);
