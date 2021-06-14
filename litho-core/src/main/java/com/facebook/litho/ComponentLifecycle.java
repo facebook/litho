@@ -600,8 +600,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       Component currentComponent,
       final @Nullable ComponentContext nextScopedContext,
       Component nextComponent) {
+    final boolean useStatelessComponent =
+        previousScopedContext != null
+            ? previousScopedContext.useStatelessComponent()
+            : (nextScopedContext != null
+                ? nextScopedContext.useStatelessComponent()
+                : ComponentsConfiguration.useStatelessComponent);
+
     final boolean shouldUpdate;
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (useStatelessComponent) {
       shouldUpdate =
           shouldUpdate(
               currentComponent,
@@ -637,7 +644,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       final @Nullable Component previous,
       final @Nullable ComponentContext nextScopedContext,
       final @Nullable Component next) {
-    final boolean isComponentStateless = ComponentsConfiguration.useStatelessComponent;
+    final boolean isComponentStateless =
+        previousScopedContext != null
+            ? previousScopedContext.useStatelessComponent()
+            : (nextScopedContext != null
+                ? nextScopedContext.useStatelessComponent()
+                : ComponentsConfiguration.useStatelessComponent);
+
     final StateContainer prevStateContainer =
         previous == null
             ? null

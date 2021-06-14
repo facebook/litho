@@ -704,7 +704,7 @@ public abstract class Component extends ComponentLifecycle
 
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (scopedContext != null && scopedContext.useStatelessComponent()) {
 
       if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
