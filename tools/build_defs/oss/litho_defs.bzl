@@ -288,7 +288,7 @@ def fb_java_test(*args, **kwargs):
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
-    java_test(*args, **kwargs)
+    native.java_test(*args, **kwargs)
 
 def litho_android_library(name, srcs = None, *args, **kwargs):
     srcs = srcs or []
@@ -328,7 +328,7 @@ def fb_android_resource(**kwargs):
 
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
-    android_resource(**kwargs)
+    native.android_resource(**kwargs)
 
 def fb_java_binary(**kwargs):
     """Delegates to native java_binary rule."""
