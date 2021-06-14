@@ -42,6 +42,7 @@ import com.facebook.litho.testing.TimeOutSemaphore;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentTreeTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
@@ -1821,7 +1822,7 @@ public class ComponentTreeTest {
   @Test
   @Ignore
   public void testCreateOneLayoutStateFuture() {
-    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
@@ -1835,8 +1836,10 @@ public class ComponentTreeTest {
 
     final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
 
-    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+    ComponentTreeTester root2 =
+        ComponentTreeTester.create(mContext)
+            .unlockWaitingOnCreateLayout(unlockWaitingOnCreateLayout)
+            .build();
 
     componentTree.setRootAsync(root2);
 
@@ -1865,7 +1868,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testLayoutStateFutureMainWaitingOnBg() {
-    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
@@ -1880,11 +1883,13 @@ public class ComponentTreeTest {
     final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
     final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
 
-    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
-    root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
+    ComponentTreeTester root2 =
+        ComponentTreeTester.create(mContext)
+            .unlockWaitingOnCreateLayout(unlockWaitingOnCreateLayout)
+            .lockOnCreateLayoutFinish(lockOnCreateLayoutFinish)
+            .build();
 
-    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    ComponentTreeTester root3 = ComponentTreeTester.create(mContext).build();
 
     componentTree.setRootAsync(root2);
 
@@ -1920,7 +1925,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testRecalculateDifferentRoots() {
-    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
@@ -1935,11 +1940,13 @@ public class ComponentTreeTest {
     final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
     final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
 
-    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
-    root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
+    ComponentTreeTester root2 =
+        ComponentTreeTester.create(mContext)
+            .unlockWaitingOnCreateLayout(unlockWaitingOnCreateLayout)
+            .lockOnCreateLayoutFinish(lockOnCreateLayoutFinish)
+            .build();
 
-    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    ComponentTreeTester root3 = ComponentTreeTester.create(mContext).build();
 
     componentTree.setRootAsync(root2);
 
@@ -1977,7 +1984,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testVersioningCalculate() {
-    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    Component root1 = ComponentTreeTester.create(mContext).build();
 
     ComponentTree componentTree = ComponentTree.create(mContext).build();
 
@@ -1986,8 +1993,8 @@ public class ComponentTreeTest {
     LayoutState layoutState = componentTree.getMainThreadLayoutState();
     assertEquals(root1.getId(), layoutState.getRootComponent().getId());
 
-    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
-    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    Component root2 = ComponentTreeTester.create(mContext).build();
+    Component root3 = ComponentTreeTester.create(mContext).build();
 
     componentTree.setVersionedRootAndSizeSpec(root3, mWidthSpec, mHeightSpec, new Size(), null, 2);
 
@@ -2038,35 +2045,6 @@ public class ComponentTreeTest {
         });
 
     componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
-  }
-
-  class MyTestComponent extends Component {
-
-    CountDownLatch unlockWaitingOnCreateLayout;
-    CountDownLatch lockOnCreateLayoutFinish;
-    boolean hasRunLayout;
-
-    protected MyTestComponent(String simpleName) {
-      super(simpleName);
-    }
-
-    @Override
-    protected Component onCreateLayout(ComponentContext c) {
-      if (unlockWaitingOnCreateLayout != null) {
-        unlockWaitingOnCreateLayout.countDown();
-      }
-
-      if (lockOnCreateLayoutFinish != null) {
-        try {
-          lockOnCreateLayoutFinish.await(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-
-      hasRunLayout = true;
-      return Column.create(c).build();
-    }
   }
 
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {
