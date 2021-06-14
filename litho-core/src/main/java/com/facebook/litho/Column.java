@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
