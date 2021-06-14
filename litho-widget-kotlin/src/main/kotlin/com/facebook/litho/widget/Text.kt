@@ -22,6 +22,7 @@ import android.graphics.Typeface.DEFAULT
 import android.graphics.Typeface.NORMAL
 import android.text.TextUtils
 import androidx.annotation.ColorInt
+import androidx.annotation.StyleRes
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Sp
 import com.facebook.litho.Style
@@ -42,7 +43,7 @@ inline fun ComponentScope.Text(
     @ColorInt textColor: Int = Color.BLACK,
     textSize: Sp = 14.sp,
     textStyle: Int = NORMAL,
-    typeface: Typeface = DEFAULT,
+    typeface: Typeface? = DEFAULT,
     alignment: TextAlignment = TextAlignment.TEXT_START,
     verticalGravity: VerticalGravity = VerticalGravity.TOP,
     isSingleLine: Boolean = false,
@@ -52,8 +53,10 @@ inline fun ComponentScope.Text(
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
     clipToBounds: Boolean = CLIP_TO_BOUNDS,
+    @StyleRes defStyleAttr: Int = 0,
+    @StyleRes defStyleRes: Int = 0
 ): Text =
-    Text.create(context)
+    Text.create(context, defStyleAttr, defStyleRes)
         .text(text)
         .textColor(textColor)
         .textSizeSp(textSize.value)
