@@ -511,7 +511,7 @@ public abstract class Component extends ComponentLifecycle
 
   /** Get a key that is unique to this component within its tree. */
   static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (scopedContext != null && scopedContext.useStatelessComponent()) {
       if (scopedContext == null) {
         return null;
       }
