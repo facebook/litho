@@ -76,7 +76,7 @@ public class ComponentKeyUtils {
    * @return a unique global key for this component relative to its siblings.
    */
   static String generateGlobalKey(
-      final @Nullable ComponentContext parentContext,
+      final ComponentContext parentContext,
       final @Nullable Component parentComponent,
       final Component childComponent) {
     final boolean hasManualKey = childComponent.hasManualKey();

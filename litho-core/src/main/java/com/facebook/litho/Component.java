@@ -490,8 +490,8 @@ public abstract class Component extends ComponentLifecycle
   @Override
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+    if (scopedContext.useStatelessComponent()) {
+      if (scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access error event handler outside of a layout state calculation.");
       }
@@ -784,8 +784,8 @@ public abstract class Component extends ComponentLifecycle
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+    if (scopedContext.useStatelessComponent()) {
+      if (scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access a inter-stage props outside of a layout state calculation.");
       }
@@ -907,11 +907,11 @@ public abstract class Component extends ComponentLifecycle
    * @return the number of children of {@param childComponent} type
    */
   static int getChildCountAndIncrement(
-      final @Nullable ComponentContext parentContext,
+      final ComponentContext parentContext,
       final Component parentComponent,
       final Component childComponent) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+    if (parentContext.useStatelessComponent()) {
+      if (parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment child counter outside of a layout state calculation.");
       }
@@ -944,11 +944,11 @@ public abstract class Component extends ComponentLifecycle
    * it by 1.
    */
   static int getManualKeyUsagesCountAndIncrement(
-      final @Nullable ComponentContext parentContext,
+      final ComponentContext parentContext,
       final Component parentComponent,
       final String manualKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (parentContext == null || parentContext.getLayoutStateContext() == null) {
+    if (parentContext.useStatelessComponent()) {
+      if (parentContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access and increment manual key usages counter outside of a layout state calculation.");
       }
@@ -1075,8 +1075,8 @@ public abstract class Component extends ComponentLifecycle
       WorkingRange workingRange,
       Component component,
       String globalKey) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+    if (scopedContext.useStatelessComponent()) {
+      if (scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot register WorkingRange outside of a layout state calculation.");
       }
@@ -1093,8 +1093,8 @@ public abstract class Component extends ComponentLifecycle
 
   static void addWorkingRangeToNode(
       InternalNode node, ComponentContext scopedContext, Component component) {
-    if (ComponentsConfiguration.useStatelessComponent) {
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+    if (scopedContext.useStatelessComponent()) {
+      if (scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot add working ranges to InternalNode outside of a layout state calculation.");
       }
