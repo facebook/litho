@@ -603,9 +603,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     final boolean useStatelessComponent =
         previousScopedContext != null
             ? previousScopedContext.useStatelessComponent()
-            : (nextScopedContext != null
-                ? nextScopedContext.useStatelessComponent()
-                : ComponentsConfiguration.useStatelessComponent);
+            : (nextScopedContext != null && nextScopedContext.useStatelessComponent());
 
     final boolean shouldUpdate;
     if (useStatelessComponent) {
@@ -647,9 +645,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     final boolean isComponentStateless =
         previousScopedContext != null
             ? previousScopedContext.useStatelessComponent()
-            : (nextScopedContext != null
-                ? nextScopedContext.useStatelessComponent()
-                : ComponentsConfiguration.useStatelessComponent);
+            : (nextScopedContext != null && nextScopedContext.useStatelessComponent());
 
     final StateContainer prevStateContainer =
         previous == null

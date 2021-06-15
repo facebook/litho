@@ -162,7 +162,6 @@ public class LayoutStateContext {
   void releaseReference() {
     mLayoutStateRef = null;
     mLayoutStateFuture = null;
-    mComponentTree = null;
     mCurrentDiffTree = null;
   }
 

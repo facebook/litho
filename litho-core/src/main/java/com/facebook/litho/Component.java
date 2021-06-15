@@ -799,9 +799,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private static boolean useStatelessComponent(ComponentTree componentTree) {
-    return componentTree != null
-        ? componentTree.useStatelessComponent()
-        : ComponentsConfiguration.useStatelessComponent;
+    return componentTree != null && componentTree.useStatelessComponent();
   }
 
   @Nullable
