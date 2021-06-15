@@ -717,7 +717,9 @@ public abstract class Component extends ComponentLifecycle
 
       return component.getScopedInfo(layoutStateContext, globalKey).getStateContainer();
     } else {
-      return component.mStateContainer;
+      return component.mStateContainer != null
+          ? component.mStateContainer
+          : component.createStateContainer();
     }
   }
 
@@ -733,7 +735,7 @@ public abstract class Component extends ComponentLifecycle
       final ScopedComponentInfo scopedComponentInfo = getScopedInfo(layoutStateContext, globalKey);
       return scopedComponentInfo.getStateContainer();
     } else {
-      return mStateContainer;
+      return mStateContainer != null ? mStateContainer : createStateContainer();
     }
   }
 
@@ -795,7 +797,9 @@ public abstract class Component extends ComponentLifecycle
       return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
     }
 
-    return mInterStagePropsContainer;
+    return mInterStagePropsContainer != null
+        ? mInterStagePropsContainer
+        : createInterStagePropsContainer();
   }
 
   private static boolean useStatelessComponent(ComponentTree componentTree) {
@@ -813,7 +817,9 @@ public abstract class Component extends ComponentLifecycle
 
       return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
     } else {
-      return mInterStagePropsContainer;
+      return mInterStagePropsContainer != null
+          ? mInterStagePropsContainer
+          : createInterStagePropsContainer();
     }
   }
 
