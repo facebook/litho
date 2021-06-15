@@ -1202,7 +1202,7 @@ public abstract class Component extends ComponentLifecycle
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
    */
-  public abstract static class Builder<T extends Builder<T>> implements Cloneable {
+  public abstract static class Builder<T extends Builder<T>> {
 
     protected ResourceResolver mResourceResolver;
     @Nullable private ComponentContext mContext;
@@ -1212,19 +1212,6 @@ public abstract class Component extends ComponentLifecycle
     public abstract Component build();
 
     public abstract T getThis();
-
-    @Override
-    public Builder clone() {
-      try {
-        final Builder clone = (Builder) super.clone();
-        clone.mComponent = mComponent.makeShallowCopy();
-        clone.setComponent(clone.mComponent);
-        return clone;
-      } catch (CloneNotSupportedException e) {
-        e.printStackTrace();
-        throw new RuntimeException(e);
-      }
-    }
 
     protected abstract void setComponent(Component component);
 
