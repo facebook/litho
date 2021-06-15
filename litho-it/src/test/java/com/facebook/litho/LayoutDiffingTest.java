@@ -22,28 +22,59 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.TextView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecWithShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.TextViewCounter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class LayoutDiffingTest {
+
+  private final boolean mUsesInputOnlyInternalNode;
+  private final boolean mOriginalValueOfUseInputOnlyInternalNodes;
 
   public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "usesInputOnlyInternalNode={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
+
+  public LayoutDiffingTest(boolean usesInputOnlyInternalNode) {
+    mUsesInputOnlyInternalNode = usesInputOnlyInternalNode;
+    mOriginalValueOfUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+  }
+
+  @Before
+  public void before() {
+    ComponentsConfiguration.useInputOnlyInternalNodes = mUsesInputOnlyInternalNode;
+  }
+
+  @After
+  public void after() {
+    ComponentsConfiguration.useInputOnlyInternalNodes = mOriginalValueOfUseInputOnlyInternalNodes;
+  }
 
   /**
    * In this scenario, we make sure that if a state update happens in the background followed by a
@@ -220,6 +251,134 @@ public class LayoutDiffingTest {
     assertThat(((TextView) view).getText()).isEqualTo("0");
     view.callOnClick();
     assertThat(((TextView) view).getText()).isEqualTo("1");
+  }
+
+  @Test
+  public void onSetRootWithSameComponent_thenShouldNotRemeasureMountSpec() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final ArrayList<LifecycleStep> operations = new ArrayList<>();
+    final Object objectForShouldUpdate = new Object();
+
+    final Component component =
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        Row.create(c)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .background(new ColorDrawable(Color.RED)))
+                    .child(
+                        MountSpecWithShouldUpdate.create(c)
+                            .objectForShouldUpdate(objectForShouldUpdate)
+                            .operationsOutput(operations)))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT);
+
+    operations.clear();
+
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    assertThat(operations).isEmpty();
+  }
+
+  @Test
+  public void onSetRootWithSimilarComponent_thenShouldNotRemeasureMountSpec() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final ArrayList<LifecycleStep> operations = new ArrayList<>();
+    final Object objectForShouldUpdate = new Object();
+
+    final Component component =
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        Row.create(c)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .background(new ColorDrawable(Color.RED)))
+                    .child(
+                        MountSpecWithShouldUpdate.create(c)
+                            .objectForShouldUpdate(objectForShouldUpdate)
+                            .operationsOutput(operations)))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT);
+
+    operations.clear();
+
+    final Component next =
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        Row.create(c)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .background(new ColorDrawable(Color.RED)))
+                    .child(
+                        MountSpecWithShouldUpdate.create(c)
+                            .objectForShouldUpdate(objectForShouldUpdate)
+                            .operationsOutput(operations)))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(next).measure().layout();
+
+    assertThat(operations).isEmpty();
+  }
+
+  @Test
+  public void onSetRootWithSimilarComponentWithShouldUpdateTrue_thenShouldRemeasureMountSpec() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final ArrayList<LifecycleStep> operations = new ArrayList<>();
+    final Object objectForShouldUpdate = new Object();
+
+    final Component component =
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        Row.create(c)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .background(new ColorDrawable(Color.RED)))
+                    .child(
+                        MountSpecWithShouldUpdate.create(c)
+                            .objectForShouldUpdate(objectForShouldUpdate)
+                            .operationsOutput(operations)))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    assertThat(operations).containsExactly(LifecycleStep.ON_MEASURE, LifecycleStep.ON_MOUNT);
+
+    operations.clear();
+
+    final Component next =
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        Row.create(c)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .background(new ColorDrawable(Color.RED)))
+                    .child(
+                        MountSpecWithShouldUpdate.create(c)
+                            .objectForShouldUpdate(new Object())
+                            .operationsOutput(operations)))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(next).measure().layout();
+
+    assertThat(operations)
+        .containsExactly(
+            LifecycleStep.ON_MEASURE, LifecycleStep.ON_UNMOUNT, LifecycleStep.ON_MOUNT);
   }
 
   private static Component createRootComponentWithStateUpdater(

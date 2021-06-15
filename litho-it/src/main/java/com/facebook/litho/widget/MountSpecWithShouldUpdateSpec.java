@@ -19,10 +19,13 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.view.View;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.LifecycleStep;
+import com.facebook.litho.Size;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
@@ -44,6 +47,19 @@ public class MountSpecWithShouldUpdateSpec {
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(@Prop Diff<Object> objectForShouldUpdate) {
     return !objectForShouldUpdate.getPrevious().equals(objectForShouldUpdate.getNext());
+  }
+
+  @OnMeasure
+  static void onMeasure(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      final int widthSpec,
+      final int heightSpec,
+      final Size size,
+      @Prop List<LifecycleStep> operationsOutput) {
+    size.height = 100;
+    size.width = 100;
+    operationsOutput.add(LifecycleStep.ON_MEASURE);
   }
 
   @OnMount

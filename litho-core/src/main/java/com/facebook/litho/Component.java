@@ -379,7 +379,7 @@ public abstract class Component extends ComponentLifecycle
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
-    final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null);
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null, null, null);
     contextForLayout.setLayoutStateContextSafely(layoutStateContext);
 
     final LayoutResultHolder holder =

@@ -23,6 +23,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.Layout.hostIsCompatible;
 import static com.facebook.litho.Layout.isLayoutDirectionRTL;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -144,7 +145,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
   protected final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
 
-  private @Nullable DiffNode mDiffNode;
   protected @Nullable NodeInfo mNodeInfo;
   protected @Nullable EventHandler<VisibleEvent> mVisibleHandler;
   protected @Nullable EventHandler<FocusedVisibleEvent> mFocusedHandler;
@@ -173,7 +173,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected boolean mDuplicateParentState;
   protected boolean mDuplicateChildrenStates;
   protected boolean mForceViewWrapping;
-  private boolean mCachedMeasuresValid;
 
   protected int mLayerType = LayerType.LAYER_TYPE_NOT_SET;
   protected int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -328,6 +327,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       // Create the layout result of 'this' InternalNode.
       result = createLayoutResult(c, node, parentResult);
 
+      // Apply the diff node.
+      applyDiffNode(c, result, parentResult);
+
       // Add the result to the parent result
       parentResult.addChild(result);
 
@@ -344,6 +346,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
       // Create the layout result of 'this' InternalNode.
       result = createLayoutResult(c, node, null);
+
+      // Apply the diff node.
+      applyDiffNode(c, result, null);
     }
 
     // Replace input with the output
@@ -360,6 +365,64 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       // Set the InternalNode as input
       child.setData(new LayoutContextContainer(c, getChildAt(i)));
       node.addChildAt(child, i); // Add the child YogaNode to NodeYoga of this result.
+    }
+  }
+
+  protected void applyDiffNode(
+      final LayoutStateContext current,
+      final LithoLayoutResult result,
+      final @Nullable LithoLayoutResult parent) {
+
+    final LayoutState state = current.getLayoutState();
+    if (state == null) { // Cannot apply diff nodes without a LayoutState
+      return;
+    }
+
+    final @Nullable LayoutStateContext prev = state.getPrevLayoutStateContext();
+    if (prev == null) { // If first layout then no diff nodes to apply.
+      return;
+    }
+
+    final @Nullable DiffNode diff;
+
+    if (parent == null) { // If root, then get diff node root from the current layout state
+      if (isLayoutSpecWithSizeSpec(getHeadComponent()) && current.hasNestedTreeDiffNodeSet()) {
+        diff = current.consumeNestedTreeDiffNode();
+      } else {
+        diff = current.getCurrentDiffTree();
+      }
+    } else if (parent.getDiffNode() != null) { // Otherwise get it from the parent
+      final int index = parent.getInternalNode().getChildIndex(this);
+      if (index != -1 && index < parent.getDiffNode().getChildCount()) {
+        diff = parent.getDiffNode().getChildAt(index);
+      } else {
+        diff = null;
+      }
+    } else {
+      diff = null;
+    }
+
+    if (diff == null) { // Return if no diff node to apply.
+      return;
+    }
+
+    final Component component = getTailComponent();
+
+    if (!hostIsCompatible(this, diff) && !(parent != null && isLayoutSpecWithSizeSpec(component))) {
+      return;
+    }
+
+    result.setDiffNode(diff);
+
+    if (!Layout.shouldComponentUpdate(current, this, prev, diff)) {
+      final String key = getTailComponentKey();
+      if (component != null) {
+        component.copyInterStageImpl(
+            component.getInterStagePropsContainer(current, key),
+            diff.getComponent().getInterStagePropsContainer(prev, diff.getComponentGlobalKey()));
+      }
+
+      result.setCachedMeasuresValid(true);
     }
   }
 
@@ -603,16 +666,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public @Nullable DiffNode getDiffNode() {
-    return mDiffNode;
-  }
-
-  @Override
-  public void setDiffNode(@Nullable DiffNode diffNode) {
-    mDiffNode = diffNode;
-  }
-
-  @Override
   public @Nullable EventHandler<FocusedVisibleEvent> getFocusedHandler() {
     return mFocusedHandler;
   }
@@ -690,11 +743,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public @DrawableRes int getStateListAnimatorRes() {
     return mStateListAnimatorRes;
-  }
-
-  @Override
-  public boolean areCachedMeasuresValid() {
-    return mCachedMeasuresValid;
   }
 
   @Override
@@ -917,14 +965,15 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mDebugComponents.add(debugComponent);
   }
 
+  @Deprecated
   @Override
-  public InternalNode removeChildAt(int index) {
-    return mChildren.remove(index);
+  public boolean implementsLayoutDiffing() {
+    return false;
   }
 
   @Override
-  public void setCachedMeasuresValid(boolean valid) {
-    mCachedMeasuresValid = valid;
+  public InternalNode removeChildAt(int index) {
+    return mChildren.remove(index);
   }
 
   @Override
@@ -1191,7 +1240,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mComponents = new ArrayList<>();
     mChildren = new ArrayList<>(1);
     mComponentGlobalKeys = new ArrayList<>();
-    mDiffNode = null;
     mDebugComponents = null;
     mFrozen = false;
   }
@@ -1206,8 +1254,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mComponentContext = c;
     mComponents = components;
     mComponentGlobalKeys = componentKeys;
-
-    mDiffNode = diffNode;
 
     // 2. Update props.
     mComponentsNeedingPreviousRenderData = null;

@@ -79,11 +79,6 @@ class NoOpInternalNode implements InternalNode {
   public void appendUnresolvedComponent(Component component) {}
 
   @Override
-  public boolean areCachedMeasuresValid() {
-    return false;
-  }
-
-  @Override
   public void setNestedPadding(@Nullable Edges padding, @Nullable boolean[] isPercentage) {}
 
   @Override
@@ -251,19 +246,10 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
-  @Nullable
-  @Override
-  public DiffNode getDiffNode() {
-    return null;
-  }
-
   @Override
   public @Nullable Drawable getBackground() {
     return null;
   }
-
-  @Override
-  public void setDiffNode(@Nullable DiffNode diffNode) {}
 
   @Nullable
   @Override
@@ -485,15 +471,18 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void registerDebugComponent(DebugComponent debugComponent) {}
-
-  @Override
-  public @Nullable InternalNode removeChildAt(int index) {
+  public InternalNode removeChildAt(int index) {
     return null;
   }
 
   @Override
-  public void setCachedMeasuresValid(boolean valid) {}
+  public void registerDebugComponent(DebugComponent debugComponent) {}
+
+  @Deprecated
+  @Override
+  public boolean implementsLayoutDiffing() {
+    return false;
+  }
 
   @Override
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {}

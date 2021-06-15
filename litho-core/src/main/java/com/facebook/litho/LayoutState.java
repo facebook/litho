@@ -799,9 +799,9 @@ public class LayoutState
     }
 
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
-    final DiffNode currentDiffNode = node.getDiffNode();
+    final DiffNode currentDiffNode = result.getDiffNode();
     final boolean shouldUseCachedOutputs = isMountSpec(component) && currentDiffNode != null;
-    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
+    final boolean isCachedOutputUpdated = shouldUseCachedOutputs && result.areCachedMeasuresValid();
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
@@ -1532,7 +1532,8 @@ public class LayoutState
       layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
 
       layoutStateContext =
-          new LayoutStateContext(layoutState, c.getComponentTree(), layoutStateFuture);
+          new LayoutStateContext(
+              layoutState, c.getComponentTree(), layoutStateFuture, diffTreeRoot);
 
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);

@@ -19,12 +19,12 @@ package com.facebook.litho;
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.graphics.Color;
 import androidx.core.view.ViewCompat;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutWithSizeSpecLifecycleTester;
-import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.MountSpecPureRenderLifecycleTester;
+import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -86,18 +86,23 @@ public class LayoutWithSizeSpecLifecycleTest {
   public void onSetRootWithLayoutWithSizeSpecWhichRemeasure_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final ComponentContext c = mLithoViewRule.getContext();
+    final LifecycleTracker tracker = new LifecycleTracker();
+
+    final Component mountable_0 =
+        MountSpecPureRenderLifecycleTester.create(c).lifecycleTracker(tracker).build();
+
     final Component component =
         Row.create(c)
-            .child(SolidColor.create(c).color(Color.BLACK).widthDip(100).heightDip(100))
+            .heightPx(100) // Ensures that nested tree is resolved only twice
             .child(
                 LayoutWithSizeSpecLifecycleTester.create(c)
                     .steps(info)
-                    .widthPercent(50)
-                    .heightPercent(50))
+                    .body(mountable_0)
+                    .shouldReusePreviousLayout(true))
+            .child(Text.create(c).text("Hello World"))
             .build();
 
-    mLithoViewRule.setRoot(component);
-    mLithoViewRule.attachToWindow().measure().layout();
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")

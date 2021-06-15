@@ -19,9 +19,12 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.view.View;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
+import com.facebook.litho.Size;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -33,6 +36,12 @@ import java.util.List;
  */
 @MountSpec(isPureRender = true)
 public class RecordsShouldUpdateSpec {
+
+  @OnMeasure
+  static void onMeasure(ComponentContext c, ComponentLayout layout, int w, int h, Size size) {
+    size.width = 100;
+    size.height = 100;
+  }
 
   @OnCreateMountContent
   static View onCreateMountContent(Context c) {

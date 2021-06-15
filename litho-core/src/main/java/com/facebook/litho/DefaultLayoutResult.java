@@ -46,6 +46,9 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
 
   private @Nullable LithoLayoutResult mParent;
 
+  private boolean mCachedMeasuresValid;
+  private @Nullable DiffNode mDiffNode;
+
   private int mLastWidthSpec = DiffNode.UNSPECIFIED;
   private int mLastHeightSpec = DiffNode.UNSPECIFIED;
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
@@ -266,8 +269,28 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   }
 
   @Override
+  public void setDiffNode(@Nullable DiffNode diffNode) {
+    mDiffNode = diffNode;
+  }
+
+  @Override
+  public void setCachedMeasuresValid(boolean isValid) {
+    mCachedMeasuresValid = isValid;
+  }
+
+  @Override
   public int getLastWidthSpec() {
     return mLastWidthSpec;
+  }
+
+  @Override
+  public boolean areCachedMeasuresValid() {
+    return mCachedMeasuresValid;
+  }
+
+  @Override
+  public @Nullable DiffNode getDiffNode() {
+    return mDiffNode;
   }
 
   @Override

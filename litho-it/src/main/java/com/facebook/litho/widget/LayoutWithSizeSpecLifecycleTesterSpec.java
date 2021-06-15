@@ -16,21 +16,29 @@
 
 package com.facebook.litho.widget;
 
+import android.graphics.Color;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
+import com.facebook.litho.Row;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import java.util.List;
 
 @LayoutSpec
 class LayoutWithSizeSpecLifecycleTesterSpec {
+
+  static final @PropDefault boolean causeYogaRemeasure = false;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -45,12 +53,39 @@ class LayoutWithSizeSpecLifecycleTesterSpec {
       int w,
       int h,
       @Prop List<LifecycleStep.StepInfo> steps,
+      @Prop(optional = true) Component body,
+      @Prop(optional = true) boolean causeYogaRemeasure,
       @State String state) {
 
     steps.add(new StepInfo(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC));
     if (state == null) {
       throw new IllegalStateException("OnCreateLayout called without initialised state.");
     }
-    return Column.create(c).build();
+    return Column.create(c)
+        .heightPx(100)
+        .child(
+            Wrapper.create(c)
+                .delegate(
+                    body != null
+                        ? body
+                        : SolidColor.create(c)
+                            .color(Color.BLACK)
+                            .widthPx(SizeSpec.getSize(w))
+                            .build()))
+        .child(causeYogaRemeasure ? Row.create(c).heightPx(SizeSpec.getSize(h)) : null)
+        .build();
+  }
+
+  @OnShouldCreateLayoutWithNewSizeSpec
+  static boolean onShouldCreateLayoutWithNewSizeSpec(
+      ComponentContext c,
+      int newWidthSpec,
+      int newHeightSpec,
+      @Prop(optional = true) Boolean shouldReusePreviousLayout) {
+    if (shouldReusePreviousLayout != null) {
+      return shouldReusePreviousLayout;
+    } else {
+      return false;
+    }
   }
 }

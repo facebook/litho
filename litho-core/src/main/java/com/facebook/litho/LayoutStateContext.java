@@ -30,11 +30,15 @@ import java.util.Map;
  * without having to keep track of all these objects to clear out the references.
  */
 public class LayoutStateContext {
+
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
   private final Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo = new HashMap<>();
   private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
+  private @Nullable DiffNode mCurrentDiffTree;
+  private @Nullable DiffNode mCurrentNestedTreeDiffNode;
+  private boolean mHasNestedTreeDiffNodeSet = false;
 
   private static @Nullable LayoutState sTestLayoutState;
 
@@ -47,7 +51,7 @@ public class LayoutStateContext {
       sTestLayoutState = new LayoutState(c);
     }
 
-    return new LayoutStateContext(sTestLayoutState, c.getComponentTree(), null);
+    return new LayoutStateContext(sTestLayoutState, c.getComponentTree(), null, null);
   }
 
   void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
@@ -66,17 +70,19 @@ public class LayoutStateContext {
 
   @VisibleForTesting
   LayoutStateContext(final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, componentTree, null);
+    this(layoutState, componentTree, null, null);
   }
 
   @VisibleForTesting
   LayoutStateContext(
       final LayoutState layoutState,
       final @Nullable ComponentTree componentTree,
-      final @Nullable LayoutStateFuture layoutStateFuture) {
+      final @Nullable LayoutStateFuture layoutStateFuture,
+      final @Nullable DiffNode currentDiffTree) {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
+    mCurrentDiffTree = currentDiffTree;
   }
 
   void addScopedComponentInfo(
@@ -157,6 +163,7 @@ public class LayoutStateContext {
     mLayoutStateRef = null;
     mLayoutStateFuture = null;
     mComponentTree = null;
+    mCurrentDiffTree = null;
   }
 
   /** Returns the LayoutState instance or null if the layout state has been released. */
@@ -200,5 +207,25 @@ public class LayoutStateContext {
               + (mComponentTree != null ? mComponentTree.getRoot() : null));
     }
     mIsLayoutStarted = true;
+  }
+
+  public @Nullable DiffNode getCurrentDiffTree() {
+    return mCurrentDiffTree;
+  }
+
+  void setNestedTreeDiffNode(DiffNode diff) {
+    mHasNestedTreeDiffNodeSet = true;
+    mCurrentNestedTreeDiffNode = diff;
+  }
+
+  boolean hasNestedTreeDiffNodeSet() {
+    return mHasNestedTreeDiffNodeSet;
+  }
+
+  public @Nullable DiffNode consumeNestedTreeDiffNode() {
+    final DiffNode node = mCurrentNestedTreeDiffNode;
+    mCurrentNestedTreeDiffNode = null;
+    mHasNestedTreeDiffNodeSet = false;
+    return node;
   }
 }

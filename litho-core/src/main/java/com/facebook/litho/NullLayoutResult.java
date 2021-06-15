@@ -94,6 +94,16 @@ public final class NullLayoutResult implements LithoLayoutResult {
   }
 
   @Override
+  public boolean areCachedMeasuresValid() {
+    return false;
+  }
+
+  @Override
+  public @Nullable DiffNode getDiffNode() {
+    return null;
+  }
+
+  @Override
   public void setLastWidthSpec(int widthSpec) {}
 
   @Override
@@ -104,6 +114,12 @@ public final class NullLayoutResult implements LithoLayoutResult {
 
   @Override
   public void setLastMeasuredWidth(float lastMeasuredWidth) {}
+
+  @Override
+  public void setCachedMeasuresValid(boolean valid) {}
+
+  @Override
+  public void setDiffNode(@Nullable DiffNode diffNode) {}
 
   @Override
   public void addChild(LithoLayoutResult child) {}

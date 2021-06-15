@@ -378,6 +378,9 @@ class Layout {
             newNode.layoutDirection(holder.getResolvedLayoutDirection());
           }
 
+          // Set the DiffNode for the nested tree's result to consume during measurement.
+          parentContext.getLayoutStateContext().setNestedTreeDiffNode(holder.getDiffNode());
+
           layout =
               measure(
                   parentContext,
@@ -385,7 +388,7 @@ class Layout {
                   widthSpec,
                   heightSpec,
                   prevLayoutStateContext,
-                  node.getDiffNode());
+                  holder.getDiffNode());
         }
 
         layout.setLastWidthSpec(widthSpec);
@@ -479,10 +482,14 @@ class Layout {
       ComponentsSystrace.beginSection("measureTree:" + root.getSimpleName());
     }
 
-    if (diff != null) {
+    if (diff != null && root.implementsLayoutDiffing()) {
       ComponentsSystrace.beginSection("applyDiffNode");
       applyDiffNodeToUnchangedNodes(
-          c.getLayoutStateContext(), root, true, prevLayoutStateContext, diff);
+          c.getLayoutStateContext(),
+          (LithoLayoutResult) root, // Only for DefaultInternalNode
+          true,
+          prevLayoutStateContext,
+          diff);
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
@@ -555,7 +562,7 @@ class Layout {
         widthSpec,
         heightSpec,
         prevLayoutStateContext,
-        layout.getInternalNode().getDiffNode());
+        layout.getDiffNode());
   }
 
   /**
@@ -566,19 +573,22 @@ class Layout {
    * also tries to re-use the old measurements and therefore marks as valid the cachedMeasures for
    * the whole component subtree.
    *
-   * @param layoutNode the root of the LayoutTree
+   * @param result the root of the LayoutTree
    * @param diffNode the root of the diffTree
    */
   static void applyDiffNodeToUnchangedNodes(
       final LayoutStateContext layoutStateContext,
-      final InternalNode layoutNode,
+      final LithoLayoutResult result,
       final boolean isTreeRoot,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diffNode) {
+
+    final InternalNode layoutNode = result.getInternalNode();
+
     try {
       // Root of the main tree or of a nested tree.
       if (isLayoutSpecWithSizeSpec(layoutNode.getTailComponent()) && !isTreeRoot) {
-        layoutNode.setDiffNode(diffNode);
+        result.setDiffNode(diffNode);
         return;
       }
 
@@ -586,7 +596,7 @@ class Layout {
         return;
       }
 
-      layoutNode.setDiffNode(diffNode);
+      result.setDiffNode(diffNode);
 
       final int layoutCount = layoutNode.getChildCount();
       final int diffCount = diffNode.getChildCount();
@@ -595,7 +605,7 @@ class Layout {
         for (int i = 0; i < layoutCount && i < diffCount; i++) {
           applyDiffNodeToUnchangedNodes(
               layoutStateContext,
-              layoutNode.getChildAt(i),
+              result.getChildAt(i),
               false,
               prevLayoutStateContext,
               diffNode.getChildAt(i));
@@ -604,7 +614,7 @@ class Layout {
         // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
       } else if (!shouldComponentUpdate(
           layoutStateContext, layoutNode, prevLayoutStateContext, diffNode)) {
-        applyDiffNodeToLayoutNode(layoutStateContext, layoutNode, prevLayoutStateContext, diffNode);
+        applyDiffNodeToLayoutNode(layoutStateContext, result, prevLayoutStateContext, diffNode);
       }
     } catch (Throwable t) {
       final LithoMetadataExceptionWrapper e =
@@ -624,9 +634,10 @@ class Layout {
    */
   private static void applyDiffNodeToLayoutNode(
       final LayoutStateContext nextLayoutStateContext,
-      final InternalNode layoutNode,
+      final LithoLayoutResult result,
       final LayoutStateContext diffNodeLayoutStateContext,
       final DiffNode diffNode) {
+    final InternalNode layoutNode = result.getInternalNode();
     final Component component = layoutNode.getTailComponent();
     final String componentKey = layoutNode.getTailComponentKey();
     if (component != null) {
@@ -638,7 +649,7 @@ class Layout {
                   diffNodeLayoutStateContext, diffNode.getComponentGlobalKey()));
     }
 
-    layoutNode.setCachedMeasuresValid(true);
+    result.setCachedMeasuresValid(true);
   }
 
   @Nullable
@@ -740,8 +751,7 @@ class Layout {
    * Returns true either if the two nodes have the same Component type or if both don't have a
    * Component.
    */
-  private static boolean hostIsCompatible(
-      final InternalNode node, final @Nullable DiffNode diffNode) {
+  static boolean hostIsCompatible(final InternalNode node, final @Nullable DiffNode diffNode) {
     if (diffNode == null) {
       return false;
     }
@@ -749,7 +759,7 @@ class Layout {
     return ComponentUtils.isSameComponentType(node.getTailComponent(), diffNode.getComponent());
   }
 
-  private static boolean shouldComponentUpdate(
+  static boolean shouldComponentUpdate(
       final LayoutStateContext layoutStateContext,
       final InternalNode layoutNode,
       final @Nullable LayoutStateContext prevLayoutStateContext,

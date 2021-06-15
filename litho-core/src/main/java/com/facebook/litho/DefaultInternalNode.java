@@ -1139,6 +1139,12 @@ public class DefaultInternalNode
     mDebugComponents.add(debugComponent);
   }
 
+  @Deprecated
+  @Override
+  public boolean implementsLayoutDiffing() {
+    return true;
+  }
+
   @Override
   public InternalNode removeChildAt(int index) {
     return (InternalNode) mYogaNode.removeChildAt(index).getData();

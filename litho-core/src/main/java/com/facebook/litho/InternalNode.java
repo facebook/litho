@@ -102,11 +102,6 @@ public interface InternalNode {
   InternalNode fullImpressionHandler(
       @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler);
 
-  @Nullable
-  DiffNode getDiffNode();
-
-  void setDiffNode(@Nullable DiffNode diffNode);
-
   void setNodeInfo(NodeInfo nodeInfo);
 
   NodeInfo getOrCreateNodeInfo();
@@ -118,8 +113,6 @@ public interface InternalNode {
   InternalNode justifyContent(YogaJustify justifyContent);
 
   InternalNode removeChildAt(int index);
-
-  void setCachedMeasuresValid(boolean valid);
 
   void setMeasureFunction(YogaMeasureFunction measureFunction);
 
@@ -322,8 +315,6 @@ public interface InternalNode {
 
   boolean isLayoutDirectionInherit();
 
-  boolean areCachedMeasuresValid();
-
   void setNestedPadding(@Nullable Edges padding, @Nullable boolean[] isPercentage);
 
   /* Testing a nd debugging related APIs */
@@ -337,6 +328,9 @@ public interface InternalNode {
   String getTestKey();
 
   void registerDebugComponent(DebugComponent debugComponent);
+
+  @Deprecated
+  boolean implementsLayoutDiffing();
 
   /**
    * The API for the nested tree holder, which is used to hold the partial results of an unresolved
