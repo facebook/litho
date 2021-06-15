@@ -1512,6 +1512,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     final InternalNode layout;
 
     switch (mode) {
+      case ReconciliationMode.REUSE:
+        layout = current;
+        break;
       case ReconciliationMode.COPY:
         if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
           layout = current.deepClone();
@@ -1570,21 +1573,17 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
           (mode == ReconciliationMode.COPY ? "copy:" : "reconcile:") + next.getSimpleName());
     }
 
-    if (isTracing) {
-      ComponentsSystrace.beginSection("cloneYogaNode:" + next.getSimpleName());
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
     // 2. Shallow copy this layout.
-    final InputOnlyInternalNode layout =
-        getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey);
-    ComponentContext parentContext =
-        layout
-            .getTailComponent()
-            .getScopedContext(layoutStateContext, layout.getTailComponentKey());
+    final InputOnlyInternalNode<?> layout;
+
+    if (ComponentsConfiguration.reuseInternalNodes) {
+      layout = current.clone();
+      layout.mChildren = new ArrayList<>(current.getChildCount());
+    } else {
+      layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey);
+    }
+
+    ComponentContext parentContext = getContext(layoutStateContext, layout);
 
     // 3. Iterate over children.
     int count = current.getChildCount();
@@ -1599,7 +1598,13 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final String key = componentKeys == null ? null : componentKeys.get(index);
 
       // 3.2 Update the head component of the child layout.
-      final Component updated = component.makeUpdatedShallowCopy(parentContext, key);
+      final Component updated;
+
+      if (ComponentsConfiguration.reuseInternalNodes) {
+        updated = component;
+      } else {
+        updated = component.makeUpdatedShallowCopy(parentContext, key);
+      }
 
       // 3.3 Reconcile child layout.
       final InternalNode copy;
@@ -1701,7 +1706,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       }
     }
 
-    return ReconciliationMode.COPY;
+    return ComponentsConfiguration.reuseInternalNodes
+        ? ReconciliationMode.REUSE
+        : ReconciliationMode.COPY;
   }
 
   protected static ComponentContext getContext(LayoutStateContext c, InternalNode node) {
@@ -1737,10 +1744,16 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     }
   }
 
-  @IntDef({ReconciliationMode.COPY, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
+  @IntDef({
+    ReconciliationMode.REUSE,
+    ReconciliationMode.COPY,
+    ReconciliationMode.RECONCILE,
+    ReconciliationMode.RECREATE
+  })
   @interface ReconciliationMode {
     int COPY = 0;
     int RECONCILE = 1;
     int RECREATE = 2;
+    int REUSE = 3;
   }
 }

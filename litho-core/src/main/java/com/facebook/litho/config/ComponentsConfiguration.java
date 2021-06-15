@@ -245,6 +245,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useInputOnlyInternalNodes = false;
 
+  public static boolean reuseInternalNodes = false;
+
   public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
 
   public static boolean throwExceptionWillRenderGlobalKeyNull = false;
