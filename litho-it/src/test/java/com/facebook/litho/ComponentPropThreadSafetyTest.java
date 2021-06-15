@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.ContextWrapper;
 import android.os.Looper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestWrappedComponentProp;
 import com.facebook.litho.testing.TestWrappedComponentPropSpec;
@@ -31,6 +32,7 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,14 +47,27 @@ public class ComponentPropThreadSafetyTest {
 
   private ComponentContext mContext;
   private ShadowLooper mLayoutThreadShadowLooper;
+  private boolean mShouldSkipShallowCopyConfig;
+
+  public ComponentPropThreadSafetyTest() {
+    mShouldSkipShallowCopyConfig =
+        ComponentsConfiguration.useStatelessComponent
+            && ComponentsConfiguration.shouldSkipShallowCopy;
+  }
 
   @Before
   public void setup() throws Exception {
+    ComponentsConfiguration.shouldSkipShallowCopy = false;
     mContext = new ComponentContext(new ContextWrapper(getApplicationContext()));
 
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.shouldSkipShallowCopy = mShouldSkipShallowCopyConfig;
   }
 
   @Test
