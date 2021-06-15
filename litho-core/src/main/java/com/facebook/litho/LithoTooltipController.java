@@ -80,7 +80,10 @@ public class LithoTooltipController {
       ComponentContext c, LithoTooltip lithoTooltip, Handle handle, int xOffset, int yOffset) {
     final ComponentTree componentTree = c.getComponentTree();
 
-    if (componentTree == null || componentTree.isReleased() || !componentTree.hasMounted()) {
+    if (componentTree == null
+        || componentTree.isReleased()
+        || !componentTree.hasMounted()
+        || componentTree.getMainThreadLayoutState() == null) {
       return;
     }
 
@@ -167,7 +170,10 @@ public class LithoTooltipController {
     final ComponentTree componentTree = c.getComponentTree();
     final Component rootComponent = c.getComponentScope();
 
-    if (componentTree == null || componentTree.isReleased() || !componentTree.hasMounted()) {
+    if (componentTree == null
+        || componentTree.isReleased()
+        || !componentTree.hasMounted()
+        || componentTree.getMainThreadLayoutState() == null) {
       return;
     }
 
