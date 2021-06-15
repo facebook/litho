@@ -435,7 +435,8 @@ class Layout {
 
     parent.validate();
 
-    final Component component = original.getThreadSafeInstance();
+    final Component component =
+        parent.shouldSkipShallowCopy() ? original : original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
       if (ComponentsConfiguration.useGlobalKeys && globalKeyToReuse == null) {

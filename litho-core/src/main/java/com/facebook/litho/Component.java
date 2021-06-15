@@ -200,7 +200,7 @@ public abstract class Component extends ComponentLifecycle
 
     if (useStatelessComponent(layoutStateContext.getComponentTree())) {
 
-      assertSameGlobalKey(globalKey, mGlobalKey);
+      assertSameGlobalKey(layoutStateContext, globalKey, mGlobalKey);
 
       final ComponentContext c = layoutStateContext.getScopedContext(globalKey);
       if (c != null && c.getComponentScope().getClass() != getClass()) {
@@ -472,7 +472,14 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private static void assertSameGlobalKey(
-      final String scopedContextGlobalKey, final String componentGlobalKey) {
+      final LayoutStateContext layoutStateContext,
+      final String scopedContextGlobalKey,
+      final String componentGlobalKey) {
+    if (layoutStateContext.getComponentTree() != null
+        && layoutStateContext.getComponentTree().shouldSkipShallowCopy()) {
+      return;
+    }
+
     if (scopedContextGlobalKey == null && componentGlobalKey == null) {
       return;
     }
@@ -623,6 +630,10 @@ public abstract class Component extends ComponentLifecycle
   /** Returns an updated shallow copy of this component with the same global key. */
   final Component makeUpdatedShallowCopy(
       final ComponentContext parentContext, final String globalKeyToReuse) {
+    if (parentContext.shouldSkipShallowCopy()) {
+      return this;
+    }
+
     final Component clone = makeShallowCopy();
     final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
     final String existingGlobalKey = ComponentUtils.getGlobalKey(this, globalKeyToReuse);
@@ -765,7 +776,7 @@ public abstract class Component extends ComponentLifecycle
 
   private ScopedComponentInfo getScopedInfo(LayoutStateContext context, String globalKey) {
 
-    assertSameGlobalKey(globalKey, mGlobalKey);
+    assertSameGlobalKey(context, globalKey, mGlobalKey);
 
     final ScopedComponentInfo info = context.getScopedComponentInfo(globalKey);
     if (info.mComponent.getClass() != getClass()) {

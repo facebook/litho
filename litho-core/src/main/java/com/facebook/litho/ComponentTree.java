@@ -369,6 +369,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean useStatelessComponent;
 
+  private final boolean shouldSkipShallowCopy;
+
   private final boolean isReconciliationEnabled;
 
   private final boolean mMoveLayoutsBetweenThreads;
@@ -432,6 +434,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mUseInputOnlyInternalNodes =
         mReuseInternalNodes || ComponentsConfiguration.useInputOnlyInternalNodes;
     useStatelessComponent = mReuseInternalNodes || ComponentsConfiguration.useStatelessComponent;
+    shouldSkipShallowCopy = useStatelessComponent && ComponentsConfiguration.shouldSkipShallowCopy;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -1220,6 +1223,10 @@ public class ComponentTree implements LithoLifecycleListener {
     return useStatelessComponent;
   }
 
+  public boolean shouldSkipShallowCopy() {
+    return shouldSkipShallowCopy;
+  }
+
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
   }
@@ -1536,7 +1543,7 @@ public class ComponentTree implements LithoLifecycleListener {
         return;
       }
 
-      root = mRoot.makeShallowCopy();
+      root = shouldSkipShallowCopy() ? mRoot : mRoot.makeShallowCopy();
       rootTreeProps = TreeProps.copy(mRootTreeProps);
 
       if (isCreateLayoutInProgress) {
@@ -2262,7 +2269,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
       widthSpec = mWidthSpec;
       heightSpec = mHeightSpec;
-      root = mRoot.makeShallowCopy();
+      root = shouldSkipShallowCopy() ? mRoot : mRoot.makeShallowCopy();
       localLayoutVersion = mNextLayoutVersion++;
     }
 

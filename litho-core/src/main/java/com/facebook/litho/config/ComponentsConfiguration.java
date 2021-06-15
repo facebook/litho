@@ -247,6 +247,8 @@ public class ComponentsConfiguration {
 
   public static boolean reuseInternalNodes = false;
 
+  public static boolean shouldSkipShallowCopy = false;
+
   public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
 
   public static boolean throwExceptionWillRenderGlobalKeyNull = false;

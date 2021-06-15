@@ -415,7 +415,9 @@ public class MountStateRemountInPlaceTest {
 
     mountComponent(firstLithoView, secondTree);
 
-    verify(thirdComponent).makeShallowCopy();
+    if (!ComponentsConfiguration.shouldSkipShallowCopy) {
+      verify(thirdComponent).makeShallowCopy();
+    }
 
     assertThat(thirdComponent.wasOnMountCalled()).isTrue();
     assertThat(thirdComponent.wasOnBindCalled()).isTrue();
