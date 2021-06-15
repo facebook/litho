@@ -57,17 +57,13 @@ public class NestedTreeResolutionTest {
         new NodeConfig.InternalNodeFactory() {
           @Override
           public InternalNode create(ComponentContext c) {
-            DefaultInternalNode node = spy(new DefaultInternalNode(c));
-            node.getYogaNode().setData(node);
-            return node;
+            return spy(new InputOnlyInternalNode<>(c));
           }
 
           @Override
           public InternalNode.NestedTreeHolder createNestedTreeHolder(
               ComponentContext c, @Nullable TreeProps props) {
-            DefaultNestedTreeHolder node = spy(new DefaultNestedTreeHolder(c, props));
-            node.getYogaNode().setData(node);
-            return node;
+            return spy(new InputOnlyNestedTreeHolder(c, props));
           }
         };
   }
@@ -90,8 +86,11 @@ public class NestedTreeResolutionTest {
     assertThat(root).isNotNull();
     assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
 
-    DefaultNestedTreeHolder holder = (DefaultNestedTreeHolder) root.getChildAt(1);
-    assertThat(holder.mNestedTreePadding.get(YogaEdge.ALL)).isEqualTo(5.0f);
+    DefaultNestedTreeHolderResult holder = (DefaultNestedTreeHolderResult) root.getChildAt(1);
+    assertThat(
+            ((InputOnlyNestedTreeHolder) holder.getInternalNode())
+                .mNestedTreePadding.get(YogaEdge.ALL))
+        .isEqualTo(5.0f);
     assertThat(holder.getNestedResult().getPaddingTop()).isEqualTo(5);
   }
 
@@ -180,7 +179,8 @@ public class NestedTreeResolutionTest {
     NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
 
     assertThat(holder.getYogaNode().getLayoutDirection()).isEqualTo(YogaDirection.LTR);
-    verify(holder.getNestedResult().getInternalNode()).layoutDirection(YogaDirection.RTL);
+    assertThat(holder.getNestedResult().getYogaNode().getLayoutDirection())
+        .isEqualTo(YogaDirection.RTL);
   }
 
   @Test

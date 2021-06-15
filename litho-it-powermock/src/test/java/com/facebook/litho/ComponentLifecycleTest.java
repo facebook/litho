@@ -17,8 +17,6 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -34,7 +32,6 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNodeFactory;
 import java.util.Arrays;
@@ -74,7 +71,8 @@ public class ComponentLifecycleTest {
   private int mNestedTreeWidthSpec;
   private int mNestedTreeHeightSpec;
 
-  private DefaultInternalNode mNode;
+  private DefaultLayoutResult mResult;
+  private InputOnlyInternalNode mNode;
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
@@ -103,19 +101,13 @@ public class ComponentLifecycleTest {
         new NodeConfig.InternalNodeFactory() {
           @Override
           public InternalNode create(ComponentContext componentContext) {
-            InternalNode layout = spy(new DefaultInternalNode(componentContext));
-            YogaNode node = YogaNodeFactory.create();
-            node.setData(layout);
-            return layout;
+            return spy(new InputOnlyInternalNode<>(componentContext));
           }
 
           @Override
           public InternalNode.NestedTreeHolder createNestedTreeHolder(
               ComponentContext c, @Nullable TreeProps props) {
-            DefaultNestedTreeHolder layout = spy(new DefaultNestedTreeHolder(c, props));
-            YogaNode node = YogaNodeFactory.create();
-            node.setData(layout);
-            return layout;
+            return spy(new InputOnlyNestedTreeHolder(c, props));
           }
         };
 
@@ -133,12 +125,13 @@ public class ComponentLifecycleTest {
         .thenCallRealMethod();
 
     mDiffNode = mock(DiffNode.class);
-    mNode = mock(DefaultInternalNode.class);
+    mNode = mock(InputOnlyInternalNode.class);
+    mResult = mock(DefaultLayoutResult.class);
     mYogaNode = YogaNodeFactory.create();
     mYogaNode.setData(mNode);
 
-    when(mNode.getLastWidthSpec()).thenReturn(-1);
-    when(mNode.getDiffNode()).thenReturn(mDiffNode);
+    when(mResult.getLastWidthSpec()).thenReturn(-1);
+    when(mResult.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
 
@@ -150,7 +143,7 @@ public class ComponentLifecycleTest {
     mContext = spy(c);
     mLayoutStateContext = spy(c.getLayoutStateContext());
     when(mNode.getContext()).thenReturn(mContext);
-    when(mNode.getInternalNode()).thenReturn(mNode);
+    when(mResult.getInternalNode()).thenReturn(mNode);
     when(mContext.getLayoutStateContext()).thenReturn(mLayoutStateContext);
     when(mLayoutStateContext.getComponentTree()).thenReturn(mComponentTree);
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
@@ -341,21 +334,6 @@ public class ComponentLifecycleTest {
             scopedContext, scopedContext.getWidthSpec(), scopedContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-  }
-
-  @Test
-  public void testMountSpecYogaMeasureOutputSet() {
-    final boolean value = ComponentsConfiguration.useStatelessComponent;
-    ComponentsConfiguration.useStatelessComponent = false;
-    when(mComponentTree.useStatelessComponent()).thenReturn(false);
-    Component component = new TestMountSpecSettingSizesInOnMeasure(mNode);
-    YogaMeasureFunction measureFunction = getMeasureFunction(component);
-
-    long output = measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
-
-    assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(A_WIDTH);
-    assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(A_HEIGHT);
-    ComponentsConfiguration.useStatelessComponent = value;
   }
 
   private Component setUpSpyComponentForCreateLayout(boolean isMountSpec, boolean canMeasure) {

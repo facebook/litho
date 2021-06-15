@@ -238,6 +238,10 @@ public class LayoutDiffingTest {
 
   @Test
   public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem() {
+
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
+
     final ComponentContext c = mLithoViewRule.getContext();
     final Component component =
         Column.create(c)
@@ -251,6 +255,35 @@ public class LayoutDiffingTest {
     assertThat(((TextView) view).getText()).isEqualTo("0");
     view.callOnClick();
     assertThat(((TextView) view).getText()).isEqualTo("1");
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  @Test
+  public void whenStateUpdateOnPureRenderMountSpec_shouldRemountItem_with_reuse() {
+
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(TextViewCounter.create(c).viewWidth(200).viewHeight(200).build())
+            .build();
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
+
+    final View view = mLithoViewRule.getLithoView().getChildAt(0);
+    assertThat(view).isNotNull();
+    assertThat(view).isInstanceOf(TextView.class);
+    assertThat(((TextView) view).getText()).isEqualTo("0");
+    view.callOnClick();
+    assertThat(((TextView) view).getText()).isEqualTo("1");
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   @Test

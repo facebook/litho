@@ -33,7 +33,6 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.SameManualKeyRootComponentSpec;
@@ -45,19 +44,27 @@ import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LooperMode.Mode.LEGACY)
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class StateUpdatesWithReconciliationTest {
+
+  private final boolean mUsesInputOnlyInternalNode;
+  private final boolean mOriginalValueOfUseInputOnlyInternalNodes;
+  private final boolean mOriginalValueOfUseStatelessComponent;
+  private final boolean originalE2ETestRun;
 
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
@@ -72,9 +79,29 @@ public class StateUpdatesWithReconciliationTest {
   private ComponentTree mComponentTree;
   private ComponentsLogger mComponentsLogger;
   private LithoView mLithoView;
-  private boolean originalE2ETestRun;
 
   private static final int STATE_VALUE_INITIAL_COUNT = 4;
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "usesInputOnlyInternalNode={0}")
+  public static Collection data() {
+    return Arrays.asList(
+        new Object[][] {
+          {false}, {true},
+        });
+  }
+
+  public StateUpdatesWithReconciliationTest(boolean usesInputOnlyInternalNode) {
+    originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
+    mUsesInputOnlyInternalNode = usesInputOnlyInternalNode;
+    mOriginalValueOfUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+    mOriginalValueOfUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+  }
+
+  @Before
+  public void setup() {
+    ComponentsConfiguration.useInputOnlyInternalNodes = mUsesInputOnlyInternalNode;
+    ComponentsConfiguration.useStatelessComponent = mUsesInputOnlyInternalNode;
+  }
 
   @Before
   public void before() {
@@ -82,20 +109,20 @@ public class StateUpdatesWithReconciliationTest {
   }
 
   public void before(Component component) {
-    originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
+
     ComponentsConfiguration.isEndToEndTestRun = true;
 
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
           @Override
           public InternalNode create(ComponentContext c) {
-            return spy(new DefaultInternalNode(c));
+            return spy(new InputOnlyInternalNode(c));
           }
 
           @Override
           public InternalNode.NestedTreeHolder createNestedTreeHolder(
               ComponentContext c, @Nullable TreeProps props) {
-            return spy(new DefaultNestedTreeHolder(c, props));
+            return spy(new InputOnlyNestedTreeHolder(c, props));
           }
         };
     mComponentsLogger = new TestComponentsLogger();
@@ -117,6 +144,8 @@ public class StateUpdatesWithReconciliationTest {
   @After
   public void after() {
     ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
+    ComponentsConfiguration.useInputOnlyInternalNodes = mOriginalValueOfUseInputOnlyInternalNodes;
+    ComponentsConfiguration.useStatelessComponent = mOriginalValueOfUseStatelessComponent;
     NodeConfig.sInternalNodeFactory = null;
   }
 
@@ -202,8 +231,6 @@ public class StateUpdatesWithReconciliationTest {
 
   @Test
   public void testStateUpdateWithComponentsWhichHaveSameManualKeyWithNewLayoutCreation() {
-    after();
-
     // Set custom root component
     before(SameManualKeyRootComponentSpec.create(mContext));
 
@@ -217,8 +244,6 @@ public class StateUpdatesWithReconciliationTest {
 
   @Test
   public void testStateUpdateWithComponentsWhichHaveSameManualKey() {
-    after();
-
     // Set custom root component
     before(SameManualKeyRootComponentSpec.create(mContext));
 
@@ -232,8 +257,6 @@ public class StateUpdatesWithReconciliationTest {
 
   @Test
   public void testIsReconcilableForRootComponentWithUpdatedState() {
-    after();
-
     SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
     before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
@@ -251,8 +274,6 @@ public class StateUpdatesWithReconciliationTest {
 
   @Test
   public void testIsReconcilableForRootComponentWithDifferentPropValues() {
-    after();
-
     SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
     before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
 
@@ -279,7 +300,8 @@ public class StateUpdatesWithReconciliationTest {
    */
   @Test
   public void testMultipleBackgroundStateUpdates() {
-    after();
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
 
     ComponentContext c = new ComponentContext(getApplicationContext());
     LithoView lithoView = new LithoView(c);
@@ -338,6 +360,84 @@ public class StateUpdatesWithReconciliationTest {
                     MatchNode.list(
                         MatchNode.forType(TextDrawable.class).prop("text", "First: 2"),
                         MatchNode.forType(TextDrawable.class).prop("text", "Second: 2"))));
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  /**
+   * In this scenario, we make sure that if a state update happens in the background followed by a
+   * second state update in the background before the first can commit on the main thread, that the
+   * final result includes both state updates.
+   */
+  @Test
+  public void testMultipleBackgroundStateUpdates_with_reuse() {
+
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    ComponentContext c = new ComponentContext(getApplicationContext());
+    LithoView lithoView = new LithoView(c);
+    ComponentTree componentTree = ComponentTree.create(c).build();
+    lithoView.setComponentTree(componentTree);
+    lithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    lithoView.layout(0, 0, 100, 100);
+    lithoView.onAttachedToWindow();
+
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater1 =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater2 =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    componentTree.setRootAsync(
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        SimpleStateUpdateEmulator.create(c)
+                            .caller(stateUpdater1)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .prefix("First: "))
+                    .child(
+                        SimpleStateUpdateEmulator.create(c)
+                            .caller(stateUpdater2)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .prefix("Second: ")))
+            .build());
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    ShadowLooper.idleMainLooper();
+    lithoView.layout(0, 0, 100, 100);
+
+    // Do two state updates sequentially without draining the main thread queue
+    stateUpdater1.incrementAsync();
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    stateUpdater2.incrementAsync();
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    // Now drain the main thread queue and mount the result
+    ShadowLooper.idleMainLooper();
+    lithoView.layout(0, 0, 100, 100);
+
+    ViewAssertions.assertThat(lithoView)
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "First: 2"),
+                        MatchNode.forType(TextDrawable.class).prop("text", "Second: 2"))));
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   @Test

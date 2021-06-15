@@ -19,11 +19,11 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -363,161 +363,158 @@ public class LayoutStateCreateTreeTest {
     final StateListAnimator stateListAnimator = mock(StateListAnimator.class);
 
     final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponentWithMockInternalNode.create(c)
-                .layoutDirection(YogaDirection.INHERIT)
-                .alignSelf(YogaAlign.AUTO)
-                .positionType(YogaPositionType.ABSOLUTE)
-                .flex(2)
-                .flexGrow(3)
-                .flexShrink(4)
-                .flexBasisPx(5)
-                .flexBasisPercent(6)
-                .importantForAccessibility(
-                    ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-                .duplicateParentState(false)
-                .marginPx(YogaEdge.ALL, 5)
-                .marginPx(YogaEdge.RIGHT, 6)
-                .marginPx(YogaEdge.LEFT, 4)
-                .marginPercent(YogaEdge.ALL, 10)
-                .marginPercent(YogaEdge.VERTICAL, 12)
-                .marginPercent(YogaEdge.RIGHT, 5)
-                .marginAuto(YogaEdge.LEFT)
-                .marginAuto(YogaEdge.TOP)
-                .marginAuto(YogaEdge.RIGHT)
-                .marginAuto(YogaEdge.BOTTOM)
-                .paddingPx(YogaEdge.ALL, 1)
-                .paddingPx(YogaEdge.RIGHT, 2)
-                .paddingPx(YogaEdge.LEFT, 3)
-                .paddingPercent(YogaEdge.VERTICAL, 7)
-                .paddingPercent(YogaEdge.RIGHT, 6)
-                .paddingPercent(YogaEdge.ALL, 5)
-                .positionPx(YogaEdge.ALL, 11)
-                .positionPx(YogaEdge.RIGHT, 12)
-                .positionPx(YogaEdge.LEFT, 13)
-                .positionPercent(YogaEdge.VERTICAL, 17)
-                .positionPercent(YogaEdge.RIGHT, 16)
-                .positionPercent(YogaEdge.ALL, 15)
-                .widthPx(5)
-                .widthPercent(50)
-                .minWidthPx(15)
-                .minWidthPercent(100)
-                .maxWidthPx(25)
-                .maxWidthPercent(26)
-                .heightPx(30)
-                .heightPercent(31)
-                .minHeightPx(32)
-                .minHeightPercent(33)
-                .maxHeightPx(34)
-                .maxHeightPercent(35)
-                .aspectRatio(20)
-                .touchExpansionPx(YogaEdge.RIGHT, 22)
-                .touchExpansionPx(YogaEdge.LEFT, 23)
-                .touchExpansionPx(YogaEdge.ALL, 21)
-                .background(background)
-                .foreground(foreground)
-                .wrapInView()
-                .clickHandler(clickHandler)
-                .focusChangeHandler(focusChangedHandler)
-                .longClickHandler(longClickHandler)
-                .touchHandler(touchHandler)
-                .interceptTouchHandler(interceptTouchHandler)
-                .focusable(true)
-                .selected(false)
-                .enabled(false)
-                .accessibilityHeading(false)
-                .visibleHeightRatio(55)
-                .visibleWidthRatio(56)
-                .visibleHandler(visibleHandler)
-                .focusedHandler(focusedHandler)
-                .unfocusedHandler(unfocusedHandler)
-                .fullImpressionHandler(fullImpressionHandler)
-                .invisibleHandler(invisibleHandler)
-                .visibilityChangedHandler(visibleRectChangedHandler)
-                .contentDescription("test")
-                .viewTag(viewTag)
-                .viewTags(viewTags)
-                .shadowElevationPx(60)
-                .clipToOutline(false)
-                .transitionKey("transitionKey")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-                .testKey("testKey")
-                .accessibilityRole(AccessibilityRole.BUTTON)
-                .accessibilityRoleDescription("Test Role Description")
-                .dispatchPopulateAccessibilityEventHandler(
-                    dispatchPopulateAccessibilityEventHandler)
-                .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler)
-                .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler)
-                .onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler)
-                .onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler)
-                .performAccessibilityActionHandler(performAccessibilityActionHandler)
-                .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
-                .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
-                .stateListAnimator(stateListAnimator)
-                .build();
-          }
-        };
+        TestDrawableComponentWithMockInternalNode.create(mComponentContext)
+            .layoutDirection(YogaDirection.INHERIT)
+            .alignSelf(YogaAlign.AUTO)
+            .positionType(YogaPositionType.ABSOLUTE)
+            .flex(2)
+            .flexGrow(3)
+            .flexShrink(4)
+            .flexBasisPx(5)
+            .flexBasisPercent(6)
+            .importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+            .duplicateParentState(false)
+            .marginPx(YogaEdge.ALL, 5)
+            .marginPx(YogaEdge.RIGHT, 6)
+            .marginPx(YogaEdge.LEFT, 4)
+            .marginPercent(YogaEdge.ALL, 10)
+            .marginPercent(YogaEdge.VERTICAL, 12)
+            .marginPercent(YogaEdge.RIGHT, 5)
+            .marginAuto(YogaEdge.LEFT)
+            .marginAuto(YogaEdge.TOP)
+            .marginAuto(YogaEdge.RIGHT)
+            .marginAuto(YogaEdge.BOTTOM)
+            .paddingPx(YogaEdge.ALL, 1)
+            .paddingPx(YogaEdge.RIGHT, 2)
+            .paddingPx(YogaEdge.LEFT, 3)
+            .paddingPercent(YogaEdge.VERTICAL, 7)
+            .paddingPercent(YogaEdge.RIGHT, 6)
+            .paddingPercent(YogaEdge.ALL, 5)
+            .positionPx(YogaEdge.ALL, 11)
+            .positionPx(YogaEdge.RIGHT, 12)
+            .positionPx(YogaEdge.LEFT, 13)
+            .positionPercent(YogaEdge.VERTICAL, 17)
+            .positionPercent(YogaEdge.RIGHT, 16)
+            .positionPercent(YogaEdge.ALL, 15)
+            .widthPx(5)
+            .widthPercent(50)
+            .minWidthPx(15)
+            .minWidthPercent(100)
+            .maxWidthPx(25)
+            .maxWidthPercent(26)
+            .heightPx(30)
+            .heightPercent(31)
+            .minHeightPx(32)
+            .minHeightPercent(33)
+            .maxHeightPx(34)
+            .maxHeightPercent(35)
+            .aspectRatio(20)
+            .touchExpansionPx(YogaEdge.RIGHT, 22)
+            .touchExpansionPx(YogaEdge.LEFT, 23)
+            .touchExpansionPx(YogaEdge.ALL, 21)
+            .background(background)
+            .foreground(foreground)
+            .wrapInView()
+            .clickHandler(clickHandler)
+            .focusChangeHandler(focusChangedHandler)
+            .longClickHandler(longClickHandler)
+            .touchHandler(touchHandler)
+            .interceptTouchHandler(interceptTouchHandler)
+            .focusable(true)
+            .selected(false)
+            .enabled(false)
+            .accessibilityHeading(false)
+            .visibleHeightRatio(55)
+            .visibleWidthRatio(56)
+            .visibleHandler(visibleHandler)
+            .focusedHandler(focusedHandler)
+            .unfocusedHandler(unfocusedHandler)
+            .fullImpressionHandler(fullImpressionHandler)
+            .invisibleHandler(invisibleHandler)
+            .visibilityChangedHandler(visibleRectChangedHandler)
+            .contentDescription("test")
+            .viewTag(viewTag)
+            .viewTags(viewTags)
+            .shadowElevationPx(60)
+            .clipToOutline(false)
+            .transitionKey("transitionKey")
+            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
+            .testKey("testKey")
+            .accessibilityRole(AccessibilityRole.BUTTON)
+            .accessibilityRoleDescription("Test Role Description")
+            .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler)
+            .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler)
+            .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler)
+            .onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler)
+            .onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler)
+            .performAccessibilityActionHandler(performAccessibilityActionHandler)
+            .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
+            .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+            .stateListAnimator(stateListAnimator)
+            .build();
 
     component.setScopedContext(mComponentContext);
 
-    DefaultInternalNode node = (DefaultInternalNode) Layout.create(mComponentContext, component);
-    NodeInfo nodeInfo = node.getOrCreateNodeInfo();
+    final InternalNode node = Layout.create(mComponentContext, component);
+    final NodeInfo nodeInfo = node.getOrCreateNodeInfo();
+    final CopyableLayoutProps input = component.getCommonProps().getLayoutProps();
+    final LayoutProps output = spy(LayoutProps.class);
 
-    verify(node).layoutDirection(YogaDirection.INHERIT);
-    verify(node).alignSelf(YogaAlign.AUTO);
-    verify(node).positionType(YogaPositionType.ABSOLUTE);
-    verify(node).flex(2);
-    verify(node).flexGrow(3);
-    verify(node).flexShrink(4);
-    verify(node).flexBasisPx(5);
-    verify(node).flexBasisPercent(6);
+    input.copyInto(output);
+
+    verify(output).layoutDirection(YogaDirection.INHERIT);
+    verify(output).alignSelf(YogaAlign.AUTO);
+    verify(output).positionType(YogaPositionType.ABSOLUTE);
+    verify(output).flex(2);
+    verify(output).flexGrow(3);
+    verify(output).flexShrink(4);
+    verify(output).flexBasisPx(5);
+    verify(output).flexBasisPercent(6);
 
     verify(node)
         .importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     verify(node).duplicateParentState(false);
 
-    verify(node).marginPx(YogaEdge.ALL, 5);
-    verify(node).marginPx(YogaEdge.RIGHT, 6);
-    verify(node).marginPx(YogaEdge.LEFT, 4);
-    verify(node).marginPercent(YogaEdge.ALL, 10);
-    verify(node).marginPercent(YogaEdge.VERTICAL, 12);
-    verify(node).marginPercent(YogaEdge.RIGHT, 5);
-    verify(node).marginAuto(YogaEdge.LEFT);
-    verify(node).marginAuto(YogaEdge.TOP);
-    verify(node).marginAuto(YogaEdge.RIGHT);
-    verify(node).marginAuto(YogaEdge.BOTTOM);
+    verify(output).marginPx(YogaEdge.ALL, 5);
+    verify(output).marginPx(YogaEdge.RIGHT, 6);
+    verify(output).marginPx(YogaEdge.LEFT, 4);
+    verify(output).marginPercent(YogaEdge.ALL, 10);
+    verify(output).marginPercent(YogaEdge.VERTICAL, 12);
+    verify(output).marginPercent(YogaEdge.RIGHT, 5);
+    verify(output).marginAuto(YogaEdge.LEFT);
+    verify(output).marginAuto(YogaEdge.TOP);
+    verify(output).marginAuto(YogaEdge.RIGHT);
+    verify(output).marginAuto(YogaEdge.BOTTOM);
 
-    verify(node).paddingPx(YogaEdge.ALL, 1);
-    verify(node).paddingPx(YogaEdge.RIGHT, 2);
-    verify(node).paddingPx(YogaEdge.LEFT, 3);
-    verify(node).paddingPercent(YogaEdge.VERTICAL, 7);
-    verify(node).paddingPercent(YogaEdge.RIGHT, 6);
-    verify(node).paddingPercent(YogaEdge.ALL, 5);
+    verify(output).paddingPx(YogaEdge.ALL, 1);
+    verify(output).paddingPx(YogaEdge.RIGHT, 2);
+    verify(output).paddingPx(YogaEdge.LEFT, 3);
+    verify(output).paddingPercent(YogaEdge.VERTICAL, 7);
+    verify(output).paddingPercent(YogaEdge.RIGHT, 6);
+    verify(output).paddingPercent(YogaEdge.ALL, 5);
 
-    verify(node).positionPx(YogaEdge.ALL, 11);
-    verify(node).positionPx(YogaEdge.RIGHT, 12);
-    verify(node).positionPx(YogaEdge.LEFT, 13);
-    verify(node).positionPercent(YogaEdge.VERTICAL, 17);
-    verify(node).positionPercent(YogaEdge.RIGHT, 16);
-    verify(node).positionPercent(YogaEdge.ALL, 15);
+    verify(output).positionPx(YogaEdge.ALL, 11);
+    verify(output).positionPx(YogaEdge.RIGHT, 12);
+    verify(output).positionPx(YogaEdge.LEFT, 13);
+    verify(output).positionPercent(YogaEdge.VERTICAL, 17);
+    verify(output).positionPercent(YogaEdge.RIGHT, 16);
+    verify(output).positionPercent(YogaEdge.ALL, 15);
 
-    verify(node).widthPx(5);
-    verify(node).widthPercent(50);
-    verify(node).minWidthPx(15);
-    verify(node).minWidthPercent(100);
-    verify(node).maxWidthPx(25);
-    verify(node).maxWidthPercent(26);
+    verify(output).widthPx(5);
+    verify(output).widthPercent(50);
+    verify(output).minWidthPx(15);
+    verify(output).minWidthPercent(100);
+    verify(output).maxWidthPx(25);
+    verify(output).maxWidthPercent(26);
 
-    verify(node).heightPx(30);
-    verify(node).heightPercent(31);
-    verify(node).minHeightPx(32);
-    verify(node).minHeightPercent(33);
-    verify(node).maxHeightPx(34);
-    verify(node).maxHeightPercent(35);
+    verify(output).heightPx(30);
+    verify(output).heightPercent(31);
+    verify(output).minHeightPx(32);
+    verify(output).minHeightPercent(33);
+    verify(output).maxHeightPx(34);
+    verify(output).maxHeightPercent(35);
 
-    verify(node).aspectRatio(20);
+    verify(output).aspectRatio(20);
 
     verify(node).touchExpansionPx(YogaEdge.RIGHT, 22);
     verify(node).touchExpansionPx(YogaEdge.LEFT, 23);
@@ -556,7 +553,7 @@ public class LayoutStateCreateTreeTest {
     verify(nodeInfo).setShadowElevation(60);
 
     verify(nodeInfo).setClipToOutline(false);
-    verify(node).transitionKey(eq("transitionKey"), anyString());
+    verify(node).transitionKey(eq("transitionKey"), nullable(String.class));
     verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
 
@@ -579,21 +576,6 @@ public class LayoutStateCreateTreeTest {
     verify(node).stateListAnimator(stateListAnimator);
   }
 
-  @Test
-  public void testCopyPropsOnlyCalledOnce() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return TestDrawableComponentWithMockInternalNode.create(c).flexGrow(1).build();
-          }
-        };
-
-    final LithoLayoutResult root =
-        Layout.createAndMeasureComponent(mComponentContext, component, 800, 600).mResult;
-    verify((DefaultInternalNode) root.getInternalNode()).flexGrow(anyFloat());
-  }
-
   private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
 
     @Override
@@ -603,7 +585,7 @@ public class LayoutStateCreateTreeTest {
 
     protected InternalNode resolve(ComponentContext c) {
       LithoLayoutResult result = mock(LithoLayoutResult.class);
-      DefaultInternalNode node = mock(DefaultInternalNode.class);
+      InputOnlyInternalNode node = mock(InputOnlyInternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
       when(node.calculateLayout(any(ComponentContext.class), anyInt(), anyInt()))

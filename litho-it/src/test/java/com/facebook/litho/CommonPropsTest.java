@@ -27,7 +27,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,32 +36,34 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
-import androidx.core.content.ContextCompat;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 @RunWith(LithoTestRunner.class)
 public class CommonPropsTest {
 
-  private DefaultInternalNode mNode;
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  private InputOnlyInternalNode mNode;
   private NodeInfo mNodeInfo;
   private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
-    mNode = mock(DefaultInternalNode.class);
+    mNode = mock(InputOnlyInternalNode.class);
     mNodeInfo = mock(NodeInfo.class);
     when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
     mCommonProps = new CommonPropsHolder();
@@ -215,62 +216,66 @@ public class CommonPropsTest {
     mCommonProps.stateListAnimator(stateListAnimator);
 
     mCommonProps.copyInto(mComponentContext, mNode);
+    final CopyableLayoutProps input = mCommonProps.getLayoutProps();
+    final LayoutProps output = spy(LayoutProps.class);
 
-    verify(mNode).layoutDirection(YogaDirection.INHERIT);
-    verify(mNode).alignSelf(YogaAlign.AUTO);
-    verify(mNode).positionType(YogaPositionType.ABSOLUTE);
-    verify(mNode).flex(2);
-    verify(mNode).flexGrow(3);
-    verify(mNode).flexShrink(4);
-    verify(mNode).flexBasisPx(5);
-    verify(mNode).flexBasisPercent(6);
+    input.copyInto(output);
+
+    verify(output).layoutDirection(YogaDirection.INHERIT);
+    verify(output).alignSelf(YogaAlign.AUTO);
+    verify(output).positionType(YogaPositionType.ABSOLUTE);
+    verify(output).flex(2);
+    verify(output).flexGrow(3);
+    verify(output).flexShrink(4);
+    verify(output).flexBasisPx(5);
+    verify(output).flexBasisPercent(6);
 
     verify(mNode)
         .importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     verify(mNode).duplicateParentState(false);
 
-    verify(mNode).marginPx(YogaEdge.ALL, 5);
-    verify(mNode).marginPx(YogaEdge.RIGHT, 6);
-    verify(mNode).marginPx(YogaEdge.LEFT, 4);
-    verify(mNode).marginPercent(YogaEdge.ALL, 10);
-    verify(mNode).marginPercent(YogaEdge.VERTICAL, 12);
-    verify(mNode).marginPercent(YogaEdge.RIGHT, 5);
-    verify(mNode).marginAuto(YogaEdge.LEFT);
-    verify(mNode).marginAuto(YogaEdge.TOP);
-    verify(mNode).marginAuto(YogaEdge.RIGHT);
-    verify(mNode).marginAuto(YogaEdge.BOTTOM);
+    verify(output).marginPx(YogaEdge.ALL, 5);
+    verify(output).marginPx(YogaEdge.RIGHT, 6);
+    verify(output).marginPx(YogaEdge.LEFT, 4);
+    verify(output).marginPercent(YogaEdge.ALL, 10);
+    verify(output).marginPercent(YogaEdge.VERTICAL, 12);
+    verify(output).marginPercent(YogaEdge.RIGHT, 5);
+    verify(output).marginAuto(YogaEdge.LEFT);
+    verify(output).marginAuto(YogaEdge.TOP);
+    verify(output).marginAuto(YogaEdge.RIGHT);
+    verify(output).marginAuto(YogaEdge.BOTTOM);
 
-    verify(mNode).paddingPx(YogaEdge.ALL, 1);
-    verify(mNode).paddingPx(YogaEdge.RIGHT, 2);
-    verify(mNode).paddingPx(YogaEdge.LEFT, 3);
-    verify(mNode).paddingPercent(YogaEdge.VERTICAL, 7);
-    verify(mNode).paddingPercent(YogaEdge.RIGHT, 6);
-    verify(mNode).paddingPercent(YogaEdge.ALL, 5);
+    verify(output).paddingPx(YogaEdge.ALL, 1);
+    verify(output).paddingPx(YogaEdge.RIGHT, 2);
+    verify(output).paddingPx(YogaEdge.LEFT, 3);
+    verify(output).paddingPercent(YogaEdge.VERTICAL, 7);
+    verify(output).paddingPercent(YogaEdge.RIGHT, 6);
+    verify(output).paddingPercent(YogaEdge.ALL, 5);
 
     verify(mNode).border((Border) any());
 
-    verify(mNode).positionPx(YogaEdge.ALL, 11);
-    verify(mNode).positionPx(YogaEdge.RIGHT, 12);
-    verify(mNode).positionPx(YogaEdge.LEFT, 13);
-    verify(mNode).positionPercent(YogaEdge.VERTICAL, 17);
-    verify(mNode).positionPercent(YogaEdge.RIGHT, 16);
-    verify(mNode).positionPercent(YogaEdge.ALL, 15);
+    verify(output).positionPx(YogaEdge.ALL, 11);
+    verify(output).positionPx(YogaEdge.RIGHT, 12);
+    verify(output).positionPx(YogaEdge.LEFT, 13);
+    verify(output).positionPercent(YogaEdge.VERTICAL, 17);
+    verify(output).positionPercent(YogaEdge.RIGHT, 16);
+    verify(output).positionPercent(YogaEdge.ALL, 15);
 
-    verify(mNode).widthPx(5);
-    verify(mNode).widthPercent(50);
-    verify(mNode).minWidthPx(15);
-    verify(mNode).minWidthPercent(100);
-    verify(mNode).maxWidthPx(25);
-    verify(mNode).maxWidthPercent(26);
+    verify(output).widthPx(5);
+    verify(output).widthPercent(50);
+    verify(output).minWidthPx(15);
+    verify(output).minWidthPercent(100);
+    verify(output).maxWidthPx(25);
+    verify(output).maxWidthPercent(26);
 
-    verify(mNode).heightPx(30);
-    verify(mNode).heightPercent(31);
-    verify(mNode).minHeightPx(32);
-    verify(mNode).minHeightPercent(33);
-    verify(mNode).maxHeightPx(34);
-    verify(mNode).maxHeightPercent(35);
+    verify(output).heightPx(30);
+    verify(output).heightPercent(31);
+    verify(output).minHeightPx(32);
+    verify(output).minHeightPercent(33);
+    verify(output).maxHeightPx(34);
+    verify(output).maxHeightPercent(35);
 
-    verify(mNode).aspectRatio(20);
+    verify(output).aspectRatio(20);
 
     verify(mNode).touchExpansionPx(YogaEdge.RIGHT, 22);
     verify(mNode).touchExpansionPx(YogaEdge.LEFT, 23);
@@ -391,39 +396,45 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawable() {
-    final DefaultInternalNode node = spy(new DefaultInternalNode(mComponentContext));
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(Text.create(c).text("Hello World").backgroundRes(background_with_padding))
+            .build();
 
-    mCommonProps.background(
-        ContextCompat.getDrawable(mComponentContext.getAndroidContext(), background_with_padding));
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
-    mCommonProps.copyInto(mComponentContext, node);
+    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode().getChildAt(0);
 
-    verify(node).paddingPx(YogaEdge.LEFT, 48);
-    verify(node).paddingPx(YogaEdge.TOP, 0);
-    verify(node).paddingPx(YogaEdge.RIGHT, 0);
-    verify(node).paddingPx(YogaEdge.BOTTOM, 0);
+    assertThat(result.getPaddingLeft()).isEqualTo(48);
+    assertThat(result.getPaddingTop()).isEqualTo(0);
+    assertThat(result.getPaddingRight()).isEqualTo(0);
+    assertThat(result.getPaddingBottom()).isEqualTo(0);
   }
 
   @Test
   public void testPaddingFromDrawableIsOverwritten() {
-    final DefaultInternalNode node = spy(new DefaultInternalNode(mComponentContext));
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component =
+        Column.create(c)
+            .child(
+                Text.create(c)
+                    .text("Hello World")
+                    .backgroundRes(background_with_padding)
+                    .paddingPx(YogaEdge.LEFT, 8)
+                    .paddingPx(YogaEdge.RIGHT, 8)
+                    .paddingPx(YogaEdge.TOP, 8)
+                    .paddingPx(YogaEdge.BOTTOM, 8))
+            .build();
 
-    mCommonProps.background(
-        ContextCompat.getDrawable(mComponentContext.getAndroidContext(), background_with_padding));
-    mCommonProps.paddingPx(YogaEdge.LEFT, 0);
-    mCommonProps.paddingPx(YogaEdge.TOP, 0);
-    mCommonProps.paddingPx(YogaEdge.RIGHT, 0);
-    mCommonProps.paddingPx(YogaEdge.BOTTOM, 0);
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
-    mCommonProps.copyInto(mComponentContext, node);
+    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode().getChildAt(0);
 
-    InOrder inOrder = Mockito.inOrder(node);
-    inOrder.verify(node).paddingPx(YogaEdge.LEFT, 48);
-    inOrder.verify(node).paddingPx(YogaEdge.LEFT, 0);
-
-    verify(node, times(2)).paddingPx(YogaEdge.TOP, 0);
-    verify(node, times(2)).paddingPx(YogaEdge.RIGHT, 0);
-    verify(node, times(2)).paddingPx(YogaEdge.BOTTOM, 0);
+    assertThat(result.getPaddingLeft()).isEqualTo(8);
+    assertThat(result.getPaddingTop()).isEqualTo(8);
+    assertThat(result.getPaddingRight()).isEqualTo(8);
+    assertThat(result.getPaddingBottom()).isEqualTo(8);
   }
 
   @Test

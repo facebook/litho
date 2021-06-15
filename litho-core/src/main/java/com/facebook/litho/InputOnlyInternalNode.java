@@ -1576,7 +1576,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 2. Shallow copy this layout.
     final InputOnlyInternalNode<?> layout;
 
-    if (ComponentsConfiguration.reuseInternalNodes) {
+    if (layoutStateContext.isInternalNodeReuseEnabled()) {
       layout = current.clone();
       layout.mChildren = new ArrayList<>(current.getChildCount());
     } else {
@@ -1600,7 +1600,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       // 3.2 Update the head component of the child layout.
       final Component updated;
 
-      if (ComponentsConfiguration.reuseInternalNodes) {
+      if (layoutStateContext.isInternalNodeReuseEnabled()) {
         updated = component;
       } else {
         updated = component.makeUpdatedShallowCopy(parentContext, key);
@@ -1706,9 +1706,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       }
     }
 
-    return ComponentsConfiguration.reuseInternalNodes
-        ? ReconciliationMode.REUSE
-        : ReconciliationMode.COPY;
+    return c.isInternalNodeReuseEnabled() ? ReconciliationMode.REUSE : ReconciliationMode.COPY;
   }
 
   protected static ComponentContext getContext(LayoutStateContext c, InternalNode node) {

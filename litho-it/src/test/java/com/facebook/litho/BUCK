@@ -111,7 +111,6 @@ litho_android_library(
     name = "testutil",
     srcs = [
         "StateUpdateTestComponent.java",
-        "TouchExpansionTestInternalNode.java",
     ],
     autoglob = False,
     source = "8",

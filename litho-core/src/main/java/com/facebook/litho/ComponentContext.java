@@ -692,9 +692,11 @@ public class ComponentContext implements Cloneable {
   }
 
   boolean isInputOnlyInternalNodeEnabled() {
-    return mComponentTree == null
-        ? ComponentsConfiguration.useInputOnlyInternalNodes
-        : mComponentTree.isInputOnlyInternalNodeEnabled();
+    return mComponentTree != null && mComponentTree.isInputOnlyInternalNodeEnabled();
+  }
+
+  boolean isInternalNodeReuseEnabled() {
+    return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
   }
 
   @Override

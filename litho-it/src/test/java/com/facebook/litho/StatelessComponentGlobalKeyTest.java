@@ -45,13 +45,17 @@ public class StatelessComponentGlobalKeyTest {
 
   private static final String mLogTag = "logTag";
 
+  private final boolean mUseStatelessComponentDefault;
+
   private ComponentContext mContext;
   private TestComponentsReporter mComponentsReporter;
-  private boolean mUseStatelessComponentDefault;
+
+  public StatelessComponentGlobalKeyTest() {
+    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
+  }
 
   @Before
   public void setup() {
-    mUseStatelessComponentDefault = ComponentsConfiguration.useStatelessComponent;
     ComponentsConfiguration.useStatelessComponent = true;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());

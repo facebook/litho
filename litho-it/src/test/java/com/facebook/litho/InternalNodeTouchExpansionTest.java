@@ -17,9 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
@@ -31,6 +29,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,127 +37,124 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTouchExpansionTest {
 
-  private DefaultInternalNode mInternalNode;
+  private InternalNode mInternalNode;
   ComponentContext mContext;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
     mContext.setLayoutStateContextForTesting();
-    mInternalNode =
-        (DefaultInternalNode)
-            createAndMeasureComponent(
-                    mContext,
-                    Column.create(mContext).build(),
-                    makeSizeSpec(0, UNSPECIFIED),
-                    makeSizeSpec(0, UNSPECIFIED))
-                .mResult;
-
+    mInternalNode = Layout.create(mContext, Column.create(mContext).build());
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
-  private static void setDirection(ComponentContext c, InternalNode node, YogaDirection direction) {
-    node.layoutDirection(direction);
-    node.calculateLayout(c, UNSPECIFIED, UNSPECIFIED);
+  private InternalNodeTouchExpansionTest setDirection(YogaDirection direction) {
+    mInternalNode.layoutDirection(direction);
+    return this;
+  }
+
+  private InternalNodeTouchExpansionTest touchExpansionPx(YogaEdge edge, int value) {
+    mInternalNode.touchExpansionPx(edge, value);
+    return this;
+  }
+
+  private LithoLayoutResult calculateLayout() {
+    return mInternalNode.calculateLayout(mContext, UNSPECIFIED, UNSPECIFIED);
   }
 
   @Test
   public void testTouchExpansionLeftWithoutTouchHandling() {
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
-    mInternalNode.touchExpansionPx(LEFT, 10);
-    assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(0);
+    LithoLayoutResult result = touchExpansionPx(LEFT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionLeft()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionTopWithoutTouchHandling() {
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
-    mInternalNode.touchExpansionPx(TOP, 10);
-    assertThat(mInternalNode.getTouchExpansionTop()).isEqualTo(0);
+    LithoLayoutResult result = touchExpansionPx(TOP, 10).calculateLayout();
+    assertThat(result.getTouchExpansionTop()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionRightWithoutTouchHandling() {
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
-    mInternalNode.touchExpansionPx(RIGHT, 10);
-    assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(0);
+    LithoLayoutResult result = touchExpansionPx(RIGHT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionRight()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionBottomWithoutTouchHandling() {
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
-    mInternalNode.touchExpansionPx(BOTTOM, 10);
-    assertThat(mInternalNode.getTouchExpansionBottom()).isEqualTo(0);
+    LithoLayoutResult result = touchExpansionPx(BOTTOM, 10).calculateLayout();
+    assertThat(result.getTouchExpansionBottom()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionLeftWithUndefinedStartEnd() {
-    mInternalNode.touchExpansionPx(LEFT, 10);
-    assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(10);
+    LithoLayoutResult result = touchExpansionPx(LEFT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionLeft()).isEqualTo(10);
   }
 
   @Test
   public void testTouchExpansionLeftWithDefinedStart() {
-    mInternalNode.touchExpansionPx(START, 5);
-    mInternalNode.touchExpansionPx(LEFT, 10);
-    assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(5);
+    LithoLayoutResult result =
+        touchExpansionPx(START, 5).touchExpansionPx(LEFT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionLeft()).isEqualTo(5);
   }
 
   @Test
   public void testTouchExpansionLeftWithDefinedEnd() {
-    mInternalNode.touchExpansionPx(END, 5);
-    mInternalNode.touchExpansionPx(LEFT, 10);
-    assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(10);
+    LithoLayoutResult result =
+        touchExpansionPx(END, 5).touchExpansionPx(LEFT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionLeft()).isEqualTo(10);
   }
 
   @Test
   public void testTouchExpansionLeftWithDefinedStartInRtl() {
-    setDirection(mContext, mInternalNode, RTL);
-    mInternalNode.touchExpansionPx(START, 5);
-    mInternalNode.touchExpansionPx(LEFT, 10);
-    assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(10);
+    LithoLayoutResult result =
+        setDirection(RTL).touchExpansionPx(START, 5).touchExpansionPx(LEFT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionLeft()).isEqualTo(10);
   }
 
   @Test
   public void testTouchExpansionLeftWithDefinedEndInRtl() {
-    setDirection(mContext, mInternalNode, RTL);
-    mInternalNode.touchExpansionPx(END, 5);
-    mInternalNode.touchExpansionPx(LEFT, 10);
-    assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(5);
+    LithoLayoutResult result =
+        setDirection(RTL).touchExpansionPx(END, 5).touchExpansionPx(LEFT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionLeft()).isEqualTo(5);
   }
 
   @Test
   public void testTouchExpansionRightWithUndefinedStartEnd() {
-    mInternalNode.touchExpansionPx(RIGHT, 10);
-    assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(10);
+    LithoLayoutResult result = touchExpansionPx(RIGHT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionRight()).isEqualTo(10);
   }
 
   @Test
   public void testTouchExpansionRightWithDefinedStart() {
-    mInternalNode.touchExpansionPx(START, 5);
-    mInternalNode.touchExpansionPx(RIGHT, 10);
-    assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(10);
+    LithoLayoutResult result =
+        touchExpansionPx(START, 5).touchExpansionPx(RIGHT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionRight()).isEqualTo(10);
   }
 
   @Test
   public void testTouchExpansionRightWithDefinedEnd() {
-    mInternalNode.touchExpansionPx(END, 5);
-    mInternalNode.touchExpansionPx(RIGHT, 10);
-    assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(5);
+    LithoLayoutResult result =
+        touchExpansionPx(END, 5).touchExpansionPx(RIGHT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionRight()).isEqualTo(5);
   }
 
   @Test
   public void testTouchExpansionRightWithDefinedStartInRtl() {
-    setDirection(mContext, mInternalNode, RTL);
-    mInternalNode.touchExpansionPx(START, 5);
-    mInternalNode.touchExpansionPx(RIGHT, 10);
-    assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(5);
+    LithoLayoutResult result =
+        setDirection(RTL).touchExpansionPx(START, 5).touchExpansionPx(RIGHT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionRight()).isEqualTo(5);
   }
 
   @Test
   public void testTouchExpansionRightWithDefinedEndInRtl() {
-    setDirection(mContext, mInternalNode, RTL);
-    mInternalNode.touchExpansionPx(END, 5);
-    mInternalNode.touchExpansionPx(RIGHT, 10);
-    assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(10);
+    LithoLayoutResult result =
+        setDirection(RTL).touchExpansionPx(END, 5).touchExpansionPx(RIGHT, 10).calculateLayout();
+    assertThat(result.getTouchExpansionRight()).isEqualTo(10);
   }
 }

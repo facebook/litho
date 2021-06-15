@@ -288,9 +288,9 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getCachedLayout(sizeDependentComponentSpy)).isNotNull();
     final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(sizeDependentComponentSpy);
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
+    assertThat(cachedLayout.getChildAt(0).getInternalNode().getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
-    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getTailComponent())
+    assertThat(cachedLayout.getChildAt(1).getInternalNode().getTailComponent())
         .isInstanceOf(TestViewComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
@@ -368,7 +368,7 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getCachedLayout(componentSpy)).isNotNull();
     final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(componentSpy);
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
+    assertThat(cachedLayout.getChildAt(0).getInternalNode().getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.

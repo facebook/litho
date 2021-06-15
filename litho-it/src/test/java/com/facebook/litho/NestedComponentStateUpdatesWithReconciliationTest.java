@@ -73,17 +73,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
         new NodeConfig.InternalNodeFactory() {
           @Override
           public InternalNode create(final ComponentContext c) {
-            DefaultInternalNode node = spy(new DefaultInternalNode(c));
-            node.getYogaNode().setData(node);
-            return node;
+            return spy(new InputOnlyInternalNode(c));
           }
 
           @Override
           public InternalNode.NestedTreeHolder createNestedTreeHolder(
               ComponentContext c, @Nullable TreeProps props) {
-            DefaultNestedTreeHolder node = spy(new DefaultNestedTreeHolder(c, props));
-            node.getYogaNode().setData(node);
-            return node;
+            return spy(new InputOnlyNestedTreeHolder(c, props));
           }
         };
     mComponentsLogger = new TestComponentsLogger();
@@ -109,7 +105,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   public void noStateUpdates() {
     measureAndLayoutComponent(createSimpleTree());
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
     assertCloneCalledForOnly(layout, null);
   }
 
@@ -124,10 +120,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   */
   @Test
   public void updateStateSync_singleComponentC() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
+
     measureAndLayoutComponent(createSimpleTree());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
 
     mComponentTree.updateStateSync(join(root, B, C), createStateUpdate(), "test", false);
 
@@ -137,6 +136,41 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     set.add(join(root, B));
     set.add(join(root, B, D));
     assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  /*
+
+    root
+     /\
+    A  B
+       /\
+     [C] D
+
+  */
+  @Test
+  public void updateStateSync_singleComponentC_with_reuse() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    measureAndLayoutComponent(createSimpleTree());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
+
+    mComponentTree.updateStateSync(join(root, B, C), createStateUpdate(), "test", false);
+
+    Set<String> set = new HashSet<>();
+    set.add(root);
+    set.add(join(root, B));
+    assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   /*
@@ -150,10 +184,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   */
   @Test
   public void updateStateAsync_singleComponentC() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
+
     measureAndLayoutComponent(createSimpleTree());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
 
     mComponentTree.updateStateAsync(join(root, B, C), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -164,6 +201,42 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     set.add(join(root, B));
     set.add(join(root, B, D));
     assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  /*
+
+    root
+     /\
+    A  B
+       /\
+     [C] D
+
+  */
+  @Test
+  public void updateStateAsync_singleComponentC_with_reuse() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    measureAndLayoutComponent(createSimpleTree());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
+
+    mComponentTree.updateStateAsync(join(root, B, C), createStateUpdate(), "test", false);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    Set<String> set = new HashSet<>();
+    set.add(join(root));
+    set.add(join(root, B));
+    assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   /*
@@ -177,10 +250,13 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   */
   @Test
   public void updateStateSync_singleComponentD() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
+
     measureAndLayoutComponent(createSimpleTree());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
 
     mComponentTree.updateStateSync(join(root, B, D), createStateUpdate(), "test", false);
 
@@ -190,6 +266,42 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     set.add(join(root, B));
     set.add(join(root, B, C));
     assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  /*
+
+    root
+     /\
+    A  B
+       /\
+      C [D]
+
+  */
+  @Test
+  public void updateStateSync_singleComponentD_with_reuse() {
+
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    measureAndLayoutComponent(createSimpleTree());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
+
+    mComponentTree.updateStateSync(join(root, B, D), createStateUpdate(), "test", false);
+
+    Set<String> set = new HashSet<>();
+    set.add(join(root));
+    set.add(join(root, B));
+    assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   /*
@@ -203,10 +315,14 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   */
   @Test
   public void updateStateAsync_singleComponentD() {
+
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
+
     measureAndLayoutComponent(createSimpleTree());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
 
     mComponentTree.updateStateAsync(join(root, B, D), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -217,6 +333,43 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     set.add(join(root, B));
     set.add(join(root, B, C));
     assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  /*
+
+    root
+     /\
+    A  B
+       /\
+      C [D]
+
+  */
+  @Test
+  public void updateStateAsync_singleComponentD_with_reuse() {
+
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    measureAndLayoutComponent(createSimpleTree());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
+
+    mComponentTree.updateStateAsync(join(root, B, D), createStateUpdate(), "test", false);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    Set<String> set = new HashSet<>();
+    set.add(join(root));
+    set.add(join(root, B));
+    assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   /*
@@ -230,10 +383,12 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   */
   @Test
   public void updateStateAsync_multipleComponents() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = false;
     measureAndLayoutComponent(createSimpleTree());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
-    DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
 
     mComponentTree.updateStateAsync(join(root, B, C), createStateUpdate(), "test-0", false);
     mComponentTree.updateStateAsync(join(root, B, D), createStateUpdate(), "test-1", false);
@@ -244,6 +399,43 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     set.add(join(root, A));
     set.add(join(root, B));
     assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+  }
+
+  /*
+
+    root
+     /\
+    A  B
+       /\
+     [C][D]
+
+  */
+  @Test
+  public void updateStateAsync_multipleComponents_with_reuse() {
+    final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultStatelessness = ComponentsConfiguration.useStatelessComponent;
+
+    ComponentsConfiguration.reuseInternalNodes = true;
+    ComponentsConfiguration.useStatelessComponent = true;
+
+    measureAndLayoutComponent(createSimpleTree());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot().getInternalNode();
+
+    mComponentTree.updateStateAsync(join(root, B, C), createStateUpdate(), "test-0", false);
+    mComponentTree.updateStateAsync(join(root, B, D), createStateUpdate(), "test-1", false);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    Set<String> set = new HashSet<>();
+    set.add(join(root));
+    set.add(join(root, B));
+    assertCloneCalledForOnly(layout, set);
+
+    ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.useStatelessComponent = defaultStatelessness;
   }
 
   /*
@@ -289,7 +481,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     ComponentTestHelper.measureAndLayout(mLithoView);
   }
 
-  private static void assertCloneCalledForOnly(DefaultInternalNode layout, Set<String> keys) {
+  private static void assertCloneCalledForOnly(InternalNode layout, Set<String> keys) {
     if (keys == null) {
       keys = new HashSet<>();
     }
@@ -297,7 +489,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     assertIsEmpty(keys);
   }
 
-  private static void assertCloneCalledFor(DefaultInternalNode layout, Set<String> keys) {
+  private static void assertCloneCalledFor(InternalNode layout, Set<String> keys) {
     boolean isInSet = false;
     final List<Component> components = layout.getComponents();
     final List<String> componentKeys = layout.getComponentKeys();
@@ -322,16 +514,16 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     int count = layout.getChildCount();
     for (int i = 0; i < count; i++) {
       InternalNode child = layout.getChildAt(i);
-      assertCloneCalledFor((DefaultInternalNode) child, keys);
+      assertCloneCalledFor(child, keys);
     }
   }
 
-  private static void assertCloneCalled(DefaultInternalNode layout) {
-    verify(layout, times(1)).clone();
+  private static void assertCloneCalled(InternalNode layout) {
+    verify((InputOnlyInternalNode) layout, times(1)).clone();
   }
 
-  private static void assertCloneNotCalled(DefaultInternalNode layout) {
-    verify(layout, times(0)).clone();
+  private static void assertCloneNotCalled(InternalNode layout) {
+    verify((InputOnlyInternalNode) layout, times(0)).clone();
   }
 
   private static void assertIsEmpty(Set<String> keys) {

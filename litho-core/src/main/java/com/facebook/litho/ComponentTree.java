@@ -108,6 +108,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private static boolean sBoostPerfLayoutStateFuture = false;
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
+  private final boolean mReuseInternalNodes;
   private final boolean mUseInputOnlyInternalNodes;
   private final boolean mIgnoreNullLayoutStateError;
 
@@ -181,6 +182,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isInputOnlyInternalNodeEnabled() {
     return mUseInputOnlyInternalNodes;
+  }
+
+  public boolean isInternalNodeReuseEnabled() {
+    return mReuseInternalNodes;
   }
 
   public interface MeasureListener {
@@ -362,7 +367,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
 
-  private final boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+  private final boolean useStatelessComponent;
 
   private final boolean isReconciliationEnabled;
 
@@ -423,7 +428,10 @@ public class ComponentTree implements LithoLifecycleListener {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
-    mUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+    mReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
+    mUseInputOnlyInternalNodes =
+        mReuseInternalNodes || ComponentsConfiguration.useInputOnlyInternalNodes;
+    useStatelessComponent = mReuseInternalNodes || ComponentsConfiguration.useStatelessComponent;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =

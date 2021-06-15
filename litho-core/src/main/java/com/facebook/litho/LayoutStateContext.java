@@ -228,4 +228,8 @@ public class LayoutStateContext {
     mHasNestedTreeDiffNodeSet = false;
     return node;
   }
+
+  boolean isInternalNodeReuseEnabled() {
+    return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
+  }
 }
