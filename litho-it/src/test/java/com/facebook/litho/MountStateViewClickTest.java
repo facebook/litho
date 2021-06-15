@@ -23,9 +23,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ViewGroup;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.LayoutWithInnerClickableChildTester;
 import com.facebook.litho.widget.SimpleLayoutSpecWithClickHandlersTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
@@ -46,49 +46,45 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickable() {
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .child(
-                        create(c)
-                            .clickHandler(c.newEventHandler(1))
-                            .child(TestViewComponent.create(c)))
-                    .build();
-              }
-            });
+    final Component component =
+        LayoutWithInnerClickableChildTester.create(mContext).shouldSetClickHandler(true).build();
+
+    mLithoViewRule.setRoot(component);
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    setupLithoViewParentAndComponentTree(lithoView, component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(lithoView.getChildCount()).isEqualTo(1);
     assertThat(lithoView.isClickable()).isFalse();
+    assertThat(lithoView.isLongClickable()).isFalse();
 
     ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
     assertThat(innerHost.isClickable()).isTrue();
+    assertThat(innerHost.isLongClickable()).isFalse();
   }
 
   @Test
   public void testInnerComponentHostClickableWithLongClickHandler() {
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .child(
-                        create(c)
-                            .longClickHandler(c.newEventHandler(1))
-                            .child(TestViewComponent.create(c)))
-                    .build();
-              }
-            });
+    final Component component =
+        LayoutWithInnerClickableChildTester.create(mContext)
+            .shouldSetLongClickHandler(true)
+            .build();
+
+    mLithoViewRule.setRoot(component);
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    setupLithoViewParentAndComponentTree(lithoView, component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(lithoView.getChildCount()).isEqualTo(1);
     assertThat(lithoView.isClickable()).isFalse();
+    assertThat(lithoView.isLongClickable()).isFalse();
 
     ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
+    assertThat(innerHost.isClickable()).isFalse();
     assertThat(innerHost.isLongClickable()).isTrue();
   }
 
@@ -137,22 +133,7 @@ public class MountStateViewClickTest {
 
     mLithoViewRule.setRoot(component);
 
-    final ViewGroup parent =
-        new ViewGroup(mLithoViewRule.getLithoView().getContext()) {
-          @Override
-          protected void onLayout(boolean changed, int l, int t, int r, int b) {}
-        };
-
-    parent.addView(mLithoViewRule.getLithoView());
-
-    mLithoViewRule
-        .getLithoView()
-        .setComponentTree(
-            ComponentTree.create(mLithoViewRule.getContext(), component)
-                .incrementalMount(false)
-                .layoutDiffing(false)
-                .visibilityProcessing(false)
-                .build());
+    setupLithoViewParentAndComponentTree(mLithoViewRule.getLithoView(), component);
 
     mLithoViewRule.attachToWindow().measure().layout();
 
@@ -163,5 +144,25 @@ public class MountStateViewClickTest {
 
     assertThat(mLithoViewRule.getLithoView().isClickable()).isFalse();
     assertThat(mLithoViewRule.getLithoView().isLongClickable()).isFalse();
+  }
+
+  // When testing a LithoView via a LithoViewRule - we must set the parent and component tree
+  // prior to attach / measure / layout for that LithoView otherwise mounting will not behave
+  // properly.
+  private void setupLithoViewParentAndComponentTree(LithoView lithoView, Component component) {
+    final ViewGroup parent =
+        new ViewGroup(lithoView.getContext()) {
+          @Override
+          protected void onLayout(boolean changed, int l, int t, int r, int b) {}
+        };
+
+    parent.addView(lithoView);
+
+    lithoView.setComponentTree(
+        ComponentTree.create(mContext, component)
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .visibilityProcessing(false)
+            .build());
   }
 }
