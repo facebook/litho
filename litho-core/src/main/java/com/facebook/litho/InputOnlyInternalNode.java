@@ -88,32 +88,15 @@ import java.util.Set;
 public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     implements InternalNode, Cloneable {
 
-  private static final String CONTEXT_SPECIFIC_STYLE_SET =
-      "InputOnlyInternalNode:ContextSpecificStyleSet";
-
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L;
-  private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
-  private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
-  private static final long PFLAG_FLEX_IS_SET = 1L << 3;
-  private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 4;
-  private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
-  private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
   protected static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
-  private static final long PFLAG_MARGIN_IS_SET = 1L << 9;
   protected static final long PFLAG_PADDING_IS_SET = 1L << 10;
-  private static final long PFLAG_POSITION_IS_SET = 1L << 11;
-  private static final long PFLAG_WIDTH_IS_SET = 1L << 12;
-  private static final long PFLAG_MIN_WIDTH_IS_SET = 1L << 13;
-  private static final long PFLAG_MAX_WIDTH_IS_SET = 1L << 14;
-  private static final long PFLAG_HEIGHT_IS_SET = 1L << 15;
-  private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 16;
-  private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 17;
   protected static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
   protected static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
   protected static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
@@ -122,7 +105,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
   protected static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
   private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 25;
-  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
   protected static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
   protected static final long PFLAG_BORDER_IS_SET = 1L << 28;
   protected static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
@@ -470,6 +452,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     writeToYogaNode(c.getLayoutStateContext(), writer, node);
 
     applyOverridesRecursive(c.getLayoutStateContext(), this);
+
+    // Validate layout props for the root
+    writer.validateLayoutPropsForRoot();
 
     if (YogaConstants.isUndefined(node.getWidth().value)) {
       Layout.setStyleWidthFromSpec(node, widthSpec);
@@ -911,33 +896,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   /** Crash if the given node has context specific style set. */
   @Override
   public void assertContextSpecificStyleNotSet() {
-    List<CharSequence> errorTypes = null;
-    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "alignSelf");
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "positionType");
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flex");
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flexGrow");
-    }
-    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "margin");
-    }
-
-    if (errorTypes != null) {
-      final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
-          CONTEXT_SPECIFIC_STYLE_SET,
-          "You should not set "
-              + errorStr
-              + " to a root layout in "
-              + getTailComponent().getSimpleName());
-    }
+    // No-Op
   }
 
   @Override

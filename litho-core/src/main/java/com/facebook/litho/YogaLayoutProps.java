@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.CommonUtils.addOrCreateList;
+
+import android.text.TextUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -25,12 +28,21 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
+import java.util.List;
 
 public class YogaLayoutProps implements LayoutProps {
+
+  private static final String INVALID_LAYOUT_PROPS = "YogaLayoutProps:ContextSpecificStyleSet";
+  private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
+  private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
+  private static final long PFLAG_FLEX_IS_SET = 1L << 3;
+  private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 4;
+  private static final long PFLAG_MARGIN_IS_SET = 1L << 5;
 
   private final YogaNode node;
 
   boolean isPaddingSet;
+  private long mPrivateFlags;
 
   public YogaLayoutProps(YogaNode node) {
     this.node = node;
@@ -103,16 +115,19 @@ public class YogaLayoutProps implements LayoutProps {
 
   @Override
   public void alignSelf(YogaAlign alignSelf) {
+    mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     node.setAlignSelf(alignSelf);
   }
 
   @Override
   public void flex(float flex) {
+    mPrivateFlags |= PFLAG_FLEX_IS_SET;
     node.setFlex(flex);
   }
 
   @Override
   public void flexGrow(float flexGrow) {
+    mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     node.setFlexGrow(flexGrow);
   }
 
@@ -138,6 +153,7 @@ public class YogaLayoutProps implements LayoutProps {
 
   @Override
   public void positionType(YogaPositionType positionType) {
+    mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     node.setPositionType(positionType);
   }
 
@@ -165,16 +181,19 @@ public class YogaLayoutProps implements LayoutProps {
 
   @Override
   public void marginPx(YogaEdge edge, int margin) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     node.setMargin(edge, margin);
   }
 
   @Override
   public void marginPercent(YogaEdge edge, float percent) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     node.setMarginPercent(edge, percent);
   }
 
   @Override
   public void marginAuto(YogaEdge edge) {
+    mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     node.setMarginAuto(edge);
   }
 
@@ -230,5 +249,32 @@ public class YogaLayoutProps implements LayoutProps {
 
   public void alignItems(YogaAlign align) {
     node.setAlignItems(align);
+  }
+
+  public void validateLayoutPropsForRoot() {
+    List<CharSequence> error = null;
+    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
+      error = addOrCreateList(error, "alignSelf");
+    }
+    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
+      error = addOrCreateList(error, "positionType");
+    }
+    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
+      error = addOrCreateList(error, "flex");
+    }
+    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
+      error = addOrCreateList(error, "flexGrow");
+    }
+    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
+      error = addOrCreateList(error, "margin");
+    }
+
+    if (error != null) {
+      final CharSequence props = TextUtils.join(", ", error);
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          INVALID_LAYOUT_PROPS,
+          "You should not set " + props + " to a root layout.");
+    }
   }
 }
