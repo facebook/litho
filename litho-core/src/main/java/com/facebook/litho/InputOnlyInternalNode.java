@@ -20,7 +20,6 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.Layout.hostIsCompatible;
