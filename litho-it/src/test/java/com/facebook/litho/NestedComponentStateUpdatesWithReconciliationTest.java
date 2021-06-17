@@ -496,8 +496,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
     for (int i = 0, size = components.size(); i < size; i++) {
       final Component c = components.get(i);
-      final String globalKey =
-          ComponentUtils.getGlobalKey(c, componentKeys == null ? null : componentKeys.get(i));
+      final String globalKey = componentKeys.get(i);
       if (keys.contains(globalKey)) {
         keys.remove(globalKey);
         isInSet = true;
