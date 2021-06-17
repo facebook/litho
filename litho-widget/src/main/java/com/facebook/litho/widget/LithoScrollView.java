@@ -26,10 +26,13 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
+import com.facebook.litho.LithoMetadataExceptionWrapper;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.widget.VerticalScrollSpec.OnInterceptTouchListener;
 import com.facebook.litho.widget.VerticalScrollSpec.ScrollPosition;
+import com.facebook.rendercore.ErrorReporter;
+import com.facebook.rendercore.LogLevel;
 import java.util.List;
 
 /**
@@ -82,9 +85,24 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   @Override
   public void draw(Canvas canvas) {
-    super.draw(canvas);
-    if (mScrollStateDetector != null) {
-      mScrollStateDetector.onDraw();
+    try {
+      super.draw(canvas);
+      if (mScrollStateDetector != null) {
+        mScrollStateDetector.onDraw();
+      }
+    } catch (Throwable t) {
+      final ComponentTree ct = mLithoView.getComponentTree();
+      if (ct != null) {
+        ErrorReporter.getInstance()
+            .report(
+                LogLevel.ERROR,
+                "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
+                "Root component: " + ct.getSimpleName(),
+                t);
+        throw new LithoMetadataExceptionWrapper(ct, t);
+      } else {
+        throw t;
+      }
     }
   }
 

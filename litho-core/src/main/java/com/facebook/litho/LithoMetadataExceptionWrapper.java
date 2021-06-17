@@ -47,7 +47,7 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     this(componentContext, null, cause);
   }
 
-  LithoMetadataExceptionWrapper(@Nullable ComponentTree componentTree, Throwable cause) {
+  public LithoMetadataExceptionWrapper(@Nullable ComponentTree componentTree, Throwable cause) {
     this(null, componentTree, cause);
   }
 
