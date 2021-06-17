@@ -1935,10 +1935,7 @@ public class DefaultInternalNode
 
     // 1.1 Check if any component has mutations
     for (int i = 0, size = components.size(); i < size; i++) {
-      final Component component = components.get(i);
-      final String key =
-          ComponentUtils.getGlobalKey(
-              component, componentKeys == null ? null : componentKeys.get(i));
+      final String key = componentKeys.get(i);
       if (keys.contains(key)) {
         return ReconciliationMode.RECREATE;
       }

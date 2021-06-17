@@ -636,21 +636,20 @@ public abstract class Component extends ComponentLifecycle
 
     final Component clone = makeShallowCopy();
     final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
-    final String existingGlobalKey = ComponentUtils.getGlobalKey(this, globalKeyToReuse);
 
     // set the global key so that it is not generated again and overridden.
-    clone.setGlobalKey(existingGlobalKey);
+    clone.setGlobalKey(globalKeyToReuse);
 
     // copy the inter-stage props so that they are set again.
     if (!parentContext.useStatelessComponent()) {
       clone.copyInterStageImpl(
-          clone.getInterStagePropsContainer(layoutStateContext, existingGlobalKey),
-          getInterStagePropsContainer(layoutStateContext, existingGlobalKey));
+          clone.getInterStagePropsContainer(layoutStateContext, globalKeyToReuse),
+          getInterStagePropsContainer(layoutStateContext, globalKeyToReuse));
     }
 
     // update the cloned component with the new context.
     final ComponentContext scopedContext =
-        clone.updateInternalChildState(parentContext, existingGlobalKey);
+        clone.updateInternalChildState(parentContext, globalKeyToReuse);
 
     // create updated tree props for children.
     final TreeProps treeProps =
