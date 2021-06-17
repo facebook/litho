@@ -40,7 +40,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode heightMode) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final InternalNode node = result.getInternalNode();
-    final LayoutStateContext layoutStateContext = node.getContext().getLayoutStateContext();
+    final LayoutStateContext layoutStateContext = result.getContext().getLayoutStateContext();
 
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
