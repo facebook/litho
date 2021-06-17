@@ -560,7 +560,7 @@ public class ComponentContext implements Cloneable {
       return NoOpEventHandler.getNoOpEventHandler();
     }
 
-    if (ComponentsConfiguration.useStatelessComponent) {
+    if (useStatelessComponent()) {
       if (getLayoutStateContext() != null) {
         try {
           getLayoutStateContext().getScopedComponentInfo(mGlobalKey);
