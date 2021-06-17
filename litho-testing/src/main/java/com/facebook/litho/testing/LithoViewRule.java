@@ -20,6 +20,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
@@ -128,9 +129,15 @@ public class LithoViewRule implements TestRule {
       throw new RuntimeException(
           "You must use the same ComponentContext for the LithoView as what is on the LithoViewRule @Rule!");
     }
-    if (mComponentTree != null) {
-      mLithoView.setComponentTree(mComponentTree);
+
+    if (mLithoView.getComponentTree() == null) {
+      if (mComponentTree != null) {
+        mLithoView.setComponentTree(mComponentTree);
+      }
+    } else {
+      mComponentTree = mLithoView.getComponentTree();
     }
+
     return this;
   }
 
