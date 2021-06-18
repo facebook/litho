@@ -185,6 +185,12 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return create(context, component, null);
   }
 
+  /**
+   * Creates a new LithoView and sets a new ComponentTree on it. The ComponentTree is subscribed to
+   * the given LithoLifecycleProvider instance.
+   *
+   * @return
+   */
   public static LithoView create(
       ComponentContext context,
       Component component,
@@ -908,8 +914,33 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     }
   }
 
-  private boolean hasLifecycleOwner() {
+  /**
+   * @return true if this LithoView has a ComponentTree attached and a LithoLifecycleProvider is set
+   *     on it, false otherwise.
+   */
+  public synchronized boolean componentTreeHasLifecycleProvider() {
     return mComponentTree != null && mComponentTree.isSubscribedToLifecycleProvider();
+  }
+
+  /**
+   * If this LithoView has a ComponentTree attached to it, set a LithoLifecycleProvider if it
+   * doesn't already have one.
+   *
+   * @return true if the LithoView's ComponentTree was subscribed as listener to the given
+   *     LithoLifecycleProvider, false otherwise.
+   */
+  public synchronized boolean subscribeComponentTreeToLifecycleProvider(
+      LithoLifecycleProvider lifecycleProvider) {
+    if (mComponentTree == null) {
+      return false;
+    }
+
+    if (mComponentTree.isSubscribedToLifecycleProvider()) {
+      return false;
+    }
+
+    mComponentTree.subscribeToLifecycleProvider(lifecycleProvider);
+    return true;
   }
 
   /**
@@ -953,7 +984,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
   private void setVisibilityHintInternal(boolean isVisible, boolean skipMountingIfNotVisible) {
     assertMainThread();
-    if (hasLifecycleOwner()) {
+    if (componentTreeHasLifecycleProvider()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           LITHO_LIFECYCLE_FOUND,
@@ -1182,7 +1213,7 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   @Deprecated
   public void release() {
     assertMainThread();
-    if (hasLifecycleOwner()) {
+    if (componentTreeHasLifecycleProvider()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
           LITHO_LIFECYCLE_FOUND,

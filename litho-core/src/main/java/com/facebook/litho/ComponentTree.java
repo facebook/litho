@@ -130,10 +130,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
-  boolean isSubscribedToLifecycleProvider() {
-    return mLifecycleProvider != null;
-  }
-
   @Override
   public void onMovedToState(LithoLifecycle state) {
     switch (state) {
@@ -172,12 +168,16 @@ public class ComponentTree implements LithoLifecycleListener {
     }
   }
 
-  private void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
+  public synchronized void subscribeToLifecycleProvider(LithoLifecycleProvider lifecycleProvider) {
     if (mLifecycleProvider != null) {
       throw new IllegalStateException("Already subscribed");
     }
     mLifecycleProvider = lifecycleProvider;
     mLifecycleProvider.addListener(this);
+  }
+
+  public synchronized boolean isSubscribedToLifecycleProvider() {
+    return mLifecycleProvider != null;
   }
 
   public boolean isInputOnlyInternalNodeEnabled() {
