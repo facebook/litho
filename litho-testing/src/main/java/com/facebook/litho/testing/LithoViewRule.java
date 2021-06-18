@@ -20,7 +20,6 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
