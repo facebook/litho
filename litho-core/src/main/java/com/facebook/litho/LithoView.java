@@ -647,13 +647,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mOnPostDrawListener = onPostDrawListener;
   }
 
-  void onDirtyMountComplete() {
-    final OnDirtyMountListener onDirtyMountListener;
-    synchronized (this) {
-      onDirtyMountListener = mOnDirtyMountListener;
-    }
-    if (onDirtyMountListener != null) {
-      onDirtyMountListener.onDirtyMount(this);
+  synchronized void onDirtyMountComplete() {
+    if (mOnDirtyMountListener != null) {
+      mOnDirtyMountListener.onDirtyMount(this);
     }
   }
 
