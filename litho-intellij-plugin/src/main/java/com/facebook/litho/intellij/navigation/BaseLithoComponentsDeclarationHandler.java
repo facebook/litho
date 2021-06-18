@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import static com.facebook.litho.intellij.LithoPluginUtils.isKotlinPluginAvailable;
+
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -35,6 +37,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.kotlin.idea.KotlinLanguage;
+import org.jetbrains.kotlin.idea.references.KtSimpleNameReference;
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression;
 
 /** Utility class helping resolve component class to componentSpec class. */
 class BaseLithoComponentsDeclarationHandler {
@@ -62,7 +67,16 @@ class BaseLithoComponentsDeclarationHandler {
     }
     final Project project = sourceElement.getProject();
 
-    return resolve(sourceElement)
+    Stream<PsiElement> resolvedElement;
+    // must check first that kotlin plugin is available, otherwise we'll get runtime exception when
+    // accessing objects defined in Kotlin plugin
+    if (isKotlinPluginAvailable() && isKotlinFile(sourceElement)) {
+      resolvedElement = resolveKotlinElement(sourceElement);
+    } else {
+      resolvedElement = resolve(sourceElement);
+    }
+
+    return resolvedElement
         // Filter Component classes
         .filter(PsiClass.class::isInstance)
         .map(PsiClass.class::cast)
@@ -88,6 +102,11 @@ class BaseLithoComponentsDeclarationHandler {
         .orElse(null);
   }
 
+  /** @return true if the containing file of the given element is a Kotlin file. */
+  private static boolean isKotlinFile(PsiElement sourceElement) {
+    return sourceElement.getContainingFile().getLanguage() == KotlinLanguage.INSTANCE;
+  }
+
   /**
    * @return Stream of resolved elements from the given element or an empty stream if nothing found.
    */
@@ -99,6 +118,23 @@ class BaseLithoComponentsDeclarationHandler {
         .map(
             psiReferences ->
                 Stream.of(psiReferences).map(PsiReference::resolve).filter(Objects::nonNull))
+        .orElse(Stream.empty());
+  }
+
+  /**
+   * @return Stream of resolved elements from the given Kotlin element or an empty stream if nothing
+   *     found.
+   */
+  static Stream<PsiElement> resolveKotlinElement(PsiElement sourceElement) {
+    return Optional.of(sourceElement)
+        .map(element -> PsiTreeUtil.getParentOfType(element, KtNameReferenceExpression.class))
+        .map(PsiElement::getReferences)
+        .map(
+            psiReferences ->
+                Stream.of(psiReferences)
+                    .filter(KtSimpleNameReference.class::isInstance)
+                    .map(PsiReference::resolve)
+                    .filter(Objects::nonNull))
         .orElse(Stream.empty());
   }
 }

@@ -65,6 +65,7 @@
 
   <depends>com.intellij.java</depends>
   <depends>com.intellij.modules.platform</depends>
+  <depends optional="true">org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.facebook.litho.intellij">
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.LayoutSpecTemplateProvider"/>

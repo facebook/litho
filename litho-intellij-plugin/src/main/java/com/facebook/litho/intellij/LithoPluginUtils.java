@@ -24,8 +24,10 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import com.google.common.annotations.VisibleForTesting;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaResolveResult;
@@ -55,6 +57,7 @@ public class LithoPluginUtils {
   private static final NotificationGroup NOTIFICATION_GROUP =
       NotificationGroup.balloonGroup("Litho");
   private static final String SPEC_SUFFIX = "Spec";
+  private static final String KOTLIN_PLUGIN_ID = "org.jetbrains.kotlin";
 
   public static boolean isComponentClass(@Nullable PsiClass psiClass) {
     return psiClass != null
@@ -259,5 +262,9 @@ public class LithoPluginUtils {
     if (vf != null) return vf;
 
     return file.getViewProvider().getVirtualFile();
+  }
+
+  public static boolean isKotlinPluginAvailable() {
+    return PluginManagerCore.getPlugin(PluginId.findId(KOTLIN_PLUGIN_ID)) != null;
   }
 }
