@@ -189,7 +189,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun padding_whenGranularPaddingSet_isRespected() {
+  fun padding_whenGranularPaddingSetWithLeftRight_isRespected() {
     val left = 10
     val top = 20
     val right = 30
@@ -203,7 +203,8 @@ class FlexboxStylesTest {
               style =
                   Style.width(100.px)
                       .height(100.px)
-                      .padding(start = left.px, top = top.px, end = right.px, bottom = bottom.px)) {
+                      .padding(
+                          left = left.px, top = top.px, right = right.px, bottom = bottom.px)) {
             child(Row(style = Style.flex(grow = 1f).wrapInView()))
           }
         }
@@ -211,6 +212,27 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
+            })
+  }
+
+  @Test
+  fun padding_whenStartEndPaddingSet_isRespected() {
+    val start = 10
+    val end = 20
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              alignItems = YogaAlign.STRETCH,
+              style = Style.width(100.px).height(100.px).padding(start = start.px, end = end.px)) {
+            child(Row(style = Style.flex(grow = 1f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(start, 0, 100 - start - end, 100) }
             })
   }
 
@@ -277,7 +299,7 @@ class FlexboxStylesTest {
                 Row(
                     style =
                         Style.margin(
-                                start = left.px, top = top.px, end = right.px, bottom = bottom.px)
+                                left = left.px, top = top.px, right = right.px, bottom = bottom.px)
                             .flex(grow = 1f)
                             .wrapInView()))
           }
@@ -286,6 +308,28 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
+            })
+  }
+
+  @Test
+  fun margin_whenMarginStartEndSet_isRespected() {
+    val start = 10
+    val end = 20
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(alignItems = YogaAlign.STRETCH, style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.margin(start = start.px, end = end.px).flex(grow = 1f).wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(start, 0, 100 - start - end, 100) }
             })
   }
 
@@ -334,7 +378,7 @@ class FlexboxStylesTest {
   }
 
   @Test
-  fun position_whenSet_isRespected() {
+  fun position_whenLeftRightSet_isRespected() {
     val left = 10
     val top = 20
     val right = 30
@@ -349,7 +393,7 @@ class FlexboxStylesTest {
                     style =
                         Style.positionType(YogaPositionType.ABSOLUTE)
                             .position(
-                                start = left.px, top = top.px, end = right.px, bottom = bottom.px)
+                                left = left.px, top = top.px, right = right.px, bottom = bottom.px)
                             .wrapInView()))
           }
         }
@@ -357,6 +401,33 @@ class FlexboxStylesTest {
             match<LithoView> {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(left, top, 100 - left - right, 100 - top - bottom) }
+            })
+  }
+
+  @Test
+  fun position_whenStartEndSet_isRespected() {
+    val start = 10
+    val top = 20
+    val end = 30
+    val bottom = 40
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .position(
+                                start = start.px, top = top.px, end = end.px, bottom = bottom.px)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(start, top, 100 - start - end, 100 - top - bottom) }
             })
   }
 

@@ -35,6 +35,8 @@ private enum class FlexboxDimenField {
   POSITION_TOP,
   POSITION_END,
   POSITION_BOTTOM,
+  POSITION_LEFT,
+  POSITION_RIGHT,
 }
 
 /** Enums for [FlexboxFloatStyleItem]. */
@@ -63,6 +65,8 @@ private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dim
       FlexboxDimenField.POSITION_END -> commonProps.positionPx(YogaEdge.END, pixelValue)
       FlexboxDimenField.POSITION_TOP -> commonProps.positionPx(YogaEdge.TOP, pixelValue)
       FlexboxDimenField.POSITION_BOTTOM -> commonProps.positionPx(YogaEdge.BOTTOM, pixelValue)
+      FlexboxDimenField.POSITION_LEFT -> commonProps.positionPx(YogaEdge.LEFT, pixelValue)
+      FlexboxDimenField.POSITION_RIGHT -> commonProps.positionPx(YogaEdge.RIGHT, pixelValue)
     }.exhaustive
   }
 }
@@ -159,13 +163,17 @@ fun Style.position(
     start: Dimen? = null,
     top: Dimen? = null,
     end: Dimen? = null,
-    bottom: Dimen? = null
+    bottom: Dimen? = null,
+    left: Dimen? = null,
+    right: Dimen? = null,
 ) =
     this +
         start?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_START, it) } +
         top?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_TOP, it) } +
         end?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_END, it) } +
-        bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_BOTTOM, it) }
+        bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_BOTTOM, it) } +
+        left?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_LEFT, it) } +
+        right?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_RIGHT, it) }
 
 /** See docs in [position]. */
 fun Style.positionType(positionType: YogaPositionType) =

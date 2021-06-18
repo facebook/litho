@@ -37,6 +37,8 @@ private enum class CoreDimenField {
   PADDING_TOP,
   PADDING_END,
   PADDING_BOTTOM,
+  PADDING_LEFT,
+  PADDING_RIGHT,
   PADDING_HORIZONTAL,
   PADDING_VERTICAL,
   PADDING_ALL,
@@ -44,6 +46,8 @@ private enum class CoreDimenField {
   MARGIN_TOP,
   MARGIN_END,
   MARGIN_BOTTOM,
+  MARGIN_LEFT,
+  MARGIN_RIGHT,
   MARGIN_HORIZONTAL,
   MARGIN_VERTICAL,
   MARGIN_ALL,
@@ -76,6 +80,8 @@ private class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : 
       CoreDimenField.PADDING_TOP -> commonProps.paddingPx(YogaEdge.TOP, pixelValue)
       CoreDimenField.PADDING_END -> commonProps.paddingPx(YogaEdge.END, pixelValue)
       CoreDimenField.PADDING_BOTTOM -> commonProps.paddingPx(YogaEdge.BOTTOM, pixelValue)
+      CoreDimenField.PADDING_LEFT -> commonProps.paddingPx(YogaEdge.LEFT, pixelValue)
+      CoreDimenField.PADDING_RIGHT -> commonProps.paddingPx(YogaEdge.RIGHT, pixelValue)
       CoreDimenField.PADDING_HORIZONTAL -> commonProps.paddingPx(YogaEdge.HORIZONTAL, pixelValue)
       CoreDimenField.PADDING_VERTICAL -> commonProps.paddingPx(YogaEdge.VERTICAL, pixelValue)
       CoreDimenField.PADDING_ALL -> commonProps.paddingPx(YogaEdge.ALL, pixelValue)
@@ -83,6 +89,8 @@ private class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : 
       CoreDimenField.MARGIN_TOP -> commonProps.marginPx(YogaEdge.TOP, pixelValue)
       CoreDimenField.MARGIN_END -> commonProps.marginPx(YogaEdge.END, pixelValue)
       CoreDimenField.MARGIN_BOTTOM -> commonProps.marginPx(YogaEdge.BOTTOM, pixelValue)
+      CoreDimenField.MARGIN_LEFT -> commonProps.marginPx(YogaEdge.LEFT, pixelValue)
+      CoreDimenField.MARGIN_RIGHT -> commonProps.marginPx(YogaEdge.RIGHT, pixelValue)
       CoreDimenField.MARGIN_HORIZONTAL -> commonProps.marginPx(YogaEdge.HORIZONTAL, pixelValue)
       CoreDimenField.MARGIN_VERTICAL -> commonProps.marginPx(YogaEdge.VERTICAL, pixelValue)
       CoreDimenField.MARGIN_ALL -> commonProps.marginPx(YogaEdge.ALL, pixelValue)
@@ -142,7 +150,9 @@ fun Style.padding(
     start: Dimen? = null,
     top: Dimen? = null,
     end: Dimen? = null,
-    bottom: Dimen? = null
+    bottom: Dimen? = null,
+    left: Dimen? = null,
+    right: Dimen? = null,
 ) =
     this +
         all?.let { CoreDimenStyleItem(CoreDimenField.PADDING_ALL, it) } +
@@ -151,7 +161,9 @@ fun Style.padding(
         start?.let { CoreDimenStyleItem(CoreDimenField.PADDING_START, it) } +
         top?.let { CoreDimenStyleItem(CoreDimenField.PADDING_TOP, it) } +
         end?.let { CoreDimenStyleItem(CoreDimenField.PADDING_END, it) } +
-        bottom?.let { CoreDimenStyleItem(CoreDimenField.PADDING_BOTTOM, it) }
+        bottom?.let { CoreDimenStyleItem(CoreDimenField.PADDING_BOTTOM, it) } +
+        left?.let { CoreDimenStyleItem(CoreDimenField.PADDING_LEFT, it) } +
+        right?.let { CoreDimenStyleItem(CoreDimenField.PADDING_RIGHT, it) }
 
 /** Defines margin around the component on a per-edge basis. */
 fun Style.margin(
@@ -161,7 +173,9 @@ fun Style.margin(
     start: Dimen? = null,
     top: Dimen? = null,
     end: Dimen? = null,
-    bottom: Dimen? = null
+    bottom: Dimen? = null,
+    left: Dimen? = null,
+    right: Dimen? = null,
 ) =
     this +
         all?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_ALL, it) } +
@@ -170,4 +184,6 @@ fun Style.margin(
         start?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_START, it) } +
         top?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_TOP, it) } +
         end?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_END, it) } +
-        bottom?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_BOTTOM, it) }
+        bottom?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_BOTTOM, it) } +
+        left?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_LEFT, it) } +
+        right?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_RIGHT, it) }
