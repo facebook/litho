@@ -67,8 +67,4 @@ class LayoutThreadFactory implements ThreadFactory {
 
     return thread;
   }
-
-  void setThreadPriority(int threadPriority) {
-    mThreadPriority = threadPriority;
-  }
 }
