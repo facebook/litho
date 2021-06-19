@@ -717,7 +717,7 @@ public abstract class Component extends ComponentLifecycle
       final @Nullable ComponentContext scopedContext, Component component) {
     if (scopedContext != null && scopedContext.useStatelessComponent()) {
 
-      if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
+      if (scopedContext.getLayoutStateContext() == null) {
         throw new IllegalStateException(
             "Cannot access a state container outside of a layout state calculation.");
       }
@@ -727,9 +727,10 @@ public abstract class Component extends ComponentLifecycle
 
       return component.getScopedInfo(layoutStateContext, globalKey).getStateContainer();
     } else {
-      return component.mStateContainer != null
-          ? component.mStateContainer
-          : component.createStateContainer();
+      if (component.mStateContainer == null) {
+        component.mStateContainer = component.createStateContainer();
+      }
+      return component.mStateContainer;
     }
   }
 
@@ -745,7 +746,10 @@ public abstract class Component extends ComponentLifecycle
       final ScopedComponentInfo scopedComponentInfo = getScopedInfo(layoutStateContext, globalKey);
       return scopedComponentInfo.getStateContainer();
     } else {
-      return mStateContainer != null ? mStateContainer : createStateContainer();
+      if (mStateContainer == null) {
+        mStateContainer = createStateContainer();
+      }
+      return mStateContainer;
     }
   }
 
@@ -805,11 +809,12 @@ public abstract class Component extends ComponentLifecycle
       final String globalKey = scopedContext.getGlobalKey();
 
       return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
+    } else {
+      if (mInterStagePropsContainer == null) {
+        mInterStagePropsContainer = createInterStagePropsContainer();
+      }
+      return mInterStagePropsContainer;
     }
-
-    return mInterStagePropsContainer != null
-        ? mInterStagePropsContainer
-        : createInterStagePropsContainer();
   }
 
   private static boolean useStatelessComponent(ComponentTree componentTree) {
@@ -827,9 +832,10 @@ public abstract class Component extends ComponentLifecycle
 
       return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
     } else {
-      return mInterStagePropsContainer != null
-          ? mInterStagePropsContainer
-          : createInterStagePropsContainer();
+      if (mInterStagePropsContainer == null) {
+        mInterStagePropsContainer = createInterStagePropsContainer();
+      }
+      return mInterStagePropsContainer;
     }
   }
 
