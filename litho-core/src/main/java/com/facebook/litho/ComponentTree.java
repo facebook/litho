@@ -430,11 +430,10 @@ public class ComponentTree implements LithoLifecycleListener {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
-    mReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
-    mUseInputOnlyInternalNodes =
-        mReuseInternalNodes || ComponentsConfiguration.useInputOnlyInternalNodes;
-    useStatelessComponent = mReuseInternalNodes || ComponentsConfiguration.useStatelessComponent;
-    shouldSkipShallowCopy = useStatelessComponent && ComponentsConfiguration.shouldSkipShallowCopy;
+    mReuseInternalNodes = builder.reuseInternalNodes;
+    mUseInputOnlyInternalNodes = mReuseInternalNodes || builder.useInputOnlyInternalNodes;
+    useStatelessComponent = mReuseInternalNodes || builder.useStatelessComponent;
+    shouldSkipShallowCopy = useStatelessComponent && builder.shouldSkipShallowCopy;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -3276,6 +3275,11 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
+    private boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
+    private boolean shouldSkipShallowCopy = ComponentsConfiguration.shouldSkipShallowCopy;
+    private boolean useInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+    private boolean reuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
+
     protected Builder(ComponentContext context) {
       this.context = context;
     }
@@ -3492,6 +3496,17 @@ public class ComponentTree implements LithoLifecycleListener {
       }
 
       return new ComponentTree(this);
+    }
+
+    public void overrideStatelessConfigs(
+        boolean useStateLessComponent,
+        boolean shouldSkipShallowCopy,
+        boolean inputOnlyInternalNode,
+        boolean internalNodeReuseEnabled) {
+      this.useStatelessComponent = useStateLessComponent;
+      this.shouldSkipShallowCopy = shouldSkipShallowCopy;
+      this.useInputOnlyInternalNodes = inputOnlyInternalNode;
+      this.reuseInternalNodes = internalNodeReuseEnabled;
     }
   }
 }

@@ -62,6 +62,11 @@ public class ComponentTreeHolder {
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
 
+  private @Nullable Boolean mUseStateLessComponent;
+  private @Nullable Boolean mShouldSkipShallowCopy;
+  private @Nullable Boolean mInputOnlyInternalNode;
+  private @Nullable Boolean mInternalNodeReuseEnabled;
+
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
 
@@ -472,25 +477,41 @@ public class ComponentTreeHolder {
       // if custom attributes are provided on RenderInfo, they will be preferred over builder values
       applyCustomAttributesIfProvided(builder);
 
-      mComponentTree =
-          builder
-              .layoutThreadHandler(mLayoutHandler)
-              .stateHandler(mStateHandler)
-              .preAllocateMountContentHandler(mPreallocateMountContentHandler)
-              .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
-              .measureListener(
-                  mComponentTreeMeasureListenerFactory == null
-                      ? null
-                      : mComponentTreeMeasureListenerFactory.create(this))
-              .hasMounted(mHasMounted)
-              .incrementalMount(mIncrementalMount)
-              .visibilityProcessing(mVisibilityProcessingEnabled)
-              .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
-              .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
-              .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
-              .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
-              .recyclingMode(mRecyclingMode)
-              .build();
+      builder
+          .layoutThreadHandler(mLayoutHandler)
+          .stateHandler(mStateHandler)
+          .preAllocateMountContentHandler(mPreallocateMountContentHandler)
+          .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
+          .measureListener(
+              mComponentTreeMeasureListenerFactory == null
+                  ? null
+                  : mComponentTreeMeasureListenerFactory.create(this))
+          .hasMounted(mHasMounted)
+          .incrementalMount(mIncrementalMount)
+          .visibilityProcessing(mVisibilityProcessingEnabled)
+          .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
+          .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
+          .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
+          .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
+          .recyclingMode(mRecyclingMode)
+          .build();
+
+      if (mUseStateLessComponent != null) {
+        builder.overrideStatelessConfigs(
+            mUseStateLessComponent,
+            mShouldSkipShallowCopy,
+            mInputOnlyInternalNode,
+            mInternalNodeReuseEnabled);
+      }
+
+      mComponentTree = builder.build();
+
+      if (mUseStateLessComponent == null) {
+        mUseStateLessComponent = mComponentTree.useStatelessComponent();
+        mShouldSkipShallowCopy = mComponentTree.shouldSkipShallowCopy();
+        mInputOnlyInternalNode = mComponentTree.isInputOnlyInternalNodeEnabled();
+        mInternalNodeReuseEnabled = mComponentTree.isInternalNodeReuseEnabled();
+      }
 
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
