@@ -20,6 +20,7 @@ plugins {
     id 'idea'
     id 'java'
     id 'org.jetbrains.intellij' version '0.4.10'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group 'com.facebook.litho.intellij'
@@ -32,6 +33,8 @@ sourceSets {
 }
 
 dependencies {
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // Processor
     implementation project(':litho-sections-annotations')
     implementation project(':litho-sections-processor')
@@ -48,7 +51,7 @@ dependencies {
 intellij {
     version '2019.3'
     updateSinceUntilBuild = false
-    plugins = ['java']
+    plugins = ['java', 'kotlin']
 }
 
 task merge {
