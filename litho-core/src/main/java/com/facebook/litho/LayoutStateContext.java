@@ -19,7 +19,11 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -117,31 +121,22 @@ public class LayoutStateContext {
   }
 
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
+    if (globalKey == null) {
+      return null;
+    }
+
     final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
+
     if (scopedComponentInfo == null) {
       throw new IllegalStateException(
-          "ScopedComponentInfo is null for globalKey: "
-              + globalKey
-              + "\nsize: "
-              + mGlobalKeyToScopedInfo.size());
+          "ScopedComponentInfo is null for globalKey: " + globalKey + getDebugString());
     }
 
     return scopedComponentInfo;
   }
 
   ComponentContext getScopedContext(String globalKey) {
-    if (globalKey == null) {
-      return null;
-    }
-
-    final ScopedComponentInfo info = mGlobalKeyToScopedInfo.get(globalKey);
-    if (info == null) {
-      throw new IllegalStateException(
-          "ComponentContext is null for globalKey: "
-              + globalKey
-              + "\nsize: "
-              + mGlobalKeyToScopedInfo.size());
-    }
+    final ScopedComponentInfo info = getScopedComponentInfo(globalKey);
     return info.getContext();
   }
 
@@ -230,5 +225,28 @@ public class LayoutStateContext {
 
   boolean isInternalNodeReuseEnabled() {
     return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
+  }
+
+  private String getDebugString() {
+    final StringBuilder builder = new StringBuilder();
+    final List<String> keys = new ArrayList<>(mGlobalKeyToScopedInfo.keySet());
+
+    // Sorts the keys by length so the keys closer to the root are in the beginning.
+    Collections.sort(
+        keys,
+        new Comparator<String>() {
+          public int compare(String o1, String o2) {
+            return Integer.compare(o1.length(), o2.length());
+          }
+        });
+
+    for (String key : keys) {
+      builder.append("\n  ").append(key);
+    }
+
+    // Truncate at 200 characters.
+    String string = builder.substring(0, Math.min(builder.length(), 200));
+
+    return String.format("\nsize: %d\nkeys: %s", keys.size(), string);
   }
 }
