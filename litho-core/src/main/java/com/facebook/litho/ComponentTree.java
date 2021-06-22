@@ -1050,6 +1050,10 @@ public class ComponentTree implements LithoLifecycleListener {
       throw new IllegalStateException("Clearing the LithoView while the ComponentTree is attached");
     }
 
+    if (mLifecycleProvider != null) {
+      mLithoView.resetVisibilityHint();
+    }
+
     mLithoView = null;
     mLithoRenderUnitFactory = null;
   }

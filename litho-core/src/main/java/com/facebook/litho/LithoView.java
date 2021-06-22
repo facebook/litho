@@ -880,6 +880,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     mSkipMountingIfNotVisible = skipMountingIfNotVisible;
   }
 
+  void resetVisibilityHint() {
+    mHasVisibilityHint = false;
+    mPauseMountingWhileVisibilityHintFalse = false;
+  }
+
   void setVisibilityHintNonRecursive(boolean isVisible) {
     assertMainThread();
 
