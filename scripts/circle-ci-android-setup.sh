@@ -15,6 +15,16 @@
 
 set -e
 
+[ -z "$ANDROID_HOME" ] && ANDROID_HOME="/opt/android_sdk"
+
+if env | grep -q ^ANDROID_HOME=
+then
+  echo ANDROID_HOME env variable is already exported
+else
+  echo ANDROID_HOME env variable was not exported; setting it now
+  export ANDROID_HOME
+fi
+
 function download() {
   if hash curl 2>/dev/null; then
     curl -s -L -o "$2" "$1"
@@ -42,8 +52,10 @@ function installsdk() {
 
 function getAndroidSDK {
   TMP=/tmp/sdk$$.zip
-  download 'https://dl.google.com/android/repository/tools_r26.1.1-linux.zip' $TMP
+  download 'https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip' $TMP
   unzip -qod "$ANDROID_SDK" $TMP
+  rm -r $ANDROID_HOME/tools
+  mv $ANDROID_HOME/cmdline-tools $ANDROID_HOME/tools
   rm $TMP
 }
 
