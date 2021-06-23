@@ -4,16 +4,15 @@
 
 _release-date_
 
- * **Breaking:** `ErrorEventHandler.onError()` method has a new parameter `ComponentTree`.
- * **Breaking:** `ComponentTree.release()` method asserts that it is called on the UI thread.
- * **Breaking:** `getErrorHandler`, `getHandle`, `getId`, and `getKey` are now package-private for `Component` and `Section`. This is for compatibility with the Kotlin API.
- * **Breaking:** Removed `checkNeedsRemeasure`, `useVisibilityExtension`, and `threadPoolForBackgroundThreadsConfig` configuration parameters from `ComponentsConfiguration`.
- * **Breaking:** Removed `useInternalNodesForLayoutDiffing` configuration parameter from `ComponentsConfiguration`.
- * **Breaking:** Most methods on Component/ComponentLifecycle that are not lifecycle methods (e.g. onCreateLayout, onMount, etc) are now final as they are not meant to be overridden.
- * **Breaking:** Removed `ThreadPoolDynamicPriorityLayoutHandler` and `LayoutPriorityThreadPoolExecutor` classes.
+ * **Breaking:** Add new `ComponentTree` parameter to `ErrorEventHandler.onError()` method.
+ * **Breaking:** Add UI thread call assertion to `ComponentTree.release()` method.
+ * **Breaking:** Make `getErrorHandler`, `getHandle`, `getId`, and `getKey` package-private for `Component` and `Section`. This is for compatibility with the Kotlin API.
+ * **Breaking:** Make most `Component`/`ComponentLifecycle` non-lifecycle methods (e.g. `onCreateLayout`, `onMount`, etc) final as they are not meant to be overridden.
+ * **Breaking:** Remove `checkNeedsRemeasure`, `useVisibilityExtension`, `useInternalNodesForLayoutDiffing`, and `threadPoolForBackgroundThreadsConfig` configuration parameters from `ComponentsConfiguration`.
+ * **Breaking:** Remove stale `ThreadPoolDynamicPriorityLayoutHandler` and `LayoutPriorityThreadPoolExecutor` classes.
  * **Breaking:** Rename `LithoHandler` to `RunnableHandler` and `DefaultLithoHandler` to `DefaultHandler`.
  * **Breaking:** Move `RunnableHandler`, `FutureInstrumenter`, and `HandlerInstrumenter` to core RenderCore artifact.
- * New: Almost all lifecycle methods are now covered by by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.
+ * New: Almost all lifecycle methods are now covered by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
 
