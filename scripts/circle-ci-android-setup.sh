@@ -53,7 +53,7 @@ function installsdk() {
 function getAndroidSDK {
   TMP=/tmp/sdk$$.zip
   download 'https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip' $TMP
-  unzip -qod "$ANDROID_SDK" $TMP
+  unzip -qod "$ANDROID_HOME" $TMP
   rm -r $ANDROID_HOME/tools
   mv $ANDROID_HOME/cmdline-tools $ANDROID_HOME/tools
   rm $TMP
