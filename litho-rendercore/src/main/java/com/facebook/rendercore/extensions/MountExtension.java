@@ -75,6 +75,18 @@ public abstract class MountExtension<Input, State> {
   /** Called after all the Host's children have been unbound. */
   public void onUnbind(ExtensionState<State> extensionState) {}
 
+  /**
+   * Called when an item is already mounted. If true, the old item will be unbound and the new item
+   * will be rebound
+   */
+  public boolean shouldUpdateItem(
+      final RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData) {
+    return false;
+  }
+
   /** Called after an item is bound, after it gets mounted or updated. */
   public void onBindItem(
       final ExtensionState<State> extensionState,

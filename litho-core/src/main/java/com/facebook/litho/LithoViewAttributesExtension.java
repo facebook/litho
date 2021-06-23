@@ -97,4 +97,20 @@ public class LithoViewAttributesExtension
       MountState.unsetViewAttributes(content, output, flags);
     }
   }
+
+  @Override
+  public boolean shouldUpdateItem(
+      final RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData) {
+    if (previousRenderUnit == nextRenderUnit) {
+      return false;
+    }
+
+    final LithoRenderUnit prevLithoRenderUnit = (LithoRenderUnit) previousRenderUnit;
+    final LithoRenderUnit nextLithoRenderUnit = (LithoRenderUnit) nextRenderUnit;
+
+    return MountState.shouldUpdateViewInfo(nextLithoRenderUnit.output, prevLithoRenderUnit.output);
+  }
 }

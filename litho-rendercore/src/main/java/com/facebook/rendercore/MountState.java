@@ -139,7 +139,7 @@ public class MountState implements MountDelegateTarget {
         mountRenderUnit(i, renderTreeNode);
         RenderCoreSystrace.endSection();
       } else {
-        updateMountItemIfNeeded(mContext, renderTreeNode, currentMountItem);
+        updateMountItemIfNeeded(mMountDelegate, mContext, renderTreeNode, currentMountItem);
       }
     }
 
@@ -411,7 +411,7 @@ public class MountState implements MountDelegateTarget {
     } else {
 
       // If root mount item is present then update it.
-      updateMountItemIfNeeded(mContext, rootNode, rootItem);
+      updateMountItemIfNeeded(mMountDelegate, mContext, rootNode, rootItem);
     }
 
     final int outputCount = mRenderTree.getMountableOutputCount();
@@ -745,7 +745,10 @@ public class MountState implements MountDelegateTarget {
   }
 
   private static void updateMountItemIfNeeded(
-      Context context, RenderTreeNode renderTreeNode, MountItem currentMountItem) {
+      @Nullable MountDelegate mountDelegate,
+      Context context,
+      RenderTreeNode renderTreeNode,
+      MountItem currentMountItem) {
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final Object newLayoutData = renderTreeNode.getLayoutData();
     final RenderTreeNode currentNode = currentMountItem.getRenderTreeNode();
@@ -761,6 +764,11 @@ public class MountState implements MountDelegateTarget {
 
       renderUnit.updateExtensions(
           context, content, currentRenderUnit, currentLayoutData, newLayoutData);
+    }
+
+    if (mountDelegate != null) {
+      mountDelegate.onUpdateItemsIfNeeded(
+          currentRenderUnit, currentLayoutData, renderUnit, newLayoutData, content);
     }
 
     // Update the bounds of the mounted content. This needs to be done regardless of whether

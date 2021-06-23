@@ -111,6 +111,23 @@ public class MountDelegate {
     }
   }
 
+  void onUpdateItemsIfNeeded(
+      final @Nullable RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final @Nullable RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData,
+      final Object content) {
+    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
+      final MountExtension extension = mMountExtensions.get(i);
+      final ExtensionState state = getExtensionState(extension);
+      if (extension.shouldUpdateItem(
+          previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
+        extension.onUnbindItem(state, previousRenderUnit, content, previousLayoutData);
+        extension.onBindItem(state, nextRenderUnit, content, nextLayoutData);
+      }
+    }
+  }
+
   public void onMountItem(
       final RenderUnit renderUnit, final Object content, final Object layoutData) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
