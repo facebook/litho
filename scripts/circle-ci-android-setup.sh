@@ -19,9 +19,9 @@ set -e
 
 if env | grep -q ^ANDROID_HOME=
 then
-  echo ANDROID_HOME env variable is already exported
+  echo "ANDROID_HOME env variable is already exported"
 else
-  echo ANDROID_HOME env variable was not exported; setting it now
+  echo "ANDROID_HOME env variable was not exported. setting it now"
   export ANDROID_HOME
 fi
 
