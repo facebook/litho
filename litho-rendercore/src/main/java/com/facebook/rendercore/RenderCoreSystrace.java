@@ -30,6 +30,8 @@ public final class RenderCoreSystrace {
     void beginAsyncSection(String name, Class value, int cookie);
 
     void endAsyncSection(String name, Class value, int cookie);
+
+    boolean isEnabled();
   }
 
   private static volatile IRenderCoreSystrace sInstance = new DefaultTrace();
@@ -74,6 +76,10 @@ public final class RenderCoreSystrace {
     sInstance = systraceImpl;
   }
 
+  public static boolean isEnabled() {
+    return sInstance.isEnabled();
+  }
+
   private static final class DefaultTrace implements IRenderCoreSystrace {
 
     @Override
@@ -102,6 +108,13 @@ public final class RenderCoreSystrace {
       if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         Trace.endAsyncSection(getName(name, value), cookie);
       }
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return (BuildConfig.DEBUG
+          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+          && Trace.isEnabled());
     }
 
     private static String getName(String name, Class value) {
