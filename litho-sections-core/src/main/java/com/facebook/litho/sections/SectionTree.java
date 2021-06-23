@@ -23,9 +23,9 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_SET_ROOT_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SET_ROOT_ON_BG_THREAD;
-import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
+import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -44,8 +44,6 @@ import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
-import com.facebook.litho.LithoHandler;
-import com.facebook.litho.LithoHandler.DefaultLithoHandler;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.StateContainer;
@@ -65,6 +63,8 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
+import com.facebook.rendercore.RunnableHandler;
+import com.facebook.rendercore.RunnableHandler.DefaultHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,7 +161,7 @@ public class SectionTree {
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
 
-  private final LithoHandler mMainThreadHandler;
+  private final RunnableHandler mMainThreadHandler;
   private final SectionContext mContext;
   private final BatchedTarget mTarget;
   private final FocusDispatcher mFocusDispatcher;
@@ -180,7 +180,7 @@ public class SectionTree {
 
   private class CalculateChangeSetRunnable extends ThreadTracingRunnable {
 
-    private final LithoHandler mHandler;
+    private final RunnableHandler mHandler;
 
     @GuardedBy("this")
     private boolean mIsPosted;
@@ -193,7 +193,7 @@ public class SectionTree {
 
     private @Nullable ChangesetDebugInfo mChangesetDebugInfo;
 
-    public CalculateChangeSetRunnable(LithoHandler handler) {
+    public CalculateChangeSetRunnable(RunnableHandler handler) {
       mHandler = handler;
     }
 
@@ -329,7 +329,7 @@ public class SectionTree {
   }
 
   private SectionTree(Builder builder) {
-    mMainThreadHandler = instrumentLithoHandler(new DefaultLithoHandler(Looper.getMainLooper()));
+    mMainThreadHandler = instrumentHandler(new DefaultHandler(Looper.getMainLooper()));
     mSectionsDebugLogger = new Logger(SectionsConfiguration.LOGGERS);
     mReleased = false;
     mAsyncStateUpdates = builder.mAsyncStateUpdates;
@@ -346,11 +346,11 @@ public class SectionTree {
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
     mPendingStateUpdates = new StateUpdatesHolder();
-    LithoHandler changeSetThreadHandler =
+    RunnableHandler changeSetThreadHandler =
         builder.mChangeSetThreadHandler != null
             ? builder.mChangeSetThreadHandler
-            : new DefaultLithoHandler(getDefaultChangeSetThreadLooper());
-    changeSetThreadHandler = instrumentLithoHandler(changeSetThreadHandler);
+            : new DefaultHandler(getDefaultChangeSetThreadLooper());
+    changeSetThreadHandler = instrumentHandler(changeSetThreadHandler);
     mCalculateChangeSetRunnable = new CalculateChangeSetRunnable(changeSetThreadHandler);
     mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(mMainThreadHandler);
     mChangesetDebug = ChangesetDebugConfiguration.getListener();
@@ -876,7 +876,7 @@ public class SectionTree {
     return true;
   }
 
-  private static void focusRequestOnUiThread(LithoHandler mainThreadHandler, Runnable runnable) {
+  private static void focusRequestOnUiThread(RunnableHandler mainThreadHandler, Runnable runnable) {
     if (isMainThread()) {
       runnable.run();
     } else {
@@ -1829,7 +1829,7 @@ public class SectionTree {
     private boolean mAsyncStateUpdates;
     private boolean mAsyncPropUpdates;
     private String mTag;
-    private @Nullable LithoHandler mChangeSetThreadHandler;
+    private @Nullable RunnableHandler mChangeSetThreadHandler;
     private boolean mForceSyncStateUpdates;
     private boolean mPostToFrontOfQueueForFirstChangeset;
 
@@ -1842,7 +1842,7 @@ public class SectionTree {
      * An optional Handler where {@link ChangeSet} calculation should happen. If not provided the
      * framework will use its default background thread.
      */
-    public Builder changeSetThreadHandler(@Nullable LithoHandler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(@Nullable RunnableHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
     }

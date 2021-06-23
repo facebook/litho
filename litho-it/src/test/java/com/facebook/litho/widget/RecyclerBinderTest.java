@@ -59,7 +59,6 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderCompleteEvent;
@@ -77,6 +76,7 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.RecyclerBinder.RenderCompleteRunnable;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -172,7 +172,7 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              LithoHandler layoutHandler,
+              RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
               boolean processVisibility,
@@ -182,7 +182,7 @@ public class RecyclerBinderTest {
               boolean ignoreNullLayoutStateError,
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
-              LithoHandler preallocateHandler,
+              RunnableHandler preallocateHandler,
               boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
@@ -201,7 +201,7 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              LithoHandler layoutHandler,
+              RunnableHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
               boolean processVisibility,
@@ -211,7 +211,7 @@ public class RecyclerBinderTest {
               boolean ignoreNullLayoutStateError,
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
-              LithoHandler preallocateHandler,
+              RunnableHandler preallocateHandler,
               boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {
@@ -1688,17 +1688,17 @@ public class RecyclerBinderTest {
 
   @Test
   public void testShouldAlwaysUpdateLayoutHandler() {
-    final LithoHandler layoutHandlerBase = mock(LithoHandler.class);
-    final LithoHandler layoutHandler1 = mock(LithoHandler.class);
-    final LithoHandler layoutHandler2 = mock(LithoHandler.class);
-    final LithoHandler layoutHandlerN = mock(LithoHandler.class);
+    final RunnableHandler layoutHandlerBase = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandler1 = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandler2 = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Nullable
                   @Override
-                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     final Object handlerType = renderInfo.getCustomAttribute("handlerType");
                     if (handlerType == null) {
                       return layoutHandlerBase;
@@ -1755,16 +1755,16 @@ public class RecyclerBinderTest {
 
   @Test
   public void testShouldNeverUpdateLayoutHandler() {
-    final LithoHandler layoutHandler1 = mock(LithoHandler.class);
-    final LithoHandler layoutHandler2 = mock(LithoHandler.class);
-    final LithoHandler layoutHandlerN = mock(LithoHandler.class);
+    final RunnableHandler layoutHandler1 = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandler2 = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Nullable
                   @Override
-                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     final Object handlerType = renderInfo.getCustomAttribute("handlerType");
                     if (handlerType == null) {
                       return null;
@@ -1817,16 +1817,16 @@ public class RecyclerBinderTest {
 
   @Test
   public void testShouldUpdateOnlyFromFirstToSecondLayoutHandler() {
-    final LithoHandler layoutHandler1 = mock(LithoHandler.class);
-    final LithoHandler layoutHandler2 = mock(LithoHandler.class);
-    final LithoHandler layoutHandlerN = mock(LithoHandler.class);
+    final RunnableHandler layoutHandler1 = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandler2 = mock(RunnableHandler.class);
+    final RunnableHandler layoutHandlerN = mock(RunnableHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Nullable
                   @Override
-                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     final Object handlerType = renderInfo.getCustomAttribute("handlerType");
                     if (handlerType == null) {
                       return null;
@@ -5002,7 +5002,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testBothLayoutHandlerFactoryAndThreadPoolConfigProvided() {
-    final LithoHandler layoutHandler = mock(LithoHandler.class);
+    final RunnableHandler layoutHandler = mock(RunnableHandler.class);
     final Component component = mock(Component.class);
     final RecyclerBinder binder =
         mRecyclerBinderBuilder
@@ -5010,7 +5010,7 @@ public class RecyclerBinderTest {
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Override
-                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public RunnableHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     return layoutHandler;
                   }
 

@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ErrorEventHandler;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
@@ -29,6 +28,7 @@ import com.facebook.litho.widget.ComponentWarmer;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.List;
 
 /** Configuration setting for {@link RecyclerBinder}. */
@@ -51,7 +51,7 @@ public class RecyclerBinderConfiguration {
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
-  @Nullable private LithoHandler mChangeSetThreadHandler;
+  @Nullable private RunnableHandler mChangeSetThreadHandler;
   private final boolean mEnableDetach;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
@@ -79,7 +79,7 @@ public class RecyclerBinderConfiguration {
       boolean hScrollAsyncMode,
       boolean enableStableIds,
       boolean enableDetach,
-      @Nullable LithoHandler changeSetThreadHandler,
+      @Nullable RunnableHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
       boolean useCancelableLayoutFutures,
       boolean isReconciliationEnabled,
@@ -157,7 +157,7 @@ public class RecyclerBinderConfiguration {
     return mInvalidStateLogParamsList;
   }
 
-  public @Nullable LithoHandler getChangeSetThreadHandler() {
+  public @Nullable RunnableHandler getChangeSetThreadHandler() {
     return mChangeSetThreadHandler;
   }
 
@@ -230,7 +230,7 @@ public class RecyclerBinderConfiguration {
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean mEnableDetach = false;
-    @Nullable private LithoHandler mChangeSetThreadHandler;
+    @Nullable private RunnableHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
@@ -371,7 +371,7 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder changeSetThreadHandler(@Nullable LithoHandler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(@Nullable RunnableHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
     }

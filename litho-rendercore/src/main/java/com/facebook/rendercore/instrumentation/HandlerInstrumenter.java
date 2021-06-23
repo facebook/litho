@@ -14,34 +14,36 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.instrumentation;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.RunnableHandler;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class HandlerInstrumenter {
 
   public interface Instrumenter {
     /**
-     * Instrument a {@LithoHandler} or returns the same given {@LithoHandler}. If the
-     * {@LithoHandler} given as input is null, the return value will be null too.
+     * Instrument a {@link RunnableHandler} or return the same given {@link RunnableHandler}. If the
+     * {@link RunnableHandler} given as input is null, the return value will be null too.
      */
-    LithoHandler instrumentLithoHandler(LithoHandler lithoHandler);
+    RunnableHandler instrumentHandler(RunnableHandler handler);
   }
 
-  private static volatile Instrumenter sInstance;
+  private static volatile @Nullable Instrumenter sInstrumenter;
 
   public static void provide(Instrumenter instrumenter) {
-    sInstance = instrumenter;
+    sInstrumenter = instrumenter;
   }
 
-  /** {@link Instrumenter#instrumentLithoHandler(com.facebook.litho.LithoHandler)} */
-  public static LithoHandler instrumentLithoHandler(LithoHandler lithoHandler) {
-    final Instrumenter instrumenter = sInstance;
+  /** {@link Instrumenter#instrumentHandler} */
+  public static RunnableHandler instrumentHandler(RunnableHandler handler) {
+    final Instrumenter instrumenter = sInstrumenter;
     if (instrumenter == null) {
-      return lithoHandler;
+      return handler;
     }
 
-    return instrumenter.instrumentLithoHandler(lithoHandler);
+    return instrumenter.instrumentHandler(handler);
   }
 }

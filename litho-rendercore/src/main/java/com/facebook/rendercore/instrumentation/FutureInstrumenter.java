@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore.instrumentation;
 
 import com.facebook.infer.annotation.Nullsafe;
 import java.util.concurrent.RunnableFuture;
@@ -29,11 +29,10 @@ public final class FutureInstrumenter {
   public interface Instrumenter {
 
     /**
-     * Hook that allows to instrument a {@RunnableFuture}.
+     * Hook that allows to instrument a {@link RunnableFuture}.
      *
      * @param future that has to be instrumented
      * @param tag used to mark the task for debugging purposes.
-     * @param <V>
      * @return an instrumented {@link RunnableFuture} or returns the given input one.
      */
     <V> RunnableFuture<V> instrument(RunnableFuture<V> future, String tag);

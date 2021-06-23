@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -28,7 +29,7 @@ import javax.annotation.concurrent.GuardedBy;
  * threading model and need to run layout against one of their already available executors.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public final class ExecutorLithoHandler implements LithoHandler {
+public final class ExecutorLithoHandler implements RunnableHandler {
 
   @GuardedBy("pendingTasks")
   private final Map<Runnable, Integer> pendingTasks = new HashMap<>();

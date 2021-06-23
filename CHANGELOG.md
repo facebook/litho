@@ -11,6 +11,8 @@ _release-date_
  * **Breaking:** Removed `useInternalNodesForLayoutDiffing` configuration parameter from `ComponentsConfiguration`.
  * **Breaking:** Most methods on Component/ComponentLifecycle that are not lifecycle methods (e.g. onCreateLayout, onMount, etc) are now final as they are not meant to be overridden.
  * **Breaking:** Removed `ThreadPoolDynamicPriorityLayoutHandler` and `LayoutPriorityThreadPoolExecutor` classes.
+ * **Breaking:** Rename `LithoHandler` to `RunnableHandler` and `DefaultLithoHandler` to `DefaultHandler`.
+ * **Breaking:** Move `RunnableHandler`, `FutureInstrumenter`, and `HandlerInstrumenter` to core RenderCore artifact.
  * New: Almost all lifecycle methods are now covered by by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).

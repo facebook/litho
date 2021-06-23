@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
 import android.os.Handler;
 import android.os.Looper;
 import com.facebook.infer.annotation.Nullsafe;
 
 /**
- * The Litho handler is responsible for scheduling computations on a {@link ComponentTree}. The
- * default implementation uses a {@link android.os.Handler} with a {@link android.os.Looper}.
+ * Handler abstraction to allow instrumentation and that is responsible for scheduling {@link
+ * Runnable} computations in RenderCore. The default implementation uses a {@link Handler} with a
+ * {@link Looper}.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public interface LithoHandler {
+public interface RunnableHandler {
 
   boolean isTracing();
 
@@ -35,10 +36,10 @@ public interface LithoHandler {
 
   void remove(Runnable runnable);
 
-  /** Default implementation of the LithoHandler which simply wraps an {@link Handler}. */
-  class DefaultLithoHandler extends Handler implements LithoHandler {
+  /** Default implementation of the RunnableHandler which simply wraps a {@link Handler}. */
+  class DefaultHandler extends Handler implements RunnableHandler {
 
-    public DefaultLithoHandler(Looper looper) {
+    public DefaultHandler(Looper looper) {
       super(looper);
     }
 

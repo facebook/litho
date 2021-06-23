@@ -33,6 +33,7 @@ import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -419,7 +420,7 @@ public class MountSpecLifecycleTest {
     final ComponentTree tree =
         ComponentTree.create(mLithoViewRule.getContext())
             .shouldPreallocateMountContentPerMountSpec(true)
-            .preAllocateMountContentHandler(new LithoHandler.DefaultLithoHandler(looper))
+            .preAllocateMountContentHandler(new RunnableHandler.DefaultHandler(looper))
             .build();
     mLithoViewRule.useComponentTree(tree);
 

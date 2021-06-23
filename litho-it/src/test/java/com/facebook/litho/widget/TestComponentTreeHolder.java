@@ -21,9 +21,9 @@ import static org.mockito.Mockito.mock;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.rendercore.RunnableHandler;
 
 public class TestComponentTreeHolder extends ComponentTreeHolder {
 
@@ -37,7 +37,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   int mChildWidth;
   int mChildHeight;
   boolean mCheckWorkingRangeCalled;
-  LithoHandler mLayoutHandler;
+  RunnableHandler mLayoutHandler;
   private int mLastRequestedWidthSpec;
   private int mLastRequestedHeightSpec;
 
@@ -109,7 +109,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   }
 
   @Override
-  public synchronized void updateLayoutHandler(@Nullable LithoHandler layoutHandler) {
+  public synchronized void updateLayoutHandler(@Nullable RunnableHandler layoutHandler) {
     super.updateLayoutHandler(layoutHandler);
     mLayoutHandler = layoutHandler;
   }

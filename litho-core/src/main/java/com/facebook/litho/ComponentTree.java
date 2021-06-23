@@ -21,7 +21,6 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GE
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
-import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.LayoutState.layoutSourceToString;
 import static com.facebook.litho.LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE;
@@ -35,6 +34,7 @@ import static com.facebook.litho.WorkContinuationInstrumenter.onBeginWorkContinu
 import static com.facebook.litho.WorkContinuationInstrumenter.onEndWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForContinuation;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
+import static com.facebook.rendercore.instrumentation.HandlerInstrumenter.instrumentHandler;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -52,7 +52,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.LithoHandler.DefaultLithoHandler;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
@@ -60,6 +59,9 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.RunnableHandler;
+import com.facebook.rendercore.RunnableHandler.DefaultHandler;
+import com.facebook.rendercore.instrumentation.FutureInstrumenter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -228,7 +230,7 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultPreallocateMountContentThreadLooper;
 
-  private static final ThreadLocal<WeakReference<LithoHandler>> sSyncStateUpdatesHandler =
+  private static final ThreadLocal<WeakReference<RunnableHandler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
 
   @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
@@ -248,7 +250,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final ComponentContext mContext;
 
-  @Nullable private LithoHandler mPreAllocateMountContentHandler;
+  @Nullable private RunnableHandler mPreAllocateMountContentHandler;
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
@@ -276,9 +278,9 @@ public class ComponentTree implements LithoLifecycleListener {
   private LithoView mLithoView;
 
   @ThreadConfined(ThreadConfined.UI)
-  private LithoHandler mLayoutThreadHandler;
+  private RunnableHandler mLayoutThreadHandler;
 
-  private LithoHandler mMainThreadHandler = new DefaultLithoHandler(Looper.getMainLooper());
+  private RunnableHandler mMainThreadHandler = new DefaultHandler(Looper.getMainLooper());
   private final Runnable mBackgroundLayoutStateUpdateRunnable =
       new Runnable() {
         @Override
@@ -455,10 +457,10 @@ public class ComponentTree implements LithoLifecycleListener {
             : null;
 
     // Instrument LithoHandlers.
-    mMainThreadHandler = instrumentLithoHandler(mMainThreadHandler);
+    mMainThreadHandler = instrumentHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
     if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler = instrumentLithoHandler(mPreAllocateMountContentHandler);
+      mPreAllocateMountContentHandler = instrumentHandler(mPreAllocateMountContentHandler);
     }
     mLogger = builder.logger;
     mLogTag = builder.logTag;
@@ -504,10 +506,10 @@ public class ComponentTree implements LithoLifecycleListener {
     return mAreTransitionsEnabled;
   }
 
-  private static LithoHandler ensureAndInstrumentLayoutThreadHandler(
-      @Nullable LithoHandler handler) {
+  private static RunnableHandler ensureAndInstrumentLayoutThreadHandler(
+      @Nullable RunnableHandler handler) {
     if (handler == null) {
-      handler = new DefaultLithoHandler(getDefaultLayoutThreadLooper());
+      handler = new DefaultHandler(getDefaultLayoutThreadLooper());
     } else {
       if (sDefaultLayoutThreadLooper != null
           && sBoostPerfLayoutStateFuture == false
@@ -521,7 +523,7 @@ public class ComponentTree implements LithoLifecycleListener {
         sBoostPerfLayoutStateFuture = true;
       }
     }
-    return instrumentLithoHandler(handler);
+    return instrumentHandler(handler);
   }
 
   @Nullable
@@ -562,10 +564,11 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   /**
-   * Provide custom {@link LithoHandler}. If null is provided default one will be used for layouts.
+   * Provide custom {@link RunnableHandler}. If null is provided default one will be used for
+   * layouts.
    */
   @ThreadConfined(ThreadConfined.UI)
-  public void updateLayoutThreadHandler(@Nullable LithoHandler layoutThreadHandler) {
+  public void updateLayoutThreadHandler(@Nullable RunnableHandler layoutThreadHandler) {
     synchronized (mUpdateStateSyncRunnableLock) {
       if (mUpdateStateSyncRunnable != null) {
         mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
@@ -580,8 +583,8 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @VisibleForTesting
-  public LithoHandler getLayoutThreadHandler() {
-    return (LithoHandler) mLayoutThreadHandler;
+  public RunnableHandler getLayoutThreadHandler() {
+    return (RunnableHandler) mLayoutThreadHandler;
   }
 
   @VisibleForTesting
@@ -1511,11 +1514,11 @@ public class ComponentTree implements LithoLifecycleListener {
       return;
     }
 
-    final WeakReference<LithoHandler> handlerWr = sSyncStateUpdatesHandler.get();
-    LithoHandler handler = handlerWr != null ? handlerWr.get() : null;
+    final WeakReference<RunnableHandler> handlerWr = sSyncStateUpdatesHandler.get();
+    RunnableHandler handler = handlerWr != null ? handlerWr.get() : null;
 
     if (handler == null) {
-      handler = new DefaultLithoHandler(looper);
+      handler = new DefaultHandler(looper);
       sSyncStateUpdatesHandler.set(new WeakReference<>(handler));
     }
 
@@ -3255,8 +3258,8 @@ public class ComponentTree implements LithoLifecycleListener {
     // optional
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
-    private LithoHandler layoutThreadHandler;
-    private LithoHandler preAllocateMountContentHandler;
+    private RunnableHandler layoutThreadHandler;
+    private RunnableHandler preAllocateMountContentHandler;
     private StateHandler stateHandler;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
@@ -3343,21 +3346,21 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder layoutThreadLooper(Looper looper) {
       if (looper != null) {
-        layoutThreadHandler = new DefaultLithoHandler(looper);
+        layoutThreadHandler = new DefaultHandler(looper);
       }
 
       return this;
     }
 
     /** Specify the handler for to preAllocateMountContent */
-    public Builder preAllocateMountContentHandler(@Nullable LithoHandler handler) {
+    public Builder preAllocateMountContentHandler(@Nullable RunnableHandler handler) {
       preAllocateMountContentHandler = handler;
       return this;
     }
 
     /** Enable Mount Content preallocation using the same thread we use to compute layouts */
     public Builder useDefaultHandlerForContentPreallocation() {
-      preAllocateMountContentHandler = new DefaultLithoHandler(getDefaultLayoutThreadLooper());
+      preAllocateMountContentHandler = new DefaultHandler(getDefaultLayoutThreadLooper());
       return this;
     }
 
@@ -3376,7 +3379,7 @@ public class ComponentTree implements LithoLifecycleListener {
      * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
      * you don't specify a Looper here, the Components default Looper will be used.
      */
-    public Builder layoutThreadHandler(@Nullable LithoHandler handler) {
+    public Builder layoutThreadHandler(@Nullable RunnableHandler handler) {
       layoutThreadHandler = handler;
       return this;
     }

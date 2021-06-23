@@ -19,12 +19,13 @@ package com.facebook.litho;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /** LithoHandler implementation that uses a thread pool to calculate the layout. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ThreadPoolLayoutHandler implements LithoHandler {
+public class ThreadPoolLayoutHandler implements RunnableHandler {
 
   public static final LayoutThreadPoolConfiguration DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION =
       new LayoutThreadPoolConfigurationImpl(
@@ -46,9 +47,9 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
    *
    * @return default {@code ThreadPoolLayoutHandler}.
    */
-  public static LithoHandler getDefaultInstance() {
+  public static RunnableHandler getDefaultInstance() {
     if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThread) {
-      return new DefaultLithoHandler(ComponentTree.getDefaultLayoutThreadLooper());
+      return new DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper());
     }
     if (sInstance == null) {
       synchronized (ThreadPoolLayoutHandler.class) {
@@ -68,14 +69,14 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
    *     core and max pool size, and thread priority
    * @return new instance with a separate {@code ThreadPoolExecutor} with specified configuration.
    */
-  public static LithoHandler getNewInstance(LayoutThreadPoolConfiguration configuration) {
+  public static RunnableHandler getNewInstance(LayoutThreadPoolConfiguration configuration) {
     final boolean alwaysUseSingleThread =
         ComponentsConfiguration.layoutCalculationAlwaysUseSingleThread;
     final boolean alwaysUseDefaultThreadPool =
         ComponentsConfiguration.layoutCalculationAlwaysUseDefaultThreadPool;
 
     if (alwaysUseSingleThread && !alwaysUseDefaultThreadPool) {
-      return new DefaultLithoHandler(ComponentTree.getDefaultLayoutThreadLooper());
+      return new DefaultHandler(ComponentTree.getDefaultLayoutThreadLooper());
     } else if (alwaysUseDefaultThreadPool && !alwaysUseSingleThread) {
       return getDefaultInstance();
     } else {

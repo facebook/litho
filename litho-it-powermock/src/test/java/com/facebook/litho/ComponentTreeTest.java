@@ -26,6 +26,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import android.os.Build;
 import android.os.Process;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
@@ -97,7 +98,7 @@ public class ComponentTreeTest {
 
     final CountDownLatch lockWaitForResults = new CountDownLatch(1);
 
-    LithoHandler handler =
+    RunnableHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     final ComponentTree componentTree =

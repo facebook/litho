@@ -18,18 +18,19 @@ package com.facebook.litho;
 
 import android.os.HandlerThread;
 import android.os.Process;
+import com.facebook.rendercore.RunnableHandler;
 
 /**
  * LithoHandler implementation backed by a HandlerThread, which allows changing the priority of a
  * HandlerThread.
  */
-public class DefaultLithoHandlerDynamicPriority implements LithoHandler {
+public class DefaultLithoHandlerDynamicPriority implements RunnableHandler {
 
   private final HandlerThread mHandlerThread;
-  private final DefaultLithoHandler mDelegate;
+  private final DefaultHandler mDelegate;
 
   /**
-   * Creates a {@link LithoHandler} instance backed by a {@link HandlerThread}. Starts the
+   * Creates a {@link RunnableHandler} instance backed by a {@link HandlerThread}. Starts the
    * HandlerThread if it's not started yet.
    */
   public DefaultLithoHandlerDynamicPriority(HandlerThread handlerThread) {
@@ -38,7 +39,7 @@ public class DefaultLithoHandlerDynamicPriority implements LithoHandler {
     }
 
     mHandlerThread = handlerThread;
-    mDelegate = new DefaultLithoHandler(handlerThread.getLooper());
+    mDelegate = new DefaultHandler(handlerThread.getLooper());
   }
 
   @Override

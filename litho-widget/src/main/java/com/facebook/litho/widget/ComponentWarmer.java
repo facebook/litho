@@ -23,9 +23,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.annotation.Nullable;
@@ -317,7 +317,7 @@ public class ComponentWarmer {
       String tag,
       ComponentRenderInfo componentRenderInfo,
       @Nullable Size size,
-      LithoHandler handler) {
+      RunnableHandler handler) {
     if (!isReady()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
@@ -353,8 +353,8 @@ public class ComponentWarmer {
    * associated RecyclerBinder uses. To change it, you can implement a {@link
    * ComponentTreeHolderPreparer} and configure the layout handler when creating the ComponentTree.
    *
-   * <p>Alternatively you can use {@link #prepare(String, ComponentRenderInfo, Size, LithoHandler)}
-   * to synchronously post the prepare call to a custom handler.
+   * <p>Alternatively you can use {@link #prepare(String, ComponentRenderInfo, Size,
+   * RunnableHandler)} to synchronously post the prepare call to a custom handler.
    */
   public void prepareAsync(String tag, ComponentRenderInfo componentRenderInfo) {
     if (!isReady()) {
@@ -371,7 +371,7 @@ public class ComponentWarmer {
       ComponentRenderInfo renderInfo,
       @Nullable final Size size,
       boolean isAsync,
-      @Nullable LithoHandler handler) {
+      @Nullable RunnableHandler handler) {
     if (mFactory == null) {
       throw new IllegalStateException(
           "ComponentWarmer: trying to execute prepare but ComponentWarmer is not ready.");
@@ -399,7 +399,7 @@ public class ComponentWarmer {
   }
 
   private void addToPending(
-      String tag, ComponentRenderInfo componentRenderInfo, @Nullable LithoHandler handler) {
+      String tag, ComponentRenderInfo componentRenderInfo, @Nullable RunnableHandler handler) {
     ensurePendingQueue();
 
     componentRenderInfo.addCustomAttribute(COMPONENT_WARMER_TAG, tag);
@@ -430,8 +430,8 @@ public class ComponentWarmer {
       final String tag = (String) customAttrTag;
 
       if (renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER) != null) {
-        final LithoHandler handler =
-            (LithoHandler) renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER);
+        final RunnableHandler handler =
+            (RunnableHandler) renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER);
         executePrepare(tag, renderInfo, null, false, handler);
       } else {
         executePrepare(tag, renderInfo, null, true, null);

@@ -27,13 +27,13 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -319,7 +319,7 @@ public class ComponentWarmerTest {
             .component(SimpleMountSpecTester.create(mContext).build())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
-    final LithoHandler handler = new LithoHandler.DefaultLithoHandler(Looper.myLooper());
+    final RunnableHandler handler = new RunnableHandler.DefaultHandler(Looper.myLooper());
 
     warmer.prepare("tag1", renderInfo, null, handler);
     assertThat(warmer.getPending().size()).isEqualTo(1);
@@ -416,8 +416,7 @@ public class ComponentWarmerTest {
     handlerThread.start();
 
     final Looper looper = handlerThread.getLooper();
-    final LithoHandler.DefaultLithoHandler lithoHandler =
-        new LithoHandler.DefaultLithoHandler(looper);
+    final RunnableHandler.DefaultHandler lithoHandler = new RunnableHandler.DefaultHandler(looper);
 
     warmer.prepare("tag1", renderInfo1, null, lithoHandler);
     warmer.prepare("tag2", renderInfo2, null, lithoHandler);

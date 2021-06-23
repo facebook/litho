@@ -30,12 +30,12 @@ import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ErrorEventHandler;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.Size;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -77,7 +77,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              LithoHandler layoutHandler,
+              RunnableHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
@@ -88,7 +88,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               boolean ignoreNullLayoutStateError,
               int recyclingMode,
               boolean isLayoutDiffingEnabled,
-              LithoHandler preallocateHandler,
+              RunnableHandler preallocateHandler,
               boolean preallocatePerMountSpec,
               @Nullable LithoLifecycleProvider lifecycleProvider,
               @Nullable ErrorEventHandler errorEventHandler) {

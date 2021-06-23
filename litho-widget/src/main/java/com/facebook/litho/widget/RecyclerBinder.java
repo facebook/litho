@@ -57,7 +57,6 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
@@ -79,6 +78,7 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer;
+import com.facebook.rendercore.RunnableHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -131,7 +131,7 @@ public class RecyclerBinder
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
-  private final @Nullable LithoHandler mAsyncInsertHandler;
+  private final @Nullable RunnableHandler mAsyncInsertHandler;
   private final int mRecyclingMode;
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
@@ -202,7 +202,7 @@ public class RecyclerBinder
 
   private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private @Nullable ComponentWarmer mComponentWarmer;
-  private final LithoHandler mPreallocateMountContentHandler;
+  private final RunnableHandler mPreallocateMountContentHandler;
   private final boolean mPreallocatePerMountSpec;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
@@ -276,7 +276,7 @@ public class RecyclerBinder
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
-  private final @Nullable LithoHandler mThreadPoolHandler;
+  private final @Nullable RunnableHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
@@ -370,7 +370,7 @@ public class RecyclerBinder
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
-        @Nullable LithoHandler layoutHandler,
+        @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
@@ -380,7 +380,7 @@ public class RecyclerBinder
         boolean ignoreNullLayoutStateError,
         int recyclingMode,
         boolean isLayoutDiffingEnabled,
-        LithoHandler preallocateHandler,
+        RunnableHandler preallocateHandler,
         boolean preallocatePerMountSpec,
         @Nullable LithoLifecycleProvider lifecycleProvider,
         @Nullable ErrorEventHandler errorEventHandler);
@@ -391,7 +391,7 @@ public class RecyclerBinder
         @Override
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
-            @Nullable LithoHandler layoutHandler,
+            @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
@@ -401,7 +401,7 @@ public class RecyclerBinder
             boolean ignoreNullLayoutStateError,
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
-            @Nullable LithoHandler preallocateHandler,
+            @Nullable RunnableHandler preallocateHandler,
             boolean preallocatePerMountSpec,
             @Nullable LithoLifecycleProvider lifecycleProvider,
             @Nullable ErrorEventHandler errorEventHandler) {
@@ -457,11 +457,11 @@ public class RecyclerBinder
     private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private LithoHandler preallocateMountContentHandler;
+    private RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
-    private LithoHandler mAsyncInsertLayoutHandler;
+    private RunnableHandler mAsyncInsertLayoutHandler;
     private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
@@ -549,7 +549,7 @@ public class RecyclerBinder
     }
 
     public Builder preallocateMountContentHandler(
-        @Nullable LithoHandler preallocateMountContentHandler) {
+        @Nullable RunnableHandler preallocateMountContentHandler) {
       this.preallocateMountContentHandler = preallocateMountContentHandler;
       return this;
     }
@@ -779,7 +779,7 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder asyncInsertLayoutHandler(LithoHandler handler) {
+    public Builder asyncInsertLayoutHandler(RunnableHandler handler) {
       mAsyncInsertLayoutHandler = handler;
       return this;
     }
@@ -3867,7 +3867,7 @@ public class RecyclerBinder
       }
     }
 
-    final LithoHandler layoutHandler;
+    final RunnableHandler layoutHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
     } else if (mThreadPoolHandler != null) {

@@ -47,6 +47,7 @@ import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.TextDrawable;
+import com.facebook.rendercore.RunnableHandler;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
@@ -783,7 +784,7 @@ public class ComponentTreeTest {
     // separately.
     HandlerThread newHandlerThread = createAndStartNewHandlerThread();
     componentTree.updateLayoutThreadHandler(
-        new LithoHandler.DefaultLithoHandler(newHandlerThread.getLooper()));
+        new RunnableHandler.DefaultHandler(newHandlerThread.getLooper()));
     parent.requestLayout();
     parent.measure(
         View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
@@ -1250,7 +1251,7 @@ public class ComponentTreeTest {
     // separately.
     HandlerThread newHandlerThread = createAndStartNewHandlerThread();
     componentTree.updateLayoutThreadHandler(
-        new LithoHandler.DefaultLithoHandler(newHandlerThread.getLooper()));
+        new RunnableHandler.DefaultHandler(newHandlerThread.getLooper()));
     ShadowLooper newThreadLooper = Shadows.shadowOf(newHandlerThread.getLooper());
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -1352,7 +1353,7 @@ public class ComponentTreeTest {
     // separately.
     HandlerThread newHandlerThread = createAndStartNewHandlerThread();
     componentTree.updateLayoutThreadHandler(
-        new LithoHandler.DefaultLithoHandler(newHandlerThread.getLooper()));
+        new RunnableHandler.DefaultHandler(newHandlerThread.getLooper()));
     ShadowLooper newThreadLooper = Shadows.shadowOf(newHandlerThread.getLooper());
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -1824,7 +1825,7 @@ public class ComponentTreeTest {
   public void testCreateOneLayoutStateFuture() {
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
-    LithoHandler handler =
+    RunnableHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
@@ -1870,7 +1871,7 @@ public class ComponentTreeTest {
   public void testLayoutStateFutureMainWaitingOnBg() {
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
-    LithoHandler handler =
+    RunnableHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
@@ -1927,7 +1928,7 @@ public class ComponentTreeTest {
   public void testRecalculateDifferentRoots() {
     ComponentTreeTester root1 = ComponentTreeTester.create(mContext).build();
 
-    LithoHandler handler =
+    RunnableHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =

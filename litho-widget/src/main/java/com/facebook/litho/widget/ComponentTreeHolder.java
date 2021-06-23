@@ -27,7 +27,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ErrorEventHandler;
-import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoLifecycleListener;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
@@ -35,6 +34,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.RunnableHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -82,7 +82,7 @@ public class ComponentTreeHolder {
   private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
-  private final LithoHandler mPreallocateMountContentHandler;
+  private final RunnableHandler mPreallocateMountContentHandler;
   private final boolean mShouldPreallocatePerMountSpec;
   private final boolean mIncrementalMount;
   private final boolean mVisibilityProcessingEnabled;
@@ -91,7 +91,7 @@ public class ComponentTreeHolder {
   private boolean mIsTreeValid;
 
   @GuardedBy("this")
-  private @Nullable LithoHandler mLayoutHandler;
+  private @Nullable RunnableHandler mLayoutHandler;
 
   @GuardedBy("this")
   private boolean mIsInserted = true;
@@ -127,9 +127,9 @@ public class ComponentTreeHolder {
   public static class Builder {
 
     private RenderInfo renderInfo;
-    private LithoHandler layoutHandler;
+    private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private @Nullable LithoHandler preallocateMountContentHandler;
+    private @Nullable RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
     private boolean useCancelableLayoutFutures;
@@ -149,7 +149,7 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder layoutHandler(@Nullable LithoHandler layoutHandler) {
+    public Builder layoutHandler(@Nullable RunnableHandler layoutHandler) {
       this.layoutHandler = layoutHandler;
       return this;
     }
@@ -161,7 +161,7 @@ public class ComponentTreeHolder {
     }
 
     public Builder preallocateMountContentHandler(
-        @Nullable LithoHandler preallocateMountContentHandler) {
+        @Nullable RunnableHandler preallocateMountContentHandler) {
       this.preallocateMountContentHandler = preallocateMountContentHandler;
       return this;
     }
@@ -408,7 +408,7 @@ public class ComponentTreeHolder {
     mRenderInfo = renderInfo;
   }
 
-  public synchronized void updateLayoutHandler(@Nullable LithoHandler layoutHandler) {
+  public synchronized void updateLayoutHandler(@Nullable RunnableHandler layoutHandler) {
     mLayoutHandler = layoutHandler;
     if (mComponentTree != null) {
       mComponentTree.updateLayoutThreadHandler(layoutHandler);
