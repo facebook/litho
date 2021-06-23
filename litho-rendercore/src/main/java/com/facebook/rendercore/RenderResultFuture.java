@@ -20,10 +20,12 @@ import android.content.Context;
 import android.os.Process;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.instrumentation.FutureInstrumenter;
 import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RenderResultFuture<State, RenderContext> {
@@ -31,7 +33,7 @@ public class RenderResultFuture<State, RenderContext> {
   private final int mSetRootId;
   private final int mWidthSpec;
   private final int mHeightSpec;
-  private final FutureTask<RenderResult<State>> mFutureTask;
+  private final RunnableFuture<RenderResult<State>> mFutureTask;
   private final AtomicInteger mRunningThreadId = new AtomicInteger(-1);
   private volatile @Nullable RenderResult<State> mPreviousResult;
 
@@ -49,21 +51,23 @@ public class RenderResultFuture<State, RenderContext> {
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
     mFutureTask =
-        new FutureTask<>(
-            new Callable<RenderResult<State>>() {
-              @Override
-              public RenderResult<State> call() {
-                return RenderResult.resolve(
-                    context,
-                    lazyTree,
-                    renderContext,
-                    extensions,
-                    mPreviousResult,
-                    mSetRootId,
-                    mWidthSpec,
-                    mHeightSpec);
-              }
-            });
+        FutureInstrumenter.instrument(
+            new FutureTask<>(
+                new Callable<RenderResult<State>>() {
+                  @Override
+                  public RenderResult<State> call() {
+                    return RenderResult.resolve(
+                        context,
+                        lazyTree,
+                        renderContext,
+                        extensions,
+                        mPreviousResult,
+                        mSetRootId,
+                        mWidthSpec,
+                        mHeightSpec);
+                  }
+                }),
+            "RenderResultFuture_resolve");
   }
 
   public RenderResult<State> runAndGet() {
