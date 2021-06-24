@@ -37,7 +37,6 @@ import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
-import com.facebook.yoga.YogaWrap
 
 /**
  * Backwards compatibility for a Kotlin Component to accept a [Style] and apply it to a Java Spec

@@ -28,7 +28,6 @@ import com.facebook.litho.testing.unspecified
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
-import com.facebook.yoga.YogaWrap
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
