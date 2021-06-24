@@ -156,8 +156,8 @@ class Layout {
         if (parent.useStatelessComponent()) {
           final ComponentContext context =
               cached
-                  .getTailComponent()
-                  .getScopedContext(parent.getLayoutStateContext(), cached.getTailComponentKey());
+                  .getHeadComponent()
+                  .getScopedContext(parent.getLayoutStateContext(), cached.getHeadComponentKey());
           context.validate();
         }
         return cached;
@@ -516,7 +516,7 @@ class Layout {
       return NullLayoutResult.INSTANCE;
     }
 
-    resume(root);
+    resume(c.getLayoutStateContext(), root);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("start_measure");
@@ -532,18 +532,20 @@ class Layout {
     return result;
   }
 
-  static void resume(final InternalNode root) {
+  static void resume(final LayoutStateContext c, final InternalNode root) {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
+      final ComponentContext context =
+          root.getTailComponent().getScopedContext(c, root.getTailComponentKey());
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(root.getContext(), unresolved.get(i));
+        root.child(context, unresolved.get(i));
       }
       root.getUnresolvedComponents().clear();
     }
 
     for (int i = 0, size = root.getChildCount(); i < size; i++) {
-      resume(root.getChildAt(i));
+      resume(c, root.getChildAt(i));
     }
   }
 
