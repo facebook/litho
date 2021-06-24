@@ -182,22 +182,7 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
   private void initStickyHeader(int stickyHeaderPosition) {
     final ComponentTree componentTree =
         mHasStickyHeader.getComponentForStickyHeaderAt(stickyHeaderPosition);
-    // RecyclerView might not have yet detached the view that this componentTree bound to,
-    // so detach it if that is the case.
-    detachLithoViewIfNeeded(componentTree.getLithoView());
     mSectionsRecyclerView.setStickyComponent(componentTree);
-  }
-
-  private static void detachLithoViewIfNeeded(LithoView view) {
-    if (view == null) {
-      return;
-    }
-    // This is equivalent of calling view.isAttachedToWindow(),
-    // however, that method is available only from API19
-    final boolean isAttachedToWindow = view.getWindowToken() != null;
-    if (isAttachedToWindow) {
-      view.onStartTemporaryDetach();
-    }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
