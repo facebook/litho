@@ -125,11 +125,24 @@ public class LayoutStateContext {
       return null;
     }
 
-    final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
+    final boolean hasKey = mGlobalKeyToScopedInfo.containsKey(globalKey);
+    if (!hasKey) {
+      throw new IllegalStateException(
+          "ScopedComponentInfo not found. Copied:  "
+              + mIsScopedInfoCopiedFromLSCInstance
+              + " key "
+              + globalKey
+              + getDebugString());
+    }
 
+    final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
     if (scopedComponentInfo == null) {
       throw new IllegalStateException(
-          "ScopedComponentInfo is null for globalKey: " + globalKey + getDebugString());
+          "ScopedComponentInfo is null. Copied:  "
+              + mIsScopedInfoCopiedFromLSCInstance
+              + " key "
+              + globalKey
+              + getDebugString());
     }
 
     return scopedComponentInfo;
