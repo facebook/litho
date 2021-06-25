@@ -183,6 +183,10 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       return;
     }
     final Set<Component> dependentComponents = mDependentComponents.get(value);
+    if (dependentComponents == null) {
+      return;
+    }
+
     dependentComponents.remove(component);
 
     if (dependentComponents.isEmpty()) {
