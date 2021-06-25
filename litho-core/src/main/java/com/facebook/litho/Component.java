@@ -413,27 +413,28 @@ public abstract class Component extends ComponentLifecycle
       assertSameBaseContext(context, layout.getContext());
     }
 
-    if (!ComponentsConfiguration.useCachedLayoutOnlyWhenGlobalKeysMatchesParent) {
-      return layout;
-    }
-
-    if (layout == null || context == null || context.getComponentScope() == null) {
+    if (layout == null) {
       return null;
     }
 
-    try {
-      return layout.getHeadComponentKey().startsWith(context.getGlobalKey()) ? layout : null;
-    } catch (NullPointerException ex) {
-      if (ComponentsConfiguration.throwExceptionWillRenderGlobalKeyNull) {
-        throw new IllegalStateException(
-            "layout's head component globalKey is null, headComponent: "
-                + layout.getHeadComponent()
-                + " ,head component key: "
-                + layout.getHeadComponentKey(),
-            ex);
-      }
-      return null;
+    if (context.getComponentScope() == null
+        || !layout.getHeadComponentKey().startsWith(context.getGlobalKey())) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          "WILL_RENDER_GLOBAL_KEY_DOES_NOT_MATCHES_PARENT",
+          "Will render layout global key does not match parent while consuming will render layout. Context's componentScope: "
+              + (context.getComponentScope() == null
+                  ? "null"
+                  : context.getComponentScope().getSimpleName())
+              + " , HeadComponent: "
+              + layout.getHeadComponent().getSimpleName()
+              + " , HeadComponentKey: "
+              + layout.getHeadComponentKey()
+              + " , parentKey: "
+              + context.getGlobalKey());
     }
+
+    return layout;
   }
 
   @VisibleForTesting

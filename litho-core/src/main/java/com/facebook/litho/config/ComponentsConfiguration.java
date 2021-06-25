@@ -249,10 +249,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldSkipShallowCopy = false;
 
-  public static boolean useCachedLayoutOnlyWhenGlobalKeysMatchesParent = false;
-
-  public static boolean throwExceptionWillRenderGlobalKeyNull = false;
-
   public static boolean useTreePropsfromContext = false;
 
   public static boolean hostHasOverlappingRendering = true;
