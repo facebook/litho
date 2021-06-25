@@ -781,8 +781,22 @@ public abstract class Component extends ComponentLifecycle
   private ScopedComponentInfo getScopedInfo(LayoutStateContext context, String globalKey) {
 
     assertSameGlobalKey(context, globalKey, mGlobalKey);
-
-    final ScopedComponentInfo info = context.getScopedComponentInfo(globalKey);
+    final ScopedComponentInfo info;
+    try {
+      info = context.getScopedComponentInfo(globalKey);
+    } catch (IllegalStateException e) {
+      String extraInfo = "Component key: " + mGlobalKey + ", passed key: " + globalKey + "\n";
+      if (mScopedContext == null) {
+        extraInfo += "Component Scoped Context is null";
+      } else if (mScopedContext.getLayoutStateContext() == null) {
+        extraInfo += "Component LSC is null";
+      } else {
+        extraInfo +=
+            "LayoutStateContexts match: "
+                + (mScopedContext.getLayoutStateContext().hashCode() == context.hashCode());
+      }
+      throw new IllegalStateException(e.getMessage() + "\n" + extraInfo);
+    }
     if (info.mComponent.getClass() != getClass()) {
       throw new IllegalStateException(
           "Component mismatch for same key."
