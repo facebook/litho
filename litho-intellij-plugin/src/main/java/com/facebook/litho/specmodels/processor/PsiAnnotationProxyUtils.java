@@ -18,9 +18,9 @@ package com.facebook.litho.specmodels.processor;
 
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiModifierListOwner;
-import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -93,12 +93,15 @@ public class PsiAnnotationProxyUtils {
         PsiAnnotation currentAnnotation =
             AnnotationUtil.findAnnotationInHierarchy(
                 mListOwner, Collections.singleton(mAnnotationClass.getCanonicalName()));
-        PsiReferenceExpression declaredValue =
-            (PsiReferenceExpression) currentAnnotation.findAttributeValue(method.getName());
+        PsiExpression declaredValue =
+            (PsiExpression) currentAnnotation.findAttributeValue(method.getName());
         if (declaredValue == null) {
           return method.getDefaultValue();
         }
         PsiIdentifier identifier = PsiTreeUtil.getChildOfType(declaredValue, PsiIdentifier.class);
+        if (identifier == null) {
+          return method.getDefaultValue();
+        }
         return Enum.valueOf((Class<Enum>) returnType, identifier.getText());
       }
 

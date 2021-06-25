@@ -111,7 +111,8 @@ public class PsiMethodExtractorUtils {
     final List<AnnotationSpec> annotations = new ArrayList<>();
 
     for (PsiAnnotation annotationOnParam : annotationsOnParam) {
-      if (annotationOnParam.getQualifiedName().startsWith(COMPONENTS_PACKAGE)) {
+      if (annotationOnParam.getQualifiedName() == null
+          || annotationOnParam.getQualifiedName().startsWith(COMPONENTS_PACKAGE)) {
         continue;
       }
 
