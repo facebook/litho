@@ -49,6 +49,11 @@ public class LayoutStateContext {
   private boolean mIsLayoutStarted = false;
 
   boolean mIsScopedInfoCopiedFromLSCInstance = false;
+  private volatile boolean mIsFrozen = false;
+
+  void freeze() {
+    mIsFrozen = true;
+  }
 
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     if (sTestLayoutState == null) {
@@ -59,6 +64,7 @@ public class LayoutStateContext {
   }
 
   void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
+    checkIfFrozen();
     mIsScopedInfoCopiedFromLSCInstance = true;
 
     mGlobalKeyToScopedInfo.clear();
@@ -94,6 +100,7 @@ public class LayoutStateContext {
       final Component component,
       final ComponentContext scopedContext,
       final ComponentContext parentContext) {
+    checkIfFrozen();
 
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
@@ -261,5 +268,12 @@ public class LayoutStateContext {
     String string = builder.substring(0, Math.min(builder.length(), 200));
 
     return String.format("\nsize: %d\nkeys: %s", keys.size(), string);
+  }
+
+  private void checkIfFrozen() {
+    if (mIsFrozen) {
+      throw new IllegalStateException(
+          "Cannot modify this LayoutStateContext, it's already been committed.");
+    }
   }
 }
