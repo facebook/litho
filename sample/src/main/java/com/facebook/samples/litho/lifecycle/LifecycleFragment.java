@@ -38,10 +38,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LifecycleFragment extends Fragment {
 
   private static final AtomicInteger mId = new AtomicInteger(0);
-  LithoView mLithoView;
+  private LithoView mLithoView;
+  private ConsoleView mConsoleView;
   private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
       new LithoLifecycleProviderDelegate();
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
+  private final DelegateListener mDelegateListener =
+      new DelegateListener() {
+        @Override
+        public void onDelegateMethodCalled(int type, Thread thread, long timestamp, String id) {
+          if (mConsoleView != null) {
+            mConsoleView.post(
+                new ConsoleView.LogRunnable(
+                    mConsoleView,
+                    LifecycleDelegateLog.prefix(thread, timestamp, id),
+                    LifecycleDelegateLog.log(type)));
+          }
+        }
+
+        public void setRootComponent(boolean isSync) {}
+      };
 
   @Override
   public View onCreateView(
@@ -58,6 +74,7 @@ public class LifecycleFragment extends Fragment {
                 .child(
                     LifecycleDelegateComponent.create(c)
                         .id(String.valueOf(mId.getAndIncrement()))
+                        .delegateListener((mDelegateListener))
                         .consoleDelegateListener(mConsoleDelegateListener)
                         .build())
                 .build(),
@@ -65,7 +82,10 @@ public class LifecycleFragment extends Fragment {
     final LinearLayout.LayoutParams params1 =
         new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;
+    mConsoleView = new ConsoleView(requireContext());
     mLithoView.setLayoutParams(params1);
+    mConsoleView.setLayoutParams(params1);
+    parent.addView(mConsoleView);
     return parent;
   }
 
