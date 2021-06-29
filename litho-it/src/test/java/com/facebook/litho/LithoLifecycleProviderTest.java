@@ -66,6 +66,10 @@ public class LithoLifecycleProviderTest {
   @After
   public void resetViews() {
     steps.clear();
+    if (mLithoLifecycleProviderDelegate.getLifecycleStatus()
+        != LithoLifecycleProvider.LithoLifecycle.DESTROYED) {
+      mLithoViewRule.release();
+    }
   }
 
   @Test
