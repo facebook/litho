@@ -61,6 +61,20 @@ android {
             // proper folder (see block around line 120). So, skip them for Gradle as they still
             // will be run for BUCK.
             exclude '/com/facebook/litho/processor/integration/ProcessorIntegrationTest.class'
+
+            /*
+              T94395240
+              The following tests fail when run using gradle. The javac tools used in the test
+              environment skips some method parameters when API/Build Tools version >=v30. These
+              tests will still run for BUCK. The test class needs to be excluded because the
+              android plugin's UnitTest options doesn't allow excluding specific tests.
+            */
+            exclude 'com/facebook/litho/sections/specmodels/generator/GroupSectionSpecGeneratorTest.class'
+            exclude 'com/facebook/litho/specmodels/generator/ComponentBodyGeneratorTest.class'
+            exclude 'com/facebook/litho/specmodels/generator/EventGeneratorTest.class'
+            exclude 'com/facebook/litho/specmodels/generator/StateContainerGeneratorTest.class'
+            exclude 'com/facebook/litho/specmodels/generator/StateGeneratorTest.class'
+            exclude 'com/facebook/litho/specmodels/generator/TriggerGeneratorTest.class'
         }
     }
 
