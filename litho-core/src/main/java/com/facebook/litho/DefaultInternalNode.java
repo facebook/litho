@@ -413,6 +413,10 @@ public class DefaultInternalNode
 
     mYogaNode.calculateLayout(width, height);
 
+    for (Component component : mComponents) {
+      component.onLayoutCalculated(mComponentContext);
+    }
+
     return this;
   }
 
