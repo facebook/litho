@@ -7,11 +7,11 @@
 [ndk]
   ndk_version = 15.2.4203891
   compiler = clang
-  app_platform = android-24
+  app_platform = android-30
   cpu_abis = arm64, armv7, x86, x86_64
 
 [android]
-  target = android-29
+  target = android-30
   build_tools_version = 30.0.2
 
 [tools]
