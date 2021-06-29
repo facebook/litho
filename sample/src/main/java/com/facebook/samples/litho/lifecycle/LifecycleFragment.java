@@ -19,37 +19,45 @@ package com.facebook.samples.litho.lifecycle;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.os.Bundle;
-import android.widget.FrameLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
+import com.facebook.samples.litho.R;
+import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.LithoView;
-import com.facebook.samples.litho.NavigatableDemoActivity;
-import com.facebook.samples.litho.R;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LifecycleFragmentActivity extends NavigatableDemoActivity {
+public class LifecycleFragment extends Fragment {
 
   private static final AtomicInteger mId = new AtomicInteger(0);
+  private ConsoleView mConsoleView;
   private LithoView mLithoView;
   private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
       new LithoLifecycleProviderDelegate();
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
 
   @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    final LinearLayout parent = new LinearLayout(this);
-    final ComponentContext componentContext = new ComponentContext(this);
+  public View onCreateView(
+      @Nullable LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+
+    final LinearLayout parent = new LinearLayout(requireContext());
+    final ComponentContext c = new ComponentContext(requireContext());
     mLithoView =
         LithoView.create(
-            componentContext,
-            Column.create(componentContext)
+            c,
+            Column.create(c)
                 .child(
-                    LifecycleDelegateComponent.create(componentContext)
+                    LifecycleDelegateComponent.create(c)
                         .id(String.valueOf(mId.getAndIncrement()))
                         .consoleDelegateListener(mConsoleDelegateListener)
                         .build())
@@ -60,12 +68,32 @@ public class LifecycleFragmentActivity extends NavigatableDemoActivity {
     params1.weight = 1;
     mLithoView.setLayoutParams(params1);
     parent.addView(mLithoView);
-    setContentView(parent);
-    FrameLayout frame = new FrameLayout(this);
-    frame.setId(R.id.fragment_container_view);
-    setContentView(frame, new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-    Fragment lifecycleFragment = new LifecycleFragment();
-    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-    ft.add(R.id.fragment_container_view, lifecycleFragment).commit();
+
+    Button fragmentButton = new Button(requireContext());
+    fragmentButton.setText("New Fragment");
+    fragmentButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            LifecycleFragment lifecycleFragment = new LifecycleFragment();
+            FragmentManager fragmentManager = getParentFragmentManager();
+            fragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container_view, lifecycleFragment, null)
+                .addToBackStack(null)
+                .commit();
+            mLithoLifecycleProviderDelegate.moveToLifecycle(
+                LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
+          }
+        });
+
+    mConsoleView = new ConsoleView(requireContext());
+    final LinearLayout.LayoutParams params2 =
+        new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+    params2.weight = 1;
+    mConsoleView.setLayoutParams(params2);
+    parent.addView(mConsoleView);
+    parent.addView(fragmentButton);
+    return parent;
   }
 }
