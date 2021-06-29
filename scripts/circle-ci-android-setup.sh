@@ -25,6 +25,9 @@ else
   export ANDROID_HOME
 fi
 
+# New environment variables required
+export ANDROID_SDK_ROOT=$ANDROID_HOME
+
 function download() {
   if hash curl 2>/dev/null; then
     curl -s -L -o "$2" "$1"
@@ -37,8 +40,7 @@ function download() {
 }
 
 function installsdk() {
-  # We need an existing SDK with `sdkmanager`, otherwise, install it.
-  which sdkmanager &> /dev/null || getAndroidSDK
+  getAndroidSDK
 
   PROXY_ARGS=""
   if [[ ! -z "$HTTPS_PROXY" ]]; then
@@ -47,32 +49,26 @@ function installsdk() {
     PROXY_ARGS="--proxy=http --proxy_host=$PROXY_HOST --proxy_port=$PROXY_PORT"
   fi
 
-  echo y | "$ANDROID_HOME/tools/bin/sdkmanager" $PROXY_ARGS "$@"
+  echo y | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" $PROXY_ARGS "$@"
 }
 
 function getAndroidSDK {
   TMP=/tmp/sdk$$.zip
+
+  echo "downloading sdk command line tools"
   download 'https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip' $TMP
-  unzip -qod "$ANDROID_HOME" $TMP
-  rm -r $ANDROID_HOME/tools
-  mv $ANDROID_HOME/cmdline-tools $ANDROID_HOME/tools
+
+  echo "clean $ANDROID_HOME"
+  rm -r $ANDROID_HOME/*
+
+  echo "unzipping to $ANDROID_HOME"
+  unzip -qod $ANDROID_HOME/cmdline-tools/ $TMP
+
+  echo "rename dir"
+  mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+
+  echo "deleting $TMP"
   rm $TMP
-}
-
-function getAndroidNDK {
-  NDK_HOME="/opt/ndk"
-  DEPS="$NDK_HOME/installed-dependencies"
-
-  if [ ! -e $DEPS ]; then
-    cd $NDK_HOME
-    echo "Downloading NDK..."
-    TMP=/tmp/ndk$$.zip
-    download https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip "$TMP"
-    unzip -qo "$TMP"
-    echo "Installed Android NDK at $NDK_HOME"
-    touch $DEPS
-    rm "$TMP"
-  fi
 }
 
 function installAndroidSDK {
@@ -82,5 +78,5 @@ function installAndroidSDK {
   echo > "$ANDROID_HOME/licenses/android-sdk-license"
   echo -n 24333f8a63b6825ea9c5514f83c2829b004d1fee > "$ANDROID_HOME/licenses/android-sdk-license"
 
-  installsdk 'platforms;android-29' 'cmake;3.6.4111459' 'build-tools;29.0.3'
+  installsdk 'platforms;android-29' 'cmake;3.6.4111459' 'build-tools;30.0.2'
 }

@@ -12,7 +12,7 @@
 
 [android]
   target = android-29
-  build_tools_version = 29.0.3
+  build_tools_version = 30.0.2
 
 [tools]
   java11_for_tests = "/usr/local/java-runtime/impl/11/bin/java"
