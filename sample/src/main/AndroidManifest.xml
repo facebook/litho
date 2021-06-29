@@ -71,6 +71,7 @@
     <activity android:name=".triggers.TooltipTriggerExampleActivity" />
     <activity android:name=".lifecycle.LifecycleDelegateActivity" />
     <activity android:name=".lifecycle.ViewPagerLifecycleActivity" />
+    <activity android:name=".lifecycle.LifecycleFragmentActivity" />
     <activity android:name=".animations.sharedelements.SharedElementsActivity" />
     <activity android:name=".animations.sharedelements.SharedElementsFragmentActivity" />
     <activity android:name=".animations.sharedelements.DetailActivity" />
