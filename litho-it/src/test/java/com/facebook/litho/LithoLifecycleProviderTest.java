@@ -43,16 +43,16 @@ public class LithoLifecycleProviderTest {
   private LayoutSpecLifecycleTester mComponent;
   private MountSpecLifecycleTester mMountableComponent;
   private LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
-  private List<LifecycleStep.StepInfo> steps;
+  private List<LifecycleStep.StepInfo> mSteps;
   private LifecycleTracker lifecycleTracker;
 
   @Before
   public void setup() {
     final ComponentContext c = mLithoViewRule.getContext();
     mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
-    steps = new ArrayList<>();
+    mSteps = new ArrayList<>();
     lifecycleTracker = new LifecycleTracker();
-    mComponent = LayoutSpecLifecycleTester.create(c).widthPx(10).heightPx(5).steps(steps).build();
+    mComponent = LayoutSpecLifecycleTester.create(c).widthPx(10).heightPx(5).steps(mSteps).build();
     mMountableComponent =
         MountSpecLifecycleTester.create(c)
             .widthPx(10)
@@ -65,11 +65,9 @@ public class LithoLifecycleProviderTest {
 
   @After
   public void resetViews() {
-    steps.clear();
-    if (mLithoLifecycleProviderDelegate.getLifecycleStatus()
-        != LithoLifecycleProvider.LithoLifecycle.DESTROYED) {
-      mLithoViewRule.release();
-    }
+    mSteps.clear();
+    mLithoLifecycleProviderDelegate.moveToLifecycle(
+        LithoLifecycleProvider.LithoLifecycle.DESTROYED);
   }
 
   @Test
@@ -84,16 +82,16 @@ public class LithoLifecycleProviderTest {
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
 
-    assertThat(LifecycleStep.getSteps(steps))
+    assertThat(LifecycleStep.getSteps(mSteps))
         .describedAs("Invisible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    steps.clear();
+    mSteps.clear();
 
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
 
-    assertThat(LifecycleStep.getSteps(steps))
+    assertThat(LifecycleStep.getSteps(mSteps))
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
@@ -107,16 +105,16 @@ public class LithoLifecycleProviderTest {
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
 
-    assertThat(LifecycleStep.getSteps(steps))
+    assertThat(LifecycleStep.getSteps(mSteps))
         .describedAs("Invisible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_INVISIBLE);
 
-    steps.clear();
+    mSteps.clear();
 
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
 
-    assertThat(LifecycleStep.getSteps(steps))
+    assertThat(LifecycleStep.getSteps(mSteps))
         .describedAs("Invisible event is expected to be dispatched")
         .isEmpty();
   }
@@ -130,16 +128,16 @@ public class LithoLifecycleProviderTest {
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
 
-    assertThat(LifecycleStep.getSteps(steps))
+    assertThat(LifecycleStep.getSteps(mSteps))
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_EVENT_VISIBLE);
 
-    steps.clear();
+    mSteps.clear();
 
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
 
-    assertThat(LifecycleStep.getSteps(steps))
+    assertThat(LifecycleStep.getSteps(mSteps))
         .describedAs("Visible event is expected to be dispatched")
         .isEmpty();
   }
