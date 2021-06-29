@@ -38,19 +38,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LifecycleFragment extends Fragment {
 
   private static final AtomicInteger mId = new AtomicInteger(0);
-  private ConsoleView mConsoleView;
-  private LithoView mLithoView;
+  LithoView mLithoView;
   private final LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate =
       new LithoLifecycleProviderDelegate();
   private final ConsoleDelegateListener mConsoleDelegateListener = new ConsoleDelegateListener();
 
   @Override
   public View onCreateView(
-      @Nullable LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+      LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-    final LinearLayout parent = new LinearLayout(requireContext());
+    ViewGroup parent =
+        (ViewGroup)
+            inflater.inflate(R.layout.activity_fragment_transactions_lifecycle, container, false);
     final ComponentContext c = new ComponentContext(requireContext());
     mLithoView =
         LithoView.create(
@@ -67,9 +66,12 @@ public class LifecycleFragment extends Fragment {
         new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;
     mLithoView.setLayoutParams(params1);
-    parent.addView(mLithoView);
+    return parent;
+  }
 
-    Button fragmentButton = new Button(requireContext());
+  @Override
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    Button fragmentButton = view.findViewById(R.id.new_fragment_button);
     fragmentButton.setText("New Fragment");
     fragmentButton.setOnClickListener(
         new View.OnClickListener() {
@@ -79,7 +81,7 @@ public class LifecycleFragment extends Fragment {
             FragmentManager fragmentManager = getParentFragmentManager();
             fragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment_container_view, lifecycleFragment, null)
+                .replace(R.id.fragment_view, lifecycleFragment, null)
                 .addToBackStack(null)
                 .commit();
             mLithoLifecycleProviderDelegate.moveToLifecycle(
@@ -87,13 +89,7 @@ public class LifecycleFragment extends Fragment {
           }
         });
 
-    mConsoleView = new ConsoleView(requireContext());
-    final LinearLayout.LayoutParams params2 =
-        new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
-    params2.weight = 1;
-    mConsoleView.setLayoutParams(params2);
-    parent.addView(mConsoleView);
-    parent.addView(fragmentButton);
-    return parent;
+    ViewGroup fragmentLithoView = view.findViewById(R.id.fragment_litho_view);
+    fragmentLithoView.addView(mLithoView);
   }
 }

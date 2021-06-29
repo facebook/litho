@@ -62,10 +62,10 @@ public class LifecycleFragmentActivity extends NavigatableDemoActivity {
     parent.addView(mLithoView);
     setContentView(parent);
     FrameLayout frame = new FrameLayout(this);
-    frame.setId(R.id.fragment_container_view);
+    frame.setId(R.id.fragment_view);
     setContentView(frame, new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
     Fragment lifecycleFragment = new LifecycleFragment();
     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-    ft.add(R.id.fragment_container_view, lifecycleFragment).commit();
+    ft.add(R.id.fragment_view, lifecycleFragment).commit();
   }
 }
