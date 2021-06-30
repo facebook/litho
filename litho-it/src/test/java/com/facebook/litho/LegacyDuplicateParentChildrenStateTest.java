@@ -28,7 +28,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -38,13 +37,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class DuplicateParentChildrenStateTest {
+public class LegacyDuplicateParentChildrenStateTest {
 
   private int mUnspecifiedSizeSpec;
 
   @Before
   public void setUp() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
 
@@ -54,32 +53,31 @@ public class DuplicateParentChildrenStateTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return create(c) // (0 = root host)
-                .duplicateParentState(true) // (1 = generated host)
+            return create(c)
+                .duplicateParentState(true)
                 .clickHandler(c.newEventHandler(1))
                 .child(
                     create(c)
-                        .duplicateParentState(false) // (2 = simpleMountTester)
+                        .duplicateParentState(false)
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
                     create(c)
-                        .duplicateParentState(true) // (3 = simpleMountTester)
+                        .duplicateParentState(true)
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
-                    create(c) // (4 = generated host)
-                        .clickHandler(c.newEventHandler(2)) // (5 = simpleMountTester)
+                    create(c)
+                        .clickHandler(c.newEventHandler(2))
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
-                    create(c) // (6 = generated host)
-                        .clickHandler(c.newEventHandler(3)) // (7 = simpleMountTester)
+                    create(c)
+                        .clickHandler(c.newEventHandler(3))
                         .child(SimpleMountSpecTester.create(c).duplicateParentState(false)))
                 .child(
-                    create(c) // (8 = generated host)
+                    create(c)
                         .clickHandler(c.newEventHandler(3))
                         .backgroundColor(RED)
                         .foregroundColor(RED))
-                .child(
-                    create(c).backgroundColor(BLUE).foregroundColor(BLUE)) // (9 = generated host)
+                .child(create(c).backgroundColor(BLUE).foregroundColor(BLUE))
                 .build();
           }
         };
@@ -93,72 +91,41 @@ public class DuplicateParentChildrenStateTest {
             mUnspecifiedSizeSpec,
             LayoutState.CalculateLayoutSource.TEST);
 
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(10);
-
-    assertFalse(
-        "Root output doesn't have duplicate state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(0)).getFlags()));
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
 
     assertTrue(
-        "Clickable generated root host output has duplicate state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()));
+        "Clickable root output has duplicate state",
+        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(0)).getFlags()));
 
     assertFalse(
-        "Drawable doesn't duplicate host state",
+        "Parent doesn't duplicate host state",
+        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()));
+
+    assertTrue(
+        "Parent does duplicate host state",
         isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(2)).getFlags()));
 
     assertTrue(
-        "Drawable does duplicate parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(3)).getFlags()));
-
-    assertFalse(
-        "Drawable host doesn't duplicate clickable parent state",
+        "Drawable duplicates clickable parent state",
         isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(4)).getFlags()));
-
-    assertTrue(
-        "Drawable duplicates parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(5)).getFlags()));
-
-    assertFalse(
-        "Drawable host doesn't duplicate clickable parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(6)).getFlags()));
 
     assertFalse(
         "Drawable doesn't duplicate clickable parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(7)).getFlags()));
+        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(6)).getFlags()));
 
-    assertFalse(
-        "Clickable host doesn't duplicate parent state",
+    assertTrue(
+        "Background should duplicate clickable node state",
         isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(8)).getFlags()));
+    assertTrue(
+        "Foreground should duplicate clickable node state",
+        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(9)).getFlags()));
 
     assertFalse(
-        "Host with bg doesn't duplicate parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(9)).getFlags()));
-  }
-
-  @Test
-  public void duplicateChildrenStates_passedToView() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return Row.create(c)
-                .child(
-                    Row.create(c)
-                        .duplicateChildrenStates(true)
-                        .child(SimpleMountSpecTester.create(c).focusable(true))
-                        .child(SimpleMountSpecTester.create(c).clickable(true)))
-                .build();
-          }
-        };
-
-    LithoView lv =
-        ComponentTestHelper.mountComponent(
-            new ComponentContext(getApplicationContext()), component);
-
-    final Object secondMountedItem = lv.getMountDelegateTarget().getMountItemAt(1).getContent();
-    assertTrue(secondMountedItem instanceof ComponentHost);
-    assertTrue(((ComponentHost) secondMountedItem).addStatesFromChildren());
+        "Background should duplicate non-clickable node state",
+        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(10)).getFlags()));
+    assertFalse(
+        "Foreground should duplicate non-clickable node state",
+        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(11)).getFlags()));
   }
 
   @After
