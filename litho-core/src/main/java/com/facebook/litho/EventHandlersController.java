@@ -81,11 +81,7 @@ public class EventHandlersController {
       prevEventHandler = eventHandlersForKey.getEventHandlers().get(eventHandler.id);
     }
 
-    if (eventHandler.isEquivalentTo(prevEventHandler)) {
-      final ComponentContext c =
-          eventHandler.params == null ? null : (ComponentContext) eventHandler.params[0];
-      bindEventHandlerToDispatcher(prevEventHandler, eventHandler.mHasEventDispatcher, c);
-    } else {
+    if (!eventHandler.isEquivalentTo(prevEventHandler)) {
       eventHandlersForKey.addEventHandler(eventHandler);
     }
   }
