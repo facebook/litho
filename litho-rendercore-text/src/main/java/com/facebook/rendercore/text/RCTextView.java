@@ -93,7 +93,10 @@ public class RCTextView extends View {
 
     int saveCount = 0;
     boolean shouldRestore = false;
-    if (mLayoutTranslationY != 0 || getPaddingTop() != 0 || getPaddingLeft() != 0) {
+    if (mLayoutTranslationX != 0
+        || mLayoutTranslationY != 0
+        || getPaddingTop() != 0
+        || getPaddingLeft() != 0) {
       saveCount = canvas.save();
       canvas.translate(mLayoutTranslationX, mLayoutTranslationY);
       canvas.translate(getPaddingLeft(), getPaddingTop());

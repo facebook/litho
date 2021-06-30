@@ -96,7 +96,11 @@ public class TextMeasurementUtils {
         TextMeasurementUtils.createTextLayout(
             androidContext, textStyle, widthSpec, heightSpec, text);
 
-    final int layoutWidth = View.resolveSize(layout.getWidth(), widthSpec);
+    final int layoutWidth =
+        View.resolveSize(
+            layout.getWidth()
+                + Math.round(textStyle.extraSpacingLeft + textStyle.extraSpacingRight),
+            widthSpec);
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(layout);
@@ -179,7 +183,11 @@ public class TextMeasurementUtils {
 
     textLayoutContext.processedText = processedText;
     textLayoutContext.layout = layout;
-    textLayoutContext.textLayoutTranslationX = textStyle.extraSpacingLeft;
+    if (textStyle.alignment == TextAlignment.TEXT_START) {
+      textLayoutContext.textLayoutTranslationX = textStyle.extraSpacingLeft;
+    } else if (textStyle.alignment == TextAlignment.TEXT_END) {
+      textLayoutContext.textLayoutTranslationX = -textStyle.extraSpacingRight;
+    }
     textLayoutContext.textLayoutTranslationY = textLayoutTranslationY;
     if (processedText instanceof Spanned) {
       Spanned spanned = (Spanned) processedText;
@@ -234,10 +242,7 @@ public class TextMeasurementUtils {
         .setSingleLine(textStyle.isSingleLine)
         .setText(text)
         .setTextSize(textStyle.textSize)
-        .setWidth(
-            View.MeasureSpec.getSize(widthSpec)
-                - Math.round(textStyle.extraSpacingLeft + textStyle.extraSpacingRight),
-            textMeasureMode)
+        .setWidth(View.MeasureSpec.getSize(widthSpec), textMeasureMode)
         .setIncludeFontPadding(includeFontPadding)
         .setTextSpacingExtra(textStyle.extraSpacing)
         .setTextSpacingMultiplier(textStyle.spacingMultiplier)
