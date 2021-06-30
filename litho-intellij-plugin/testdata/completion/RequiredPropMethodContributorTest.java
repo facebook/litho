@@ -20,9 +20,9 @@ class RequiredPropMethodContributorTest {
     MyComponent.crea<caret>
   }
 
-  static class ComponentLifecycle {}
+  static class SpecGeneratedComponent {}
 
-  static class MyComponent extends ComponentLifecycle {
+  static class MyComponent extends SpecGeneratedComponent {
 
     static void create(com.facebook.litho.ComponentContext c) {}
 

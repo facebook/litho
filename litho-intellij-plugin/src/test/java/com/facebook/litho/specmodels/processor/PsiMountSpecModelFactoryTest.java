@@ -82,7 +82,7 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
         "TestMountSpecWithImplicitMountType",
         mountSpecModel ->
             assertThat(mountSpecModel.getMountType())
-                .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE));
+                .isEqualTo(ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE));
   }
 
   @Test
@@ -91,7 +91,7 @@ public class PsiMountSpecModelFactoryTest extends LithoPluginIntellijTest {
         "TestMountSpecWithoutMountType",
         mountSpecModel ->
             assertThat(mountSpecModel.getMountType())
-                .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE));
+                .isEqualTo(ClassNames.COMPONENT_MOUNT_TYPE_NONE));
   }
 
   private void verifyCreateWithPsiForSpec(String specName, Consumer<MountSpecModel> assertion) {

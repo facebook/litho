@@ -62,7 +62,7 @@ public class LithoPluginUtils {
   public static boolean isComponentClass(@Nullable PsiClass psiClass) {
     return psiClass != null
         && psiClass.getSuperClass() != null
-        && ("ComponentLifecycle".equals(psiClass.getSuperClass().getName())
+        && ("SpecGeneratedComponent".equals(psiClass.getSuperClass().getName())
             || "com.facebook.litho.Component".equals(psiClass.getSuperClass().getQualifiedName()));
   }
 

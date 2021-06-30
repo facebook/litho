@@ -30,12 +30,12 @@ class TestSpec {
 
   static void method1() {}
 
-  class Test extends ComponentLifecycle {
+  class Test extends SpecGeneratedComponent {
     static void method1() {}
 
     @com.facebook.litho.annotations.PropSetter( value = "prop", required = true)
     static void prop(int prop) {}
   }
 
-  static class ComponentLifecycle {}
+  static class SpecGeneratedComponent {}
 }
