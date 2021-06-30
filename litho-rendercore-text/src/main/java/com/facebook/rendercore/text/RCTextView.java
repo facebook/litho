@@ -291,6 +291,14 @@ public class RCTextView extends View {
     return true;
   }
 
+  public float getLayoutTranslationX() {
+    return mLayoutTranslationX;
+  }
+
+  public float getLayoutTranslationY() {
+    return mLayoutTranslationY;
+  }
+
   /**
    * Get the clickable span that is at the exact coordinates
    *
@@ -317,6 +325,9 @@ public class RCTextView extends View {
   }
 
   private int getTextOffsetAt(int x, int y) {
+    // Adjust for any canvas translations
+    y -= mLayoutTranslationY;
+    x -= mLayoutTranslationX;
     final int line = mLayout.getLineForVertical(y);
 
     final float left;
