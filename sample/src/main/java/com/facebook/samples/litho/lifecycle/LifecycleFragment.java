@@ -29,10 +29,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
-import com.facebook.samples.litho.R;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoLifecycleProviderDelegate;
 import com.facebook.litho.LithoView;
+import com.facebook.samples.litho.R;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LifecycleFragment extends Fragment {
