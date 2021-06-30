@@ -47,6 +47,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import androidx.collection.SparseArrayCompat;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -58,6 +59,7 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaMeasureFunction;
 import java.util.HashMap;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +77,7 @@ public class TreeDiffingTest {
 
   @Before
   public void setup() throws Exception {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     mContext = new ComponentContext(getApplicationContext());
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     sRedDrawable = ComparableColorDrawable.create(Color.RED);
@@ -525,20 +528,15 @@ public class TreeDiffingTest {
     componentTree.setRoot(component2);
     LayoutState secondState = componentTree.getMainThreadLayoutState();
 
-    assertThat(5).isEqualTo(secondState.getMountableOutputCount());
-    assertOutputsState(secondState, STATE_UPDATED);
+    assertThat(secondState.getMountableOutputCount()).isEqualTo(4);
 
     componentTree.setRoot(component3);
     LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
-    assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(1)).getUpdateState())
-        .isEqualTo(STATE_DIRTY);
+    assertThat(thirdState.getMountableOutputCount()).isEqualTo(4);
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(3)).getUpdateState())
-        .isEqualTo(STATE_UPDATED);
-    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(4)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
   }
 
@@ -565,13 +563,17 @@ public class TreeDiffingTest {
     LayoutState secondState = componentTree.getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(secondState.getMountableOutputAt(2)).getUpdateState())
+        .isEqualTo(STATE_UNKNOWN);
+    assertThat(getLayoutOutput(secondState.getMountableOutputAt(3)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
 
     componentTree.setRoot(component3);
     LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
-        .isEqualTo(STATE_DIRTY);
+        .isEqualTo(STATE_UNKNOWN);
+    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(3)).getUpdateState())
+        .isEqualTo(STATE_UPDATED);
   }
 
   @Test
@@ -742,6 +744,11 @@ public class TreeDiffingTest {
     TestComponent nestedLeaf2 =
         (TestComponent) getLayoutOutput(layoutState.getMountableOutputAt(4)).getComponent();
     assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 
   private static LayoutState calculateLayoutState(
