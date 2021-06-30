@@ -20,6 +20,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LifecycleStep.getSteps;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.EMPTY;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.ERROR;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
@@ -40,9 +41,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
@@ -251,10 +254,12 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testInitialState() throws Exception {
-    LithoView view =
-        ComponentTestHelper.mountComponent(mComponentContext, mRecyclerCollectionComponent);
+    mLithoViewRule
+        .setRoot(mRecyclerCollectionComponent)
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
+    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
-    ViewTreeAssert.assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(mLithoViewRule.getLithoView()))
         .hasVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -263,9 +268,10 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testNestedIncrementalMountDisabled() {
-    LithoView view =
-        ComponentTestHelper.mountComponent(
-            mComponentContext,
+    mLithoViewRule.useComponentTree(
+        ComponentTree.create(mComponentContext).incrementalMount(false).build());
+    mLithoViewRule
+        .setRoot(
             RecyclerCollectionComponent.create(mComponentContext)
                 .section(
                     SingleComponentSection.create(new SectionContext(mComponentContext))
@@ -275,20 +281,20 @@ public class RecyclerCollectionComponentSpecTest {
                                 .heightDip(100)
                                 .widthDip(100))
                         .build())
-                .build(),
-            false,
-            false);
+                .build())
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
+    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
-    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row").getParent();
+    final LithoView childView =
+        (LithoView) findViewWithTag(mLithoViewRule.getLithoView(), "rv_row").getParent();
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
   }
 
   @Test
   public void testNestedIncrementalMountNormal() {
-    LithoView view =
-        ComponentTestHelper.mountComponent(
-            mComponentContext,
+    mLithoViewRule
+        .setRoot(
             RecyclerCollectionComponent.create(mComponentContext)
                 .section(
                     SingleComponentSection.create(new SectionContext(mComponentContext))
@@ -298,11 +304,12 @@ public class RecyclerCollectionComponentSpecTest {
                                 .heightDip(100)
                                 .widthDip(100))
                         .build())
-                .build(),
-            true,
-            true);
+                .build())
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
+    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
-    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row").getParent();
+    final LithoView childView =
+        (LithoView) findViewWithTag(mLithoViewRule.getLithoView(), "rv_row").getParent();
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
   }
