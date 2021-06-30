@@ -23,6 +23,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Rect;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
@@ -166,5 +167,34 @@ public class LithoLifecycleProviderTest {
     assertThat(lifecycleTracker.getSteps())
         .describedAs("Visible event is expected to be dispatched")
         .contains(LifecycleStep.ON_UNMOUNT);
+  }
+
+  @Test
+  public void lithoLifecycleProviderComponentTreeResetVisibilityFlags() {
+    mLithoViewRule
+        .setRoot(mComponent)
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY));
+    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+
+    mLithoLifecycleProviderDelegate.moveToLifecycle(
+        LithoLifecycleProvider.LithoLifecycle.HINT_INVISIBLE);
+    boolean hasVisibilityHint =
+        Whitebox.getInternalState(mLithoViewRule.getLithoView(), "mHasVisibilityHint");
+    boolean pauseMountingWhileVisibilityHintFalse =
+        Whitebox.getInternalState(
+            mLithoViewRule.getLithoView(), "mPauseMountingWhileVisibilityHintFalse");
+    assertThat(hasVisibilityHint).isTrue();
+    assertThat(pauseMountingWhileVisibilityHintFalse).isTrue();
+
+    mLithoViewRule.useComponentTree(ComponentTree.create(mLithoViewRule.getContext()).build());
+
+    hasVisibilityHint =
+        Whitebox.getInternalState(mLithoViewRule.getLithoView(), "mHasVisibilityHint");
+    pauseMountingWhileVisibilityHintFalse =
+        Whitebox.getInternalState(
+            mLithoViewRule.getLithoView(), "mPauseMountingWhileVisibilityHintFalse");
+
+    assertThat(hasVisibilityHint).isFalse();
+    assertThat(pauseMountingWhileVisibilityHintFalse).isFalse();
   }
 }
