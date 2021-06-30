@@ -27,6 +27,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -40,6 +42,7 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +53,7 @@ public class MountStateRemountTest {
 
   @Before
   public void setup() {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -223,7 +227,8 @@ public class MountStateRemountTest {
     mountComponent(
         lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
-    final View oldView = lithoView.getChildAt(0);
+    final ViewGroup oldHost = (ViewGroup) lithoView.getChildAt(0);
+    final View oldView = oldHost.getChildAt(0);
 
     final Object oldTag = oldView.getTag();
     final String oldContentDescription = oldView.getContentDescription().toString();
@@ -246,7 +251,8 @@ public class MountStateRemountTest {
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
-    View newView = lithoView.getChildAt(0);
+    final ViewGroup newHost = (ViewGroup) lithoView.getChildAt(0);
+    View newView = newHost.getChildAt(0);
 
     assertThat(newView).isSameAs(oldView);
 
@@ -284,7 +290,8 @@ public class MountStateRemountTest {
     mountComponent(
         lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
-    final View oldView = lithoView.getChildAt(0);
+    final ViewGroup oldHost = (ViewGroup) lithoView.getChildAt(0);
+    final View oldView = oldHost.getChildAt(0);
 
     final Object oldTag = oldView.getTag();
     final boolean oldIsEnabled = oldView.isEnabled();
@@ -306,7 +313,8 @@ public class MountStateRemountTest {
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
-    final View newView = lithoView.getChildAt(0);
+    final ViewGroup newHost = (ViewGroup) lithoView.getChildAt(0);
+    final View newView = newHost.getChildAt(0);
 
     assertThat(newView).isSameAs(oldView);
 
@@ -340,7 +348,8 @@ public class MountStateRemountTest {
     mountComponent(
         lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
-    final View oldView = lithoView.getChildAt(0);
+    final ViewGroup oldHost = (ViewGroup) lithoView.getChildAt(0);
+    final View oldView = oldHost.getChildAt(0);
 
     final ComparableDrawable oldDrawable = (ComparableDrawable) oldView.getBackground();
 
@@ -360,7 +369,8 @@ public class MountStateRemountTest {
 
     componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
-    final View newView = lithoView.getChildAt(0);
+    final ViewGroup newHost = (ViewGroup) lithoView.getChildAt(0);
+    final View newView = newHost.getChildAt(0);
 
     assertThat(newView).isSameAs(oldView);
 
@@ -384,5 +394,10 @@ public class MountStateRemountTest {
     while (pool.acquire() != null) {
       // Run.
     }
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 }
