@@ -18,15 +18,17 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.testing.ViewAssertions;
 import com.facebook.rendercore.testing.match.MatchNode;
 import com.facebook.rendercore.testing.match.ViewMatchNode;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +38,11 @@ import org.junit.runner.RunWith;
 public class ApplyStylesTest {
 
   public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  @Before
+  public void setup() {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+  }
 
   @Test
   public void styles_withWidthHeightStyle_appliesWidthHeight() {
@@ -238,24 +245,14 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+
+    ViewAssertions.assertThat(innerHost)
         .matches(
-            ViewMatchNode.forType(LithoView.class)
+            ViewMatchNode.forType(ComponentHost.class)
                 .child(
                     ViewMatchNode.forType(ComponentHost.class)
-                        .prop(
-                            "drawables",
-                            MatchNode.list(
-                                MatchNode.forType(MatrixDrawable.class)
-                                    .prop(
-                                        "mountedDrawable",
-                                        MatchNode.forType(ComparableColorDrawable.class)
-                                            .prop("color", Color.WHITE)),
-                                MatchNode.forType(MatrixDrawable.class)
-                                    .prop(
-                                        "mountedDrawable",
-                                        MatchNode.forType(ComparableColorDrawable.class)
-                                            .prop("color", Color.BLACK))))));
+                        .prop("background", MatchNode.forType(ColorDrawable.class))));
   }
 
   @Test
@@ -280,9 +277,11 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+
+    ViewAssertions.assertThat(innerHost)
         .matches(
-            ViewMatchNode.forType(LithoView.class)
+            ViewMatchNode.forType(ComponentHost.class)
                 .child(
                     ViewMatchNode.forType(ComponentHost.class)
                         .prop("contentDescription", "Test Content Description")
@@ -310,11 +309,18 @@ public class ApplyStylesTest {
         .layout()
         .attachToWindow();
 
-    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+    final ComponentHost innerHost = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+
+    ViewAssertions.assertThat(innerHost)
         .matches(
-            ViewMatchNode.forType(LithoView.class)
+            ViewMatchNode.forType(ComponentHost.class)
                 .child(
                     ViewMatchNode.forType(ComponentHost.class)
                         .prop("isDuplicateParentStateEnabled", true)));
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 }
