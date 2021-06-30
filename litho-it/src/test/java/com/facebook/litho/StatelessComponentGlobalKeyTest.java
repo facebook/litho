@@ -24,6 +24,7 @@ import android.util.Pair;
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -56,6 +57,7 @@ public class StatelessComponentGlobalKeyTest {
 
   @Before
   public void setup() {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     ComponentsConfiguration.useStatelessComponent = true;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
@@ -151,7 +153,8 @@ public class StatelessComponentGlobalKeyTest {
             columnSpecId,
             columnSpecId,
             "$[CardClip1]");
-    final String globalKeyCardClip = getComponentGlobalKeyAt(lithoView, 3);
+
+    final String globalKeyCardClip = getNestedComponentGlobalKeyAt(lithoView, 2, 0);
     Assert.assertEquals(globalKeyCardClip, expectedGlobalKeyCardClip);
     assertThat(layoutStateContext.getScopedContext(globalKeyCardClip).getGlobalKey())
         .isEqualTo(expectedGlobalKeyCardClip);
@@ -160,18 +163,16 @@ public class StatelessComponentGlobalKeyTest {
     final String expectedGlobalKeyTextChild =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[Text1]");
-    final String globalKeyTextChild = getComponentGlobalKeyAt(lithoView, 4);
+    final String globalKeyTextChild = getComponentGlobalKeyAt(lithoView, 3);
     Assert.assertEquals(globalKeyTextChild, expectedGlobalKeyTextChild);
     assertThat(layoutStateContext.getScopedContext(globalKeyTextChild).getGlobalKey())
         .isEqualTo(expectedGlobalKeyTextChild);
 
-    // background
-    Assert.assertNull(getComponentGlobalKeyAt(lithoView, 5));
     // CardClip
     final String expectedGlobalKeyCardClip2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, columnSpecId, "$[CardClip2]");
-    final String globalKeyCardClip2 = getComponentGlobalKeyAt(lithoView, 6);
+    final String globalKeyCardClip2 = getNestedComponentGlobalKeyAt(lithoView, 4, 0);
     Assert.assertEquals(globalKeyCardClip2, expectedGlobalKeyCardClip2);
     assertThat(layoutStateContext.getScopedContext(globalKeyCardClip2).getGlobalKey())
         .isEqualTo(expectedGlobalKeyCardClip2);
@@ -180,7 +181,7 @@ public class StatelessComponentGlobalKeyTest {
     final String expectedGlobalKeyTestViewComponent2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, "$[TestViewComponent2]");
-    final String globalKeyTestViewComponent2 = getComponentGlobalKeyAt(lithoView, 7);
+    final String globalKeyTestViewComponent2 = getComponentGlobalKeyAt(lithoView, 5);
     Assert.assertEquals(globalKeyTestViewComponent2, expectedGlobalKeyTestViewComponent2);
     assertThat(layoutStateContext.getScopedContext(globalKeyTestViewComponent2).getGlobalKey())
         .isEqualTo(expectedGlobalKeyTestViewComponent2);
@@ -511,6 +512,15 @@ public class StatelessComponentGlobalKeyTest {
     return getLayoutOutput(lithoView.getMountItemAt(index)).getKey();
   }
 
+  private static String getNestedComponentGlobalKeyAt(
+      LithoView lithoView, int index, int nestedIndex) {
+
+    return getLayoutOutput(
+            ((ComponentHost) lithoView.getMountItemAt(index).getContent())
+                .getMountItemAt(nestedIndex))
+        .getKey();
+  }
+
   private LithoView getLithoView(Component component) {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponent(component);
@@ -569,5 +579,10 @@ public class StatelessComponentGlobalKeyTest {
         };
 
     return testGlobalKeyChild;
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 }
