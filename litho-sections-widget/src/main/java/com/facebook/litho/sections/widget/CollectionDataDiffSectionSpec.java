@@ -38,7 +38,7 @@ class CollectionDataDiffSectionSpec {
 
   public interface ItemRenderer<T> {
 
-    Component render(ComponentContext c, T model, int index);
+    Component render(ComponentContext c, T model);
 
     boolean checkIsSameItem(T previous, T next);
 
@@ -60,11 +60,8 @@ class CollectionDataDiffSectionSpec {
 
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(
-      SectionContext c,
-      @Prop ItemRenderer itemRenderer,
-      @FromEvent int index,
-      @FromEvent Object model) {
-    return ComponentRenderInfo.create().component(itemRenderer.render(c, model, index)).build();
+      SectionContext c, @Prop ItemRenderer itemRenderer, @FromEvent Object model) {
+    return ComponentRenderInfo.create().component(itemRenderer.render(c, model)).build();
   }
 
   @OnEvent(OnCheckIsSameItemEvent.class)

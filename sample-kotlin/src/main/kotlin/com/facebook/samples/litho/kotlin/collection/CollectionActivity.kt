@@ -91,12 +91,9 @@ class CollectionActivity : NavigatableDemoActivity() {
               child(Button(text = "Reverse Order", onClick = { inOrder.update { !it } }))
               child(Button(text = "Jeff +1", onClick = { counter.update { (it + 1) % 5 } }))
             })
-        items(
-            data = orderedPeople,
-            render = { item, _ ->
-              Text(text = "${item.name} ${"\uD83D\uDC31".repeat(item.score + 1)}")
-            },
-            isSameItem = itemId(Person::id))
+        items(data = orderedPeople, isSameItem = itemId(Person::id)) {
+          Text(text = "${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}")
+        }
       }
     }
 

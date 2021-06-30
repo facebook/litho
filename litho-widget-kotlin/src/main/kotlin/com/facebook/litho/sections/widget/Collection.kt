@@ -175,14 +175,13 @@ class CollectionContainerScope(componentContext: ComponentContext) {
    */
   fun <T> items(
       data: List<T>,
-      render: (item: T, index: Int) -> Component,
       isSameItem: (previous: T, next: T) -> Boolean,
       isSameContent: (previous: T, next: T) -> Boolean = { previous, next -> previous == next },
+      render: (item: T) -> Component,
   ) {
     val renderer =
         object : ItemRenderer<T> {
-          override fun render(c: ComponentContext?, model: T, index: Int): Component? =
-              render(model, index)
+          override fun render(c: ComponentContext?, model: T): Component? = render(model)
 
           override fun checkIsSameItem(previous: T, next: T): Boolean = isSameItem(previous, next)
 
