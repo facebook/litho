@@ -353,8 +353,8 @@ public class LegacyLayoutStateCalculateTest {
     // Check quantity of HostComponents.
     int totalHosts = 0;
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      final ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
-      if (isHostComponent(lifecycle)) {
+      final Component childComponent = getComponentAt(layoutState, i);
+      if (isHostComponent(childComponent)) {
         totalHosts++;
       }
     }
@@ -998,8 +998,8 @@ public class LegacyLayoutStateCalculateTest {
     // Check quantity of HostComponents.
     int totalHosts = 0;
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      final ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
-      if (isHostComponent(lifecycle)) {
+      final Component childComponent = getComponentAt(layoutState, i);
+      if (isHostComponent(childComponent)) {
         totalHosts++;
       }
     }
@@ -1083,11 +1083,11 @@ public class LegacyLayoutStateCalculateTest {
         getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent(), "text");
   }
 
-  private static boolean isHostComponent(final ComponentLifecycle component) {
+  private static boolean isHostComponent(final Component component) {
     return component instanceof HostComponent;
   }
 
-  private static ComponentLifecycle getComponentAt(final LayoutState layoutState, final int index) {
+  private static Component getComponentAt(final LayoutState layoutState, final int index) {
     return getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent();
   }
 
