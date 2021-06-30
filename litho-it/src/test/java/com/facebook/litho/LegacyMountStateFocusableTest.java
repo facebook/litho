@@ -21,9 +21,7 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.view.View;
 import com.facebook.litho.config.TempComponentsConfigurations;
-import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -33,40 +31,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class MountStateFocusableTest {
-
+public class LegacyMountStateFocusableTest {
   private ComponentContext mContext;
-  private boolean mFocusableDefault;
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
     mContext = new ComponentContext(getApplicationContext());
-    mFocusableDefault = new ComponentHost(mContext).isFocusable();
-  }
-
-  @Test
-  public void testInnerComponentHostFocusable() {
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .child(create(c).focusable(true).child(TestViewComponent.create(c)))
-                    .build();
-              }
-            });
-
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    // TODO(T16959291): The default varies between internal and external test runs, which indicates
-    // that our Robolectric setup is not actually identical. Until we can figure out why,
-    // we will compare against the dynamic default instead of asserting false.
-    assertThat(lithoView.isFocusable()).isEqualTo(mFocusableDefault);
-
-    ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
-    assertThat(innerHost.isFocusable()).isTrue();
   }
 
   @Test
@@ -81,10 +52,8 @@ public class MountStateFocusableTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-
-    final View innerHost = lithoView.getChildAt(0);
-    assertThat(innerHost.isFocusable()).isTrue();
+    assertThat(lithoView.getChildCount()).isEqualTo(0);
+    assertThat(lithoView.isFocusable()).isTrue();
   }
 
   @After
