@@ -307,4 +307,108 @@ public class TextInputSpecTest {
   private static EditText getEditText(LithoView lithoView) {
     return (EditText) lithoView.getChildAt(0);
   }
+
+  @Test
+  public void textInput_setReplaceText_replacesText() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    final CharSequence textToSet = "set text in test";
+    final EditText editText = getEditText(mLithoViewRule.getLithoView());
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.replaceText(mLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 0);
+    assertThat(editText.getText().toString()).isEqualTo(textToSet);
+    assertThat(editText.getSelectionStart()).isEqualTo(textToSet.length());
+    assertThat(editText.getSelectionEnd()).isEqualTo(textToSet.length());
+  }
+
+  @Test
+  public void textInput_setReplaceText_replacesTextAtGivenIndices() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    final EditText editText = getEditText(mLithoViewRule.getLithoView());
+    editText.setText("0123");
+    final CharSequence textToSet = "set text in test";
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.replaceText(mLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 2);
+    assertThat(editText.getText().toString()).isEqualTo(textToSet + "23");
+    assertThat(editText.getSelectionStart()).isEqualTo(textToSet.length());
+    assertThat(editText.getSelectionEnd()).isEqualTo(textToSet.length());
+  }
+
+  @Test
+  public void textInput_setReplaceTextForUnmountedView_replacesTextAfterMount() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    final CharSequence textToSet = "set text in test";
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.replaceText(mLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 0);
+    final CharSequence text =
+        TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    assertThat(text).isNotNull();
+    assertThat(text.toString()).isEqualTo(textToSet);
+
+    // Mount the view again
+    mLithoViewRule.layout();
+
+    assertThat(getEditText(mLithoViewRule.getLithoView()).getText().toString())
+        .isEqualTo(textToSet);
+  }
+
+  @Test
+  public void textInput_setReplaceTextForUnmountedViewWithExistingText_replacesTextAfterMount() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    final EditText editText = getEditText(mLithoViewRule.getLithoView());
+    editText.setText("0123");
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    final CharSequence textToSet = "set text in test";
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.replaceText(mLithoViewRule.getComponentTree().getContext(), handle, textToSet, 0, 2);
+    final CharSequence text =
+        TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    assertThat(text).isNotNull();
+    assertThat(text.toString()).isEqualTo(textToSet + "23");
+
+    // Mount the view again
+    mLithoViewRule.layout();
+
+    assertThat(getEditText(mLithoViewRule.getLithoView()).getText().toString())
+        .isEqualTo(textToSet + "23");
+  }
 }

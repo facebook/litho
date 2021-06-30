@@ -36,6 +36,7 @@ import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
@@ -955,6 +956,33 @@ class TextInputSpec {
     editText.setText(text);
     editText.setSelection(text != null ? text.length() : 0);
     return false;
+  }
+
+  @OnTrigger(ReplaceTextEvent.class)
+  static void replaceText(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @State AtomicReference<CharSequence> savedText,
+      @FromTrigger CharSequence text,
+      @FromTrigger int startIndex,
+      @FromTrigger int endIndex) {
+    EditTextWithEventHandlers editText = mountedView.get();
+    if (editText != null) {
+      editText.getText().replace(startIndex, endIndex, text);
+      editText.setSelection(text != null ? startIndex + text.length() : startIndex);
+      return;
+    }
+
+    CharSequence currentSavedText = savedText.get();
+    savedText.set(
+        currentSavedText == null
+            ? text
+            : new SpannableStringBuilder()
+                .append(currentSavedText.subSequence(0, startIndex))
+                .append(text)
+                .append(currentSavedText.subSequence(endIndex, currentSavedText.length())));
+
+    TextInput.remeasureForUpdatedTextSync(c);
   }
 
   @OnTrigger(DispatchKeyEvent.class)
