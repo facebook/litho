@@ -346,6 +346,33 @@ public class LayoutState
     return mergedDynamicProps;
   }
 
+  private static void addRootHostLayoutOutput(
+      final LayoutState layoutState,
+      final LithoLayoutResult result,
+      final @Nullable DebugHierarchy.Node hierarchy) {
+    final LayoutOutput hostOutput =
+        new LayoutOutput(
+            null,
+            null,
+            null,
+            HostComponent.create(),
+            null,
+            new Rect(0, 0, result.getWidth(), result.getHeight()),
+            0,
+            0,
+            0,
+            0,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            layoutState.mOrientation,
+            null);
+
+    calculateAndSetHostOutputIdAndUpdateState(null, result, hostOutput, layoutState, hierarchy);
+    addMountableOutput(layoutState, hostOutput, null);
+    addLayoutOutputIdToPositionsMap(layoutState.mOutputsIdToPositionMap, hostOutput, 0);
+    maybeAddLayoutOutputToAffinityGroup(
+        layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostOutput);
+  }
+
   private static LayoutOutput createHostLayoutOutput(
       LayoutState layoutState, LithoLayoutResult result, InternalNode node) {
 
@@ -680,6 +707,14 @@ public class LayoutState
         || hasTransitionName;
   }
 
+  @Nullable
+  private static DebugHierarchy.Node getDebugHierarchy(
+      @Nullable DebugHierarchy.Node parentHierarchy, final InternalNode node) {
+    return ComponentsConfiguration.isDebugHierarchyEnabled
+        ? DebugHierarchy.newNode(parentHierarchy, node.getTailComponent(), node.getComponents())
+        : null;
+  }
+
   /**
    * Collects layout outputs and release the layout tree. The layout outputs hold necessary
    * information to be used by {@link MountState} to mount components into a {@link ComponentHost}.
@@ -732,13 +767,7 @@ public class LayoutState
         component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey);
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    final DebugHierarchy.Node hierarchy;
-    // Update the hierarchy if we are tracking it.
-    if (ComponentsConfiguration.isDebugHierarchyEnabled) {
-      hierarchy = DebugHierarchy.newNode(parentHierarchy, component, node.getComponents());
-    } else {
-      hierarchy = null;
-    }
+    final DebugHierarchy.Node hierarchy = getDebugHierarchy(parentHierarchy, node);
 
     // Early return if collecting results of a node holding a nested tree.
     if (result instanceof NestedTreeHolderResult) {
@@ -848,7 +877,9 @@ public class LayoutState
     // duplicate parent state.
     final boolean shouldDuplicateParentState = layoutState.mShouldDuplicateParentState;
     layoutState.mShouldDuplicateParentState =
-        needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
+        needsHostView
+            || layoutState.isLayoutRoot(result)
+            || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
     // Generate the layoutOutput for the given node.
     final LayoutOutput layoutOutput =
@@ -1190,12 +1221,26 @@ public class LayoutState
     return mAttachables;
   }
 
+  /**
+   * Returns true when the layout state is the root, and shouldDisableDrawableOutputs flag is false
+   * When this flag is set to true, layout roots don't need their own host unless some other
+   * conditions apply, in which case they will need their own dedicated host other than the
+   * LithoView.
+   *
+   * @see #needsHostView(LithoLayoutResult, InternalNode, LayoutState)
+   */
+  private static boolean isLayoutRootThatRequiresHost(
+      LayoutState layoutState, LithoLayoutResult result) {
+    return !layoutState.mShouldDisableDrawableOutputs && layoutState.isLayoutRoot(result);
+  }
+
   private static void calculateAndSetHostOutputIdAndUpdateState(
+      @Nullable RenderTreeNode parent,
       LithoLayoutResult result,
       LayoutOutput hostOutput,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy) {
-    if (layoutState.isLayoutRoot(result)) {
+    if (isLayoutRootThatRequiresHost(layoutState, result) || parent == null) {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       hostOutput.setId(ROOT_HOST_ID);
@@ -1415,7 +1460,8 @@ public class LayoutState
       diffNode.setHostOutput(hostLayoutOutput);
     }
 
-    calculateAndSetHostOutputIdAndUpdateState(result, hostLayoutOutput, layoutState, hierarchy);
+    calculateAndSetHostOutputIdAndUpdateState(
+        parent, result, hostLayoutOutput, layoutState, hierarchy);
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
@@ -1798,10 +1844,21 @@ public class LayoutState
       return;
     }
 
+    RenderTreeNode parent = null;
+    DebugHierarchy.Node hierarchy = null;
+    if (layoutState.mShouldDisableDrawableOutputs) {
+      hierarchy = getDebugHierarchy(null, node);
+      addRootHostLayoutOutput(layoutState, root, hierarchy);
+      parent = layoutState.mMountableOutputs.get(0);
+      layoutState.mCurrentLevel++;
+      layoutState.mCurrentHostMarker = LayoutOutput.getLayoutOutput(parent).getId();
+      layoutState.mCurrentHostOutputPosition = 0;
+    }
+
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(c, root, node, layoutState, null, null, null);
+    collectResults(c, root, node, layoutState, parent, null, hierarchy);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -2210,7 +2267,7 @@ public class LayoutState
    */
   private static boolean needsHostView(
       final LithoLayoutResult result, final InternalNode node, final LayoutState layoutState) {
-    if (layoutState.isLayoutRoot(result)) {
+    if (isLayoutRootThatRequiresHost(layoutState, result)) {
       // Need a View for the Root component.
       return true;
     }
@@ -2240,7 +2297,19 @@ public class LayoutState
       return true;
     }
 
+    if (hasSelectedStateWhenDisablingDrawableOutputs(layoutState, node)) {
+      return true;
+    }
+
     return false;
+  }
+
+  private static boolean hasSelectedStateWhenDisablingDrawableOutputs(
+      final LayoutState layoutState, final InternalNode node) {
+    return layoutState.mShouldDisableDrawableOutputs
+        && !isMountViewSpec(node.getTailComponent())
+        && node.getNodeInfo() != null
+        && node.getNodeInfo().getSelectedState() != NodeInfo.SELECTED_UNSET;
   }
 
   private static boolean needsHostViewForCommonDynamicProps(final InternalNode node) {
