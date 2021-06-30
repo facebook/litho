@@ -31,7 +31,7 @@ import javax.lang.model.element.Modifier;
  * Describes the signature and other feature of a delegate method.
  *
  * <p>We use method descriptions to refer to abstract methods defined in
- * com.facebook.litho.ComponentLifecycle, so that we can define implementations that delegate to
+ * com.facebook.litho.Component, so that we can define implementations that delegate to
  * client-declared methods with annotated props.
  */
 @Immutable

@@ -525,7 +525,7 @@ public final class MatcherGenerator {
         type instanceof ParameterizedTypeName
                 && !((ParameterizedTypeName) type).typeArguments.isEmpty()
             ? ((ParameterizedTypeName) type).typeArguments.get(0)
-            : WildcardTypeName.subtypeOf(ClassNames.COMPONENT_LIFECYCLE);
+            : WildcardTypeName.subtypeOf(ClassNames.SPEC_GENERATED_COMPONENT);
 
     if (builderClass.equals(ClassNames.COMPONENT_BUILDER)) {
       return new TypeName[] {WildcardTypeName.subtypeOf(TypeName.OBJECT)};

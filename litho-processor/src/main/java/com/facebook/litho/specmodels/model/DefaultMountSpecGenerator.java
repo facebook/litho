@@ -58,7 +58,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
   public TypeSpec generate(MountSpecModel mountSpecModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(mountSpecModel.getComponentName())
-            .superclass(ClassNames.COMPONENT)
+            .superclass(ClassNames.SPEC_GENERATED_COMPONENT)
             .addTypeVariables(mountSpecModel.getTypeVariables());
 
     if (SpecModelUtils.isTypeElement(mountSpecModel)) {

@@ -245,8 +245,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
     final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
-    EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
+    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
+    return (boolean) _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(

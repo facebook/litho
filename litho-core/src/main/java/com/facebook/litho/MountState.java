@@ -2468,7 +2468,7 @@ class MountState implements MountDelegateTarget {
    * Unbinds all the MountItems currently mounted on this MountState. Unbinding a MountItem means
    * calling unbind on its {@link Component}. The MountItem is not yet unmounted after unbind is
    * called and can be re-used in place to re-mount another {@link Component} with the same {@link
-   * ComponentLifecycle}.
+   * Component}.
    */
   void unbind() {
     assertMainThread();

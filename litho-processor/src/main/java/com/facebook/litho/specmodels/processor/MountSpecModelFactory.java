@@ -167,10 +167,10 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
       OnCreateMountContent annotation = enclosedElement.getAnnotation(OnCreateMountContent.class);
       if (annotation != null) {
         if (annotation.mountingType() == MountingType.VIEW) {
-          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+          return ClassNames.COMPONENT_MOUNT_TYPE_VIEW;
         }
         if (annotation.mountingType() == MountingType.DRAWABLE) {
-          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+          return ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE;
         }
 
         TypeMirror initialReturnType = ((ExecutableElement) enclosedElement).getReturnType();
@@ -178,9 +178,9 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
           // We can't access the supertypes of the return type, so let's guess, and we'll verify
           // that our guess was correct when we do a full build later.
           if (initialReturnType.toString().contains("Drawable")) {
-            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+            return ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE;
           } else {
-            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+            return ClassNames.COMPONENT_MOUNT_TYPE_VIEW;
           }
         }
 
@@ -195,11 +195,11 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
                       + element
                       + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.VIEW)`.");
             } else {
-              return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+              return ClassNames.COMPONENT_MOUNT_TYPE_VIEW;
             }
           } else if (returnElement.equals(drawableType)) {
             if (initialReturnType.toString().contains("Drawable")) {
-              return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+              return ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE;
             } else {
               throw new ComponentsProcessingException(
                   "Mount type cannot be correctly inferred from the name of "
@@ -220,6 +220,6 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
       }
     }
 
-    return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE;
+    return ClassNames.COMPONENT_MOUNT_TYPE_NONE;
   }
 }

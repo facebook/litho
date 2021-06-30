@@ -18,8 +18,8 @@ package com.facebook.litho.testing.assertj;
 
 import static org.hamcrest.core.Is.is;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
@@ -52,8 +52,7 @@ public final class ComponentConditions {
    *       subComponentWith(c, typeIs(MyCustomComponent.class))));
    * </code></pre>
    */
-  public static Condition<InspectableComponent> typeIs(
-      final Class<? extends ComponentLifecycle> clazz) {
+  public static Condition<InspectableComponent> typeIs(final Class<? extends Component> clazz) {
     return new Condition<InspectableComponent>(
         new TextDescription("Component with type <%s>", clazz)) {
       @Override

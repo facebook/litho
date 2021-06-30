@@ -29,7 +29,6 @@ import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
@@ -42,6 +41,7 @@ import com.facebook.litho.InterStagePropsContainer;
 import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
+import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
@@ -70,7 +70,7 @@ import javax.annotation.Nullable;
  */
 @TargetApi(17)
 @Generated
-public final class TestMount<S extends View> extends Component implements TestTag {
+public final class TestMount<S extends View> extends SpecGeneratedComponent implements TestTag {
   @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   int prop1;
@@ -413,8 +413,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  public ComponentLifecycle.MountType getMountType() {
-    return ComponentLifecycle.MountType.DRAWABLE;
+  public Component.MountType getMountType() {
+    return Component.MountType.DRAWABLE;
   }
 
   @Override
@@ -454,8 +454,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
+    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
+    _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testLayoutEvent(

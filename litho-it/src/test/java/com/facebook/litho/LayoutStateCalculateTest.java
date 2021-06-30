@@ -416,8 +416,8 @@ public class LayoutStateCalculateTest {
     // Check quantity of HostComponents.
     int totalHosts = 0;
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      final ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
-      if (isHostComponent(lifecycle)) {
+      final Component mountedComponent = getComponentAt(layoutState, i);
+      if (isHostComponent(mountedComponent)) {
         totalHosts++;
       }
     }
@@ -555,8 +555,8 @@ public class LayoutStateCalculateTest {
     // Check quantity of HostComponents.
     int totalHosts = 0;
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      final ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
-      if (isHostComponent(lifecycle)) {
+      final Component mountedComponent = getComponentAt(layoutState, i);
+      if (isHostComponent(mountedComponent)) {
         totalHosts++;
       }
     }
@@ -671,8 +671,8 @@ public class LayoutStateCalculateTest {
     // Check quantity of HostComponents.
     int totalHosts = 0;
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      final ComponentLifecycle lifecycle = getComponentAt(layoutState, i);
-      if (isHostComponent(lifecycle)) {
+      final Component mountedComponent = getComponentAt(layoutState, i);
+      if (isHostComponent(mountedComponent)) {
         totalHosts++;
       }
     }
@@ -1002,7 +1002,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
   }
 
-  private static ComponentLifecycle getComponentAt(final LayoutState layoutState, final int index) {
+  private static Component getComponentAt(final LayoutState layoutState, final int index) {
     return getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent();
   }
 
@@ -1012,7 +1012,7 @@ public class LayoutStateCalculateTest {
         getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent(), "text");
   }
 
-  private static boolean isHostComponent(final ComponentLifecycle component) {
+  private static boolean isHostComponent(final Component component) {
     return component instanceof HostComponent;
   }
 

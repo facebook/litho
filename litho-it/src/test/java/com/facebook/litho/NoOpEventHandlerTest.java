@@ -56,7 +56,7 @@ public class NoOpEventHandlerTest {
     ComponentContext componentContext = new ComponentContext(getApplicationContext());
     Component component = null;
     assertThat(
-            ComponentLifecycle.newEventHandler(
+            Component.newEventHandler(
                     component.getClass(), "Component", componentContext, 1, new Object[1])
                 .isEquivalentTo(NoOpEventHandler.getNoOpEventHandler()))
         .isTrue();

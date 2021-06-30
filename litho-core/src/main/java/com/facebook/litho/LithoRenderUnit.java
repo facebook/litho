@@ -74,7 +74,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
     if (output == null) {
       throw new IllegalArgumentException("Null output used for LithoRenderUnit.");
     }
-    return output.getComponent().getMountType() == ComponentLifecycle.MountType.DRAWABLE
+    return output.getComponent().getMountType() == Component.MountType.DRAWABLE
         ? RenderType.DRAWABLE
         : RenderType.VIEW;
   }

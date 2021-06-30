@@ -84,7 +84,7 @@ public class MountSpecGenerator {
             MethodSpec.methodBuilder("getMountType")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .returns(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE)
+                .returns(ClassNames.COMPONENT_MOUNT_TYPE)
                 .addStatement("return $T", specModel.getMountType())
                 .build())
         .build();

@@ -109,8 +109,8 @@ public class SpecModelValidation {
   static List<SpecModelValidationError> validateGetMountType(MountSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    if (!specModel.getMountType().equals(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE)
-        && !specModel.getMountType().equals(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW)) {
+    if (!specModel.getMountType().equals(ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE)
+        && !specModel.getMountType().equals(ClassNames.COMPONENT_MOUNT_TYPE_VIEW)) {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),

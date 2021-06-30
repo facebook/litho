@@ -65,26 +65,24 @@ public class ComponentsPools {
   static boolean sIsManualCallbacks;
 
   public static Object acquireMountContent(
-      Context context,
-      ComponentLifecycle lifecycle,
-      @ComponentTree.RecyclingMode int recyclingMode) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
+      Context context, Component component, @ComponentTree.RecyclingMode int recyclingMode) {
+    final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
     if (pool == null) {
-      return lifecycle.createMountContent(context);
+      return component.createMountContent(context);
     }
 
-    Object content = pool.acquire(context, lifecycle);
+    Object content = pool.acquire(context, component);
     if (recyclingMode == ComponentTree.RecyclingMode.NO_VIEW_REUSE) {
       // Throw acquired content if N0_VIEW_REUSE recycling mode!
-      return lifecycle.createMountContent(context);
+      return component.createMountContent(context);
     }
 
     return content;
   }
 
   public static void release(
-      Context context, ComponentLifecycle lifecycle, Object mountContent, int recyclingMode) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
+      Context context, Component component, Object mountContent, int recyclingMode) {
+    final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
     if (pool != null) {
       pool.release(mountContent);
     }
@@ -95,16 +93,16 @@ public class ComponentsPools {
    * pre-allocation limit has been hit in which case we do nothing.
    */
   public static void maybePreallocateContent(
-      Context context, ComponentLifecycle lifecycle, int recyclingMode) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
+      Context context, Component component, int recyclingMode) {
+    final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
     if (pool != null) {
-      pool.maybePreallocateContent(context, lifecycle);
+      pool.maybePreallocateContent(context, component);
     }
   }
 
   private static @Nullable MountContentPool getMountContentPool(
-      Context context, ComponentLifecycle lifecycle, int recyclingMode) {
-    if (lifecycle.poolSize() == 0 || !shouldCreateMountContentPool(recyclingMode)) {
+      Context context, Component component, int recyclingMode) {
+    if (component.poolSize() == 0 || !shouldCreateMountContentPool(recyclingMode)) {
       return null;
     }
 
@@ -121,10 +119,10 @@ public class ComponentsPools {
         sMountContentPoolsByContext.put(context, poolsArray);
       }
 
-      MountContentPool pool = poolsArray.get(lifecycle.getTypeId());
+      MountContentPool pool = poolsArray.get(component.getTypeId());
       if (pool == null) {
-        pool = PoolBisectUtil.getPoolForComponent((Component) lifecycle);
-        poolsArray.put(lifecycle.getTypeId(), pool);
+        pool = PoolBisectUtil.getPoolForComponent((Component) component);
+        poolsArray.put(component.getTypeId(), pool);
       }
 
       return pool;

@@ -31,7 +31,7 @@ public interface MountContentPool<T> extends PoolWithDebugInfo {
    *
    * <p>NB: This can be called from multiple threads, possibly at the same time!
    */
-  T acquire(Context c, ComponentLifecycle lifecycle);
+  T acquire(Context c, Component component);
 
   /**
    * Release the given mount content into the pool.
@@ -47,5 +47,5 @@ public interface MountContentPool<T> extends PoolWithDebugInfo {
    *
    * <p>NB: This can be called from multiple threads, possibly at the same time!
    */
-  void maybePreallocateContent(Context c, ComponentLifecycle lifecycle);
+  void maybePreallocateContent(Context c, Component component);
 }

@@ -34,31 +34,31 @@ public class DefaultMountContentPool extends RecyclePool implements MountContent
   }
 
   @Override
-  public Object acquire(Context c, ComponentLifecycle lifecycle) {
+  public Object acquire(Context c, Component component) {
     final Object fromPool = super.acquire();
     if (fromPool != null) {
       return fromPool;
     }
 
     mAllocationCount.incrementAndGet();
-    return lifecycle.createMountContent(c);
+    return component.createMountContent(c);
   }
 
   @Override
   public final Object acquire() {
-    throw new UnsupportedOperationException("Call acquire(ComponentContext, ComponentLifecycle)");
+    throw new UnsupportedOperationException("Call acquire(ComponentContext, Component)");
   }
 
   /**
-   * Pre-allocates one item for the given ComponentLifecycle if the preallocation count is less than
-   * the pool size, otherwise does nothing.
+   * Pre-allocates one item for the given Component if the preallocation count is less than the pool
+   * size, otherwise does nothing.
    */
   @Override
-  public void maybePreallocateContent(Context c, ComponentLifecycle lifecycle) {
+  public void maybePreallocateContent(Context c, Component component) {
     // There's a slight race between checking isFull and the actual release() but this shouldn't
     // happen much and when it does it isn't that bad.
     if (!isFull() && mAllocationCount.getAndIncrement() < mPoolSize) {
-      release(lifecycle.createMountContent(c));
+      release(component.createMountContent(c));
     }
   }
 }

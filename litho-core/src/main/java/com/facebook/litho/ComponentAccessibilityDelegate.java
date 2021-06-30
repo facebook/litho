@@ -172,13 +172,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final Component component = layoutOutput.getComponent();
-    final ComponentLifecycle lifecycle = component;
     final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
 
-    node.setClassName(lifecycle.getClass().getName());
+    node.setClassName(component.getClass().getName());
 
     try {
-      if (virtualViewId >= lifecycle.getExtraAccessibilityNodesCount(scopedContext)) {
+      if (virtualViewId >= component.getExtraAccessibilityNodesCount(scopedContext)) {
         Log.e(TAG, "Received unrecognized virtual view id: " + virtualViewId);
 
         // ExploreByTouchHelper insists that we set something.
@@ -187,7 +186,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         return;
       }
 
-      lifecycle.onPopulateExtraAccessibilityNode(
+      component.onPopulateExtraAccessibilityNode(
           scopedContext, node, virtualViewId, bounds.left, bounds.top);
     } catch (Exception e) {
       ComponentUtils.handle(scopedContext, e);
@@ -207,11 +206,10 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final Component component = layoutOutput.getComponent();
-    final ComponentLifecycle lifecycle = component;
     final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
 
     try {
-      if (lifecycle.getExtraAccessibilityNodesCount(scopedContext) == 0) {
+      if (component.getExtraAccessibilityNodesCount(scopedContext) == 0) {
         return INVALID_ID;
       }
 
@@ -221,7 +219,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // Try to find an extra accessibility node that intersects with
       // the given coordinates.
       final int virtualViewId =
-          lifecycle.getExtraAccessibilityNodeAt(
+          component.getExtraAccessibilityNodeAt(
               scopedContext, (int) x - bounds.left, (int) y - bounds.top);
 
       return (virtualViewId >= 0 ? virtualViewId : INVALID_ID);

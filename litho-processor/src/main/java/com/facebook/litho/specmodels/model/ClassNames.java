@@ -75,20 +75,20 @@ public interface ClassNames {
   ClassName COMPONENT_TREE = ClassName.bestGuess("com.facebook.litho.ComponentTree");
 
   ClassName COMPONENT = ClassName.bestGuess("com.facebook.litho.Component");
+  ClassName SPEC_GENERATED_COMPONENT =
+      ClassName.bestGuess("com.facebook.litho.SpecGeneratedComponent");
   ClassName COMPONENT_BUILDER = ClassName.bestGuess("com.facebook.litho.Component.Builder");
-  ClassName COMPONENT_LIFECYCLE = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle");
-  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE =
-      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType");
-  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE =
-      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.DRAWABLE");
-  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW =
-      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.VIEW");
-  ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE =
-      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.NONE");
+  ClassName COMPONENT_MOUNT_TYPE = ClassName.bestGuess("com.facebook.litho.Component.MountType");
+  ClassName COMPONENT_MOUNT_TYPE_DRAWABLE =
+      ClassName.bestGuess("com.facebook.litho.Component.MountType.DRAWABLE");
+  ClassName COMPONENT_MOUNT_TYPE_VIEW =
+      ClassName.bestGuess("com.facebook.litho.Component.MountType.VIEW");
+  ClassName COMPONENT_MOUNT_TYPE_NONE =
+      ClassName.bestGuess("com.facebook.litho.Component.MountType.NONE");
 
   ClassName TRANSITON = ClassName.bestGuess("com.facebook.litho.Transition");
   ClassName TRANSITION_CONTAINER =
-      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.TransitionContainer");
+      ClassName.bestGuess("com.facebook.litho.Component.TransitionContainer");
 
   ClassName COMPARABLE_DRAWABLE =
       ClassName.bestGuess("com.facebook.litho.drawable.ComparableDrawable");
@@ -101,7 +101,7 @@ public interface ClassNames {
   ClassName STATE_CONTAINER = ClassName.bestGuess("com.facebook.litho.StateContainer");
   ClassName INTER_STAGE_PROPS_CONTAINER =
       ClassName.bestGuess("com.facebook.litho.InterStagePropsContainer");
-  ClassName RENDER_DATA = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.RenderData");
+  ClassName RENDER_DATA = ClassName.bestGuess("com.facebook.litho.Component.RenderData");
 
   ClassName EVENT_DISPATCHER = ClassName.bestGuess("com.facebook.litho.EventDispatcher");
   ClassName HAS_EVENT_DISPATCHER_CLASSNAME =

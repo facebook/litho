@@ -55,7 +55,7 @@ public class SpecModelValidationTest {
 
   @Test
   public void testMountTypeValidation() {
-    when(mMountSpecModel.getMountType()).thenReturn(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE);
+    when(mMountSpecModel.getMountType()).thenReturn(ClassNames.COMPONENT_MOUNT_TYPE_NONE);
     List<SpecModelValidationError> validationErrors =
         SpecModelValidation.validateGetMountType(mMountSpecModel);
 

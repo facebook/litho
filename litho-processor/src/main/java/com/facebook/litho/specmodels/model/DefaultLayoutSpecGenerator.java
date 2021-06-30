@@ -45,7 +45,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
   public TypeSpec generate(LayoutSpecModel layoutSpecModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(layoutSpecModel.getComponentName())
-            .superclass(ClassNames.COMPONENT)
+            .superclass(ClassNames.SPEC_GENERATED_COMPONENT)
             .addTypeVariables(layoutSpecModel.getTypeVariables());
 
     if (SpecModelUtils.isTypeElement(layoutSpecModel)) {

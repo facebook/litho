@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentLifecycle.ERROR_EVENT_HANDLER_ID;
+import static com.facebook.litho.Component.ERROR_EVENT_HANDLER_ID;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
@@ -38,7 +38,7 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
 
   @Override
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (eventHandler.id == ComponentLifecycle.ERROR_EVENT_HANDLER_ID) {
+    if (eventHandler.id == Component.ERROR_EVENT_HANDLER_ID) {
       final Exception e = ((ErrorEvent) eventState).exception;
       final ComponentTree ct = ((ErrorEvent) eventState).componentTree;
       onError(ct, e);

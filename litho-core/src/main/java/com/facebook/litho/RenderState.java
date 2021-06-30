@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class RenderState {
 
-  private final Map<String, ComponentLifecycle.RenderData> mRenderData = new HashMap<>();
+  private final Map<String, Component.RenderData> mRenderData = new HashMap<>();
   private final Set<String> mSeenGlobalKeys = new HashSet<>();
 
   void recordRenderData(
@@ -78,9 +78,8 @@ public class RenderState {
 
     final ComponentContext scopedContext =
         component.getScopedContext(layoutStateContext, globalKey);
-    final ComponentLifecycle.RenderData existingInfo = mRenderData.get(globalKey);
-    final ComponentLifecycle.RenderData newInfo =
-        component.recordRenderData(scopedContext, existingInfo);
+    final Component.RenderData existingInfo = mRenderData.get(globalKey);
+    final Component.RenderData newInfo = component.recordRenderData(scopedContext, existingInfo);
 
     mRenderData.put(globalKey, newInfo);
   }
@@ -91,7 +90,7 @@ public class RenderState {
           "Trying to apply previous render data to component that doesn't support it");
     }
 
-    final ComponentLifecycle.RenderData previousRenderData = mRenderData.get(globalKey);
+    final Component.RenderData previousRenderData = mRenderData.get(globalKey);
     component.applyPreviousRenderData(previousRenderData);
   }
 }

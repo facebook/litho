@@ -249,8 +249,8 @@ public class StateHandler {
 
   private static @Nullable Transition obtainTransitionFromStateContainer(
       StateContainer stateContainer) {
-    if (stateContainer instanceof ComponentLifecycle.TransitionContainer) {
-      return ((ComponentLifecycle.TransitionContainer) stateContainer).consumeTransition();
+    if (stateContainer instanceof Component.TransitionContainer) {
+      return ((Component.TransitionContainer) stateContainer).consumeTransition();
     }
     return null;
   }

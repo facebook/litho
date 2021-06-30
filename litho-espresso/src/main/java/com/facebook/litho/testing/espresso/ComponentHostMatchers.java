@@ -23,7 +23,6 @@ import android.view.View;
 import androidx.test.espresso.matcher.ViewMatchers;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
-import com.facebook.litho.ComponentLifecycle;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.hamcrest.BaseMatcher;
@@ -69,7 +68,7 @@ public class ComponentHostMatchers {
    * {@code lifecycleMatcher}.
    */
   public static Matcher<ComponentHost> withLifecycle(
-      final Matcher<? extends ComponentLifecycle> lifecycleMatcher) {
+      final Matcher<? extends Component> lifecycleMatcher) {
     return new BaseMatcher<ComponentHost>() {
       private StringBuilder mTypes = new StringBuilder();
 

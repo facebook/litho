@@ -167,15 +167,15 @@ public class EventGenerator {
     }
 
     eventDispatcherMethod.addStatement(
-        "$T _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
+        "$T _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
         ClassNames.EVENT_DISPATCHER);
 
     if (eventDeclaration.returnType.equals(TypeName.VOID)) {
-      eventDispatcherMethod.addStatement("_lifecycle.dispatchOnEvent(_eventHandler, _eventState)");
+      eventDispatcherMethod.addStatement("_dispatcher.dispatchOnEvent(_eventHandler, _eventState)");
     } else {
       eventDispatcherMethod
           .addStatement(
-              "return ($T) _lifecycle.dispatchOnEvent(_eventHandler, _eventState)",
+              "return ($T) _dispatcher.dispatchOnEvent(_eventHandler, _eventState)",
               eventDeclaration.returnType)
           .returns(eventDeclaration.returnType);
     }

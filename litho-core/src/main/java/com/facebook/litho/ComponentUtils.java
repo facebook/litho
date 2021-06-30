@@ -582,7 +582,7 @@ public class ComponentUtils {
       Component component, ComponentContext parentContext, ComponentContext scopedContext) {
     if (component.hasOwnErrorHandler()) {
       return new EventHandler<>(
-          component, ComponentLifecycle.ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
+          component, Component.ERROR_EVENT_HANDLER_ID, new Object[] {scopedContext});
     } else {
       return parentContext.getErrorEventHandler();
     }

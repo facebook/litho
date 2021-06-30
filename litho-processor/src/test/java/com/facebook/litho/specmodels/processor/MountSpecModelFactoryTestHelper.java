@@ -33,8 +33,7 @@ public class MountSpecModelFactoryTestHelper {
       MountSpecModel mountSpecModel, DependencyInjectionHelper mDependencyInjectionHelper) {
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpecWithExplicitMountType");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
-    assertThat(mountSpecModel.getMountType())
-        .isEqualTo(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE);
+    assertThat(mountSpecModel.getMountType()).isEqualTo(ClassNames.COMPONENT_MOUNT_TYPE_DRAWABLE);
     assertThat(mountSpecModel.getEventDeclarations()).hasSize(1);
     assertThat(mountSpecModel.getEventDeclarations().get(0).getRawName().toString())
         .endsWith("TestTriggerEvent");

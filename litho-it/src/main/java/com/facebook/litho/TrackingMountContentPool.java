@@ -28,8 +28,8 @@ public class TrackingMountContentPool extends DefaultMountContentPool {
   }
 
   @Override
-  public Object acquire(Context c, ComponentLifecycle lifecycle) {
-    Object item = super.acquire(c, lifecycle);
+  public Object acquire(Context c, Component component) {
+    Object item = super.acquire(c, component);
     mAcquireCount++;
     return item;
   }

@@ -29,7 +29,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.OkToExtend;
-import com.facebook.litho.ComponentLifecycle.MountType;
+import com.facebook.litho.Component.MountType;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
@@ -46,7 +46,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 
-/** Tests {@link ComponentLifecycle} */
+/** Tests {@link Component} */
 @PrepareForTest({
   DiffNode.class,
   Layout.class,
@@ -362,7 +362,7 @@ public class ComponentLifecycleTest {
     when(mNode.getTailComponent()).thenReturn(component);
     when(mNode.getTailComponentKey()).thenReturn("$" + KEY);
 
-    return ComponentLifecycle.sMeasureFunction;
+    return Component.sMeasureFunction;
   }
 
   private static Component createSpyComponent(

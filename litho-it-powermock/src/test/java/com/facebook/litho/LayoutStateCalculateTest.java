@@ -422,11 +422,11 @@ public class LayoutStateCalculateTest {
         LayoutState.CalculateLayoutSource.TEST);
   }
 
-  private static ComponentLifecycle getComponentAt(final LayoutState layoutState, final int index) {
+  private static Component getComponentAt(final LayoutState layoutState, final int index) {
     return getLayoutOutput(layoutState.getMountableOutputAt(index)).getComponent();
   }
 
-  private static boolean isHostComponent(final ComponentLifecycle component) {
+  private static boolean isHostComponent(final Component component) {
     return component instanceof HostComponent;
   }
 }

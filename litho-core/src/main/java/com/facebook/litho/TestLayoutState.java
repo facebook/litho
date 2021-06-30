@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
+import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.litho.ComponentLifecycle.sMeasureFunction;
 
 import com.facebook.infer.annotation.Nullsafe;
 

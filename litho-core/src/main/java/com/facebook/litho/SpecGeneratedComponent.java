@@ -16,39 +16,13 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
 import com.facebook.infer.annotation.Nullsafe;
 
-/**
- * A MountContentPool that has no size and doesn't recycle objects. Return from
- * OnCreateMountContentPool to disable recycling.
- */
+/** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class DisabledMountContentPool implements MountContentPool {
+public abstract class SpecGeneratedComponent extends Component {
 
-  @Override
-  public Object acquire(Context c, Component component) {
-    return component.createMountContent(c);
-  }
-
-  @Override
-  public void release(Object item) {}
-
-  @Override
-  public void maybePreallocateContent(Context c, Component component) {}
-
-  @Override
-  public String getName() {
-    return "DisabledMountContentPool";
-  }
-
-  @Override
-  public int getMaxSize() {
-    return 0;
-  }
-
-  @Override
-  public int getCurrentSize() {
-    return 0;
+  protected SpecGeneratedComponent(String simpleName) {
+    super(simpleName);
   }
 }

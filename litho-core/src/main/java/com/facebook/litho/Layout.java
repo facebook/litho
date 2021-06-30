@@ -22,8 +22,8 @@ import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
+import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.litho.ComponentLifecycle.sMeasureFunction;
 
 import android.annotation.TargetApi;
 import android.content.Context;

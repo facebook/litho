@@ -26,7 +26,6 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Diff;
 import com.facebook.litho.ErrorEvent;
 import com.facebook.litho.EventDispatcher;
@@ -37,6 +36,7 @@ import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.Handle;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.Output;
+import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -69,7 +69,7 @@ import java.util.List;
  */
 @TargetApi(17)
 @Generated
-public final class TestLayout<S extends View> extends Component implements TestTag {
+public final class TestLayout<S extends View> extends SpecGeneratedComponent implements TestTag {
   private TestLayoutRenderData mPreviousRenderData;
 
   @Prop(resType = ResType.NONE, optional = false)
@@ -251,8 +251,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
-    EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
+    EventDispatcher _dispatcher = _eventHandler.mHasEventDispatcher.getEventDispatcher();
+    _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testLayoutEvent(
@@ -487,8 +487,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected ComponentLifecycle.RenderData recordRenderData(
-      ComponentContext c, ComponentLifecycle.RenderData toRecycle) {
+  protected Component.RenderData recordRenderData(
+      ComponentContext c, Component.RenderData toRecycle) {
     TestLayoutRenderData renderInfo =
         toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
     renderInfo.record(c, this);
@@ -496,7 +496,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected void applyPreviousRenderData(ComponentLifecycle.RenderData previousRenderData) {
+  protected void applyPreviousRenderData(Component.RenderData previousRenderData) {
     if (previousRenderData == null) {
       mPreviousRenderData = null;
       return;
@@ -575,8 +575,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Generated
-  private static class TestLayoutRenderData<S extends View>
-      implements ComponentLifecycle.RenderData {
+  private static class TestLayoutRenderData<S extends View> implements Component.RenderData {
     @State int state3;
 
     void copy(TestLayoutRenderData info) {
