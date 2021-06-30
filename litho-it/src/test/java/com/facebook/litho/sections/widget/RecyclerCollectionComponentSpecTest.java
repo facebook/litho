@@ -44,6 +44,7 @@ import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.testing.ComponentsRule;
@@ -59,6 +60,7 @@ import com.facebook.litho.widget.MountSpecWorkingRangeTester;
 import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -90,6 +92,7 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Before
   public void setup() throws Exception {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     mComponentContext = new ComponentContext(getApplicationContext());
 
     mLoadingComponent =
@@ -276,7 +279,7 @@ public class RecyclerCollectionComponentSpecTest {
             false,
             false);
 
-    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
+    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row").getParent();
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
   }
@@ -299,7 +302,7 @@ public class RecyclerCollectionComponentSpecTest {
             true,
             true);
 
-    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
+    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row").getParent();
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
   }
@@ -375,5 +378,10 @@ public class RecyclerCollectionComponentSpecTest {
     }
 
     return null;
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 }

@@ -8,6 +8,7 @@ load(
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_HAMCREST_CORE_TARGET",
+    "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
     "LITHO_MOCKITO_V2_TARGET",
@@ -21,7 +22,10 @@ load(
 litho_android_library(
     name = "litho",
     srcs = glob(
-        ["*.java"],
+        [
+            "*.java",
+            "config/*.java",
+        ],
         # It has its own module
         exclude = ["BenchmarkTestHelper.java"],
     ),
@@ -37,6 +41,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        LITHO_INFERANNOTATIONS_TARGET,
         LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_TESTING_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
