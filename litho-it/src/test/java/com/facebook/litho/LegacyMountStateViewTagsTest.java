@@ -22,7 +22,6 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.mountCompone
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.util.SparseArray;
-import android.view.View;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -33,50 +32,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class MountStateViewTagsTest {
+public class LegacyMountStateViewTagsTest {
   private static final int DUMMY_ID = 0x10000000;
 
   private ComponentContext mContext;
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
     mContext = new ComponentContext(getApplicationContext());
-  }
-
-  @Test
-  public void testInnerComponentHostViewTags() {
-    final Object tag1 = new Object();
-    final SparseArray<Object> tags1 = new SparseArray<>(1);
-    tags1.put(DUMMY_ID, tag1);
-
-    final Object tag2 = new Object();
-    final SparseArray<Object> tags2 = new SparseArray<>(1);
-    tags2.put(DUMMY_ID, tag2);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return create(c)
-                    .child(
-                        create(c)
-                            .viewTags(tags1)
-                            .child(SimpleMountSpecTester.create(c))
-                            .child(SimpleMountSpecTester.create(c)))
-                    .child(SimpleMountSpecTester.create(c))
-                    .child(SimpleMountSpecTester.create(c).viewTags(tags2))
-                    .build();
-              }
-            });
-
-    final View innerHost1 = lithoView.getChildAt(0);
-    final View innerHost2 = lithoView.getChildAt(1);
-
-    assertThat(innerHost1.getTag(DUMMY_ID)).isEqualTo(tag1);
-    assertThat(innerHost2.getTag(DUMMY_ID)).isEqualTo(tag2);
   }
 
   @Test
@@ -99,8 +63,7 @@ public class MountStateViewTagsTest {
               }
             });
 
-    final View innerHost = lithoView.getChildAt(0);
-    assertThat(innerHost.getTag(DUMMY_ID)).isEqualTo(tag);
+    assertThat(lithoView.getTag(DUMMY_ID)).isEqualTo(tag);
   }
 
   @After
