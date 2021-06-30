@@ -23,6 +23,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiFile;
 import java.io.IOException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -32,6 +33,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
     super("testdata/actions");
   }
 
+  @Ignore("T73932936")
   @Test
   public void createJavaFile_noDoubleSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.java");
@@ -53,6 +55,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
             });
   }
 
+  @Ignore("T73932936")
   @Test
   public void createJavaFile_addedSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.java");
@@ -72,6 +75,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
             });
   }
 
+  @Ignore("T73932936")
   @Test
   public void createKotlinFile_noDoubleSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.kt");
@@ -93,6 +97,7 @@ public class LithoTemplateActionTest extends LithoPluginIntellijTest {
             });
   }
 
+  @Ignore("T73932936")
   @Test
   public void createKotlinFile_addedSuffix() throws IOException {
     final PsiFile specCls = testHelper.configure("LayoutSpec.kt");
