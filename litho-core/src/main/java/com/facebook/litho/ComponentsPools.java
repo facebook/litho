@@ -84,6 +84,9 @@ public class ComponentsPools {
       Context context, Component component, Object mountContent, int recyclingMode) {
     final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
     if (pool != null) {
+      if (mountContent instanceof LoggingMountContent) {
+        ((LoggingMountContent) mountContent).onMountContentRecycled();
+      }
       pool.release(mountContent);
     }
   }
@@ -253,5 +256,13 @@ public class ComponentsPools {
   @GuardedBy("sMountContentLock")
   static void clearActivityCallbacks() {
     sActivityCallbacks = null;
+  }
+
+  /**
+   * A Mount Content which implements this interface can be notified of recycling events for
+   * logging.
+   */
+  public interface LoggingMountContent {
+    void onMountContentRecycled();
   }
 }

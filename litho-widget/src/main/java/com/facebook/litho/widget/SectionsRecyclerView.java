@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import java.util.List;
@@ -33,10 +34,14 @@ import javax.annotation.Nullable;
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
  * and pull-to-refresh
  */
-public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLithoViewChildren {
+public class SectionsRecyclerView extends SwipeRefreshLayout
+    implements HasLithoViewChildren, ComponentsPools.LoggingMountContent {
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
+  private @Nullable SectionsRecylerViewLogger mSectionsRecylerViewLogger;
+  private boolean mIsFirstLayout = true;
+
   /**
    * Indicates whether {@link RecyclerView} has been detached. In such case we need to make sure to
    * relayout its children eventually.
@@ -76,6 +81,10 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
     addView(mStickyHeader);
+  }
+
+  void setSectionsRecyclerViewLogger(SectionsRecylerViewLogger lithoViewLogger) {
+    mSectionsRecylerViewLogger = lithoViewLogger;
   }
 
   public RecyclerView getRecyclerView() {
@@ -137,19 +146,30 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-    super.onLayout(changed, left, top, right, bottom);
-
-    if (mStickyHeader.getVisibility() == View.GONE) {
-      return;
+    if (mSectionsRecylerViewLogger != null) {
+      mSectionsRecylerViewLogger.onLayoutStarted(mIsFirstLayout);
     }
 
-    final int stickyHeaderLeft = getPaddingLeft();
-    final int stickyHeaderTop = getPaddingTop();
-    mStickyHeader.layout(
-        stickyHeaderLeft,
-        stickyHeaderTop,
-        stickyHeaderLeft + mStickyHeader.getMeasuredWidth(),
-        stickyHeaderTop + mStickyHeader.getMeasuredHeight());
+    try {
+      super.onLayout(changed, left, top, right, bottom);
+
+      if (mStickyHeader.getVisibility() == View.GONE) {
+        return;
+      }
+
+      final int stickyHeaderLeft = getPaddingLeft();
+      final int stickyHeaderTop = getPaddingTop();
+      mStickyHeader.layout(
+          stickyHeaderLeft,
+          stickyHeaderTop,
+          stickyHeaderLeft + mStickyHeader.getMeasuredWidth(),
+          stickyHeaderTop + mStickyHeader.getMeasuredHeight());
+    } finally {
+      if (mSectionsRecylerViewLogger != null) {
+        mSectionsRecylerViewLogger.onLayoutEnded(mIsFirstLayout);
+      }
+      mIsFirstLayout = false;
+    }
   }
 
   static @Nullable SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
@@ -200,5 +220,17 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
         lithoViews.add((LithoView) child);
       }
     }
+  }
+
+  @Override
+  public void onMountContentRecycled() {
+    mIsFirstLayout = true;
+  }
+
+  /** Pass to a SectionsRecyclerView to do custom logging. */
+  public interface SectionsRecylerViewLogger {
+    void onLayoutStarted(boolean isFirstLayoutAfterRecycle);
+
+    void onLayoutEnded(boolean isFirstLayoutAfterRecycle);
   }
 }

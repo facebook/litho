@@ -83,7 +83,8 @@ public class RecyclerSpecTest {
         true,
         touchInterceptor,
         onItemTouchListener,
-        refreshHandler);
+        refreshHandler,
+        null);
 
     assertThat(mSectionsRecyclerView.isEnabled()).isTrue();
 

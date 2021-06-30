@@ -154,6 +154,7 @@ class RecyclerSpec {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
+
     recyclerView.setContentDescription(contentDescription);
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
@@ -198,7 +199,10 @@ class RecyclerSpec {
       @Prop(optional = true) boolean pullToRefresh,
       @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
-      @Nullable @Prop(optional = true) final EventHandler refreshHandler) {
+      @Nullable @Prop(optional = true) final EventHandler refreshHandler,
+      @Prop(optional = true) SectionsRecyclerView.SectionsRecylerViewLogger sectionsViewLogger) {
+
+    sectionsRecycler.setSectionsRecyclerViewLogger(sectionsViewLogger);
 
     // contentDescription should be set on the recyclerView itself, and not the sectionsRecycler.
     sectionsRecycler.setContentDescription(null);
@@ -263,6 +267,9 @@ class RecyclerSpec {
       @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
       @Prop(optional = true, varArg = "onScrollListener") @Nullable
           List<OnScrollListener> onScrollListeners) {
+
+    sectionsRecycler.setSectionsRecyclerViewLogger(null);
+
     final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
