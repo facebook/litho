@@ -46,6 +46,7 @@ dependencies {
     kapt project(':litho-processor')
 
     implementation deps.soloader
+    implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib

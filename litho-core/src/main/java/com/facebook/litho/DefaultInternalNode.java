@@ -426,14 +426,6 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode child(Component.Builder<?> child) {
-    if (child != null) {
-      child(mComponentContext, child.build());
-    }
-    return this;
-  }
-
-  @Override
   public InternalNode child(InternalNode child) {
     if (child != null && child != NULL_LAYOUT) {
       addChildAt(child, mYogaNode.getChildCount());

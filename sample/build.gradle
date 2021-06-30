@@ -64,6 +64,7 @@ dependencies {
 
     // Support Library
     implementation deps.supportAppCompat
+    implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.supportTransition

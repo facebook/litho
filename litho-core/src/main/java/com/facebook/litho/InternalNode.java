@@ -79,8 +79,6 @@ public interface InternalNode {
 
   InternalNode child(ComponentContext c, Component child);
 
-  InternalNode child(Component.Builder<?> child);
-
   InternalNode child(InternalNode child);
 
   InternalNode duplicateParentState(boolean duplicateParentState);

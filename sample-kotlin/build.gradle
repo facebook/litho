@@ -66,6 +66,7 @@ dependencies {
     implementation deps.flipperLithoPlugin
     implementation deps.fresco
 
+    implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib

@@ -44,6 +44,7 @@ dependencies {
     annotationProcessor project(':litho-sections-processor')
 
     implementation deps.soloader
+    implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
 }

@@ -75,6 +75,7 @@ ext.deps = [
         supportAnnotations : 'androidx.annotation:annotation:1.0.0',
         supportAppCompat   : 'androidx.appcompat:appcompat:1.0.0',
         supportCore        : 'androidx.core:core:1.0.0',
+        supportFragment    : 'androidx.fragment:fragment:1.3.5',
         supportCustomView  : 'androidx.customview:customview:1.0.0',
         supportRecyclerView: 'androidx.recyclerview:recyclerview:1.2.0-beta01',
         supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.1',

@@ -120,11 +120,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable InternalNode child(Component.Builder<?> child) {
-    return null;
-  }
-
-  @Override
   public @Nullable InternalNode child(InternalNode child) {
     return null;
   }
