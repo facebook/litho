@@ -24,12 +24,15 @@ import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.view.View;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsResetValueTester;
 import com.facebook.litho.widget.DynamicPropsResetValueTesterSpec;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +48,7 @@ public class DynamicPropsTest {
 
   @Before
   public void setup() {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -57,16 +61,19 @@ public class DynamicPropsTest {
         mountComponent(
             mContext, Column.create(mContext).widthPx(80).heightPx(80).alpha(alphaDV).build());
 
-    assertThat(lithoView.getAlpha()).isEqualTo(startValue);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    final View hostView = lithoView.getChildAt(0);
+
+    assertThat(hostView.getAlpha()).isEqualTo(startValue);
 
     alphaDV.set(0.5f);
-    assertThat(lithoView.getAlpha()).isEqualTo(0.5f);
+    assertThat(hostView.getAlpha()).isEqualTo(0.5f);
 
     alphaDV.set(0.f);
-    assertThat(lithoView.getAlpha()).isEqualTo(0.f);
+    assertThat(hostView.getAlpha()).isEqualTo(0.f);
 
     alphaDV.set(1.f);
-    assertThat(lithoView.getAlpha()).isEqualTo(1.f);
+    assertThat(hostView.getAlpha()).isEqualTo(1.f);
   }
 
   @Test
@@ -86,23 +93,27 @@ public class DynamicPropsTest {
                 .translationY(translationYDV)
                 .build());
 
-    assertThat(lithoView.getTranslationX()).isEqualTo(startValueX);
-    assertThat(lithoView.getTranslationY()).isEqualTo(startValueY);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+
+    final View hostView = lithoView.getChildAt(0);
+
+    assertThat(hostView.getTranslationX()).isEqualTo(startValueX);
+    assertThat(hostView.getTranslationY()).isEqualTo(startValueY);
 
     translationXDV.set(50.f);
     translationYDV.set(20.f);
-    assertThat(lithoView.getTranslationX()).isEqualTo(50.f);
-    assertThat(lithoView.getTranslationY()).isEqualTo(20.f);
+    assertThat(hostView.getTranslationX()).isEqualTo(50.f);
+    assertThat(hostView.getTranslationY()).isEqualTo(20.f);
 
     translationXDV.set(-50.f);
     translationYDV.set(-20.f);
-    assertThat(lithoView.getTranslationX()).isEqualTo(-50.f);
-    assertThat(lithoView.getTranslationY()).isEqualTo(-20.f);
+    assertThat(hostView.getTranslationX()).isEqualTo(-50.f);
+    assertThat(hostView.getTranslationY()).isEqualTo(-20.f);
 
     translationXDV.set(0f);
     translationYDV.set(0f);
-    assertThat(lithoView.getTranslationX()).isEqualTo(0f);
-    assertThat(lithoView.getTranslationY()).isEqualTo(0f);
+    assertThat(hostView.getTranslationX()).isEqualTo(0f);
+    assertThat(hostView.getTranslationY()).isEqualTo(0f);
   }
 
   @Test
@@ -122,23 +133,27 @@ public class DynamicPropsTest {
                 .scaleY(scaleYDV)
                 .build());
 
-    assertThat(lithoView.getScaleX()).isEqualTo(startValueX);
-    assertThat(lithoView.getScaleY()).isEqualTo(startValueY);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+
+    final View hostView = lithoView.getChildAt(0);
+
+    assertThat(hostView.getScaleX()).isEqualTo(startValueX);
+    assertThat(hostView.getScaleY()).isEqualTo(startValueY);
 
     scaleXDV.set(0.5f);
     scaleYDV.set(2.f);
-    assertThat(lithoView.getScaleX()).isEqualTo(0.5f);
-    assertThat(lithoView.getScaleY()).isEqualTo(2.f);
+    assertThat(hostView.getScaleX()).isEqualTo(0.5f);
+    assertThat(hostView.getScaleY()).isEqualTo(2.f);
 
     scaleXDV.set(2.f);
     scaleYDV.set(0.5f);
-    assertThat(lithoView.getScaleX()).isEqualTo(2.f);
-    assertThat(lithoView.getScaleY()).isEqualTo(.5f);
+    assertThat(hostView.getScaleX()).isEqualTo(2.f);
+    assertThat(hostView.getScaleY()).isEqualTo(.5f);
 
     scaleXDV.set(0f);
     scaleYDV.set(0f);
-    assertThat(lithoView.getScaleX()).isEqualTo(0f);
-    assertThat(lithoView.getScaleY()).isEqualTo(0f);
+    assertThat(hostView.getScaleX()).isEqualTo(0f);
+    assertThat(hostView.getScaleY()).isEqualTo(0f);
   }
 
   @Test
@@ -155,17 +170,21 @@ public class DynamicPropsTest {
                 .backgroundColor(backgroundColorDV)
                 .build());
 
-    assertThat(lithoView.getBackground()).isInstanceOf(ColorDrawable.class);
-    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(startValue);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+
+    final View hostView = lithoView.getChildAt(0);
+
+    assertThat(hostView.getBackground()).isInstanceOf(ColorDrawable.class);
+    assertThat(((ColorDrawable) hostView.getBackground()).getColor()).isEqualTo(startValue);
 
     backgroundColorDV.set(Color.BLUE);
-    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(Color.BLUE);
+    assertThat(((ColorDrawable) hostView.getBackground()).getColor()).isEqualTo(Color.BLUE);
 
     backgroundColorDV.set(0x88888888);
-    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(0x88888888);
+    assertThat(((ColorDrawable) hostView.getBackground()).getColor()).isEqualTo(0x88888888);
 
     backgroundColorDV.set(Color.TRANSPARENT);
-    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(Color.TRANSPARENT);
+    assertThat(((ColorDrawable) hostView.getBackground()).getColor()).isEqualTo(Color.TRANSPARENT);
   }
 
   @Test
@@ -178,16 +197,20 @@ public class DynamicPropsTest {
             mContext,
             Column.create(mContext).widthPx(80).heightPx(80).rotation(rotationDV).build());
 
-    assertThat(lithoView.getRotation()).isEqualTo(startValue);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+
+    final View hostView = lithoView.getChildAt(0);
+
+    assertThat(hostView.getRotation()).isEqualTo(startValue);
 
     rotationDV.set(364f);
-    assertThat(lithoView.getRotation()).isEqualTo(364f);
+    assertThat(hostView.getRotation()).isEqualTo(364f);
 
     rotationDV.set(520f);
-    assertThat(lithoView.getRotation()).isEqualTo(520f);
+    assertThat(hostView.getRotation()).isEqualTo(520f);
 
     rotationDV.set(-1.f);
-    assertThat(lithoView.getRotation()).isEqualTo(-1.f);
+    assertThat(hostView.getRotation()).isEqualTo(-1.f);
   }
 
   @Test
@@ -350,5 +373,10 @@ public class DynamicPropsTest {
     assertThat(stateUpdateText1HostComponent.hasCommonDynamicProps()).isFalse();
     assertThat(stateUpdateText1Host.getAlpha())
         .isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE);
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 }
