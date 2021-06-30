@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LifecycleStep.ON_MOUNT;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -34,6 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,8 +45,10 @@ import android.graphics.Rect;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
@@ -65,6 +70,7 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,6 +80,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLooper;
 
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -106,6 +113,7 @@ public class MountStateIncrementalMountTest {
 
   @Before
   public void setup() {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
@@ -984,6 +992,7 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void testRootViewAttributes_incrementalMountAfterUnmount_setViewAttributes() {
+    enableAccessibility();
     final Component root = Text.create(mContext).text("Test").contentDescription("testcd").build();
 
     mLithoViewRule
@@ -994,13 +1003,16 @@ public class MountStateIncrementalMountTest {
         .layout();
 
     final LithoView lithoView = mLithoViewRule.getLithoView();
-    assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
+    View innerView = lithoView.getChildAt(0);
+    assertThat(innerView.getContentDescription()).isEqualTo("testcd");
 
     lithoView.unmountAllItems();
-    assertThat(lithoView.getContentDescription()).isNull();
+    assertThat(innerView.getContentDescription()).isNull();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
-    assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
+    innerView = lithoView.getChildAt(0);
+
+    assertThat(innerView.getContentDescription()).isEqualTo("testcd");
   }
 
   /**
@@ -1335,6 +1347,22 @@ public class MountStateIncrementalMountTest {
     mLithoViewRule.getLithoView().notifyVisibleBoundsChanged();
 
     assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
+    validateMockitoUsage();
+  }
+
+  private static void enableAccessibility() {
+    AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
+    final ShadowAccessibilityManager manager =
+        Shadows.shadowOf(
+            (AccessibilityManager) getApplicationContext().getSystemService(ACCESSIBILITY_SERVICE));
+    manager.setEnabled(true);
+    manager.setTouchExplorationEnabled(true);
   }
 
   private LithoViewFactory getLithoViewFactory() {
