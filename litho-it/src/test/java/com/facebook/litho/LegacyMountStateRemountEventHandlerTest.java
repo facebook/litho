@@ -35,13 +35,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class MountStateRemountEventHandlerTest {
-
+public class LegacyMountStateRemountEventHandlerTest {
   private ComponentContext mContext;
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -61,8 +60,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentClickListener clickListener = getComponentClickListener(lithoView.getChildAt(0));
+    final ComponentClickListener clickListener = getComponentClickListener(lithoView);
     assertThat(clickListener).isNotNull();
 
     lithoView
@@ -79,7 +77,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(clickListener == getComponentClickListener(lithoView.getChildAt(0))).isTrue();
+    assertThat(clickListener == getComponentClickListener(lithoView)).isTrue();
   }
 
   @Test
@@ -98,9 +96,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentLongClickListener longClickListener =
-        getComponentLongClickListener(lithoView.getChildAt(0));
+    final ComponentLongClickListener longClickListener = getComponentLongClickListener(lithoView);
     assertThat(longClickListener).isNotNull();
 
     lithoView
@@ -117,8 +113,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(longClickListener == getComponentLongClickListener(lithoView.getChildAt(0)))
-        .isTrue();
+    assertThat(longClickListener == getComponentLongClickListener(lithoView)).isTrue();
   }
 
   @Test
@@ -137,9 +132,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    ComponentFocusChangeListener focusChangeListener =
-        getComponentFocusChangeListener(lithoView.getChildAt(0));
+    ComponentFocusChangeListener focusChangeListener = getComponentFocusChangeListener(lithoView);
     assertThat(focusChangeListener).isNotNull();
 
     lithoView
@@ -156,8 +149,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(focusChangeListener == getComponentFocusChangeListener(lithoView.getChildAt(0)))
-        .isTrue();
+    assertThat(focusChangeListener == getComponentFocusChangeListener(lithoView)).isTrue();
   }
 
   @Test
@@ -176,8 +168,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentTouchListener touchListener = getComponentTouchListener(lithoView.getChildAt(0));
+    final ComponentTouchListener touchListener = getComponentTouchListener(lithoView);
     assertThat(touchListener).isNotNull();
 
     lithoView
@@ -194,7 +185,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(getComponentTouchListener(lithoView.getChildAt(0))).isEqualTo(touchListener);
+    assertThat(getComponentTouchListener(lithoView)).isEqualTo(touchListener);
   }
 
   @Test
@@ -213,8 +204,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(getComponentClickListener(lithoView.getChildAt(0))).isNotNull();
+    assertThat(getComponentClickListener(lithoView)).isNotNull();
 
     lithoView
         .getComponentTree()
@@ -229,9 +219,9 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     final ComponentClickListener listener = getComponentClickListener(lithoView);
-    assertThat(listener).isNull();
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
@@ -250,8 +240,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(getComponentLongClickListener(lithoView.getChildAt(0))).isNotNull();
+    assertThat(getComponentLongClickListener(lithoView)).isNotNull();
 
     lithoView
         .getComponentTree()
@@ -266,9 +255,9 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     final ComponentLongClickListener listener = getComponentLongClickListener(lithoView);
-    assertThat(listener).isNull();
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
@@ -287,8 +276,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(getComponentFocusChangeListener(lithoView.getChildAt(0))).isNotNull();
+    assertThat(getComponentFocusChangeListener(lithoView)).isNotNull();
 
     lithoView
         .getComponentTree()
@@ -303,9 +291,9 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     final ComponentFocusChangeListener listener = getComponentFocusChangeListener(lithoView);
-    assertThat(listener).isNull();
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
@@ -337,9 +325,8 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     final ComponentTouchListener listener = getComponentTouchListener(lithoView);
-    assertThat(listener).isNull();
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
@@ -357,7 +344,6 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(getComponentClickListener(lithoView)).isNull();
 
     lithoView
@@ -374,8 +360,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentClickListener listener = getComponentClickListener(lithoView.getChildAt(0));
+    final ComponentClickListener listener = getComponentClickListener(lithoView);
     assertThat(listener).isNotNull();
     assertThat(listener.getEventHandler()).isNotNull();
   }
@@ -395,7 +380,6 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(getComponentLongClickListener(lithoView)).isNull();
 
     lithoView
@@ -412,9 +396,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentLongClickListener listener =
-        getComponentLongClickListener(lithoView.getChildAt(0));
+    final ComponentLongClickListener listener = getComponentLongClickListener(lithoView);
     assertThat(listener).isNotNull();
     assertThat(listener.getEventHandler()).isNotNull();
   }
@@ -434,7 +416,6 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(getComponentFocusChangeListener(lithoView)).isNull();
 
     lithoView
@@ -451,9 +432,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentFocusChangeListener listener =
-        getComponentFocusChangeListener(lithoView.getChildAt(0));
+    final ComponentFocusChangeListener listener = getComponentFocusChangeListener(lithoView);
     assertThat(listener).isNotNull();
     assertThat(listener.getEventHandler()).isNotNull();
   }
@@ -473,7 +452,6 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(getComponentTouchListener(lithoView)).isNull();
 
     lithoView
@@ -490,8 +468,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    final ComponentTouchListener listener = getComponentTouchListener(lithoView.getChildAt(0));
+    final ComponentTouchListener listener = getComponentTouchListener(lithoView);
     assertThat(listener).isNotNull();
     assertThat(listener.getEventHandler()).isNotNull();
   }
