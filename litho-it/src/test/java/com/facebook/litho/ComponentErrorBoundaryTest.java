@@ -43,6 +43,7 @@ import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CrashFromLayoutFromStyle;
+import com.facebook.litho.widget.CrashKotlinComponent;
 import com.facebook.litho.widget.CrashingMountable;
 import com.facebook.litho.widget.CrashingMountableSpec;
 import com.facebook.litho.widget.DynamicPropCrasher;
@@ -241,6 +242,24 @@ public class ComponentErrorBoundaryTest {
 
     ComponentsReporter.provide(null);
     ComponentsConfiguration.swallowUnhandledExceptions = false;
+  }
+
+  @Test
+  public void testKotlinComponentCrashWithTestErrorBoundary() {
+    final ComponentContext context = mLithoViewRule.getContext();
+
+    final List<Exception> errorOutput = new ArrayList<>();
+    Component component =
+        TestErrorBoundary.create(context)
+            .errorOutput(errorOutput)
+            .child(new CrashKotlinComponent())
+            .build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    Exception error = errorOutput.size() == 1 ? errorOutput.get(0) : null;
+    assertThat(error).isInstanceOf(RuntimeException.class);
+    assertThat(error).hasMessage("crash from kotlin component");
   }
 
   @Test

@@ -93,6 +93,7 @@ android {
 dependencies {
     // For main targets
     implementation project(':litho-core')
+    implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
     implementation deps.supportAppCompat
