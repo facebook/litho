@@ -41,12 +41,10 @@
   <version>1.8.2-SNAPSHOT</version>
   <change-notes>
     <![CDATA[
-    <h3>1.8.1</h3>
+    <h3>1.8.2</h3>
       <ul>
-	<li>New: "Resolve Litho Red Symbol" and "Regenerate Component" actions for `GroupSectionSpec`</li>      
-	<li>New: "Litho View" to inspect `GroupSectionSpec` on sidebar</li>
-	<li>New: Lint errors for `GroupSectionSpec`</li>
-	<li>New: Navigation and usage finder for methods in `GroupSectionSpec`</li>
+        <li>Fix: Plugin is updated for new Component class inheritance (generated Components now extend `SpecGeneratedComponent`).</li>
+        <li>Fix: Navigation to spec files from generated component usages in Kotlin files.</li>
       </ul>
     <h3>Older Versions</h3>
     <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.

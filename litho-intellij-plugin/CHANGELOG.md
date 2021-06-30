@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Version 1.8.2
+
+_2021-06-30_
+
+* Fix: Plugin is updated for new Component class inheritance (generated Components now extend `SpecGeneratedComponent`)
+* Fix: Navigation to spec files from generated component usages in Kotlin files
+
 ## Version 1.8.1
 
 _2021-06-08_
