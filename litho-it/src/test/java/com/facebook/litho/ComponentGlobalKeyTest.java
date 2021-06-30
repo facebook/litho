@@ -24,6 +24,7 @@ import android.util.Pair;
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -65,6 +66,7 @@ public class ComponentGlobalKeyTest {
 
   @Before
   public void setup() {
+    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
     ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
@@ -141,11 +143,7 @@ public class ComponentGlobalKeyTest {
         Component.getGlobalKey(
             getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
             getComponentAt(lithoView, 1)));
-    // background in child
-    Assert.assertNull(
-        Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(2)).getScopedContext(),
-            getComponentAt(lithoView, 2)));
+
     // CardClip in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
@@ -156,34 +154,35 @@ public class ComponentGlobalKeyTest {
             columnSpecId,
             "$[CardClip1]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
-            getComponentAt(lithoView, 3)));
+            getLayoutOutput(
+                    ((ComponentHost) lithoView.getMountItemAt(2).getContent()).getMountItemAt(0))
+                .getScopedContext(),
+            getNestedComponentAt(lithoView, 2, 0)));
+
     // Text in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[Text1]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(4)).getScopedContext(),
-            getComponentAt(lithoView, 4)));
-    // background
-    Assert.assertNull(
-        Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(5)).getScopedContext(),
-            getComponentAt(lithoView, 5)));
+            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
+            getComponentAt(lithoView, 3)));
+
     // CardClip
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, columnSpecId, "$[CardClip2]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(6)).getScopedContext(),
-            getComponentAt(lithoView, 6)));
+            getLayoutOutput(
+                    ((ComponentHost) lithoView.getMountItemAt(4).getContent()).getMountItemAt(0))
+                .getScopedContext(),
+            getNestedComponentAt(lithoView, 4, 0)));
     // TestViewComponent
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, "$[TestViewComponent2]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(7)).getScopedContext(),
-            getComponentAt(lithoView, 7)));
+            getLayoutOutput(lithoView.getMountItemAt(5)).getScopedContext(),
+            getComponentAt(lithoView, 5)));
   }
 
   @Test
@@ -514,16 +513,17 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 1).getOwnerGlobalKey());
 
     // CardClip in child
-    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 3).getOwnerGlobalKey());
+    Assert.assertEquals(
+        nestedLayoutGlobalKey, getNestedComponentAt(lithoView, 2, 0).getOwnerGlobalKey());
 
     // Text in child
-    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 4).getOwnerGlobalKey());
+    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 3).getOwnerGlobalKey());
 
     // CardClip
-    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 6).getOwnerGlobalKey());
+    Assert.assertEquals(rootGlobalKey, getNestedComponentAt(lithoView, 4, 0).getOwnerGlobalKey());
 
     // TestViewComponent
-    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 7).getOwnerGlobalKey());
+    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 5).getOwnerGlobalKey());
   }
 
   @Test
@@ -537,6 +537,13 @@ public class ComponentGlobalKeyTest {
 
   private static Component getComponentAt(LithoView lithoView, int index) {
     return getLayoutOutput(lithoView.getMountItemAt(index)).getComponent();
+  }
+
+  private static Component getNestedComponentAt(LithoView lithoView, int index, int nestedIndex) {
+    return getLayoutOutput(
+            ((ComponentHost) lithoView.getMountItemAt(index).getContent())
+                .getMountItemAt(nestedIndex))
+        .getComponent();
   }
 
   private LithoView getLithoView(Component component) {
@@ -597,5 +604,10 @@ public class ComponentGlobalKeyTest {
         };
 
     return testGlobalKeyChild;
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
   }
 }
