@@ -30,6 +30,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.RunnableHandler;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -651,6 +652,10 @@ public class ComponentContext implements Cloneable {
    */
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
     return c.mComponentTree == null || c.mComponentTree.isIncrementalMountEnabled();
+  }
+
+  public static @Nullable RunnableHandler getMountContentPreallocationHandler(ComponentContext c) {
+    return c.mComponentTree == null ? null : c.mComponentTree.getMountContentPreallocationHandler();
   }
 
   public static boolean isVisibilityProcessingEnabled(ComponentContext c) {

@@ -295,4 +295,10 @@ public class ComponentsConfiguration {
    * calculation by ThreadPoolLayoutHandler.getNewInstance().
    */
   public static boolean layoutCalculationAlwaysUseDefaultThreadPool = false;
+
+  /**
+   * If true, uses the root ComponentTree's mount content preallocation handler to perform
+   * preallocation for nested trees.
+   */
+  public static boolean enableNestedTreePreallocation = false;
 }

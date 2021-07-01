@@ -1216,6 +1216,11 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   @Nullable
+  RunnableHandler getMountContentPreallocationHandler() {
+    return mPreAllocateMountContentHandler;
+  }
+
+  @Nullable
   LithoRenderUnitFactory getLithoRenderUnitFactory() {
     return mLithoRenderUnitFactory;
   }
