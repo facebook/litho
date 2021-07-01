@@ -193,7 +193,9 @@ class CollectionContainerScope(componentContext: ComponentContext) {
   }
 
   /** Create an isSameItem parameter for items(..) for model comparison using a unique id field. */
-  fun <T> itemId(getField: (T) -> Any): (previous: T, next: T) -> Boolean {
-    return { previous, next -> getField(previous) == getField(next) }
+  fun <T> itemId(getField: (T) -> Any?): (previous: T?, next: T?) -> Boolean {
+    return { previous, next ->
+      if (previous === null || next === null) false else getField(previous) == getField(next)
+    }
   }
 }
