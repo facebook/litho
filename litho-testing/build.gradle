@@ -55,6 +55,7 @@ dependencies {
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
 
+    implementation deps.inferAnnotations
     implementation deps.javapoet
     implementation deps.assertjCore
     implementation deps.guava

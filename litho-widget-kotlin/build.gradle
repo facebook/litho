@@ -49,6 +49,7 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     implementation deps.supportCore
+    implementation deps.supportSwipeRefresh
     implementation deps.kotlinStandardLib
     implementation deps.supportRecyclerView
 
