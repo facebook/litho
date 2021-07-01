@@ -19,8 +19,6 @@ package com.facebook.litho;
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;

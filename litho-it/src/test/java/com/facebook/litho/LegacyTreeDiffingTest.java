@@ -23,7 +23,9 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
 import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
 import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -32,9 +34,6 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
