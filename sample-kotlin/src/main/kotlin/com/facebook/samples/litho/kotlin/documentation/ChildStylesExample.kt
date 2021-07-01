@@ -23,6 +23,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.margin
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
+import com.facebook.litho.kotlinStyle
 import com.facebook.litho.view.alpha
 import com.facebook.litho.widget.Text
 
@@ -41,3 +42,11 @@ class InnerTextComponent(private val style: Style? = null) : KComponent() {
   }
 }
 // end_combine_style_example
+// start_combine_java_kotlin_style_example
+class OuterStyleKComponent : KComponent() {
+  override fun ComponentScope.render(): Component? {
+    val style = Style.margin(all = 8.dp)
+    return OuterStyleComponent.create(context).kotlinStyle(style).build()
+  }
+}
+// end_combine_java_kotlin_style_example

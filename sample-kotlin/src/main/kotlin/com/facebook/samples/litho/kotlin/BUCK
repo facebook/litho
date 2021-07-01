@@ -45,7 +45,10 @@ load(
 
 fb_android_library(
     name = "litho",
-    srcs = glob(["**/*.kt"]),
+    srcs = glob([
+        "**/*.java",
+        "**/*.kt",
+    ]),
     autoglob = False,
     is_androidx = True,
     language = "KOTLIN",
@@ -53,6 +56,7 @@ fb_android_library(
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
+    pure_kotlin = False,
     visibility = [
         "PUBLIC",
     ],
