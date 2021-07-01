@@ -323,8 +323,11 @@ public class ComponentBodyGenerator {
 
     if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
       final String propName = prop.getName();
+      final boolean needGetter = !propName.startsWith("is");
       final String propAccessor =
-          "get" + propName.substring(0, 1).toUpperCase() + propName.substring(1) + "()";
+          (needGetter ? "get" + propName.substring(0, 1).toUpperCase() : propName.substring(0, 1))
+              + propName.substring(1)
+              + "()";
 
       fieldBuilder.initializer("$L.$L.$L", specModel.getSpecName(), "INSTANCE", propAccessor);
     } else {

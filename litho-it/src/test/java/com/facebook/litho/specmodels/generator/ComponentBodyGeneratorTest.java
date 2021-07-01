@@ -84,6 +84,7 @@ public class ComponentBodyGeneratorTest {
   @LayoutSpec
   static class TestSpec {
     @PropDefault protected static boolean arg0 = true;
+    @PropDefault protected static boolean isarg10 = true;
 
     @OnCreateLayout
     public void testDelegateMethod(
@@ -96,7 +97,8 @@ public class ComponentBodyGeneratorTest {
         @Prop List<String> arg6,
         @TreeProp Set<List<Row>> arg7,
         @TreeProp Set<Integer> arg8,
-        @Prop(varArg = "item") java.util.List<? extends java.lang.Number> arg9) {}
+        @Prop(varArg = "item") java.util.List<? extends java.lang.Number> arg9,
+        @Prop(optional = true) boolean isarg10) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(
@@ -161,10 +163,15 @@ public class ComponentBodyGeneratorTest {
   static class TestKotlinWildcardsSpec {
     public static final TestKotlinWildcardsSpec INSTANCE = null;
 
+    @PropDefault boolean isArg1 = true;
+    @PropDefault boolean arg2 = true;
+
     @OnCreateLayout
     public final Component onCreateLayout(
         ComponentContext c,
-        @Prop(varArg = "number") java.util.List<? extends java.lang.Number> numbers) {
+        @Prop(varArg = "number") java.util.List<? extends java.lang.Number> numbers,
+        @Prop(optional = true) boolean isArg1,
+        @Prop(optional = true) boolean arg2) {
       return null;
     }
   }
@@ -243,7 +250,7 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateProps() {
     TypeSpecDataHolder dataHolder =
         ComponentBodyGenerator.generateProps(mSpecModelDI, RunMode.normal());
-    assertThat(dataHolder.getFieldSpecs()).hasSize(5);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(6);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
@@ -277,6 +284,16 @@ public class ComponentBodyGeneratorTest {
                 + "    type = 5\n"
                 + ")\n"
                 + "java.util.List<? extends java.lang.Number> arg9 = java.util.Collections.emptyList();\n");
+    assertThat(dataHolder.getFieldSpecs().get(5).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = true\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 3\n"
+                + ")\n"
+                + "boolean isarg10 = TestSpec.isarg10;\n");
 
     dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(6);
@@ -333,8 +350,28 @@ public class ComponentBodyGeneratorTest {
   public void testGeneratePropsForKotlinWildcards() {
     TypeSpecDataHolder dataHolder =
         ComponentBodyGenerator.generateProps(mKotlinWildcardsSpecModel, RunMode.normal());
-    assertThat(dataHolder.getFieldSpecs()).hasSize(1);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(3);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = true\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 3\n"
+                + ")\n"
+                + "boolean arg2 = TestKotlinWildcardsSpec.INSTANCE.getArg2();\n");
+    assertThat(dataHolder.getFieldSpecs().get(1).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = true\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 3\n"
+                + ")\n"
+                + "boolean isArg1 = TestKotlinWildcardsSpec.INSTANCE.isArg1();\n");
+    assertThat(dataHolder.getFieldSpecs().get(2).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
