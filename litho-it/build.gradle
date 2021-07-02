@@ -113,7 +113,7 @@ dependencies {
     testImplementation project(':litho-sections-core')
     testImplementation project(':litho-sections-processor')
     testImplementation project(':litho-sections-widget')
-    //testImplementation project(':litho-intellij-plugin')
+    testImplementation project(':litho-intellij-plugin')
     testImplementation project(':test-specs')
 
     // Testing deps

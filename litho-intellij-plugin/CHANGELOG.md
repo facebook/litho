@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.8.3
+
+_2021-00-00_
+
+* New: Idea version increased to 201
+
 ## Version 1.8.2
 
 _2021-06-30_

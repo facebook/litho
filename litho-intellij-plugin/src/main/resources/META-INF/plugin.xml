@@ -17,8 +17,8 @@
 <idea-plugin>
   <id>com.facebook.litho.intellij</id>
   <name>Litho</name>
-  <!-- 193 is IntelliJ 2019.3 and/or Android Studio 4.0 -->
-  <idea-version since-build="193"/>
+  <!-- 201 is Android Studio 4.1 -->
+  <idea-version since-build="201"/>
   <description>
   <![CDATA[
     <p><a href='https://fblitho.com/'>Litho</a> is a declarative UI framework for Android.
@@ -61,9 +61,9 @@
       interface="com.facebook.litho.intellij.extensions.TemplateProvider" />
   </extensionPoints>
 
-  <depends>com.intellij.java</depends>
+  <depends>com.intellij.modules.java</depends>
   <depends>com.intellij.modules.platform</depends>
-  <depends optional="true">org.jetbrains.kotlin</depends>
+  <depends>org.jetbrains.kotlin</depends>
 
   <extensions defaultExtensionNs="com.facebook.litho.intellij">
     <templateProvider implementation="com.facebook.litho.intellij.actions.templates.LayoutSpecTemplateProvider"/>

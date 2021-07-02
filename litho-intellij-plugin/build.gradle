@@ -19,13 +19,23 @@ import groovy.xml.XmlUtil
 plugins {
     id 'idea'
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.10'
     id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.intellij' version "0.4.21"
 }
+
+apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: "org.jetbrains.intellij"
 
 group 'com.facebook.litho.intellij'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
+}
 
 sourceSets {
     test.java.srcDirs += project(':litho-processor').file("src/test/java")
@@ -34,7 +44,8 @@ sourceSets {
 
 dependencies {
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compileOnly 'org.jetbrains:annotations:21.0.0'
     // Processor
     implementation project(':litho-sections-annotations')
     implementation project(':litho-sections-processor')
@@ -49,9 +60,9 @@ dependencies {
 }
 
 intellij {
-    version '2019.3'
+    version '2020.1'
     updateSinceUntilBuild = false
-    plugins = ['java', 'kotlin']
+    plugins = ['java', 'org.jetbrains.kotlin',]
 }
 
 task merge {

@@ -76,7 +76,7 @@ class ComponentShortNamesCache extends PsiShortNamesCache {
 
   @Override
   public boolean processMethodsWithName(
-      String name, GlobalSearchScope scope, Processor<PsiMethod> processor) {
+      String name, GlobalSearchScope scope, Processor<? super PsiMethod> processor) {
     return false;
   }
 
