@@ -34,7 +34,7 @@ android {
                 // Because of native libraries loading (Yoga), we can never reuse a class loader and
                 // need to fork a new process per class.
                 forkEvery = 1
-                maxParallelForks = 2
+                maxParallelForks = 1
 
                 testLogging {
                     events 'skipped', 'failed', 'standardOut', 'standardError'
