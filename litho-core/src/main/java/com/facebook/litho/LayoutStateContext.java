@@ -276,4 +276,8 @@ public class LayoutStateContext {
           "Cannot modify this LayoutStateContext, it's already been committed.");
     }
   }
+
+  boolean isFrozen() {
+    return mIsFrozen;
+  }
 }

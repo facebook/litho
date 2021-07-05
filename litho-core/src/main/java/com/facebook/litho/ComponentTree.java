@@ -2413,7 +2413,7 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (components != null) {
-      bindEventAndTriggerHandlers(layoutStateContext, components, componentKeys);
+      bindEventAndTriggerHandlers(layoutStateContext, components, componentKeys, extraAttribution);
     }
 
     if (committedNewLayout) {
@@ -2435,9 +2435,18 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   private void bindEventAndTriggerHandlers(
-      LayoutStateContext layoutStateContext,
-      List<Component> components,
-      List<String> componentKeys) {
+      final LayoutStateContext layoutStateContext,
+      final List<Component> components,
+      final List<String> componentKeys,
+      final @Nullable String extraAttribution) {
+
+    if (!layoutStateContext.isFrozen()) {
+      throw new IllegalStateException(
+          "Using a LayoutStateContext before it was frozen.\n"
+              + "extra-attribution="
+              + extraAttribution);
+    }
+
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
 
