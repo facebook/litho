@@ -411,4 +411,21 @@ class StyleCompatTest {
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
   }
+
+  /** See comment on [border_whenSet_isRespected] above. */
+  @Test
+  fun transition_whenSet_isRespected() {
+    class ComponentWithTransition : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Row(
+            style =
+                StyleCompat.transitionKey(context, "test", Transition.TransitionKeyType.GLOBAL)
+                    .build())
+      }
+    }
+
+    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithTransition())
+    assertThat(node.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
+    assertThat(node.transitionKey).isEqualTo("test")
+  }
 }

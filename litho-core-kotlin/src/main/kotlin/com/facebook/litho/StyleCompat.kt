@@ -33,6 +33,7 @@ import com.facebook.litho.flexbox.border
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.flexbox.position
 import com.facebook.litho.flexbox.positionType
+import com.facebook.litho.transition.transitionKey
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
@@ -144,6 +145,14 @@ object StyleCompat {
   @JvmStatic
   fun positionPx(yogaEdge: YogaEdge, value: Int): JavaStyle =
       JavaStyle().positionPx(yogaEdge, value)
+
+  /** @see [JavaStyle.transitionKey] */
+  @JvmStatic
+  fun transitionKey(
+      context: ComponentContext,
+      transitionKey: String?,
+      transitionKeyType: Transition.TransitionKeyType = Transition.TransitionKeyType.LOCAL
+  ): JavaStyle = JavaStyle().transitionKey(context, transitionKey, transitionKeyType)
 
   /** @see [JavaStyle.wrapInView] */
   @JvmStatic fun wrapInView(): JavaStyle = JavaStyle().wrapInView()
@@ -370,6 +379,15 @@ class JavaStyle {
       YogaEdge.HORIZONTAL -> style = TODO("No matching functionality on Style yet")
       YogaEdge.ALL -> style = TODO("No matching functionality on Style yet")
     }.exhaustive
+    return this
+  }
+
+  fun transitionKey(
+      context: ComponentContext,
+      key: String?,
+      keyType: Transition.TransitionKeyType
+  ): JavaStyle {
+    style = style.transitionKey(context, key, keyType)
     return this
   }
 
