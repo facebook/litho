@@ -167,7 +167,7 @@ class CollectionContainerScope(componentContext: ComponentContext) {
   /**
    * Adds a list of models and a renderer function to convert each model into a component.
    * @param data A list of models
-   * @param renderer A function that converts a model into a component
+   * @param render A function that converts a model into a component
    * @isSameItem Used during diffing. Determine if two models represent the same item in the
    * collection
    * @isSameContent Used during diffing. Determine if two models that represent the same item also
