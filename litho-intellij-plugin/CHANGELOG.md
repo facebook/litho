@@ -5,6 +5,7 @@
 _2021-00-00_
 
 * New: Idea version increased to 201
+* Fix: Documentation links in completed methods point to fblitho
 
 ## Version 1.8.2
 
