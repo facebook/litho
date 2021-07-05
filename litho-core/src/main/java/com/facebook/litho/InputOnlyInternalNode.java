@@ -874,15 +874,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         || mImportantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   }
 
-  /**
-   * For testing and debugging purposes only where initialization may have not occurred. For any
-   * production use, this should never be necessary.
-   */
-  @Override
-  public boolean isInitialized() {
-    return mComponentContext != null;
-  }
-
   /** Crash if the given node has context specific style set. */
   @Override
   public void assertContextSpecificStyleNotSet() {

@@ -984,15 +984,6 @@ public class DefaultInternalNode
         || mImportantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   }
 
-  /**
-   * For testing and debugging purposes only where initialization may have not occurred. For any
-   * production use, this should never be necessary.
-   */
-  @Override
-  public boolean isInitialized() {
-    return mYogaNode != null && mComponentContext != null;
-  }
-
   @Override
   public boolean isLayoutDirectionInherit() {
     return (mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) == 0L

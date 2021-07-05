@@ -451,11 +451,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean isInitialized() {
-    return false;
-  }
-
-  @Override
   public boolean isLayoutDirectionInherit() {
     return false;
   }

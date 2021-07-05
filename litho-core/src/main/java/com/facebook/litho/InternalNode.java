@@ -156,12 +156,6 @@ public interface InternalNode {
 
   int getChildIndex(InternalNode child);
 
-  /**
-   * For testing and debugging purposes only where initialization may have not occurred. For any
-   * production use, this should never be necessary.
-   */
-  boolean isInitialized();
-
   void assertContextSpecificStyleNotSet();
 
   /**
