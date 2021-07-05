@@ -50,6 +50,7 @@
     <activity android:name=".animations.transitions.TransitionsActivity" />
     <activity android:name=".animations.bouncingcounter.AnimatedCounterActivity" />
     <activity android:name=".logging.LoggingActivity" />
-    <activity android:name=".collection.CollectionActivity" />
+    <activity android:name=".collection.FixedItemsCollectionActivity" />
+    <activity android:name=".collection.ChangeableItemsCollectionActivity" />
   </application>
 </manifest>

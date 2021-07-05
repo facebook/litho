@@ -24,7 +24,8 @@ import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationActivi
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementActivity
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsActivity
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsActivity
-import com.facebook.samples.litho.kotlin.collection.CollectionActivity
+import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionActivity
+import com.facebook.samples.litho.kotlin.collection.FixedItemsCollectionActivity
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
@@ -59,7 +60,15 @@ object DataModels {
                       DemoListDataModel(
                           name = "Transitions", klass = TransitionsActivity::class.java))),
           DemoListDataModel(name = "Logging", klass = LoggingActivity::class.java),
-          DemoListDataModel(name = "Collection", klass = CollectionActivity::class.java),
+          DemoListDataModel(
+              name = "Collections",
+              datamodels =
+                  listOf(
+                      DemoListDataModel(
+                          name = "Fixed Items", klass = FixedItemsCollectionActivity::class.java),
+                      DemoListDataModel(
+                          name = "Changeable items",
+                          klass = ChangeableItemsCollectionActivity::class.java))),
       )
 
   fun getDataModels(indices: IntArray?): List<DemoListDataModel> {

@@ -18,52 +18,28 @@ package com.facebook.samples.litho.kotlin.collection
 
 import android.os.Bundle
 import android.util.Log
-import com.facebook.litho.ClickEvent
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
-import com.facebook.litho.State
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
-import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.setContent
 import com.facebook.litho.useState
-import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
-class CollectionActivity : NavigatableDemoActivity() {
+class ChangeableItemsCollectionActivity : NavigatableDemoActivity() {
 
   class CollectionComponent : KComponent() {
 
     override fun ComponentScope.render(): Component? {
       val counter = useState { 0 }
       val inOrder = useState { true }
-      return Column(style = Style.padding(16.dp)) {
-        child(staticItemsExample())
-        child(dynamicItemsExample(counter, inOrder))
-      }
-    }
-
-    fun ComponentScope.staticItemsExample(): Component {
-      val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
-      return Collection(disablePTR = true, style = Style.flex(grow = 1f), onDataBound = null) {
-        item(Text(text = "Header"))
-        items(friends.map { Text(text = it) })
-        item(Text(text = "Footer"))
-      }
-    }
-
-    fun ComponentScope.dynamicItemsExample(
-        counter: State<Int>,
-        inOrder: State<Boolean>
-    ): Component {
-
       val uniqueIds = generateSequence(0) { it + 1 }.iterator()
 
       data class Person(val name: String, val score: Int) {
@@ -79,33 +55,28 @@ class CollectionActivity : NavigatableDemoActivity() {
       val comparator = compareBy<Person> { it.score }.thenBy { it.name }
       val orderedPeople =
           people.sortedWith(if (inOrder.value) comparator else comparator.reversed<Person>())
-      return Collection(
-          disablePTR = true,
-          style = Style.flex(grow = 1f),
-          onViewportChangedFunction = { _, _, _, _, _, _ ->
-            Log.d("litho-kotlin", "onViewportChangedFunction")
-          },
-          onDataBound = { Log.d("litho-kotlin", "onDataBound") }) {
-        item(
+
+      return Column(style = Style.padding(16.dp)) {
+        child(
             Row {
-              child(Button(text = "Reverse Order", onClick = { inOrder.update { !it } }))
-              child(Button(text = "Jeff +1", onClick = { counter.update { (it + 1) % 5 } }))
+              child(Button("Reverse Order") { inOrder.update { !it } })
+              child(Button("Jeff +1") { counter.update { (it + 1) % 5 } })
             })
-        items(data = orderedPeople, isSameItem = itemId(Person::id)) {
-          Text(text = "${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}")
-        }
+        child(
+            Collection(
+                disablePTR = true,
+                style = Style.flex(grow = 1f),
+                onViewportChangedFunction = { _, _, _, _, _, _ ->
+                  Log.d("litho-kotlin", "onViewportChangedFunction")
+                },
+                onDataBound = { Log.d("litho-kotlin", "onDataBound") }) {
+              items(
+                  data = orderedPeople,
+                  render = { Text("${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}") },
+                  isSameItem = itemId(Person::id))
+            })
       }
     }
-
-    @Suppress("FunctionName")
-    inline fun ComponentScope.Button(
-        text: String,
-        noinline onClick: (ClickEvent) -> Unit,
-    ): Text =
-        Text.create(context, android.R.attr.buttonStyle, 0)
-            .text(text)
-            .kotlinStyle(Style.onClick(onClick))
-            .build()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
