@@ -20,6 +20,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -44,12 +46,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class MountStateRemountTest {
   private ComponentContext mContext;
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
@@ -119,11 +123,20 @@ public class MountStateRemountTest {
    */
   @Test
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
-    final LithoView lithoView =
-        ComponentTestHelper.mountComponent(mContext, TestViewComponent.create(mContext).build());
 
-    ComponentTestHelper.mountComponent(
-        mContext, lithoView, TestDrawableComponent.create(mContext).build());
+    mLithoViewRule
+        .setRoot(TestViewComponent.create(mContext).build())
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
+
+    mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
+
+    assertThat(mLithoViewRule.getLithoView().getChildCount()).isEqualTo(1);
+
+    mLithoViewRule
+        .setRoot(TestDrawableComponent.create(mContext).build())
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(5, SizeSpec.EXACTLY));
+
+    assertThat(mLithoViewRule.getLithoView().getDrawables().get(0)).isNotNull();
   }
 
   @Test
