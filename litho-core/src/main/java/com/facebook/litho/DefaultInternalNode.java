@@ -47,7 +47,6 @@ import android.text.TextUtils;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
@@ -1942,12 +1941,5 @@ public class DefaultInternalNode
     }
 
     return ReconciliationMode.COPY;
-  }
-
-  @IntDef({ReconciliationMode.COPY, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
-  @interface ReconciliationMode {
-    int COPY = 0;
-    int RECONCILE = 1;
-    int RECREATE = 2;
   }
 }

@@ -48,7 +48,6 @@ import android.text.TextUtils;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
@@ -1690,18 +1689,5 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     public void freeze(YogaNode node, @Nullable YogaNode parent) {
       this.node.freeze(context, node, parent);
     }
-  }
-
-  @IntDef({
-    ReconciliationMode.REUSE,
-    ReconciliationMode.COPY,
-    ReconciliationMode.RECONCILE,
-    ReconciliationMode.RECREATE
-  })
-  @interface ReconciliationMode {
-    int COPY = 0;
-    int RECONCILE = 1;
-    int RECREATE = 2;
-    int REUSE = 3;
   }
 }

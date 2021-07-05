@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
@@ -343,5 +344,20 @@ public interface InternalNode {
      */
     @Nullable
     TreeProps getPendingTreeProps();
+  }
+
+  @IntDef({
+    ReconciliationMode.REUSE,
+    ReconciliationMode.COPY,
+    ReconciliationMode.RECONCILE,
+    ReconciliationMode.RECREATE
+  })
+  @interface ReconciliationMode {
+    /** Used only for InternalNode's without satatless components */
+    @Deprecated int COPY = 0;
+
+    int RECONCILE = 1;
+    int RECREATE = 2;
+    int REUSE = 3;
   }
 }
