@@ -41,9 +41,15 @@ fun ComponentScope.stringRes(@StringRes id: Int): String =
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
+/** Return a string for a resource ID, substituting the format arguments with [arg]. */
+fun ComponentScope.stringRes(@StringRes id: Int, arg: Any): String =
+    requireNotNull(resourceResolver.resolveStringRes(id, arg)) {
+      "String resource not found for ID #0x${Integer.toHexString(id)}"
+    }
+
 /** Return a string for a resource ID, substituting the format arguments with [formatArgs]. */
 fun ComponentScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): String =
-    requireNotNull(resourceResolver.resolveStringRes(id, formatArgs)) {
+    requireNotNull(resourceResolver.resolveStringRes(id, *formatArgs)) {
       "String resource not found for ID #0x${Integer.toHexString(id)}"
     }
 
