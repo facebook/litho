@@ -32,6 +32,7 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import com.facebook.rendercore.transitions.TransitionUtils;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 /** A Drawable that wraps another drawable. */
@@ -40,8 +41,8 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   public static final int UNSET = -1;
 
-  private T mDrawable;
-  private DrawableMatrix mMatrix;
+  private @Nullable T mDrawable;
+  private @Nullable DrawableMatrix mMatrix;
   private boolean mShouldClipRect;
   private int mWidth;
   private int mHeight;
@@ -210,7 +211,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   @Override
-  public void setColorFilter(ColorFilter cf) {
+  public void setColorFilter(@Nullable ColorFilter cf) {
     if (mDrawable == null) {
       return;
     }
@@ -306,7 +307,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     final int x = (int) event.getX() - bounds.left;
     final int y = (int) event.getY() - bounds.top;
 
-    mDrawable.setHotspot(x, y);
+    Objects.requireNonNull(mDrawable).setHotspot(x, y);
 
     return false;
   }

@@ -189,13 +189,10 @@ public class DefaultInternalNode
   }
 
   protected DefaultInternalNode(ComponentContext componentContext, YogaNode yogaNode) {
-    super();
     mComponentContext = componentContext;
 
-    if (yogaNode != null) {
-      yogaNode.setData(this);
-    }
     mYogaNode = yogaNode;
+    mYogaNode.setData(this);
 
     mDebugComponents = new HashSet<>();
   }
@@ -753,7 +750,7 @@ public class DefaultInternalNode
 
   @Override
   public @Nullable DefaultInternalNode getParent() {
-    if (mYogaNode != null && mYogaNode.getOwner() != null) {
+    if (mYogaNode.getOwner() != null) {
       return (DefaultInternalNode) mYogaNode.getOwner().getData();
     } else {
       return mParent != null ? (DefaultInternalNode) mParent : null;

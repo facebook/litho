@@ -17,6 +17,7 @@
 package com.facebook.litho.config;
 
 import android.os.Build;
+import androidx.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
@@ -24,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 public class DeviceInfoUtils {
 
@@ -79,7 +81,7 @@ public class DeviceInfoUtils {
   public static boolean hasMultipleCores() {
     final int numCores = getNumberOfCPUCores();
 
-    return numCores != DEVICEINFO_UNKNOWN && numCores > 1;
+    return numCores > 1;
   }
 
   /**
@@ -115,16 +117,16 @@ public class DeviceInfoUtils {
    * @param str The CPU core information string, in the format of "0-N"
    * @return The number of cores represented by this string
    */
-  static int getCoresFromFileString(String str) {
+  static int getCoresFromFileString(@Nullable String str) {
     if (str == null || !str.matches("0-[\\d]+$")) {
       return DEVICEINFO_UNKNOWN;
     }
-    int cores = Integer.valueOf(str.substring(2)) + 1;
-    return cores;
+    return Integer.parseInt(str.substring(2)) + 1;
   }
 
   private static int getCoresFromCPUFileList() {
-    return new File("/sys/devices/system/cpu/").listFiles(CPU_FILTER).length;
+    final File[] cpuFiles = new File("/sys/devices/system/cpu/").listFiles(CPU_FILTER);
+    return Objects.requireNonNull(cpuFiles).length;
   }
 
   private static final FileFilter CPU_FILTER =

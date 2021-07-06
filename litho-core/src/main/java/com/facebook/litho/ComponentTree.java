@@ -510,18 +510,14 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable RunnableHandler handler) {
     if (handler == null) {
       handler = new DefaultHandler(getDefaultLayoutThreadLooper());
-    } else {
-      if (sDefaultLayoutThreadLooper != null
-          && sBoostPerfLayoutStateFuture == false
-          && ComponentsConfiguration.boostPerfLayoutStateFuture == true
-          && ComponentsConfiguration.perfBoosterFactory != null) {
-        /**
-         * Right now we don't care about testing this per surface, so we'll use the config value.
-         */
-        LithoPerfBooster booster = ComponentsConfiguration.perfBoosterFactory.acquireInstance();
-        booster.markImportantThread(new Handler(sDefaultLayoutThreadLooper));
-        sBoostPerfLayoutStateFuture = true;
-      }
+    } else if (sDefaultLayoutThreadLooper != null
+        && sBoostPerfLayoutStateFuture == false
+        && ComponentsConfiguration.boostPerfLayoutStateFuture == true
+        && ComponentsConfiguration.perfBoosterFactory != null) {
+      /** Right now we don't care about testing this per surface, so we'll use the config value. */
+      LithoPerfBooster booster = ComponentsConfiguration.perfBoosterFactory.acquireInstance();
+      booster.markImportantThread(new Handler(sDefaultLayoutThreadLooper));
+      sBoostPerfLayoutStateFuture = true;
     }
     return instrumentHandler(handler);
   }

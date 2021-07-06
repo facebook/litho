@@ -52,7 +52,7 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
   }
 
   private static void drawBorder(
-      Canvas canvas, RectF bounds, Path path, float[] radii, Paint paint) {
+      Canvas canvas, RectF bounds, @Nullable Path path, float[] radii, Paint paint) {
     float maxRadii = Math.min(bounds.width(), bounds.height()) / 2f;
     if (path == null) {
       // All radii are the same
@@ -313,14 +313,14 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
   }
 
   @Override
-  public void setColorFilter(ColorFilter colorFilter) {
+  public void setColorFilter(@Nullable ColorFilter colorFilter) {
     if (mPaint != null) {
       mPaint.setColorFilter(colorFilter);
     }
   }
 
   @Override
-  public ColorFilter getColorFilter() {
+  public @Nullable ColorFilter getColorFilter() {
     return mPaint != null ? mPaint.getColorFilter() : null;
   }
 
@@ -335,7 +335,7 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }
@@ -410,7 +410,7 @@ public class BorderColorDrawable extends Drawable implements ComparableDrawable 
 
   public static class Builder {
 
-    private State mState;
+    private final State mState;
 
     public Builder() {
       mState = new State();

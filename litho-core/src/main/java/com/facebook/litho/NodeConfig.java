@@ -25,7 +25,6 @@ import com.facebook.yoga.YogaNode;
 public class NodeConfig {
 
   public interface InternalYogaNodeFactory {
-    @Nullable
     YogaNode create(YogaConfig config);
   }
 

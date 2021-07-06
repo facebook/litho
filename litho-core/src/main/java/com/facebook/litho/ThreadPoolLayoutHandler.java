@@ -30,7 +30,7 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
   public static final LayoutThreadPoolConfiguration DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION =
       new LayoutThreadPoolConfigurationImpl(
           2, 2, ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY);
-  private static ThreadPoolLayoutHandler sInstance;
+  private static volatile ThreadPoolLayoutHandler sInstance;
   private final ThreadPoolExecutor mLayoutThreadPoolExecutor;
 
   private ThreadPoolLayoutHandler(LayoutThreadPoolConfiguration configuration) {
