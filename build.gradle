@@ -44,6 +44,23 @@ subprojects {
     afterEvaluate {
         tasks.withType(com.android.build.gradle.tasks.factory.AndroidUnitTest) {
             it.dependsOn copyYogaLibs
+
+            doFirst {
+                println "::: Before AndroidUnitTest :::"
+                exec {
+                    executable "ls"
+                    args "-al", "${rootDir}/build/jniLibs"
+                }
+            }
+
+            doLast {
+                println "::: After AndroidUnitTest :::"
+                exec {
+                    executable "ls"
+                    args "-al", "${rootDir}/build/jniLibs"
+                }
+            }
+
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
             environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
@@ -133,6 +150,21 @@ ext.deps.yoga =
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
 task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
+    doFirst {
+        println "::: Before copyYogaLibs :::"
+        exec {
+            executable "ls"
+            args "-al", "${rootDir}/build/jniLibs"
+        }
+    }
+    doLast {
+        println "::: After copyYogaLibs :::"
+        exec {
+            executable "ls"
+            args "-al", "${rootDir}/build/jniLibs"
+        }
+    }
+
     from 'buck-out/gen/lib/yogajni/jni#default,shared/'
     include '*.so'
     include '*.dylib'
