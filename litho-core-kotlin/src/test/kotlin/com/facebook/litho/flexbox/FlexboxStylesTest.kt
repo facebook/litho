@@ -430,6 +430,78 @@ class FlexboxStylesTest {
               child<ComponentHost> { bounds(start, top, 100 - start - end, 100 - top - bottom) }
             })
   }
+  @Test
+  fun position_whenAllSet_isRespected() {
+    val all = 10
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .position(all = all.px)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(all, all, 100 - 2 * all, 100 - 2 * all) }
+            })
+  }
+
+  @Test
+  fun position_whenHorizontalSet_isRespected() {
+    val horizontal = 10
+    val all = 50
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .position(all = all.px, horizontal = horizontal.px)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> {
+                bounds(horizontal, 100 - all, 100 - 2 * horizontal, 100 - 2 * all)
+              }
+            })
+  }
+
+  @Test
+  fun position_whenVerticalSet_isRespected() {
+    val vertical = 10
+    val all = 50
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px)) {
+            child(
+                Row(
+                    style =
+                        Style.positionType(YogaPositionType.ABSOLUTE)
+                            .position(vertical = vertical.px, all = all.px)
+                            .wrapInView()))
+          }
+        }
+        .assertMatches(
+            match<LithoView> {
+              bounds(0, 0, 100, 100)
+              child<ComponentHost> { bounds(all, vertical, 100 - 2 * all, 100 - 2 * vertical) }
+            })
+  }
 
   /**
    * Test is using [Layout] and [NodeInfo] classes as a workaround for the issue with 'libyoga.so

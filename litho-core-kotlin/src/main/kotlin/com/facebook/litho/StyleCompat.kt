@@ -354,14 +354,14 @@ class JavaStyle {
     val valueDip = value.dp
     when (yogaEdge) {
       YogaEdge.LEFT -> style = style.position(left = valueDip)
-      YogaEdge.VERTICAL -> TODO("No matching functionality on Style yet")
+      YogaEdge.VERTICAL -> style = style.position(vertical = valueDip)
       YogaEdge.TOP -> style = style.position(top = valueDip)
       YogaEdge.RIGHT -> style = style.position(right = valueDip)
       YogaEdge.BOTTOM -> style = style.position(bottom = valueDip)
       YogaEdge.START -> style = style.position(start = valueDip)
       YogaEdge.END -> style = style.position(end = valueDip)
-      YogaEdge.HORIZONTAL -> TODO("No matching functionality on Style yet")
-      YogaEdge.ALL -> TODO("No matching functionality on Style yet")
+      YogaEdge.HORIZONTAL -> style = style.position(horizontal = valueDip)
+      YogaEdge.ALL -> style = style.position(all = valueDip)
     }.exhaustive
     return this
   }
@@ -370,14 +370,14 @@ class JavaStyle {
     val valuePx = value.px
     when (yogaEdge) {
       YogaEdge.LEFT -> style = style.position(left = valuePx)
-      YogaEdge.VERTICAL -> style = TODO("No matching functionality on Style yet")
+      YogaEdge.VERTICAL -> style = style.position(vertical = valuePx)
       YogaEdge.TOP -> style = style.position(top = valuePx)
       YogaEdge.RIGHT -> style = style.position(right = valuePx)
       YogaEdge.BOTTOM -> style = style.position(bottom = valuePx)
       YogaEdge.START -> style = style.position(start = valuePx)
       YogaEdge.END -> style = style.position(end = valuePx)
-      YogaEdge.HORIZONTAL -> style = TODO("No matching functionality on Style yet")
-      YogaEdge.ALL -> style = TODO("No matching functionality on Style yet")
+      YogaEdge.HORIZONTAL -> style = style.position(horizontal = valuePx)
+      YogaEdge.ALL -> style = style.position(all = valuePx)
     }.exhaustive
     return this
   }

@@ -31,12 +31,15 @@ import com.facebook.yoga.YogaPositionType
 /** Enums for [FlexboxDimenStyleItem]. */
 private enum class FlexboxDimenField {
   FLEX_BASIS,
+  POSITION_ALL,
   POSITION_START,
   POSITION_TOP,
   POSITION_END,
   POSITION_BOTTOM,
   POSITION_LEFT,
   POSITION_RIGHT,
+  POSITION_HORIZONTAL,
+  POSITION_VERTICAL,
 }
 
 /** Enums for [FlexboxFloatStyleItem]. */
@@ -61,12 +64,16 @@ private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dim
     val pixelValue = value.toPixels(resourceResolver)
     when (field) {
       FlexboxDimenField.FLEX_BASIS -> commonProps.flexBasisPx(pixelValue)
+      FlexboxDimenField.POSITION_ALL -> commonProps.positionPx(YogaEdge.ALL, pixelValue)
       FlexboxDimenField.POSITION_START -> commonProps.positionPx(YogaEdge.START, pixelValue)
       FlexboxDimenField.POSITION_END -> commonProps.positionPx(YogaEdge.END, pixelValue)
       FlexboxDimenField.POSITION_TOP -> commonProps.positionPx(YogaEdge.TOP, pixelValue)
       FlexboxDimenField.POSITION_BOTTOM -> commonProps.positionPx(YogaEdge.BOTTOM, pixelValue)
       FlexboxDimenField.POSITION_LEFT -> commonProps.positionPx(YogaEdge.LEFT, pixelValue)
       FlexboxDimenField.POSITION_RIGHT -> commonProps.positionPx(YogaEdge.RIGHT, pixelValue)
+      FlexboxDimenField.POSITION_HORIZONTAL ->
+          commonProps.positionPx(YogaEdge.HORIZONTAL, pixelValue)
+      FlexboxDimenField.POSITION_VERTICAL -> commonProps.positionPx(YogaEdge.VERTICAL, pixelValue)
     }.exhaustive
   }
 }
@@ -160,20 +167,26 @@ fun Style.aspectRatio(aspectRatio: Float) =
  * See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  */
 fun Style.position(
+    all: Dimen? = null,
     start: Dimen? = null,
     top: Dimen? = null,
     end: Dimen? = null,
     bottom: Dimen? = null,
     left: Dimen? = null,
     right: Dimen? = null,
+    vertical: Dimen? = null,
+    horizontal: Dimen? = null
 ) =
     this +
+        all?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_ALL, it) } +
         start?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_START, it) } +
         top?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_TOP, it) } +
         end?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_END, it) } +
         bottom?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_BOTTOM, it) } +
         left?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_LEFT, it) } +
-        right?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_RIGHT, it) }
+        right?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_RIGHT, it) } +
+        vertical?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_VERTICAL, it) } +
+        horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_HORIZONTAL, it) }
 
 /** See docs in [position]. */
 fun Style.positionType(positionType: YogaPositionType) =
