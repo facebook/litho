@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Wraps objects which should only be available for the duration of a LayoutState, to access them in
@@ -38,7 +39,7 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private final Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo = new HashMap<>();
+  private final Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo = new ConcurrentHashMap<>();
   private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
