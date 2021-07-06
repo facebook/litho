@@ -293,9 +293,6 @@ def fb_java_test(*args, **kwargs):
 def litho_android_library(name, srcs = None, *args, **kwargs):
     srcs = srcs or []
 
-    # This has no meaning in OSS.
-    kwargs.pop("fblite", None)
-
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
     kwargs.pop("autoglob", False)
