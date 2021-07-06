@@ -52,5 +52,6 @@
     <activity android:name=".logging.LoggingActivity" />
     <activity android:name=".collection.FixedItemsCollectionActivity" />
     <activity android:name=".collection.ChangeableItemsCollectionActivity" />
+    <activity android:name=".collection.ScrollToCollectionActivity" />
   </application>
 </manifest>

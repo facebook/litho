@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
+import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
@@ -68,6 +69,7 @@ fun ComponentScope.RecyclerCollectionComponent(
     startupLogger: LithoStartupLogger? = null,
     stickyHeaderControllerFactory: StickyHeaderControllerFactory? = null,
     sectionsViewLogger: SectionsRecylerViewLogger? = null,
+    handle: Handle? = null,
     style: Style? = null,
 ): RecyclerCollectionComponent =
     RecyclerCollectionComponent.create(context)
@@ -98,5 +100,6 @@ fun ComponentScope.RecyclerCollectionComponent(
         .startupLogger(startupLogger)
         .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
         .sectionsViewLogger(sectionsViewLogger)
+        .handle(handle)
         .kotlinStyle(style)
         .build()

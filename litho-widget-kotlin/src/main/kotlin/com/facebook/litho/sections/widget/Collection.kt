@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ContainerDsl
 import com.facebook.litho.Dimen
+import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.sections.Children
@@ -89,6 +90,7 @@ inline fun ComponentScope.Collection(
             lastFullyVisibleIndex: Int) -> Unit)? =
         null,
     noinline onDataBound: ((c: ComponentContext) -> Unit)? = null,
+    handle: Handle? = null,
     init: CollectionContainerScope.() -> Unit,
 ): RecyclerCollectionComponent {
   val containerScope = CollectionContainerScope(context)
@@ -143,8 +145,14 @@ inline fun ComponentScope.Collection(
       sectionTreeTag = sectionTreeTag,
       startupLogger = startupLogger,
       stickyHeaderControllerFactory = stickyHeaderControllerFactory,
+      handle = handle,
       style = style,
   )
+}
+
+object CollectionUtils {
+  fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
+      RecyclerCollectionComponent.onScroll(c, handle, position, false /* ignored */)
 }
 
 @ContainerDsl
