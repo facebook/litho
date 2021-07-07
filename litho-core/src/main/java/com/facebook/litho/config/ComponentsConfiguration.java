@@ -124,12 +124,6 @@ public class ComponentsConfiguration {
   public static boolean enableThreadTracingStacktrace = false;
 
   /**
-   * Whether the background thread that's currently running the layout should have its priority
-   * raised to the thread priority of the UI thread.
-   */
-  public static boolean inheritPriorityFromUiThread = false;
-
-  /**
    * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This
    * will also disable the associated layout caching.
    */
