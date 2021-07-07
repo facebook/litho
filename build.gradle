@@ -56,6 +56,12 @@ subprojects {
     }
 }
 
+allprojects {
+    tasks.withType(Javadoc).all {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
 ext {
     minSdkVersion = 15
     targetSdkVersion = 28
