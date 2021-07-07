@@ -3630,26 +3630,6 @@ public class RecyclerBinder
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
         if (!componentTreeHolder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
-
-          if (ComponentsConfiguration.computeRangeOnSyncLayout) {
-            // Since synchronous layout is about to happen, and the ScrollListener that updates the
-            // visible and working ranges will not fire until after the full frame is rendered,
-            // we want to kick off background layout for the estimated visible range in the
-            // scrolling direction in an attempt to take advantage of more parallel layout.
-            if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
-                && mCurrentLastVisiblePosition != RecyclerView.NO_POSITION) {
-              // Get the last known visible range if available.
-              final int range = mCurrentLastVisiblePosition - mCurrentFirstVisiblePosition;
-              if (position > mCurrentLastVisiblePosition) {
-                // Scrolling down
-                computeRange(position, position + range, RecyclerRangeTraverser.FORWARD_TRAVERSER);
-              } else if (position < mCurrentFirstVisiblePosition) {
-                // Scrolling up
-                computeRange(position - range, position, RecyclerRangeTraverser.BACKWARD_TRAVERSER);
-              }
-            }
-          }
-
           final Size size = new Size();
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
