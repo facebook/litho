@@ -250,8 +250,6 @@ public class ComponentsConfiguration {
    */
   @Deprecated public static boolean ignoreNullLayoutStateError = false;
 
-  public static boolean interruptUseCurrentLayoutSource = false;
-
   /** When the LithoView visibility changes, rebind */
   public static boolean rebindWhenVisibilityChanges = false;
 

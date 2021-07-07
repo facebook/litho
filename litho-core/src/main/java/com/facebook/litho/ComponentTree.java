@@ -377,8 +377,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
-  private final boolean mInterruptUseCurrentLayoutSource;
-
   private final boolean mForceAsyncStateUpdate;
 
   private final @Nullable String mLogTag;
@@ -426,7 +424,6 @@ public class ComponentTree implements LithoLifecycleListener {
     addMeasureListener(builder.mMeasureListener);
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
-    mInterruptUseCurrentLayoutSource = ComponentsConfiguration.interruptUseCurrentLayoutSource;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
@@ -3002,8 +2999,6 @@ public class ComponentTree implements LithoLifecycleListener {
       final boolean didRaiseThreadPriority;
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
-      final boolean isSyncLayout =
-          mInterruptUseCurrentLayoutSource ? isFromSyncLayout(source) : isFromSyncLayout;
 
       if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
         return null;
@@ -3012,7 +3007,7 @@ public class ComponentTree implements LithoLifecycleListener {
       if (isMainThread() && shouldWaitForResult) {
         // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
         // the bg task is interrupted.
-        if (mMoveLayoutsBetweenThreads && !isSyncLayout) {
+        if (mMoveLayoutsBetweenThreads && !isFromSyncLayout) {
           interrupt();
           interruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
