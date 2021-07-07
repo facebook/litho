@@ -1389,11 +1389,7 @@ public class ComponentHost extends Host implements DisappearingHost {
 
   @Override
   public boolean hasOverlappingRendering() {
-    if (!ComponentsConfiguration.hostHasOverlappingRendering) {
-      // hostHasOverlappingRendering defaults to true. If it's false, then it
-      // means hasOverlappingRendering should always be false.
-      return false;
-    } else if (getWidth() <= 0 || getHeight() <= 0) {
+    if (getWidth() <= 0 || getHeight() <= 0) {
       // Views with size zero can't possibly have overlapping rendering.
       // Returning false here prevents the rendering system from creating
       // zero-sized layers, which causes crashes.

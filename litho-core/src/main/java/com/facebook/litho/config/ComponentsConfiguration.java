@@ -229,8 +229,6 @@ public class ComponentsConfiguration {
 
   public static boolean useTreePropsfromContext = false;
 
-  public static boolean hostHasOverlappingRendering = true;
-
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
 
   public static int overlappingRenderingViewSizeLimit = Integer.MAX_VALUE;
