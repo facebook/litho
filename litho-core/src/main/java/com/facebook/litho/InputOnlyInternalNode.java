@@ -1456,18 +1456,14 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         layout = current;
         break;
       case ReconciliationMode.COPY:
-        if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
-          layout = current.deepClone();
-        } else {
-          layout =
-              reconcile(
-                  parentContext.getLayoutStateContext(),
-                  current,
-                  next,
-                  nextKey,
-                  keys,
-                  ReconciliationMode.COPY);
-        }
+        layout =
+            reconcile(
+                parentContext.getLayoutStateContext(),
+                current,
+                next,
+                nextKey,
+                keys,
+                ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
         layout =

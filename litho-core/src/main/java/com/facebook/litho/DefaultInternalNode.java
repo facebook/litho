@@ -1730,18 +1730,14 @@ public class DefaultInternalNode
 
     switch (mode) {
       case ReconciliationMode.COPY:
-        if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
-          layout = current.deepClone();
-        } else {
-          layout =
-              reconcile(
-                  parentContext.getLayoutStateContext(),
-                  current,
-                  next,
-                  nextKey,
-                  keys,
-                  ReconciliationMode.COPY);
-        }
+        layout =
+            reconcile(
+                parentContext.getLayoutStateContext(),
+                current,
+                next,
+                nextKey,
+                keys,
+                ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
         layout =

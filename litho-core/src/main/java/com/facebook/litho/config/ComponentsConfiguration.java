@@ -179,12 +179,6 @@ public class ComponentsConfiguration {
    */
   public static boolean boostPerfLayoutStateFuture;
 
-  /**
-   * When enabled reconciliation will use the deep clone method of the InternalNode with the
-   * simplified implementation of shallow copy.
-   */
-  public static boolean shouldUseDeepCloneDuringReconciliation = false;
-
   /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */
   public static boolean shouldForceAsyncStateUpdate = false;
 
