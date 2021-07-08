@@ -143,7 +143,7 @@ public class ComponentsConfiguration {
   public static boolean enableRenderInfoDebugging = false;
 
   public static boolean useCancelableLayoutFutures;
-  public static boolean canInterruptAndMoveLayoutsBetweenThreads = false;
+  public static boolean canInterruptAndMoveLayoutsBetweenThreads = true;
 
   /**
    * field.getAnnotation() has bugs which is causing java crashes in the App, in addition to this we
