@@ -38,7 +38,7 @@ class FixedItemsCollectionActivity : NavigatableDemoActivity() {
       val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
       return Column(style = Style.padding(16.dp)) {
         child(
-            Collection(disablePTR = true, style = Style.flex(grow = 1f)) {
+            Collection(style = Style.flex(grow = 1f)) {
               item(Text(text = "Header"))
               items(friends.map { Text(text = it) })
               item(Text(text = "Footer"))

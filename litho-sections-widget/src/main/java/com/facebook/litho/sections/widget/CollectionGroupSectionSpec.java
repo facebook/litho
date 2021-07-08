@@ -23,7 +23,9 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnDataBound;
+import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
+import kotlin.jvm.functions.Function0;
 
 @GroupSectionSpec
 class CollectionGroupSectionSpec {
@@ -73,5 +75,11 @@ class CollectionGroupSectionSpec {
           firstFullyVisibleIndex,
           lastFullyVisibleIndex);
     }
+  }
+
+  @OnRefresh
+  static void onRefresh(
+      SectionContext c, @Prop(optional = true) Function0<kotlin.Unit> onPullToRefresh) {
+    onPullToRefresh.invoke();
   }
 }

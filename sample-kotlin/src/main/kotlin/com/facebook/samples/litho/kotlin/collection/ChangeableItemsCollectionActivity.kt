@@ -64,7 +64,6 @@ class ChangeableItemsCollectionActivity : NavigatableDemoActivity() {
             })
         child(
             Collection(
-                disablePTR = true,
                 style = Style.flex(grow = 1f),
                 onViewportChangedFunction = { _, _, _, _, _, _ ->
                   Log.d("litho-kotlin", "onViewportChangedFunction")

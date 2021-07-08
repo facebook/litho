@@ -22,7 +22,6 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
-import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
@@ -30,26 +29,31 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sections.widget.CollectionUtils
 import com.facebook.litho.setContent
+import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
+import kotlin.random.Random
 
-class ScrollToCollectionActivity : NavigatableDemoActivity() {
+class PullToRefreshCollectionActivity : NavigatableDemoActivity() {
 
   class CollectionComponent : KComponent() {
 
+    private fun generateRandomNumbers(): List<Int> = List(50) { Random.nextInt(0, 100) }
+
     override fun ComponentScope.render(): Component? {
+      val list = useState { generateRandomNumbers() }
       val handle = Handle()
+
       return Column(style = Style.padding(16.dp)) {
-        child(
-            Row {
-              child(Button("First") { CollectionUtils.scrollTo(context, handle, 0) })
-              child(Button("Position 10") { CollectionUtils.scrollTo(context, handle, 10) })
-            })
         child(
             Collection(
                 handle = handle,
                 style = Style.flex(grow = 1f),
-            ) { items((0..99).map { Text("$it ") }) })
+                onPullToRefresh = {
+                  list.update(generateRandomNumbers())
+                  CollectionUtils.clearRefreshing(context, handle)
+                },
+            ) { items(list.value.map { Text("$it") }) })
       }
     }
   }

@@ -53,5 +53,6 @@
     <activity android:name=".collection.FixedItemsCollectionActivity" />
     <activity android:name=".collection.ChangeableItemsCollectionActivity" />
     <activity android:name=".collection.ScrollToCollectionActivity" />
+    <activity android:name=".collection.PullToRefreshCollectionActivity" />
   </application>
 </manifest>

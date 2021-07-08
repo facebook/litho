@@ -26,6 +26,7 @@ import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsActiv
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsActivity
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionActivity
 import com.facebook.samples.litho.kotlin.collection.FixedItemsCollectionActivity
+import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionActivity
 import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionActivity
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyActivity
@@ -72,6 +73,9 @@ object DataModels {
                           klass = ChangeableItemsCollectionActivity::class.java),
                       DemoListDataModel(
                           name = "Scroll to items", klass = ScrollToCollectionActivity::class.java),
+                      DemoListDataModel(
+                          name = "Pull to Refresh",
+                          klass = PullToRefreshCollectionActivity::class.java),
                   )),
       )
 

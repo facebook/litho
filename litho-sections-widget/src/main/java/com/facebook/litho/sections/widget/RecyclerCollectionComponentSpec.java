@@ -444,6 +444,12 @@ public class RecyclerCollectionComponentSpec {
     sectionTree.setTargetConfig(new SectionTree.Target.DynamicConfig(commitPolicy));
   }
 
+  @OnTrigger(ClearRefreshingEvent.class)
+  static void onClearRefreshing(
+      ComponentContext c, @State RecyclerCollectionEventsController internalEventsController) {
+    internalEventsController.clearRefreshing();
+  }
+
   @OnDetached
   static void onDetached(ComponentContext c, @State Binder<RecyclerView> binder) {
     binder.detach();

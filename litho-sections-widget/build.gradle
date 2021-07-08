@@ -47,6 +47,8 @@ dependencies {
     compileOnly deps.supportAnnotations
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
+
+    implementation deps.kotlinStandardLib
 }
 
 apply from: rootProject.file('gradle/release.gradle')

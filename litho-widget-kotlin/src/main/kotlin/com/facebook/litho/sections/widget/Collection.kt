@@ -67,7 +67,6 @@ inline fun ComponentScope.Collection(
     recyclerViewEndPadding: Dimen? = null,
     recyclerViewTopPadding: Dimen? = null,
     recyclerViewBottomPadding: Dimen? = null,
-    disablePTR: Boolean = false,
     nestedScrollingEnabled: Boolean = RecyclerCollectionComponentSpec.nestedScrollingEnabled,
     scrollBarStyle: Int = RecyclerCollectionComponentSpec.scrollBarStyle,
     recyclerViewId: Int = RecyclerCollectionComponentSpec.recyclerViewId,
@@ -75,7 +74,6 @@ inline fun ComponentScope.Collection(
     refreshProgressBarColor: Int = RecyclerCollectionComponentSpec.refreshProgressBarColor,
     touchInterceptor: LithoRecylerView.TouchInterceptor? = null,
     itemTouchListener: RecyclerView.OnItemTouchListener? = null,
-    eventsController: RecyclerCollectionEventsController? = null,
     sectionTreeTag: String? = null,
     startupLogger: LithoStartupLogger? = null,
     stickyHeaderControllerFactory: StickyHeaderControllerFactory? = null,
@@ -91,6 +89,7 @@ inline fun ComponentScope.Collection(
         null,
     noinline onDataBound: ((c: ComponentContext) -> Unit)? = null,
     handle: Handle? = null,
+    noinline onPullToRefresh: (() -> Unit)? = null,
     init: CollectionContainerScope.() -> Unit,
 ): RecyclerCollectionComponent {
   val containerScope = CollectionContainerScope(context)
@@ -116,6 +115,7 @@ inline fun ComponentScope.Collection(
                   lastFullyVisibleIndex)
             }
           }
+          .onPullToRefresh(onPullToRefresh)
           .build()
 
   return RecyclerCollectionComponent(
@@ -133,7 +133,7 @@ inline fun ComponentScope.Collection(
       recyclerViewEndPadding = recyclerViewEndPadding,
       recyclerViewTopPadding = recyclerViewTopPadding,
       recyclerViewBottomPadding = recyclerViewBottomPadding,
-      disablePTR = disablePTR,
+      disablePTR = onPullToRefresh == null,
       nestedScrollingEnabled = nestedScrollingEnabled,
       scrollBarStyle = scrollBarStyle,
       recyclerViewId = recyclerViewId,
@@ -141,7 +141,6 @@ inline fun ComponentScope.Collection(
       refreshProgressBarColor = refreshProgressBarColor,
       touchInterceptor = touchInterceptor,
       itemTouchListener = itemTouchListener,
-      eventsController = eventsController,
       sectionTreeTag = sectionTreeTag,
       startupLogger = startupLogger,
       stickyHeaderControllerFactory = stickyHeaderControllerFactory,
@@ -153,6 +152,10 @@ inline fun ComponentScope.Collection(
 object CollectionUtils {
   fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
       RecyclerCollectionComponent.onScroll(c, handle, position, false /* ignored */)
+
+  fun clearRefreshing(c: ComponentContext, handle: Handle) {
+    RecyclerCollectionComponent.onClearRefreshing(c, handle)
+  }
 }
 
 @ContainerDsl
