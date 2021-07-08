@@ -269,4 +269,8 @@ public class ComponentsConfiguration {
    * preallocation for nested trees.
    */
   public static boolean enableNestedTreePreallocation = false;
+
+  public static boolean enableVisibilityExtension = true;
+
+  public static boolean enableTransitionsExtension = true;
 }

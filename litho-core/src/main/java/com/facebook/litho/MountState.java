@@ -148,8 +148,8 @@ class MountState implements MountDelegateTarget {
 
   private final MountItem mRootHostMountItem;
 
-  private final VisibilityMountExtension mVisibilityExtension;
-  private final ExtensionState mVisibilityExtensionState;
+  private final @Nullable VisibilityMountExtension mVisibilityExtension;
+  private final @Nullable ExtensionState mVisibilityExtensionState;
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
 
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
@@ -174,16 +174,28 @@ class MountState implements MountDelegateTarget {
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
 
-    mVisibilityExtension = VisibilityMountExtension.getInstance();
-    mVisibilityExtensionState = mVisibilityExtension.createExtensionState(new MountDelegate(this));
-    VisibilityMountExtension.setRootHost(mVisibilityExtensionState, mLithoView);
+    if (ComponentsConfiguration.enableVisibilityExtension) {
+      mVisibilityExtension = VisibilityMountExtension.getInstance();
+      mVisibilityExtensionState =
+          mVisibilityExtension.createExtensionState(new MountDelegate(this));
+      VisibilityMountExtension.setRootHost(mVisibilityExtensionState, mLithoView);
+    } else {
+      mVisibilityExtension = null;
+      mVisibilityExtensionState = null;
+    }
 
     // Using Incremental Mount Extension and the Transition Extension here is not allowed.
-    if (!mLithoView.usingExtensionsWithMountDelegate()) {
-      mTransitionsExtension =
-          TransitionsExtension.getInstance((AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
-      registerMountDelegateExtension(mTransitionsExtension);
-      mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
+    if (ComponentsConfiguration.enableTransitionsExtension) {
+      if (!mLithoView.usingExtensionsWithMountDelegate()) {
+        mTransitionsExtension =
+            TransitionsExtension.getInstance(
+                (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
+        registerMountDelegateExtension(mTransitionsExtension);
+        mTransitionsExtensionState = getExtensionState(mTransitionsExtension);
+      }
+    } else {
+      mTransitionsExtension = null;
+      mTransitionsExtensionState = null;
     }
   }
 
@@ -841,7 +853,9 @@ class MountState implements MountDelegateTarget {
   }
 
   void clearVisibilityItems() {
-    VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
+    if (mVisibilityExtension != null) {
+      VisibilityMountExtension.clearVisibilityItems(mVisibilityExtensionState);
+    }
   }
 
   private void registerHost(long id, ComponentHost host) {
