@@ -245,6 +245,8 @@ LITHO_FRESCO_PIPELINE_TARGET = [make_dep_path("lib/fresco:imagepipeline")]
 
 def litho_robolectric4_test(
         name,
+        language = "KOTLIN",
+        pure_kotlin = False,
         *args,
         **kwargs):
     """Tests that can successfully run from the library root folder."""
@@ -276,6 +278,8 @@ def litho_robolectric4_test(
     native.robolectric_test(
         name = name,
         annotation_processor_params = annotation_processor_params,
+        language = language,
+        pure_kotlin = pure_kotlin,
         *args,
         **kwargs
     )

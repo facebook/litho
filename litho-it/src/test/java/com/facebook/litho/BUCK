@@ -39,15 +39,16 @@ litho_robolectric4_test(
     srcs = glob(
         [
             "**/*.java",
+            "**/*.kt",
         ],
         exclude = [
-            "animation/**/*.java",
-            "dataflow/**/*.java",
-            "intellij/**/*.java",
-            "sections/specmodels/**/*.java",
-            "processor/**/*.java",
-            "specmodels/**/*.java",
-            "testing/**/*.java",
+            "animation/**/*",
+            "dataflow/**/*",
+            "intellij/**/*",
+            "sections/specmodels/**/*",
+            "processor/**/*",
+            "specmodels/**/*",
+            "testing/**/*",
         ],
     ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
