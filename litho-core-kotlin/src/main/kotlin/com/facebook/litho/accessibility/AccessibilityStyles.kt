@@ -52,7 +52,7 @@ private class AccessibilityStyleItem(val field: AccessibilityField, val value: A
       AccessibilityField.CONTENT_DESCRIPTION ->
           commonProps.contentDescription(value as CharSequence)
       AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY ->
-          commonProps.importantForAccessibility((value as ImportantForAccessibility).asInt)
+          commonProps.importantForAccessibility(value as Int)
       AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO ->
           commonProps.onInitializeAccessibilityNodeInfoHandler(
               eventHandler(value as (OnInitializeAccessibilityNodeInfoEvent) -> Unit))
@@ -105,7 +105,7 @@ fun Style.contentDescription(contentDescription: CharSequence) =
 fun Style.importantForAccessibility(importantForAccessibility: ImportantForAccessibility) =
     this +
         AccessibilityStyleItem(
-            AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility)
+            AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility.asInt)
 
 /**
  * Initializes an [AccessibilityNodeInfoCompat] with information about the host view.
