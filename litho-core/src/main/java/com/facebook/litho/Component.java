@@ -471,6 +471,10 @@ public abstract class Component
     return false;
   }
 
+  protected boolean implementsShouldUpdate() {
+    return false;
+  }
+
   /**
    * @return {@code true} iff the {@link LayoutSpec} implements {@link
    *     OnShouldCreateLayoutWithNewSizeSpec} to {@code true}.
@@ -746,7 +750,7 @@ public abstract class Component
           shouldUpdate(previousScopedContext, currentComponent, nextScopedContext, nextComponent);
     }
 
-    if (ComponentsConfiguration.useTreePropsfromContext) {
+    if (ComponentsConfiguration.useTreePropsfromContext && !implementsShouldUpdate()) {
       return shouldUpdate
           || (previousScopedContext != null
               && nextScopedContext != null

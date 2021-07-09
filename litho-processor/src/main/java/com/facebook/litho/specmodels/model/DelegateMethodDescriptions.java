@@ -356,6 +356,14 @@ public final class DelegateMethodDescriptions {
           .name("shouldUpdate")
           .definedParameterTypes(ImmutableList.of())
           .optionalParameterTypes(ImmutableList.of(DIFF_PROP, DIFF_STATE, INJECT_PROP))
+          .extraMethods(
+              ImmutableList.of(
+                  MethodSpec.methodBuilder("implementsShouldUpdate")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PUBLIC)
+                      .returns(TypeName.BOOLEAN)
+                      .addStatement("return true")
+                      .build()))
           .build();
 
   public static final DelegateMethodDescription ON_POPULATE_ACCESSIBILITY_NODE =

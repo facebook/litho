@@ -406,6 +406,11 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
+  public boolean implementsShouldUpdate() {
+    return true;
+  }
+
+  @Override
   protected MountContentPool onCreateMountContentPool() {
     MountContentPool _result;
     _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
