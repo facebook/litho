@@ -16,15 +16,13 @@
 
 package com.facebook.litho
 
-import kotlin.reflect.KClass
-
 /**
  * Defines a single tree prop, i.e. a mapping from type to concrete instance of that type that is
  * visible to the subtree, to be used with [TreePropProvider].
  *
  * You can create a Pair with the `to` infix function, e.g. `String::class to "Hello World!"`.
  */
-typealias ClassValuePair<T> = Pair<KClass<T>, T>
+typealias ClassValuePair<T> = Pair<Class<T>, T>
 
 /**
  * A component which provides one or more tree props to the given child hierarchy. A tree prop is a
@@ -50,7 +48,7 @@ class TreePropProviderImpl(
     private val child: Component
 ) : KComponent() {
   override fun ComponentScope.render(): Component {
-    props.forEach { createTreeProp(it.first.javaObjectType, it.second) }
+    props.forEach { createTreeProp(it.first, it.second) }
     return child
   }
 }

@@ -27,7 +27,7 @@ class LoggingChildComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
     val parent = useTreeProp<LogContext>()
 
-    return TreePropProvider(LogContext::class to parent.append("child")) {
+    return TreePropProvider(LogContext::class.java to parent.append("child")) {
       Text(text = "Hello, Logger.")
     }
   }

@@ -23,6 +23,8 @@ import com.facebook.litho.TreePropProvider
 
 class LoggingRootComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
-    return TreePropProvider(LogContext::class to LogContext("root")) { LoggingChildComponent() }
+    return TreePropProvider(LogContext::class.java to LogContext("root")) {
+      LoggingChildComponent()
+    }
   }
 }
