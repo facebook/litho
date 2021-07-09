@@ -18,20 +18,21 @@
 
 package com.facebook.litho
 
+import androidx.annotation.UiThread
 import com.facebook.litho.annotations.Hook
 
 /** A simple mutable holder of a value. */
-class Ref<T>(var value: T)
+class Ref<T>(@UiThread var value: T)
 
 /**
- * Declares a mutable reference that will be persisted across renders with an initial value provided
- * by the initializer. It's similar to [useState], except that the returned reference is mutable and
- * updating it will *not* cause a re-render.
+ * Declares a mutable, main-thread confined reference that will be persisted across renders with an
+ * initial value provided by the initializer. It's similar to [useState], except that the returned
+ * reference is mutable and updating it will *not* cause a re-render.
  *
- * Note: Since [Ref] is mutable, you must also consider thread-safety! This means that generally
- * speaking, the value should only be read/written from the UI thread. For example, a safe way to
- * use `useRef` is to store an Animator that is started/stopped from [useEffect]
- * - this is because useEffect always runs on the UI thread.
+ * IMPORTANT: It's only safe to read/write the [Ref]'s value on the main thread!
+ *
+ * An example of a safe way to use `useRef` is to store an Animator that is started/stopped from
+ * [useEffect] or a click event, both of which run on the UI thread.
  */
 @Hook
 fun <T> ComponentScope.useRef(initializer: () -> T): Ref<T> = useState { Ref(initializer()) }.value
