@@ -292,7 +292,7 @@ public class LithoViewRule implements TestRule {
     return null;
   }
 
-  protected @Nullable LayoutState getCommittedLayoutState() {
+  public @Nullable LayoutState getCommittedLayoutState() {
     return getComponentTree().getCommittedLayoutState();
   }
 

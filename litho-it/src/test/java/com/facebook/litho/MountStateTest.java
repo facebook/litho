@@ -18,17 +18,21 @@ package com.facebook.litho;
 
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
+import com.facebook.litho.widget.EmptyComponent;
 import com.facebook.litho.widget.Progress;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.TextInput;
+import com.facebook.rendercore.RenderTree;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -196,5 +200,32 @@ public class MountStateTest {
 
     ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
     ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
+  }
+
+  @Test
+  public void onSetRootWithNullComponentWithStatelessness_shouldMountWithoutCrashing() {
+    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
+    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(true);
+    TempComponentsConfigurations.setUseStatelessComponent(true);
+
+    mLithoViewRule
+        .attachToWindow()
+        .setRoot(EmptyComponent.create(mLithoViewRule.getContext()))
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    assertThat(mLithoViewRule.getCurrentRootNode()).isSameAs(NullLayoutResult.INSTANCE);
+    assertThat(mLithoViewRule.getLithoView().getChildCount()).isEqualTo(0);
+
+    final RenderTree tree = mLithoViewRule.getCommittedLayoutState().toRenderTree();
+
+    assertThat(tree.getMountableOutputCount()).isEqualTo(1);
+    assertThat(tree.getRoot()).isSameAs(tree.getRenderTreeNodeAtIndex(0));
+    assertThat(tree.getRenderTreeNodeIndex(ROOT_HOST_ID)).isEqualTo(0);
+
+    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
+    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
+    TempComponentsConfigurations.restoreUseStatelessComponent();
   }
 }

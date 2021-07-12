@@ -1763,27 +1763,7 @@ public class LayoutState
     final RenderTreeNode root;
 
     if (mMountableOutputs.isEmpty()) {
-      final Component component = Column.create(mContext).build();
-      final ComponentContext scopedContext = component.updateInternalChildState(mContext, null);
-      final LayoutOutput output =
-          new LayoutOutput(
-              scopedContext,
-              null,
-              null,
-              component,
-              scopedContext.getGlobalKey(),
-              new Rect(),
-              0,
-              0,
-              0,
-              0,
-              IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-              mContext.getAndroidContext().getResources().getConfiguration().orientation,
-              null);
-      output.setId(ROOT_HOST_ID);
-      addMountableOutput(this, output, null);
-      addLayoutOutputIdToPositionsMap(
-          mOutputsIdToPositionMap, output, mMountableOutputs.size() - 1);
+      addRootHostLayoutOutput(this, NullLayoutResult.INSTANCE, null);
     }
 
     root = mMountableOutputs.get(0);

@@ -23,11 +23,44 @@ public class TempComponentsConfigurations {
   private static final boolean originalShouldDisableDrawableOutputs =
       ComponentsConfiguration.shouldDisableDrawableOutputs;
 
+  private static final boolean originalUseStatelessComponent =
+      ComponentsConfiguration.useStatelessComponent;
+
+  private static final boolean originalDelegateToRenderCoreMount =
+      ComponentsConfiguration.delegateToRenderCoreMount;
+
+  private static final boolean originalExtensionsWithMountDelegate =
+      ComponentsConfiguration.useExtensionsWithMountDelegate;
+
   public static void setShouldDisableDrawableOutputs(boolean value) {
     ComponentsConfiguration.shouldDisableDrawableOutputs = value;
   }
 
   public static void restoreShouldDisableDrawableOutputs() {
     ComponentsConfiguration.shouldDisableDrawableOutputs = originalShouldDisableDrawableOutputs;
+  }
+
+  public static void setUseStatelessComponent(boolean value) {
+    ComponentsConfiguration.useStatelessComponent = value;
+  }
+
+  public static void restoreUseStatelessComponent() {
+    ComponentsConfiguration.useStatelessComponent = originalUseStatelessComponent;
+  }
+
+  public static void setDelegateToRenderCoreMount(boolean value) {
+    ComponentsConfiguration.delegateToRenderCoreMount = value;
+  }
+
+  public static void restoreDelegateToRenderCoreMount() {
+    ComponentsConfiguration.delegateToRenderCoreMount = originalDelegateToRenderCoreMount;
+  }
+
+  public static void setUseExtensionsWithMountDelegate(boolean value) {
+    ComponentsConfiguration.delegateToRenderCoreMount = value;
+  }
+
+  public static void restoreUseExtensionsWithMountDelegate() {
+    ComponentsConfiguration.useExtensionsWithMountDelegate = originalExtensionsWithMountDelegate;
   }
 }
