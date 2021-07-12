@@ -2487,7 +2487,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = componentSpy.getLayoutCreatedInWillRender(c);
     assertThat(cachedLayout).isNotNull();
 
-    c.setLayoutStateContextSafely(null);
+    c.setLayoutStateContext(null);
 
     calculateLayoutState(
         c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));

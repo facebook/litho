@@ -97,8 +97,6 @@ class Layout {
       final ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
 
-      updatedScopedContext.validate();
-
       layout = current.getInternalNode().reconcile(c, updated, globalKeyToReuse);
     }
 
@@ -158,7 +156,6 @@ class Layout {
               cached
                   .getHeadComponent()
                   .getScopedContext(parent.getLayoutStateContext(), cached.getHeadComponentKey());
-          context.validate();
         }
         return cached;
       }
@@ -166,7 +163,6 @@ class Layout {
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
       c = update(parent, component, reuseGlobalKey, globalKeyToReuse);
-      c.validate();
       globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
@@ -433,8 +429,6 @@ class Layout {
       final boolean reuseGlobalKey,
       @Nullable final String globalKeyToReuse) {
 
-    parent.validate();
-
     final Component component =
         parent.shouldSkipShallowCopy() ? original : original.getThreadSafeInstance();
 
@@ -455,8 +449,6 @@ class Layout {
     // 2. Update the internal state of the component wrt the parent.
     // 3. Get the scoped context from the updated component.
     final ComponentContext c = component.updateInternalChildState(parent, globalKeyToReuse);
-
-    c.validate();
 
     // 4. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
@@ -674,17 +666,6 @@ class Layout {
     final LithoLayoutResult cachedLayout = layoutState.getCachedLayout(component);
 
     if (cachedLayout != null) {
-
-      if (c.useStatelessComponent()) {
-        final ComponentContext context =
-            cachedLayout
-                .getInternalNode()
-                .getTailComponent()
-                .getScopedContext(
-                    c.getLayoutStateContext(),
-                    cachedLayout.getInternalNode().getTailComponentKey());
-        context.validate();
-      }
 
       layoutState.clearCachedLayout(component);
 

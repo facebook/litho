@@ -964,29 +964,8 @@ public abstract class Component
   @Nullable
   protected ComponentContext getScopedContext(
       @Nullable LayoutStateContext layoutStateContext, String globalKey) {
-    if (layoutStateContext == null) {
-      throw new IllegalStateException(
-          "Should not attempt to get a scoped context outside of a LayoutStateContext");
-    }
-
     if (useStatelessComponent(layoutStateContext.getComponentTree())) {
-
-      assertSameGlobalKey(layoutStateContext, globalKey, mGlobalKey);
-
-      final ComponentContext c = layoutStateContext.getScopedContext(globalKey);
-      if (c != null && c.getComponentScope().getClass() != getClass()) {
-        throw new IllegalStateException(
-            "Component mismatch for same key."
-                + "\nthis: "
-                + getSimpleName()
-                + "\nkey: "
-                + getGlobalKeyForLogging()
-                + "\ncomponent: "
-                + c.getComponentScope().getSimpleName()
-                + c.getDebugString());
-      }
-
-      return c;
+      return layoutStateContext.getScopedContext(globalKey);
     }
 
     return mScopedContext;
@@ -1151,7 +1130,7 @@ public abstract class Component
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null, null, null);
-    contextForLayout.setLayoutStateContextSafely(layoutStateContext);
+    contextForLayout.setLayoutStateContext(layoutStateContext);
 
     final LayoutResultHolder holder =
         Layout.createAndMeasureComponent(contextForLayout, this, widthSpec, heightSpec);
@@ -1211,21 +1190,11 @@ public abstract class Component
   @VisibleForTesting
   @Nullable
   final InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
-    if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
-      throw new IllegalStateException(
-          "Cannot access layout created in will render outside of a layout state calculation.");
-    }
-
     return scopedContext.getLayoutStateContext().getLayoutCreatedInWillRender(mId);
   }
 
-  private final void setLayoutCreatedInWillRender(
+  private void setLayoutCreatedInWillRender(
       final ComponentContext scopedContext, final @Nullable InternalNode newValue) {
-    if (scopedContext == null || scopedContext.getLayoutStateContext() == null) {
-      throw new IllegalStateException(
-          "Cannot access layout created in will render outside of a layout state calculation.");
-    }
-
     scopedContext.getLayoutStateContext().setLayoutCreatedInWillRender(mId, newValue);
   }
 
@@ -1243,26 +1212,6 @@ public abstract class Component
     return mCommonProps;
   }
 
-  private static void assertSameGlobalKey(
-      final LayoutStateContext layoutStateContext,
-      final String scopedContextGlobalKey,
-      final String componentGlobalKey) {
-    if (layoutStateContext.getComponentTree() != null
-        && layoutStateContext.getComponentTree().shouldSkipShallowCopy()) {
-      return;
-    }
-
-    if (scopedContextGlobalKey == null && componentGlobalKey == null) {
-      return;
-    }
-    if (componentGlobalKey == null || !componentGlobalKey.equals(scopedContextGlobalKey)) {
-      throw new IllegalStateException(
-          "Scoped context's global key and component mGlobalKey does not match "
-              + scopedContextGlobalKey
-              + "  mGlobalKey "
-              + componentGlobalKey);
-    }
-  }
   /**
    * @return The error handler dispatching to either the parent component if available, or reraising
    *     the exception. Null if the component isn't initialized.
@@ -1270,11 +1219,6 @@ public abstract class Component
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
     if (scopedContext.useStatelessComponent()) {
-      if (scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access error event handler outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
 
@@ -1305,12 +1249,6 @@ public abstract class Component
   @ThreadSafe(enableChecks = false)
   final void setGlobalKey(String key) {
     mGlobalKey = key;
-  }
-
-  @Nullable
-  @Deprecated
-  final String getGlobalKeyForLogging() {
-    return mGlobalKey;
   }
 
   /** @return a handle that is unique to this component. */
@@ -1487,12 +1425,6 @@ public abstract class Component
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
     if (scopedContext != null && scopedContext.useStatelessComponent()) {
-
-      if (scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access a state container outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
 
@@ -1549,50 +1481,14 @@ public abstract class Component
   }
 
   private ScopedComponentInfo getScopedInfo(LayoutStateContext context, String globalKey) {
-
-    assertSameGlobalKey(context, globalKey, mGlobalKey);
-    final ScopedComponentInfo info;
-    try {
-      info = context.getScopedComponentInfo(globalKey);
-    } catch (IllegalStateException e) {
-      String extraInfo = "Component key: " + mGlobalKey + ", passed key: " + globalKey + "\n";
-      if (mScopedContext == null) {
-        extraInfo += "Component Scoped Context is null";
-      } else if (mScopedContext.getLayoutStateContext() == null) {
-        extraInfo += "Component LSC is null";
-      } else {
-        extraInfo +=
-            "LayoutStateContexts match: "
-                + (mScopedContext.getLayoutStateContext().hashCode() == context.hashCode());
-      }
-      throw new IllegalStateException(e.getMessage() + "\n" + extraInfo);
-    }
-    if (info.mComponent.getClass() != getClass()) {
-      throw new IllegalStateException(
-          "Component mismatch for same key."
-              + "\nthis: "
-              + getSimpleName()
-              + "\nkey: "
-              + getGlobalKeyForLogging()
-              + "\ncomponent: "
-              + info.mComponent.getSimpleName()
-              + context.getScopedContext(globalKey).getDebugString());
-    }
-
-    return info;
+    return context.getScopedComponentInfo(globalKey);
   }
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
     if (scopedContext.useStatelessComponent()) {
-      if (scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access a inter-stage props outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
-
       return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
     } else {
       if (mInterStagePropsContainer == null) {
@@ -1721,11 +1617,6 @@ public abstract class Component
       final Component parentComponent,
       final Component childComponent) {
     if (parentContext.useStatelessComponent()) {
-      if (parentContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access and increment child counter outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
       final String globalKey = parentContext.getGlobalKey();
 
@@ -1758,11 +1649,6 @@ public abstract class Component
       final Component parentComponent,
       final String manualKey) {
     if (parentContext.useStatelessComponent()) {
-      if (parentContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot access and increment manual key usages counter outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
       final String globalKey = parentContext.getGlobalKey();
 
@@ -1886,11 +1772,6 @@ public abstract class Component
       Component component,
       String globalKey) {
     if (scopedContext.useStatelessComponent()) {
-      if (scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot register WorkingRange outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
 
       component
@@ -1904,11 +1785,6 @@ public abstract class Component
   static void addWorkingRangeToNode(
       InternalNode node, ComponentContext scopedContext, Component component) {
     if (scopedContext.useStatelessComponent()) {
-      if (scopedContext.getLayoutStateContext() == null) {
-        throw new IllegalStateException(
-            "Cannot add working ranges to InternalNode outside of a layout state calculation.");
-      }
-
       final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
       final String globalKey = scopedContext.getGlobalKey();
 

@@ -49,7 +49,6 @@ public class LayoutStateContext {
 
   private boolean mIsLayoutStarted = false;
 
-  boolean mIsScopedInfoCopiedFromLSCInstance = false;
   private volatile boolean mIsFrozen = false;
 
   void freeze() {
@@ -66,7 +65,6 @@ public class LayoutStateContext {
 
   void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
     checkIfFrozen();
-    mIsScopedInfoCopiedFromLSCInstance = true;
 
     mGlobalKeyToScopedInfo.clear();
     for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
@@ -111,19 +109,6 @@ public class LayoutStateContext {
 
     final ScopedComponentInfo previous = mGlobalKeyToScopedInfo.put(globalKey, info);
     if (previous != null) {
-      if (info.mComponent.getClass() != previous.mComponent.getClass()) {
-        throw new IllegalStateException(
-            "Component mismatch for same key."
-                + "\nprev: "
-                + previous.mComponent
-                + "\nkey: "
-                + previous.mComponent.getGlobalKeyForLogging()
-                + "\nnew: "
-                + info.mComponent.getSimpleName()
-                + "\nkey:"
-                + info.mComponent.getGlobalKeyForLogging()
-                + scopedContext.getDebugString());
-      }
       previous.transferInto(info);
     }
   }
@@ -133,24 +118,10 @@ public class LayoutStateContext {
       return null;
     }
 
-    final boolean hasKey = mGlobalKeyToScopedInfo.containsKey(globalKey);
-    if (!hasKey) {
-      throw new IllegalStateException(
-          "ScopedComponentInfo not found. Copied:  "
-              + mIsScopedInfoCopiedFromLSCInstance
-              + " key "
-              + globalKey
-              + getDebugString());
-    }
-
     final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
     if (scopedComponentInfo == null) {
       throw new IllegalStateException(
-          "ScopedComponentInfo is null. Copied:  "
-              + mIsScopedInfoCopiedFromLSCInstance
-              + " key "
-              + globalKey
-              + getDebugString());
+          "ScopedComponentInfo is null for key " + globalKey + getDebugString());
     }
 
     return scopedComponentInfo;

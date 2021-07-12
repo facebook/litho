@@ -197,19 +197,6 @@ public class ComponentContext implements Cloneable {
     componentContext.mGlobalKey = null;
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
-
-    if (ComponentsConfiguration.useGlobalKeys && globalKey == null) {
-      throw new IllegalStateException(
-          "GlobalKey should not be null for component "
-              + scope.getSimpleName()
-              + ", parent global key: "
-              + ((parentContext.getComponentScope() == null)
-                  ? "NULL_COMPONENT_SCOPE"
-                  : parentContext.getGlobalKey())
-              + " useStateless: "
-              + ComponentsConfiguration.useGlobalKeys);
-    }
-
     componentContext.mGlobalKey = globalKey;
 
     final LayoutStateContext layoutContext = componentContext.getLayoutStateContext();
@@ -234,22 +221,12 @@ public class ComponentContext implements Cloneable {
   }
 
   void setLayoutStateContext(LayoutStateContext layoutStateContext) {
-    if (mLayoutStateContext != null) {
-      throw new IllegalStateException(
-          "LayoutStateContext must not be overridden. " + getDebugString());
-    } else {
-      mLayoutStateContext = layoutStateContext;
-    }
-  }
-
-  @Deprecated
-  public void setLayoutStateContextSafely(LayoutStateContext layoutStateContext) {
     mLayoutStateContext = layoutStateContext;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   public void setLayoutStateContextForTesting() {
-    setLayoutStateContextSafely(LayoutStateContext.getTestInstance(this));
+    setLayoutStateContext(LayoutStateContext.getTestInstance(this));
   }
 
   /**
@@ -561,28 +538,6 @@ public class ComponentContext implements Cloneable {
       return NoOpEventHandler.getNoOpEventHandler();
     }
 
-    if (useStatelessComponent()) {
-      if (getLayoutStateContext() != null) {
-        try {
-          getLayoutStateContext().getScopedComponentInfo(mGlobalKey);
-        } catch (IllegalStateException e) {
-          String thisGlobalKey = mGlobalKey != null ? mGlobalKey : "t-null";
-          String componentGlobalKey =
-              mComponentScope.getGlobalKeyForLogging() != null
-                  ? mComponentScope.getGlobalKeyForLogging()
-                  : "c-null";
-
-          throw new IllegalStateException(
-              "No scoped info found. "
-                  + getDebugString()
-                  + "\nglobal-key-mismatch: "
-                  + !thisGlobalKey.equals(componentGlobalKey)
-                  + "\ncomponent-global-key: "
-                  + componentGlobalKey);
-        }
-      }
-    }
-
     return new EventHandler<>(mComponentScope, id, params);
   }
 
@@ -720,44 +675,6 @@ public class ComponentContext implements Cloneable {
     cloned.mLayoutStateContext = layoutStateContext;
     cloned.mStateHandler = stateHandler;
     return cloned;
-  }
-
-  public void validate() {
-    if (!useStatelessComponent()) {
-      return;
-    }
-
-    if (mLayoutStateContext == null) {
-      throw new IllegalStateException("Using an uninitialised context. " + getDebugString());
-    }
-
-    if (mComponentScope != null && (mGlobalKey == null || mGlobalKey.equals("null"))) {
-      throw new IllegalStateException("Global key must not be null. " + getDebugString());
-    }
-
-    if (mComponentScope != null) {
-      final ComponentContext context = mLayoutStateContext.getScopedContext(mGlobalKey);
-      if (context != this) {
-        throw new IllegalStateException("Context mismatched. " + getDebugString());
-      }
-    }
-  }
-
-  String getDebugString() {
-    return String.format(
-        "\n  "
-            + "component: %s\n  "
-            + "globalKey: %s\n  "
-            + "wasStatelessWhenCreated: %s\n  "
-            + "wasLayoutStateStateless: %s\n  "
-            + "copied: %s",
-        mComponentScope,
-        mGlobalKey != null ? "'" + mGlobalKey + "'" : "NULL",
-        mWasStatelessWhenCreated != null ? String.valueOf(mWasStatelessWhenCreated) : "'NULL'",
-        mLayoutStateContext != null ? String.valueOf(useStatelessComponent()) : "'NULL'",
-        mLayoutStateContext != null
-            ? String.valueOf(mLayoutStateContext.mIsScopedInfoCopiedFromLSCInstance)
-            : "'NULL'");
   }
 
   boolean useStatelessComponent() {

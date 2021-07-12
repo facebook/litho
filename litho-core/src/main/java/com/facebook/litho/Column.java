@@ -110,7 +110,6 @@ public final class Column extends Component {
 
   @Override
   protected InternalNode resolve(ComponentContext c) {
-    c.validate();
     InternalNode node =
         InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
