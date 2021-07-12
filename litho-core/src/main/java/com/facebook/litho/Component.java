@@ -1542,8 +1542,13 @@ public abstract class Component
 
     final ComponentContext scopedContext =
         ComponentContext.withComponentScope(parentContext, this, globalKey);
-    setScopedContext(scopedContext);
+
+    if (!parentContext.useStatelessComponent()) {
+      setScopedContext(scopedContext);
+    }
+
     applyStateUpdates(parentContext, scopedContext, globalKey);
+
     if (!parentContext.useStatelessComponent()) {
       generateErrorEventHandler(parentContext, scopedContext);
     }
