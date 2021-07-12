@@ -146,7 +146,7 @@ public interface InternalNode {
 
   /* InternalNode related APIs */
 
-  ComponentContext getContext();
+  Context getAndroidContext();
 
   String getSimpleName();
 

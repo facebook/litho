@@ -142,7 +142,6 @@ public class ComponentLifecycleTest {
     c.setLayoutStateContextForTesting();
     mContext = spy(c);
     mLayoutStateContext = spy(c.getLayoutStateContext());
-    when(mNode.getContext()).thenReturn(mContext);
     when(mResult.getInternalNode()).thenReturn(mNode);
     when(mContext.getLayoutStateContext()).thenReturn(mLayoutStateContext);
     when(mLayoutStateContext.getComponentTree()).thenReturn(mComponentTree);

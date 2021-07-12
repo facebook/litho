@@ -978,7 +978,7 @@ public abstract class Component
             ? getLayoutCreatedInWillRender(scopedContext)
             : null;
     if (layoutCreatedInWillRender != null) {
-      assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getContext());
+      assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
     }
   }
 
@@ -1160,7 +1160,7 @@ public abstract class Component
     layout = context.getLayoutStateContext().consumeLayoutCreatedInWillRender(mId);
 
     if (layout != null && context.useStatelessComponent()) {
-      assertSameBaseContext(context, layout.getContext());
+      assertSameBaseContext(context, layout.getAndroidContext());
     }
 
     if (layout == null) {
@@ -1815,15 +1815,15 @@ public abstract class Component
   }
 
   private static void assertSameBaseContext(
-      ComponentContext scopedContext, ComponentContext willRenderContext) {
-    if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
+      ComponentContext scopedContext, Context willRenderContext) {
+    if (scopedContext.getAndroidContext() != willRenderContext) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           MISMATCHING_BASE_CONTEXT,
           "Found mismatching base contexts between the Component's Context ("
               + scopedContext.getAndroidContext()
               + ") and the Context used in willRender ("
-              + willRenderContext.getAndroidContext()
+              + willRenderContext
               + ")!");
     }
   }

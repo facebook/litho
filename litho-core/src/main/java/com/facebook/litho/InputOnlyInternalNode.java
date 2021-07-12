@@ -113,7 +113,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   private List<InternalNode> mChildren = new ArrayList<>(1);
 
-  protected ComponentContext mComponentContext;
+  protected Context mContext;
 
   @ThreadConfined(ThreadConfined.ANY)
   protected List<Component> mComponents = new ArrayList<>(1);
@@ -181,7 +181,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected long mPrivateFlags;
 
   protected InputOnlyInternalNode(ComponentContext componentContext) {
-    mComponentContext = componentContext;
+    mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
   }
 
@@ -267,7 +267,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       return background(null);
     }
 
-    return background(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+    return background(ContextCompat.getDrawable(mContext, resId));
   }
 
   @Override
@@ -319,8 +319,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         freeze(null);
       }
 
-      if (isLayoutDirectionInherit()
-          && isLayoutDirectionRTL(mComponentContext.getAndroidContext())) {
+      if (isLayoutDirectionInherit() && isLayoutDirectionRTL(mContext)) {
         node.setDirection(YogaDirection.RTL);
       }
 
@@ -540,7 +539,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       return foreground(null);
     }
 
-    return foreground(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+    return foreground(ContextCompat.getDrawable(mContext, resId));
   }
 
   @Override
@@ -636,8 +635,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public ComponentContext getContext() {
-    return mComponentContext;
+  public Context getAndroidContext() {
+    return mContext;
   }
 
   @Override
@@ -1191,7 +1190,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final @Nullable DiffNode diffNode) {
 
     // 1. Set new ComponentContext, YogaNode, and components.
-    mComponentContext = c;
     mComponents = components;
     mComponentGlobalKeys = componentKeys;
 

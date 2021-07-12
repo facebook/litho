@@ -237,7 +237,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable ComponentContext getContext() {
+  public @Nullable Context getAndroidContext() {
     return null;
   }
 

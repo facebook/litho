@@ -612,6 +612,11 @@ public class DefaultInternalNode
   }
 
   @Override
+  public Context getAndroidContext() {
+    return mComponentContext.getAndroidContext();
+  }
+
+  @Override
   public ComponentContext getContext() {
     return mComponentContext;
   }

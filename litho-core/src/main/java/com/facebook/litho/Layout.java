@@ -612,9 +612,10 @@ class Layout {
         applyDiffNodeToLayoutNode(layoutStateContext, result, prevLayoutStateContext, diffNode);
       }
     } catch (Throwable t) {
-      final LithoMetadataExceptionWrapper e =
-          new LithoMetadataExceptionWrapper(layoutNode.getContext(), t);
       final Component c = layoutNode.getTailComponent();
+      final ComponentContext ct =
+          c.getScopedContext(layoutStateContext, layoutNode.getTailComponentKey());
+      final LithoMetadataExceptionWrapper e = new LithoMetadataExceptionWrapper(ct, t);
       if (c != null) {
         e.addComponentForLayoutStack(c);
       }
