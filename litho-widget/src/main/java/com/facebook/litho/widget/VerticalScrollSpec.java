@@ -193,6 +193,7 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
+      @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       @Prop(optional = true) ScrollStateListener scrollStateListener,
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
@@ -216,10 +217,20 @@ public class VerticalScrollSpec {
     }
     lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
     lithoScrollView.setOnInterceptTouchListener(onInterceptTouchListener);
+
+    if (eventsController != null) {
+      eventsController.setScrollView(lithoScrollView);
+    }
   }
 
   @OnUnmount
-  static void onUnmount(ComponentContext context, LithoScrollView lithoScrollView) {
+  static void onUnmount(
+      ComponentContext context,
+      LithoScrollView lithoScrollView,
+      @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController) {
+    if (eventsController != null) {
+      eventsController.setScrollView(null);
+    }
     lithoScrollView.setOnScrollChangeListener((OnScrollChangeListener) null);
     lithoScrollView.setOnInterceptTouchListener(null);
     lithoScrollView.unmount();

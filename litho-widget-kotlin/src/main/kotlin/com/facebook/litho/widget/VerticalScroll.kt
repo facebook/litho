@@ -38,6 +38,7 @@ inline fun ComponentScope.VerticalScroll(
     fadingEdgeLength: Dp = 0.dp,
     fillViewport: Boolean = false,
     incrementalMountEnabled: Boolean = false,
+    eventsController: VerticalScrollEventsController? = null,
     noinline onScrollChange: ((NestedScrollView, scrollY: Int, oldScrollY: Int) -> Unit)? = null,
     noinline onInterceptTouch: ((NestedScrollView, event: MotionEvent) -> Boolean)? = null,
     style: Style? = null,
@@ -53,6 +54,7 @@ inline fun ComponentScope.VerticalScroll(
         .fadingEdgeLengthDip(fadingEdgeLength.value)
         .fillViewport(fillViewport)
         .incrementalMountEnabled(incrementalMountEnabled)
+        .eventsController(eventsController)
         .apply {
           onScrollChange?.let {
             onScrollChangeListener { v, _, scrollY, _, oldScrollY -> it(v, scrollY, oldScrollY) }
