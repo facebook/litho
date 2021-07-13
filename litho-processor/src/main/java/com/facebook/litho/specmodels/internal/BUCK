@@ -31,12 +31,13 @@ fb_java_library(
 fb_java_library(
     name = "internal4idea",
     srcs = glob(["*.java"]),
-    java_version = "8",
     labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
     ],
+    source = "8",
+    target = "8",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
