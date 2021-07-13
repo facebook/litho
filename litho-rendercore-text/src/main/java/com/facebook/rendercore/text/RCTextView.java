@@ -184,6 +184,7 @@ public class RCTextView extends View {
       }
       mImageSpans = null;
     }
+    mClickableSpans = null;
   }
 
   // Note: if renaming this method, we have use reflection to access this in
