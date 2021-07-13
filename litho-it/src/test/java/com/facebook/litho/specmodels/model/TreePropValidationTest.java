@@ -44,7 +44,7 @@ public class TreePropValidationTest {
   @Before
   public void setup() {
     when(mSpecModel.getRepresentedObject()).thenReturn(mModelRepresentedObject);
-    when(mSpecModel.getComponentClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
+    when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
   }
 
   @Test
