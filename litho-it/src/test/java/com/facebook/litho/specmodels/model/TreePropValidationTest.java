@@ -18,16 +18,26 @@ package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.specmodels.MockMethodParamModel;
-import com.squareup.javapoet.TypeName;
-import java.lang.annotation.Annotation;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
+import com.facebook.litho.widget.EmptyComponent;
+import com.google.common.collect.Iterables;
+import com.google.testing.compile.CompilationRule;
 import java.util.List;
-import javax.lang.model.element.Modifier;
-import org.junit.Before;
+
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -35,56 +45,62 @@ import org.junit.runners.JUnit4;
 /** Tests {@link TreePropValidation} */
 @RunWith(JUnit4.class)
 public class TreePropValidationTest {
-  private final SpecModel mSpecModel = mock(LayoutSpecModel.class);
-  private final Object mModelRepresentedObject = new Object();
-  private final Object mDelegateMethodObject = new Object();
-  private final Object mMethodParamObject1 = new Object();
-  private final Object mMethodParamObject2 = new Object();
+  @Rule
+  public CompilationRule mCompilationRule = new CompilationRule();
 
-  @Before
-  public void setup() {
-    when(mSpecModel.getRepresentedObject()).thenReturn(mModelRepresentedObject);
-    when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
+  @LayoutSpec
+  static class TestSpec {
+
+    @OnCreateLayout
+    public static Component onCreateLayout(ComponentContext c) {
+      return EmptyComponent.create(c).build();
+    }
+
+    @OnCreateTreeProp
+    public static void treePropReturningVoid(
+        ComponentContext c,
+        @Prop int myProp
+    ) {
+    }
+
+    @OnCreateTreeProp
+    public static TestTreeProp treePropWithoutContextArg(
+        @Prop TestTreeProp myProp
+    ) {
+      return myProp;
+    }
+
+  }
+
+  static class TestTreeProp {
   }
 
   @Test
   public void testOnCreateTreePropMethod() {
-    when(mSpecModel.getDelegateMethods())
-        .thenReturn(
-            ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of(
-                SpecMethodModel.<DelegateMethod, Void>builder()
-                    .annotations(
-                        ImmutableList.<Annotation>of(
-                            new OnCreateTreeProp() {
-                              @Override
-                              public Class<? extends Annotation> annotationType() {
-                                return OnCreateTreeProp.class;
-                              }
-                            }))
-                    .modifiers(ImmutableList.<Modifier>of())
-                    .name("")
-                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
-                    .methodParams(
-                        ImmutableList.<MethodParamModel>of(
-                            MockMethodParamModel.newBuilder()
-                                .type(TypeName.INT)
-                                .representedObject(mMethodParamObject1)
-                                .build(),
-                            MockMethodParamModel.newBuilder()
-                                .type(ClassNames.COMPONENT_CONTEXT)
-                                .representedObject(mMethodParamObject2)
-                                .build()))
-                    .representedObject(mDelegateMethodObject)
-                    .build()));
+    Elements elements = mCompilationRule.getElements();
+    Types types = mCompilationRule.getTypes();
+    TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
+    LayoutSpecModel specModel =
+        new LayoutSpecModelFactory().create(
+            elements, types, typeElement, mock(Messager.class), RunMode.normal(), null, null);
 
-    List<SpecModelValidationError> validationErrors = TreePropValidation.validate(mSpecModel);
+    SpecMethodModel<?, ?> methodReturningVoid = Iterables.find(
+        specModel.getDelegateMethods(),
+        delegateMethod -> delegateMethod.name.toString().equals("treePropReturningVoid"));
+    SpecMethodModel<?, ?> methodWithoutContextArg = Iterables.find(
+        specModel.getDelegateMethods(),
+        delegateMethod -> delegateMethod.name.toString().equals("treePropWithoutContextArg"));
+
+    List<SpecModelValidationError> validationErrors = TreePropValidation.validate(specModel);
     assertThat(validationErrors).hasSize(2);
 
-    assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject);
+    assertThat(validationErrors.get(0).element)
+        .isEqualTo(methodReturningVoid.representedObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo("@OnCreateTreeProp methods cannot return void.");
 
-    assertThat(validationErrors.get(1).element).isEqualTo(mDelegateMethodObject);
+    assertThat(validationErrors.get(1).element)
+        .isEqualTo(methodWithoutContextArg.representedObject);
     assertThat(validationErrors.get(1).message)
         .isEqualTo(
             "The first argument of an @OnCreateTreeProp method should be "
