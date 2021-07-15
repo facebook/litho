@@ -40,7 +40,7 @@ import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
 @LayoutSpec
-object AnimatedBadgeSpec {
+object AnimatedBadgeKotlinSpec {
 
   private const val ANIMATION_DURATION = 300
   private val ANIMATOR = Transition.timing(ANIMATION_DURATION)
@@ -55,7 +55,7 @@ object AnimatedBadgeSpec {
         .paddingDip(YogaEdge.ALL, 8f)
         .child(Row.create(c).marginDip(YogaEdge.TOP, 8f).child(buildComment1(c, expanded1)))
         .child(Row.create(c).marginDip(YogaEdge.TOP, 16f).child(buildComment2(c, expanded2)))
-        .clickHandler(AnimatedBadge.onClick(c))
+        .clickHandler(AnimatedBadgeKotlin.onClick(c))
         .build()
   }
 
@@ -151,7 +151,7 @@ object AnimatedBadgeSpec {
 
   @OnEvent(ClickEvent::class)
   fun onClick(c: ComponentContext) {
-    AnimatedBadge.updateState(c)
+    AnimatedBadgeKotlin.updateState(c)
   }
 
   @OnUpdateState

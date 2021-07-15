@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.kotlin.animations.animationcomposition
+package com.facebook.samples.litho
 
 import android.os.Bundle
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
-import com.facebook.samples.litho.NavigatableDemoActivity
+import com.facebook.samples.litho.Demos.SingleDemo
+import java.lang.RuntimeException
 
-class ComposedAnimationsActivity : NavigatableDemoActivity() {
-
+class ComponentDemoActivity : NavigatableDemoActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    setContentView(
-        LithoView.create(this, ComposedAnimationsComponent.create(ComponentContext(this)).build()))
+    val model = dataModel
+    if (model !is SingleDemo || (model.componentCreator == null && model.component == null)) {
+      throw RuntimeException("Invalid model: $model")
+    }
+    val lithoView = LithoView(this)
+    val componentCreator = model.componentCreator
+    if (componentCreator != null) {
+      lithoView.setComponent(componentCreator.create(lithoView.componentContext))
+    } else {
+      lithoView.setComponent(model.component)
+    }
+    setContentView(lithoView)
   }
 }

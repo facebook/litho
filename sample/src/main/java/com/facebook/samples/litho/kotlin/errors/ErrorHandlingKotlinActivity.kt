@@ -21,7 +21,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.facebook.samples.litho.NavigatableDemoActivity
 
-class ErrorHandlingActivity : NavigatableDemoActivity() {
+class ErrorHandlingKotlinActivity : NavigatableDemoActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

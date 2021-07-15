@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.kotlin.playground
 
 import android.graphics.Typeface
-import android.os.Bundle
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -25,33 +24,20 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.setContent
 import com.facebook.litho.sp
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
 import com.facebook.litho.widget.Text
-import com.facebook.samples.litho.NavigatableDemoActivity
 
-class PlaygroundActivity : NavigatableDemoActivity() {
+class PlaygroundKComponent : KComponent() {
+  override fun ComponentScope.render(): Component? {
+    val counter = useState { 1 }
 
-  class PlaygroundComponent : KComponent() {
-    override fun ComponentScope.render(): Component? {
-      val counter = useState { 1 }
-
-      return Column(
-          style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } }) {
-        child(Text(text = "Hello, Kotlin World!", textSize = 20.sp))
-        child(
-            Text(
-                text = "with ${"❤️".repeat(counter.value)} from London",
-                textStyle = Typeface.ITALIC))
-      }
+    return Column(style = Style.padding(16.dp).onClick { counter.update { value -> value + 1 } }) {
+      child(Text(text = "Hello, Kotlin World!", textSize = 20.sp))
+      child(
+          Text(
+              text = "with ${"❤️".repeat(counter.value)} from London", textStyle = Typeface.ITALIC))
     }
-  }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    setContent(PlaygroundComponent())
   }
 }
