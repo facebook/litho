@@ -30,6 +30,8 @@ import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -44,7 +46,7 @@ import java.util.Map;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode {
+public interface InternalNode extends Node<LithoRenderContext> {
 
   void addChildAt(InternalNode child, int index);
 
@@ -76,7 +78,8 @@ public interface InternalNode {
 
   void freeze(LayoutStateContext c, YogaNode node, @Nullable YogaNode parent);
 
-  LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec);
+  LithoLayoutResult calculateLayout(
+      LayoutContext<LithoRenderContext> c, int widthSpec, int heightSpec);
 
   InternalNode child(ComponentContext c, Component child);
 

@@ -59,6 +59,8 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.Copyable;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -434,7 +436,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec) {
+  public LithoLayoutResult calculateLayout(
+      final RenderState.LayoutContext<LithoRenderContext> c,
+      final int widthSpec,
+      final int heightSpec) {
 
     // A new YogaNode is required because unlike DefaultInternalNode
     // which creates the YogaNode tree at the same time as the InternalNode
@@ -446,9 +451,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     final Writer writer = (Writer) createYogaNodeWriter(node);
 
     // Transfer the layout props to YogaNode
-    writeToYogaNode(c.getLayoutStateContext(), writer, node);
+    writeToYogaNode(c.getRenderContext().c, writer, node);
 
-    applyOverridesRecursive(c.getLayoutStateContext(), this);
+    applyOverridesRecursive(c.getRenderContext().c, this);
 
     // Validate layout props for the root
     writer.validateLayoutPropsForRoot();
@@ -469,7 +474,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec);
 
-    node.setData(new LayoutContextContainer(c.getLayoutStateContext(), this));
+    node.setData(new LayoutContextContainer(c.getRenderContext().c, this));
 
     node.calculateLayout(width, height);
 
@@ -1654,6 +1659,16 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         applyOverridesRecursive(c, node.getChildAt(i));
       }
     }
+  }
+
+  @Override
+  public Copyable makeCopy() {
+    return null;
+  }
+
+  @Override
+  public Copyable getLayoutParams() {
+    return null;
   }
 
   /**

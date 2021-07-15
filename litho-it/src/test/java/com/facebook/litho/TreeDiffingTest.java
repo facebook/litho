@@ -248,6 +248,7 @@ public class TreeDiffingTest {
             createInternalNodeForMeasurableComponent(component2),
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
+            null,
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(
@@ -282,6 +283,7 @@ public class TreeDiffingTest {
             createInternalNodeForMeasurableComponent(component2),
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
+            null,
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(

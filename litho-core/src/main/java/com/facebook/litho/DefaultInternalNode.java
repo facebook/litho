@@ -58,6 +58,9 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.Copyable;
+import com.facebook.rendercore.RenderState;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -382,7 +385,10 @@ public class DefaultInternalNode
   }
 
   @Override
-  public LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec) {
+  public LithoLayoutResult calculateLayout(
+      final RenderState.LayoutContext<LithoRenderContext> c,
+      final int widthSpec,
+      final int heightSpec) {
 
     if (mYogaNode.getStyleDirection() == YogaDirection.INHERIT
         && isLayoutDirectionRTL(c.getAndroidContext())) {
@@ -557,8 +563,33 @@ public class DefaultInternalNode
   }
 
   @Override
+  public @Nullable RenderUnit<?> getRenderUnit() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public @Nullable Object getLayoutData() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public int getChildrenCount() {
+    return getChildCount();
+  }
+
+  @Override
   public @Nullable DefaultInternalNode getChildAt(int index) {
     return (DefaultInternalNode) mYogaNode.getChildAt(index).getData();
+  }
+
+  @Override
+  public int getXForChildAtIndex(int index) {
+    return getChildAt(index).getX();
+  }
+
+  @Override
+  public int getYForChildAtIndex(int index) {
+    return getChildAt(index).getY();
   }
 
   @Override
@@ -1337,6 +1368,16 @@ public class DefaultInternalNode
   }
 
   @Override
+  public int getWidthSpec() {
+    return mLastWidthSpec;
+  }
+
+  @Override
+  public int getHeightSpec() {
+    return mLastHeightSpec;
+  }
+
+  @Override
   public boolean isPaddingSet() {
     return (mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L;
   }
@@ -1930,5 +1971,15 @@ public class DefaultInternalNode
     }
 
     return ReconciliationMode.COPY;
+  }
+
+  @Override
+  public Copyable getLayoutParams() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public Copyable makeCopy() {
+    return null;
   }
 }

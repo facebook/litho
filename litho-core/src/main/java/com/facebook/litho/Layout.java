@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaNode;
@@ -110,7 +111,7 @@ class Layout {
     }
 
     LithoLayoutResult result =
-        measure(c, layout, widthSpec, heightSpec, prevLayoutStateContext, diff);
+        measure(c, layout, widthSpec, heightSpec, current, prevLayoutStateContext, diff);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -383,6 +384,7 @@ class Layout {
                   newNode,
                   widthSpec,
                   heightSpec,
+                  null,
                   prevLayoutStateContext,
                   holder.getDiffNode());
         }
@@ -467,6 +469,7 @@ class Layout {
       final InternalNode root,
       final int widthSpec,
       final int heightSpec,
+      final @Nullable LithoLayoutResult current,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff) {
 
@@ -486,7 +489,15 @@ class Layout {
       ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
-    LithoLayoutResult result = root.calculateLayout(c, widthSpec, heightSpec);
+    final LayoutContext<LithoRenderContext> context =
+        new LayoutContext<>(
+            c.getAndroidContext(),
+            new LithoRenderContext(c.getLayoutStateContext(), current, diff),
+            0,
+            null,
+            null);
+
+    LithoLayoutResult result = root.calculateLayout(context, widthSpec, heightSpec);
 
     if (isTracing) {
       ComponentsSystrace.endSection(/* measureTree */ );
@@ -515,7 +526,14 @@ class Layout {
     }
 
     final LithoLayoutResult result =
-        measure(c, root, widthSpec, heightSpec, prevLayoutStateContext, diff);
+        measure(
+            c,
+            root,
+            widthSpec,
+            heightSpec,
+            null, // TODO(T94662963): Pass the current LayoutResult from LayoutState.
+            prevLayoutStateContext,
+            diff);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("end_measure");
@@ -556,6 +574,7 @@ class Layout {
         layout.getInternalNode(),
         widthSpec,
         heightSpec,
+        null, // TODO(T94662963): Pass the current LayoutResult from LayoutState.
         prevLayoutStateContext,
         layout.getDiffNode());
   }

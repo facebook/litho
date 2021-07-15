@@ -1643,6 +1643,7 @@ public class LayoutState
                 layoutCreatedInWillRender,
                 widthSpec,
                 heightSpec,
+                currentLayoutRoot,
                 layoutState.mPrevLayoutStateContext,
                 diffTreeRoot);
       }
