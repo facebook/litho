@@ -156,6 +156,8 @@ import javax.annotation.Nullable;
  * @prop editable If set, allows the text to be editable.
  * @prop inputType Type of data being placed in a text field, used to help an input method decide
  *     how to let the user enter text. To add multiline use multiline(true) method.
+ * @prop rawInputType Type of data being placed in a text field, used to help an input method decide
+ *     how to let the user enter text. This prop will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
  * @prop inputFilters Used to filter the input to e.g. a max character count.
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
@@ -212,6 +214,7 @@ class TextInputSpec {
   @PropDefault protected static final int gravity = Gravity.CENTER_VERTICAL | Gravity.START;
   @PropDefault protected static final boolean editable = true;
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
+  @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
   @PropDefault protected static final int cursorDrawableRes = -1;
   @PropDefault static final boolean multiline = false;
@@ -269,6 +272,7 @@ class TextInputSpec {
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int inputType,
+      @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
@@ -302,6 +306,7 @@ class TextInputSpec {
             gravity,
             editable,
             inputType,
+            rawInputType,
             keyListener,
             imeOptions,
             inputFilters,
@@ -352,6 +357,7 @@ class TextInputSpec {
       int gravity,
       boolean editable,
       int inputType,
+      int rawInputType,
       @Nullable KeyListener keyListener,
       int imeOptions,
       List<InputFilter> inputFilters,
@@ -387,6 +393,7 @@ class TextInputSpec {
         gravity,
         editable,
         inputType,
+        rawInputType,
         keyListener,
         imeOptions,
         inputFilters,
@@ -422,6 +429,7 @@ class TextInputSpec {
       int gravity,
       boolean editable,
       int inputType,
+      int rawInputType,
       @Nullable KeyListener keyListener,
       int imeOptions,
       @Nullable List<InputFilter> inputFilters,
@@ -454,7 +462,13 @@ class TextInputSpec {
     if (!editable) {
       inputType = EditorInfo.TYPE_NULL;
     }
-    setInputTypeAndKeyListenerIfChanged(editText, inputType, keyListener);
+
+    if (rawInputType != EditorInfo.TYPE_NULL) {
+      editText.setRawInputType(rawInputType);
+    } else {
+      // Only set inputType if rawInputType is not specified.
+      setInputTypeAndKeyListenerIfChanged(editText, inputType, keyListener);
+    }
 
     // Needs to be set before the text so it would apply to the current text
     if (inputFilters != null) {
@@ -564,6 +578,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
       @Prop(optional = true) Diff<Integer> inputType,
+      @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
       @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters,
       @Prop(optional = true) Diff<TextUtils.TruncateAt> ellipsize,
@@ -623,6 +638,9 @@ class TextInputSpec {
       return true;
     }
     if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
+      return true;
+    }
+    if (!equals(rawInputType.getPrevious(), rawInputType.getNext())) {
       return true;
     }
     if (!ObjectsCompat.equals(keyListener.getPrevious(), keyListener.getNext())) {
@@ -754,6 +772,7 @@ class TextInputSpec {
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int inputType,
+      @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
@@ -785,7 +804,8 @@ class TextInputSpec {
         textAlignment,
         gravity,
         editable,
-        inputType,
+        inputType
+        rawInputType,
         keyListener,
         imeOptions,
         inputFilters,
