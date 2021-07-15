@@ -100,6 +100,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int gravity = TextInputSpec.gravity;
   @PropDefault protected static final boolean editable = TextInputSpec.editable;
   @PropDefault protected static final int inputType = TextInputSpec.inputType;
+  @PropDefault protected static final int inputType = TextInputSpec.rawInputType;
   @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
   @PropDefault protected static final int cursorDrawableRes = TextInputSpec.cursorDrawableRes;
   @PropDefault static final boolean multiline = TextInputSpec.multiline;
@@ -150,6 +151,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int inputType,
+      @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
@@ -191,6 +193,7 @@ class MaterialTextInputSpec {
             gravity,
             editable,
             inputType,
+            rawInputType,
             keyListener,
             imeOptions,
             inputFilters,
@@ -242,6 +245,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) Diff<Integer> gravity,
       @Prop(optional = true) Diff<Boolean> editable,
       @Prop(optional = true) Diff<Integer> inputType,
+      @Prop(optional = true) Diff<Integer> rawInputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
       @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters,
       @Prop(optional = true) Diff<TextUtils.TruncateAt> ellipsize,
@@ -281,6 +285,7 @@ class MaterialTextInputSpec {
             gravity,
             editable,
             inputType,
+            rawInputType,
             imeOptions,
             inputFilters,
             ellipsize,
@@ -337,6 +342,7 @@ class MaterialTextInputSpec {
       @Prop(optional = true) int gravity,
       @Prop(optional = true) boolean editable,
       @Prop(optional = true) int inputType,
+      @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
@@ -378,6 +384,7 @@ class MaterialTextInputSpec {
         gravity,
         editable,
         inputType,
+        rawInputType,
         keyListener,
         imeOptions,
         inputFilters,
