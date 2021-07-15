@@ -1172,6 +1172,7 @@ class TextInputSpec {
       if (textWatchers != null && textWatchers.size() > 0) {
         mTextWatcher =
             textWatchers.size() == 1 ? textWatchers.get(0) : new CompositeTextWatcher(textWatchers);
+        setEditTextOnTextWatcher(mTextWatcher, this);
         addTextChangedListener(mTextWatcher);
       }
     }
@@ -1179,7 +1180,24 @@ class TextInputSpec {
     void detachWatchers() {
       if (mTextWatcher != null) {
         removeTextChangedListener(mTextWatcher);
+        removeEditTextFromTextWatcher(mTextWatcher);
         mTextWatcher = null;
+      }
+    }
+
+    void setEditTextOnTextWatcher(TextWatcher textWatcher, EditText editText) {
+      if (textWatcher != null) {
+        if (textWatcher instanceof TextWatcherWithEditText) {
+          ((TextWatcherWithEditText) textWatcher).setEditText(editText);
+        }
+      }
+    }
+
+    void removeEditTextFromTextWatcher(TextWatcher textWatcher) {
+      if (textWatcher != null) {
+        if (textWatcher instanceof TextWatcherWithEditText) {
+          ((TextWatcherWithEditText) textWatcher).setEditText(null);
+        }
       }
     }
 
