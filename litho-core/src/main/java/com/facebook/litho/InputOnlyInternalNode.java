@@ -1463,6 +1463,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     switch (mode) {
       case ReconciliationMode.REUSE:
+        if (parentContext.isInternalNodeReuseEnabled()) {
+          commitToLayoutStateRecursively(parentContext.getLayoutStateContext(), current);
+        }
         layout = current;
         break;
       case ReconciliationMode.COPY:
@@ -1476,6 +1479,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
                 ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
+        if (parentContext.isInternalNodeReuseEnabled()) {
+          commitToLayoutState(parentContext.getLayoutStateContext(), current);
+        }
         layout =
             reconcile(
                 parentContext.getLayoutStateContext(),
@@ -1569,6 +1575,22 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     }
 
     return layout;
+  }
+
+  static void commitToLayoutStateRecursively(LayoutStateContext c, InternalNode node) {
+    final int count = node.getChildCount();
+    commitToLayoutState(c, node);
+    for (int i = 0; i < count; i++) {
+      commitToLayoutStateRecursively(c, node.getChildAt(i));
+    }
+  }
+
+  static void commitToLayoutState(LayoutStateContext c, InternalNode node) {
+    List<String> keys = node.getComponentKeys();
+    for (String key : keys) {
+      final ScopedComponentInfo info = c.getScopedComponentInfo(key);
+      info.commitToLayoutState();
+    }
   }
 
   /**

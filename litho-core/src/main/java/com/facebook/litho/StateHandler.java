@@ -247,6 +247,13 @@ public class StateHandler {
     }
   }
 
+  public synchronized void addStateContainer(String key, StateContainer state) {
+    maybeInitStateContainers();
+    maybeInitNeededStateContainers();
+    mNeededStateContainers.add(key);
+    mStateContainers.put(key, state);
+  }
+
   private static @Nullable Transition obtainTransitionFromStateContainer(
       StateContainer stateContainer) {
     if (stateContainer instanceof Component.TransitionContainer) {

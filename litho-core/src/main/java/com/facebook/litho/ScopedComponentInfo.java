@@ -168,6 +168,12 @@ final class ScopedComponentInfo implements Cloneable {
     return mErrorEventHandler;
   }
 
+  public void commitToLayoutState() {
+    if (mComponent.hasState()) {
+      mContext.getStateHandler().addStateContainer(mContext.getGlobalKey(), mStateContainer);
+    }
+  }
+
   @Override
   protected ScopedComponentInfo clone() {
     try {
