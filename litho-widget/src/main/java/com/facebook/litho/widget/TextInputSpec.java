@@ -1109,7 +1109,8 @@ class TextInputSpec {
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
       if (mEditorActionEventHandler != null) {
-        return TextInput.dispatchEditorActionEvent(mEditorActionEventHandler, actionId, event);
+        return TextInput.dispatchEditorActionEvent(
+            mEditorActionEventHandler, actionId, event, EditTextWithEventHandlers.this);
       }
       return false;
     }
