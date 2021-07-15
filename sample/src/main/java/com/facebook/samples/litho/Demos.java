@@ -30,7 +30,6 @@ import com.facebook.samples.litho.animations.animationcomposition.ComposedAnimat
 import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBookActivity;
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
-import com.facebook.samples.litho.animations.docs.AlphaTransitionComponent;
 import com.facebook.samples.litho.animations.docs.AppearTransitionComponent;
 import com.facebook.samples.litho.animations.docs.ParallelTransitionWithAnimatorsComponent;
 import com.facebook.samples.litho.animations.docs.SequenceTransitionLoopComponent;
@@ -57,10 +56,16 @@ import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithDynamicItemHeight;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomViewContainerActivity;
+import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedActivity;
+import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatedCounterActivity;
+import com.facebook.samples.litho.kotlin.collection.CollectionKComponent;
+import com.facebook.samples.litho.kotlin.logging.LoggingActivity;
+import com.facebook.samples.litho.kotlin.playground.PlaygroundActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
 import com.facebook.samples.litho.lifecycle.LifecycleFragmentActivity;
 import com.facebook.samples.litho.lifecycle.ViewPagerLifecycleActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
+import com.facebook.samples.litho.onboarding.AlphaTransitionComponent;
 import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity;
 import com.facebook.samples.litho.onboarding.HelloWorldActivity;
 import com.facebook.samples.litho.onboarding.IntroducingLayoutComponent;
@@ -81,20 +86,82 @@ import java.util.List;
 
 public class Demos {
 
-  public static final List<NavigableDemoItem> DEMOS =
+  public static final List<DemoList> DEMOS =
       Arrays.asList(
-          new SingleDemo(
+          new DemoList(
               "Playground",
-              new ComponentCreator() {
-                @Override
-                public Component create(ComponentContext c) {
-                  return PlaygroundComponent.create(c).build();
-                }
-              }),
-
+              Arrays.asList(
+                  new DemoGrouping(
+                      "Playground",
+                      Arrays.asList(
+                          new SingleDemo(
+                              "Java API Playground",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return PlaygroundComponent.create(c).build();
+                                }
+                              }),
+                          new SingleDemo("Kotlin API Playground", PlaygroundActivity.class))))),
           // Please keep this alphabetical with consistent naming and casing!
           new DemoList(
-              "API Demos",
+              "Kotlin API Demos",
+              Arrays.asList(
+                  new DemoGrouping(
+                      "Animations",
+                      Arrays.asList(
+                          new SingleDemo("Animated API Demo", AnimatedActivity.class),
+                          new SingleDemo(
+                              "Animated Badge",
+                              com.facebook.samples.litho.kotlin.animations.animatedbadge
+                                  .AnimatedBadgeActivity.class),
+                          new SingleDemo("Animated Counter", AnimatedCounterActivity.class),
+                          new SingleDemo(
+                              "Animations Composition",
+                              com.facebook.samples.litho.kotlin.animations.animationcomposition
+                                  .ComposedAnimationsActivity.class),
+                          new SingleDemo(
+                              "Expandable Element",
+                              com.facebook.samples.litho.kotlin.animations.expandableelement
+                                  .ExpandableElementActivity.class),
+                          new SingleDemo(
+                              "Transitions",
+                              com.facebook.samples.litho.kotlin.animations.transitions
+                                  .TransitionsActivity.class))),
+                  new DemoGrouping(
+                      "Collections",
+                      Arrays.asList(
+                          new SingleDemo(
+                              "Collections Demo",
+                              new ComponentCreator() {
+                                @Override
+                                public Component create(ComponentContext c) {
+                                  return new CollectionKComponent();
+                                }
+                              }),
+                          new SingleDemo(
+                              "Sections Demo: Lithography",
+                              com.facebook.samples.litho.kotlin.lithography.LithographyActivity
+                                  .class))),
+                  new DemoGrouping(
+                      "Errors",
+                      Arrays.asList(
+                          new SingleDemo(
+                              "Error Boundaries",
+                              com.facebook.samples.litho.kotlin.errors.ErrorHandlingActivity
+                                  .class))),
+                  new DemoGrouping(
+                      "Common Props",
+                      Arrays.asList(
+                          new SingleDemo(
+                              "Border Effects",
+                              com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsActivity
+                                  .class))),
+                  new DemoGrouping(
+                      "Logging",
+                      Arrays.asList(new SingleDemo(" Logging", LoggingActivity.class))))),
+          new DemoList(
+              "Java API Demos",
               Arrays.asList(
                   new DemoGrouping(
                       "Animations",

@@ -16,7 +16,7 @@ load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET",
-    "LITHO_SAMPLE_JAVA",
+    "LITHO_SAMPLE",
     "fb_android_resource",
 )
 
@@ -31,7 +31,7 @@ fb_native.android_binary(
         "PUBLIC",
     ],
     deps = [
-        LITHO_SAMPLE_JAVA,
+        LITHO_SAMPLE,
     ],
 )
 
