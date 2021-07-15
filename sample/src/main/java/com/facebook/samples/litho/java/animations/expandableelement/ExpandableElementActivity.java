@@ -20,8 +20,6 @@ import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.NavigatableDemoActivity;
-import com.facebook.samples.litho.animations.expandableelement.ExpandableElementRootComponent;
-import com.facebook.samples.litho.animations.expandableelement.Message;
 import java.util.Arrays;
 
 public class ExpandableElementActivity extends NavigatableDemoActivity {

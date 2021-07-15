@@ -22,35 +22,55 @@ import com.facebook.litho.Component
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentCreator
-import com.facebook.samples.litho.animations.animatedbadge.AnimatedBadge
-import com.facebook.samples.litho.animations.animationcallbacks.AnimationCallbacksActivity
-import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBookActivity
-import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
-import com.facebook.samples.litho.animations.docs.AppearTransitionComponent
-import com.facebook.samples.litho.animations.docs.ParallelTransitionWithAnimatorsComponent
-import com.facebook.samples.litho.animations.docs.SequenceTransitionLoopComponent
-import com.facebook.samples.litho.animations.docs.SimpleAllLayoutTransitionComponent
-import com.facebook.samples.litho.animations.docs.StaggerTransitionComponent
-import com.facebook.samples.litho.animations.docs.StaggerTransitionSameComponent
-import com.facebook.samples.litho.animations.docs.StaggerTransitionWithDelayComponent
-import com.facebook.samples.litho.animations.docs.keyscope.GlobalKeyParentComponent
-import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsRootComponent
-import com.facebook.samples.litho.animations.sharedelements.SharedElementsComponent
-import com.facebook.samples.litho.animations.sharedelements.SharedElementsFragmentActivity
-import com.facebook.samples.litho.animations.transitions.TransitionsActivity
-import com.facebook.samples.litho.changesetdebug.ItemsRerenderingActivity
-import com.facebook.samples.litho.changesetdebug.PropUpdatingActivity
-import com.facebook.samples.litho.changesetdebug.ScrollingToBottomActivity
-import com.facebook.samples.litho.changesetdebug.StateResettingActivity
-import com.facebook.samples.litho.duplicatestate.DuplicateState
-import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity
-import com.facebook.samples.litho.editor.SimpleEditorExampleActivity
-import com.facebook.samples.litho.errors.ErrorHandlingActivity
-import com.facebook.samples.litho.fastscroll.FastScrollHandleComponent
-import com.facebook.samples.litho.hscroll.HorizontalScrollWithDynamicItemHeight
-import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity
-import com.facebook.samples.litho.incrementalmount.IncrementalMountWithCustomViewContainerActivity
+import com.facebook.samples.litho.java.animations.animatedbadge.AnimatedBadge
+import com.facebook.samples.litho.java.animations.animationcallbacks.AnimationCallbacksActivity
+import com.facebook.samples.litho.java.animations.animationcookbook.AnimationCookBookActivity
+import com.facebook.samples.litho.java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
+import com.facebook.samples.litho.java.animations.docs.AppearTransitionComponent
+import com.facebook.samples.litho.java.animations.docs.ParallelTransitionWithAnimatorsComponent
+import com.facebook.samples.litho.java.animations.docs.SequenceTransitionLoopComponent
+import com.facebook.samples.litho.java.animations.docs.SimpleAllLayoutTransitionComponent
+import com.facebook.samples.litho.java.animations.docs.StaggerTransitionComponent
+import com.facebook.samples.litho.java.animations.docs.StaggerTransitionSameComponent
+import com.facebook.samples.litho.java.animations.docs.StaggerTransitionWithDelayComponent
+import com.facebook.samples.litho.java.animations.docs.keyscope.GlobalKeyParentComponent
 import com.facebook.samples.litho.java.animations.expandableelement.ExpandableElementActivity
+import com.facebook.samples.litho.java.animations.pageindicators.PageIndicatorsRootComponent
+import com.facebook.samples.litho.java.animations.sharedelements.SharedElementsComponent
+import com.facebook.samples.litho.java.animations.sharedelements.SharedElementsFragmentActivity
+import com.facebook.samples.litho.java.animations.transitions.TransitionsActivity
+import com.facebook.samples.litho.java.changesetdebug.ItemsRerenderingActivity
+import com.facebook.samples.litho.java.changesetdebug.PropUpdatingActivity
+import com.facebook.samples.litho.java.changesetdebug.ScrollingToBottomActivity
+import com.facebook.samples.litho.java.changesetdebug.StateResettingActivity
+import com.facebook.samples.litho.java.duplicatestate.DuplicateState
+import com.facebook.samples.litho.java.dynamicprops.DynamicPropsActivity
+import com.facebook.samples.litho.java.editor.SimpleEditorExampleActivity
+import com.facebook.samples.litho.java.errors.ErrorHandlingActivity
+import com.facebook.samples.litho.java.fastscroll.FastScrollHandleComponent
+import com.facebook.samples.litho.java.horizontalscroll.HorizontalScrollRootComponent
+import com.facebook.samples.litho.java.hscroll.HorizontalScrollWithDynamicItemHeight
+import com.facebook.samples.litho.java.hscroll.HorizontalScrollWithSnapActivity
+import com.facebook.samples.litho.java.incrementalmount.IncrementalMountWithCustomViewContainerActivity
+import com.facebook.samples.litho.java.lifecycle.LifecycleDelegateActivity
+import com.facebook.samples.litho.java.lifecycle.LifecycleFragmentActivity
+import com.facebook.samples.litho.java.lifecycle.ViewPagerLifecycleActivity
+import com.facebook.samples.litho.java.lithography.LithographyActivity
+import com.facebook.samples.litho.java.onboarding.AlphaTransitionComponent
+import com.facebook.samples.litho.java.onboarding.FirstComponentSpecActivity
+import com.facebook.samples.litho.java.onboarding.HelloWorldActivity
+import com.facebook.samples.litho.java.onboarding.IntroducingLayoutComponent
+import com.facebook.samples.litho.java.onboarding.LayoutWithImageComponent
+import com.facebook.samples.litho.java.playground.PlaygroundComponent
+import com.facebook.samples.litho.java.stateupdates.SectionStateUpdateFromComponentSection
+import com.facebook.samples.litho.java.stateupdates.StateUpdateFromOutsideTreeActivity
+import com.facebook.samples.litho.java.stats.Stats
+import com.facebook.samples.litho.java.textinput.TextInputRequestAndClearFocus
+import com.facebook.samples.litho.java.textinput.TextInputWithKeyboardAndFocusDemo
+import com.facebook.samples.litho.java.triggers.ClearTextTriggerExampleComponent
+import com.facebook.samples.litho.java.triggers.CustomEventTriggerExampleComponent
+import com.facebook.samples.litho.java.triggers.TooltipTriggerExampleActivity
+import com.facebook.samples.litho.java.viewpager.ViewPagerDemoComponent
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
@@ -65,28 +85,9 @@ import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
-import com.facebook.samples.litho.kotlin.lithography.LithographyActivity
+import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
 import com.facebook.samples.litho.kotlin.playground.PlaygroundKComponent
-import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity
-import com.facebook.samples.litho.lifecycle.LifecycleFragmentActivity
-import com.facebook.samples.litho.lifecycle.ViewPagerLifecycleActivity
-import com.facebook.samples.litho.onboarding.AlphaTransitionComponent
-import com.facebook.samples.litho.onboarding.FirstComponentSpecActivity
-import com.facebook.samples.litho.onboarding.HelloWorldActivity
-import com.facebook.samples.litho.onboarding.IntroducingLayoutComponent
-import com.facebook.samples.litho.onboarding.LayoutWithImageComponent
-import com.facebook.samples.litho.playground.PlaygroundComponent
-import com.facebook.samples.litho.stateupdates.SectionStateUpdateFromComponentSection
-import com.facebook.samples.litho.stateupdates.StateUpdateFromOutsideTreeActivity
-import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollRootComponent
-import com.facebook.samples.litho.stats.Stats
-import com.facebook.samples.litho.textinput.TextInputRequestAndClearFocus
-import com.facebook.samples.litho.textinput.TextInputWithKeyboardAndFocusDemo
-import com.facebook.samples.litho.triggers.ClearTextTriggerExampleComponent
-import com.facebook.samples.litho.triggers.CustomEventTriggerExampleComponent
-import com.facebook.samples.litho.triggers.TooltipTriggerExampleActivity
-import com.facebook.samples.litho.viewpager.ViewPagerDemoComponent
 
 class Demos {
   companion object {
@@ -143,7 +144,7 @@ class Demos {
                                 component = PullToRefreshCollectionKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
-                                klass = LithographyActivity::class.java))),
+                                klass = LithographyKotlinActivity::class.java))),
                     DemoGrouping(
                         name = "Errors",
                         listOf(
@@ -233,10 +234,7 @@ class Demos {
                             },
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
-                                klass =
-                                    com.facebook.samples.litho.lithography
-                                            .LithographyActivity::class
-                                        .java),
+                                klass = LithographyActivity::class.java),
                             SingleDemo(
                                 name = "Snapping",
                                 klass = HorizontalScrollWithSnapActivity::class.java),
