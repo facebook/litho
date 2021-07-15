@@ -185,6 +185,8 @@ public class DefaultInternalNode
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
 
+  private boolean mIsClone = false;
+
   protected long mPrivateFlags;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
@@ -594,7 +596,7 @@ public class DefaultInternalNode
 
   @Override
   public void addChild(LithoLayoutResult child) {
-    throw new UnsupportedOperationException("This supported by DefaultInternalNode");
+    throw new UnsupportedOperationException("This API is not supported by DefaultInternalNode");
   }
 
   @Override
@@ -1572,10 +1574,16 @@ public class DefaultInternalNode
     mComponentContext = c;
   }
 
+  @Override
+  public boolean isClone() {
+    return mIsClone;
+  }
+
   protected DefaultInternalNode clone() {
     final DefaultInternalNode node;
     try {
       node = (DefaultInternalNode) super.clone();
+      node.mIsClone = true;
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }

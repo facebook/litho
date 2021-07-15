@@ -178,6 +178,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
   private @Nullable CommonPropsHolder.DefaultLayoutProps mDebugLayoutProps;
 
+  private boolean mIsClone = false;
   private boolean mFrozen;
 
   protected long mPrivateFlags;
@@ -1159,10 +1160,16 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return mComponents.isEmpty() ? "<null>" : mComponents.get(0).getSimpleName();
   }
 
+  @Override
+  public boolean isClone() {
+    return mIsClone;
+  }
+
   protected InputOnlyInternalNode clone() {
     final InputOnlyInternalNode node;
     try {
       node = (InputOnlyInternalNode) super.clone();
+      node.mIsClone = true;
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }

@@ -161,6 +161,8 @@ public interface InternalNode extends Node<LithoRenderContext> {
 
   void assertContextSpecificStyleNotSet();
 
+  boolean isClone();
+
   /**
    * Reconcile returns a new InternalNode tree where only mutated sub-trees are recreated and all
    * other sub-trees are copied. The returned InternalNode tree represents the updated layout tree.
