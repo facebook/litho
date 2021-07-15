@@ -804,7 +804,7 @@ class TextInputSpec {
         textAlignment,
         gravity,
         editable,
-        inputType
+        inputType,
         rawInputType,
         keyListener,
         imeOptions,
