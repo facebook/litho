@@ -370,6 +370,7 @@ class TextInputSpec {
       text = text.toString();
     }
     setParams(
+        c,
         forMeasure,
         hint,
         getBackgroundOrDefault(
@@ -406,6 +407,7 @@ class TextInputSpec {
   }
 
   static void setParams(
+      ComponentContext c,
       EditText editText,
       @Nullable CharSequence hint,
       @Nullable Drawable background,
@@ -479,7 +481,6 @@ class TextInputSpec {
     editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
     editText.setTypeface(typeface, 0);
     editText.setGravity(gravity);
-    editText.setImeOptions(imeOptions);
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
     editText.setLongClickable(editable);
@@ -490,6 +491,7 @@ class TextInputSpec {
       editText.setHighlightColor(highlightColor);
     }
     editText.setMovementMethod(movementMethod);
+    setImeOptionsAndRestartInputIfChanged(c, editText, editText.getImeOptions(), imeOptions);
 
     /**
      * Sets error state on the TextInput, which shows an error icon provided by errorDrawable and an
@@ -543,6 +545,18 @@ class TextInputSpec {
     // Optionally Set KeyListener later to override the one set by the InputType
     if (keyListener != null && keyListener != editText.getKeyListener()) {
       editText.setKeyListener(keyListener);
+    }
+  }
+
+  // If imeOptions are changed when the keyboard is visible, restartInput needs to be called for
+  // this change to be reflected.
+  private static void setImeOptionsAndRestartInputIfChanged(
+      ComponentContext c, EditText editText, int oldImeOptions, int newImeOptions) {
+    editText.setImeOptions(newImeOptions);
+    if (oldImeOptions != newImeOptions) {
+      InputMethodManager imm =
+          (InputMethodManager) c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.restartInput(editText);
     }
   }
 
@@ -770,6 +784,7 @@ class TextInputSpec {
     mountedView.set(editText);
 
     setParams(
+        c,
         editText,
         hint,
         getBackgroundOrDefault(c, inputBackground),
