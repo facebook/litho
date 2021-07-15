@@ -150,8 +150,6 @@ public class LithoLifecycleProviderTest {
         .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(5, EXACTLY));
     mLithoViewRule.attachToWindow().measure().layout().setSizeSpecs(10, 10);
 
-    ComponentsConfiguration.unmountAllWhenComponentTreeSetToNull = true;
-
     mLithoLifecycleProviderDelegate.moveToLifecycle(
         LithoLifecycleProvider.LithoLifecycle.HINT_VISIBLE);
 

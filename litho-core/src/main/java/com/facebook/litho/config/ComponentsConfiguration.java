@@ -113,9 +113,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
-  public static boolean unmountAllWhenComponentTreeSetToNull = false;
-
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */

@@ -2538,13 +2538,13 @@ public class ComponentTree implements LithoLifecycleListener {
         mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
       }
 
-      mReleased = true;
       if (mRoot != null) {
         mReleasedComponent = mRoot.getSimpleName();
       }
       if (mLithoView != null) {
         mLithoView.setComponentTree(null);
       }
+      mReleased = true;
       mRoot = null;
 
       // Clear mWorkingRangeStatusHandler before releasing LayoutState because we need them to help
