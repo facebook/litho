@@ -19,15 +19,16 @@ package com.facebook.litho.intellij.completion;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
-import com.intellij.psi.PsiFile;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
+public class OnEventCompletionTest extends LithoPluginIntellijTest {
 
-  public OnEventCompletionProviderTest() {
+  public OnEventCompletionTest() {
     super("testdata/completion");
   }
 
@@ -35,17 +36,12 @@ public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
   public void eventInLithoClass_completes() throws IOException {
     String clsName = "OnClickEventCompletionSpec.java";
 
-    PsiFile layoutSpec = testHelper.configure(clsName);
+    testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    assertThat(
-            layoutSpec
-                .getText()
-                .contains(
-                    "    @com.facebook.litho.annotations.OnEvent(ClickEvent.class)\n"
-                        + "    static void onClickEvent(com.facebook.litho.ComponentContext c) {\n"
-                        + "    }"))
-        .isTrue();
+    @Nullable List<String> lookupElements = fixture.getLookupElementStrings();
+    assertThat(lookupElements).isNotNull();
+    assertThat(lookupElements).contains("onClickEvent");
   }
 
   @Test
@@ -54,23 +50,20 @@ public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
-    fixture.completeBasic();
-    List<String> completion = fixture.getLookupElementStrings();
-    assertThat(completion).isEmpty();
+    LookupElement[] lookupElements = fixture.completeBasic();
+    assertThat(lookupElements).isNotNull();
+    assertThat(lookupElements.length == 0).isTrue();
   }
 
   @Test
   public void eventAboveMethod_completes() throws IOException {
-    PsiFile mountSpec = testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
+    String clsName = "OnClickEventAboveMethodCompletionSpec.java";
+
+    testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    assertThat(
-            mountSpec
-                .getText()
-                .contains(
-                    "    @com.facebook.litho.annotations.OnEvent(ClickEvent.class)\n"
-                        + "    static void onClickEvent(com.facebook.litho.ComponentContext c) {\n"
-                        + "    }"))
-        .isTrue();
+    @Nullable List<String> lookupElements = fixture.getLookupElementStrings();
+    assertThat(lookupElements).isNotNull();
+    assertThat(lookupElements).contains("onClickEvent");
   }
 }

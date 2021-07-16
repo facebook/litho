@@ -118,27 +118,35 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
       PsiTreeUtil.processElements(
           psiMethodWithContext,
           psiElement -> {
-            if (psiElement instanceof PsiTypeElement
-                && psiElement.getText().equals("placeholder_type")) {
+            final String elementText = psiElement.getText();
+            if (psiElement instanceof PsiTypeElement && elementText.equals("placeholder_type")) {
               templateBuilder.replaceElement(
                   psiElement, new TextExpression(getFirstStateTypeAndName(specClass).first));
-            } else if (psiElement instanceof PsiIdentifier
-                && psiElement.getText().equals("placeholder_name")) {
-              templateBuilder.replaceElement(
-                  psiElement, new TextExpression(getFirstStateTypeAndName(specClass).second));
+            } else if (psiElement instanceof PsiIdentifier) {
+              String methodName = "onClickEvent";
+              if (elementText.equals(methodName)) {
+                int postfix = 1;
+                while (specClass.findMethodsByName(methodName).length > 0) {
+                  methodName = "onClickEvent" + postfix;
+                  postfix++;
+                }
+                templateBuilder.replaceElement(psiElement, methodName);
+              } else if (elementText.equals("placeholder_name")) {
+                templateBuilder.replaceElement(
+                    psiElement, new TextExpression(getFirstStateTypeAndName(specClass).second));
+              } else if (psiElement.getParent() instanceof PsiMethod) {
+                // Method name
+                templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
+              }
             } else if (psiElement instanceof PsiTypeElement
-                && psiElement.getText().equals("placeholder_service_type")) {
+                && elementText.equals("placeholder_service_type")) {
               templateBuilder.replaceElement(
                   psiElement, new TextExpression(getServiceType(specClass)));
             } else if (psiElement instanceof PsiTypeElement
-                && psiElement.getText().equals("placeholder_tree_prop_type")) {
+                && elementText.equals("placeholder_tree_prop_type")) {
               templateBuilder.replaceElement(psiElement, "TreePropType");
-            } else if (psiElement instanceof PsiIdentifier
-                && psiElement.getParent() instanceof PsiMethod) {
-              // Method name
-              templateBuilder.replaceElement(psiElement, new TextExpression(psiElement.getText()));
             } else if (psiElement instanceof PsiComment) {
-              templateBuilder.replaceElement(psiElement, new TextExpression(psiElement.getText()));
+              templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
               templateBuilder.setEndVariableAfter(psiElement);
             }
             return true;
