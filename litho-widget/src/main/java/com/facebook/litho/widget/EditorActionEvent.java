@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.view.KeyEvent;
+import android.widget.EditText;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -27,4 +28,5 @@ import com.facebook.litho.annotations.Event;
 public class EditorActionEvent {
   public int actionId;
   public KeyEvent event;
+  public EditText view;
 }
