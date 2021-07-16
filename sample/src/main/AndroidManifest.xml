@@ -70,7 +70,7 @@
     <activity android:name=".java.onboarding.HelloWorldActivity" />
     <activity android:name=".java.onboarding.FirstComponentSpecActivity" />
 
-    <activity android:name=".kotlin.lithography.LithographyActivity" />
+    <activity android:name=".kotlin.lithography.LithographyKotlinActivity" />
     <activity android:name=".kotlin.errors.ErrorHandlingActivity" />
     <activity android:name=".kotlin.animations.animatedcounter.AnimatedCounterActivity" />
     <activity android:name=".kotlin.logging.LoggingActivity" />
