@@ -8,7 +8,7 @@ on:
 
 jobs:
   get-buck:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/cache@v2
@@ -25,7 +25,7 @@ jobs:
 
   build:
     needs: [get-buck]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -55,7 +55,7 @@ jobs:
 
   tests:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -85,7 +85,7 @@ jobs:
 
   plugin-tests:
     needs: [build]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -117,7 +117,7 @@ jobs:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
     needs: [tests]
     if: ${{ github.event_name != 'pull_request' && github.repository == 'facebook/litho' }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     outputs:
       is-snapshot: ${{ steps.check_snapshot.outputs.IS_SNAPSHOT != '' }}
@@ -133,7 +133,7 @@ jobs:
   deploy:
     needs: [deploy-check]
     if: ${{ needs.deploy-check.outputs.is-snapshot == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
