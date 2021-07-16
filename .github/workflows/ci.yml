@@ -53,7 +53,7 @@ jobs:
       - name: Build everything
         run: BUCK_PATH=`realpath buck/buck` ./gradlew assemble --stacktrace --no-daemon
 
-  tests:
+  it-tests:
     needs: [build]
     runs-on: ubuntu-latest
 
@@ -81,7 +81,67 @@ jobs:
           key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Run all library tests
-        run: BUCK_PATH=`realpath buck/buck` ./gradlew test -x :litho-intellij-plugin:test --stacktrace --no-daemon --max-workers 2
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew :litho-it:testDebug --stacktrace --no-daemon
+
+  it-powermock-tests:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Run all library tests
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew :litho-it-powermock:testDeb --stacktrace --no-daemon
+
+  kotlin-tests:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - uses: actions/cache@v2
+        with:
+          path: buck
+          key: buck-${{ runner.os }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Run all library tests
+        run: BUCK_PATH=`realpath buck/buck` ./gradlew :litho-core-kotlin:testDeb --stacktrace --no-daemon
 
   plugin-tests:
     needs: [build]
@@ -115,7 +175,7 @@ jobs:
 
   deploy-check:
     name: Skip deploy if PR or Fork or not a SNAPSHOT version
-    needs: [tests]
+    needs: [it-tests, it-powermock-tests, kotlin-tests]
     if: ${{ github.event_name != 'pull_request' && github.repository == 'facebook/litho' }}
     runs-on: ubuntu-latest
 
