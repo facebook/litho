@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -55,6 +56,7 @@ public class MountSpecMethodAnnotationsProvider extends CompletionProvider<Compl
         MountSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS) {
       ANNOTATION_QUALIFIED_NAMES.add(permittedMethod.getTypeName());
     }
+    ANNOTATION_QUALIFIED_NAMES.add(OnTrigger.class.getTypeName());
     ANNOTATION_QUALIFIED_NAMES.add(OnEvent.class.getTypeName());
     ANNOTATION_QUALIFIED_NAMES.add(OnCreateMountContent.class.getTypeName());
     ANNOTATION_QUALIFIED_NAMES.add(OnPrepare.class.getTypeName());

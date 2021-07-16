@@ -123,13 +123,12 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
               templateBuilder.replaceElement(
                   psiElement, new TextExpression(getFirstStateTypeAndName(specClass).first));
             } else if (psiElement instanceof PsiIdentifier) {
-              String methodName = "onClickEvent";
-              if (elementText.equals(methodName)) {
-                int postfix = 1;
-                while (specClass.findMethodsByName(methodName).length > 0) {
-                  methodName = "onClickEvent" + postfix;
-                  postfix++;
-                }
+
+              if (elementText.equals("onClickEvent")) {
+                String methodName = getNextMethodName("onClickEvent");
+                templateBuilder.replaceElement(psiElement, methodName);
+              } else if (elementText.equals("onTriggerEvent")) {
+                String methodName = getNextMethodName("onTriggerEvent");
                 templateBuilder.replaceElement(psiElement, methodName);
               } else if (elementText.equals("placeholder_name")) {
                 templateBuilder.replaceElement(
@@ -154,6 +153,16 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
       final Template template = templateBuilder.buildTemplate();
       template.setToReformat(true);
       return template;
+    }
+
+    private String getNextMethodName(String methodName) {
+      String newMethodName = methodName;
+      int postfix = 1;
+      while (specClass.findMethodsByName(newMethodName).length > 0) {
+        newMethodName = methodName + postfix;
+        postfix++;
+      }
+      return newMethodName;
     }
   }
 
