@@ -39,10 +39,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.LooperMode;
 
 /** Tests {@link BatchedTarget} */
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class BatchedTargetTest {
 

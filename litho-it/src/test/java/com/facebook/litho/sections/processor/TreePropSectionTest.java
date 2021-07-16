@@ -32,10 +32,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.LooperMode;
 
 /** Tests passing {@link TreeProp}s down a Section tree. */
-@LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(LithoTestRunner.class)
 public class TreePropSectionTest {
 
