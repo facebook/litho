@@ -705,7 +705,7 @@ public abstract class Component
   }
 
   protected final boolean useTreePropsFromContext() {
-    return ComponentsConfiguration.useTreePropsfromContext;
+    return true;
   }
 
   /**
@@ -750,7 +750,7 @@ public abstract class Component
           shouldUpdate(previousScopedContext, currentComponent, nextScopedContext, nextComponent);
     }
 
-    if (ComponentsConfiguration.useTreePropsfromContext && !implementsShouldUpdate()) {
+    if (!implementsShouldUpdate()) {
       return shouldUpdate
           || (previousScopedContext != null
               && nextScopedContext != null
@@ -1570,9 +1570,6 @@ public abstract class Component
       final ComponentContext parentContext,
       final ComponentContext scopedContext,
       final String globalKey) {
-    if (!ComponentsConfiguration.useTreePropsfromContext) {
-      populateTreeProps(parentContext.getTreeProps());
-    }
     scopedContext.setParentTreeProps(parentContext.getTreeProps());
     if (hasState()) {
       parentContext
