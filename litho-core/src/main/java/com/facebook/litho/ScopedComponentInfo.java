@@ -52,6 +52,8 @@ final class ScopedComponentInfo implements Cloneable {
    */
   private @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
+  private boolean mIsBeingUsed = true;
+
   ScopedComponentInfo(
       final Component component,
       final ComponentContext context,
@@ -95,6 +97,8 @@ final class ScopedComponentInfo implements Cloneable {
     }
 
     mErrorEventHandler = info.mErrorEventHandler;
+
+    mIsBeingUsed = false;
   }
 
   public ComponentContext getContext() {
@@ -169,9 +173,14 @@ final class ScopedComponentInfo implements Cloneable {
   }
 
   public void commitToLayoutState() {
+    mIsBeingUsed = true;
     if (mComponent.hasState()) {
       mContext.getStateHandler().addStateContainer(mContext.getGlobalKey(), mStateContainer);
     }
+  }
+
+  public boolean isBeingUsed() {
+    return mIsBeingUsed;
   }
 
   @Override

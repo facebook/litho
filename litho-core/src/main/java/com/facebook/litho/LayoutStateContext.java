@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +45,7 @@ public class LayoutStateContext {
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mHasNestedTreeDiffNodeSet = false;
+  private boolean wasReconciled = false;
 
   private static @Nullable LayoutState sTestLayoutState;
 
@@ -75,6 +77,8 @@ public class LayoutStateContext {
 
     mComponentIdToWillRenderLayout.clear();
     mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
+
+    wasReconciled = true;
   }
 
   @VisibleForTesting
@@ -240,6 +244,20 @@ public class LayoutStateContext {
     String string = builder.substring(0, Math.min(builder.length(), 200));
 
     return String.format("\nsize: %d\nkeys: %s", keys.size(), string);
+  }
+
+  /** Remove scoped info of components which are not part of the hierarchy. */
+  public void prune() {
+    final Iterator<Map.Entry<String, ScopedComponentInfo>> iterator =
+        mGlobalKeyToScopedInfo.entrySet().iterator();
+    if (wasReconciled) {
+      while (iterator.hasNext()) {
+        Map.Entry<String, ScopedComponentInfo> info = iterator.next();
+        if (!info.getValue().isBeingUsed()) {
+          iterator.remove();
+        }
+      }
+    }
   }
 
   private void checkIfFrozen() {
