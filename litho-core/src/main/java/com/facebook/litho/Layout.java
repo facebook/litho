@@ -345,7 +345,7 @@ class Layout {
                 .getInternalNode()
                 .getHeadComponent()
                 .canUsePreviousLayout(parentContext, globalKey)) {
-          remeasure(currentLayout, widthSpec, heightSpec, prevLayoutStateContext);
+          remeasure(currentLayout, widthSpec, heightSpec, currentLayout, prevLayoutStateContext);
           layout = currentLayout;
         } else {
 
@@ -559,6 +559,7 @@ class Layout {
       final LithoLayoutResult layout,
       final int widthSpec,
       final int heightSpec,
+      final @Nullable LithoLayoutResult current,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
     if (layout == NullLayoutResult.INSTANCE) { // If NULL layout result, then return immediately.
       return;
@@ -569,7 +570,7 @@ class Layout {
         layout.getInternalNode(),
         widthSpec,
         heightSpec,
-        null, // TODO(T94662963): Pass the current LayoutResult from LayoutState.
+        current,
         prevLayoutStateContext,
         layout.getDiffNode());
   }

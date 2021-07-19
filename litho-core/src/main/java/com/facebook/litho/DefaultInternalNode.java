@@ -352,14 +352,16 @@ public class DefaultInternalNode
 
   @Override
   public void freeze(final YogaNode node, final @Nullable YogaNode parent) {
-    freeze(mComponentContext.getLayoutStateContext(), node, parent);
+    freeze(mComponentContext.getLayoutStateContext(), node, false, parent, null);
   }
 
   @Override
   public void freeze(
       final LayoutStateContext context,
       final YogaNode node,
-      final @Nullable YogaNode parentYogaNode) {
+      final boolean isCloned,
+      final @Nullable YogaNode parentYogaNode,
+      final @Nullable LithoLayoutResult current) {
 
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
     // child's important for A11Y needs to be NO_HIDE_DESCENDANTS

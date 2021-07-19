@@ -76,7 +76,12 @@ public interface InternalNode extends Node<LithoRenderContext> {
 
   void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect);
 
-  void freeze(LayoutStateContext c, YogaNode node, @Nullable YogaNode parent);
+  void freeze(
+      LayoutStateContext c,
+      YogaNode node,
+      boolean isCloned,
+      @Nullable YogaNode parent,
+      @Nullable LithoLayoutResult current);
 
   LithoLayoutResult calculateLayout(
       LayoutContext<LithoRenderContext> c, int widthSpec, int heightSpec);

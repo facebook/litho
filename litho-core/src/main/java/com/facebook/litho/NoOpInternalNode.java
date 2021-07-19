@@ -585,7 +585,12 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void freeze(LayoutStateContext c, YogaNode node, @Nullable YogaNode parent) {}
+  public void freeze(
+      final LayoutStateContext c,
+      final YogaNode node,
+      final boolean isCloned,
+      final @Nullable YogaNode parent,
+      final LithoLayoutResult current) {}
 
   @Override
   public Copyable getLayoutParams() {

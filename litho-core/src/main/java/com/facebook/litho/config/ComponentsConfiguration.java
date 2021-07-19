@@ -216,6 +216,8 @@ public class ComponentsConfiguration {
 
   public static boolean reuseInternalNodes = false;
 
+  public static boolean enableLayoutCaching = false;
+
   public static boolean shouldSkipShallowCopy = false;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
