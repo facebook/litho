@@ -873,10 +873,6 @@ public class TransitionsExtension
     while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
       final long id = parentRenderTreeNode.getRenderUnit().getId();
       if (increment) {
-        // We use the position as 0 as we are not mounting it, just acquiring reference.
-        if (!extensionState.ownsReference(id)) {
-          extensionState.acquireMountReference(id, false);
-        }
         if (!extensionState.ownsReference(id)) {
           extensionState.acquireMountReference(id, false);
         }
