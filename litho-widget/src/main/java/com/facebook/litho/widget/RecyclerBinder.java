@@ -3092,6 +3092,10 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private boolean isCompatibleSize(int widthSpec, int heightSpec) {
+    if (mMeasuredSize == null) {
+      return false;
+    }
+
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
     if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
