@@ -135,7 +135,7 @@ You may have your own `MountSpec` which has `@Props` that also do not affect lay
 It is possible to control the values of those properties in similar way using `DynamicValue` interface.
 However, in this case you will need to tell framework *how* to apply the value of the `@Prop` to the mounted element.
 
-To show you how to do this, let us consider a `MountSpec` that mounts a [`ClockView`](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/dynamicprops/ClockView.java) and defines `time` property, which it passes to the View in `@OnMount`.
+To show you how to do this, let us consider a `MountSpec` that mounts a [`ClockView`](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/dynamicprops/ClockView.java) and defines `time` property, which it passes to the View in `@OnMount`.
 
 ```java
 /**
@@ -211,7 +211,7 @@ Then, it is the responsibility of the framework to invoke these methods to keep 
   <p>Your browser does not support the video element.</p>
 </video>
 
-[Here](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/dynamicprops) you find the full implementation of the sample above.
+[Here](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/dynamicprops) you find the full implementation of the sample above.
 
 ### Animating Common Dynamic Props
 
@@ -305,4 +305,4 @@ In this example we have created a simple `LayoutSpec` that contains a `Text` com
 The scale of the `Text` defined by a `DynamicValue`, which will trigger a re-draw when ever it is updated. The `DynamicValue` is defined within a `@State` so that it can be easily shared between the `LayoutSpec`'s static functions.
 There is an `Animator` that updates the scale `DynamicValue`. The `Animator` is defined as a `@State` so the instance can be shared between different on click events. It is also wrapped inside an `AtomicReference` which allows us to replace the Animator instance so we don't have to re-use the same `Animator` for different animations.
 
-For more examples of creating Animations using Common Dynamic Props, see our [Animations Cook Book](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/animations/animationcookbook) in the Sample App.
+For more examples of creating Animations using Common Dynamic Props, see our [Animations Cook Book](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/java/animations/animationcookbook) in the Sample App.
