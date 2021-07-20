@@ -306,7 +306,7 @@ class MountState implements MountDelegateTarget {
     if (componentTreeId != mLastMountedComponentTreeId) {
       // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
       // since things like transition animations aren't relevant.
-      mLastMountedLayoutState = null;
+      clearLastMountedLayoutState();
     }
 
     final PerfEvent mountPerfEvent =
@@ -425,7 +425,7 @@ class MountState implements MountDelegateTarget {
       mPreviousLocalVisibleRect.set(localVisibleRect);
     }
 
-    mLastMountedLayoutState = null;
+    clearLastMountedLayoutState();
     mLastMountedComponentTreeId = componentTreeId;
     mLastMountedLayoutState = layoutState;
 
@@ -442,6 +442,16 @@ class MountState implements MountDelegateTarget {
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
+  }
+
+  private void clearLastMountedLayoutState() {
+    if (mLithoView.getComponentTree() != null
+        && mLithoView.getComponentTree().shouldClearPrevContextWhenCommitted()
+        && mLastMountedLayoutState != null) {
+      mLastMountedLayoutState.clearPrevLayoutStateContext();
+    }
+
+    mLastMountedLayoutState = null;
   }
 
   private void afterMountMaybeUpdateAnimations() {
@@ -493,7 +503,7 @@ class MountState implements MountDelegateTarget {
     if (componentTreeId != mLastMountedComponentTreeId) {
       // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
       // since things like transition animations aren't relevant.
-      mLastMountedLayoutState = null;
+      clearLastMountedLayoutState();
     }
 
     final PerfEvent mountPerfEvent =
@@ -574,7 +584,7 @@ class MountState implements MountDelegateTarget {
     mIsDirty = false;
     mNeedsRemount = false;
 
-    mLastMountedLayoutState = null;
+    clearLastMountedLayoutState();
     mLastMountedComponentTreeId = componentTreeId;
     mLastMountedLayoutState = layoutState;
 

@@ -380,6 +380,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isReconciliationEnabled;
 
+  private final boolean shouldClearPrevContextWhenCommitted;
+
   private final boolean mMoveLayoutsBetweenThreads;
 
   private final boolean mForceAsyncStateUpdate;
@@ -439,6 +441,8 @@ public class ComponentTree implements LithoLifecycleListener {
     mUseInputOnlyInternalNodes = mReuseInternalNodes || builder.useInputOnlyInternalNodes;
     useStatelessComponent = mReuseInternalNodes || builder.useStatelessComponent;
     shouldSkipShallowCopy = useStatelessComponent && builder.shouldSkipShallowCopy;
+    shouldClearPrevContextWhenCommitted =
+        useStatelessComponent && builder.shouldClearPrevContextWhenCommitted;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -1239,6 +1243,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
+  }
+
+  public boolean shouldClearPrevContextWhenCommitted() {
+    return shouldClearPrevContextWhenCommitted;
   }
 
   public ErrorEventHandler getErrorEventHandler() {
@@ -3300,6 +3308,8 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean useInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
     private boolean reuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
+    private boolean shouldClearPrevContextWhenCommitted =
+        ComponentsConfiguration.shouldClearPrevContextWhenCommitted;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3530,6 +3540,7 @@ public class ComponentTree implements LithoLifecycleListener {
       this.useInputOnlyInternalNodes = inputOnlyInternalNode;
       this.reuseInternalNodes = internalNodeReuseEnabled;
       this.isLayoutCachingEnabled = isLayoutCachingEnabled;
+      this.shouldClearPrevContextWhenCommitted = shouldClearPrevContextWhenCommitted;
     }
   }
 }

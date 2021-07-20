@@ -270,4 +270,13 @@ public class LayoutStateContext {
   boolean isFrozen() {
     return mIsFrozen;
   }
+
+  void clear() {
+    mGlobalKeyToScopedInfo.clear();
+    mComponentIdToWillRenderLayout.clear();
+
+    mCurrentDiffTree = null;
+    mCurrentNestedTreeDiffNode = null;
+    mHasNestedTreeDiffNodeSet = false;
+  }
 }

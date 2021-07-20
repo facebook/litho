@@ -1499,6 +1499,13 @@ public class LayoutState
         null);
   }
 
+  void clearPrevLayoutStateContext() {
+    if (mPrevLayoutStateContext != null) {
+      mPrevLayoutStateContext.clear();
+      mPrevLayoutStateContext = null;
+    }
+  }
+
   static LayoutState calculate(
       ComponentContext c,
       Component component,
