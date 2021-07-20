@@ -722,6 +722,10 @@ class MountState implements MountDelegateTarget {
       Rect previousLocalVisibleRect,
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
+    if (mVisibilityExtension == null) {
+      return;
+    }
+
     if (isDirty) {
       mVisibilityExtension.afterMount(mVisibilityExtensionState);
     } else {
