@@ -115,6 +115,7 @@ public class AttachDetachHandler {
     }
     detachAll(Preconditions.checkNotNull(mLayoutStateContext), mAttached);
     mAttached = null;
+    mLayoutStateContext = null;
   }
 
   private void attachAll(Map<String, Attachable> toAttach) {
