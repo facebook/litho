@@ -69,6 +69,7 @@ import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SectionsRecyclerView;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
@@ -432,8 +433,19 @@ public class RecyclerCollectionComponentSpec {
       ComponentContext c,
       @FromTrigger int position,
       @FromTrigger boolean animate,
-      @State SectionTree sectionTree) {
+      @State SectionTree sectionTree,
+      @State RecyclerCollectionEventsController internalEventsController) {
     sectionTree.requestFocusOnRoot(position);
+  }
+
+  @OnTrigger(SmoothScrollEvent.class)
+  static void onSmoothScroll(
+      ComponentContext c,
+      @FromTrigger int index,
+      @FromTrigger int offset,
+      @FromTrigger SmoothScrollAlignmentType type,
+      @State SectionTree sectionTree) {
+    sectionTree.requestSmoothFocusOnRoot(index, offset, type);
   }
 
   @OnTrigger(RecyclerDynamicConfigEvent.class)

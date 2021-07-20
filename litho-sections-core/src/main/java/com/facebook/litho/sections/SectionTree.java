@@ -830,6 +830,19 @@ public class SectionTree {
         });
   }
 
+  public void requestSmoothFocusOnRoot(int index, int offset, SmoothScrollAlignmentType type) {
+    final String sectionKey;
+    synchronized (this) {
+      if (mCurrentSection == null) {
+        return;
+      }
+
+      sectionKey = mCurrentSection.getGlobalKey();
+    }
+
+    requestSmoothFocus(sectionKey, index, offset, type);
+  }
+
   void requestSmoothFocus(
       final String globalKey,
       final int index,

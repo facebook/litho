@@ -28,6 +28,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sections.widget.CollectionUtils
+import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.Text
 
 class ScrollToCollectionKComponent : KComponent() {
@@ -39,6 +40,14 @@ class ScrollToCollectionKComponent : KComponent() {
           Row {
             child(Button("First") { CollectionUtils.scrollTo(context, handle, 0) })
             child(Button("Position 10") { CollectionUtils.scrollTo(context, handle, 10) })
+            child(
+                Button("50 to center") {
+                  CollectionUtils.smoothScrollTo(
+                      context,
+                      handle,
+                      50,
+                      smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_CENTER)
+                })
           })
       child(
           Collection(

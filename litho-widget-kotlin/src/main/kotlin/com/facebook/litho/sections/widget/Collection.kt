@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget
 
+import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
@@ -30,6 +31,7 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.sections.widget.CollectionDataDiffSectionSpec.ItemRenderer
 import com.facebook.litho.widget.LithoRecylerView
+import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.StickyHeaderControllerFactory
 
 /**
@@ -152,6 +154,16 @@ inline fun ComponentScope.Collection(
 object CollectionUtils {
   fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
       RecyclerCollectionComponent.onScroll(c, handle, position, false /* ignored */)
+
+  fun smoothScrollTo(
+      c: ComponentContext,
+      handle: Handle,
+      index: Int,
+      @Px offset: Int = 0,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+  ): Unit =
+      RecyclerCollectionComponent.onSmoothScroll(
+          c, handle, index, offset, smoothScrollAlignmentType)
 
   fun clearRefreshing(c: ComponentContext, handle: Handle) {
     RecyclerCollectionComponent.onClearRefreshing(c, handle)
