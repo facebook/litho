@@ -29,7 +29,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
-import com.facebook.litho.sections.widget.CollectionDataDiffSectionSpec.ItemRenderer
+import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecylerView
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.StickyHeaderControllerFactory
@@ -202,17 +202,13 @@ class CollectionContainerScope(componentContext: ComponentContext) {
       isSameContent: (previous: T, next: T) -> Boolean = { previous, next -> previous == next },
       render: (item: T) -> Component,
   ) {
-    val renderer =
-        object : ItemRenderer<T> {
-          override fun render(c: ComponentContext?, model: T): Component? = render(model)
-
-          override fun checkIsSameItem(previous: T, next: T): Boolean = isSameItem(previous, next)
-
-          override fun checkIsSameContent(previous: T, next: T): Boolean =
-              isSameContent(previous, next)
-        }
     childrenBuilder.child(
-        CollectionDataDiffSection.create(sectionContext).data(data).itemRenderer(renderer).build())
+        CollectionDataDiffSection.create<T>(sectionContext)
+            .data(data)
+            .render { ComponentRenderInfo.create().component(render(it)).build() }
+            .checkIsSameItem(isSameItem)
+            .checkIsSameContent(isSameContent)
+            .build())
   }
 
   /** Create an isSameItem parameter for items(..) for model comparison using a unique id field. */
