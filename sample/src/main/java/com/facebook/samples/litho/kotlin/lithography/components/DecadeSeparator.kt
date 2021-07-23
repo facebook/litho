@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.Row
 import com.facebook.litho.Style
@@ -27,6 +26,7 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.drawableColor
 import com.facebook.litho.flexbox.flex
+import com.facebook.litho.px
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text
@@ -36,23 +36,13 @@ import com.facebook.yoga.YogaAlign.CENTER
 class DecadeSeparator(val decade: Decade) : KComponent() {
   override fun ComponentScope.render() =
       Row(alignItems = CENTER, style = Style.padding(16.dp).background(drawableColor(0xFFFAFAFA))) {
-        child(
-            Row(
-                style =
-                    Style.height(Dimen.Hairline)
-                        .flex(grow = 1f)
-                        .background(drawableColor(0xFFAAAAAA))))
+        child(Row(style = Style.height(1.px).flex(grow = 1f).background(drawableColor(0xFFAAAAAA))))
         child(
             Text(
                 text = "${decade.year}",
                 textSize = 14.sp,
                 textColor = 0xFFAAAAAA.toInt(),
                 style = Style.margin(horizontal = 10.dp).flex(shrink = 0f)))
-        child(
-            Row(
-                style =
-                    Style.height(Dimen.Hairline)
-                        .flex(grow = 1f)
-                        .background(drawableColor(0xFFAAAAAA))))
+        child(Row(style = Style.height(1.px).flex(grow = 1f).background(drawableColor(0xFFAAAAAA))))
       }
 }

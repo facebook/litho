@@ -22,14 +22,6 @@ package com.facebook.litho
  */
 interface Dimen {
   fun toPixels(resourceResolver: ResourceResolver): Int
-
-  companion object {
-    /**
-     * Used to represent dimension of an element that should be drawn with 1px size (typically,
-     * dividers). Is respected only for sizing and not spacing.
-     */
-    val Hairline = Dp(0f)
-  }
 }
 
 /** Unit-type for pixels. */
