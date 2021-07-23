@@ -28,7 +28,7 @@ public class StateParamModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
   private final boolean mCanUpdateLazily;
 
-  StateParamModel(MethodParamModel paramModel, boolean canUpdateLazily) {
+  public StateParamModel(MethodParamModel paramModel, boolean canUpdateLazily) {
     mParamModel = paramModel;
     mCanUpdateLazily = canUpdateLazily;
   }

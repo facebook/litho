@@ -16,6 +16,10 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOCAL_STATE_CONTAINER_NAME;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
+
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
@@ -90,6 +94,18 @@ public class TreePropGenerator {
                 ClassNames.TREE_PROPS,
                 ClassNames.TREE_PROPS);
 
+    final boolean requiresState =
+        onCreateTreePropsMethods.stream()
+            .anyMatch(method -> method.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE));
+
+    if (requiresState) {
+      builder.addStatement(
+          "$L $L = $L",
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
+          STATE_CONTAINER_IMPL_GETTER + "(c)");
+    }
+
     for (SpecMethodModel<DelegateMethod, Void> onCreateTreePropsMethod : onCreateTreePropsMethods) {
       final CodeBlock.Builder block = CodeBlock.builder();
       block
@@ -108,7 +124,7 @@ public class TreePropGenerator {
             onCreateTreePropsMethod.methodParams.get(i), State.class)) {
           block.add(
               "$L.$L",
-              GeneratorConstants.STATE_CONTAINER_IMPL_GETTER + "(c)",
+              LOCAL_STATE_CONTAINER_NAME,
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else if (MethodParamModelUtils.isAnnotatedWith(
             onCreateTreePropsMethod.methodParams.get(i), TreeProp.class)) {

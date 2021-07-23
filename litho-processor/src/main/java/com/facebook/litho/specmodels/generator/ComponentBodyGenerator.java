@@ -22,6 +22,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_C
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.generator.InterStagePropsContainerGenerator.getInterStagePropsContainerClassName;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
+import static com.facebook.litho.specmodels.model.MethodParamModelUtils.isAnnotatedWith;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Comparable;
@@ -81,7 +82,7 @@ public class ComponentBodyGenerator {
   static final String LIFECYCLE_CREATE_INITIAL_STATE = "createInitialState";
 
   static final Predicate<MethodParamModel> PREDICATE_NEEDS_STATE =
-      methodParamModel -> methodParamModel instanceof StateParamModel;
+      param -> param instanceof StateParamModel || isAnnotatedWith(param, State.class);
 
   private ComponentBodyGenerator() {}
 

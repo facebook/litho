@@ -218,7 +218,7 @@ public class DelegateMethodGenerator {
     return methodSpec.build();
   }
 
-  private static String getContextParamName(
+  static String getContextParamName(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription) {
