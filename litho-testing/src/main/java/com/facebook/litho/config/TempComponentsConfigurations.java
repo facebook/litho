@@ -20,8 +20,8 @@ import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TempComponentsConfigurations {
-  private static final boolean originalShouldDisableDrawableOutputs =
-      ComponentsConfiguration.shouldDisableDrawableOutputs;
+  private static final boolean originalShouldAddHostViewForRootComponent =
+      ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
   private static final boolean originalUseStatelessComponent =
       ComponentsConfiguration.useStatelessComponent;
@@ -33,11 +33,12 @@ public class TempComponentsConfigurations {
       ComponentsConfiguration.useExtensionsWithMountDelegate;
 
   public static void setShouldDisableDrawableOutputs(boolean value) {
-    ComponentsConfiguration.shouldDisableDrawableOutputs = value;
+    ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
   }
 
   public static void restoreShouldDisableDrawableOutputs() {
-    ComponentsConfiguration.shouldDisableDrawableOutputs = originalShouldDisableDrawableOutputs;
+    ComponentsConfiguration.shouldAddHostViewForRootComponent =
+        originalShouldAddHostViewForRootComponent;
   }
 
   public static void setUseStatelessComponent(boolean value) {

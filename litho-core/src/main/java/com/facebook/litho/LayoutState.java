@@ -220,8 +220,11 @@ public class LayoutState
 
   private @Nullable List<Attachable> mAttachables;
 
+  final boolean mShouldAddHostViewForRootComponent =
+      ComponentsConfiguration.shouldAddHostViewForRootComponent;
+
   final boolean mShouldDisableDrawableOutputs =
-      ComponentsConfiguration.shouldDisableDrawableOutputs;
+      mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableDrawableOutputs;
 
   final Map<String, Object> mLayoutData = new HashMap<>();
 
@@ -1231,7 +1234,7 @@ public class LayoutState
    */
   private static boolean isLayoutRootThatRequiresHost(
       LayoutState layoutState, LithoLayoutResult result) {
-    return !layoutState.mShouldDisableDrawableOutputs && layoutState.isLayoutRoot(result);
+    return !layoutState.mShouldAddHostViewForRootComponent && layoutState.isLayoutRoot(result);
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
@@ -1833,7 +1836,7 @@ public class LayoutState
 
     RenderTreeNode parent = null;
     DebugHierarchy.Node hierarchy = null;
-    if (layoutState.mShouldDisableDrawableOutputs) {
+    if (layoutState.mShouldAddHostViewForRootComponent) {
       hierarchy = getDebugHierarchy(null, node);
       addRootHostLayoutOutput(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
@@ -2293,7 +2296,7 @@ public class LayoutState
 
   private static boolean hasSelectedStateWhenDisablingDrawableOutputs(
       final LayoutState layoutState, final InternalNode node) {
-    return layoutState.mShouldDisableDrawableOutputs
+    return layoutState.mShouldAddHostViewForRootComponent
         && !isMountViewSpec(node.getTailComponent())
         && node.getNodeInfo() != null
         && node.getNodeInfo().getSelectedState() != NodeInfo.SELECTED_UNSET;
