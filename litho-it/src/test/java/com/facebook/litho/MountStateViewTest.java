@@ -212,8 +212,8 @@ public class MountStateViewTest {
 
   @Test
   public void onMountContentWithPadded9PatchDrawable_shouldNotSetPaddingOnHost() {
-    final boolean cachedValue = ComponentsConfiguration.shouldDisableDrawableOutputs;
-    ComponentsConfiguration.shouldDisableDrawableOutputs = true;
+    final boolean cachedValue = ComponentsConfiguration.shouldDisableBgFgOutputs;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = true;
 
     final Component component =
         Column.create(mContext)
@@ -228,6 +228,6 @@ public class MountStateViewTest {
     assertThat(mLithoViewRule.getLithoView().getPaddingBottom()).isEqualTo(0);
     assertThat(mLithoViewRule.getLithoView().getPaddingLeft()).isEqualTo(0);
 
-    ComponentsConfiguration.shouldDisableDrawableOutputs = cachedValue;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = cachedValue;
   }
 }

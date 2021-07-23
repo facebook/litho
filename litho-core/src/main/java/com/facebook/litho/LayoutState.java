@@ -224,7 +224,7 @@ public class LayoutState
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
   final boolean mShouldDisableDrawableOutputs =
-      mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableDrawableOutputs;
+      mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableBgFgOutputs;
 
   final Map<String, Object> mLayoutData = new HashMap<>();
 
