@@ -70,11 +70,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the implementation of a Component. */
 public class ComponentBodyGenerator {
+
+  static final String LOCAL_STATE_CONTAINER_NAME = "_state";
+  static final String LIFECYCLE_CREATE_INITIAL_STATE = "createInitialState";
+
+  static final Predicate<MethodParamModel> PREDICATE_NEEDS_STATE =
+      methodParamModel -> methodParamModel instanceof StateParamModel;
 
   private ComponentBodyGenerator() {}
 
@@ -929,17 +936,46 @@ public class ComponentBodyGenerator {
       String contextParamName,
       boolean shallow) {
 
+    return getImplAccessorFromContainer(
+        methodName, specModel, methodParamModel, contextParamName, shallow, null);
+  }
+
+  static String getImplAccessorFromContainer(
+      String methodName,
+      SpecModel specModel,
+      MethodParamModel methodParamModel,
+      String contextParamName,
+      @Nullable String cachedContainerVariableName) {
+    return getImplAccessorFromContainer(
+        methodName,
+        specModel,
+        methodParamModel,
+        contextParamName,
+        false,
+        cachedContainerVariableName);
+  }
+
+  static String getImplAccessorFromContainer(
+      String methodName,
+      SpecModel specModel,
+      MethodParamModel methodParamModel,
+      String contextParamName,
+      boolean shallow,
+      @Nullable String cachedContainerVariableName) {
+
     if (methodParamModel instanceof StateParamModel
         || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       if (contextParamName == null) {
         throw new IllegalStateException(
             "Cannot access state in method " + methodName + " without a scoped component context.");
       }
-      return STATE_CONTAINER_IMPL_GETTER
-          + "("
-          + contextParamName
-          + ")."
-          + methodParamModel.getName();
+      return cachedContainerVariableName != null
+          ? cachedContainerVariableName + "." + methodParamModel.getName()
+          : STATE_CONTAINER_IMPL_GETTER
+              + "("
+              + contextParamName
+              + ")."
+              + methodParamModel.getName();
     } else if (methodParamModel instanceof CachedValueParamModel) {
       if (contextParamName == null) {
         throw new IllegalStateException("Need a scoped context to access cached values.");
