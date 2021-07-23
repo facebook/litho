@@ -41,7 +41,7 @@ public class ApplyStylesTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
   }
 
   @Test
@@ -321,6 +321,6 @@ public class ApplyStylesTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

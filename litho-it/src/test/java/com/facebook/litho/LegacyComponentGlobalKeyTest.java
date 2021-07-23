@@ -54,7 +54,7 @@ public class LegacyComponentGlobalKeyTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mContext = new ComponentContext(getApplicationContext());
   }
@@ -229,7 +229,7 @@ public class LegacyComponentGlobalKeyTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
     ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentDefault;
   }
 }

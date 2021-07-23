@@ -40,7 +40,7 @@ public class MountStateViewTagsTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -105,6 +105,6 @@ public class MountStateViewTagsTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

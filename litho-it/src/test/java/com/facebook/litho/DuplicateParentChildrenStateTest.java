@@ -44,7 +44,7 @@ public class DuplicateParentChildrenStateTest {
 
   @Before
   public void setUp() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
 
@@ -163,6 +163,6 @@ public class DuplicateParentChildrenStateTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

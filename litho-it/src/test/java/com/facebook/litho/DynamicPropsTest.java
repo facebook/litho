@@ -48,7 +48,7 @@ public class DynamicPropsTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -377,6 +377,6 @@ public class DynamicPropsTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

@@ -40,7 +40,7 @@ public class MountStateFocusableTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
     mFocusableDefault = new ComponentHost(mContext).isFocusable();
   }
@@ -89,6 +89,6 @@ public class MountStateFocusableTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

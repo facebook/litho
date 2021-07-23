@@ -41,7 +41,7 @@ public class LegacyMountStateRemountTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -217,6 +217,6 @@ public class LegacyMountStateRemountTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

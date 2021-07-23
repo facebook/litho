@@ -58,7 +58,7 @@ public class LegacyRecyclerCollectionComponentSpecTest {
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mComponentContext = new ComponentContext(getApplicationContext());
   }
 
@@ -133,6 +133,6 @@ public class LegacyRecyclerCollectionComponentSpecTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

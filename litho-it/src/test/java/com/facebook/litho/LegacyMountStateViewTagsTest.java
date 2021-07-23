@@ -39,7 +39,7 @@ public class LegacyMountStateViewTagsTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -68,6 +68,6 @@ public class LegacyMountStateViewTagsTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

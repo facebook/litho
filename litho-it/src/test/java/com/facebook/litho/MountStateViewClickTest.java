@@ -44,7 +44,7 @@ public class MountStateViewClickTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -174,6 +174,6 @@ public class MountStateViewClickTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

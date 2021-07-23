@@ -32,11 +32,11 @@ public class TempComponentsConfigurations {
   private static final boolean originalExtensionsWithMountDelegate =
       ComponentsConfiguration.useExtensionsWithMountDelegate;
 
-  public static void setShouldDisableDrawableOutputs(boolean value) {
+  public static void setShouldAddHostViewForRootComponent(boolean value) {
     ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
   }
 
-  public static void restoreShouldDisableDrawableOutputs() {
+  public static void restoreShouldAddHostViewForRootComponent() {
     ComponentsConfiguration.shouldAddHostViewForRootComponent =
         originalShouldAddHostViewForRootComponent;
   }

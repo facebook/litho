@@ -113,7 +113,7 @@ public class MountStateIncrementalMountTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(
         new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
@@ -1351,7 +1351,7 @@ public class MountStateIncrementalMountTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
     validateMockitoUsage();
   }

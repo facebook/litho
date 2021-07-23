@@ -949,7 +949,7 @@ public class AnimationTest {
   @Test
   public void animation_unmountParentBeforeChildDisappearAnimation_shouldNotCrash() {
     // Disabling drawable outputs to ensure a nest heirachy rather than a list of drawables.
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
 
     final TestAnimationsComponent component =
         TestAnimationsComponent.create(mLithoViewRule.getContext())
@@ -1013,7 +1013,7 @@ public class AnimationTest {
     mStateCaller.update();
 
     // Restoring disable drawable outputs configuration
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 
   @Test
