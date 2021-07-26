@@ -19,5 +19,5 @@ public class OnClickEventCompletionTest {
   public @interface OnEventI {
   }
 
-  @OnEven<caret>
+  @OnC<caret>
 }

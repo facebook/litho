@@ -66,7 +66,7 @@ public class ComponentGlobalKeyTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     ComponentsConfiguration.useStatelessComponent = useStatelessComponent;
     mComponentsReporter = new TestComponentsReporter();
     mContext = new ComponentContext(getApplicationContext());
@@ -608,6 +608,6 @@ public class ComponentGlobalKeyTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

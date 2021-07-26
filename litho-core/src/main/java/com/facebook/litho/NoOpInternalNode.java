@@ -22,6 +22,8 @@ import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Copyable;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -110,7 +112,10 @@ class NoOpInternalNode implements InternalNode {
   public void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect) {}
 
   @Override
-  public LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec) {
+  public LithoLayoutResult calculateLayout(
+      final RenderState.LayoutContext<LithoRenderContext> c,
+      final int widthSpec,
+      final int heightSpec) {
     return NullLayoutResult.INSTANCE;
   }
 
@@ -560,6 +565,11 @@ class NoOpInternalNode implements InternalNode {
   public void assertContextSpecificStyleNotSet() {}
 
   @Override
+  public boolean isClone() {
+    return false;
+  }
+
+  @Override
   public InternalNode deepClone() {
     throw new UnsupportedOperationException("NoOpInternalNode.deepClone not implemented.");
   }
@@ -575,5 +585,20 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void freeze(LayoutStateContext c, YogaNode node, @Nullable YogaNode parent) {}
+  public void freeze(
+      final LayoutStateContext c,
+      final YogaNode node,
+      final boolean isCloned,
+      final @Nullable YogaNode parent,
+      final LithoLayoutResult current) {}
+
+  @Override
+  public Copyable getLayoutParams() {
+    return null;
+  }
+
+  @Override
+  public Copyable makeCopy() {
+    return null;
+  }
 }

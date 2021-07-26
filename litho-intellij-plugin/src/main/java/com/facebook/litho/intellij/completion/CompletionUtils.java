@@ -23,6 +23,7 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiAnnotationParameterList;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
@@ -35,6 +36,11 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 class CompletionUtils {
+  static final ElementPattern<? extends PsiElement> METHOD_ANNOTATION_PARAMETER =
+      PlatformPatterns.psiElement(PsiIdentifier.class)
+          .inside(PsiAnnotationParameterList.class)
+          .inside(PsiMethod.class);
+
   static final ElementPattern<? extends PsiElement> METHOD_PARAMETER_ANNOTATION =
       PlatformPatterns.psiElement(PsiIdentifier.class)
           .inside(PsiParameterList.class)

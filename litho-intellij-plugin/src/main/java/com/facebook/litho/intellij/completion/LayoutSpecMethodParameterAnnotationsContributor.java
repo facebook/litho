@@ -34,6 +34,8 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.completion.InsertHandler;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
@@ -105,25 +107,24 @@ public class LayoutSpecMethodParameterAnnotationsContributor extends CompletionC
     protected void addCompletions(
         CompletionParameters parameters, ProcessingContext context, CompletionResultSet result) {
       PsiElement element = parameters.getPosition();
+      InsertHandler<LookupElement> insertHandler =
+          (insertionContext, item) -> {
+            final Map<String, String> data = new HashMap<>();
+            data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_PARAMETER);
+            data.put(EventLogger.KEY_CLASS, item.getLookupString());
+            LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
+          };
       Optional.ofNullable(PsiTreeUtil.findFirstParent(element, PsiMethod.class::isInstance))
           .flatMap(method -> getParameterAnnotations((PsiMethod) method))
           .map(
               annotations ->
                   new ReplacingConsumer(
-                      annotations,
-                      result,
-                      (insertionContext, item) -> {
-                        final Map<String, String> data = new HashMap<>();
-                        data.put(
-                            EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_PARAMETER);
-                        data.put(EventLogger.KEY_CLASS, item.getLookupString());
-                        LithoLoggerProvider.getEventLogger()
-                            .log(EventLogger.EVENT_COMPLETION, data);
-                      }))
+                      result, new QualifiedNamesFilter(annotations, insertHandler), false))
           .ifPresent(
               replacingConsumer -> {
                 // We want our suggestions at the top, that's why adding them first
-                replacingConsumer.addRemainingCompletions(parameters.getPosition().getProject());
+                replacingConsumer.filterElement.addRemainingCompletions(
+                    parameters.getPosition().getProject(), result);
                 result.runRemainingContributors(parameters, replacingConsumer);
               });
     }

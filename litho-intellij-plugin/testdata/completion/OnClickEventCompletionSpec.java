@@ -20,5 +20,5 @@ public class OnClickEventCompletionSpec {
   public @interface OnEventI {
   }
 
-  @OnEven<caret>
+  @OnC<caret>
 }

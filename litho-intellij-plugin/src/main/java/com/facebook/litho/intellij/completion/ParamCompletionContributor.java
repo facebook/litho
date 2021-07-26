@@ -30,12 +30,15 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.completion.InsertHandler;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,18 +92,24 @@ public class ParamCompletionContributor extends CompletionContributor {
           return;
         }
 
-        final ReplacingConsumer replacingConsumer =
-            new ReplacingConsumer(
-                Collections.singleton(Param.class.getTypeName()),
-                completionResultSet,
-                (insertionContext, item) -> {
-                  final Map<String, String> data = new HashMap<>();
-                  data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_PARAMETER);
-                  data.put(EventLogger.KEY_CLASS, item.getLookupString());
-                  LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
-                });
+        Collection<String> replacedQualifiedNames =
+            Collections.singleton(Param.class.getTypeName());
+        InsertHandler<LookupElement> insertHandler =
+            (insertionContext, item) -> {
+              final Map<String, String> data = new HashMap<>();
+              data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_PARAMETER);
+              data.put(EventLogger.KEY_CLASS, item.getLookupString());
+              LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
+            };
 
-        replacingConsumer.addRemainingCompletions(completionParameters.getPosition().getProject());
+        QualifiedNamesFilter qualifiedNamesFilter =
+            new QualifiedNamesFilter(replacedQualifiedNames, insertHandler);
+
+        final ReplacingConsumer replacingConsumer =
+            new ReplacingConsumer(completionResultSet, qualifiedNamesFilter, false);
+
+        qualifiedNamesFilter.addRemainingCompletions(
+            completionParameters.getPosition().getProject(), completionResultSet);
         completionResultSet.runRemainingContributors(completionParameters, replacingConsumer);
       }
     };

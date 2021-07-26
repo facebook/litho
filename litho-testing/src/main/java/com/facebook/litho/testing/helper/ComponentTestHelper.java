@@ -613,6 +613,24 @@ public final class ComponentTestHelper {
     treeProps.put(propClass, prop);
   }
 
+  /**
+   * Sets a TreeProp that will be visible to all Components which are created from the given Context
+   * (unless a child overwrites its).
+   */
+  public static void setParentTreeProp(ComponentContext context, Class propClass, Object prop) {
+    TreeProps treeProps;
+    try {
+      treeProps = Whitebox.invokeMethod(context, "getParentTreeProps");
+      if (treeProps == null) {
+        treeProps = new TreeProps();
+        Whitebox.invokeMethod(context, "setParentTreeProps", treeProps);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    treeProps.put(propClass, prop);
+  }
+
   /** Access the default layout thread looper for testing purposes only. */
   public static Looper getDefaultLayoutThreadLooper() {
     return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");

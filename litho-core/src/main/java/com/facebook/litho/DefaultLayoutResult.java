@@ -24,6 +24,7 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -116,6 +117,16 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   @Override
   public int getPaddingLeft() {
     return FastMath.round(mYogaNode.getLayoutPadding(LEFT));
+  }
+
+  @Override
+  public int getWidthSpec() {
+    return mLastWidthSpec;
+  }
+
+  @Override
+  public int getHeightSpec() {
+    return mLastHeightSpec;
   }
 
   @Override
@@ -308,8 +319,34 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   }
 
   @Override
+  public @Nullable RenderUnit<?> getRenderUnit() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Nullable
+  @Override
+  public Object getLayoutData() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public int getChildrenCount() {
+    return mChildren.size();
+  }
+
+  @Override
   public LithoLayoutResult getChildAt(int i) {
     return mChildren.get(i);
+  }
+
+  @Override
+  public int getXForChildAtIndex(int index) {
+    return mChildren.get(index).getX();
+  }
+
+  @Override
+  public int getYForChildAtIndex(int index) {
+    return mChildren.get(index).getY();
   }
 
   @Override

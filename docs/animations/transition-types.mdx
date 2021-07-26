@@ -63,7 +63,7 @@ In certain situations you may want to animate how a certain UI element appears o
 
 In this case, we are dealing with an *Appearing* transition: a `Component` is present in the *after* `LayoutState`, but wasn't seen in the *before* `LayoutState`. In order to run transitions we need *start* and *end* values of the `AnimatedProperty`, while the framework, obviously, can only get the latter from the layout, thus it is the responsibility of the user to supply the *start* value. You can do this using `.appearFrom()` (*lines 28, 30*) method when building a `Transition`.
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/AppearTransitionComponentSpec.java start=start end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/AppearTransitionComponentSpec.java start=start end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">

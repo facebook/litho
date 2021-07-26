@@ -61,8 +61,8 @@ import org.robolectric.shadows.ShadowLooper;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class StateUpdatesWithReconciliationTest {
 
-  private final boolean mUsesInputOnlyInternalNode;
-  private final boolean mOriginalValueOfUseInputOnlyInternalNodes;
+  private final boolean mReuseInternalNodes;
+  private final boolean mOriginalValueOfReuseInternalNodes;
   private final boolean mOriginalValueOfUseStatelessComponent;
   private final boolean originalE2ETestRun;
 
@@ -82,7 +82,7 @@ public class StateUpdatesWithReconciliationTest {
 
   private static final int STATE_VALUE_INITIAL_COUNT = 4;
 
-  @ParameterizedRobolectricTestRunner.Parameters(name = "usesInputOnlyInternalNode={0}")
+  @ParameterizedRobolectricTestRunner.Parameters(name = "reuseInternalNodes={0}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
@@ -90,17 +90,17 @@ public class StateUpdatesWithReconciliationTest {
         });
   }
 
-  public StateUpdatesWithReconciliationTest(boolean usesInputOnlyInternalNode) {
+  public StateUpdatesWithReconciliationTest(boolean reuseInternalNodes) {
     originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
-    mUsesInputOnlyInternalNode = usesInputOnlyInternalNode;
-    mOriginalValueOfUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+    mReuseInternalNodes = reuseInternalNodes;
+    mOriginalValueOfReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     mOriginalValueOfUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
   }
 
   @Before
   public void setup() {
-    ComponentsConfiguration.useInputOnlyInternalNodes = mUsesInputOnlyInternalNode;
-    ComponentsConfiguration.useStatelessComponent = mUsesInputOnlyInternalNode;
+    ComponentsConfiguration.reuseInternalNodes = mReuseInternalNodes;
+    ComponentsConfiguration.useStatelessComponent = mReuseInternalNodes;
   }
 
   @Before
@@ -144,7 +144,7 @@ public class StateUpdatesWithReconciliationTest {
   @After
   public void after() {
     ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
-    ComponentsConfiguration.useInputOnlyInternalNodes = mOriginalValueOfUseInputOnlyInternalNodes;
+    ComponentsConfiguration.reuseInternalNodes = mOriginalValueOfReuseInternalNodes;
     ComponentsConfiguration.useStatelessComponent = mOriginalValueOfUseStatelessComponent;
     NodeConfig.sInternalNodeFactory = null;
   }
@@ -490,6 +490,60 @@ public class StateUpdatesWithReconciliationTest {
 
     // If the new component's on create layout is not called then it was reconciled.
     assertThat(getSteps(info)).doesNotContain(LifecycleStep.ON_CREATE_LAYOUT);
+  }
+
+  @Test
+  public void onStateUpdateWithStatelessComponents_shouldEnsureNoStateContainersAreLost() {
+    final ComponentContext c = mLithoView.getComponentContext();
+
+    final SimpleStateUpdateEmulatorSpec.Caller caller_1 =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+    final SimpleStateUpdateEmulatorSpec.Caller caller_2 =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root =
+        Column.create(c)
+            .child(SimpleStateUpdateEmulator.create(c).caller(caller_1))
+            .child(SimpleStateUpdateEmulator.create(c).caller(caller_2))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(root).measure().layout();
+
+    // trigger a state update
+    caller_1.increment();
+
+    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "Text: 2"),
+                        MatchNode.forType(TextDrawable.class).prop("text", "Text: 1"))));
+
+    // trigger a state update
+    caller_2.increment();
+
+    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "Text: 2"),
+                        MatchNode.forType(TextDrawable.class).prop("text", "Text: 2"))));
+
+    // trigger a state update
+    caller_1.increment();
+
+    ViewAssertions.assertThat(mLithoViewRule.getLithoView())
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "Text: 3"),
+                        MatchNode.forType(TextDrawable.class).prop("text", "Text: 2"))));
   }
 
   static class DummyComponent extends Component {

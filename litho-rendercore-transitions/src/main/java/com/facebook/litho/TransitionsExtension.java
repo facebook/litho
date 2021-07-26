@@ -30,6 +30,7 @@ import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.LogLevel;
+import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
@@ -546,6 +547,73 @@ public class TransitionsExtension
     return state.mTransitionManager.isDisappearing(transitionId);
   }
 
+  private static boolean isMountedAtIndex(final int index, final MountDelegateTarget mountTarget) {
+    return mountTarget.getMountItemAt(index) != null;
+  }
+
+  private static int getParentIndex(final int index, final TransitionsExtensionInput input) {
+    final RenderTreeNode node = input.getMountableOutputAt(index);
+
+    if (node == null || node.getParent() == null) {
+      return -1;
+    }
+
+    return input.getPositionForId(node.getParent().getRenderUnit().getId());
+  }
+
+  private static void mountParentIndicesIfNeeded(
+      final int index, final ExtensionState<TransitionsExtensionState> extensionState) {
+
+    final TransitionsExtensionInput input =
+        extensionState.getState().mLastTransitionsExtensionInput;
+
+    // invalid input
+    if (input == null || index < 0) {
+      return;
+    }
+
+    // extract the parent index form the given index.
+    int parentIndex = getParentIndex(index, input);
+
+    // no parent, stop here.
+    if (parentIndex < 0) {
+      return;
+    }
+
+    // if the parent index is mounted, stop here.
+    if (isMountedAtIndex(parentIndex, getMountTarget(extensionState))) {
+      return;
+    }
+
+    // check the parents recursively before mounting this item
+    mountParentIndicesIfNeeded(parentIndex, extensionState);
+
+    // mount this item
+    mountItemAtIndexIfNeeded(parentIndex, extensionState);
+  }
+
+  private static void mountItemAtIndexIfNeeded(
+      final int index, final ExtensionState<TransitionsExtensionState> extensionState) {
+    if (isMountedAtIndex(index, getMountTarget(extensionState))) {
+      return;
+    }
+
+    // We need to release any mount reference to this because we need to force mount here.
+    final long id =
+        extensionState
+            .getState()
+            .mLastTransitionsExtensionInput
+            .getMountableOutputAt(index)
+            .getRenderUnit()
+            .getId();
+    if (extensionState.ownsReference(id)) {
+      extensionState.releaseMountReference(id, false);
+    }
+    extensionState.acquireMountReference(id, true);
+    // Here we have to release the ref count without mounting.
+    extensionState.releaseMountReference(id, false);
+  }
+
   /**
    * This is where we go through the new layout state and compare it to the previous one. If we find
    * we do a couple of things:
@@ -561,60 +629,60 @@ public class TransitionsExtension
   private static void extractDisappearingItems(
       ExtensionState<TransitionsExtensionState> extensionState,
       TransitionsExtensionInput newTransitionsExtensionInput) {
-    int mountItemCount = getMountTarget(extensionState).getRenderUnitCount();
+    final MountDelegateTarget mountTarget = getMountTarget(extensionState);
+    int mountItemCount = mountTarget.getRenderUnitCount();
     final TransitionsExtensionState state = extensionState.getState();
     if (state.mLastTransitionsExtensionInput == null || mountItemCount == 0) {
       return;
     }
 
-    for (int i = 1; i < mountItemCount; i++) {
-      if (isItemDisappearing(state, newTransitionsExtensionInput, i)) {
-        final int lastDescendantIndex =
-            findLastDescendantIndex(state.mLastTransitionsExtensionInput, i);
-        // Go though disappearing subtree. Mount anything that's not mounted (without acquiring
-        // reference).
-        for (int j = i; j <= lastDescendantIndex; j++) {
-          if (getMountTarget(extensionState).getMountItemAt(j) == null) {
-            // We need to release any mount reference to this because we need to force mount here.
-            final long id =
-                state
-                    .mLastTransitionsExtensionInput
-                    .getMountableOutputAt(j)
-                    .getRenderUnit()
-                    .getId();
-            if (extensionState.ownsReference(id)) {
-              extensionState.releaseMountReference(id, false);
-            }
-            extensionState.acquireMountReference(id, true);
-            // Here we have to release the ref count without mounting.
-            extensionState.releaseMountReference(id, false);
-          }
-          final RenderUnit renderUnit =
-              getMountTarget(extensionState).getMountItemAt(j).getRenderTreeNode().getRenderUnit();
-          state.mLockedDisappearingMountitems.put(
-              renderUnit, state.mLastTransitionsExtensionInput.getAnimatableItem(renderUnit));
-        }
+    int index = 1;
 
-        // Reference to the root of the disappearing subtree
-        final MountItem disappearingItem = getMountTarget(extensionState).getMountItemAt(i);
-
-        if (disappearingItem == null) {
-          throw new IllegalStateException(
-              "The root of the disappearing subtree should not be null,"
-                  + " acquireMountReference on this index should be called before this. Index: "
-                  + i);
-        }
-
-        // Moving item to the root if needed.
-        remountHostToRootIfNeeded(extensionState, i, disappearingItem);
-
-        mapDisappearingItemWithTransitionId(state, disappearingItem);
-
-        final long id = disappearingItem.getRenderTreeNode().getRenderUnit().getId();
-        getMountTarget(extensionState).notifyUnmount(id);
-
-        i = lastDescendantIndex;
+    while (index < mountItemCount) {
+      // If this is not a disappearing item, increment the index and continue to next item
+      if (!isItemDisappearing(state, newTransitionsExtensionInput, index)) {
+        index++;
+        continue;
       }
+
+      // if any of this disappearing item's parents are unmounted, mount them now
+      mountParentIndicesIfNeeded(index, extensionState);
+
+      final int lastDescendantIndex =
+          findLastDescendantIndex(state.mLastTransitionsExtensionInput, index);
+
+      // iterate over disappearing item and all its descendants, ensure they are mounted, and
+      // add them to the locked disappearing mount items map.
+      for (int i = index; i <= lastDescendantIndex; i++) {
+        mountItemAtIndexIfNeeded(i, extensionState);
+
+        final RenderUnit renderUnit =
+            mountTarget.getMountItemAt(i).getRenderTreeNode().getRenderUnit();
+
+        state.mLockedDisappearingMountitems.put(
+            renderUnit, state.mLastTransitionsExtensionInput.getAnimatableItem(renderUnit));
+      }
+
+      // Reference to the root of the disappearing subtree
+      final MountItem disappearingItem = mountTarget.getMountItemAt(index);
+
+      if (disappearingItem == null) {
+        throw new IllegalStateException(
+            "The root of the disappearing subtree should not be null,"
+                + " acquireMountReference on this index should be called before this. Index: "
+                + index);
+      }
+
+      // Moving item to the root if needed.
+      remountHostToRootIfNeeded(extensionState, index, disappearingItem);
+
+      mapDisappearingItemWithTransitionId(state, disappearingItem);
+
+      final long id = disappearingItem.getRenderTreeNode().getRenderUnit().getId();
+      mountTarget.notifyUnmount(id);
+
+      // set the index to the last descendant index + 1
+      index = lastDescendantIndex + 1;
     }
   }
 
@@ -873,10 +941,6 @@ public class TransitionsExtension
     while (parentRenderTreeNode != null && parentRenderTreeNode.getParent() != null) {
       final long id = parentRenderTreeNode.getRenderUnit().getId();
       if (increment) {
-        // We use the position as 0 as we are not mounting it, just acquiring reference.
-        if (!extensionState.ownsReference(id)) {
-          extensionState.acquireMountReference(id, false);
-        }
         if (!extensionState.ownsReference(id)) {
           extensionState.acquireMountReference(id, false);
         }

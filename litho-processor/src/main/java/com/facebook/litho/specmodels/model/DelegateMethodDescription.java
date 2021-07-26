@@ -64,6 +64,7 @@ public final class DelegateMethodDescription {
   public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
+  public final boolean createsState;
 
   private DelegateMethodDescription(Builder builder) {
     annotations = builder.annotations;
@@ -76,6 +77,7 @@ public final class DelegateMethodDescription {
     interStageInputAnnotations = builder.interStageInputAnnotations;
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
+    createsState = builder.createsState;
   }
 
   public ImmutableList<TypeName> allowedDelegateMethodArguments() {
@@ -113,6 +115,7 @@ public final class DelegateMethodDescription {
     private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
+    private boolean createsState = false;
 
     private Builder() {}
 
@@ -186,6 +189,11 @@ public final class DelegateMethodDescription {
 
     public Builder exceptions(ImmutableList<TypeName> exceptions) {
       this.exceptions = exceptions;
+      return this;
+    }
+
+    public Builder createsState(boolean createsState) {
+      this.createsState = createsState;
       return this;
     }
 

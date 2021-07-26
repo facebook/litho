@@ -37,7 +37,6 @@ public final class LayoutCache {
   private final CachedData mWriteCache = new CachedData();
   private final @Nullable CachedData mReadCache;
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public LayoutCache() {
     this(null);
   }

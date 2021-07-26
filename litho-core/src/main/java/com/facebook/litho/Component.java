@@ -115,6 +115,7 @@ public abstract class Component
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
+  private static final int WILL_RENDER_ERROR_SAMPLING_FREQUENCY = 100000;
   /**
    * @return the globally unique ID associated with {@param type}, creating one if necessary.
    *     Allocated IDs map 1-to-1 with objects passed to this method.
@@ -705,7 +706,7 @@ public abstract class Component
   }
 
   protected final boolean useTreePropsFromContext() {
-    return ComponentsConfiguration.useTreePropsfromContext;
+    return true;
   }
 
   /**
@@ -750,7 +751,7 @@ public abstract class Component
           shouldUpdate(previousScopedContext, currentComponent, nextScopedContext, nextComponent);
     }
 
-    if (ComponentsConfiguration.useTreePropsfromContext && !implementsShouldUpdate()) {
+    if (!implementsShouldUpdate()) {
       return shouldUpdate
           || (previousScopedContext != null
               && nextScopedContext != null
@@ -1181,7 +1182,8 @@ public abstract class Component
               + " , HeadComponentKey: "
               + layout.getHeadComponentKey()
               + " , parentKey: "
-              + context.getGlobalKey());
+              + context.getGlobalKey(),
+          WILL_RENDER_ERROR_SAMPLING_FREQUENCY);
     }
 
     return layout;
@@ -1570,9 +1572,6 @@ public abstract class Component
       final ComponentContext parentContext,
       final ComponentContext scopedContext,
       final String globalKey) {
-    if (!ComponentsConfiguration.useTreePropsfromContext) {
-      populateTreeProps(parentContext.getTreeProps());
-    }
     scopedContext.setParentTreeProps(parentContext.getTreeProps());
     if (hasState()) {
       parentContext

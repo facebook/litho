@@ -326,7 +326,7 @@ public class InternalNodeTest {
     editor.alignSelf(YogaAlign.AUTO);
     editor.flex(1f);
 
-    Layout.measure(context, node, UNSPECIFIED, UNSPECIFIED, null, null);
+    Layout.measure(context, node, UNSPECIFIED, UNSPECIFIED, null, null, null);
 
     assertThat(mComponentsReporter.getLoggedMessages().get(0).second)
         .isEqualTo("You should not set alignSelf, flex to a root layout.");

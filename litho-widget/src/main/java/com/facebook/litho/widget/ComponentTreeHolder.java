@@ -66,6 +66,7 @@ public class ComponentTreeHolder {
   private @Nullable Boolean mShouldSkipShallowCopy;
   private @Nullable Boolean mInputOnlyInternalNode;
   private @Nullable Boolean mInternalNodeReuseEnabled;
+  private @Nullable Boolean mIsLayoutCachingEnabled;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -501,7 +502,8 @@ public class ComponentTreeHolder {
             mUseStateLessComponent,
             mShouldSkipShallowCopy,
             mInputOnlyInternalNode,
-            mInternalNodeReuseEnabled);
+            mInternalNodeReuseEnabled,
+            mIsLayoutCachingEnabled);
       }
 
       mComponentTree = builder.build();
@@ -511,6 +513,7 @@ public class ComponentTreeHolder {
         mShouldSkipShallowCopy = mComponentTree.shouldSkipShallowCopy();
         mInputOnlyInternalNode = mComponentTree.isInputOnlyInternalNodeEnabled();
         mInternalNodeReuseEnabled = mComponentTree.isInternalNodeReuseEnabled();
+        mIsLayoutCachingEnabled = mComponentTree.isLayoutCachingEnabled();
       }
 
       if (mPendingNewLayoutListener != null) {

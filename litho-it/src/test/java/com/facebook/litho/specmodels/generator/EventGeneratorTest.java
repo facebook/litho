@@ -154,10 +154,11 @@ public class EventGeneratorTest {
                 + "    com.facebook.litho.ComponentContext c, java.lang.Object arg2, T arg3,\n"
                 + "    @androidx.annotation.Nullable T arg6) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
+                + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  TestSpec.testEventMethod1(\n"
                 + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) _ref.getStateContainerImpl(c).arg1,\n"
+                + "    (int) _state.arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
                 + "    (long) _ref.arg4,\n"
@@ -169,12 +170,12 @@ public class EventGeneratorTest {
             "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstract,\n"
                 + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
-                + "  TestStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);\n"
+                + "  TestStateContainer _state = getStateContainerWithLazyStateUpdatesApplied(c, _ref);\n"
                 + "  TestSpec.testEventMethod2(\n"
                 + "    c,\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) stateContainer.arg1,\n"
-                + "    (long) stateContainer.arg5);\n"
+                + "    (int) _state.arg1,\n"
+                + "    (long) _state.arg5);\n"
                 + "}\n");
   }
 

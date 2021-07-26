@@ -111,6 +111,7 @@ public class ComponentTree implements LithoLifecycleListener {
   @Nullable LithoLifecycleProvider mLifecycleProvider;
   private final boolean mAreTransitionsEnabled;
   private final boolean mReuseInternalNodes;
+  private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseInputOnlyInternalNodes;
   private final boolean mIgnoreNullLayoutStateError;
 
@@ -188,6 +189,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isInternalNodeReuseEnabled() {
     return mReuseInternalNodes;
+  }
+
+  public boolean isLayoutCachingEnabled() {
+    return mIsLayoutCachingEnabled;
   }
 
   public interface MeasureListener {
@@ -375,6 +380,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean isReconciliationEnabled;
 
+  private final boolean shouldClearPrevContextWhenCommitted;
+
   private final boolean mMoveLayoutsBetweenThreads;
 
   private final boolean mForceAsyncStateUpdate;
@@ -429,10 +436,13 @@ public class ComponentTree implements LithoLifecycleListener {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
-    mReuseInternalNodes = builder.reuseInternalNodes;
+    mIsLayoutCachingEnabled = builder.isLayoutCachingEnabled;
+    mReuseInternalNodes = mIsLayoutCachingEnabled || builder.reuseInternalNodes;
     mUseInputOnlyInternalNodes = mReuseInternalNodes || builder.useInputOnlyInternalNodes;
     useStatelessComponent = mReuseInternalNodes || builder.useStatelessComponent;
     shouldSkipShallowCopy = useStatelessComponent && builder.shouldSkipShallowCopy;
+    shouldClearPrevContextWhenCommitted =
+        useStatelessComponent && builder.shouldClearPrevContextWhenCommitted;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -1233,6 +1243,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
+  }
+
+  public boolean shouldClearPrevContextWhenCommitted() {
+    return shouldClearPrevContextWhenCommitted;
   }
 
   public ErrorEventHandler getErrorEventHandler() {
@@ -2373,6 +2387,7 @@ public class ComponentTree implements LithoLifecycleListener {
         }
 
         layoutStateContext = localLayoutState.getLayoutStateContext();
+        layoutStateContext.prune();
         layoutStateContext.freeze();
       }
 
@@ -3292,6 +3307,9 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean shouldSkipShallowCopy = ComponentsConfiguration.shouldSkipShallowCopy;
     private boolean useInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
     private boolean reuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
+    private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
+    private boolean shouldClearPrevContextWhenCommitted =
+        ComponentsConfiguration.shouldClearPrevContextWhenCommitted;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3515,11 +3533,14 @@ public class ComponentTree implements LithoLifecycleListener {
         boolean useStateLessComponent,
         boolean shouldSkipShallowCopy,
         boolean inputOnlyInternalNode,
-        boolean internalNodeReuseEnabled) {
+        boolean internalNodeReuseEnabled,
+        boolean isLayoutCachingEnabled) {
       this.useStatelessComponent = useStateLessComponent;
       this.shouldSkipShallowCopy = shouldSkipShallowCopy;
       this.useInputOnlyInternalNodes = inputOnlyInternalNode;
       this.reuseInternalNodes = internalNodeReuseEnabled;
+      this.isLayoutCachingEnabled = isLayoutCachingEnabled;
+      this.shouldClearPrevContextWhenCommitted = shouldClearPrevContextWhenCommitted;
     }
   }
 }

@@ -62,14 +62,14 @@ open class Style(
     if (other == null) {
       return this
     }
-    return CombinedStyle(if (this == Style) null else this, other)
+    return CombinedStyle(if (this === Style) null else this, other)
   }
 
   inline operator fun plus(nextItem: StyleItem?): Style {
     if (nextItem == null) {
       return this
     }
-    return Style(if (this == Style) null else this, nextItem)
+    return Style(if (this === Style) null else this, nextItem)
   }
 
   open fun forEach(lambda: (StyleItem) -> Unit) {

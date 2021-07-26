@@ -41,7 +41,7 @@ public class LegacyMountStateViewClickTest {
 
   @Before
   public void setup() {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mContext = new ComponentContext(getApplicationContext());
   }
 
@@ -125,6 +125,6 @@ public class LegacyMountStateViewClickTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

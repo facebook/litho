@@ -94,7 +94,7 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mComponentContext = new ComponentContext(getApplicationContext());
 
     mLoadingComponent =
@@ -388,6 +388,6 @@ public class RecyclerCollectionComponentSpecTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

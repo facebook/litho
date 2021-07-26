@@ -22,7 +22,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Pair;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -389,7 +388,6 @@ public class RenderState<State, RenderContext> {
     private final @Nullable RenderContext mRenderContext;
     private final @Nullable RenderCoreExtension<?, ?>[] extensions;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public LayoutContext(
         final Context androidContext,
         final @Nullable RenderContext renderContext,

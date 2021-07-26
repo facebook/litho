@@ -29,12 +29,14 @@ import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentHost;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateCaller;
 import com.facebook.litho.Transition;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
@@ -942,6 +944,76 @@ public class AnimationTest {
     mLithoViewRule.useComponentTree(nonAnimatingComponentTree);
     mLithoViewRule.measure().layout();
     // Should not crash.
+  }
+
+  @Test
+  public void animation_unmountParentBeforeChildDisappearAnimation_shouldNotCrash() {
+    // Disabling drawable outputs to ensure a nest heirachy rather than a list of drawables.
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
+
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.ALPHA)
+                    .disappearTo(0))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Column.create(componentContext)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(50)
+                                .widthDip(50)
+                                .backgroundColor(Color.YELLOW)
+                                .viewTag("parent_of_parent")
+                                .child(
+                                    Row.create(componentContext)
+                                        .heightDip(25)
+                                        .widthDip(25)
+                                        .backgroundColor(Color.RED)
+                                        .viewTag("parent") // This is the parent that will unmount
+                                        .child(
+                                            !state
+                                                // Disappearing child
+                                                ? Row.create(componentContext)
+                                                    .heightDip(10)
+                                                    .widthDip(10)
+                                                    .backgroundColor(Color.BLUE)
+                                                    .transitionKey(TRANSITION_KEY)
+                                                    .viewTag(TRANSITION_KEY)
+                                                : null)))
+                        .build();
+                  }
+                })
+            .build();
+
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    mTransitionTestRule.step(1);
+
+    // Grab the parent of the parent
+    final ComponentHost parentOfParent =
+        (ComponentHost) mLithoViewRule.findViewWithTagOrNull("parent_of_parent");
+
+    // Grab the id of the 1st child - this is the parent we will unmount
+    final long id = parentOfParent.getMountItemAt(0).getRenderTreeNode().getRenderUnit().getId();
+
+    // Manually unmount the parent of the disappearing item
+    mLithoViewRule.getLithoView().getMountDelegateTarget().notifyUnmount(id);
+
+    // Update so the disappearing item triggers a disappear animation.
+    // If there's a problem, a crash will occur here.
+    mStateCaller.update();
+
+    // Restoring disable drawable outputs configuration
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 
   @Test

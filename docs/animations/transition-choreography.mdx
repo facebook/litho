@@ -11,7 +11,7 @@ After the [Animation basics](/docs/animations/transition-basics) the next natura
 Synchronising transitions objects can be done by wrapping them in one of the following animations sets: `parallel`, `sequence` and `stagger`. This transition sets can be nested within each other, e.g. you can have a stagger of parallel animation sets.
 
 Example using a `stagger` set to animate 3 different rectangles.
-```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/StaggerTransitionComponentSpec.java start=start end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/StaggerTransitionComponentSpec.java start=start end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -23,7 +23,7 @@ Sequences and staggers also support interrupting behavior, trying to preserve th
 
 We can also use this sets to animate different properties of the same component, like in the following example.
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/StaggerTransitionSameComponentSpec.java start=start end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/StaggerTransitionSameComponentSpec.java start=start end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -42,7 +42,7 @@ By default, all transitions in Litho run by [`SpringTransitionAnimator`](pathnam
 The [`TimingTransitionAnimator`](pathname:///javadoc/com/facebook/litho/Transition.TimingTransitionAnimator.html) default interpolator is an `AccelerateDecelerateInterpolator` so keep in mind that adding this animator to only a few transitions in a set (like the example below) could create unwanted behavior.
 :::
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/ParallelTransitionWithAnimatorsComponentSpec.java start=start end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/ParallelTransitionWithAnimatorsComponentSpec.java start=start end=end
 ```
 
 <video loop="true" autoplay="true" class="video" width="100%" height="500px">
@@ -57,7 +57,7 @@ A listener can be added to receive a callback when an individual transition has 
 The `TransitionEndEvent` will be called with the transition key and the specific `AnimatedProperty` that has been animated for that key. If multiple `AnimatedProperty`s are added to the same transition, and all of them run at the same time, a callback will be excecuted for each one of those.
 In many cases this callback may be useful to loop animations by updating the tree. Many examples can be found in the Litho Sample app: `API Demos`->`Animation Callbacks`.
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/animations/docs/SequenceTransitionLoopComponentSpec.java start=start end=end
+```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/SequenceTransitionLoopComponentSpec.java start=start end=end
 ```
 
 You can also add the transition end handler to the `Transition.allLayout()` and the same logic applies.

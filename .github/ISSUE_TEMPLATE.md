@@ -11,4 +11,4 @@ section of the gradle file if you have one.***
 ***Describe what you expected would happen.***
 
 ## Link to Code
-***Please show some code we can use to reproduce this issue. Consider using [PlaygroundComponentSpec](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/playground/PlaygroundComponentSpec.java) to provide a small example of the issue***
+***Please show some code we can use to reproduce this issue. Consider using [PlaygroundComponentSpec](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/java/playground/PlaygroundComponentSpec.java) to provide a small example of the issue***

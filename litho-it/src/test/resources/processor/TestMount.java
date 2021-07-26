@@ -1,19 +1,3 @@
-/*
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
@@ -193,7 +177,6 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
             != null) {
       return false;
     }
-
     return true;
   }
 
@@ -253,10 +236,11 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   protected void createInitialState(ComponentContext c) {
+    TestMountStateContainer _state = getStateContainerImpl(c);
     StateValue<S> state2 = new StateValue<>();
     TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
-      getStateContainerImpl(c).state2 = state2.get();
+      _state.state2 = state2.get();
     }
   }
 
@@ -301,12 +285,13 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   protected void onMount(ComponentContext c, Object v) {
+    TestMountStateContainer _state = getStateContainerImpl(c);
     TestMountSpec.onMount(
         (ComponentContext) c,
         (Drawable) v,
         (boolean) prop2,
-        (long) getStateContainerImpl(c).state1,
-        (S) getStateContainerImpl(c).state2,
+        (long) _state.state1,
+        (S) _state.state2,
         (Long) getInterStagePropsContainerImpl(c).measureOutput,
         (TestTreeProp)
             (useTreePropsFromContext()
@@ -466,14 +451,14 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   private void testLayoutEvent(
       HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestMount _ref = (TestMount) _abstract;
-    TestMountStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
+    TestMountStateContainer _state = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestMountSpec.testLayoutEvent(
         c,
         (Object) _ref.prop3,
         (char) _ref.prop5,
         view,
         param1,
-        (long) stateContainer.state1,
+        (long) _state.state1,
         (int) _ref.getCached(c));
   }
 

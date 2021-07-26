@@ -78,7 +78,7 @@ public class LegacyLayoutStateCalculateTest {
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     // invdalidate the cached accessibility value before each test runs so that we don't
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
@@ -1125,6 +1125,6 @@ public class LegacyLayoutStateCalculateTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

@@ -77,7 +77,7 @@ public class TreeDiffingTest {
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     sRedDrawable = ComparableColorDrawable.create(Color.RED);
@@ -248,6 +248,7 @@ public class TreeDiffingTest {
             createInternalNodeForMeasurableComponent(component2),
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
+            null,
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(
@@ -282,6 +283,7 @@ public class TreeDiffingTest {
             createInternalNodeForMeasurableComponent(component2),
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
+            null,
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(
@@ -748,7 +750,7 @@ public class TreeDiffingTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 
   private static LayoutState calculateLayoutState(
