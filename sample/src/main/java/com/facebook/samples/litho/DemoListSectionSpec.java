@@ -49,14 +49,14 @@ class DemoListSectionSpec {
       final Demos.DemoGrouping model = dataModels.get(i);
       children.child(
           SingleComponentSection.create(c)
-              .component(DemoGroupTitleComponent.create(c).title(model.name))
+              .component(DemoGroupTitleComponent.create(c).title(model.getName()))
               .sticky(true));
       children.child(
           DataDiffSection.<Demos.NavigableDemoItem>create(c)
-              .data(model.datamodels)
+              .data(model.getDatamodels())
               .renderEventHandler(
                   DemoListSection.onRenderComponentDemo(
-                      c, i, dataModels.get(i).datamodels.size())));
+                      c, i, dataModels.get(i).getDatamodels().size())));
     }
     return children.build();
   }

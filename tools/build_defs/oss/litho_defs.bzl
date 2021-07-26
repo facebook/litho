@@ -211,7 +211,7 @@ LITHO_PROCESSOR_LIB_TARGET = make_dep_path("litho-processor/src/main/java/com/fa
 LITHO_SECTIONS_PROCESSOR_LIB_TARGET = make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib")
 
 # Sample app
-LITHO_SAMPLE_JAVA = make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho")
+LITHO_SAMPLE = make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho")
 
 LITHO_SAMPLE_BAREBONES_JAVA = make_dep_path("sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones")
 
@@ -222,8 +222,6 @@ LITHO_SAMPLE_CODELAB_JAVA = make_dep_path("sample-codelab/src/main/java/com/face
 LITHO_SAMPLE_CODELAB_RES = make_dep_path("sample-codelab:res")
 
 LITHO_SAMPLE_RES = make_dep_path("sample:res")
-
-LITHO_SAMPLE_KOTLIN = make_dep_path("sample-kotlin/src/main/kotlin/com/facebook/samples/litho/kotlin:litho")
 
 # Other targets
 LITHO_OSS_TARGET = make_dep_path(":components")

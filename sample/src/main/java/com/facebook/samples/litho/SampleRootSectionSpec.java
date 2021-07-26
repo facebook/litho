@@ -41,11 +41,10 @@ import java.util.List;
 class SampleRootSectionSpec {
 
   @OnCreateChildren
-  static Children onCreateChildren(
-      SectionContext c, @Prop List<Demos.NavigableDemoItem> dataModels) {
+  static Children onCreateChildren(SectionContext c, @Prop List<Demos.DemoList> dataModels) {
     return Children.create()
         .child(
-            DataDiffSection.<Demos.NavigableDemoItem>create(c)
+            DataDiffSection.<Demos.DemoList>create(c)
                 .data(dataModels)
                 .renderEventHandler(SampleRootSection.onRender(c)))
         .build();
@@ -53,7 +52,7 @@ class SampleRootSectionSpec {
 
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(
-      SectionContext c, @FromEvent int index, @FromEvent Demos.NavigableDemoItem model) {
+      SectionContext c, @FromEvent int index, @FromEvent Demos.DemoList model) {
     return ComponentRenderInfo.create()
         .component(
             Column.create(c)

@@ -24,6 +24,7 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionSorter;
+import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.codeInsight.completion.PrioritizedLookupElement;
@@ -56,8 +57,11 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           namesToReplace.add("One");
           namesToReplace.add("Other");
 
+          InsertHandler<LookupElement> insertHandler = (context, item) -> {};
+
           ReplacingConsumer replacingConsumer =
-              new ReplacingConsumer(namesToReplace, mutate, (context, item) -> {});
+              new ReplacingConsumer(
+                  mutate, new QualifiedNamesFilter(namesToReplace, insertHandler), false);
 
           // Consumes CompletionResult and passes SpecLookupElement replacement to the provided
           // CompletionResultSet
@@ -95,9 +99,12 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           List<String> namesToReplace = new ArrayList<>();
           namesToReplace.add("One");
 
+          InsertHandler<LookupElement> insertHandler =
+              (context, item) -> inserts.add(item.getLookupString());
+
           ReplacingConsumer replacingConsumer =
               new ReplacingConsumer(
-                  namesToReplace, mutate, (context, item) -> inserts.add(item.getLookupString()));
+                  mutate, new QualifiedNamesFilter(namesToReplace, insertHandler), false);
 
           replacingConsumer.consume(createCompletionResultFor(OneCls));
           mutate.elements.get(0).handleInsert(Mockito.mock(InsertionContext.class));
@@ -119,13 +126,12 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           namesToReplace.add("one");
           namesToReplace.add("other");
 
-          new ReplacingConsumer(namesToReplace, mutate, (context, item) -> {})
-              .addRemainingCompletions(project);
+          InsertHandler<LookupElement> insertHandler = (context, item) -> {};
 
-          // Creates Completions without consumption
-          assertThat(mutate.elements).hasSize(2);
-          assertThat(mutate.elements.get(0).getLookupString()).isEqualTo("other");
-          assertThat(mutate.elements.get(1).getLookupString()).isEqualTo("one");
+          new QualifiedNamesFilter(namesToReplace, insertHandler)
+              .addRemainingCompletions(project, mutate);
+
+          assertThat(namesToReplace).contains(mutate.elements.get(0).getLookupString());
         });
   }
 

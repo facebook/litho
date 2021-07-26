@@ -1,19 +1,3 @@
-/*
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
@@ -180,16 +164,18 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
 
   @Override
   protected void createInitialState(ComponentContext c) {
+    TestLayoutStateContainer _state = getStateContainerImpl(c);
     StateValue<S> state2 = new StateValue<>();
     TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
-      getStateContainerImpl(c).state2 = state2.get();
+      _state.state2 = state2.get();
     }
   }
 
   @Override
   protected Component onCreateLayout(ComponentContext context) {
     Component _result;
+    TestLayoutStateContainer _state = getStateContainerImpl(context);
     _result =
         (Component)
             TestLayoutSpec.onCreateLayout(
@@ -200,9 +186,9 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
                 (Component) child,
                 (boolean) prop2,
                 (List<String>) names,
-                (long) getStateContainerImpl(context).state1,
-                (S) getStateContainerImpl(context).state2,
-                (int) getStateContainerImpl(context).state3,
+                (long) _state.state1,
+                (S) _state.state2,
+                (int) _state.state3,
                 (TestTreeProp)
                     (useTreePropsFromContext()
                         ? context.getParentTreeProp(
@@ -225,6 +211,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
     Transition _result;
+    TestLayoutStateContainer _state = getStateContainerImpl(c);
     Diff<Integer> _state3Diff =
         new Diff<Integer>(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
@@ -234,7 +221,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
             TestLayoutSpec.onCreateTransition(
                 (ComponentContext) c,
                 (Object) prop3,
-                (long) getStateContainerImpl(c).state1,
+                (long) _state.state1,
                 (Diff<Integer>) _state3Diff);
     return _result;
   }
@@ -258,7 +245,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
   private void testLayoutEvent(
       HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestLayout _ref = (TestLayout) _abstract;
-    TestLayoutStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
+    TestLayoutStateContainer _state = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestLayoutSpec.testLayoutEvent(
         c,
         view,
@@ -267,7 +254,7 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
         (char) _ref.prop5,
         (float) _ref.aspectRatio,
         (boolean) _ref.focusable,
-        (long) stateContainer.state1);
+        (long) _state.state1);
   }
 
   private void __internalOnErrorHandler(

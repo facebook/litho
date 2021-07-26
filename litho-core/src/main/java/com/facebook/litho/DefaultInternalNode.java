@@ -58,6 +58,9 @@ import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.Copyable;
+import com.facebook.rendercore.RenderState;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -181,6 +184,8 @@ public class DefaultInternalNode
   private int mLastHeightSpec = DiffNode.UNSPECIFIED;
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
+
+  private boolean mIsClone = false;
 
   protected long mPrivateFlags;
 
@@ -347,14 +352,16 @@ public class DefaultInternalNode
 
   @Override
   public void freeze(final YogaNode node, final @Nullable YogaNode parent) {
-    freeze(mComponentContext.getLayoutStateContext(), node, parent);
+    freeze(mComponentContext.getLayoutStateContext(), node, false, parent, null);
   }
 
   @Override
   public void freeze(
       final LayoutStateContext context,
       final YogaNode node,
-      final @Nullable YogaNode parentYogaNode) {
+      final boolean isCloned,
+      final @Nullable YogaNode parentYogaNode,
+      final @Nullable LithoLayoutResult current) {
 
     // If parents important for A11Y is YES_HIDE_DESCENDANTS then
     // child's important for A11Y needs to be NO_HIDE_DESCENDANTS
@@ -382,7 +389,10 @@ public class DefaultInternalNode
   }
 
   @Override
-  public LithoLayoutResult calculateLayout(ComponentContext c, int widthSpec, int heightSpec) {
+  public LithoLayoutResult calculateLayout(
+      final RenderState.LayoutContext<LithoRenderContext> c,
+      final int widthSpec,
+      final int heightSpec) {
 
     if (mYogaNode.getStyleDirection() == YogaDirection.INHERIT
         && isLayoutDirectionRTL(c.getAndroidContext())) {
@@ -557,13 +567,38 @@ public class DefaultInternalNode
   }
 
   @Override
+  public @Nullable RenderUnit<?> getRenderUnit() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public @Nullable Object getLayoutData() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public int getChildrenCount() {
+    return getChildCount();
+  }
+
+  @Override
   public @Nullable DefaultInternalNode getChildAt(int index) {
     return (DefaultInternalNode) mYogaNode.getChildAt(index).getData();
   }
 
   @Override
+  public int getXForChildAtIndex(int index) {
+    return getChildAt(index).getX();
+  }
+
+  @Override
+  public int getYForChildAtIndex(int index) {
+    return getChildAt(index).getY();
+  }
+
+  @Override
   public void addChild(LithoLayoutResult child) {
-    throw new UnsupportedOperationException("This supported by DefaultInternalNode");
+    throw new UnsupportedOperationException("This API is not supported by DefaultInternalNode");
   }
 
   @Override
@@ -1337,6 +1372,16 @@ public class DefaultInternalNode
   }
 
   @Override
+  public int getWidthSpec() {
+    return mLastWidthSpec;
+  }
+
+  @Override
+  public int getHeightSpec() {
+    return mLastHeightSpec;
+  }
+
+  @Override
   public boolean isPaddingSet() {
     return (mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L;
   }
@@ -1531,10 +1576,16 @@ public class DefaultInternalNode
     mComponentContext = c;
   }
 
+  @Override
+  public boolean isClone() {
+    return mIsClone;
+  }
+
   protected DefaultInternalNode clone() {
     final DefaultInternalNode node;
     try {
       node = (DefaultInternalNode) super.clone();
+      node.mIsClone = true;
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
@@ -1930,5 +1981,15 @@ public class DefaultInternalNode
     }
 
     return ReconciliationMode.COPY;
+  }
+
+  @Override
+  public Copyable getLayoutParams() {
+    throw new UnsupportedOperationException("This API is not yet implemented");
+  }
+
+  @Override
+  public Copyable makeCopy() {
+    return null;
   }
 }

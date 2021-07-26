@@ -43,7 +43,7 @@ public class LegacyDuplicateParentChildrenStateTest {
 
   @Before
   public void setUp() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
   }
 
@@ -130,6 +130,6 @@ public class LegacyDuplicateParentChildrenStateTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

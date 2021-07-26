@@ -16,9 +16,13 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOCAL_STATE_CONTAINER_NAME;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessorFromContainer;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
 import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
@@ -210,12 +214,21 @@ public class EventGenerator {
                 componentName,
                 ABSTRACT_PARAM_NAME);
 
+    final String contextParamName = getContextParamName(specModel, eventMethodModel);
     final boolean hasLazyStateParams = SpecMethodModelUtils.hasLazyStateParams(eventMethodModel);
+
     if (hasLazyStateParams) {
       methodSpec.addStatement(
-          "$L stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, $L)",
+          "$L $L = getStateContainerWithLazyStateUpdatesApplied(c, $L)",
           StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
           REF_VARIABLE_NAME);
+    } else if (eventMethodModel.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE)) {
+      methodSpec.addStatement(
+          "$L $L = $L",
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
+          STATE_CONTAINER_IMPL_GETTER + "(" + contextParamName + ")");
     }
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
@@ -239,8 +252,6 @@ public class EventGenerator {
 
     delegation.indent();
 
-    final String contextParamName = getContextParamName(specModel, eventMethodModel);
-
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
@@ -259,9 +270,7 @@ public class EventGenerator {
                     ? methodParamModel.getExternalAnnotations()
                     : Collections.emptyList()));
         delegation.add(methodParamModel.getName());
-      } else if (hasLazyStateParams && methodParamModel instanceof StateParamModel) {
-        delegation.add(
-            "($T) stateContainer.$L", methodParamModel.getTypeName(), methodParamModel.getName());
+
       } else if (methodParamModel instanceof TreePropModel) {
         delegation.add(
             "useTreePropsFromContext() ? (($T) $L) : (($T) $L.$L)",
@@ -273,6 +282,16 @@ public class EventGenerator {
             methodParamModel.getTypeName(),
             REF_VARIABLE_NAME,
             methodParamModel.getName());
+      } else if (methodParamModel instanceof StateParamModel) {
+        delegation.add(
+            "($T) $L",
+            methodParamModel.getTypeName(),
+            getImplAccessorFromContainer(
+                eventMethodModel.name.toString(),
+                specModel,
+                methodParamModel,
+                contextParamName,
+                LOCAL_STATE_CONTAINER_NAME));
       } else {
         delegation.add(
             "($T) $L.$L",

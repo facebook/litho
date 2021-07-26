@@ -183,7 +183,9 @@ public class ComponentsConfiguration {
 
   public static boolean delegateToRenderCoreMount = false;
 
-  public static boolean shouldDisableDrawableOutputs = false;
+  public static boolean shouldDisableBgFgOutputs = false;
+
+  public static boolean shouldAddHostViewForRootComponent = false;
 
   /**
    * If {@code false} we won't force Component to update when Device Orientation change, and rely on
@@ -216,9 +218,11 @@ public class ComponentsConfiguration {
 
   public static boolean reuseInternalNodes = false;
 
+  public static boolean enableLayoutCaching = false;
+
   public static boolean shouldSkipShallowCopy = false;
 
-  public static boolean useTreePropsfromContext = false;
+  public static boolean shouldClearPrevContextWhenCommitted = false;
 
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
 

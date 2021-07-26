@@ -70,8 +70,8 @@ private class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : 
     val pixelValue = value.toPixels(resourceResolver)
     when (field) {
       // TODO(t89044330): When yoga is decoupled from Litho, implement these more generically.
-      CoreDimenField.WIDTH -> commonProps.widthPx(if (value == Dimen.Hairline) 1 else pixelValue)
-      CoreDimenField.HEIGHT -> commonProps.heightPx(if (value == Dimen.Hairline) 1 else pixelValue)
+      CoreDimenField.WIDTH -> commonProps.widthPx(pixelValue)
+      CoreDimenField.HEIGHT -> commonProps.heightPx(pixelValue)
       CoreDimenField.MIN_WIDTH -> commonProps.minWidthPx(pixelValue)
       CoreDimenField.MAX_WIDTH -> commonProps.maxWidthPx(pixelValue)
       CoreDimenField.MIN_HEIGHT -> commonProps.minHeightPx(pixelValue)

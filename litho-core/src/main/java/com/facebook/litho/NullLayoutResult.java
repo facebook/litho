@@ -18,6 +18,8 @@ package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.RenderUnit;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaNode;
@@ -125,8 +127,33 @@ public final class NullLayoutResult implements LithoLayoutResult {
   public void addChild(LithoLayoutResult child) {}
 
   @Override
+  public @Nullable RenderUnit<?> getRenderUnit() {
+    return null;
+  }
+
+  @Override
+  public @Nullable Object getLayoutData() {
+    return null;
+  }
+
+  @Override
+  public int getChildrenCount() {
+    return 0;
+  }
+
+  @Override
   public LithoLayoutResult getChildAt(int i) {
     return null;
+  }
+
+  @Override
+  public int getXForChildAtIndex(int index) {
+    return 0;
+  }
+
+  @Override
+  public int getYForChildAtIndex(int index) {
+    return 0;
   }
 
   @Override
@@ -185,6 +212,16 @@ public final class NullLayoutResult implements LithoLayoutResult {
   @Override
   public int getPaddingLeft() {
     return 0;
+  }
+
+  @Override
+  public int getWidthSpec() {
+    return MeasureSpecUtils.unspecified();
+  }
+
+  @Override
+  public int getHeightSpec() {
+    return MeasureSpecUtils.unspecified();
   }
 
   @Override

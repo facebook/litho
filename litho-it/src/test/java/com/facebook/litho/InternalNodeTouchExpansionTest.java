@@ -28,6 +28,7 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
@@ -59,7 +60,14 @@ public class InternalNodeTouchExpansionTest {
   }
 
   private LithoLayoutResult calculateLayout() {
-    return mInternalNode.calculateLayout(mContext, UNSPECIFIED, UNSPECIFIED);
+    final RenderState.LayoutContext<LithoRenderContext> context =
+        new RenderState.LayoutContext<>(
+            mContext.getAndroidContext(),
+            new LithoRenderContext(mContext.getLayoutStateContext(), null, null),
+            0,
+            null,
+            null);
+    return mInternalNode.calculateLayout(context, UNSPECIFIED, UNSPECIFIED);
   }
 
   @Test

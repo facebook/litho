@@ -17,7 +17,7 @@
 @com.facebook.litho.annotations.MountSpec
 public class OnClickEventAboveMethodCompletionSpec {
 
-  @OnEven<caret>
+  @OnC<caret>
 
   @AnyPresentAnnotation
   void belowMethod() {}

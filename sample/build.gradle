@@ -15,6 +15,8 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -41,18 +43,21 @@ android {
 
 dependencies {
     implementation project(':litho-core')
+    implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
+    implementation project(':litho-widget-kotlin')
     implementation project(':litho-fresco')
+    implementation project(':litho-fresco-kotlin')
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
     implementation project(':litho-editor-core')
     implementation project(':litho-editor-flipper')
     compileOnly project(':litho-sections-annotations')
-    annotationProcessor project(':litho-processor')
-    annotationProcessor project(':litho-sections-processor')
+    kapt project(':litho-processor')
+    kapt project(':litho-sections-processor')
 
-    // First-party
-    implementation deps.soloader
+// First-party
+implementation deps.soloader
     implementation deps.flipper
     implementation deps.flipperLithoPlugin
     implementation deps.fresco
@@ -63,11 +68,14 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     // Support Library
+    implementation deps.kotlinStandardLib
     implementation deps.supportAppCompat
     implementation deps.supportFragment
     implementation deps.supportRecyclerView
     implementation deps.supportSwipeRefresh
     implementation deps.supportTransition
+    implementation deps.archLifecycle
+
 
     // Integration test only
     androidTestImplementation project(':litho-espresso')
@@ -79,6 +87,7 @@ dependencies {
     testImplementation project(':litho-testing')
     testCompileOnly deps.jsr305
     testAnnotationProcessor project(':litho-processor')
+    kaptTest project(':litho-processor')
     testImplementation deps.junit
     testImplementation deps.hamcrestLibrary
     testImplementation deps.robolectric

@@ -16,8 +16,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
@@ -29,24 +27,16 @@ import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.sections.common.OnCheckIsSameContentEvent;
 import com.facebook.litho.sections.common.OnCheckIsSameItemEvent;
 import com.facebook.litho.sections.common.RenderEvent;
-import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.List;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 @GroupSectionSpec
-class CollectionDataDiffSectionSpec {
-
-  public interface ItemRenderer<T> {
-
-    Component render(ComponentContext c, T model);
-
-    boolean checkIsSameItem(T previous, T next);
-
-    boolean checkIsSameContent(T previous, T next);
-  }
+class CollectionDataDiffSectionSpec<TModel> {
 
   @OnCreateChildren
-  static Children onCreateChildren(SectionContext c, @Prop List data) {
+  static <TModel> Children onCreateChildren(SectionContext c, @Prop List<TModel> data) {
     return Children.create()
         .child(
             DataDiffSection.create(c)
@@ -59,26 +49,26 @@ class CollectionDataDiffSectionSpec {
   }
 
   @OnEvent(RenderEvent.class)
-  static RenderInfo onRender(
-      SectionContext c, @Prop ItemRenderer itemRenderer, @FromEvent Object model) {
-    return ComponentRenderInfo.create().component(itemRenderer.render(c, model)).build();
+  static <TModel> RenderInfo onRender(
+      SectionContext c, @Prop Function1<TModel, RenderInfo> render, @FromEvent TModel model) {
+    return render.invoke(model);
   }
 
   @OnEvent(OnCheckIsSameItemEvent.class)
-  static boolean onCheckIsSameItem(
+  static <TModel> boolean onCheckIsSameItem(
       SectionContext c,
-      @Prop ItemRenderer itemRenderer,
-      @FromEvent Object previousItem,
-      @FromEvent Object nextItem) {
-    return itemRenderer.checkIsSameItem(previousItem, nextItem);
+      @Prop Function2<TModel, TModel, Boolean> checkIsSameItem,
+      @FromEvent TModel previousItem,
+      @FromEvent TModel nextItem) {
+    return checkIsSameItem.invoke(previousItem, nextItem);
   }
 
   @OnEvent(OnCheckIsSameContentEvent.class)
-  static boolean onCheckIsSameContent(
+  static <TModel> boolean onCheckIsSameContent(
       SectionContext c,
-      @Prop ItemRenderer itemRenderer,
-      @FromEvent Object previousItem,
-      @FromEvent Object nextItem) {
-    return itemRenderer.checkIsSameContent(previousItem, nextItem);
+      @Prop Function2<TModel, TModel, Boolean> checkIsSameContent,
+      @FromEvent TModel previousItem,
+      @FromEvent TModel nextItem) {
+    return checkIsSameContent.invoke(previousItem, nextItem);
   }
 }

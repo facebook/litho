@@ -57,7 +57,7 @@ class TreePropValidation {
             new SpecModelValidationError(
                 onCreateTreePropMethod.representedObject,
                 "The first argument of an @OnCreateTreeProp method should be "
-                    + specModel.getComponentClass()
+                    + specModel.getContextClass()
                     + "."));
       }
     }

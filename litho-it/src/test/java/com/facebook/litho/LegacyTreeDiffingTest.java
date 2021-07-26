@@ -48,7 +48,7 @@ public class LegacyTreeDiffingTest {
 
   @Before
   public void setup() throws Exception {
-    TempComponentsConfigurations.setShouldDisableDrawableOutputs(false);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(false);
     mContext = new ComponentContext(getApplicationContext());
     sRedDrawable = ComparableColorDrawable.create(Color.RED);
     sBlackDrawable = ComparableColorDrawable.create(Color.BLACK);
@@ -176,6 +176,6 @@ public class LegacyTreeDiffingTest {
 
   @After
   public void restoreConfiguration() {
-    TempComponentsConfigurations.restoreShouldDisableDrawableOutputs();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
   }
 }

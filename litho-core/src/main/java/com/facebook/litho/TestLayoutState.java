@@ -49,7 +49,7 @@ public class TestLayoutState {
       return root;
     }
 
-    Layout.measure(c, root, widthSpec, heightSpec, null, null);
+    Layout.measure(c, root, widthSpec, heightSpec, null, null, null);
 
     return root;
   }

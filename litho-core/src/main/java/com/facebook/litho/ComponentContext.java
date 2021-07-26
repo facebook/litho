@@ -156,6 +156,7 @@ public class ComponentContext implements Cloneable {
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+    mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
     mWasStatelessWhenCreated = mLayoutStateContext != null ? useStatelessComponent() : null;
   }

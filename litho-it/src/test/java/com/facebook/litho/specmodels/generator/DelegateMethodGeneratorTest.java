@@ -36,6 +36,8 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.facebook.litho.specmodels.model.TypeSpec;
+import com.facebook.litho.testing.specmodels.MockSpecModel;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -101,12 +103,15 @@ public class DelegateMethodGeneratorTest {
             .build();
 
     mSpecModelWithoutDI =
-        SpecModelImpl.newBuilder()
-            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+        MockSpecModel.newBuilder()
+            .specTypeName(ClassName.bestGuess(TEST_QUALIFIED_SPEC_NAME))
+            .specName("TestSpec")
             .componentClass(ClassNames.COMPONENT)
-            .contextClassName(ClassNames.COMPONENT_CONTEXT)
+            .contextClass(ClassNames.COMPONENT_CONTEXT)
             .delegateMethods(ImmutableList.of(mDelegateMethodModel))
             .representedObject(new Object())
+            .stateContainerClass(
+                ClassName.bestGuess("Test" + GeneratorConstants.STATE_CONTAINER_NAME_SUFFIX))
             .build();
 
     mSpecModelWithDI =
@@ -134,6 +139,7 @@ public class DelegateMethodGeneratorTest {
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result;\n"
+                + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) prop,\n"

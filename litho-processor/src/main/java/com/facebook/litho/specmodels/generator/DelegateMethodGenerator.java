@@ -16,8 +16,13 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LIFECYCLE_CREATE_INITIAL_STATE;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOCAL_STATE_CONTAINER_NAME;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessorFromContainer;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
@@ -60,6 +65,7 @@ import javax.lang.model.element.Modifier;
 
 /** Class that generates delegate methods for a component. */
 public class DelegateMethodGenerator {
+
   private DelegateMethodGenerator() {}
 
   /** Generate all delegates defined on this {@link SpecModel}. */
@@ -212,7 +218,7 @@ public class DelegateMethodGenerator {
     return methodSpec.build();
   }
 
-  private static String getContextParamName(
+  static String getContextParamName(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription) {
@@ -244,6 +250,18 @@ public class DelegateMethodGenerator {
     // If null, find the first spec context from the delegate methods arguments.
     if (contextParamName == null) {
       contextParamName = getContextParamName(specModel, delegateMethod, methodDescription);
+    }
+
+    final boolean requiresState =
+        (methodDescription.createsState && !specModel.getStateValues().isEmpty())
+            || delegateMethod.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE);
+
+    if (requiresState) {
+      acquireStatements.addStatement(
+          "$L $L = $L",
+          StateContainerGenerator.getStateContainerClassName(specModel),
+          LOCAL_STATE_CONTAINER_NAME,
+          STATE_CONTAINER_IMPL_GETTER + "(" + contextParamName + ")");
     }
 
     final Queue<TypeName> remainingAllowedTypes = new LinkedList<>(allowedParamTypes);
@@ -327,16 +345,21 @@ public class DelegateMethodGenerator {
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
 
-        if (delegateMethod.name.toString().equals("createInitialState")) {
+        if (delegateMethod.name.toString().equals(LIFECYCLE_CREATE_INITIAL_STATE)) {
           releaseStatements.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
         }
 
         releaseStatements.addStatement(
             "$L = $L.get()",
-            getImplAccessor(methodDescription.name, specModel, methodParamModel, contextParamName),
+            getImplAccessorFromContainer(
+                methodDescription.name,
+                specModel,
+                methodParamModel,
+                contextParamName,
+                LOCAL_STATE_CONTAINER_NAME),
             methodParamModel.getName());
 
-        if (delegateMethod.name.toString().equals("createInitialState")) {
+        if (delegateMethod.name.toString().equals(LIFECYCLE_CREATE_INITIAL_STATE)) {
           releaseStatements.endControlFlow();
         }
 
@@ -368,8 +391,12 @@ public class DelegateMethodGenerator {
         delegationParams.add(
             ParamTypeAndName.create(
                 methodParamModel.getTypeName(),
-                getImplAccessor(
-                    methodDescription.name, specModel, methodParamModel, contextParamName)));
+                getImplAccessorFromContainer(
+                    methodDescription.name,
+                    specModel,
+                    methodParamModel,
+                    contextParamName,
+                    LOCAL_STATE_CONTAINER_NAME)));
       }
     }
 

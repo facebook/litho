@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.TypeSpec;
 import com.squareup.javapoet.AnnotationSpec;
@@ -109,6 +110,20 @@ public class TreePropGeneratorTest {
     when(mSpecModel.getDelegateMethods())
         .thenReturn(ImmutableList.of(mOnCreateTreePropMethodModel));
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(mTreeProp));
+
+    ImmutableList<StateParamModel> states =
+        ImmutableList.of(
+            new StateParamModel(
+                MethodParamModelFactory.create(
+                    new TypeSpec(TypeName.INT),
+                    "state",
+                    ImmutableList.of(createAnnotation(State.class)),
+                    new ArrayList<AnnotationSpec>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    true,
+                    null),
+                false));
+    when(mSpecModel.getStateValues()).thenReturn(states);
 
     mGenericOnCreateTreePropMethodModel =
         SpecMethodModel.<DelegateMethod, Void>builder()
@@ -196,10 +211,11 @@ public class TreePropGeneratorTest {
                 + "protected com.facebook.litho.TreeProps getTreePropsForChildren(com.facebook.litho.ComponentContext c,\n"
                 + "    com.facebook.litho.TreeProps parentTreeProps) {\n"
                 + "  final com.facebook.litho.TreeProps childTreeProps = com.facebook.litho.TreeProps.acquire(parentTreeProps);\n"
+                + "  TestStateContainer _state = getStateContainerImpl(c);\n"
                 + "  childTreeProps.put(boolean.class, TestSpec.onCreateTreeProp(\n"
                 + "      (com.facebook.litho.ComponentContext) c,\n"
                 + "      prop,\n"
-                + "      getStateContainerImpl(c).state));\n"
+                + "      _state.state));\n"
                 + "  return childTreeProps;\n"
                 + "}\n");
   }

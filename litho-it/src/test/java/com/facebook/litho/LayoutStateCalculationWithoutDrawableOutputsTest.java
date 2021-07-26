@@ -42,7 +42,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
   @Before
   public void before() {
-    cachedConfigValue = ComponentsConfiguration.shouldDisableDrawableOutputs;
+    cachedConfigValue = ComponentsConfiguration.shouldDisableBgFgOutputs;
     mContext = new ComponentContext(getApplicationContext());
     mLithoView = new LithoView(mContext);
     mComponentTree = ComponentTree.create(mContext).build();
@@ -51,7 +51,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.shouldDisableDrawableOutputs = cachedConfigValue;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = cachedConfigValue;
   }
 
   @Test
@@ -62,7 +62,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     attach();
 
-    ComponentsConfiguration.shouldDisableDrawableOutputs = false;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = false;
 
     mLithoView.setComponent(RootComponent.create(mContext).shouldWrapInView(false).build());
     state = mLithoView.getComponentTree().getMainThreadLayoutState();
@@ -102,7 +102,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
 
     attach();
 
-    ComponentsConfiguration.shouldDisableDrawableOutputs = false;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = false;
 
     mLithoView.setComponent(RootComponent.create(mContext).shouldWrapInView(true).build());
     state = mLithoView.getComponentTree().getMainThreadLayoutState();
@@ -155,7 +155,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     attach();
 
     // disable layout outputs for drawables
-    ComponentsConfiguration.shouldDisableDrawableOutputs = true;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = true;
 
     mLithoView.setComponent(RootComponent.create(mContext).shouldWrapInView(false).build());
     state = mLithoView.getComponentTree().getMainThreadLayoutState();
@@ -175,7 +175,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = getLayoutOutput(state.getMountableOutputAt(4));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    ComponentsConfiguration.shouldDisableDrawableOutputs = false;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = false;
   }
 
   @Test
@@ -187,7 +187,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     attach();
 
     // disable layout outputs for drawables
-    ComponentsConfiguration.shouldDisableDrawableOutputs = true;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = true;
 
     mLithoView.setComponent(RootComponent.create(mContext).shouldWrapInView(true).build());
     state = mLithoView.getComponentTree().getMainThreadLayoutState();
@@ -207,7 +207,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     output = getLayoutOutput(state.getMountableOutputAt(4));
     assertThat(output.getComponent()).isOfAnyClassIn(Text.class);
 
-    ComponentsConfiguration.shouldDisableDrawableOutputs = false;
+    ComponentsConfiguration.shouldDisableBgFgOutputs = false;
   }
 
   private void attach() {

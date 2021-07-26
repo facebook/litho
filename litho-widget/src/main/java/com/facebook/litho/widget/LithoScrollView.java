@@ -28,7 +28,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoMetadataExceptionWrapper;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.widget.VerticalScrollSpec.OnInterceptTouchListener;
 import com.facebook.litho.widget.VerticalScrollSpec.ScrollPosition;
 import com.facebook.rendercore.ErrorReporter;

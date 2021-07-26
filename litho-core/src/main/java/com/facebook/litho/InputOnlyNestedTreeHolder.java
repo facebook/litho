@@ -72,7 +72,7 @@ public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeY
   }
 
   @Override
-  protected DefaultLayoutResult createLayoutResult(
+  DefaultLayoutResult createLayoutResult(
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {

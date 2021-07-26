@@ -88,6 +88,7 @@
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.LayoutSpecMethodParameterAnnotationsContributor" order="first"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.EventHandlerCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.ParamCompletionContributor" order="first"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.EventClassNameCompletionContributor" order="first"/>
 
     <findUsagesHandlerFactory implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
 
