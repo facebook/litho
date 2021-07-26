@@ -640,7 +640,7 @@ class TextInputSpec {
     if (!ObjectsCompat.equals(inputType.getPrevious(), inputType.getNext())) {
       return true;
     }
-    if (!equals(rawInputType.getPrevious(), rawInputType.getNext())) {
+    if (!ObjectsCompat.equals(rawInputType.getPrevious(), rawInputType.getNext())) {
       return true;
     }
     if (!ObjectsCompat.equals(keyListener.getPrevious(), keyListener.getNext())) {
