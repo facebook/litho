@@ -197,7 +197,9 @@ final class ScopedComponentInfo implements Cloneable {
    * copied.
    */
   ScopedComponentInfo copy(final LayoutStateContext context, final StateHandler handler) {
-    return new ScopedComponentInfo(this, context, handler);
+    ScopedComponentInfo info = new ScopedComponentInfo(this, context, handler);
+    mContext.setScopedComponentInfo(info);
+    return info;
   }
 
   /**

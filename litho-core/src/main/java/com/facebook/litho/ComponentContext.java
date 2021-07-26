@@ -94,6 +94,8 @@ public class ComponentContext implements Cloneable {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LayoutStateContext mLayoutStateContext;
 
+  private @Nullable ScopedComponentInfo mScopedComponentInfo;
+
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
@@ -202,7 +204,8 @@ public class ComponentContext implements Cloneable {
 
     final LayoutStateContext layoutContext = componentContext.getLayoutStateContext();
     if (componentContext.useStatelessComponent()) {
-      layoutContext.addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
+      componentContext.mScopedComponentInfo =
+          layoutContext.addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
     }
 
     return componentContext;
@@ -637,6 +640,15 @@ public class ComponentContext implements Cloneable {
   @Nullable
   public LayoutStateContext getLayoutStateContext() {
     return mLayoutStateContext;
+  }
+
+  @Nullable
+  public ScopedComponentInfo getScopedComponentInfo() {
+    return mScopedComponentInfo;
+  }
+
+  void setScopedComponentInfo(ScopedComponentInfo scopedComponentInfo) {
+    mScopedComponentInfo = scopedComponentInfo;
   }
 
   void markLayoutUninterruptible() {

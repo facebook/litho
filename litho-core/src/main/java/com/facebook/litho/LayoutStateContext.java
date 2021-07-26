@@ -100,7 +100,7 @@ public class LayoutStateContext {
     mCurrentDiffTree = currentDiffTree;
   }
 
-  void addScopedComponentInfo(
+  ScopedComponentInfo addScopedComponentInfo(
       final String globalKey,
       final Component component,
       final ComponentContext scopedContext,
@@ -117,6 +117,8 @@ public class LayoutStateContext {
     if (previous != null) {
       previous.transferInto(info);
     }
+
+    return info;
   }
 
   ScopedComponentInfo getScopedComponentInfo(String globalKey) {
