@@ -16,12 +16,10 @@
 
 package com.facebook.litho.intellij.completion;
 
-import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_PARAMETER_ANNOTATION;
+import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_ANNOTATION_PARAMETER;
 
 import com.facebook.litho.annotations.OnEvent;
-import com.facebook.litho.annotations.OnUpdateState;
-import com.facebook.litho.annotations.OnUpdateStateWithTransition;
-import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -32,35 +30,56 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
-/** Offers completion for the {@code @Param} method parameters in the Litho Spec class. */
-public class ParamCompletionContributor extends CompletionContributor {
-  private static final Set<String> ALLOWED_METHOD_ANNOTATIONS = new HashSet<>();
+public class EventClassNameCompletionContributor extends CompletionContributor {
+  private static final Set<String> ALLOWED_ANNOTATIONS = new HashSet<>();
 
-  static {
-    ALLOWED_METHOD_ANNOTATIONS.add(OnEvent.class.getTypeName());
-    ALLOWED_METHOD_ANNOTATIONS.add(OnUpdateState.class.getTypeName());
-    ALLOWED_METHOD_ANNOTATIONS.add(OnUpdateStateWithTransition.class.getTypeName());
+  static class EventClassFilter implements LookupElementFilter {
+    private InsertHandler<LookupElement> handler;
+
+    public EventClassFilter(InsertHandler<LookupElement> handler) {
+      this.handler = handler;
+    }
+
+    @Override
+    public LookupElement apply(LookupElement lookupElement, PsiClass element) {
+      return Optional.ofNullable(element)
+          .filter(LithoPluginUtils::isEvent)
+          .map(PsiClass::getName)
+          .map(qualifiedName -> createLookupElement(qualifiedName, handler))
+          .orElse(null);
+    }
+
+    @Override
+    public void addRemainingCompletions(Project project, CompletionResultSet result) {}
   }
 
-  public ParamCompletionContributor() {
-    extend(CompletionType.BASIC, METHOD_PARAMETER_ANNOTATION, typeCompletionProvider());
+  static {
+    ALLOWED_ANNOTATIONS.add(OnEvent.class.getTypeName());
+    ALLOWED_ANNOTATIONS.add(OnTrigger.class.getTypeName());
+  }
+
+  public EventClassNameCompletionContributor() {
+    extend(CompletionType.BASIC, METHOD_ANNOTATION_PARAMETER, typeCompletionProvider());
   }
 
   private static CompletionProvider<CompletionParameters> typeCompletionProvider() {
+
     return new CompletionProvider<CompletionParameters>() {
       @Override
       protected void addCompletions(
@@ -73,45 +92,55 @@ public class ParamCompletionContributor extends CompletionContributor {
         if (completionParameters == null) {
           return;
         }
+
+        if (!LithoPluginUtils.isLithoSpec(completionParameters.getOriginalFile())) {
+          return;
+        }
+
         final PsiElement element = completionParameters.getPosition();
 
-        final PsiMethod containingMethod = PsiTreeUtil.getParentOfType(element, PsiMethod.class);
-        if (containingMethod == null) {
+        final PsiMethod annotatedMethod = PsiTreeUtil.getParentOfType(element, PsiMethod.class);
+        if (annotatedMethod == null) {
           return;
         }
-        final boolean isAllowedAnnotation =
-            Arrays.stream(containingMethod.getAnnotations())
+
+        String annotation =
+            Arrays.stream(annotatedMethod.getAnnotations())
                 .map(methodAnnotation -> methodAnnotation.getQualifiedName())
-                .anyMatch(ALLOWED_METHOD_ANNOTATIONS::contains);
-        if (!isAllowedAnnotation) {
+                .filter(ALLOWED_ANNOTATIONS::contains)
+                .findAny()
+                .orElse(null);
+        if (annotation == null) {
           return;
         }
 
-        final PsiClass cls = containingMethod.getContainingClass();
-        if (!LithoPluginUtils.isLithoSpec(cls)) {
+        final PsiType returnType = annotatedMethod.getReturnType();
+        if (returnType == null || returnType.getPresentableText().equals("void")) {
           return;
         }
 
-        Collection<String> replacedQualifiedNames =
-            Collections.singleton(Param.class.getTypeName());
         InsertHandler<LookupElement> insertHandler =
             (insertionContext, item) -> {
               final Map<String, String> data = new HashMap<>();
               data.put(EventLogger.KEY_TARGET, EventLogger.VALUE_COMPLETION_TARGET_PARAMETER);
-              data.put(EventLogger.KEY_CLASS, item.getLookupString());
+              data.put(EventLogger.KEY_CLASS, annotation);
               LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION, data);
             };
 
-        QualifiedNamesFilter qualifiedNamesFilter =
-            new QualifiedNamesFilter(replacedQualifiedNames, insertHandler);
+        EventClassFilter eventClassFilter = new EventClassFilter(insertHandler);
 
         final ReplacingConsumer replacingConsumer =
-            new ReplacingConsumer(completionResultSet, qualifiedNamesFilter, false);
+            new ReplacingConsumer(completionResultSet, eventClassFilter, true);
 
-        qualifiedNamesFilter.addRemainingCompletions(
-            completionParameters.getPosition().getProject(), completionResultSet);
         completionResultSet.runRemainingContributors(completionParameters, replacingConsumer);
       }
     };
+  }
+
+  private static LookupElement createLookupElement(
+      String qualifiedName, InsertHandler<LookupElement> handler) {
+    return LookupElementBuilder.create(qualifiedName + ".class")
+        .withTypeText("Litho Event")
+        .withInsertHandler(handler);
   }
 }
