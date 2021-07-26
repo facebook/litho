@@ -100,7 +100,7 @@ class MaterialTextInputSpec {
   @PropDefault protected static final int gravity = TextInputSpec.gravity;
   @PropDefault protected static final boolean editable = TextInputSpec.editable;
   @PropDefault protected static final int inputType = TextInputSpec.inputType;
-  @PropDefault protected static final int inputType = TextInputSpec.rawInputType;
+  @PropDefault protected static final int rawInputType = TextInputSpec.rawInputType;
   @PropDefault protected static final int imeOptions = TextInputSpec.imeOptions;
   @PropDefault protected static final int cursorDrawableRes = TextInputSpec.cursorDrawableRes;
   @PropDefault static final boolean multiline = TextInputSpec.multiline;
