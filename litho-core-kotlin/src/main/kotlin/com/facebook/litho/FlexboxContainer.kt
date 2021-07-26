@@ -135,9 +135,9 @@ fun ComponentScope.createRow(
  * The receiver gives the ability to add children to this container.
  */
 @ContainerDsl
-class FlexboxContainerScope {
-
-  internal val children: MutableList<Component?> = mutableListOf()
+inline class FlexboxContainerScope(
+    internal val children: MutableList<Component?> = mutableListOf()
+) {
 
   /** Adds a Component as a child to the Row or Column being initialized. */
   fun child(component: Component?) {
