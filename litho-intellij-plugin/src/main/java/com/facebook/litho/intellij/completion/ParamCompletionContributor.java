@@ -57,6 +57,9 @@ public class ParamCompletionContributor extends CompletionContributor {
   }
 
   public ParamCompletionContributor() {
+    extend(CompletionType.BASIC, METHOD_PARAMETER_ANNOTATION, FromEventParameterProvider.INSTANCE);
+    extend(
+        CompletionType.BASIC, METHOD_PARAMETER_ANNOTATION, FromTriggerParameterProvider.INSTANCE);
     extend(CompletionType.BASIC, METHOD_PARAMETER_ANNOTATION, typeCompletionProvider());
   }
 
