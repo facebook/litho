@@ -1230,10 +1230,7 @@ public abstract class Component
   @Nullable
   final EventHandler<ErrorEvent> getErrorHandler(ComponentContext scopedContext) {
     if (scopedContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
-      final String globalKey = scopedContext.getGlobalKey();
-
-      return getScopedInfo(layoutStateContext, globalKey).getErrorEventHandler();
+      return scopedContext.getScopedComponentInfo().getErrorEventHandler();
     }
 
     return mErrorEventHandler;
@@ -1436,10 +1433,7 @@ public abstract class Component
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
     if (scopedContext != null && scopedContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
-      final String globalKey = scopedContext.getGlobalKey();
-
-      return component.getScopedInfo(layoutStateContext, globalKey).getStateContainer();
+      return scopedContext.getScopedComponentInfo().getStateContainer();
     } else {
       if (component.mStateContainer == null) {
         component.mStateContainer = component.createStateContainer();
@@ -1498,9 +1492,7 @@ public abstract class Component
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
     if (scopedContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
-      final String globalKey = scopedContext.getGlobalKey();
-      return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
+      return scopedContext.getScopedComponentInfo().getInterStagePropsContainer();
     } else {
       if (mInterStagePropsContainer == null) {
         mInterStagePropsContainer = createInterStagePropsContainer();
