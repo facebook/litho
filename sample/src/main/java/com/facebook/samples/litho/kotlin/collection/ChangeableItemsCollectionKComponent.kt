@@ -60,7 +60,7 @@ class ChangeableItemsCollectionKComponent : KComponent() {
       child(
           Collection(
               style = Style.flex(grow = 1f),
-              onViewportChangedFunction = { _, _, _, _, _, _ ->
+              onViewportChanged = { _, _, _, _, _, _ ->
                 Log.d("litho-kotlin", "onViewportChangedFunction")
               },
               onDataBound = { Log.d("litho-kotlin", "onDataBound") }) {

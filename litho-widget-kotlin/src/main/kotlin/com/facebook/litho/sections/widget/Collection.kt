@@ -80,7 +80,7 @@ inline fun ComponentScope.Collection(
     startupLogger: LithoStartupLogger? = null,
     stickyHeaderControllerFactory: StickyHeaderControllerFactory? = null,
     style: Style? = null,
-    noinline onViewportChangedFunction:
+    noinline onViewportChanged:
         ((
             c: ComponentContext,
             firstVisibleIndex: Int,
@@ -99,24 +99,8 @@ inline fun ComponentScope.Collection(
   val section =
       CollectionGroupSection.create(containerScope.sectionContext)
           .childrenBuilder(containerScope.childrenBuilder)
-          .onDataBoundFunction { c -> onDataBound?.let { it(c) } }
-          .onViewportChangedFunction {
-              c,
-              firstVisibleIndex,
-              lastVisibleIndex,
-              totalCount,
-              firstFullyVisibleIndex,
-              lastFullyVisibleIndex ->
-            onViewportChangedFunction?.let {
-              it(
-                  c,
-                  firstVisibleIndex,
-                  lastVisibleIndex,
-                  totalCount,
-                  firstFullyVisibleIndex,
-                  lastFullyVisibleIndex)
-            }
-          }
+          .apply { onDataBound?.let { onDataBound(it) } }
+          .apply { onViewportChanged?.let { onViewportChanged(it) } }
           .onPullToRefresh(onPullToRefresh)
           .build()
 

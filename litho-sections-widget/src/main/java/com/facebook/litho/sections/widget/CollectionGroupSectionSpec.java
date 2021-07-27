@@ -26,23 +26,11 @@ import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
 import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function6;
 
 @GroupSectionSpec
 class CollectionGroupSectionSpec {
-
-  public interface OnDataBoundFunction {
-    void onDataBound(ComponentContext c);
-  }
-
-  public interface OnViewportChangedFunction {
-    void onViewportChanged(
-        ComponentContext c,
-        int firstVisibleIndex,
-        int lastVisibleIndex,
-        int totalCount,
-        int firstFullyVisibleIndex,
-        int lastFullyVisibleIndex);
-  }
 
   @OnCreateChildren
   static Children onCreateChildren(SectionContext c, @Prop Children.Builder childrenBuilder) {
@@ -51,9 +39,10 @@ class CollectionGroupSectionSpec {
 
   @OnDataBound
   static void onDataBound(
-      SectionContext c, @Prop(optional = true) OnDataBoundFunction onDataBoundFunction) {
-    if (onDataBoundFunction != null) {
-      onDataBoundFunction.onDataBound(c);
+      SectionContext c,
+      @Prop(optional = true) Function1<ComponentContext, kotlin.Unit> onDataBound) {
+    if (onDataBound != null) {
+      onDataBound.invoke(c);
     }
   }
 
@@ -65,9 +54,11 @@ class CollectionGroupSectionSpec {
       int totalCount,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex,
-      @Prop(optional = true) OnViewportChangedFunction onViewportChangedFunction) {
-    if (onViewportChangedFunction != null) {
-      onViewportChangedFunction.onViewportChanged(
+      @Prop(optional = true)
+          Function6<ComponentContext, Integer, Integer, Integer, Integer, Integer, kotlin.Unit>
+              onViewportChanged) {
+    if (onViewportChanged != null) {
+      onViewportChanged.invoke(
           c,
           firstVisibleIndex,
           lastVisibleIndex,
