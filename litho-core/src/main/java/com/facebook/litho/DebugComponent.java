@@ -126,8 +126,7 @@ public final class DebugComponent {
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
       overrider.applyComponentOverrides(key, component);
-      overrider.applyStateOverrides(
-          key, component.getStateContainer(context.getLayoutStateContext(), componentKey));
+      overrider.applyStateOverrides(key, component.getStateContainer(context));
     }
   }
 
@@ -417,10 +416,7 @@ public final class DebugComponent {
 
   @Nullable
   public StateContainer getStateContainer() {
-    final LayoutStateContext layoutStateContext = getContext().getLayoutStateContext();
-    final String globalKey = getGlobalKeyFromNode();
-
-    return getComponent().getStateContainer(layoutStateContext, globalKey);
+    return getComponent().getStateContainer(getContext());
   }
 
   @Nullable

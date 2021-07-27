@@ -747,14 +747,11 @@ public abstract class Component
               currentComponent,
               currentComponent == null || previousScopedContext == null
                   ? null
-                  : currentComponent.getStateContainer(
-                      previousScopedContext.getLayoutStateContext(),
-                      previousScopedContext.getGlobalKey()),
+                  : currentComponent.getStateContainer(previousScopedContext),
               nextComponent,
               nextComponent == null || nextScopedContext == null
                   ? null
-                  : nextComponent.getStateContainer(
-                      nextScopedContext.getLayoutStateContext(), nextScopedContext.getGlobalKey()));
+                  : nextComponent.getStateContainer(nextScopedContext));
     } else {
       shouldUpdate =
           shouldUpdate(previousScopedContext, currentComponent, nextScopedContext, nextComponent);
@@ -1442,17 +1439,14 @@ public abstract class Component
     }
   }
 
-  final StateContainer getStateContainer(
-      final @Nullable LayoutStateContext layoutStateContext, final @Nullable String globalKey) {
-    if (layoutStateContext == null) {
+  final StateContainer getStateContainer(final @Nullable ComponentContext scopedContext) {
+    if (scopedContext == null) {
       throw new IllegalStateException(
           "Cannot access a state container outside of a layout state calculation.");
     }
 
-    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
-
-      final ScopedComponentInfo scopedComponentInfo = getScopedInfo(layoutStateContext, globalKey);
-      return scopedComponentInfo.getStateContainer();
+    if (useStatelessComponent(scopedContext.getComponentTree())) {
+      return scopedContext.getScopedComponentInfo().getStateContainer();
     } else {
       if (mStateContainer == null) {
         mStateContainer = createStateContainer();
