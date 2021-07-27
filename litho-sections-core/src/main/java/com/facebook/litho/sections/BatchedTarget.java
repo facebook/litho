@@ -17,6 +17,7 @@
 package com.facebook.litho.sections;
 
 import android.util.SparseArray;
+import com.facebook.litho.Handle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
@@ -158,9 +159,19 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
+  public void requestSmoothFocus(Handle target, int offset, SmoothScrollAlignmentType type) {
+    mTarget.requestSmoothFocus(target, offset, type);
+  }
+
+  @Override
   public void requestFocusWithOffset(int index, int offset) {
     mTarget.requestFocusWithOffset(index, offset);
     maybeLogRequestFocusWithOffset(index, offset);
+  }
+
+  @Override
+  public void requestFocusWithOffset(Handle target, int offset) {
+    mTarget.requestFocusWithOffset(target, offset);
   }
 
   @Override

@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Handle;
 import com.facebook.litho.Size;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.config.SectionsConfiguration;
@@ -159,6 +160,16 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   @Override
   public void requestFocusWithOffset(int index, int offset) {
     mRecyclerBinder.scrollToPositionWithOffset(index, offset);
+  }
+
+  @Override
+  public void requestSmoothFocus(Handle handle, int offset, SmoothScrollAlignmentType type) {
+    mRecyclerBinder.scrollSmoothToPosition(handle, offset, type);
+  }
+
+  @Override
+  public void requestFocusWithOffset(Handle handle, int offset) {
+    mRecyclerBinder.scrollToPositionWithOffset(handle, offset);
   }
 
   @Override

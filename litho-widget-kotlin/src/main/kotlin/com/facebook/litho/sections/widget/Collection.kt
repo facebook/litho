@@ -31,6 +31,7 @@ import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.SingleComponentSection
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecylerView
+import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.StickyHeaderControllerFactory
 
@@ -139,6 +140,13 @@ object CollectionUtils {
   fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
       RecyclerCollectionComponent.onScroll(c, handle, position, false /* ignored */)
 
+  fun scrollToHandle(
+      c: ComponentContext,
+      handle: Handle,
+      target: Handle,
+      @Px offset: Int = 0,
+  ): Unit = RecyclerCollectionComponent.onScrollToHandle(c, handle, target, offset)
+
   fun smoothScrollTo(
       c: ComponentContext,
       handle: Handle,
@@ -148,6 +156,16 @@ object CollectionUtils {
   ): Unit =
       RecyclerCollectionComponent.onSmoothScroll(
           c, handle, index, offset, smoothScrollAlignmentType)
+
+  fun smoothScrollToHandle(
+      c: ComponentContext,
+      handle: Handle,
+      target: Handle,
+      @Px offset: Int = 0,
+      smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
+  ): Unit =
+      RecyclerCollectionComponent.onSmoothScrollToHandle(
+          c, handle, target, offset, smoothScrollAlignmentType)
 
   fun clearRefreshing(c: ComponentContext, handle: Handle) {
     RecyclerCollectionComponent.onClearRefreshing(c, handle)
@@ -163,7 +181,14 @@ class CollectionContainerScope(componentContext: ComponentContext) {
   /** Adds a Component as a child to the collection being initialized. */
   fun item(component: Component) {
     childrenBuilder.child(
-        SingleComponentSection.create(sectionContext).component(component).build())
+        SingleComponentSection.create(sectionContext)
+            .apply {
+              component.handle?.let {
+                customAttributes(mapOf(Pair(HANDLE_CUSTOM_ATTR_KEY, component.handle)))
+              }
+            }
+            .component(component)
+            .build())
   }
 
   /** Adds a List of Components as children to the collection being initialized. */

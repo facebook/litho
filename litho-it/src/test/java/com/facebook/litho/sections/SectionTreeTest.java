@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 import com.facebook.litho.Component;
+import com.facebook.litho.Handle;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.Whitebox;
@@ -1069,6 +1070,12 @@ public class SectionTreeTest {
 
     @Override
     public void requestFocusWithOffset(int index, int offset) {}
+
+    @Override
+    public void requestSmoothFocus(Handle target, int offset, SmoothScrollAlignmentType type) {}
+
+    @Override
+    public void requestFocusWithOffset(Handle target, int offset) {}
 
     @Override
     public boolean supportsBackgroundChangeSets() {

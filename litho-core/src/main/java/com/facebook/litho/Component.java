@@ -1264,7 +1264,7 @@ public abstract class Component
 
   /** @return a handle that is unique to this component. */
   @Nullable
-  final Handle getHandle() {
+  public final Handle getHandle() {
     return mHandle;
   }
 

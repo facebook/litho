@@ -24,6 +24,7 @@ import android.text.TextUtils
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.Handle
 import com.facebook.litho.Sp
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
@@ -53,6 +54,7 @@ inline fun ComponentScope.Text(
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
     clipToBounds: Boolean = CLIP_TO_BOUNDS,
+    handle: Handle? = null,
     @StyleRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0
 ): Text =
@@ -71,5 +73,6 @@ inline fun ComponentScope.Text(
         .shouldIncludeFontPadding(includeFontPadding)
         .clipToBounds(clipToBounds)
         .apply { ellipsize?.let { ellipsize(it) } }
+        .handle(handle)
         .kotlinStyle(style)
         .build()

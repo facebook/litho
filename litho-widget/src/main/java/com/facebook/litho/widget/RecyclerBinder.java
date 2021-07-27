@@ -57,6 +57,7 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Handle;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
@@ -111,6 +112,7 @@ public class RecyclerBinder
       "RecyclerBinder:DataRenderedNotTriggered";
   static final int UNSET = -1;
   static final int APPLY_READY_BATCHES_RETRY_LIMIT = 100;
+  public static final String HANDLE_CUSTOM_ATTR_KEY = "handle";
 
   private static Field mViewHolderField;
 
@@ -3065,6 +3067,13 @@ public class RecyclerBinder
 
   @UiThread
   public void scrollSmoothToPosition(
+      Handle target, final int offset, final SmoothScrollAlignmentType type) {
+    final int index = getPositionForHandle(target);
+    scrollSmoothToPosition(index, offset, type);
+  }
+
+  @UiThread
+  public void scrollSmoothToPosition(
       int position, final int offset, final SmoothScrollAlignmentType type) {
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
@@ -3077,6 +3086,30 @@ public class RecyclerBinder
         SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getAndroidContext(), offset, type);
     smoothScroller.setTargetPosition(position);
     mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
+  }
+
+  @UiThread
+  private synchronized int getPositionForHandle(Handle target) {
+    for (int i = 0; i < mComponentTreeHolders.size(); i++) {
+      final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(i);
+
+      final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
+      if (renderInfo == null) {
+        continue;
+      }
+      @Nullable final Handle handle = (Handle) renderInfo.getCustomAttribute("handle");
+
+      if (handle == target) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  @UiThread
+  public void scrollToPositionWithOffset(Handle target, int offset) {
+    final int index = getPositionForHandle(target);
+    scrollToPositionWithOffset(index, offset);
   }
 
   @UiThread

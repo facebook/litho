@@ -17,6 +17,7 @@
 package com.facebook.litho.testing.sections;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.Handle;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;
@@ -191,6 +192,12 @@ public class TestTarget implements SectionTree.Target {
     mFocusTo = index;
     mFocusToOffset = offset;
   }
+
+  @Override
+  public void requestSmoothFocus(Handle target, int offset, SmoothScrollAlignmentType type) {}
+
+  @Override
+  public void requestFocusWithOffset(Handle target, int offset) {}
 
   @Override
   public boolean supportsBackgroundChangeSets() {

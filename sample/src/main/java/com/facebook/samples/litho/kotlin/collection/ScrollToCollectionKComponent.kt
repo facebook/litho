@@ -34,26 +34,38 @@ import com.facebook.litho.widget.Text
 class ScrollToCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    val handle = Handle()
+    val collectionHandle = Handle()
+    val endItemHandle = Handle()
     return Column(style = Style.padding(16.dp)) {
       child(
           Row {
-            child(Button("First") { CollectionUtils.scrollTo(context, handle, 0) })
-            child(Button("Position 10") { CollectionUtils.scrollTo(context, handle, 10) })
+            child(Button("First") { CollectionUtils.scrollTo(context, collectionHandle, 0) })
+            child(Button("Position 10") { CollectionUtils.scrollTo(context, collectionHandle, 10) })
             child(
                 Button("50 to center") {
                   CollectionUtils.smoothScrollTo(
                       context,
-                      handle,
+                      collectionHandle,
                       50,
                       smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_CENTER)
+                })
+            child(
+                Button("End") {
+                  CollectionUtils.smoothScrollToHandle(
+                      context,
+                      collectionHandle,
+                      endItemHandle,
+                      smoothScrollAlignmentType = SmoothScrollAlignmentType.SNAP_TO_END)
                 })
           })
       child(
           Collection(
-              handle = handle,
+              handle = collectionHandle,
               style = Style.flex(grow = 1f),
-          ) { items((0..99).map { Text("$it ") }) })
+          ) {
+            items((0..99).map { Text("$it ") })
+            item(Text("End", handle = endItemHandle))
+          })
     }
   }
 }
