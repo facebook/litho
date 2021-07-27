@@ -55,6 +55,7 @@ inline fun ComponentScope.Text(
     includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
     clipToBounds: Boolean = CLIP_TO_BOUNDS,
     handle: Handle? = null,
+    @ColorInt backgroundColor: Int? = null,
     @StyleRes defStyleAttr: Int = 0,
     @StyleRes defStyleRes: Int = 0
 ): Text =
@@ -74,5 +75,6 @@ inline fun ComponentScope.Text(
         .clipToBounds(clipToBounds)
         .apply { ellipsize?.let { ellipsize(it) } }
         .handle(handle)
+        .apply { backgroundColor?.let { backgroundColor(backgroundColor) } }
         .kotlinStyle(style)
         .build()

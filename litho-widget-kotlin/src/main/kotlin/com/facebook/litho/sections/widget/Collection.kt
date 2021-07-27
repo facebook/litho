@@ -179,7 +179,7 @@ class CollectionContainerScope(componentContext: ComponentContext) {
   val sectionContext: SectionContext = SectionContext(componentContext)
 
   /** Adds a Component as a child to the collection being initialized. */
-  fun item(component: Component) {
+  fun item(component: Component, sticky: Boolean = false) {
     childrenBuilder.child(
         SingleComponentSection.create(sectionContext)
             .apply {
@@ -187,6 +187,7 @@ class CollectionContainerScope(componentContext: ComponentContext) {
                 customAttributes(mapOf(Pair(HANDLE_CUSTOM_ATTR_KEY, component.handle)))
               }
             }
+            .sticky(sticky)
             .component(component)
             .build())
   }
