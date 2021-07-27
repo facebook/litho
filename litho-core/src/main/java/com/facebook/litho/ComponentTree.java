@@ -103,6 +103,8 @@ public class ComponentTree implements LithoLifecycleListener {
   private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
   private static final String CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT =
       "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
+  private static final String M_LITHO_VIEW_IS_NULL =
+      "ComponentTree:mountComponentInternal_mLithoView_Null";
 
   public static final int STATE_UPDATES_IN_LOOP_THRESHOLD = 50;
   private static final String STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD =
@@ -892,7 +894,13 @@ public class ComponentTree implements LithoLifecycleListener {
       return;
     }
 
-    final boolean isDirtyMount = mLithoView.isMountStateDirty();
+    // We are investigating a crash where mLithoView becomes null during the execution of this
+    // function. Use a local copy.
+    final LithoView lithoViewRef = mLithoView;
+    if (lithoViewRef == null) {
+      return;
+    }
+    final boolean isDirtyMount = lithoViewRef.isMountStateDirty();
 
     mIsMounting = true;
 
@@ -903,7 +911,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     // currentVisibleArea null or empty => mount all
     try {
-      mLithoView.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+      lithoViewRef.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
       if (isDirtyMount) {
         recordRenderData(layoutState);
       }
@@ -915,7 +923,13 @@ public class ComponentTree implements LithoLifecycleListener {
       mRootWidthAnimation = null;
 
       if (isDirtyMount) {
-        mLithoView.onDirtyMountComplete();
+        lithoViewRef.onDirtyMountComplete();
+        if (mLithoView == null) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.WARNING,
+              M_LITHO_VIEW_IS_NULL,
+              "mLithoView is unexpectedly null");
+        }
       }
     }
   }
