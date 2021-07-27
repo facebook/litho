@@ -1622,12 +1622,7 @@ public abstract class Component
       final Component parentComponent,
       final Component childComponent) {
     if (parentContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
-      final String globalKey = parentContext.getGlobalKey();
-
-      return parentComponent
-          .getScopedInfo(layoutStateContext, globalKey)
-          .getChildCountAndIncrement(childComponent);
+      return parentContext.getScopedComponentInfo().getChildCountAndIncrement(childComponent);
     } else {
       return parentComponent.getChildCountAndIncrement(childComponent);
     }
@@ -1654,12 +1649,7 @@ public abstract class Component
       final Component parentComponent,
       final String manualKey) {
     if (parentContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
-      final String globalKey = parentContext.getGlobalKey();
-
-      return parentComponent
-          .getScopedInfo(layoutStateContext, globalKey)
-          .getManualKeyUsagesCountAndIncrement(manualKey);
+      return parentContext.getScopedComponentInfo().getManualKeyUsagesCountAndIncrement(manualKey);
     } else {
       return parentComponent.getManualKeyUsagesCountAndIncrement(manualKey);
     }
@@ -1777,10 +1767,8 @@ public abstract class Component
       Component component,
       String globalKey) {
     if (scopedContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
-
-      component
-          .getScopedInfo(layoutStateContext, globalKey)
+      scopedContext
+          .getScopedComponentInfo()
           .registerWorkingRange(name, workingRange, component, globalKey);
     } else {
       registerWorkingRange(name, workingRange, component, globalKey);
@@ -1790,10 +1778,7 @@ public abstract class Component
   static void addWorkingRangeToNode(
       InternalNode node, ComponentContext scopedContext, Component component) {
     if (scopedContext.useStatelessComponent()) {
-      final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
-      final String globalKey = scopedContext.getGlobalKey();
-
-      component.getScopedInfo(layoutStateContext, globalKey).addWorkingRangeToNode(node);
+      scopedContext.getScopedComponentInfo().addWorkingRangeToNode(node);
     } else {
       if (component.mWorkingRangeRegistrations != null
           && !component.mWorkingRangeRegistrations.isEmpty()) {
