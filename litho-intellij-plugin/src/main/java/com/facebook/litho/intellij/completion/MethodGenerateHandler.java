@@ -136,6 +136,12 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
               } else if (psiElement.getParent() instanceof PsiMethod) {
                 // Method name
                 templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
+              } else if (elementText.equals("placeholder_annotation_class")) {
+                templateBuilder.replaceElement(psiElement, "ClickEvent");
+              } else if (elementText.equals("placeholder_from_event_parameter")) {
+                templateBuilder.replaceElement(psiElement, "@FromEvent");
+              } else if (elementText.equals("placeholder_from_trigger_parameter")) {
+                templateBuilder.replaceElement(psiElement, "@FromTrigger");
               }
             } else if (psiElement instanceof PsiTypeElement
                 && elementText.equals("placeholder_service_type")) {
