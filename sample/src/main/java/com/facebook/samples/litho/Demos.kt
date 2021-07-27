@@ -84,6 +84,7 @@ import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKCo
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
@@ -146,6 +147,7 @@ class Demos {
                             SingleDemo(
                                 name = "Sticky Header",
                                 component = StickyHeaderCollectionKComponent()),
+                            SingleDemo(name = "Span", component = SpanCollectionKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),

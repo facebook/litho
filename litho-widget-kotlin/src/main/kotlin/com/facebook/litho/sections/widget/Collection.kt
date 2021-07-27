@@ -179,7 +179,12 @@ class CollectionContainerScope(componentContext: ComponentContext) {
   val sectionContext: SectionContext = SectionContext(componentContext)
 
   /** Adds a Component as a child to the collection being initialized. */
-  fun item(component: Component, sticky: Boolean = false) {
+  fun item(
+      component: Component,
+      sticky: Boolean = false,
+      isFullSpan: Boolean = false,
+      spanSize: Int? = null,
+  ) {
     childrenBuilder.child(
         SingleComponentSection.create(sectionContext)
             .apply {
@@ -188,6 +193,8 @@ class CollectionContainerScope(componentContext: ComponentContext) {
               }
             }
             .sticky(sticky)
+            .isFullSpan(isFullSpan)
+            .apply { spanSize?.let { spanSize(spanSize) } }
             .component(component)
             .build())
   }
