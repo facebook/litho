@@ -83,19 +83,6 @@ public class InternalNodeTest {
     return new InputOnlyNestedTreeHolder(context, null);
   }
 
-  private static LithoLayoutResult acquireInternalNodeWithLogger(ComponentsLogger logger) {
-    final ComponentContext context = new ComponentContext(getApplicationContext(), "TEST", logger);
-    context.setLayoutStateContextForTesting();
-
-    return Layout.createAndMeasureComponent(
-            context.getLayoutStateContext(),
-            context,
-            Column.create(context).build(),
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED))
-        .mResult;
-  }
-
   private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
 
   @Before
