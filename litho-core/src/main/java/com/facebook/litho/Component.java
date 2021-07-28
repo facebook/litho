@@ -968,10 +968,9 @@ public abstract class Component
 
   public final void setScopedContext(ComponentContext scopedContext) {
     mScopedContext = scopedContext;
+    final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
     final InternalNode layoutCreatedInWillRender =
-        scopedContext.getLayoutStateContext() != null
-            ? getLayoutCreatedInWillRender(scopedContext)
-            : null;
+        layoutStateContext != null ? getLayoutCreatedInWillRender(layoutStateContext) : null;
     if (layoutCreatedInWillRender != null) {
       assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
     }
@@ -1181,13 +1180,13 @@ public abstract class Component
 
   @VisibleForTesting
   @Nullable
-  final InternalNode getLayoutCreatedInWillRender(final ComponentContext scopedContext) {
-    return scopedContext.getLayoutStateContext().getLayoutCreatedInWillRender(mId);
+  final InternalNode getLayoutCreatedInWillRender(final LayoutStateContext layoutStateContext) {
+    return layoutStateContext.getLayoutCreatedInWillRender(mId);
   }
 
   private void setLayoutCreatedInWillRender(
-      final ComponentContext scopedContext, final @Nullable InternalNode newValue) {
-    scopedContext.getLayoutStateContext().setLayoutCreatedInWillRender(mId, newValue);
+      final LayoutStateContext layoutStateContext, final @Nullable InternalNode newValue) {
+    layoutStateContext.setLayoutCreatedInWillRender(mId, newValue);
   }
 
   /**
@@ -1668,8 +1667,10 @@ public abstract class Component
       return false;
     }
 
+    final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
+
     final InternalNode componentLayoutCreatedInWillRender =
-        component.getLayoutCreatedInWillRender(c);
+        component.getLayoutCreatedInWillRender(layoutStateContext);
     if (componentLayoutCreatedInWillRender != null) {
       return willRender(c, component, componentLayoutCreatedInWillRender);
     }
@@ -1677,14 +1678,14 @@ public abstract class Component
     // Missing StateHandler is only expected in tests
     final ComponentContext contextForLayout =
         c.getStateHandler() == null
-            ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
+            ? new ComponentContext(c, new StateHandler(), null, layoutStateContext)
             : c;
 
     final InternalNode newLayoutCreatedInWillRender =
-        Layout.create(c.getLayoutStateContext(), contextForLayout, component);
+        Layout.create(layoutStateContext, contextForLayout, component);
     boolean willRender = willRender(c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
-      component.setLayoutCreatedInWillRender(c, newLayoutCreatedInWillRender);
+      component.setLayoutCreatedInWillRender(layoutStateContext, newLayoutCreatedInWillRender);
     }
     return willRender;
   }

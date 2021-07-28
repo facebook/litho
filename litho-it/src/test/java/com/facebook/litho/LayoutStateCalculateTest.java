@@ -2478,7 +2478,8 @@ public class LayoutStateCalculateTest {
     ComponentsConfiguration.useStatelessComponent = false;
 
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
+    c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     final Component componentSpy =
         spy(TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build());
@@ -2488,7 +2489,7 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, componentSpy);
 
-    final InternalNode cachedLayout = componentSpy.getLayoutCreatedInWillRender(c);
+    final InternalNode cachedLayout = componentSpy.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     c.setLayoutStateContext(null);
@@ -2496,7 +2497,7 @@ public class LayoutStateCalculateTest {
     calculateLayoutState(
         c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
-    assertThat(componentSpy.getLayoutCreatedInWillRender(c)).isNull();
+    assertThat(componentSpy.getLayoutCreatedInWillRender(c.getLayoutStateContext())).isNull();
 
     verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
 
@@ -2517,12 +2518,12 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     InternalNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(c)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
   }
 
   @Test
@@ -2539,12 +2540,12 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     InternalNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(c)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
   }
 
   @Test
@@ -2561,12 +2562,12 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     InternalNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
-    assertThat(component.getLayoutCreatedInWillRender(c)).isNull();
+    assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isNull();
   }
 
   @Test
@@ -2594,17 +2595,18 @@ public class LayoutStateCalculateTest {
   @Test
   public void testWillRenderTwiceDoesNotReCreateLayout() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
+    c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     final Component component = TestLayoutComponent.create(c, 0, 0, true, true, false).build();
 
     Component.willRender(c, component);
 
-    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(layoutStateContext);
     assertThat(cachedLayout).isNotNull();
 
     assertThat(Component.willRender(c, component)).isTrue();
-    assertThat(component.getLayoutCreatedInWillRender(c)).isEqualTo(cachedLayout);
+    assertThat(component.getLayoutCreatedInWillRender(layoutStateContext)).isEqualTo(cachedLayout);
   }
 
   @Test
