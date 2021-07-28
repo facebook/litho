@@ -352,12 +352,12 @@ public class DefaultInternalNode
 
   @Override
   public void freeze(final YogaNode node, final @Nullable YogaNode parent) {
-    freeze(mComponentContext.getLayoutStateContext(), node, false, parent, null);
+    freeze(null, node, false, parent, null);
   }
 
   @Override
   public void freeze(
-      final LayoutStateContext context,
+      final @Nullable LayoutStateContext context, /* Only null for DefaultInternalNode */
       final YogaNode node,
       final boolean isCloned,
       final @Nullable YogaNode parentYogaNode,
