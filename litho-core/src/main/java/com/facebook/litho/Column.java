@@ -139,7 +139,7 @@ public final class Column extends Component {
         if (c.wasLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
-          node.child(c, child);
+          node.child(layoutContext, c, child);
         }
       }
     }

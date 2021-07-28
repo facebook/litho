@@ -423,7 +423,7 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode child(ComponentContext c, Component child) {
+  public InternalNode child(LayoutStateContext layoutContext, ComponentContext c, Component child) {
     if (child != null) {
       return child(Layout.create(c.getLayoutStateContext(), c, child));
     }

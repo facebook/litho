@@ -573,7 +573,7 @@ class Layout {
       final ComponentContext context =
           root.getTailComponent().getScopedContext(c, root.getTailComponentKey());
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(context, unresolved.get(i));
+        root.child(c, context, unresolved.get(i));
       }
       root.getUnresolvedComponents().clear();
     }

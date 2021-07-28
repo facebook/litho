@@ -38,6 +38,7 @@ import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InternalNode;
 import com.facebook.litho.InvisibleEvent;
+import com.facebook.litho.LayoutStateContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.NodeConfig;
 import com.facebook.litho.TestComponent;
@@ -649,7 +650,8 @@ public final class ComponentTestHelper {
     }
 
     @Override
-    public InternalNode child(ComponentContext c, Component child) {
+    public InternalNode child(
+        LayoutStateContext layoutContext, ComponentContext c, Component child) {
       if (child != null) {
         return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
       }
@@ -665,7 +667,8 @@ public final class ComponentTestHelper {
     }
 
     @Override
-    public InternalNode child(ComponentContext c, Component child) {
+    public InternalNode child(
+        LayoutStateContext layoutContext, ComponentContext c, Component child) {
       if (child != null) {
         return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
       }

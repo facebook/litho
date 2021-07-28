@@ -86,7 +86,7 @@ public interface InternalNode extends Node<LithoRenderContext> {
   LithoLayoutResult calculateLayout(
       LayoutContext<LithoRenderContext> c, int widthSpec, int heightSpec);
 
-  InternalNode child(ComponentContext c, Component child);
+  InternalNode child(LayoutStateContext layoutContext, ComponentContext c, Component child);
 
   InternalNode child(InternalNode child);
 
