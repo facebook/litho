@@ -36,7 +36,8 @@ public class TestLayoutState {
   public static InternalNode createAndMeasureTreeForComponent(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
 
-    c = component.updateInternalChildState(c, null);
+    final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
+    c = component.updateInternalChildState(layoutStateContext, c, null);
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
@@ -46,7 +47,7 @@ public class TestLayoutState {
       return root;
     }
 
-    Layout.measure(c.getLayoutStateContext(), c, root, widthSpec, heightSpec, null, null, null);
+    Layout.measure(layoutStateContext, c, root, widthSpec, heightSpec, null, null, null);
 
     return root;
   }
@@ -61,7 +62,8 @@ public class TestLayoutState {
     }
 
     final InternalNode node = InternalNodeUtils.create(c);
-    final ComponentContext scopedContext = component.updateInternalChildState(c, null);
+    final ComponentContext scopedContext =
+        component.updateInternalChildState(layoutContext, c, null);
 
     node.appendComponent(new TestComponent(component), scopedContext.getGlobalKey());
 

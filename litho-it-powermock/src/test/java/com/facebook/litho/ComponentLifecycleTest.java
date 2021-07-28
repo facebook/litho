@@ -124,7 +124,12 @@ public class ComponentLifecycleTest {
         .thenCallRealMethod();
     when(Layout.create((LayoutStateContext) any(), (ComponentContext) any(), (Component) any()))
         .thenCallRealMethod();
-    when(Layout.update((ComponentContext) any(), (Component) any(), anyBoolean(), (String) any()))
+    when(Layout.update(
+            (LayoutStateContext) any(),
+            (ComponentContext) any(),
+            (Component) any(),
+            anyBoolean(),
+            (String) any()))
         .thenCallRealMethod();
 
     mDiffNode = mock(DiffNode.class);

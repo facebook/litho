@@ -968,12 +968,6 @@ public abstract class Component
 
   public final void setScopedContext(ComponentContext scopedContext) {
     mScopedContext = scopedContext;
-    final LayoutStateContext layoutStateContext = scopedContext.getLayoutStateContext();
-    final InternalNode layoutCreatedInWillRender =
-        layoutStateContext != null ? getLayoutCreatedInWillRender(layoutStateContext) : null;
-    if (layoutCreatedInWillRender != null) {
-      assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
-    }
   }
 
   public String getSimpleName() {
@@ -1348,7 +1342,7 @@ public abstract class Component
 
     // update the cloned component with the new context.
     final ComponentContext scopedContext =
-        clone.updateInternalChildState(parentContext, globalKeyToReuse);
+        clone.updateInternalChildState(layoutStateContext, parentContext, globalKeyToReuse);
 
     // create updated tree props for children.
     final TreeProps treeProps =
@@ -1501,7 +1495,9 @@ public abstract class Component
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected final ComponentContext updateInternalChildState(
-      ComponentContext parentContext, @Nullable String existingGlobalKey) {
+      final LayoutStateContext layoutStateContext,
+      ComponentContext parentContext,
+      @Nullable String existingGlobalKey) {
 
     String globalKey = existingGlobalKey;
 
@@ -1519,6 +1515,12 @@ public abstract class Component
 
     if (!parentContext.useStatelessComponent()) {
       setScopedContext(scopedContext);
+
+      final InternalNode layoutCreatedInWillRender =
+          layoutStateContext != null ? getLayoutCreatedInWillRender(layoutStateContext) : null;
+      if (layoutCreatedInWillRender != null) {
+        assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
+      }
     }
 
     applyStateUpdates(parentContext, scopedContext, globalKey);

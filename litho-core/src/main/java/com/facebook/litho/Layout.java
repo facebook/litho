@@ -97,7 +97,8 @@ class Layout {
       }
 
     } else {
-      final ComponentContext updatedScopedContext = update(c, component, true, globalKeyToReuse);
+      final ComponentContext updatedScopedContext =
+          update(layoutStateContext, c, component, true, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
 
       layout = current.getInternalNode().reconcile(c, updated, globalKeyToReuse);
@@ -181,7 +182,7 @@ class Layout {
 
       // 4. Update the component.
       // 5. Get the scoped context of the updated component.
-      c = update(parent, component, reuseGlobalKey, globalKeyToReuse);
+      c = update(layoutStateContext, parent, component, reuseGlobalKey, globalKeyToReuse);
       globalKey = c.getGlobalKey();
 
       component = c.getComponentScope();
@@ -453,6 +454,7 @@ class Layout {
    * TODO: (T81557408) Fix @Nullable issue
    */
   static ComponentContext update(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component original,
       final boolean reuseGlobalKey,
@@ -472,7 +474,8 @@ class Layout {
 
     // 1. Update the internal state of the component wrt the parent.
     // 2. Get the scoped context from the updated component.
-    final ComponentContext c = component.updateInternalChildState(parent, globalKeyToReuse);
+    final ComponentContext c =
+        component.updateInternalChildState(layoutStateContext, parent, globalKeyToReuse);
 
     // 3. Set the TreeProps which will be passed to the descendants of the component.
     final TreeProps descendants = component.getTreePropsForChildren(c, ancestor);
