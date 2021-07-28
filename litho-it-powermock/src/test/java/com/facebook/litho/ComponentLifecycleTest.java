@@ -389,7 +389,6 @@ public class ComponentLifecycleTest {
         InternalNode node,
         boolean isLayoutSpecWithSizeSpecCheck,
         boolean hasState) {
-      super("TestBaseComponent");
       mCanMeasure = canMeasure;
       mMountType = mountType;
       mNode = node;

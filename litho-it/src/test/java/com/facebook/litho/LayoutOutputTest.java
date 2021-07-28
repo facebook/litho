@@ -38,10 +38,6 @@ public class LayoutOutputTest {
 
   private static class TestComponent extends Component {
 
-    protected TestComponent() {
-      super("TestComponent");
-    }
-
     @Override
     public boolean isEquivalentTo(Component other) {
       return this == other;

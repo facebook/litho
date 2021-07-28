@@ -242,7 +242,7 @@ public class DynamicPropsTest {
 
           {
             component =
-                new Component("Test") {
+                new Component() {
                   @Override
                   public MountType getMountType() {
                     return MountType.VIEW;

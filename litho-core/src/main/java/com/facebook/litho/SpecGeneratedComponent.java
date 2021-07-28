@@ -17,12 +17,44 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.litho.annotations.LayoutSpec;
+import javax.annotation.Nullable;
 
 /** Base class for all component generated via the Spec API (@LayoutSpec and @MountSpec). */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class SpecGeneratedComponent extends Component {
 
+  private final String mSimpleName;
+
   protected SpecGeneratedComponent(String simpleName) {
-    super(simpleName);
+    mSimpleName = simpleName;
+  }
+
+  /** Should only be used by logging to provide more readable messages. */
+  @Override
+  public final String getSimpleName() {
+    final Component delegate = getSimpleNameDelegate();
+    if (delegate == null) {
+      return mSimpleName;
+    }
+
+    return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
+  }
+
+  /**
+   * @return the Component this Component should delegate its getSimpleName calls to. See {@link
+   *     LayoutSpec#simpleNameDelegate()}
+   */
+  protected @Nullable Component getSimpleNameDelegate() {
+    return null;
+  }
+
+  private static Component getFirstNonSimpleNameDelegate(Component component) {
+    Component current = component;
+    while (current instanceof SpecGeneratedComponent
+        && ((SpecGeneratedComponent) current).getSimpleNameDelegate() != null) {
+      current = ((SpecGeneratedComponent) current).getSimpleNameDelegate();
+    }
+    return current;
   }
 }

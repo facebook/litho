@@ -305,7 +305,7 @@ public class ComponentUtilsTest {
     Object treePropObject;
 
     protected ComponentTest() {
-      super("test");
+      super();
     }
   }
 

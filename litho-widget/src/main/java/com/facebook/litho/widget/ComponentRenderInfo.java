@@ -130,10 +130,6 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
   private static class EmptyComponent extends Component {
 
-    protected EmptyComponent() {
-      super("EmptyComponent");
-    }
-
     @Override
     protected Component onCreateLayout(ComponentContext c) {
       return Column.create(c).build();
@@ -143,6 +139,11 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     public boolean isEquivalentTo(Component other) {
       return EmptyComponent.this == other
           || (other != null && EmptyComponent.this.getClass() == other.getClass());
+    }
+
+    @Override
+    public String getSimpleName() {
+      return "EmptyComponent";
     }
   }
 }

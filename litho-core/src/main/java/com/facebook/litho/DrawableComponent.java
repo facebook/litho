@@ -24,14 +24,11 @@ import com.facebook.litho.drawable.DrawableUtils;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class DrawableComponent<T extends Drawable> extends Component {
 
-  private static final String SIMPLE_NAME = "DrawableComponent";
-
   Drawable mDrawable;
   int mDrawableWidth;
   int mDrawableHeight;
 
   private DrawableComponent(Drawable drawable) {
-    super(SIMPLE_NAME);
     mDrawable = drawable;
   }
 
@@ -97,6 +94,11 @@ class DrawableComponent<T extends Drawable> extends Component {
     DrawableComponent drawableComponent = (DrawableComponent) o;
 
     return DrawableUtils.isEquivalentTo(mDrawable, drawableComponent.mDrawable);
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "DrawableComponent";
   }
 
   private void setDrawableWidth(int drawableWidth) {

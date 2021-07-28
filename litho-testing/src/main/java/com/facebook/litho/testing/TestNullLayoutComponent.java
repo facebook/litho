@@ -26,10 +26,6 @@ import com.facebook.litho.ComponentContext;
 @Deprecated
 public class TestNullLayoutComponent extends Component {
 
-  public TestNullLayoutComponent() {
-    super("TestNullLayoutComponent");
-  }
-
   @Override
   public boolean isEquivalentTo(Component other) {
     return this == other;

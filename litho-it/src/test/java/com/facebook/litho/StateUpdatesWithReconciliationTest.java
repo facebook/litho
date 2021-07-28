@@ -549,7 +549,6 @@ public class StateUpdatesWithReconciliationTest {
   static class DummyComponent extends Component {
 
     public DummyComponent() {
-      super("TestComponent");
       setStateContainer(new DummyStateContainer());
     }
 

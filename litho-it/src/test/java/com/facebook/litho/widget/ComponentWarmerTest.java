@@ -540,10 +540,11 @@ public class ComponentWarmerTest {
 
   final class TestComponent extends Component {
 
+    private final String mSimpleName;
     AtomicBoolean ranLayout = new AtomicBoolean(false);
 
     protected TestComponent(String simpleName) {
-      super(simpleName);
+      mSimpleName = simpleName;
     }
 
     @Override
@@ -558,6 +559,11 @@ public class ComponentWarmerTest {
       copy.ranLayout = ranLayout;
 
       return copy;
+    }
+
+    @Override
+    public String getSimpleName() {
+      return mSimpleName;
     }
   }
 }

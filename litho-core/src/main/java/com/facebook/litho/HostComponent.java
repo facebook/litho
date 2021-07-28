@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class HostComponent extends Component {
 
-  private static final String SIMPLE_NAME = "HostComponent";
-
   /**
    * We duplicate mComponentDynamicProps here, in order to provide {@link
    * #setCommonDynamicProps(SparseArray)} to HostComponent only, which is used in LayoutState to
@@ -37,9 +35,7 @@ class HostComponent extends Component {
 
   private boolean mImplementsVirtualViews = false;
 
-  protected HostComponent() {
-    super(SIMPLE_NAME);
-  }
+  protected HostComponent() {}
 
   @Override
   protected MountContentPool onCreateMountContentPool() {
@@ -126,6 +122,11 @@ class HostComponent extends Component {
   @Override
   boolean hasCommonDynamicProps() {
     return mCommonDynamicProps != null && mCommonDynamicProps.size() > 0;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "HostComponent";
   }
 
   /**

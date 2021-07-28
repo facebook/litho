@@ -32,8 +32,6 @@ public class TestComponent extends Component {
   private final Component mWrappedComponent;
 
   TestComponent(Component component) {
-    super(component.getSimpleName());
-
     mWrappedComponent = component;
   }
 
@@ -44,5 +42,10 @@ public class TestComponent extends Component {
   @Override
   public boolean isEquivalentTo(Component other) {
     return this == other;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "TestComponent(" + mWrappedComponent.getSimpleName() + ")";
   }
 }

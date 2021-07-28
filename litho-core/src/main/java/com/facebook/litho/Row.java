@@ -51,8 +51,10 @@ public final class Row extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  Row(String simpleName) {
-    super(simpleName);
+  private final @Nullable String mCustomSimpleName;
+
+  Row(String customSimpleName) {
+    mCustomSimpleName = customSimpleName;
   }
 
   Row(
@@ -71,6 +73,7 @@ public final class Row extends Component {
       @Nullable YogaWrap wrap,
       boolean reverse,
       @Nullable List<Component> children) {
+    mCustomSimpleName = null;
     this.alignContent = alignContent;
     this.alignItems = alignItems;
     this.justifyContent = justifyContent;
@@ -186,6 +189,11 @@ public final class Row extends Component {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return mCustomSimpleName != null ? mCustomSimpleName : "Row";
   }
 
   public static class Builder extends Component.ContainerBuilder<Builder> {

@@ -133,9 +133,6 @@ public abstract class Component
 
   private final int mTypeId;
 
-  /** Holds an identifying name of the component, set at construction time. */
-  private final String mSimpleName;
-
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -184,24 +181,15 @@ public abstract class Component
 
   protected Component() {
     mTypeId = getOrCreateId(getClass());
-    mSimpleName = getClass().getSimpleName();
-    init();
-  }
-
-  protected Component(String simpleName) {
-    mTypeId = getOrCreateId(getClass());
-    mSimpleName = simpleName;
     init();
   }
 
   /**
    * This constructor should be called only if working with a manually crafted "special" Component.
-   * This should NOT be used in general use cases. Use the standard {@link #Component(String)}
-   * instead.
+   * This should NOT be used in general use cases. Use the standard {@link #Component()} instead.
    */
-  protected Component(String simpleName, int identityHashCode) {
+  protected Component(int identityHashCode) {
     mTypeId = getOrCreateId(identityHashCode);
-    mSimpleName = simpleName;
     init();
   }
 
@@ -989,14 +977,8 @@ public abstract class Component
     }
   }
 
-  /** Should only be used by logging to provide more readable messages. */
-  public final String getSimpleName() {
-    final Component delegate = getSimpleNameDelegate();
-    if (delegate == null) {
-      return mSimpleName;
-    }
-
-    return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
+  public String getSimpleName() {
+    return getClass().getSimpleName();
   }
 
   public final boolean hasClickHandlerSet() {
@@ -1421,14 +1403,6 @@ public abstract class Component
     return mId;
   }
 
-  /**
-   * @return the Component this Component should delegate its getSimpleName calls to. See {@link
-   *     LayoutSpec#simpleNameDelegate()}
-   */
-  protected @Nullable Component getSimpleNameDelegate() {
-    return null;
-  }
-
   protected static @Nullable StateContainer getStateContainer(
       final @Nullable ComponentContext scopedContext, Component component) {
     if (scopedContext != null && scopedContext.useStatelessComponent()) {
@@ -1808,14 +1782,6 @@ public abstract class Component
               + willRenderContext
               + ")!");
     }
-  }
-
-  private static Component getFirstNonSimpleNameDelegate(Component component) {
-    Component current = component;
-    while (current.getSimpleNameDelegate() != null) {
-      current = current.getSimpleNameDelegate();
-    }
-    return current;
   }
 
   private static boolean willRender(

@@ -33,6 +33,7 @@ import java.util.Set;
 public abstract class TestComponent extends Component {
 
   private final Map<EventHandler<?>, Object> mDispatchedEventHandlers = new HashMap<>();
+  private final String mSimpleName;
   private boolean mOnMountCalled;
   private boolean mMounted;
   private boolean mOnUnmountCalled;
@@ -46,11 +47,11 @@ public abstract class TestComponent extends Component {
   private boolean mIsEquivalentToCalled;
 
   protected TestComponent(String simpleName) {
-    super(simpleName);
+    mSimpleName = simpleName;
   }
 
   protected TestComponent() {
-    super("TestComponent");
+    mSimpleName = "TestComponent";
   }
 
   void onMountCalled() {
@@ -142,6 +143,11 @@ public abstract class TestComponent extends Component {
   public boolean isEquivalentTo(Component other) {
     mIsEquivalentToCalled = true;
     return super.isEquivalentTo(other);
+  }
+
+  @Override
+  public String getSimpleName() {
+    return mSimpleName;
   }
 
   /** Reset the tracking of which methods have been called on this component. */

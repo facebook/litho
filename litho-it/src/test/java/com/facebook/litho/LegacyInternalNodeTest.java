@@ -58,18 +58,6 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class LegacyInternalNodeTest {
 
-  private static class TestComponent extends Component {
-
-    protected TestComponent() {
-      super("TestComponent");
-    }
-
-    @Override
-    public boolean isEquivalentTo(Component other) {
-      return this == other;
-    }
-  }
-
   private static InternalNode acquireInternalNode() {
     final ComponentContext context = new ComponentContext(getApplicationContext());
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);

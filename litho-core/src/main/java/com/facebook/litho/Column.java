@@ -51,8 +51,10 @@ public final class Column extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  Column(String simpleName) {
-    super(simpleName);
+  private final @Nullable String mCustomSimpleName;
+
+  Column(String customSimpleName) {
+    mCustomSimpleName = customSimpleName;
   }
 
   Column(
@@ -71,6 +73,7 @@ public final class Column extends Component {
       @Nullable YogaWrap wrap,
       boolean reverse,
       @Nullable List<Component> children) {
+    mCustomSimpleName = null;
     this.alignContent = alignContent;
     this.alignItems = alignItems;
     this.justifyContent = justifyContent;
@@ -188,6 +191,11 @@ public final class Column extends Component {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return mCustomSimpleName != null ? mCustomSimpleName : "Column";
   }
 
   public static class Builder extends Component.ContainerBuilder<Builder> {

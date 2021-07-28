@@ -38,6 +38,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   private static final int UNSPECIFIED_POOL_SIZE = -1;
 
   private final ViewCreator mViewCreator;
+  private final String mComponentName;
   private ViewBinder<V> mViewBinder;
 
   private int mPoolSize = UNSPECIFIED_POOL_SIZE;
@@ -54,8 +55,9 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super("ViewCompatComponent_" + componentName, System.identityHashCode(viewCreator));
+    super(System.identityHashCode(viewCreator));
     mViewCreator = viewCreator;
+    mComponentName = componentName;
   }
 
   @Override
@@ -160,5 +162,10 @@ public class ViewCompatComponent<V extends View> extends Component {
   @Override
   protected int poolSize() {
     return mPoolSize == UNSPECIFIED_POOL_SIZE ? super.poolSize() : mPoolSize;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "ViewCompatComponent_" + mComponentName;
   }
 }

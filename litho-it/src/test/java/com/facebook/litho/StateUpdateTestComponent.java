@@ -44,7 +44,6 @@ class StateUpdateTestComponent extends Component {
   private static final AtomicInteger finalCounterValue = new AtomicInteger(0);
 
   StateUpdateTestComponent() {
-    super("StateUpdateTestComponent");
     setStateContainer(new TestStateContainer());
   }
 

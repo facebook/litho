@@ -538,7 +538,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   static class DummyComponent extends Component {
 
     public DummyComponent() {
-      super("TestComponent");
       setStateContainer(new DummyStateContainer());
     }
 

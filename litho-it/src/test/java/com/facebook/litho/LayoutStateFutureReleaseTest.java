@@ -236,7 +236,6 @@ public class LayoutStateFutureReleaseTest {
 
     protected TestChildComponent(
         CountDownLatch wait, CountDownLatch unlockFinishedLayout, WaitActions waitActions) {
-      super("TestChildComponent");
       this.wait = wait;
       this.unlockFinishedLayout = unlockFinishedLayout;
       this.waitActions = waitActions;

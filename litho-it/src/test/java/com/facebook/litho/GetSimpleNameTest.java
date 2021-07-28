@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class GetSimpleNameTest {
 
-  private static class TestWrapperComponent extends Component {
+  private static class TestWrapperComponent extends SpecGeneratedComponent {
 
     private final Component mDelegate;
 

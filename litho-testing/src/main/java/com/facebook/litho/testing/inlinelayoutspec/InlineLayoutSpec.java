@@ -28,12 +28,9 @@ import com.facebook.litho.Transition;
 @Deprecated
 public abstract class InlineLayoutSpec extends Component {
 
-  protected InlineLayoutSpec() {
-    super("InlineLayout");
-  }
+  protected InlineLayoutSpec() {}
 
   protected InlineLayoutSpec(ComponentContext c) {
-    super("InlineLayout");
     setScopedContext(c);
   }
 
@@ -51,5 +48,10 @@ public abstract class InlineLayoutSpec extends Component {
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
     return null;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "InlineLayout";
   }
 }

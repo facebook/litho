@@ -144,7 +144,7 @@ abstract class KComponent : Component() {
       globalKey: String?
   ): ComponentContext? = super.getScopedContext(layoutStateContext, globalKey)
 
-  final override fun getSimpleNameDelegate() = super.getSimpleNameDelegate()
+  final override fun getSimpleName(): String = super.getSimpleName()
 
   final override fun getTreePropsForChildren(c: ComponentContext?, treeProps: TreeProps?) =
       super.getTreePropsForChildren(c, treeProps)

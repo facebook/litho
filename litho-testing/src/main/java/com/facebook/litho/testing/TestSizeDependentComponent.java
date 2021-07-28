@@ -28,9 +28,7 @@ import com.facebook.yoga.YogaEdge;
 @Deprecated
 public class TestSizeDependentComponent extends Component {
 
-  private TestSizeDependentComponent() {
-    super("TestSizeDependentComponent");
-  }
+  private TestSizeDependentComponent() {}
 
   @Override
   protected Component onCreateLayoutWithSizeSpec(

@@ -31,20 +31,30 @@ import org.junit.runner.RunWith;
 public class PoolBisectUtilTest {
 
   private final Component mBarComponent =
-      new Component("BarComponent") {
+      new Component() {
 
         @Override
         protected Object onCreateMountContent(Context context) {
           return new View(context);
         }
+
+        @Override
+        public String getSimpleName() {
+          return "BarComponent";
+        }
       };
 
   private final Component mFooComponent =
-      new Component("FooComponent") {
+      new Component() {
 
         @Override
         protected Object onCreateMountContent(Context context) {
           return new View(context);
+        }
+
+        @Override
+        public String getSimpleName() {
+          return "FooComponent";
         }
       };
 

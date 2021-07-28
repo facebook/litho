@@ -41,7 +41,7 @@ public class ComponentsPoolsTest {
 
   private static final int POOL_SIZE = 2;
   private final Component mLifecycle =
-      new Component("Lifecycle") {
+      new Component() {
 
         @Override
         protected int poolSize() {
@@ -52,10 +52,15 @@ public class ComponentsPoolsTest {
         public View onCreateMountContent(Context context) {
           return mNewMountContent;
         }
+
+        @Override
+        public String getSimpleName() {
+          return "Lifecycle";
+        }
       };
 
   private final Component mLifecycleWithEmptyPoolSize =
-      new Component("LifecycleWithEmptyPoolSize") {
+      new Component() {
 
         @Override
         protected int poolSize() {
@@ -65,6 +70,11 @@ public class ComponentsPoolsTest {
         @Override
         public View onCreateMountContent(Context context) {
           return mNewMountContent;
+        }
+
+        @Override
+        public String getSimpleName() {
+          return "LifecycleWithEmptyPoolSize";
         }
       };
 
