@@ -40,13 +40,14 @@ public class InternalNodeTouchExpansionTest {
 
   private InternalNode mInternalNode;
   ComponentContext mContext;
+  private LayoutStateContext mLayoutStateContext;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
-    LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(mContext);
-    mContext.setLayoutStateContext(layoutStateContext);
-    mInternalNode = Layout.create(layoutStateContext, mContext, Column.create(mContext).build());
+    mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
+    mContext.setLayoutStateContext(mLayoutStateContext);
+    mInternalNode = Layout.create(mLayoutStateContext, mContext, Column.create(mContext).build());
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
@@ -64,7 +65,7 @@ public class InternalNodeTouchExpansionTest {
     final RenderState.LayoutContext<LithoRenderContext> context =
         new RenderState.LayoutContext<>(
             mContext.getAndroidContext(),
-            new LithoRenderContext(mContext.getLayoutStateContext(), null, null),
+            new LithoRenderContext(mLayoutStateContext, null, null),
             0,
             null,
             null);

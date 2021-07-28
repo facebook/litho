@@ -255,11 +255,7 @@ public class TreeDiffingTest {
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(
-        mContext.getLayoutStateContext(),
-        layoutTreeRoot,
-        true,
-        prevLayoutState.getLayoutStateContext(),
-        node);
+        mLayoutStateContext, layoutTreeRoot, true, prevLayoutState.getLayoutStateContext(), node);
     checkAllComponentsHaveMeasureCache(layoutTreeRoot);
   }
 
@@ -291,11 +287,7 @@ public class TreeDiffingTest {
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(
-        mContext.getLayoutStateContext(),
-        layoutTreeRoot,
-        true,
-        prevLayoutState.getLayoutStateContext(),
-        node);
+        mLayoutStateContext, layoutTreeRoot, true, prevLayoutState.getLayoutStateContext(), node);
     LithoLayoutResult child_1 = layoutTreeRoot.getChildAt(0);
     assertCachedMeasurementsDefined(child_1);
 
