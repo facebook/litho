@@ -1225,6 +1225,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   void updateWith(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final List<Component> components,
       final List<String> componentKeys,
@@ -1250,7 +1251,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
       for (WorkingRangeContainer.Registration old : ranges) {
         final String key = old.mKey;
-        final Component component = old.mComponent.makeUpdatedShallowCopy(c, key);
+        final Component component =
+            old.mComponent.makeUpdatedShallowCopy(layoutStateContext, c, key);
         mWorkingRangeRegistrations.add(
             new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
       }
@@ -1283,7 +1285,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
       final String key = mComponentGlobalKeys.get(i);
-      final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
+      final Component component =
+          mComponents.get(i).makeUpdatedShallowCopy(layoutStateContext, parentContext, key);
       updated.add(component);
       updatedKeys.add(key);
 
@@ -1583,7 +1586,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       if (layoutStateContext.isInternalNodeReuseEnabled()) {
         updated = component;
       } else {
-        updated = component.makeUpdatedShallowCopy(parentContext, key);
+        updated = component.makeUpdatedShallowCopy(layoutStateContext, parentContext, key);
       }
 
       // 3.3 Reconcile child layout.
@@ -1660,7 +1663,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     // 4. Update the layout with the updated context, components, and YogaNode.
     layout.updateWith(
-        head.getScopedContext(layoutStateContext, headKey), updated.first, updated.second, null);
+        layoutStateContext,
+        head.getScopedContext(layoutStateContext, headKey),
+        updated.first,
+        updated.second,
+        null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();

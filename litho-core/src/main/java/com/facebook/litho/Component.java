@@ -1327,13 +1327,14 @@ public abstract class Component
 
   /** Returns an updated shallow copy of this component with the same global key. */
   final Component makeUpdatedShallowCopy(
-      final ComponentContext parentContext, final String globalKeyToReuse) {
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext parentContext,
+      final String globalKeyToReuse) {
     if (parentContext.shouldSkipShallowCopy()) {
       return this;
     }
 
     final Component clone = makeShallowCopy();
-    final LayoutStateContext layoutStateContext = parentContext.getLayoutStateContext();
 
     // set the global key so that it is not generated again and overridden.
     clone.setGlobalKey(globalKeyToReuse);

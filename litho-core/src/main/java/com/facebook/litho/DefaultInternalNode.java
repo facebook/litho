@@ -1664,6 +1664,7 @@ public class DefaultInternalNode
   }
 
   void updateWith(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final YogaNode node,
       final List<Component> components,
@@ -1695,7 +1696,8 @@ public class DefaultInternalNode
       mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
       for (WorkingRangeContainer.Registration old : ranges) {
         final String key = old.mKey;
-        final Component component = old.mComponent.makeUpdatedShallowCopy(c, key);
+        final Component component =
+            old.mComponent.makeUpdatedShallowCopy(layoutStateContext, c, key);
         mWorkingRangeRegistrations.add(
             new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
       }
@@ -1726,7 +1728,8 @@ public class DefaultInternalNode
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
       final String key = mComponentGlobalKeys.get(i);
-      final Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext, key);
+      final Component component =
+          mComponents.get(i).makeUpdatedShallowCopy(layoutStateContext, parentContext, key);
       updated.add(component);
       updatedKeys.add(key);
 
@@ -1858,7 +1861,8 @@ public class DefaultInternalNode
       final String key = componentKeys == null ? null : componentKeys.get(index);
 
       // 3.2 Update the head component of the child layout.
-      final Component updated = component.makeUpdatedShallowCopy(parentContext, key);
+      final Component updated =
+          component.makeUpdatedShallowCopy(layoutStateContext, parentContext, key);
 
       // 3.3 Reconcile child layout.
       final InternalNode copy;
@@ -1919,6 +1923,7 @@ public class DefaultInternalNode
 
     // 4. Update the layout with the updated context, components, and YogaNode.
     layout.updateWith(
+        layoutStateContext,
         head.getScopedContext(layoutStateContext, headKey),
         node,
         updated.first,
