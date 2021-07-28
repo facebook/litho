@@ -23,6 +23,7 @@ import static com.facebook.litho.it.R.attr.testAttrLargeText;
 import static com.facebook.litho.it.R.style.PaddingStyle;
 import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.litho.it.R.style.TextSizeStyle;
+import static com.facebook.litho.testing.LithoViewRule.getRootLayout;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -31,9 +32,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
-import com.facebook.rendercore.RenderState;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,10 +48,12 @@ public class ComponentStyleTest {
   private ComponentContext mContext;
 
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
     mContext = new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme));
+    mLithoViewRule.useContext(mContext);
     mDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     mLargeDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_large_dimen);
   }
@@ -71,8 +74,7 @@ public class ComponentStyleTest {
   @Test
   public void testStyleLayout() {
     Component component = Text.create(mContext, 0, PaddingStyle).text("text").build();
-    InternalNode node = (InternalNode) component.resolve(mContext);
-    LithoLayoutResult result = node.calculateLayout(getLayoutContext(), UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mDimen);
   }
 
@@ -80,8 +82,7 @@ public class ComponentStyleTest {
   public void testOverrideStyleLayout() {
     Component component =
         Text.create(mContext, 0, PaddingStyle).text("text").paddingPx(ALL, mDimen * 2).build();
-    InternalNode node = (InternalNode) component.resolve(mContext);
-    LithoLayoutResult result = node.calculateLayout(getLayoutContext(), UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
@@ -101,8 +102,7 @@ public class ComponentStyleTest {
   @Test
   public void testAttributeStyleLayout() {
     Component component = Text.create(mContext, testAttrLargePadding, 0).text("text").build();
-    InternalNode node = (InternalNode) component.resolve(mContext);
-    LithoLayoutResult result = node.calculateLayout(getLayoutContext(), UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
   }
 
@@ -113,8 +113,7 @@ public class ComponentStyleTest {
             .text("text")
             .paddingPx(ALL, mDimen * 2)
             .build();
-    InternalNode node = (InternalNode) component.resolve(mContext);
-    LithoLayoutResult result = node.calculateLayout(getLayoutContext(), UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(2 * mDimen);
   }
 
@@ -129,17 +128,7 @@ public class ComponentStyleTest {
   public void testStyleResOverridenByAttrResForLayout() {
     Component component =
         Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").build();
-    InternalNode node = (InternalNode) component.resolve(mContext);
-    LithoLayoutResult result = node.calculateLayout(getLayoutContext(), UNSPECIFIED, UNSPECIFIED);
+    LithoLayoutResult result = getRootLayout(mLithoViewRule, component, UNSPECIFIED, UNSPECIFIED);
     assertThat(result.getYogaNode().getPadding(LEFT)).isEqualTo(mLargeDimen);
-  }
-
-  private RenderState.LayoutContext<LithoRenderContext> getLayoutContext() {
-    return new RenderState.LayoutContext<>(
-        mContext.getAndroidContext(),
-        new LithoRenderContext(mContext.getLayoutStateContext(), null, null),
-        0,
-        null,
-        null);
   }
 }

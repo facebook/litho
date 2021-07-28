@@ -546,8 +546,8 @@ public abstract class Component
   /**
    * Invokes the Component-specific render implementation, returning a RenderResult. The
    * RenderResult will have the Component this Component rendered to (which will then need to be
-   * render()'ed or {@link #resolve(ComponentContext)}'ed), as well as other metadata from that
-   * render call such as transitions that should be applied.
+   * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
+   * metadata from that render call such as transitions that should be applied.
    */
   @ThreadSafe(enableChecks = false)
   RenderResult render(ComponentContext c) {
@@ -710,8 +710,8 @@ public abstract class Component
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected InternalNode resolve(ComponentContext c) {
-    return Layout.create(c.getLayoutStateContext(), c, (Component) this, false);
+  protected InternalNode resolve(final LayoutStateContext layoutContext, final ComponentContext c) {
+    return Layout.create(layoutContext, c, (Component) this, false);
   }
 
   protected final boolean useTreePropsFromContext() {
@@ -1400,8 +1400,8 @@ public abstract class Component
   }
 
   /**
-   * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
-   * instead of going through {@link #render(ComponentContext)}.
+   * Indicate that this component implements its own {@link #resolve(LayoutStateContext,
+   * ComponentContext)} logic instead of going through {@link #render(ComponentContext)}.
    */
   boolean canResolve() {
     return false;

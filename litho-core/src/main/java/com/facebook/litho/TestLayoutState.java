@@ -90,7 +90,7 @@ public class TestLayoutState {
       }
     } else if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
-      node = (InternalNode) component.resolve(c);
+      node = (InternalNode) component.resolve(c.getLayoutStateContext(), c);
     } else if (isMountSpec(component)) {
       node = InternalNodeUtils.create(c);
     } else {

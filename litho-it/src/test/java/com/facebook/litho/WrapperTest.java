@@ -16,21 +16,24 @@
 
 package com.facebook.litho;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class WrapperTest {
 
+  @Rule public LithoViewRule mLithoViewRule = new LithoViewRule();
+
   @Test
   public void testWrapperWithNullComponentReturnsNullLayout() {
-    ComponentContext c = new ComponentContext(getApplicationContext());
+    ComponentContext c = mLithoViewRule.getContext();
     Wrapper wrapper = Wrapper.create(c).delegate(null).build();
-    assertThat(NULL_LAYOUT).isEqualTo(wrapper.resolve(c));
+    assertThat(NullLayoutResult.INSTANCE)
+        .isEqualTo(LithoViewRule.getRootLayout(mLithoViewRule, wrapper));
   }
 }

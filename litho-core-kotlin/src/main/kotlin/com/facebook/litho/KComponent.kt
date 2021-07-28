@@ -19,7 +19,6 @@ package com.facebook.litho
 import android.content.Context
 import android.view.View
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import java.lang.Exception
 
 /** Base class for Kotlin Components. */
 abstract class KComponent : Component() {
@@ -255,7 +254,10 @@ abstract class KComponent : Component() {
   final override fun recordRenderData(c: ComponentContext?, toRecycle: RenderData?) =
       super.recordRenderData(c, toRecycle)
 
-  final override fun resolve(c: ComponentContext?) = super.resolve(c)
+  final override fun resolve(
+      layoutContext: LayoutStateContext,
+      c: ComponentContext
+  ): InternalNode? = super.resolve(layoutContext, c)
 
   final override fun shouldAlwaysRemeasure() = false
 
