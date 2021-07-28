@@ -514,7 +514,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public InternalNode child(LayoutStateContext layoutContext, ComponentContext c, Component child) {
     if (child != null) {
-      return child(Layout.create(c.getLayoutStateContext(), c, child));
+      return child(Layout.create(layoutContext, c, child));
     }
 
     return this;

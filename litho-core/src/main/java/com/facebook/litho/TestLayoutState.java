@@ -52,12 +52,12 @@ public class TestLayoutState {
   }
 
   public static InternalNode newImmediateLayoutBuilder(
-      final ComponentContext c, Component component) {
+      LayoutStateContext layoutContext, final ComponentContext c, Component component) {
     if (component.canResolve()) {
       if (component instanceof Wrapper) {
         return createImmediateLayout(c, component);
       }
-      return Layout.create(c.getLayoutStateContext(), c, component);
+      return Layout.create(layoutContext, c, component);
     }
 
     final InternalNode node = InternalNodeUtils.create(c);
@@ -73,6 +73,7 @@ public class TestLayoutState {
 
     final InternalNode node;
     final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
+    final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
 
     if (layoutCreatedInWillRender != null) {
       return layoutCreatedInWillRender;
@@ -86,11 +87,11 @@ public class TestLayoutState {
       if (delegate == null) {
         return NULL_LAYOUT;
       } else {
-        return newImmediateLayoutBuilder(c, delegate);
+        return newImmediateLayoutBuilder(layoutStateContext, c, delegate);
       }
     } else if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
-      node = (InternalNode) component.resolve(c.getLayoutStateContext(), c);
+      node = (InternalNode) component.resolve(layoutStateContext, c);
     } else if (isMountSpec(component)) {
       node = InternalNodeUtils.create(c);
     } else {
@@ -99,7 +100,7 @@ public class TestLayoutState {
       if (root == null || root.getId() <= 0) {
         node = null;
       } else {
-        node = resolveImmediateSubTree(c, root);
+        node = resolveImmediateSubTree(layoutStateContext, c, root);
         if (Component.isLayoutSpec(root) && root.canResolve()) {
           node.appendComponent(root, root.getKey());
         }
@@ -128,16 +129,17 @@ public class TestLayoutState {
     return node;
   }
 
-  static InternalNode resolveImmediateSubTree(final ComponentContext c, Component component) {
+  static InternalNode resolveImmediateSubTree(
+      LayoutStateContext layoutStateContext, final ComponentContext c, Component component) {
     if (component instanceof Wrapper) {
       Component delegate = ((Wrapper) component).delegate;
       if (delegate == null) {
         return NULL_LAYOUT;
       } else {
-        return newImmediateLayoutBuilder(c, delegate);
+        return newImmediateLayoutBuilder(layoutStateContext, c, delegate);
       }
     } else if (component.canResolve()) {
-      return Layout.create(c.getLayoutStateContext(), c, component);
+      return Layout.create(layoutStateContext, c, component);
     }
 
     InternalNode node = InternalNodeUtils.create(c);

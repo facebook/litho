@@ -425,7 +425,7 @@ public class DefaultInternalNode
   @Override
   public InternalNode child(LayoutStateContext layoutContext, ComponentContext c, Component child) {
     if (child != null) {
-      return child(Layout.create(c.getLayoutStateContext(), c, child));
+      return child(Layout.create(layoutContext, c, child));
     }
 
     return this;

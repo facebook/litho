@@ -653,7 +653,7 @@ public final class ComponentTestHelper {
     public InternalNode child(
         LayoutStateContext layoutContext, ComponentContext c, Component child) {
       if (child != null) {
-        return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
+        return child(TestLayoutState.newImmediateLayoutBuilder(layoutContext, getContext(), child));
       }
       return this;
     }
@@ -670,7 +670,7 @@ public final class ComponentTestHelper {
     public InternalNode child(
         LayoutStateContext layoutContext, ComponentContext c, Component child) {
       if (child != null) {
-        return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
+        return child(TestLayoutState.newImmediateLayoutBuilder(layoutContext, getContext(), child));
       }
       return this;
     }
