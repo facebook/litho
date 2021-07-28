@@ -101,7 +101,8 @@ class Layout {
           update(layoutStateContext, c, component, true, globalKeyToReuse);
       final Component updated = updatedScopedContext.getComponentScope();
 
-      layout = current.getInternalNode().reconcile(c, updated, globalKeyToReuse);
+      layout =
+          current.getInternalNode().reconcile(layoutStateContext, c, updated, globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {

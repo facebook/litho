@@ -1560,7 +1560,11 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode reconcile(ComponentContext c, Component next, @Nullable String nextKey) {
+  public InternalNode reconcile(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component next,
+      final @Nullable String nextKey) {
     final StateHandler stateHandler = c.getStateHandler();
     final Set<String> keys;
     if (stateHandler == null) {
@@ -1569,7 +1573,7 @@ public class DefaultInternalNode
       keys = stateHandler.getKeysForPendingUpdates();
     }
 
-    return reconcile(c, this, next, nextKey, keys);
+    return reconcile(layoutStateContext, c, this, next, nextKey, keys);
   }
 
   void setComponentContext(ComponentContext c) {
@@ -1770,6 +1774,7 @@ public class DefaultInternalNode
    * Internal method to <b>try</b> and reconcile the {@param current} InternalNode with a new {@link
    * ComponentContext} and an updated head {@link Component}.
    *
+   * @param context The current LayoutStateContext.
    * @param parentContext The ComponentContext.
    * @param current The current InternalNode which should be updated.
    * @param next The updated component to be used to reconcile this InternalNode.
@@ -1777,12 +1782,12 @@ public class DefaultInternalNode
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
+      final LayoutStateContext context,
       final ComponentContext parentContext,
       final DefaultInternalNode current,
       final Component next,
       @Nullable final String nextKey,
       final Set<String> keys) {
-    final LayoutStateContext context = parentContext.getLayoutStateContext();
     int mode = getReconciliationMode(next.getScopedContext(context, nextKey), current, keys);
     final InternalNode layout;
 
@@ -1869,7 +1874,7 @@ public class DefaultInternalNode
       if (mode == ReconciliationMode.COPY) {
         copy = reconcile(layoutStateContext, child, updated, key, keys, ReconciliationMode.COPY);
       } else {
-        copy = reconcile(parentContext, child, updated, key, keys);
+        copy = reconcile(layoutStateContext, parentContext, child, updated, key, keys);
       }
 
       // 3.3 Add the child to the cloned yoga node
