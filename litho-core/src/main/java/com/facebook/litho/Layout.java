@@ -165,7 +165,8 @@ class Layout {
     try {
 
       // 1. Consume the layout created in `willrender`.
-      final InternalNode cached = component.consumeLayoutCreatedInWillRender(parent);
+      final InternalNode cached =
+          component.consumeLayoutCreatedInWillRender(layoutStateContext, parent);
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {

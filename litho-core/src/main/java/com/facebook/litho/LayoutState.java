@@ -1598,7 +1598,8 @@ public class LayoutState
         layoutStateContext.copyScopedInfoFrom(currentLayoutStateContext, c.getStateHandler());
       }
 
-      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
+      final InternalNode layoutCreatedInWillRender =
+          component.consumeLayoutCreatedInWillRender(currentLayoutStateContext, c);
 
       layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);

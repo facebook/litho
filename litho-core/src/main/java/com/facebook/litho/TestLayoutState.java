@@ -72,8 +72,9 @@ public class TestLayoutState {
       final ComponentContext c, final Component component) {
 
     final InternalNode node;
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender(c);
     final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
+    final InternalNode layoutCreatedInWillRender =
+        component.consumeLayoutCreatedInWillRender(layoutStateContext, c);
 
     if (layoutCreatedInWillRender != null) {
       return layoutCreatedInWillRender;

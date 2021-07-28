@@ -1140,14 +1140,15 @@ public abstract class Component
   }
 
   @Nullable
-  final InternalNode consumeLayoutCreatedInWillRender(ComponentContext context) {
+  final InternalNode consumeLayoutCreatedInWillRender(
+      final LayoutStateContext layoutStateContext, ComponentContext context) {
     InternalNode layout;
 
-    if (context == null || context.getLayoutStateContext() == null) {
+    if (context == null || layoutStateContext == null) {
       return null;
     }
 
-    layout = context.getLayoutStateContext().consumeLayoutCreatedInWillRender(mId);
+    layout = layoutStateContext.consumeLayoutCreatedInWillRender(mId);
 
     if (layout != null && context.useStatelessComponent()) {
       assertSameBaseContext(context, layout.getAndroidContext());
@@ -1672,7 +1673,7 @@ public abstract class Component
     final InternalNode componentLayoutCreatedInWillRender =
         component.getLayoutCreatedInWillRender(layoutStateContext);
     if (componentLayoutCreatedInWillRender != null) {
-      return willRender(c, component, componentLayoutCreatedInWillRender);
+      return willRender(layoutStateContext, c, component, componentLayoutCreatedInWillRender);
     }
 
     // Missing StateHandler is only expected in tests
@@ -1683,7 +1684,7 @@ public abstract class Component
 
     final InternalNode newLayoutCreatedInWillRender =
         Layout.create(layoutStateContext, contextForLayout, component);
-    boolean willRender = willRender(c, component, newLayoutCreatedInWillRender);
+    boolean willRender = willRender(layoutStateContext, c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
       component.setLayoutCreatedInWillRender(layoutStateContext, newLayoutCreatedInWillRender);
     }
@@ -1785,7 +1786,10 @@ public abstract class Component
   }
 
   private static boolean willRender(
-      ComponentContext context, Component component, InternalNode node) {
+      final LayoutStateContext layoutStateContext,
+      ComponentContext context,
+      Component component,
+      InternalNode node) {
     if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
       return false;
     }
@@ -1795,7 +1799,7 @@ public abstract class Component
       // has been measured (so that we have the proper measurements to pass in). This means we can't
       // eagerly check the result of OnCreateLayoutWithSizeSpec.
       component.consumeLayoutCreatedInWillRender(
-          context); // Clear the layout created in will render
+          layoutStateContext, context); // Clear the layout created in will render
       throw new IllegalArgumentException(
           "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
               + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
