@@ -362,7 +362,7 @@ class Layout {
             && currentLayout
                 .getInternalNode()
                 .getHeadComponent()
-                .canUsePreviousLayout(parentContext, globalKey)) {
+                .canUsePreviousLayout(layoutStateContext, parentContext, globalKey)) {
           remeasure(
               layoutStateContext,
               currentLayout,

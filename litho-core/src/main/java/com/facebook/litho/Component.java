@@ -1545,10 +1545,7 @@ public abstract class Component
       final String globalKey) {
     scopedContext.setParentTreeProps(parentContext.getTreeProps());
     if (hasState()) {
-      parentContext
-          .getStateHandler()
-          .applyStateUpdatesForComponent(
-              parentContext.getLayoutStateContext(), scopedContext, this, globalKey);
+      parentContext.getStateHandler().applyStateUpdatesForComponent(scopedContext, this, globalKey);
     }
   }
 
@@ -1758,10 +1755,11 @@ public abstract class Component
     }
   }
 
-  final boolean canUsePreviousLayout(ComponentContext parentContext, String globalKey) {
+  final boolean canUsePreviousLayout(
+      LayoutStateContext layoutStateContext, ComponentContext parentContext, String globalKey) {
     return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
         && !onShouldCreateLayoutWithNewSizeSpec(
-            getScopedContext(parentContext.getLayoutStateContext(), globalKey),
+            getScopedContext(layoutStateContext, globalKey),
             parentContext.getWidthSpec(),
             parentContext.getHeightSpec());
   }

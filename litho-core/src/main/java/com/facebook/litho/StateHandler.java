@@ -172,10 +172,7 @@ public class StateHandler {
    */
   @ThreadSafe(enableChecks = false)
   void applyStateUpdatesForComponent(
-      final LayoutStateContext layoutStateContext,
-      final ComponentContext scopedContext,
-      final Component component,
-      final String key) {
+      final ComponentContext scopedContext, final Component component, final String key) {
     maybeInitStateContainers();
     maybeInitNeededStateContainers();
 
