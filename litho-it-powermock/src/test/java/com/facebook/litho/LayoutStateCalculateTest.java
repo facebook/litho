@@ -43,6 +43,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -121,7 +122,9 @@ public class LayoutStateCalculateTest {
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
+    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
+    c.setLayoutStateContext(context);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -193,7 +196,9 @@ public class LayoutStateCalculateTest {
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
+    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
+    c.setLayoutStateContext(context);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -267,7 +272,9 @@ public class LayoutStateCalculateTest {
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
+    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
+    c.setLayoutStateContext(context);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -347,7 +354,9 @@ public class LayoutStateCalculateTest {
     final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final ComponentContext c = ComponentContext.withComponentTree(mBaseContext, componentTree);
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, componentTree));
+    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
+    c.setLayoutStateContext(context);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);

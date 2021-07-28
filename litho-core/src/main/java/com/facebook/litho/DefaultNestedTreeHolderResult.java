@@ -31,11 +31,12 @@ public class DefaultNestedTreeHolderResult extends DefaultLayoutResult
   @Nullable LithoLayoutResult mNestedTree;
 
   public DefaultNestedTreeHolderResult(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final InputOnlyNestedTreeHolder internalNode,
       final YogaNode yogaNode,
       final LithoLayoutResult parent) {
-    super(c, internalNode, yogaNode, parent);
+    super(layoutStateContext, c, internalNode, yogaNode, parent);
   }
 
   @Override

@@ -1459,7 +1459,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new DefaultLayoutResult(getContext(context, this), this, node, parent);
+    return new DefaultLayoutResult(context, getContext(context, this), this, node, parent);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {

@@ -105,6 +105,14 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   }
 
   @Override
+  protected void setLayoutStateContextRecursively(LayoutStateContext c) {
+    super.setLayoutStateContextRecursively(c);
+    if (mNestedTree != null && mNestedTree instanceof DefaultInternalNode) {
+      ((DefaultInternalNode) mNestedTree).setLayoutStateContextRecursively(c);
+    }
+  }
+
+  @Override
   protected void clean() {
     super.clean();
     mNestedTree = null;

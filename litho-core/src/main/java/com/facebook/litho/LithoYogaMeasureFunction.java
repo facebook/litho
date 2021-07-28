@@ -41,7 +41,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       YogaMeasureMode heightMode) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final InternalNode node = result.getInternalNode();
-    final LayoutStateContext layoutStateContext = result.getContext().getLayoutStateContext();
+    final LayoutStateContext layoutStateContext = result.getLayoutStateContext();
 
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
@@ -110,7 +110,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
         final LithoLayoutResult nestedTree =
             Layout.create(
-                parentContext.getLayoutStateContext(),
+                layoutStateContext,
                 parentContext,
                 (NestedTreeHolderResult) result,
                 widthSpec,

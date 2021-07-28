@@ -38,6 +38,7 @@ import java.util.List;
  */
 public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
 
+  private final LayoutStateContext mLayoutContext;
   private final ComponentContext mContext;
 
   private final InputOnlyInternalNode mInternalNode;
@@ -56,14 +57,21 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
 
   public DefaultLayoutResult(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final InputOnlyInternalNode internalNode,
       final YogaNode yogaNode,
       final @Nullable LithoLayoutResult parent) {
+    mLayoutContext = layoutStateContext;
     mContext = c;
     mInternalNode = internalNode;
     mYogaNode = yogaNode;
     mParent = parent;
+  }
+
+  @Override
+  public LayoutStateContext getLayoutStateContext() {
+    return mLayoutContext;
   }
 
   @Override
