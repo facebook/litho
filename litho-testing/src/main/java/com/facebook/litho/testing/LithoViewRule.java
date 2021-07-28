@@ -299,4 +299,20 @@ public class LithoViewRule implements TestRule {
   public @Nullable LithoLayoutResult getCurrentRootNode() {
     return getCommittedLayoutState() != null ? getCommittedLayoutState().getLayoutRoot() : null;
   }
+
+  public static LithoLayoutResult getRootLayout(
+      final LithoViewRule rule,
+      final Component component,
+      final int widthSpec,
+      final int heightSpec) {
+    return rule.attachToWindow()
+        .setRootAndSizeSpec(component, widthSpec, heightSpec)
+        .measure()
+        .layout()
+        .getCurrentRootNode();
+  }
+
+  public static LithoLayoutResult getRootLayout(LithoViewRule rule, Component component) {
+    return rule.attachToWindow().setRoot(component).measure().layout().getCurrentRootNode();
+  }
 }

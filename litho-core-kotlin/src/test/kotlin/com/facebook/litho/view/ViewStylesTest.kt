@@ -33,7 +33,6 @@ import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
 import com.facebook.litho.px
-import com.facebook.litho.resolveComponentToNodeForTest
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -319,7 +318,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ElevationComponent())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent()).internalNode
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.shadowElevation).isEqualTo(elevation)
   }
@@ -334,7 +333,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, OutlineProviderComponent())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent()).internalNode
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
   }
@@ -348,7 +347,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentThatClips())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips()).internalNode
     assertThat(node.getOrCreateNodeInfo().clipToOutline).isTrue
 
     node.getOrCreateNodeInfo().setClipToOutline(false)
@@ -364,7 +363,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ElevationComponent())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent()).internalNode
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.transitionName).isEqualTo("test")
   }
@@ -378,7 +377,7 @@ class ViewStylesTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, TestKeyComponent())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent()).internalNode
     assertThat(node.testKey).isEqualTo("test")
   }
 

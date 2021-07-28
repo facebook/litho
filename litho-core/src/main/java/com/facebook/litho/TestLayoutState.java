@@ -21,8 +21,6 @@ import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.sMeasureFunction;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
-import com.facebook.infer.annotation.Nullsafe;
-
 /**
  * This should be only used with the deprecated DiffNode based testing infrastructure. This class
  * hosts a test implementation of create and resolve layout. The implementation only resolves the
@@ -32,7 +30,6 @@ import com.facebook.infer.annotation.Nullsafe;
  *
  * @deprecated Only to be used with the deprecated {@link ComponentTestHelper}
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated
 public class TestLayoutState {
 
@@ -49,7 +46,7 @@ public class TestLayoutState {
       return root;
     }
 
-    Layout.measure(c, root, widthSpec, heightSpec, null, null, null);
+    Layout.measure(c.getLayoutStateContext(), c, root, widthSpec, heightSpec, null, null, null);
 
     return root;
   }
@@ -60,7 +57,7 @@ public class TestLayoutState {
       if (component instanceof Wrapper) {
         return createImmediateLayout(c, component);
       }
-      return Layout.create(c, component);
+      return Layout.create(c.getLayoutStateContext(), c, component);
     }
 
     final InternalNode node = InternalNodeUtils.create(c);
@@ -140,7 +137,7 @@ public class TestLayoutState {
         return newImmediateLayoutBuilder(c, delegate);
       }
     } else if (component.canResolve()) {
-      return Layout.create(c, component);
+      return Layout.create(c.getLayoutStateContext(), c, component);
     }
 
     InternalNode node = InternalNodeUtils.create(c);

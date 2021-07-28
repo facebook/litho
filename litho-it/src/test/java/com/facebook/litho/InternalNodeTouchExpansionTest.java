@@ -44,8 +44,9 @@ public class InternalNodeTouchExpansionTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
-    mContext.setLayoutStateContextForTesting();
-    mInternalNode = Layout.create(mContext, Column.create(mContext).build());
+    LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(mContext);
+    mContext.setLayoutStateContext(layoutStateContext);
+    mInternalNode = Layout.create(layoutStateContext, mContext, Column.create(mContext).build());
     mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 

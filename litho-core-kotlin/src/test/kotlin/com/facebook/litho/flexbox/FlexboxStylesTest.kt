@@ -38,7 +38,6 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.core.width
 import com.facebook.litho.core.widthPercent
 import com.facebook.litho.px
-import com.facebook.litho.resolveComponentToNodeForTest
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -529,7 +528,7 @@ class FlexboxStylesTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithBorder())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder()).internalNode
     Java6Assertions.assertThat(node.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     Java6Assertions.assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))

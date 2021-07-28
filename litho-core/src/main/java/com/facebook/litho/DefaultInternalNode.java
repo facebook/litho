@@ -425,7 +425,7 @@ public class DefaultInternalNode
   @Override
   public InternalNode child(ComponentContext c, Component child) {
     if (child != null) {
-      return child(Layout.create(c, child));
+      return child(Layout.create(c.getLayoutStateContext(), c, child));
     }
 
     return this;
@@ -1779,34 +1779,19 @@ public class DefaultInternalNode
       final Component next,
       @Nullable final String nextKey,
       final Set<String> keys) {
-    int mode =
-        getReconciliationMode(
-            next.getScopedContext(parentContext.getLayoutStateContext(), nextKey), current, keys);
+    final LayoutStateContext context = parentContext.getLayoutStateContext();
+    int mode = getReconciliationMode(next.getScopedContext(context, nextKey), current, keys);
     final InternalNode layout;
 
     switch (mode) {
       case ReconciliationMode.COPY:
-        layout =
-            reconcile(
-                parentContext.getLayoutStateContext(),
-                current,
-                next,
-                nextKey,
-                keys,
-                ReconciliationMode.COPY);
+        layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
-        layout =
-            reconcile(
-                parentContext.getLayoutStateContext(),
-                current,
-                next,
-                nextKey,
-                keys,
-                ReconciliationMode.RECONCILE);
+        layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        layout = Layout.create(parentContext, next, false, true, nextKey);
+        layout = Layout.create(context, parentContext, next, false, true, nextKey);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");

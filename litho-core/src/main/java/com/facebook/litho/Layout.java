@@ -50,19 +50,21 @@ class Layout {
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
 
   static LayoutResultHolder createAndMeasureComponent(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
       final int widthSpec,
       final int heightSpec) {
     return createAndMeasureComponent(
-        c, component, null, widthSpec, heightSpec, null, null, null, null);
+        layoutStateContext, c, component, null, widthSpec, heightSpec, null, null, null, null);
   }
 
   /* TODO: (T81557408) Fix @Nullable issue */
   static LayoutResultHolder createAndMeasureComponent(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
-      @Nullable final String globalKeyToReuse,
+      final @Nullable String globalKeyToReuse,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LithoLayoutResult current,
@@ -80,7 +82,7 @@ class Layout {
 
     final InternalNode layout;
     if (current == null) {
-      layout = create(c, component, true);
+      layout = create(layoutStateContext, c, component, true);
 
       // This needs to finish layout on the UI thread.
       if (c.wasLayoutInterrupted()) {
@@ -111,7 +113,15 @@ class Layout {
     }
 
     LithoLayoutResult result =
-        measure(c, layout, widthSpec, heightSpec, current, prevLayoutStateContext, diff);
+        measure(
+            layoutStateContext,
+            c,
+            layout,
+            widthSpec,
+            heightSpec,
+            current,
+            prevLayoutStateContext,
+            diff);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -120,16 +130,23 @@ class Layout {
     return new LayoutResultHolder(result);
   }
 
-  public static InternalNode create(final ComponentContext parent, final Component component) {
-    return create(parent, component, false, false, null);
+  public static InternalNode create(
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext parent,
+      final Component component) {
+    return create(layoutStateContext, parent, component, false, false, null);
   }
 
   static InternalNode create(
-      final ComponentContext parent, final Component component, final boolean resolveNestedTree) {
-    return create(parent, component, resolveNestedTree, false, null);
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext parent,
+      final Component component,
+      final boolean resolveNestedTree) {
+    return create(layoutStateContext, parent, component, resolveNestedTree, false, null);
   }
 
   static InternalNode create(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       Component component,
       final boolean resolveNestedTree,
@@ -156,7 +173,7 @@ class Layout {
           final ComponentContext context =
               cached
                   .getHeadComponent()
-                  .getScopedContext(parent.getLayoutStateContext(), cached.getHeadComponentKey());
+                  .getScopedContext(layoutStateContext, cached.getHeadComponentKey());
         }
         return cached;
       }
@@ -202,7 +219,7 @@ class Layout {
         if (root == component) {
           node = root.resolve(c);
         } else if (root != null) {
-          node = create(c, root, false);
+          node = create(layoutStateContext, c, root, false);
         } else {
           node = null;
         }
@@ -301,6 +318,7 @@ class Layout {
   }
 
   static LithoLayoutResult create(
+      final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
       final NestedTreeHolderResult holder,
       final int widthSpec,
@@ -345,7 +363,13 @@ class Layout {
                 .getInternalNode()
                 .getHeadComponent()
                 .canUsePreviousLayout(parentContext, globalKey)) {
-          remeasure(currentLayout, widthSpec, heightSpec, currentLayout, prevLayoutStateContext);
+          remeasure(
+              layoutStateContext,
+              currentLayout,
+              widthSpec,
+              heightSpec,
+              currentLayout,
+              prevLayoutStateContext);
           layout = currentLayout;
         } else {
 
@@ -361,7 +385,8 @@ class Layout {
           parentContext.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          final InternalNode newNode = create(parentContext, component, true, true, globalKey);
+          final InternalNode newNode =
+              create(layoutStateContext, parentContext, component, true, true, globalKey);
 
           if (parentContext.useStatelessComponent()) {
             parentContext.setWidthSpec(prevWidthSpec);
@@ -376,10 +401,11 @@ class Layout {
           }
 
           // Set the DiffNode for the nested tree's result to consume during measurement.
-          parentContext.getLayoutStateContext().setNestedTreeDiffNode(holder.getDiffNode());
+          layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
 
           layout =
               measure(
+                  layoutStateContext,
                   parentContext,
                   newNode,
                   widthSpec,
@@ -460,6 +486,7 @@ class Layout {
   }
 
   static LithoLayoutResult measure(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final InternalNode root,
       final int widthSpec,
@@ -476,7 +503,7 @@ class Layout {
     if (diff != null && root.implementsLayoutDiffing()) {
       ComponentsSystrace.beginSection("applyDiffNode");
       applyDiffNodeToUnchangedNodes(
-          c.getLayoutStateContext(),
+          layoutStateContext,
           (LithoLayoutResult) root, // Only for DefaultInternalNode
           true,
           prevLayoutStateContext,
@@ -487,7 +514,7 @@ class Layout {
     final LayoutContext<LithoRenderContext> context =
         new LayoutContext<>(
             c.getAndroidContext(),
-            new LithoRenderContext(c.getLayoutStateContext(), current, diff),
+            new LithoRenderContext(layoutStateContext, current, diff),
             0,
             null,
             null);
@@ -502,6 +529,7 @@ class Layout {
   }
 
   static LithoLayoutResult resumeCreateAndMeasureComponent(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final InternalNode root,
       final int widthSpec,
@@ -514,7 +542,7 @@ class Layout {
       return NullLayoutResult.INSTANCE;
     }
 
-    resume(c.getLayoutStateContext(), root);
+    resume(layoutStateContext, root);
 
     if (logLayoutState != null) {
       logLayoutState.markerPoint("start_measure");
@@ -522,6 +550,7 @@ class Layout {
 
     final LithoLayoutResult result =
         measure(
+            layoutStateContext,
             c,
             root,
             widthSpec,
@@ -556,6 +585,7 @@ class Layout {
 
   @VisibleForTesting
   static void remeasure(
+      final LayoutStateContext layoutStateContext,
       final LithoLayoutResult layout,
       final int widthSpec,
       final int heightSpec,
@@ -566,6 +596,7 @@ class Layout {
     }
 
     measure(
+        layoutStateContext,
         layout.getContext(),
         layout.getInternalNode(),
         widthSpec,

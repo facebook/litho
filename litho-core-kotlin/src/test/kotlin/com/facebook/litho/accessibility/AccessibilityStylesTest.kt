@@ -27,9 +27,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.width
-import com.facebook.litho.eventHandler
 import com.facebook.litho.px
-import com.facebook.litho.resolveComponentToNodeForTest
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
@@ -89,7 +87,7 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, TestComponent())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent()).internalNode
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.onInitializeAccessibilityNodeInfoHandler).isNull()
   }
@@ -104,7 +102,7 @@ class AccessibilityStylesTest {
         return Row(style = Style.onInitializeAccessibilityNodeInfo { eventHandler })
       }
     }
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, TestComponentWithHandler())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler()).internalNode
     val nodeInfo = node.orCreateNodeInfo
     assertThat(nodeInfo.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }

@@ -59,7 +59,7 @@ public final class Wrapper extends Component {
       return ComponentContext.NULL_LAYOUT;
     }
 
-    return Layout.create(c, delegate);
+    return Layout.create(c.getLayoutStateContext(), c, delegate);
   }
 
   @Override

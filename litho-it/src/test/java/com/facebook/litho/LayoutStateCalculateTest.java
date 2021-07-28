@@ -25,7 +25,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
@@ -2214,7 +2213,8 @@ public class LayoutStateCalculateTest {
     final int width = 50;
     final int height = 30;
     final ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
+    c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
     final Component component =
         new InlineLayoutSpec() {
           @Override
@@ -2226,8 +2226,12 @@ public class LayoutStateCalculateTest {
         };
 
     final LithoLayoutResult node =
-        createAndMeasureComponent(
-                c, component, makeSizeSpec(width, AT_MOST), makeSizeSpec(height, AT_MOST))
+        Layout.createAndMeasureComponent(
+                layoutStateContext,
+                c,
+                component,
+                makeSizeSpec(width, AT_MOST),
+                makeSizeSpec(height, AT_MOST))
             .mResult;
 
     assertThat(node.getWidth()).isEqualTo(width);
@@ -2502,7 +2506,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testResolveLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
+    c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
@@ -2515,7 +2520,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = Layout.create(c, component);
+    InternalNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(c)).isNull();
   }
@@ -2523,7 +2528,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNewLayoutBuilderUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
+    c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
@@ -2536,7 +2542,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = Layout.create(c, component);
+    InternalNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(c)).isNull();
   }
@@ -2544,7 +2550,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testCreateLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(getApplicationContext());
-    c.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
+    c.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
@@ -2557,7 +2564,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRender(c);
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = Layout.create(c, component);
+    InternalNode result = Layout.create(layoutStateContext, c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRender(c)).isNull();
   }

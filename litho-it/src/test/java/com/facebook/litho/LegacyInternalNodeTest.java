@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -73,9 +72,11 @@ public class LegacyInternalNodeTest {
 
   private static InternalNode acquireInternalNode() {
     final ComponentContext context = new ComponentContext(getApplicationContext());
-    context.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
+    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
-    return createAndMeasureComponent(
+    return Layout.createAndMeasureComponent(
+            layoutStateContext,
             context,
             Column.create(context).build(),
             makeSizeSpec(0, UNSPECIFIED),
@@ -93,9 +94,11 @@ public class LegacyInternalNodeTest {
 
   private static LithoLayoutResult acquireInternalNodeWithLogger(ComponentsLogger logger) {
     final ComponentContext context = new ComponentContext(getApplicationContext(), "TEST", logger);
-    context.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
+    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
-    return createAndMeasureComponent(
+    return Layout.createAndMeasureComponent(
+            layoutStateContext,
             context,
             Column.create(context).build(),
             makeSizeSpec(0, UNSPECIFIED),
@@ -475,10 +478,12 @@ public class LegacyInternalNodeTest {
   @Test
   public void testDeepClone() {
     final ComponentContext context = new ComponentContext(getApplicationContext());
-    context.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
+    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     LithoLayoutResult layout =
-        createAndMeasureComponent(
+        Layout.createAndMeasureComponent(
+                layoutStateContext,
                 context,
                 Column.create(context)
                     .child(Row.create(context).child(Column.create(context)))

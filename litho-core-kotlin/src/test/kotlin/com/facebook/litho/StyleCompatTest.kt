@@ -18,7 +18,6 @@ package com.facebook.litho
 
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.facebook.litho.flexbox.border
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.assertMatches
 import com.facebook.litho.testing.child
@@ -406,7 +405,7 @@ class StyleCompatTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithBorder())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder()).internalNode
     assertThat(node.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
     assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
@@ -424,7 +423,7 @@ class StyleCompatTest {
       }
     }
 
-    val node = resolveComponentToNodeForTest(lithoViewRule.context, ComponentWithTransition())
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithTransition()).internalNode
     assertThat(node.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
     assertThat(node.transitionKey).isEqualTo("test")
   }

@@ -711,7 +711,7 @@ public abstract class Component
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected InternalNode resolve(ComponentContext c) {
-    return Layout.create(c, (Component) this, false);
+    return Layout.create(c.getLayoutStateContext(), c, (Component) this, false);
   }
 
   protected final boolean useTreePropsFromContext() {
@@ -1073,7 +1073,8 @@ public abstract class Component
       layoutState.clearCachedLayout(this);
 
       final LayoutResultHolder container =
-          Layout.createAndMeasureComponent(c, this, widthSpec, heightSpec);
+          Layout.createAndMeasureComponent(
+              layoutState.getLayoutStateContext(), c, this, widthSpec, heightSpec);
       if (container.wasLayoutInterrupted()) {
         return;
       }
@@ -1140,7 +1141,8 @@ public abstract class Component
     contextForLayout.setLayoutStateContext(layoutStateContext);
 
     final LayoutResultHolder holder =
-        Layout.createAndMeasureComponent(contextForLayout, this, widthSpec, heightSpec);
+        Layout.createAndMeasureComponent(
+            layoutStateContext, contextForLayout, this, widthSpec, heightSpec);
 
     if (holder.wasLayoutInterrupted()) {
       outputSize.height = 0;
@@ -1706,7 +1708,8 @@ public abstract class Component
             ? new ComponentContext(c, new StateHandler(), null, c.getLayoutStateContext())
             : c;
 
-    final InternalNode newLayoutCreatedInWillRender = Layout.create(contextForLayout, component);
+    final InternalNode newLayoutCreatedInWillRender =
+        Layout.create(c.getLayoutStateContext(), contextForLayout, component);
     boolean willRender = willRender(c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
       component.setLayoutCreatedInWillRender(c, newLayoutCreatedInWillRender);

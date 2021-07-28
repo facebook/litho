@@ -514,7 +514,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public InternalNode child(ComponentContext c, Component child) {
     if (child != null) {
-      return child(Layout.create(c, child));
+      return child(Layout.create(c.getLayoutStateContext(), c, child));
     }
 
     return this;
@@ -1485,15 +1485,14 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final Component next,
       @Nullable final String nextKey,
       final Set<String> keys) {
-    int mode =
-        getReconciliationMode(
-            next.getScopedContext(parentContext.getLayoutStateContext(), nextKey), current, keys);
+    final LayoutStateContext context = parentContext.getLayoutStateContext();
+    int mode = getReconciliationMode(next.getScopedContext(context, nextKey), current, keys);
     final InternalNode layout;
 
     switch (mode) {
       case ReconciliationMode.REUSE:
         if (parentContext.isInternalNodeReuseEnabled()) {
-          commitToLayoutStateRecursively(parentContext.getLayoutStateContext(), current);
+          commitToLayoutStateRecursively(context, current);
         }
         layout = current;
         break;
@@ -1509,7 +1508,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         break;
       case ReconciliationMode.RECONCILE:
         if (parentContext.isInternalNodeReuseEnabled()) {
-          commitToLayoutState(parentContext.getLayoutStateContext(), current);
+          commitToLayoutState(context, current);
         }
         layout =
             reconcile(
@@ -1521,7 +1520,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
                 ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        layout = Layout.create(parentContext, next, false, true, nextKey);
+        layout = Layout.create(context, parentContext, next, false, true, nextKey);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");

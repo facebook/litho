@@ -797,6 +797,7 @@ public class LayoutState
 
       LithoLayoutResult nestedTree =
           Layout.create(
+              layoutStateContext,
               immediateParentContext,
               (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
@@ -1620,6 +1621,7 @@ public class LayoutState
 
         final LayoutResultHolder holder =
             Layout.createAndMeasureComponent(
+                layoutStateContext,
                 c,
                 component,
                 isReconcilable ? currentLayoutRoot.getInternalNode().getHeadComponentKey() : null,
@@ -1649,6 +1651,7 @@ public class LayoutState
       } else {
         root =
             Layout.measure(
+                layoutStateContext,
                 c,
                 layoutCreatedInWillRender,
                 widthSpec,
@@ -1743,6 +1746,7 @@ public class LayoutState
 
       layoutState.mLayoutRoot =
           Layout.resumeCreateAndMeasureComponent(
+              layoutState.getLayoutStateContext(),
               c,
               layoutState.mPartiallyResolvedLayoutRoot,
               widthSpec,
@@ -1753,7 +1757,7 @@ public class LayoutState
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      c.getLayoutStateContext().releaseReference();
+      layoutState.getLayoutStateContext().releaseReference();
 
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);

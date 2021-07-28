@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -88,7 +87,8 @@ public class InternalNodeTest {
     final ComponentContext context = new ComponentContext(getApplicationContext(), "TEST", logger);
     context.setLayoutStateContextForTesting();
 
-    return createAndMeasureComponent(
+    return Layout.createAndMeasureComponent(
+            context.getLayoutStateContext(),
             context,
             Column.create(context).build(),
             makeSizeSpec(0, UNSPECIFIED),
@@ -222,7 +222,10 @@ public class InternalNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree());
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
+    c.setLayoutStateContext(layoutStateContext);
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -246,7 +249,10 @@ public class InternalNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree());
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
+    c.setLayoutStateContext(layoutStateContext);
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -318,15 +324,17 @@ public class InternalNodeTest {
 
     final ComponentContext context =
         new ComponentContext(getApplicationContext(), "TEST", componentsLogger);
-    context.setLayoutStateContextForTesting();
 
-    InternalNode node = Layout.create(context, Column.create(context).build());
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
+    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
+
+    InternalNode node = Layout.create(layoutStateContext, context, Column.create(context).build());
 
     final LayoutProps editor = node.getDebugLayoutEditor();
     editor.alignSelf(YogaAlign.AUTO);
     editor.flex(1f);
 
-    Layout.measure(context, node, UNSPECIFIED, UNSPECIFIED, null, null, null);
+    Layout.measure(layoutStateContext, context, node, UNSPECIFIED, UNSPECIFIED, null, null, null);
 
     assertThat(mComponentsReporter.getLoggedMessages().get(0).second)
         .isEqualTo("You should not set alignSelf, flex to a root layout.");
@@ -337,10 +345,12 @@ public class InternalNodeTest {
   @Test
   public void testDeepClone() {
     final ComponentContext context = new ComponentContext(getApplicationContext());
-    context.setLayoutStateContextForTesting();
+    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
+    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 
     LithoLayoutResult layout =
-        createAndMeasureComponent(
+        Layout.createAndMeasureComponent(
+                layoutStateContext,
                 context,
                 Column.create(context)
                     .child(Row.create(context).child(Column.create(context)))

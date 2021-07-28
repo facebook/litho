@@ -74,11 +74,14 @@ public class TreeDiffingTest {
   private int mUnspecifiedSpec;
 
   private ComponentContext mContext;
+  private LayoutStateContext mLayoutStateContext;
 
   @Before
   public void setup() throws Exception {
     TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
     mContext = new ComponentContext(getApplicationContext());
+    mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
+    mContext.setLayoutStateContext(mLayoutStateContext);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     sRedDrawable = ComparableColorDrawable.create(Color.RED);
     sBlackDrawable = ComparableColorDrawable.create(Color.BLACK);
@@ -148,8 +151,7 @@ public class TreeDiffingTest {
   private DefaultInternalNode createInternalNodeForMeasurableComponent(Component component) {
     component.setScopedContext(mContext);
     final ComponentContext c = new ComponentContext(mContext);
-    c.setLayoutStateContextForTesting();
-    return (DefaultInternalNode) Layout.create(c, component);
+    return (DefaultInternalNode) Layout.create(mLayoutStateContext, c, component);
   }
 
   private long measureInternalNode(
@@ -244,6 +246,7 @@ public class TreeDiffingTest {
 
     LithoLayoutResult layoutTreeRoot =
         Layout.measure(
+            mLayoutStateContext,
             mContext,
             createInternalNodeForMeasurableComponent(component2),
             SizeSpec.UNSPECIFIED,
@@ -279,6 +282,7 @@ public class TreeDiffingTest {
 
     LithoLayoutResult layoutTreeRoot =
         Layout.measure(
+            mLayoutStateContext,
             mContext,
             createInternalNodeForMeasurableComponent(component2),
             SizeSpec.UNSPECIFIED,

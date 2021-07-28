@@ -112,15 +112,18 @@ public class ComponentLifecycleTest {
         };
 
     when(Layout.create(
+            (LayoutStateContext) any(),
             (ComponentContext) any(),
             (Component) any(),
             anyBoolean(),
             anyBoolean(),
             (String) any()))
         .thenCallRealMethod();
-    when(Layout.create((ComponentContext) any(), (Component) any(), anyBoolean()))
+    when(Layout.create(
+            (LayoutStateContext) any(), (ComponentContext) any(), (Component) any(), anyBoolean()))
         .thenCallRealMethod();
-    when(Layout.create((ComponentContext) any(), (Component) any())).thenCallRealMethod();
+    when(Layout.create((LayoutStateContext) any(), (ComponentContext) any(), (Component) any()))
+        .thenCallRealMethod();
     when(Layout.update((ComponentContext) any(), (Component) any(), anyBoolean(), (String) any()))
         .thenCallRealMethod();
 
@@ -139,9 +142,9 @@ public class ComponentLifecycleTest {
         ComponentTree.create(new ComponentContext(getApplicationContext())).build();
     mComponentTree = spy(componentTree);
     final ComponentContext c = componentTree.getContext();
-    c.setLayoutStateContextForTesting();
+    mLayoutStateContext = spy(LayoutStateContext.getTestInstance(c));
+    c.setLayoutStateContext(mLayoutStateContext);
     mContext = spy(c);
-    mLayoutStateContext = spy(c.getLayoutStateContext());
     when(mResult.getInternalNode()).thenReturn(mNode);
     when(mContext.getLayoutStateContext()).thenReturn(mLayoutStateContext);
     when(mLayoutStateContext.getComponentTree()).thenReturn(mComponentTree);
@@ -158,7 +161,7 @@ public class ComponentLifecycleTest {
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCannotMeasure() {
     Component component = setUpSpyLayoutSpecWithNullLayout();
-    Layout.create(mContext, component, false);
+    Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -169,7 +172,7 @@ public class ComponentLifecycleTest {
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCanMeasure() {
     Component component = setUpSpyLayoutSpecWithNullLayout();
-    Layout.create(mContext, component, false);
+    Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -180,7 +183,7 @@ public class ComponentLifecycleTest {
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCannotMeasure() {
     Component component = setUpSpyLayoutSpecWithNullLayout();
-    Layout.create(mContext, component, false);
+    Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -191,7 +194,7 @@ public class ComponentLifecycleTest {
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCanMeasure() {
     Component component = setUpSpyLayoutSpecWithNullLayout();
-    Layout.create(mContext, component, false);
+    Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -204,7 +207,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, true);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -217,7 +220,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, false);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -230,7 +233,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, true);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -243,7 +246,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, false);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -256,7 +259,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, true);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
     verify(component).onCreateLayout(scopedContext);
@@ -268,7 +271,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCannotMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, false);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
@@ -283,7 +286,7 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
-    InternalNode node = Layout.create(mContext, component, true);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
     verify(component)
@@ -296,7 +299,7 @@ public class ComponentLifecycleTest {
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
     Component component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
-    InternalNode node = Layout.create(mContext, component, false);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     verify(component, never()).onCreateLayout((ComponentContext) any());
     verify(component, never())
@@ -321,7 +324,7 @@ public class ComponentLifecycleTest {
             .isLayoutSpecWithSizeSpecCheck(true)
             .build(mContext);
 
-    Layout.create(mContext, component, true);
+    Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
 

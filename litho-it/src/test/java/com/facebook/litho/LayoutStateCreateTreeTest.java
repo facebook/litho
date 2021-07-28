@@ -54,11 +54,13 @@ import org.robolectric.annotation.Config;
 @RunWith(LithoTestRunner.class)
 public class LayoutStateCreateTreeTest {
   private ComponentContext mComponentContext;
+  private LayoutStateContext mLayoutStateContext;
 
   @Before
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(getApplicationContext());
-    mComponentContext.setLayoutStateContextForTesting();
+    mLayoutStateContext = LayoutStateContext.getTestInstance(mComponentContext);
+    mComponentContext.setLayoutStateContext(mLayoutStateContext);
   }
 
   @After
@@ -78,7 +80,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = Layout.create(mComponentContext, component);
+    InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getHeadComponent()).isEqualTo(component);
     assertThat(node.getTailComponent()).isInstanceOf(Column.class);
@@ -136,7 +138,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = Layout.create(mComponentContext, component);
+    InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -204,7 +206,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = Layout.create(mComponentContext, component);
+    InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -266,7 +268,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = Layout.create(mComponentContext, component);
+    InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(SimpleMountSpecTester.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -316,7 +318,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = Layout.create(mComponentContext, component);
+    InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -456,7 +458,7 @@ public class LayoutStateCreateTreeTest {
 
     component.setScopedContext(mComponentContext);
 
-    final InternalNode node = Layout.create(mComponentContext, component);
+    final InternalNode node = Layout.create(mLayoutStateContext, mComponentContext, component);
     final NodeInfo nodeInfo = node.getOrCreateNodeInfo();
     final CopyableLayoutProps input = component.getCommonProps().getLayoutProps();
     final LayoutProps output = spy(LayoutProps.class);
