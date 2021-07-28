@@ -280,8 +280,17 @@ abstract class KComponent : Component() {
  * key("my_key") { Text(...) }
  * ```
  */
-fun key(key: String, componentLambda: () -> Component): Component {
+inline fun key(key: String, componentLambda: () -> Component): Component {
   val component = componentLambda()
-  component.key = key
+  setKeyForComponentInternal(component, key)
   return component
+}
+
+/**
+ * This is extracted out since we don't want to expose Component.setKey in the public API and will
+ * hopefully change this implementation in the future.
+ */
+@PublishedApi
+internal fun setKeyForComponentInternal(component: Component, key: String) {
+  component.key = key
 }
