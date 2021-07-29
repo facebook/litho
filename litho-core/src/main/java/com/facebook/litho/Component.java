@@ -242,15 +242,6 @@ public abstract class Component
 
   @Override
   public final @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (eventHandler.params != null && eventHandler.params[0] instanceof ComponentContext) {
-      final ComponentContext context = (ComponentContext) eventHandler.params[0];
-      if (context.getComponentTree() != null
-          && context.getComponentTree().shouldClearPrevContextWhenCommitted()
-          && context.getLayoutStateContext().isCleared()) {
-        return null;
-      }
-    }
-
     // We don't want to wrap and throw error events
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       return dispatchOnEventImpl(eventHandler, eventState);

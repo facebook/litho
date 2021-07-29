@@ -53,8 +53,6 @@ public class LayoutStateContext {
 
   private volatile boolean mIsFrozen = false;
 
-  private volatile boolean mIsCleared = false;
-
   void freeze() {
     mIsFrozen = true;
   }
@@ -282,11 +280,5 @@ public class LayoutStateContext {
     mCurrentDiffTree = null;
     mCurrentNestedTreeDiffNode = null;
     mHasNestedTreeDiffNodeSet = false;
-
-    mIsCleared = true;
-  }
-
-  boolean isCleared() {
-    return mIsCleared;
   }
 }
