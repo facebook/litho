@@ -20,6 +20,9 @@ import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class TempComponentsConfigurations {
+  private static final boolean originalShouldDisableBgFgOutputs =
+      ComponentsConfiguration.shouldDisableBgFgOutputs;
+
   private static final boolean originalShouldAddHostViewForRootComponent =
       ComponentsConfiguration.shouldAddHostViewForRootComponent;
 
@@ -33,10 +36,12 @@ public class TempComponentsConfigurations {
       ComponentsConfiguration.useExtensionsWithMountDelegate;
 
   public static void setShouldAddHostViewForRootComponent(boolean value) {
+    ComponentsConfiguration.shouldDisableBgFgOutputs = value;
     ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
   }
 
   public static void restoreShouldAddHostViewForRootComponent() {
+    ComponentsConfiguration.shouldDisableBgFgOutputs = originalShouldDisableBgFgOutputs;
     ComponentsConfiguration.shouldAddHostViewForRootComponent =
         originalShouldAddHostViewForRootComponent;
   }
