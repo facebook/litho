@@ -37,6 +37,7 @@ class PullToRefreshCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     val list = useState { generateRandomNumbers() }
+    val idGenerator = useState { generateSequence(0) { it + 1 }.iterator() }
     val handle = Handle()
 
     return Column(style = Style.padding(16.dp)) {
@@ -48,7 +49,7 @@ class PullToRefreshCollectionKComponent : KComponent() {
                 list.update(generateRandomNumbers())
                 CollectionUtils.clearRefreshing(context, handle)
               },
-          ) { items(list.value.map { Text("$it") }) })
+          ) { list.value.forEach { child(id = idGenerator.value.next()) { Text("$it") } } })
     }
   }
 }

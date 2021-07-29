@@ -58,12 +58,14 @@ class UseCallbackTest {
         }
 
         return Collection {
-          items(data, isSameItem = { i, j -> i == j }) { item ->
-            CollectionRow(
-                style =
-                    Style.viewTag("item_$item").onClick {
-                      selected.updateSync(selected.value + listOf(item))
-                    })
+          data.forEach { item ->
+            child(id = item) {
+              CollectionRow(
+                  style =
+                      Style.viewTag("item_$item").onClick {
+                        selected.updateSync(selected.value + listOf(item))
+                      })
+            }
           }
         }
       }
@@ -111,12 +113,14 @@ class UseCallbackTest {
         }
 
         return Collection {
-          items(data, isSameItem = { i, j -> i == j }) { item ->
-            CollectionRow(
-                style =
-                    Style.viewTag("item_$item").onClick {
-                      selected.updateSync { oldList -> oldList + listOf(item) }
-                    })
+          data.forEach { item ->
+            child(id = item) {
+              CollectionRow(
+                  style =
+                      Style.viewTag("item_$item").onClick {
+                        selected.updateSync { oldList -> oldList + listOf(item) }
+                      })
+            }
           }
         }
       }
@@ -157,8 +161,11 @@ class UseCallbackTest {
     ) : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Collection {
-          items(data, isSameItem = { i, j -> i == j }) { item ->
-            CollectionRow(style = Style.viewTag("item_$item").onClick { onRowClick(rowClickedTag) })
+          data.forEach { item ->
+            child(id = item) {
+              CollectionRow(
+                  style = Style.viewTag("item_$item").onClick { onRowClick(rowClickedTag) })
+            }
           }
         }
       }

@@ -64,10 +64,9 @@ class ChangeableItemsCollectionKComponent : KComponent() {
                 Log.d("litho-kotlin", "onViewportChangedFunction")
               },
               onDataBound = { Log.d("litho-kotlin", "onDataBound") }) {
-            items(
-                data = orderedPeople,
-                render = { Text("${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}") },
-                isSameItem = itemId(Person::id))
+            orderedPeople.forEach {
+              child(id = it.id) { Text("${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}") }
+            }
           })
     }
   }

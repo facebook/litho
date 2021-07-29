@@ -26,32 +26,34 @@ import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
+import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.SectionContext
-import com.facebook.litho.sections.common.SingleComponentSection
+import com.facebook.litho.sections.common.DataDiffSection
+import com.facebook.litho.sections.common.OnCheckIsSameContentEvent
+import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecylerView
 import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
+import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.StickyHeaderControllerFactory
 
 /**
  * Constructs a new scrollable collection of components. A single [Component] can be added using
- * [CollectionContainerScope.item].
+ * [CollectionContainerScope.child].
  * ```
- * Collection() {
- *   item(Text(text = "Foo"))
+ * Collection {
+ *   staticChild { Text(text = "Foo") }
  * }
  * ```
  *
- * A list can be added with a renderer function to convert each item into a [Component] using
- * [CollectionContainerScope.items].
+ * When adding a list, specify an id for each child for automatic diffing.
  * ```
- * Collection() {
- * items(
- *   data = arrayListOf("Foo", "Bar"),
- *   renderer = { item, _ -> Text(text = item) })
- * }
+ * Collection {
+ *   list.forEach {
+ *     child(id = it.id) { Text(text = it.name) }
+ *   }
  * ```
  */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
@@ -95,11 +97,13 @@ inline fun ComponentScope.Collection(
     noinline onPullToRefresh: (() -> Unit)? = null,
     init: CollectionContainerScope.() -> Unit,
 ): RecyclerCollectionComponent {
-  val containerScope = CollectionContainerScope(context)
+  val sectionContext = SectionContext(context)
+  val containerScope = CollectionContainerScope()
   containerScope.init()
+  val children = Children.Builder().child(containerScope.getSection(sectionContext))
   val section =
-      CollectionGroupSection.create(containerScope.sectionContext)
-          .childrenBuilder(containerScope.childrenBuilder)
+      CollectionGroupSection.create(sectionContext)
+          .childrenBuilder(children)
           .apply { onDataBound?.let { onDataBound(it) } }
           .apply { onViewportChanged?.let { onViewportChanged(it) } }
           .onPullToRefresh(onPullToRefresh)
@@ -173,65 +177,88 @@ object CollectionUtils {
 }
 
 @ContainerDsl
-class CollectionContainerScope(componentContext: ComponentContext) {
+class CollectionContainerScope {
 
-  val childrenBuilder: Children.Builder = Children.Builder()
-  val sectionContext: SectionContext = SectionContext(componentContext)
+  private data class CollectionData(
+      val id: Any?,
+      val listTag: Any?,
+      val component: Component?,
+      val renderInfo: RenderInfo,
+  )
+  private val collectionChildrenModels = mutableListOf<CollectionData>()
+  private var nextStaticId = 0
 
-  /** Adds a Component as a child to the collection being initialized. */
-  fun item(
-      component: Component,
-      sticky: Boolean = false,
+  /**
+   * Add a child where changes to position or content are not expected and will not be animated when
+   * the Collection is updated.
+   */
+  fun staticChild(
+      isSticky: Boolean = false,
+      isFullSpan: Boolean = false,
+      spanSize: Int? = null,
+      component: () -> Component?
+  ) {
+    childInternal(component(), generateStaticId(), null, isSticky, isFullSpan, spanSize)
+  }
+
+  fun child(
+      id: Any,
+      listTag: Any? = null,
+      isSticky: Boolean = false,
+      isFullSpan: Boolean = false,
+      spanSize: Int? = null,
+      component: () -> Component?
+  ) {
+    childInternal(component(), id, listTag, isSticky, isFullSpan, spanSize)
+  }
+
+  private fun childInternal(
+      component: Component?,
+      id: Any,
+      listTag: Any? = null,
+      isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
   ) {
-    childrenBuilder.child(
-        SingleComponentSection.create(sectionContext)
-            .apply {
-              component.handle?.let {
-                customAttributes(mapOf(Pair(HANDLE_CUSTOM_ATTR_KEY, component.handle)))
-              }
-            }
-            .sticky(sticky)
-            .isFullSpan(isFullSpan)
-            .apply { spanSize?.let { spanSize(spanSize) } }
-            .component(component)
-            .build())
+    collectionChildrenModels.add(
+        CollectionData(
+            id,
+            listTag,
+            component,
+            ComponentRenderInfo.create()
+                .apply {
+                  if (isSticky) {
+                    isSticky(isSticky)
+                  }
+                  if (isFullSpan) {
+                    isFullSpan(isFullSpan)
+                  }
+                  spanSize?.let { spanSize(it) }
+                  component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
+                }
+                .component(component)
+                .build()))
   }
 
-  /** Adds a List of Components as children to the collection being initialized. */
-  fun items(components: List<Component>) {
-    components.forEach { item(it) }
+  fun getSection(sectionContext: SectionContext): DataDiffSection<*> {
+    return DataDiffSection.create<CollectionData>(sectionContext)
+        .data(collectionChildrenModels)
+        .renderEventHandler(eventHandlerWithReturn { it.model.renderInfo })
+        .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
+        .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isComponentEquivalent))
+        .build()
   }
 
-  /**
-   * Adds a list of models and a renderer function to convert each model into a component.
-   * @param data A list of models
-   * @param render A function that converts a model into a component
-   * @isSameItem Used during diffing. Determine if two models represent the same item in the
-   * collection
-   * @isSameContent Used during diffing. Determine if two models that represent the same item also
-   * have the same content (and therefore does not need to be updated).
-   */
-  fun <T> items(
-      data: List<T>,
-      isSameItem: (previous: T, next: T) -> Boolean,
-      isSameContent: (previous: T, next: T) -> Boolean = { previous, next -> previous == next },
-      render: (item: T) -> Component,
-  ) {
-    childrenBuilder.child(
-        CollectionDataDiffSection.create<T>(sectionContext)
-            .data(data)
-            .render { ComponentRenderInfo.create().component(render(it)).build() }
-            .checkIsSameItem(isSameItem)
-            .checkIsSameContent(isSameContent)
-            .build())
+  private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
+    return event.previousItem.id == event.nextItem.id &&
+        event.previousItem.listTag == event.nextItem.listTag
   }
 
-  /** Create an isSameItem parameter for items(..) for model comparison using a unique id field. */
-  fun <T> itemId(getField: (T) -> Any?): (previous: T?, next: T?) -> Boolean {
-    return { previous, next ->
-      if (previous === null || next === null) false else getField(previous) == getField(next)
-    }
+  private fun isComponentEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean {
+    return event.previousItem.component?.isEquivalentTo(event.nextItem.component) ?: false
+  }
+
+  private inline fun generateStaticId(): Any {
+    return "staticId:${nextStaticId++}"
   }
 }
