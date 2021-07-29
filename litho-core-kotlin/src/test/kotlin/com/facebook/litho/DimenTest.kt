@@ -136,6 +136,33 @@ class DimenTest {
     assertThat(-9001.9f.sp.toPixels(resourceResolver)).isEqualTo(-90019)
   }
 
+  @Test
+  fun `px values exhibit equality`() {
+    assertThat(0.px).isEqualTo(0.px)
+    assertThat(1.px).isEqualTo(1.px)
+    assertThat((-1).px).isEqualTo((-1).px)
+    assertThat(1.5f.px).isEqualTo(1.5f.px)
+    assertThat((-1.5f).px).isEqualTo((-1.5f).px)
+  }
+
+  @Test
+  fun `dp values exhibit equality`() {
+    assertThat(0.dp).isEqualTo(0.dp)
+    assertThat(1.dp).isEqualTo(1.dp)
+    assertThat((-1).dp).isEqualTo((-1).dp)
+    assertThat(1.5f.dp).isEqualTo(1.5f.dp)
+    assertThat((-1.5f).dp).isEqualTo((-1.5f).dp)
+  }
+
+  @Test
+  fun `sp values exhibit equality`() {
+    assertThat(0.sp).isEqualTo(0.sp)
+    assertThat(1.sp).isEqualTo(1.sp)
+    assertThat((-1).sp).isEqualTo((-1).sp)
+    assertThat(1.5f.sp).isEqualTo(1.5f.sp)
+    assertThat((-1.5f).sp).isEqualTo((-1.5f).sp)
+  }
+
   private class MockResourceResolver(val density: Float, val scaledDensity: Float) :
       ResourceResolver(ComponentContext(ApplicationProvider.getApplicationContext<Context>())) {
     override fun dipsToPixels(dips: Float): Int = FastMath.round(dips * density)

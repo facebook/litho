@@ -24,7 +24,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.ColorInt
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Sp
+import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandler
 import com.facebook.litho.kotlinStyle
@@ -38,7 +38,7 @@ inline fun ComponentScope.TextInput(
     hint: CharSequence = "",
     @ColorInt textColor: Int = Color.BLACK,
     @ColorInt hintTextColor: Int = Color.LTGRAY,
-    textSize: Sp = 14.sp,
+    textSize: Dimen = 14.sp,
     typeface: Typeface = Typeface.DEFAULT,
     textAlignment: Int = View.TEXT_ALIGNMENT_GRAVITY,
     gravity: Int = Gravity.CENTER_VERTICAL or Gravity.START,
@@ -56,7 +56,7 @@ inline fun ComponentScope.TextInput(
         .hint(hint)
         .textColorStateList(ColorStateList.valueOf(textColor))
         .hintColorStateList(ColorStateList.valueOf(hintTextColor))
-        .textSizeSp(textSize.value)
+        .textSizePx(textSize.toPixels())
         .typeface(typeface)
         .textAlignment(textAlignment)
         .gravity(gravity)

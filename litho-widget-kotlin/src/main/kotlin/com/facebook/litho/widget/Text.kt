@@ -24,8 +24,8 @@ import android.text.TextUtils
 import androidx.annotation.ColorInt
 import androidx.annotation.StyleRes
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
-import com.facebook.litho.Sp
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
@@ -42,7 +42,7 @@ inline fun ComponentScope.Text(
     text: CharSequence?,
     style: Style? = null,
     @ColorInt textColor: Int = Color.BLACK,
-    textSize: Sp = 14.sp,
+    textSize: Dimen = 14.sp,
     textStyle: Int = NORMAL,
     typeface: Typeface? = DEFAULT,
     alignment: TextAlignment = TextAlignment.TEXT_START,
@@ -62,7 +62,7 @@ inline fun ComponentScope.Text(
     Text.create(context, defStyleAttr, defStyleRes)
         .text(text)
         .textColor(textColor)
-        .textSizeSp(textSize.value)
+        .textSizePx(textSize.toPixels())
         .textStyle(textStyle)
         .typeface(typeface)
         .alignment(alignment)

@@ -26,13 +26,13 @@ import androidx.annotation.StringRes
 import com.facebook.litho.drawable.ComparableColorDrawable
 
 /** Retrieve a dimensional for a resource ID as a [Dp] value. */
-fun ComponentScope.dpRes(@DimenRes id: Int): Dp =
+fun ComponentScope.dpRes(@DimenRes id: Int): Dimen =
     resourceResolver.pixelsToDips(resourceResolver.resolveDimenSizeRes(id)).dp
 
 /** Retrieve a dimensional for a resource ID as a [Sp] value. */
 // TODO Internally this will be consumed as a pixel value, i.e. converted back. Think about better
 //  approach.
-fun ComponentScope.spRes(@DimenRes id: Int): Sp =
+fun ComponentScope.spRes(@DimenRes id: Int): Dimen =
     resourceResolver.pixelsToSips(resourceResolver.resolveDimenSizeRes(id)).sp
 
 /** Return a string for a resource ID. */

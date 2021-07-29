@@ -20,7 +20,7 @@ import android.graphics.drawable.Drawable
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Sp
+import com.facebook.litho.Dimen
 import com.facebook.litho.eventHandler
 import com.facebook.litho.sp
 
@@ -30,7 +30,7 @@ inline fun ComponentScope.Spinner(
     options: List<String>,
     selectedOption: String,
     @LayoutRes itemLayout: Int = android.R.layout.simple_dropdown_item_1line,
-    selectedTextSize: Sp = 16.sp,
+    selectedTextSize: Dimen = 16.sp,
     @ColorInt selectedTextColor: Int = 0xDE000000.toInt(),
     caret: Drawable? = null,
     noinline onItemSelected: (ItemSelectedEvent) -> Unit
@@ -40,7 +40,7 @@ inline fun ComponentScope.Spinner(
         .selectedOption(selectedOption)
         .itemLayout(itemLayout)
         .selectedTextColor(selectedTextColor)
-        .selectedTextSizeSp(selectedTextSize.value)
+        .selectedTextSizePx(selectedTextSize.toPixels().toFloat())
         .caret(caret)
         .itemSelectedEventHandler(eventHandler(onItemSelected))
         .build()

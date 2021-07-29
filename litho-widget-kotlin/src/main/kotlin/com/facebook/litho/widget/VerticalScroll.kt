@@ -20,8 +20,7 @@ import android.view.MotionEvent
 import androidx.core.widget.NestedScrollView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dp
-import com.facebook.litho.Px
+import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
@@ -30,12 +29,12 @@ import com.facebook.litho.px
 /** Builder function for creating [VerticalScrollSpec] components. */
 @Suppress("FunctionName")
 inline fun ComponentScope.VerticalScroll(
-    initialScrollPosition: Px = 0.px,
+    initialScrollPosition: Dimen = 0.px,
     scrollbarEnabled: Boolean = false,
     scrollbarFadingEnabled: Boolean = true,
     verticalFadingEdgeEnabled: Boolean = false,
     nestedScrollingEnabled: Boolean = false,
-    fadingEdgeLength: Dp = 0.dp,
+    fadingEdgeLength: Dimen = 0.dp,
     fillViewport: Boolean = false,
     incrementalMountEnabled: Boolean = false,
     eventsController: VerticalScrollEventsController? = null,
@@ -46,12 +45,12 @@ inline fun ComponentScope.VerticalScroll(
 ): VerticalScroll =
     VerticalScroll.create(context)
         .childComponent(child())
-        .initialScrollOffsetPixels(initialScrollPosition.value)
+        .initialScrollOffsetPixels(initialScrollPosition.toPixels())
         .scrollbarEnabled(scrollbarEnabled)
         .scrollbarFadingEnabled(scrollbarFadingEnabled)
         .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
         .nestedScrollingEnabled(nestedScrollingEnabled)
-        .fadingEdgeLengthDip(fadingEdgeLength.value)
+        .fadingEdgeLengthPx(fadingEdgeLength.toPixels())
         .fillViewport(fillViewport)
         .incrementalMountEnabled(incrementalMountEnabled)
         .eventsController(eventsController)

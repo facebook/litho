@@ -20,7 +20,7 @@ import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dp
+import com.facebook.litho.Dimen
 import com.facebook.litho.Style
 import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
@@ -30,12 +30,12 @@ import com.facebook.litho.kotlinStyle
 inline fun ComponentScope.Card(
     style: Style? = null,
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
-    cornerRadius: Dp = 2.dp,
-    elevation: Dp = 2.dp,
+    cornerRadius: Dimen = 2.dp,
+    elevation: Dimen = 2.dp,
     @ColorInt clippingColor: Int = Color.WHITE,
     @ColorInt shadowStartColor: Int = 0x37000000,
     @ColorInt shadowEndColor: Int = 0x03000000,
-    shadowBottomOverride: Dp? = null,
+    shadowBottomOverride: Dimen? = null,
     disableClipTopLeft: Boolean = false,
     disableClipTopRight: Boolean = false,
     disableClipBottomLeft: Boolean = false,
@@ -46,8 +46,8 @@ inline fun ComponentScope.Card(
     Card.create(context)
         .transparencyEnabled(transparencyEnabled)
         .cardBackgroundColor(cardBackgroundColor)
-        .cornerRadiusDip(cornerRadius.value)
-        .elevationDip(elevation.value)
+        .cornerRadiusPx(cornerRadius.toPixels().toFloat())
+        .elevationPx(elevation.toPixels().toFloat())
         .clippingColor(clippingColor)
         .shadowStartColor(shadowStartColor)
         .shadowEndColor(shadowEndColor)
