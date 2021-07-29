@@ -82,6 +82,7 @@ import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsCompo
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponent
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.MultiListCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PaginationCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComponent
@@ -154,6 +155,7 @@ class Demos {
                                 name = "MultiList", component = MultiListCollectionKComponent()),
                             SingleDemo(
                                 name = "Pagination", component = PaginationCollectionKComponent()),
+                            SingleDemo(name = "Deps", component = DepsCollectionKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),

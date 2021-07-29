@@ -227,6 +227,7 @@ class CollectionContainerScope {
       val listTag: Any?,
       val component: Component?,
       val renderInfo: RenderInfo,
+      val deps: Array<Any?>?,
   )
   private val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
@@ -239,9 +240,10 @@ class CollectionContainerScope {
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
+      deps: Array<Any?>? = null,
       component: () -> Component?
   ) {
-    childInternal(component(), generateStaticId(), null, isSticky, isFullSpan, spanSize)
+    childInternal(component(), generateStaticId(), null, isSticky, isFullSpan, spanSize, deps)
   }
 
   fun child(
@@ -250,9 +252,10 @@ class CollectionContainerScope {
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
+      deps: Array<Any?>? = null,
       component: () -> Component?
   ) {
-    childInternal(component(), id, listTag, isSticky, isFullSpan, spanSize)
+    childInternal(component(), id, listTag, isSticky, isFullSpan, spanSize, deps)
   }
 
   private fun childInternal(
@@ -262,6 +265,7 @@ class CollectionContainerScope {
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
+      deps: Array<Any?>? = null,
   ) {
     collectionChildrenModels.add(
         CollectionData(
@@ -280,7 +284,8 @@ class CollectionContainerScope {
                   component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
                 }
                 .component(component)
-                .build()))
+                .build(),
+            deps))
   }
 
   fun getSection(sectionContext: SectionContext): DataDiffSection<*> {
@@ -298,7 +303,11 @@ class CollectionContainerScope {
   }
 
   private fun isComponentEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean {
-    return event.previousItem.component?.isEquivalentTo(event.nextItem.component) ?: false
+    if (event.previousItem.deps == null || event.nextItem.deps == null) {
+      return event.previousItem.component?.isEquivalentTo(event.nextItem.component) ?: false
+    }
+
+    return event.previousItem.deps?.contentDeepEquals(event.nextItem.deps) ?: false
   }
 
   private inline fun generateStaticId(): Any {
