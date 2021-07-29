@@ -82,6 +82,7 @@ import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsCompo
 import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponent
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.MultiListCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
@@ -148,6 +149,8 @@ class Demos {
                                 name = "Sticky Header",
                                 component = StickyHeaderCollectionKComponent()),
                             SingleDemo(name = "Span", component = SpanCollectionKComponent()),
+                            SingleDemo(
+                                name = "MultiList", component = MultiListCollectionKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),
