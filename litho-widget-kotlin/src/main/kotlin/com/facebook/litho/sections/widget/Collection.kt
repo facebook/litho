@@ -95,17 +95,43 @@ inline fun ComponentScope.Collection(
     noinline onDataBound: ((c: ComponentContext) -> Unit)? = null,
     handle: Handle? = null,
     noinline onPullToRefresh: (() -> Unit)? = null,
+    noinline pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
     init: CollectionContainerScope.() -> Unit,
 ): RecyclerCollectionComponent {
   val sectionContext = SectionContext(context)
   val containerScope = CollectionContainerScope()
   containerScope.init()
+
+  val combinedOnViewportChanged:
+      (
+          c: ComponentContext,
+          firstVisibleIndex: Int,
+          lastVisibleIndex: Int,
+          totalCount: Int,
+          firstFullyVisibleIndex: Int,
+          lastFullyVisibleIndex: Int) -> Unit =
+      {
+      c,
+      firstVisibleIndex,
+      lastVisibleIndex,
+      totalCount,
+      firstFullyVisibleIndex,
+      lastFullyVisibleIndex ->
+    pagination?.invoke(lastVisibleIndex, totalCount)
+    onViewportChanged?.invoke(
+        c,
+        firstVisibleIndex,
+        lastVisibleIndex,
+        totalCount,
+        firstFullyVisibleIndex,
+        lastFullyVisibleIndex)
+  }
   val children = Children.Builder().child(containerScope.getSection(sectionContext))
   val section =
       CollectionGroupSection.create(sectionContext)
           .childrenBuilder(children)
           .apply { onDataBound?.let { onDataBound(it) } }
-          .apply { onViewportChanged?.let { onViewportChanged(it) } }
+          .onViewportChanged(combinedOnViewportChanged)
           .onPullToRefresh(onPullToRefresh)
           .build()
 
@@ -173,6 +199,23 @@ object CollectionUtils {
 
   fun clearRefreshing(c: ComponentContext, handle: Handle) {
     RecyclerCollectionComponent.onClearRefreshing(c, handle)
+  }
+
+  /**
+   * Create a manager for tail pagination, i.e. fetch more data when a [Collection] is scrolled near
+   * to the end. Should be applied to [Collection]'s pagination prop.
+   * @param offsetBeforeTailFetch trigger a fetch at some offset before the end of the list
+   * @param fetchNextPage lambda to perform the data fetch
+   */
+  fun tailPagination(
+      offsetBeforeTailFetch: Int = 0,
+      fetchNextPage: () -> Unit
+  ): (Int, Int) -> Unit {
+    return { lastVisibleIndex: Int, totalCount: Int ->
+      if (lastVisibleIndex >= totalCount - 1 - offsetBeforeTailFetch) {
+        fetchNextPage()
+      }
+    }
   }
 }
 
