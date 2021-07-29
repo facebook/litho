@@ -1102,19 +1102,19 @@ public abstract class Component
       return;
     }
 
-    final ComponentContext contextForLayout;
-    if (c.getStateHandler() == null) {
-      contextForLayout =
-          new ComponentContext(c, new StateHandler(), c.getTreeProps(), c.getLayoutStateContext());
-    } else {
-      contextForLayout = c.makeNewCopy();
-    }
-
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final LayoutStateContext layoutStateContext = new LayoutStateContext(null, null, null, null);
-    contextForLayout.setLayoutStateContext(layoutStateContext);
+
+    final ComponentContext contextForLayout;
+    if (c.getStateHandler() == null) {
+      contextForLayout =
+          new ComponentContext(c, new StateHandler(), c.getTreeProps(), layoutStateContext);
+    } else {
+      contextForLayout = c.makeNewCopy();
+      contextForLayout.setLayoutStateContext(layoutStateContext);
+    }
 
     final LayoutResultHolder holder =
         Layout.createAndMeasureComponent(
