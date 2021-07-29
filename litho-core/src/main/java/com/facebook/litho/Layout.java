@@ -85,7 +85,7 @@ class Layout {
       layout = create(layoutStateContext, c, component, true);
 
       // This needs to finish layout on the UI thread.
-      if (c.wasLayoutInterrupted()) {
+      if (layoutStateContext != null && layoutStateContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
@@ -93,7 +93,9 @@ class Layout {
         return LayoutResultHolder.interrupted(layout);
       } else {
         // Layout is complete, disable interruption from this point on.
-        c.markLayoutUninterruptible();
+        if (layoutStateContext != null) {
+          layoutStateContext.markLayoutUninterruptible();
+        }
       }
 
     } else {

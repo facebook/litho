@@ -621,14 +621,6 @@ public class ComponentContext implements Cloneable {
     return c.mComponentTree == null || c.mComponentTree.isVisibilityProcessingEnabled();
   }
 
-  boolean wasLayoutCanceled() {
-    return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutReleased();
-  }
-
-  boolean wasLayoutInterrupted() {
-    return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutInterrupted();
-  }
-
   public boolean isReconciliationEnabled() {
     if (getComponentTree() != null) {
       return getComponentTree().isReconciliationEnabled();
@@ -649,12 +641,6 @@ public class ComponentContext implements Cloneable {
 
   void setScopedComponentInfo(ScopedComponentInfo scopedComponentInfo) {
     mScopedComponentInfo = scopedComponentInfo;
-  }
-
-  void markLayoutUninterruptible() {
-    if (mLayoutStateContext != null) {
-      mLayoutStateContext.markLayoutUninterruptible();
-    }
   }
 
   public @ComponentTree.RecyclingMode int getRecyclingMode() {

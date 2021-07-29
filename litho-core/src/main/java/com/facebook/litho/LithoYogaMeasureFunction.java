@@ -49,7 +49,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         component.getScopedContext(layoutStateContext, componentGlobalKey);
 
     try {
-      if (componentScopedContext != null && componentScopedContext.wasLayoutCanceled()) {
+      if (layoutStateContext != null && layoutStateContext.isLayoutReleased()) {
         return 0;
       }
 

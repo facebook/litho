@@ -135,11 +135,11 @@ public final class Row extends Component {
 
     if (children != null) {
       for (Component child : children) {
-        if (c.wasLayoutCanceled()) {
+        if (layoutContext != null && layoutContext.isLayoutReleased()) {
           return ComponentContext.NULL_LAYOUT;
         }
 
-        if (c.wasLayoutInterrupted()) {
+        if (layoutContext != null && layoutContext.isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
           node.child(layoutContext, c, child);

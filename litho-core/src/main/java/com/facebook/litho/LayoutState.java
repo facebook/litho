@@ -759,11 +759,12 @@ public class LayoutState
       @Nullable RenderTreeNode parent,
       final @Nullable DiffNode parentDiffNode,
       final @Nullable DebugHierarchy.Node parentHierarchy) {
-    if (parentContext.wasLayoutCanceled()) {
+    final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
+
+    if (layoutStateContext.isLayoutReleased()) {
       return;
     }
 
-    final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
     final Component component = node.getTailComponent();
     final String componentGlobalKey = node.getTailComponentKey();
     final ComponentContext scopedContext =
@@ -1796,7 +1797,7 @@ public class LayoutState
 
   private static void setSizeAfterMeasureAndCollectResults(
       ComponentContext c, LayoutState layoutState) {
-    if (c.wasLayoutCanceled()) {
+    if (layoutState.getLayoutStateContext().isLayoutReleased()) {
       return;
     }
 

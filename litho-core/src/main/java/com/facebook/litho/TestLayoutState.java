@@ -43,7 +43,7 @@ public class TestLayoutState {
 
     final InternalNode root = createImmediateLayout(c, component);
 
-    if (root == NULL_LAYOUT || c.wasLayoutInterrupted()) {
+    if (root == NULL_LAYOUT || layoutStateContext.isLayoutInterrupted()) {
       return root;
     }
 
