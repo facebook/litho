@@ -193,7 +193,7 @@ class Layout {
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution =
-          isNestedTree(c, component) && !resolveNestedTree;
+          isNestedTree(layoutStateContext, component) && !resolveNestedTree;
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
@@ -264,7 +264,8 @@ class Layout {
     // another component.
     if (node.getTailComponent() == null) {
       final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
-      if (isMountSpecWithMeasure || (isNestedTree(c, component) && !resolveNestedTree)) {
+      if (isMountSpecWithMeasure
+          || (isNestedTree(layoutStateContext, component) && !resolveNestedTree)) {
         node.setMeasureFunction(sMeasureFunction);
       }
     }
@@ -353,7 +354,8 @@ class Layout {
 
       // Check if cached layout can be used.
       final LithoLayoutResult cachedLayout =
-          consumeCachedLayout(parentContext, component, holder, widthSpec, heightSpec);
+          consumeCachedLayout(
+              layoutStateContext, parentContext, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
 
@@ -703,12 +705,13 @@ class Layout {
 
   @Nullable
   static LithoLayoutResult consumeCachedLayout(
+      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component,
       final NestedTreeHolderResult holder,
       final int widthSpec,
       final int heightSpec) {
-    final LayoutState layoutState = c.getLayoutState();
+    final LayoutState layoutState = layoutStateContext.getLayoutState();
     if (layoutState == null) {
       throw new IllegalStateException(
           component.getSimpleName()

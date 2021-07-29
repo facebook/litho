@@ -1646,9 +1646,9 @@ public abstract class Component
     return mCommonProps;
   }
 
-  private final boolean hasCachedLayout(ComponentContext c) {
-    if (c != null) {
-      final LayoutState layoutState = c.getLayoutState();
+  private final boolean hasCachedLayout(final LayoutStateContext layoutStateContext) {
+    if (layoutStateContext != null) {
+      final LayoutState layoutState = layoutStateContext.getLayoutState();
 
       if (layoutState != null) {
         return layoutState.hasCachedLayout(this);
@@ -1718,9 +1718,10 @@ public abstract class Component
     return (component != null && component.getMountType() == MountType.VIEW);
   }
 
-  static boolean isNestedTree(ComponentContext context, @Nullable Component component) {
+  static boolean isNestedTree(
+      final LayoutStateContext layoutStateContext, @Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.hasCachedLayout(context)));
+        || (component != null && component.hasCachedLayout(layoutStateContext)));
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */
