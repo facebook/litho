@@ -2494,10 +2494,11 @@ public class LayoutStateCalculateTest {
 
     c.setLayoutStateContext(null);
 
-    calculateLayoutState(
-        c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+    final LayoutState state =
+        calculateLayoutState(
+            c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
-    assertThat(componentSpy.getLayoutCreatedInWillRender(c.getLayoutStateContext())).isNull();
+    assertThat(componentSpy.getLayoutCreatedInWillRender(state.getLayoutStateContext())).isNull();
 
     verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
 

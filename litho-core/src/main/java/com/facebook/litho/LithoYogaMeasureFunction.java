@@ -110,7 +110,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
 
         final LithoLayoutResult nestedTree =
             Layout.create(
-                parentContext.getLayoutStateContext(),
+                layoutStateContext,
                 parentContext,
                 (NestedTreeHolderResult) result,
                 widthSpec,
