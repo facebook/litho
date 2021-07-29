@@ -131,7 +131,6 @@ public class DefaultInternalNode
 
   private YogaNode mYogaNode;
   private ComponentContext mComponentContext;
-  private @Nullable LayoutStateContext mLayoutStateContext;
 
   @ThreadConfined(ThreadConfined.ANY)
   private List<Component> mComponents = new ArrayList<>(1);
@@ -395,8 +394,6 @@ public class DefaultInternalNode
       final int widthSpec,
       final int heightSpec) {
 
-    setLayoutStateContextRecursively(c.getRenderContext().c);
-
     if (mYogaNode.getStyleDirection() == YogaDirection.INHERIT
         && isLayoutDirectionRTL(c.getAndroidContext())) {
       mYogaNode.setDirection(YogaDirection.RTL);
@@ -652,11 +649,6 @@ public class DefaultInternalNode
   @Override
   public Context getAndroidContext() {
     return mComponentContext.getAndroidContext();
-  }
-
-  @Override
-  public LayoutStateContext getLayoutStateContext() {
-    return mLayoutStateContext;
   }
 
   @Override
@@ -1661,17 +1653,6 @@ public class DefaultInternalNode
 
   private boolean shouldApplyTouchExpansion() {
     return mTouchExpansion != null && mNodeInfo != null && mNodeInfo.hasTouchEventHandlers();
-  }
-
-  protected void setLayoutStateContextRecursively(final LayoutStateContext c) {
-    mLayoutStateContext = c;
-    final int count = getChildCount();
-    for (int i = 0; i < count; i++) {
-      final DefaultInternalNode node = getChildAt(i);
-      if (node != null) {
-        node.setLayoutStateContextRecursively(c);
-      }
-    }
   }
 
   /**

@@ -1048,9 +1048,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1093,9 +1091,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1136,9 +1132,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
-    c.setLayoutStateContext(context);
-    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState, c.getComponentTree()));
 
     final Size size = new Size();
     final TestComponent innerComponent =
