@@ -73,10 +73,6 @@ public class BenchmarkTestHelper {
         c.getAndroidContext(), component, ComponentTree.RecyclingMode.DEFAULT);
   }
 
-  public static void initComponentStateValues(ComponentContext c, Component component) {
-    component.updateInternalChildState(c.getLayoutStateContext(), c, null);
-  }
-
   public static void setMountStateDirty(LithoView lithoView) {
     lithoView.setMountStateDirty();
   }
