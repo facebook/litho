@@ -2277,8 +2277,9 @@ public class RecyclerBinder
             && !mWrapContent) {
           switch (scrollDirection) {
             case VERTICAL:
-              if (MeasureComparisonUtils.isMeasureSpecCompatible(
-                  mLastWidthSpec, widthSpec, mMeasuredSize.width)) {
+              if (mMeasuredSize != null
+                  && MeasureComparisonUtils.isMeasureSpecCompatible(
+                      mLastWidthSpec, widthSpec, mMeasuredSize.width)) {
                 outSize.width = mMeasuredSize.width;
                 outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
 
@@ -2286,8 +2287,9 @@ public class RecyclerBinder
               }
               break;
             default:
-              if (MeasureComparisonUtils.isMeasureSpecCompatible(
-                  mLastHeightSpec, heightSpec, mMeasuredSize.height)) {
+              if (mMeasuredSize != null
+                  && MeasureComparisonUtils.isMeasureSpecCompatible(
+                      mLastHeightSpec, heightSpec, mMeasuredSize.height)) {
                 outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
                 outSize.height = mMeasuredSize.height;
 
