@@ -892,6 +892,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       return;
     }
 
+    if (!mHasVisibilityHint && isVisible) {
+      return;
+    }
+
     // If the LithoView previously had the visibility hint set to false, then when it's set back
     // to true we should trigger a mount, in case the visible bounds changed while mounting was
     // paused.
