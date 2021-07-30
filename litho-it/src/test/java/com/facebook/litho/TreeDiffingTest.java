@@ -151,7 +151,10 @@ public class TreeDiffingTest {
   private DefaultInternalNode createInternalNodeForMeasurableComponent(Component component) {
     component.setScopedContext(mContext);
     final ComponentContext c = new ComponentContext(mContext);
-    return (DefaultInternalNode) Layout.create(mLayoutStateContext, c, component);
+    DefaultInternalNode node =
+        (DefaultInternalNode) Layout.create(mLayoutStateContext, c, component);
+    node.setLayoutStateContextRecursively(mLayoutStateContext);
+    return node;
   }
 
   private long measureInternalNode(

@@ -26,6 +26,8 @@ import com.facebook.yoga.YogaNode;
 /** The {@link LayoutResult} class for Litho */
 public interface LithoLayoutResult extends ComponentLayout, LayoutResult {
 
+  LayoutStateContext getLayoutStateContext();
+
   ComponentContext getContext();
 
   InternalNode getInternalNode();

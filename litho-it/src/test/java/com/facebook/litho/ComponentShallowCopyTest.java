@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
@@ -43,7 +44,9 @@ public class ComponentShallowCopyTest {
     final LayoutState layoutState = new LayoutState(mContext);
 
     final ComponentContext c = new ComponentContext(mContext);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, mContext.getComponentTree()));
+    final LayoutStateContext context = new LayoutStateContext(layoutState, c.getComponentTree());
+    c.setLayoutStateContext(context);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", context);
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c, 100, 100, new Size());
@@ -64,9 +67,14 @@ public class ComponentShallowCopyTest {
     final LayoutState layoutState2 = new LayoutState(mContext);
 
     final ComponentContext c1 = new ComponentContext(mContext);
-    c1.setLayoutStateContext(new LayoutStateContext(layoutState1, mContext.getComponentTree()));
+    final LayoutStateContext lsc1 = new LayoutStateContext(layoutState1, c1.getComponentTree());
+    Whitebox.setInternalState(layoutState1, "mLayoutStateContext", lsc1);
+    c1.setLayoutStateContext(lsc1);
+
     final ComponentContext c2 = new ComponentContext(mContext);
-    c2.setLayoutStateContext(new LayoutStateContext(layoutState2, mContext.getComponentTree()));
+    final LayoutStateContext lsc2 = new LayoutStateContext(layoutState2, c2.getComponentTree());
+    Whitebox.setInternalState(layoutState2, "mLayoutStateContext", lsc2);
+    c2.setLayoutStateContext(lsc2);
 
     Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c1, 100, 100, new Size());
