@@ -224,7 +224,8 @@ public class ComponentContext implements Cloneable {
         parentTreeContext.getTreePropsCopy());
   }
 
-  void setLayoutStateContext(LayoutStateContext layoutStateContext) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void setLayoutStateContext(LayoutStateContext layoutStateContext) {
     mLayoutStateContext = layoutStateContext;
   }
 

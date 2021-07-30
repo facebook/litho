@@ -232,7 +232,8 @@ public class LayoutState
   // Futures.
   private boolean mIsCommitted;
 
-  LayoutState(ComponentContext context) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public LayoutState(ComponentContext context) {
     this(context, null);
   }
 

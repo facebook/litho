@@ -38,6 +38,7 @@ import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
 import com.facebook.litho.InternalNode;
 import com.facebook.litho.InvisibleEvent;
+import com.facebook.litho.LayoutState;
 import com.facebook.litho.LayoutStateContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.NodeConfig;
@@ -429,11 +430,15 @@ public final class ComponentTestHelper {
 
   @Deprecated
   private static InternalNode resolveImmediateSubtree(
-      ComponentContext c, Component component, int widthSpec, int heightSpec) {
-    c.setLayoutStateContextForTesting();
+      LayoutStateContext layoutStateContext,
+      ComponentContext c,
+      Component component,
+      int widthSpec,
+      int heightSpec) {
 
     InternalNode node =
-        TestLayoutState.createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec);
+        TestLayoutState.createAndMeasureTreeForComponent(
+            layoutStateContext, c, component, widthSpec, heightSpec);
 
     return node;
   }
@@ -474,7 +479,13 @@ public final class ComponentTestHelper {
         new ComponentContext(
             ComponentContext.withComponentTree(new ComponentContext(context), tree));
 
-    InternalNode root = resolveImmediateSubtree(c, component, widthSpec, heightSpec);
+    final LayoutState layoutState = new LayoutState(c);
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, tree);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
+    c.setLayoutStateContext(layoutStateContext); // TODO: to be deleted
+
+    InternalNode root =
+        resolveImmediateSubtree(layoutStateContext, c, component, widthSpec, heightSpec);
 
     NodeConfig.sInternalNodeFactory = null;
 

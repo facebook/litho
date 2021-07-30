@@ -81,8 +81,9 @@ public class LayoutStateContext {
     wasReconciled = true;
   }
 
-  @VisibleForTesting
-  LayoutStateContext(final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public LayoutStateContext(
+      final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
     this(layoutState, componentTree, null, null);
   }
 

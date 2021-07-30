@@ -34,14 +34,17 @@ import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 public class TestLayoutState {
 
   public static InternalNode createAndMeasureTreeForComponent(
-      ComponentContext c, Component component, int widthSpec, int heightSpec) {
+      LayoutStateContext layoutStateContext,
+      ComponentContext c,
+      Component component,
+      int widthSpec,
+      int heightSpec) {
 
-    final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
     c = component.updateInternalChildState(layoutStateContext, c, null);
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final InternalNode root = createImmediateLayout(c, component);
+    final InternalNode root = createImmediateLayout(layoutStateContext, c, component);
 
     if (root == NULL_LAYOUT || layoutStateContext.isLayoutInterrupted()) {
       return root;
@@ -53,17 +56,19 @@ public class TestLayoutState {
   }
 
   public static InternalNode newImmediateLayoutBuilder(
-      LayoutStateContext layoutContext, final ComponentContext c, Component component) {
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component) {
     if (component.canResolve()) {
       if (component instanceof Wrapper) {
-        return createImmediateLayout(c, component);
+        return createImmediateLayout(layoutStateContext, c, component);
       }
-      return Layout.create(layoutContext, c, component);
+      return Layout.create(layoutStateContext, c, component);
     }
 
     final InternalNode node = InternalNodeUtils.create(c);
     final ComponentContext scopedContext =
-        component.updateInternalChildState(layoutContext, c, null);
+        component.updateInternalChildState(layoutStateContext, c, null);
 
     node.appendComponent(new TestComponent(component), scopedContext.getGlobalKey());
 
@@ -71,10 +76,11 @@ public class TestLayoutState {
   }
 
   private static InternalNode createImmediateLayout(
-      final ComponentContext c, final Component component) {
+      final LayoutStateContext layoutStateContext,
+      final ComponentContext c,
+      final Component component) {
 
     final InternalNode node;
-    final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
     final InternalNode layoutCreatedInWillRender =
         component.consumeLayoutCreatedInWillRender(layoutStateContext, c);
 
