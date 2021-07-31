@@ -1724,6 +1724,12 @@ public abstract class Component
         || (component != null && component.hasCachedLayout(layoutStateContext)));
   }
 
+  /** @return whether the given component is a pure render component. */
+  @VisibleForTesting
+  public static boolean isPureRender(@Nullable Component component) {
+    return component != null && component.isPureRender();
+  }
+
   /** Store a working range information into a list for later use by {@link LayoutState}. */
   private static void registerWorkingRange(
       String name, WorkingRange workingRange, Component component, String globalKey) {
