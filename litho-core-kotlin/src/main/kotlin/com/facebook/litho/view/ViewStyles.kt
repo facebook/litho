@@ -35,7 +35,8 @@ import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [ObjectStyleItem]. */
-private enum class ObjectField {
+@PublishedApi
+internal enum class ObjectField {
   BACKGROUND,
   CLICKABLE,
   CLIP_CHILDREN,
@@ -55,7 +56,8 @@ private enum class ObjectField {
 }
 
 /** Enums for [FloatStyleItem]. */
-private enum class FloatField {
+@PublishedApi
+internal enum class FloatField {
   ALPHA,
   ELEVATION,
   ROTATION,
@@ -65,7 +67,8 @@ private enum class FloatField {
 }
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
-private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
+@PublishedApi
+internal class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -93,7 +96,8 @@ private class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleIt
 }
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
-private class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
+@PublishedApi
+internal class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -113,7 +117,7 @@ private class FloatStyleItem(val field: FloatField, val value: Float) : StyleIte
  *
  * See [android.view.View.setAlpha]
  */
-fun Style.alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
+inline fun Style.alpha(alpha: Float): Style = this + FloatStyleItem(FloatField.ALPHA, alpha)
 
 /**
  * Sets a background on the View this Component mounts to. Setting this property will cause the
@@ -121,7 +125,7 @@ fun Style.alpha(alpha: Float) = this + FloatStyleItem(FloatField.ALPHA, alpha)
  *
  * See [android.view.View.setBackground]
  */
-fun Style.background(background: Drawable?) =
+inline fun Style.background(background: Drawable?): Style =
     this + ObjectStyleItem(ObjectField.BACKGROUND, background)
 
 /**
@@ -131,7 +135,7 @@ fun Style.background(background: Drawable?) =
  *
  * See [android.view.View.setBackgroundColor]
  */
-fun Style.backgroundColor(@ColorInt backgroundColor: Int) =
+inline fun Style.backgroundColor(@ColorInt backgroundColor: Int): Style =
     this + ObjectStyleItem(ObjectField.BACKGROUND, ComparableColorDrawable.create(backgroundColor))
 
 /**
@@ -140,7 +144,7 @@ fun Style.backgroundColor(@ColorInt backgroundColor: Int) =
  *
  * See [android.view.View.setClickable]
  */
-fun Style.clickable(isClickable: Boolean) =
+inline fun Style.clickable(isClickable: Boolean): Style =
     this + ObjectStyleItem(ObjectField.CLICKABLE, isClickable)
 
 /**
@@ -148,7 +152,7 @@ fun Style.clickable(isClickable: Boolean) =
  * default behavior. It only applies to direct children. Setting this property will cause the
  * Component to be represented as a View at mount time if it wasn't going to already.
  */
-fun Style.clipChildren(clipChildren: Boolean) =
+inline fun Style.clipChildren(clipChildren: Boolean): Style =
     this + ObjectStyleItem(ObjectField.CLIP_CHILDREN, clipChildren)
 
 /**
@@ -158,7 +162,7 @@ fun Style.clipChildren(clipChildren: Boolean) =
  *
  * See [android.view.View.setClipToOutline]
  */
-fun Style.clipToOutline(clipToOutline: Boolean) =
+inline fun Style.clipToOutline(clipToOutline: Boolean): Style =
     this + ObjectStyleItem(ObjectField.CLIP_TO_OUTLINE, clipToOutline)
 
 /**
@@ -169,7 +173,8 @@ fun Style.clipToOutline(clipToOutline: Boolean) =
  *
  * See [android.view.View.setElevation]
  */
-fun Style.elevation(elevation: Float) = this + FloatStyleItem(FloatField.ELEVATION, elevation)
+inline fun Style.elevation(elevation: Float): Style =
+    this + FloatStyleItem(FloatField.ELEVATION, elevation)
 
 /**
  * Setting this property will cause the Component to be focusable. Setting this property will cause
@@ -177,7 +182,7 @@ fun Style.elevation(elevation: Float) = this + FloatStyleItem(FloatField.ELEVATI
  *
  * See [android.view.View.setFocusable]
  */
-fun Style.focusable(isFocusable: Boolean) =
+inline fun Style.focusable(isFocusable: Boolean): Style =
     this + ObjectStyleItem(ObjectField.FOCUSABLE, isFocusable)
 
 /**
@@ -186,7 +191,7 @@ fun Style.focusable(isFocusable: Boolean) =
  *
  * See [android.view.View.setForeground]
  */
-fun Style.foreground(foreground: Drawable?) =
+inline fun Style.foreground(foreground: Drawable?): Style =
     this + ObjectStyleItem(ObjectField.FOREGROUND, foreground)
 
 /**
@@ -194,7 +199,7 @@ fun Style.foreground(foreground: Drawable?) =
  * property will cause the Component to be represented as a View at mount time if it wasn't going to
  * already.
  */
-fun Style.onClick(onClick: (ClickEvent) -> Unit) =
+inline fun Style.onClick(noinline onClick: (ClickEvent) -> Unit): Style =
     this + ObjectStyleItem(ObjectField.ON_CLICK, onClick)
 
 /**
@@ -202,7 +207,7 @@ fun Style.onClick(onClick: (ClickEvent) -> Unit) =
  * this property will cause the Component to be represented as a View at mount time if it wasn't
  * going to already.
  */
-fun Style.onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
+inline fun Style.onLongClick(noinline onLongClick: (LongClickEvent) -> Boolean): Style =
     this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
 
 /**
@@ -213,7 +218,8 @@ fun Style.onLongClick(onLongClick: (LongClickEvent) -> Boolean) =
  *
  * See [android.view.View.setRotation]
  */
-fun Style.rotation(rotation: Float) = this + FloatStyleItem(FloatField.ROTATION, rotation)
+inline fun Style.rotation(rotation: Float): Style =
+    this + FloatStyleItem(FloatField.ROTATION, rotation)
 
 /**
  * Sets the degree that this component is rotated around the horizontal axis through the pivot
@@ -222,7 +228,8 @@ fun Style.rotation(rotation: Float) = this + FloatStyleItem(FloatField.ROTATION,
  *
  * See [android.view.View.setRotationX]
  */
-fun Style.rotationX(rotationX: Float) = this + FloatStyleItem(FloatField.ROTATION_X, rotationX)
+inline fun Style.rotationX(rotationX: Float): Style =
+    this + FloatStyleItem(FloatField.ROTATION_X, rotationX)
 
 /**
  * Sets the degree that this component is rotated around the vertical axis through the pivot point.
@@ -231,7 +238,8 @@ fun Style.rotationX(rotationX: Float) = this + FloatStyleItem(FloatField.ROTATIO
  *
  * See [android.view.View.setRotationY]
  */
-fun Style.rotationY(rotationY: Float) = this + FloatStyleItem(FloatField.ROTATION_Y, rotationY)
+inline fun Style.rotationY(rotationY: Float): Style =
+    this + FloatStyleItem(FloatField.ROTATION_Y, rotationY)
 
 /**
  * Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations and
@@ -241,7 +249,7 @@ fun Style.rotationY(rotationY: Float) = this + FloatStyleItem(FloatField.ROTATIO
  *
  * See [android.view.View.setScaleX] [android.view.View.setScaleY]
  */
-fun Style.scale(scale: Float) = this + FloatStyleItem(FloatField.SCALE, scale)
+inline fun Style.scale(scale: Float): Style = this + FloatStyleItem(FloatField.SCALE, scale)
 
 /**
  * Changes the selection state of this Component. Setting this property will cause the Component to
@@ -249,7 +257,8 @@ fun Style.scale(scale: Float) = this + FloatStyleItem(FloatField.SCALE, scale)
  *
  * See [android.view.View.setSelected]
  */
-fun Style.selected(isSelected: Boolean) = this + ObjectStyleItem(ObjectField.SELECTED, isSelected)
+inline fun Style.selected(isSelected: Boolean): Style =
+    this + ObjectStyleItem(ObjectField.SELECTED, isSelected)
 
 /**
  * Attaches the provided StateListAnimator to this Component. Setting this property will cause the
@@ -259,7 +268,7 @@ fun Style.selected(isSelected: Boolean) = this + ObjectStyleItem(ObjectField.SEL
  *
  * NOTE: This style will be ignored pre-API 21.
  */
-fun Style.stateListAnimator(stateListAnimator: StateListAnimator?) =
+inline fun Style.stateListAnimator(stateListAnimator: StateListAnimator?): Style =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       this + ObjectStyleItem(ObjectField.STATE_LIST_ANIMATOR, stateListAnimator)
     } else {
@@ -270,7 +279,8 @@ fun Style.stateListAnimator(stateListAnimator: StateListAnimator?) =
  * Sets testKey on the View this Component mounts to. Setting this property will cause the Component
  * to be represented as a View at mount time if it wasn't going to already.
  */
-fun Style.testKey(testKey: String?) = this + ObjectStyleItem(ObjectField.TEST_KEY, testKey)
+inline fun Style.testKey(testKey: String?): Style =
+    this + ObjectStyleItem(ObjectField.TEST_KEY, testKey)
 
 /**
  * Sets Activity transition name on the View this Component mounts to. Setting this property will
@@ -278,7 +288,7 @@ fun Style.testKey(testKey: String?) = this + ObjectStyleItem(ObjectField.TEST_KE
  *
  * See [android.view.View.setTransitionName]
  */
-fun Style.transitionName(transitionName: String?) =
+inline fun Style.transitionName(transitionName: String?): Style =
     this + ObjectStyleItem(ObjectField.TRANSITION_NAME, transitionName)
 
 /**
@@ -289,7 +299,7 @@ fun Style.transitionName(transitionName: String?) =
  * - The Component has styles that require a View (like [background])
  * - The Component has the wrapInView style
  */
-fun Style.wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
+inline fun Style.wrapInView(): Style = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
 
 /**
  * Adds a View tag to the View this Component mounts to. Setting this property will cause the
@@ -297,7 +307,8 @@ fun Style.wrapInView() = this + ObjectStyleItem(ObjectField.WRAP_IN_VIEW, null)
  *
  * See [android.view.View.setTag]
  */
-fun Style.viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
+inline fun Style.viewTag(viewTag: Any): Style =
+    this + ObjectStyleItem(ObjectField.VIEW_TAG, viewTag)
 
 /**
  * Adds a set of View tags to the View this Component mounts to. Setting this property will cause
@@ -308,7 +319,7 @@ fun Style.viewTag(viewTag: Any) = this + ObjectStyleItem(ObjectField.VIEW_TAG, v
  *
  * See [android.view.View.setTag]
  */
-fun Style.viewTags(viewTags: SparseArray<out Any>) =
+inline fun Style.viewTags(viewTags: SparseArray<out Any>): Style =
     this + ObjectStyleItem(ObjectField.VIEW_TAGS, viewTags)
 
 /**
@@ -319,5 +330,5 @@ fun Style.viewTags(viewTags: SparseArray<out Any>) =
  *
  * See [android.view.View.setOutlineProvider]
  */
-fun Style.outlineProvider(outlineProvider: ViewOutlineProvider?) =
+inline fun Style.outlineProvider(outlineProvider: ViewOutlineProvider?): Style =
     this + ObjectStyleItem(ObjectField.OUTLINE_PROVIDER, outlineProvider)

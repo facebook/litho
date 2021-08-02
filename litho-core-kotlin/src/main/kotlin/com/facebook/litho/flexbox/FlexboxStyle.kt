@@ -29,7 +29,8 @@ import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
 /** Enums for [FlexboxDimenStyleItem]. */
-private enum class FlexboxDimenField {
+@PublishedApi
+internal enum class FlexboxDimenField {
   FLEX_BASIS,
   POSITION_ALL,
   POSITION_START,
@@ -43,7 +44,8 @@ private enum class FlexboxDimenField {
 }
 
 /** Enums for [FlexboxFloatStyleItem]. */
-private enum class FlexboxFloatField {
+@PublishedApi
+internal enum class FlexboxFloatField {
   FLEX,
   FLEX_GROW,
   FLEX_SHRINK,
@@ -51,14 +53,16 @@ private enum class FlexboxFloatField {
 }
 
 /** Enums for [FlexboxObjectStyleItem]. */
-private enum class FlexboxObjectField {
+@PublishedApi
+internal enum class FlexboxObjectField {
   ALIGN_SELF,
   BORDER,
   POSITION_TYPE,
 }
 
 /** Common style item for all dimen styles. See note on [FlexboxDimenField] about this pattern. */
-private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dimen) : StyleItem {
+@PublishedApi
+internal class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dimen) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(resourceResolver)
@@ -79,7 +83,8 @@ private class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dim
 }
 
 /** Common style item for all float styles. See note on [FlexboxDimenField] about this pattern. */
-private class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : StyleItem {
+@PublishedApi
+internal class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -92,7 +97,8 @@ private class FloatStyleItem(val field: FlexboxFloatField, val value: Float) : S
 }
 
 /** Common style item for all object styles. See note on [FlexboxDimenField] about this pattern. */
-private class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: Any?) : StyleItem {
+@PublishedApi
+internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -126,7 +132,7 @@ private class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: A
  *
  * Defaults: flex-grow = 0, flex-shrink = 1, flex-basis = null
  */
-fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null) =
+inline fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null): Style =
     this +
         grow?.let { FloatStyleItem(FlexboxFloatField.FLEX_GROW, it) } +
         shrink?.let { FloatStyleItem(FlexboxFloatField.FLEX_SHRINK, it) } +
@@ -140,7 +146,7 @@ fun Style.flex(grow: Float? = null, shrink: Float? = null, basis: Dimen? = null)
  * properties.
  * - See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  */
-fun Style.alignSelf(align: YogaAlign) =
+inline fun Style.alignSelf(align: YogaAlign): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.ALIGN_SELF, align)
 
 /**
@@ -149,7 +155,7 @@ fun Style.alignSelf(align: YogaAlign) =
  *
  * Note: This property is not part of the flexbox standard.
  */
-fun Style.aspectRatio(aspectRatio: Float) =
+inline fun Style.aspectRatio(aspectRatio: Float): Style =
     this + FloatStyleItem(FlexboxFloatField.ASPECT_RATIO, aspectRatio)
 
 /**
@@ -166,7 +172,7 @@ fun Style.aspectRatio(aspectRatio: Float) =
  *
  * See https://yogalayout.com/ for a web-based playground for trying out flexbox layouts.
  */
-fun Style.position(
+inline fun Style.position(
     all: Dimen? = null,
     start: Dimen? = null,
     top: Dimen? = null,
@@ -176,7 +182,7 @@ fun Style.position(
     right: Dimen? = null,
     vertical: Dimen? = null,
     horizontal: Dimen? = null
-) =
+): Style =
     this +
         all?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_ALL, it) } +
         start?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_START, it) } +
@@ -189,11 +195,12 @@ fun Style.position(
         horizontal?.let { FlexboxDimenStyleItem(FlexboxDimenField.POSITION_HORIZONTAL, it) }
 
 /** See docs in [position]. */
-fun Style.positionType(positionType: YogaPositionType) =
+inline fun Style.positionType(positionType: YogaPositionType): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.POSITION_TYPE, positionType)
 
 /**
  * Describes how a [Border] should be drawn around this component. Setting this property will cause
  * the Component to be represented as a View at mount time if it wasn't going to already.
  */
-fun Style.border(border: Border) = this + FlexboxObjectStyleItem(FlexboxObjectField.BORDER, border)
+inline fun Style.border(border: Border): Style =
+    this + FlexboxObjectStyleItem(FlexboxObjectField.BORDER, border)

@@ -30,7 +30,8 @@ import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [VisibilityStyleItem]. */
-private enum class VisibilityField {
+@PublishedApi
+internal enum class VisibilityField {
   ON_VISIBLE,
   ON_INVISIBLE,
   ON_FOCUSED,
@@ -38,7 +39,8 @@ private enum class VisibilityField {
   ON_FULL_IMPRESSION,
 }
 
-private class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
+@PublishedApi
+internal class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -58,28 +60,28 @@ private class VisibilityStyleItem(val field: VisibilityField, val value: Any?) :
 }
 
 /** Registers a callback to be called when any part of the Component becomes visible on screen. */
-fun Style.onVisible(onVisible: (VisibleEvent) -> Unit) =
+inline fun Style.onVisible(noinline onVisible: (VisibleEvent) -> Unit): Style =
     this + VisibilityStyleItem(VisibilityField.ON_VISIBLE, onVisible)
 
 /**
  * Registers a callback to be called when a Component becomes fully invisible (e.g. scrolled off or
  * unmounted)
  */
-fun Style.onInvisible(onInvisible: (InvisibleEvent) -> Unit) =
+inline fun Style.onInvisible(noinline onInvisible: (InvisibleEvent) -> Unit): Style =
     this + VisibilityStyleItem(VisibilityField.ON_INVISIBLE, onInvisible)
 
 /**
  * Registers a callback to be called when either the Component occupies at least half of the
  * viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
  */
-fun Style.onFocusedVisible(onFocused: (FocusedVisibleEvent) -> Unit) =
+inline fun Style.onFocusedVisible(noinline onFocused: (FocusedVisibleEvent) -> Unit): Style =
     this + VisibilityStyleItem(VisibilityField.ON_FOCUSED, onFocused)
 
 /**
  * Registers a callback to be called when the Component is no longer focused, i.e. it is not fully
  * visible and does not occupy at least half the viewport.
  */
-fun Style.onUnfocusedVisible(onUnfocused: (UnfocusedVisibleEvent) -> Unit) =
+inline fun Style.onUnfocusedVisible(noinline onUnfocused: (UnfocusedVisibleEvent) -> Unit): Style =
     this + VisibilityStyleItem(VisibilityField.ON_UNFOCUSED, onUnfocused)
 
 /**
@@ -89,5 +91,6 @@ fun Style.onUnfocusedVisible(onUnfocused: (UnfocusedVisibleEvent) -> Unit) =
  * - if the Component is bigger than the viewport, when all the edges have passed through the
  * viewport once
  */
-fun Style.onFullImpression(onFullImpression: (FullImpressionVisibleEvent) -> Unit) =
-    this + VisibilityStyleItem(VisibilityField.ON_FULL_IMPRESSION, onFullImpression)
+inline fun Style.onFullImpression(
+    noinline onFullImpression: (FullImpressionVisibleEvent) -> Unit
+): Style = this + VisibilityStyleItem(VisibilityField.ON_FULL_IMPRESSION, onFullImpression)

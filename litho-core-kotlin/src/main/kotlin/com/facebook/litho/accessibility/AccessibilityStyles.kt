@@ -32,7 +32,8 @@ import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 
 /** Enums for [AccessibilityStyleItem]. */
-private enum class AccessibilityField {
+@PublishedApi
+internal enum class AccessibilityField {
   ACCESSIBILITY_HEADING,
   ACCESSIBILITY_ROLE,
   ACCESSIBILITY_ROLE_DESCRIPTION,
@@ -41,7 +42,8 @@ private enum class AccessibilityField {
   ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
 }
 
-private class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) : StyleItem {
+@PublishedApi
+internal class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -68,21 +70,21 @@ private class AccessibilityStyleItem(val field: AccessibilityField, val value: A
  *
  * See [android.view.View.setAccessibilityHeading].
  */
-fun Style.accessibilityHeading(isAccessibilityHeading: Boolean) =
+inline fun Style.accessibilityHeading(isAccessibilityHeading: Boolean): Style =
     this + AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_HEADING, isAccessibilityHeading)
 
 /**
  * The Android Talkback "role" this component has. This will be read out when the view is visited in
  * Talkback mode. See [AccessibilityRoleType] for possible roles.
  */
-fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: String) =
+inline fun Style.accessibilityRole(@AccessibilityRoleType accessibilityRole: String): Style =
     this + AccessibilityStyleItem(AccessibilityField.ACCESSIBILITY_ROLE, accessibilityRole)
 
 /**
  * The description for this Component's [accessibilityRole]. This will be read out when the view is
  * visited in Talkback mode.
  */
-fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequence) =
+inline fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequence): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ACCESSIBILITY_ROLE_DESCRIPTION, accessibilityRoleDescription)
@@ -92,7 +94,7 @@ fun Style.accessibilityRoleDescription(accessibilityRoleDescription: CharSequenc
  *
  * See [android.view.View.setContentDescription].
  */
-fun Style.contentDescription(contentDescription: CharSequence) =
+inline fun Style.contentDescription(contentDescription: CharSequence): Style =
     this + AccessibilityStyleItem(AccessibilityField.CONTENT_DESCRIPTION, contentDescription)
 
 /**
@@ -102,7 +104,9 @@ fun Style.contentDescription(contentDescription: CharSequence) =
  *
  * See [android.view.View.setImportantForAccessibility].
  */
-fun Style.importantForAccessibility(importantForAccessibility: ImportantForAccessibility) =
+inline fun Style.importantForAccessibility(
+    importantForAccessibility: ImportantForAccessibility
+): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.IMPORTANT_FOR_ACCESSIBILITY, importantForAccessibility.asInt)
@@ -112,16 +116,17 @@ fun Style.importantForAccessibility(importantForAccessibility: ImportantForAcces
  *
  * See [android.view.View.AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo].
  */
-fun Style.onInitializeAccessibilityNodeInfo(
-    onInitializeAccessibilityNodeInfoHandler: (OnInitializeAccessibilityNodeInfoEvent) -> Unit
-) =
+inline fun Style.onInitializeAccessibilityNodeInfo(
+    noinline onInitializeAccessibilityNodeInfoHandler:
+        (OnInitializeAccessibilityNodeInfoEvent) -> Unit
+): Style =
     this +
         AccessibilityStyleItem(
             AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
             onInitializeAccessibilityNodeInfoHandler)
 
 /** Enum values for [importantForAccessibility]. */
-enum class ImportantForAccessibility(internal val asInt: Int) {
+enum class ImportantForAccessibility(val asInt: Int) {
   /** Automatically determine whether a view is important for accessibility. */
   AUTO(IMPORTANT_FOR_ACCESSIBILITY_AUTO),
 

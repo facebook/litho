@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("MatchingDeclarationName")
+
 package com.facebook.litho.transition
 
 import com.facebook.litho.Component
@@ -25,7 +27,8 @@ import com.facebook.litho.Transition
 import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.getCommonPropsHolder
 
-private class TransitionKeyStyleItem(
+@PublishedApi
+internal class TransitionKeyStyleItem(
     val context: ComponentContext,
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType
@@ -42,7 +45,7 @@ private class TransitionKeyStyleItem(
  * Setting this property will cause the Component to be represented as a View at mount time if it
  * wasn't going to already.
  */
-fun Style.transitionKey(
+inline fun Style.transitionKey(
     context: ComponentContext,
     transitionKey: String?,
     transitionKeyType: TransitionKeyType = TransitionKeyType.LOCAL

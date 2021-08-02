@@ -33,7 +33,8 @@ import com.facebook.litho.exhaustive
 import com.facebook.litho.getOrCreateCommonDynamicPropsHolder
 
 /** Enums for [DynamicStyleItem]. */
-private enum class DynamicField {
+@PublishedApi
+internal enum class DynamicField {
   ALPHA,
   BACKGROUND,
   ELEVATION,
@@ -47,7 +48,8 @@ private enum class DynamicField {
 /**
  * Common style item for all dynamic value styles. See note on [DynamicField] about this pattern.
  */
-private class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) : StyleItem {
+@PublishedApi
+internal class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val dynamicProps = component.getOrCreateCommonDynamicPropsHolder()
     when (field) {
@@ -63,25 +65,26 @@ private class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<
   }
 }
 
-fun Style.alpha(alpha: DynamicValue<Float>) = this + DynamicStyleItem(DynamicField.ALPHA, alpha)
+inline fun Style.alpha(alpha: DynamicValue<Float>): Style =
+    this + DynamicStyleItem(DynamicField.ALPHA, alpha)
 
-fun Style.backgroundColor(background: DynamicValue<Int>) =
+inline fun Style.backgroundColor(background: DynamicValue<Int>): Style =
     this + DynamicStyleItem(DynamicField.BACKGROUND, background)
 
-fun Style.elevation(elevation: DynamicValue<Float>) =
+inline fun Style.elevation(elevation: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ELEVATION, elevation)
 
-fun Style.rotation(rotation: DynamicValue<Float>) =
+inline fun Style.rotation(rotation: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.ROTATION, rotation)
 
-fun Style.scaleX(scaleX: DynamicValue<Float>) =
+inline fun Style.scaleX(scaleX: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.SCALE_X, scaleX)
 
-fun Style.scaleY(scaleY: DynamicValue<Float>) =
+inline fun Style.scaleY(scaleY: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.SCALE_Y, scaleY)
 
-fun Style.translationX(translationX: DynamicValue<Float>) =
+inline fun Style.translationX(translationX: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.TRANSLATION_X, translationX)
 
-fun Style.translationY(translationY: DynamicValue<Float>) =
+inline fun Style.translationY(translationY: DynamicValue<Float>): Style =
     this + DynamicStyleItem(DynamicField.TRANSLATION_Y, translationY)

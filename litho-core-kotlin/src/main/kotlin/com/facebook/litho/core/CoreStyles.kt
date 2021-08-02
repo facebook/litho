@@ -26,7 +26,8 @@ import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaEdge
 
 /** Enums for [CoreDimenStyleItem]. */
-private enum class CoreDimenField {
+@PublishedApi
+internal enum class CoreDimenField {
   WIDTH,
   HEIGHT,
   MIN_WIDTH,
@@ -54,7 +55,8 @@ private enum class CoreDimenField {
 }
 
 /** Enums for [CoreFloatStyleItem]. */
-private enum class CoreFloatField {
+@PublishedApi
+internal enum class CoreFloatField {
   WIDTH_PERCENT,
   HEIGHT_PERCENT,
   MIN_WIDTH_PERCENT,
@@ -64,7 +66,8 @@ private enum class CoreFloatField {
 }
 
 /** Common style item for all core dimen styles. See note on [CoreDimenField] about this pattern. */
-private class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : StyleItem {
+@PublishedApi
+internal class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(resourceResolver)
@@ -99,7 +102,8 @@ private class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : 
 }
 
 /** Common style item for all core float styles. See note on [CoreDimenField] about this pattern. */
-private class CoreFloatStyleItem(val field: CoreFloatField, val value: Float) : StyleItem {
+@PublishedApi
+internal class CoreFloatStyleItem(val field: CoreFloatField, val value: Float) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -115,35 +119,38 @@ private class CoreFloatStyleItem(val field: CoreFloatField, val value: Float) : 
 }
 
 /** Sets a specific preferred width for this component when its parent lays it out. */
-fun Style.width(width: Dimen) = this + CoreDimenStyleItem(CoreDimenField.WIDTH, width)
+inline fun Style.width(width: Dimen): Style = this + CoreDimenStyleItem(CoreDimenField.WIDTH, width)
 
 /** Sets a specific preferred height for this component when its parent lays it out. */
-fun Style.height(height: Dimen) = this + CoreDimenStyleItem(CoreDimenField.HEIGHT, height)
+inline fun Style.height(height: Dimen): Style =
+    this + CoreDimenStyleItem(CoreDimenField.HEIGHT, height)
 
 /** Sets a specific preferred percent width for this component when its parent lays it out. */
-fun Style.widthPercent(widthPercent: Float) =
+inline fun Style.widthPercent(widthPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.WIDTH_PERCENT, widthPercent)
 
 /** Sets a specific preferred percent height for this component when its parent lays it out. */
-fun Style.heightPercent(heightPercent: Float) =
+inline fun Style.heightPercent(heightPercent: Float): Style =
     this + CoreFloatStyleItem(CoreFloatField.HEIGHT_PERCENT, heightPercent)
 
 /** Sets a preferred minimum width for this component when its parent lays it out. */
-fun Style.minWidth(minWidth: Dimen) = this + CoreDimenStyleItem(CoreDimenField.MIN_WIDTH, minWidth)
+inline fun Style.minWidth(minWidth: Dimen): Style =
+    this + CoreDimenStyleItem(CoreDimenField.MIN_WIDTH, minWidth)
 
 /** Sets a preferred maximum width for this component when its parent lays it out. */
-fun Style.maxWidth(maxWidth: Dimen) = this + CoreDimenStyleItem(CoreDimenField.MAX_WIDTH, maxWidth)
+inline fun Style.maxWidth(maxWidth: Dimen): Style =
+    this + CoreDimenStyleItem(CoreDimenField.MAX_WIDTH, maxWidth)
 
 /** Sets a preferred minimum height for this component when its parent lays it out. */
-fun Style.minHeight(minHeight: Dimen) =
+inline fun Style.minHeight(minHeight: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MIN_HEIGHT, minHeight)
 
 /** Sets a preferred maximum height for this component when its parent lays it out. */
-fun Style.maxHeight(maxHeight: Dimen) =
+inline fun Style.maxHeight(maxHeight: Dimen): Style =
     this + CoreDimenStyleItem(CoreDimenField.MAX_HEIGHT, maxHeight)
 
 /** Defines padding on the component on a per-edge basis. */
-fun Style.padding(
+inline fun Style.padding(
     all: Dimen? = null,
     horizontal: Dimen? = null,
     vertical: Dimen? = null,
@@ -153,7 +160,7 @@ fun Style.padding(
     bottom: Dimen? = null,
     left: Dimen? = null,
     right: Dimen? = null,
-) =
+): Style =
     this +
         all?.let { CoreDimenStyleItem(CoreDimenField.PADDING_ALL, it) } +
         horizontal?.let { CoreDimenStyleItem(CoreDimenField.PADDING_HORIZONTAL, it) } +
@@ -166,7 +173,7 @@ fun Style.padding(
         right?.let { CoreDimenStyleItem(CoreDimenField.PADDING_RIGHT, it) }
 
 /** Defines margin around the component on a per-edge basis. */
-fun Style.margin(
+inline fun Style.margin(
     all: Dimen? = null,
     horizontal: Dimen? = null,
     vertical: Dimen? = null,
@@ -176,7 +183,7 @@ fun Style.margin(
     bottom: Dimen? = null,
     left: Dimen? = null,
     right: Dimen? = null,
-) =
+): Style =
     this +
         all?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_ALL, it) } +
         horizontal?.let { CoreDimenStyleItem(CoreDimenField.MARGIN_HORIZONTAL, it) } +
