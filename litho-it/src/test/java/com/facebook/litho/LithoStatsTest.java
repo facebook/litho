@@ -21,11 +21,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.TextInput;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.LooperMode;
@@ -44,6 +47,8 @@ public class LithoStatsTest {
   private ComponentsLogger mComponentsLogger;
   private LithoView mLithoView;
   private String mTestComponentKey;
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
@@ -147,7 +152,8 @@ public class LithoStatsTest {
   public void mount_incrementsMountCount() {
     final long beforeMountCount = LithoStats.getComponentMountCount();
 
-    ComponentTestHelper.mountComponent(mContext, mTestComponent);
+    final Component component = TextInput.create(mLithoViewRule.getContext()).build();
+    mLithoViewRule.attachToWindow().setRoot(component).measure().layout();
 
     final long afterMountCount = LithoStats.getComponentMountCount();
     assertThat(afterMountCount - beforeMountCount).isEqualTo(1);
