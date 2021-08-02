@@ -39,8 +39,8 @@ public class AOSPLithoLifecycleProvider implements LithoLifecycleProvider, Lifec
   private LithoLifecycleProviderDelegate mLithoLifecycleProviderDelegate;
 
   public AOSPLithoLifecycleProvider(LifecycleOwner lifecycleOwner) {
-    lifecycleOwner.getLifecycle().addObserver(this);
     mLithoLifecycleProviderDelegate = new LithoLifecycleProviderDelegate();
+    lifecycleOwner.getLifecycle().addObserver(this);
   }
 
   @Override
