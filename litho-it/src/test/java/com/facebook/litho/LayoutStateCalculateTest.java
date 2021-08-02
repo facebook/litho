@@ -63,7 +63,6 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
@@ -73,6 +72,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ItemCardComponent;
 import com.facebook.litho.widget.ItemCardComponentSpec;
 import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.TestNullLayoutComponent;
 import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.Function;
 import com.facebook.yoga.YogaAlign;
@@ -2195,7 +2195,7 @@ public class LayoutStateCalculateTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
-            return create(c).paddingPx(ALL, 2).child(new TestNullLayoutComponent()).build();
+            return create(c).paddingPx(ALL, 2).child(TestNullLayoutComponent.create(c)).build();
           }
         };
 

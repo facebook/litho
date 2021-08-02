@@ -25,10 +25,10 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
 import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
+import com.facebook.litho.widget.TestNullLayoutComponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -249,7 +249,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
                 .paddingPx(ALL, 2)
-                .child(new TestNullLayoutComponent())
+                .child(TestNullLayoutComponent.create(c))
                 .invisibleHandler(c.newEventHandler(2))
                 .build();
           }

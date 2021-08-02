@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing;
+package com.facebook.litho.widget;
 
+import android.annotation.SuppressLint;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 
-/**
- * @deprecated Component should not be directly subclassed, write a layout spec or mount spec
- *     instead
- */
-@Deprecated
-public class TestNullLayoutComponent extends Component {
+@LayoutSpec
+class TestNullLayoutComponentSpec {
 
-  @Override
-  public boolean isEquivalentTo(Component other) {
-    return this == other;
-  }
-
-  @Override
-  protected boolean canMeasure() {
-    return true;
-  }
-
-  @Override
-  protected Component onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec) {
+  @OnCreateLayoutWithSizeSpec
+  @SuppressLint("ComponentsUnneededLayoutWithSizeSpecDetector")
+  static @Nullable Component onCreateLayout(ComponentContext c, int widthSpec, int heightSpec) {
     return null;
   }
 }
