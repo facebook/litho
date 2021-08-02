@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
+import java.lang.ref.WeakReference;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -92,7 +93,7 @@ public class ComponentContext implements Cloneable {
   private int mDefStyleAttr = 0;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable LayoutStateContext mLayoutStateContext;
+  private @Nullable WeakReference<LayoutStateContext> mLayoutStateContext;
 
   private @Nullable ScopedComponentInfo mScopedComponentInfo;
 
@@ -133,7 +134,7 @@ public class ComponentContext implements Cloneable {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateContext);
+    this(context, context.mStateHandler, context.mTreeProps, context.getLayoutStateContext());
   }
 
   public ComponentContext(
@@ -149,7 +150,7 @@ public class ComponentContext implements Cloneable {
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
-    mLayoutStateContext = layoutStateContext;
+    mLayoutStateContext = new WeakReference<>(layoutStateContext);
     mLogger = context.mLogger;
     mLogTag =
         context.mLogTag != null || mComponentTree == null
@@ -226,7 +227,7 @@ public class ComponentContext implements Cloneable {
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void setLayoutStateContext(LayoutStateContext layoutStateContext) {
-    mLayoutStateContext = layoutStateContext;
+    mLayoutStateContext = new WeakReference<>(layoutStateContext);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -239,20 +240,42 @@ public class ComponentContext implements Cloneable {
    * reference hasn't been nullified.
    */
   boolean hasLayoutState() {
-    return mLayoutStateContext != null && mLayoutStateContext.getLayoutState() != null;
+    final LayoutStateContext context;
+    if (mLayoutStateContext != null) {
+      context = mLayoutStateContext.get();
+    } else {
+      context = null;
+    }
+
+    return context != null && context.getLayoutState() != null;
   }
 
   /** Returns true if this method is called during layout creation. */
   boolean isCreateLayoutInProgress() {
-    if (mLayoutStateContext == null || mLayoutStateContext.getLayoutState() == null) {
+    final LayoutStateContext context;
+    if (mLayoutStateContext != null) {
+      context = mLayoutStateContext.get();
+    } else {
+      context = null;
+    }
+
+    if (context == null || context.getLayoutState() == null) {
       return false;
     }
-    return mLayoutStateContext.getLayoutState().isCreateLayoutInProgress();
+
+    return context.getLayoutState().isCreateLayoutInProgress();
   }
 
   @Nullable
   LayoutState getLayoutState() {
-    return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutState();
+    final LayoutStateContext context;
+    if (mLayoutStateContext != null) {
+      context = mLayoutStateContext.get();
+    } else {
+      context = null;
+    }
+
+    return context != null ? context.getLayoutState() : null;
   }
 
   public final Context getAndroidContext() {
@@ -337,7 +360,14 @@ public class ComponentContext implements Cloneable {
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
-    return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutStateFuture();
+    final LayoutStateContext context;
+    if (mLayoutStateContext != null) {
+      context = mLayoutStateContext.get();
+    } else {
+      context = null;
+    }
+
+    return context != null ? context.getLayoutStateFuture() : null;
   }
 
   /**
@@ -516,13 +546,20 @@ public class ComponentContext implements Cloneable {
   }
 
   public int getLayoutVersion() {
-    if (mLayoutStateContext == null || mLayoutStateContext.getLayoutState() == null) {
+    final LayoutStateContext context;
+    if (mLayoutStateContext != null) {
+      context = mLayoutStateContext.get();
+    } else {
+      context = null;
+    }
+
+    if (context == null || context.getLayoutState() == null) {
       throw new IllegalStateException(
           "LayoutVersion is only available during layout calculation."
               + "Please only invoke getLayoutVersion from OnCreateLayout/OnMeasure/OnPrepare");
     }
 
-    return mLayoutStateContext.getLayoutState().mLayoutVersion;
+    return context.getLayoutState().mLayoutVersion;
   }
 
   public ResourceCache getResourceCache() {
@@ -632,7 +669,7 @@ public class ComponentContext implements Cloneable {
 
   @Nullable
   public LayoutStateContext getLayoutStateContext() {
-    return mLayoutStateContext;
+    return mLayoutStateContext != null ? mLayoutStateContext.get() : null;
   }
 
   @Nullable
@@ -672,7 +709,7 @@ public class ComponentContext implements Cloneable {
   public ComponentContext createUpdatedComponentContext(
       LayoutStateContext layoutStateContext, StateHandler stateHandler) {
     final ComponentContext cloned = clone();
-    cloned.mLayoutStateContext = layoutStateContext;
+    cloned.mLayoutStateContext = new WeakReference<>(layoutStateContext);
     cloned.mStateHandler = stateHandler;
     return cloned;
   }
