@@ -1494,12 +1494,15 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final Component next,
       @Nullable final String nextKey,
       final Set<String> keys) {
-    int mode = getReconciliationMode(next.getScopedContext(context, nextKey), current, keys);
+    final boolean isInternalNodeReuseEnabled = parentContext.isInternalNodeReuseEnabled();
+    final int mode =
+        getReconciliationMode(
+            next.getScopedContext(context, nextKey), current, keys, isInternalNodeReuseEnabled);
     final InternalNode layout;
 
     switch (mode) {
       case ReconciliationMode.REUSE:
-        if (parentContext.isInternalNodeReuseEnabled()) {
+        if (isInternalNodeReuseEnabled) {
           commitToLayoutStateRecursively(context, current);
         }
         layout = current;
@@ -1508,7 +1511,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
-        if (parentContext.isInternalNodeReuseEnabled()) {
+        if (isInternalNodeReuseEnabled) {
           commitToLayoutState(context, current);
         }
         layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
@@ -1674,7 +1677,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
    */
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
-      final ComponentContext c, final InternalNode current, final Set<String> keys) {
+      final ComponentContext c,
+      final InternalNode current,
+      final Set<String> keys,
+      final boolean isInternalNodeReuseEnabled) {
     final List<Component> components = current.getComponents();
     final List<String> componentKeys = current.getComponentKeys();
     final Component root = current.getHeadComponent();
@@ -1700,7 +1706,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       }
     }
 
-    return c.isInternalNodeReuseEnabled() ? ReconciliationMode.REUSE : ReconciliationMode.COPY;
+    return isInternalNodeReuseEnabled ? ReconciliationMode.REUSE : ReconciliationMode.COPY;
   }
 
   protected static ComponentContext getContext(LayoutStateContext c, InternalNode node) {

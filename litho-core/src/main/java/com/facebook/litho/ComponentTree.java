@@ -2398,7 +2398,9 @@ public class ComponentTree implements LithoLifecycleListener {
         }
 
         layoutStateContext = localLayoutState.getLayoutStateContext();
-        layoutStateContext.prune();
+        if (isInternalNodeReuseEnabled()) {
+          layoutStateContext.prune();
+        }
         layoutStateContext.freeze();
       }
 
