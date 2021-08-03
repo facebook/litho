@@ -155,8 +155,6 @@ public class ComponentsConfiguration {
   public static String disablePoolsStart = "aaaaa";
   public static String disablePoolsEnd = "zzzzz";
 
-  public static boolean ignoreStateUpdatesForScreenshotTest;
-
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }

@@ -1563,9 +1563,6 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
-    if (ComponentsConfiguration.ignoreStateUpdatesForScreenshotTest) {
-      return;
-    }
 
     final Component root;
     final @Nullable TreeProps rootTreeProps;
