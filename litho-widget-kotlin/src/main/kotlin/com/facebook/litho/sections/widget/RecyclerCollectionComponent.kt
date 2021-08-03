@@ -40,7 +40,7 @@ import com.facebook.litho.widget.StickyHeaderControllerFactory
  * the underlying RecyclerView instead.
  */
 @Suppress("FunctionName")
-fun ComponentScope.RecyclerCollectionComponent(
+inline fun ComponentScope.RecyclerCollectionComponent(
     section: Section,
     recyclerConfiguration: RecyclerConfiguration =
         RecyclerCollectionComponentSpec.recyclerConfiguration,
