@@ -121,7 +121,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   public void updateStateSync_singleComponentC() {
     final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultEnableLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
     ComponentsConfiguration.reuseInternalNodes = false;
+    ComponentsConfiguration.enableLayoutCaching = false;
 
     measureAndLayoutComponent(createSimpleTree());
 
@@ -138,6 +140,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     assertCloneCalledForOnly(layout, set);
 
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.enableLayoutCaching = defaultEnableLayoutCaching;
   }
 
   /*
@@ -185,7 +188,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   public void updateStateAsync_singleComponentC() {
     final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultEnableLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
     ComponentsConfiguration.reuseInternalNodes = false;
+    ComponentsConfiguration.enableLayoutCaching = false;
 
     measureAndLayoutComponent(createSimpleTree());
 
@@ -203,6 +208,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     assertCloneCalledForOnly(layout, set);
 
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.enableLayoutCaching = defaultEnableLayoutCaching;
   }
 
   /*
@@ -251,7 +257,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   public void updateStateSync_singleComponentD() {
     final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultEnableLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
     ComponentsConfiguration.reuseInternalNodes = false;
+    ComponentsConfiguration.enableLayoutCaching = false;
 
     measureAndLayoutComponent(createSimpleTree());
 
@@ -268,6 +276,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     assertCloneCalledForOnly(layout, set);
 
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.enableLayoutCaching = defaultEnableLayoutCaching;
   }
 
   /*
@@ -317,7 +326,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   public void updateStateAsync_singleComponentD() {
 
     final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultEnableLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
     ComponentsConfiguration.reuseInternalNodes = false;
+    ComponentsConfiguration.enableLayoutCaching = false;
 
     measureAndLayoutComponent(createSimpleTree());
 
@@ -335,6 +346,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     assertCloneCalledForOnly(layout, set);
 
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.enableLayoutCaching = defaultEnableLayoutCaching;
   }
 
   /*
@@ -384,7 +396,9 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   @Test
   public void updateStateAsync_multipleComponents() {
     final boolean defaultReuseInternalNode = ComponentsConfiguration.reuseInternalNodes;
+    final boolean defaultEnableLayoutCaching = ComponentsConfiguration.enableLayoutCaching;
     ComponentsConfiguration.reuseInternalNodes = false;
+    ComponentsConfiguration.enableLayoutCaching = false;
     measureAndLayoutComponent(createSimpleTree());
 
     LayoutState current = mComponentTree.getMainThreadLayoutState();
@@ -401,6 +415,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     assertCloneCalledForOnly(layout, set);
 
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode;
+    ComponentsConfiguration.enableLayoutCaching = defaultEnableLayoutCaching;
   }
 
   /*
