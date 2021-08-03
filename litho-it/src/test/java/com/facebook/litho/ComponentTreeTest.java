@@ -214,7 +214,7 @@ public class ComponentTreeTest {
     assertThat(
             layoutState
                 .getRootComponent()
-                .getScopedContext(layoutState.getLayoutStateContext(), "key"))
+                .getScopedContext(layoutState.getLayoutStateContext(), "$key"))
         .isNotEqualTo(scopedContext);
   }
 
