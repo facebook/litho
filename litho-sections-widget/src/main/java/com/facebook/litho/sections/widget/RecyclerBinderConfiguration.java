@@ -57,7 +57,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
   private final int mEstimatedViewportCount;
-  private ErrorEventHandler mErrorEventHandler;
+  @Nullable private final ErrorEventHandler mErrorEventHandler;
 
   public static Builder create() {
     return new Builder();
@@ -240,7 +240,7 @@ public class RecyclerBinderConfiguration {
     private LithoViewFactory mLithoViewFactory;
     private boolean mIgnoreNullLayoutStateError =
         ComponentsConfiguration.ignoreNullLayoutStateError;
-    private ErrorEventHandler mErrorEventHandler;
+    @Nullable private ErrorEventHandler mErrorEventHandler;
 
     Builder() {}
 
@@ -418,7 +418,7 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder errorEventHandler(ErrorEventHandler errorEventHandler) {
+    public Builder errorEventHandler(@Nullable ErrorEventHandler errorEventHandler) {
       mErrorEventHandler = errorEventHandler;
       return this;
     }
