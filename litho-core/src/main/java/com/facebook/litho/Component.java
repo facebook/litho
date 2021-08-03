@@ -110,7 +110,7 @@ public abstract class Component
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
 
-  private static @Nullable ArrayMap<Object, Object> mMetadata = null;
+  private @Nullable ArrayMap<Object, Object> mMetadata = null;
 
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
