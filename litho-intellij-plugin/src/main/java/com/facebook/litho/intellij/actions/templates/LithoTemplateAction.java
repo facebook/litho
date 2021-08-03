@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.actions.templates;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.extensions.ActionPostProcess;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.extensions.TemplateProvider;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -105,6 +106,7 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
   protected void postProcess(
       PsiFile createdElement, String templateName, Map<String, String> customProperties) {
     super.postProcess(createdElement, templateName, customProperties);
+    PostProcessesHolder.postProcesses(createdElement, templateName);
     final Map<String, String> data = new HashMap<>();
     data.put(EventLogger.KEY_TYPE, templateName);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE, data);
@@ -120,5 +122,15 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
                     new LithoTemplateAction(
                         provider.getTemplateName(), provider.getClassNameSuffix()))
             .toArray(AnAction[]::new);
+  }
+
+  private static class PostProcessesHolder {
+    private static final ExtensionPointName<ActionPostProcess> EP_NAME =
+        ExtensionPointName.create("com.facebook.litho.intellij.actionPostProcess");
+
+    private static void postProcesses(PsiFile createdElement, String templateName) {
+      Arrays.stream(EP_NAME.getExtensions())
+          .forEach(provider -> provider.postProcess(createdElement, templateName));
+    }
   }
 }

@@ -59,6 +59,8 @@
       interface="com.facebook.litho.intellij.extensions.EventLogger" />
     <extensionPoint name="templateProvider"
       interface="com.facebook.litho.intellij.extensions.TemplateProvider" />
+    <extensionPoint name="actionPostProcess"
+                    interface="com.facebook.litho.intellij.extensions.ActionPostProcess" />
   </extensionPoints>
 
   <depends>com.intellij.modules.java</depends>

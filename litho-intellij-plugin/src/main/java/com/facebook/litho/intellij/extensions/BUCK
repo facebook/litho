@@ -1,8 +1,11 @@
-load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "ANDROID_STUDIO_PLUGIN_SDK", "fb_java_library")
 
 fb_java_library(
     name = "lib",
     srcs = glob(["*.java"]),
+    provided_deps = [
+        ANDROID_STUDIO_PLUGIN_SDK,
+    ],
     source = "8",
     target = "8",
     visibility = [
