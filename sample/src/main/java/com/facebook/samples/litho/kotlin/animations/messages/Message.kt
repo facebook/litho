@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.animations.messages
 
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementMe
@@ -26,25 +25,15 @@ class Message(
     private val isMe: Boolean,
     private val message: String,
     private val seen: Boolean,
-    private val timestamp: String,
-    private val forceAnimateOnInsert: Boolean = false
+    private val timestamp: String
 ) {
 
-  fun createComponent(c: ComponentContext): RenderInfo {
+  fun createComponent(): RenderInfo {
     val component =
         if (isMe) {
-          ExpandableElementMe.create(c)
-              .messageText(message)
-              .timestamp(timestamp)
-              .seen(seen)
-              .forceAnimateOnAppear(forceAnimateOnInsert)
-              .build()
+          ExpandableElementMe(messageText = message, timestamp = timestamp, seen = seen)
         } else {
-          ExpandableElementOther.create(c)
-              .messageText(message)
-              .timestamp(timestamp)
-              .seen(seen)
-              .build()
+          ExpandableElementOther(messageText = message, timestamp = timestamp, seen = seen)
         }
 
     return ComponentRenderInfo.create().component(component).build()
