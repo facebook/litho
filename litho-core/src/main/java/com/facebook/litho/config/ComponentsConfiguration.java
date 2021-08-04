@@ -32,6 +32,12 @@ import java.util.Set;
  * public consumption, or for use in experiments.
  *
  * <p>These values are safe defaults and should not require manual changes.
+ *
+ * <p>This class hosts all the config parameters that the ComponentTree configures it self ....
+ * enable and disable features ... A Component tree uses the {@link defaultComponentsConfiguration}
+ * by default but a {@link Builder} can be used to create new instances of the config to override
+ * the default parameters ... The default config values can also be overridden by manually setting
+ * their values in {@link defaultBuilder}
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentsConfiguration {
@@ -272,4 +278,33 @@ public class ComponentsConfiguration {
   public static boolean enableVisibilityExtension = true;
 
   public static boolean enableTransitionsExtension = true;
+
+  private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
+
+  private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
+
+  public static void setDefaultComponentsConfigurationBuilder(
+      ComponentsConfiguration.Builder componentsConfigurationBuilder) {
+    defaultBuilder = componentsConfigurationBuilder;
+    defaultComponentsConfiguration = defaultBuilder.build();
+  }
+
+  public static ComponentsConfiguration getDefaultComponentsConfiguration() {
+    return defaultComponentsConfiguration;
+  }
+
+  private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {}
+
+  public static ComponentsConfiguration.Builder create() {
+    return defaultBuilder;
+  }
+
+  public static class Builder {
+
+    protected Builder() {}
+
+    public ComponentsConfiguration build() {
+      return new ComponentsConfiguration(this);
+    }
+  }
 }
