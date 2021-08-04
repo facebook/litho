@@ -35,7 +35,7 @@ class DepsCollectionKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     val color = useState { Color.RED }
-    val size = useState { 14.sp }
+    val size = useState { 14 }
 
     return Column(style = Style.padding(16.dp)) {
       child(
@@ -44,23 +44,23 @@ class DepsCollectionKComponent : KComponent() {
                 Button("Toggle Color") {
                   color.update(if (color.value == Color.RED) Color.BLUE else Color.RED)
                 })
-            child(Button("Toggle Size") { size.update(if (size.value == 14.sp) 28.sp else 14.sp) })
+            child(Button("Toggle Size") { size.update(if (size.value == 14) 28 else 14) })
           })
       child(
           Collection(
               style = Style.flex(grow = 1f),
           ) {
             staticChild {
-              Text("deps = null (all props)", textColor = color.value, textSize = size.value)
+              Text("deps = null (all props)", textColor = color.value, textSize = size.value.sp)
             }
             staticChild(deps = arrayOf(color.value)) {
-              Text("deps = arrayOf(color.value)", textColor = color.value, textSize = size.value)
+              Text("deps = arrayOf(color.value)", textColor = color.value, textSize = size.value.sp)
             }
             staticChild(deps = arrayOf(size.value)) {
-              Text("deps = arrayOf(size.value)", textColor = color.value, textSize = size.value)
+              Text("deps = arrayOf(size.value)", textColor = color.value, textSize = size.value.sp)
             }
             staticChild(deps = arrayOf()) {
-              Text("deps = arrayOf()", textColor = color.value, textSize = size.value)
+              Text("deps = arrayOf()", textColor = color.value, textSize = size.value.sp)
             }
           })
     }
