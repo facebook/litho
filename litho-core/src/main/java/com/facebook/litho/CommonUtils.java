@@ -88,8 +88,11 @@ public class CommonUtils {
     int size = a.size();
 
     for (int i = 0; i < size; i++) {
+      if (a.keyAt(i) != b.keyAt(i)) {
+        return false;
+      }
 
-      if (a.keyAt(i) != b.keyAt(i) || !a.valueAt(i).equals(b.valueAt(i))) {
+      if (!equals(a.valueAt(i), b.valueAt(i))) {
         return false;
       }
     }
