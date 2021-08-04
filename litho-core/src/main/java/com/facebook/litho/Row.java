@@ -107,11 +107,6 @@ public final class Row extends Component {
   }
 
   @Override
-  protected Component onCreateLayout(ComponentContext c) {
-    return this;
-  }
-
-  @Override
   protected InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
     InternalNode node =
         InternalNodeUtils.create(c)

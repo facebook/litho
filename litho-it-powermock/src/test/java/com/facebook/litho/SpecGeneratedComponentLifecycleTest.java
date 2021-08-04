@@ -59,7 +59,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
   "com.facebook.yoga.*"
 })
 @RunWith(ParameterizedRobolectricTestRunner.class)
-public class ComponentLifecycleTest {
+public class SpecGeneratedComponentLifecycleTest {
 
   private static final String KEY = "globalKey";
   private final boolean mUseStatelessComponent;
@@ -88,7 +88,7 @@ public class ComponentLifecycleTest {
         });
   }
 
-  public ComponentLifecycleTest(boolean useStatelessComponent) {
+  public SpecGeneratedComponentLifecycleTest(boolean useStatelessComponent) {
     mUseStatelessComponent = useStatelessComponent;
   }
 
@@ -164,7 +164,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCannotMeasure() {
-    Component component = setUpSpyLayoutSpecWithNullLayout();
+    TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
@@ -175,7 +175,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCanMeasure() {
-    Component component = setUpSpyLayoutSpecWithNullLayout();
+    TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
@@ -186,7 +186,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCannotMeasure() {
-    Component component = setUpSpyLayoutSpecWithNullLayout();
+    TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
@@ -197,7 +197,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCanMeasure() {
-    Component component = setUpSpyLayoutSpecWithNullLayout();
+    TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
@@ -261,7 +261,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCannotMeasure() {
-    Component component =
+    TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
@@ -273,7 +273,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCannotMeasure() {
-    Component component =
+    TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
@@ -286,7 +286,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCanMeasure() {
-    Component component =
+    TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
@@ -301,7 +301,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
-    Component component =
+    TestBaseComponent component =
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
@@ -317,7 +317,7 @@ public class ComponentLifecycleTest {
   public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
-    Component component;
+    TestBaseComponent component;
 
     component =
         new SpyComponentBuilder()
@@ -342,7 +342,8 @@ public class ComponentLifecycleTest {
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
   }
 
-  private Component setUpSpyComponentForCreateLayout(boolean isMountSpec, boolean canMeasure) {
+  private TestBaseComponent setUpSpyComponentForCreateLayout(
+      boolean isMountSpec, boolean canMeasure) {
 
     return new SpyComponentBuilder()
         .isMountSpec(isMountSpec)
@@ -351,8 +352,8 @@ public class ComponentLifecycleTest {
         .build(mContext);
   }
 
-  private Component setUpSpyLayoutSpecWithNullLayout() {
-    Component component =
+  private TestBaseComponent setUpSpyLayoutSpecWithNullLayout() {
+    TestBaseComponent component =
         spy(
             new TestBaseComponent(
                 false,
@@ -371,15 +372,15 @@ public class ComponentLifecycleTest {
     return Component.sMeasureFunction;
   }
 
-  private static Component createSpyComponent(
+  private static TestBaseComponent createSpyComponent(
       ComponentContext context, TestBaseComponent component) {
-    Component spy = spy(component);
+    TestBaseComponent spy = spy(component);
     when(spy.makeShallowCopy()).thenReturn(spy);
     return spy;
   }
 
   @OkToExtend
-  static class TestBaseComponent extends Component {
+  static class TestBaseComponent extends SpecGeneratedComponent {
 
     private final boolean mCanMeasure;
     private final MountType mMountType;
@@ -393,6 +394,7 @@ public class ComponentLifecycleTest {
         InternalNode node,
         boolean isLayoutSpecWithSizeSpecCheck,
         boolean hasState) {
+      super("TestBaseComponent");
       mCanMeasure = canMeasure;
       mMountType = mountType;
       mNode = node;
@@ -470,7 +472,7 @@ public class ComponentLifecycleTest {
       return this;
     }
 
-    Component build(ComponentContext context) {
+    TestBaseComponent build(ComponentContext context) {
       return createSpyComponent(
           context,
           new TestBaseComponent(

@@ -19,6 +19,7 @@ package com.facebook.litho.testing;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.yoga.YogaEdge;
 
 /**
@@ -26,9 +27,11 @@ import com.facebook.yoga.YogaEdge;
  *     instead
  */
 @Deprecated
-public class TestSizeDependentComponent extends Component {
+public class TestSizeDependentComponent extends SpecGeneratedComponent {
 
-  private TestSizeDependentComponent() {}
+  private TestSizeDependentComponent() {
+    super("TestSizeDependentComponent");
+  }
 
   @Override
   protected Component onCreateLayoutWithSizeSpec(

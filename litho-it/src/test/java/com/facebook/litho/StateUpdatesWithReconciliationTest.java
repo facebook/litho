@@ -546,9 +546,10 @@ public class StateUpdatesWithReconciliationTest {
                         MatchNode.forType(TextDrawable.class).prop("text", "Text: 2"))));
   }
 
-  static class DummyComponent extends Component {
+  static class DummyComponent extends SpecGeneratedComponent {
 
     public DummyComponent() {
+      super("DummyComponent");
       setStateContainer(new DummyStateContainer());
     }
 

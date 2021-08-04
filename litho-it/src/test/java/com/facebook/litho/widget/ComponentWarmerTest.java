@@ -27,6 +27,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
+import com.facebook.litho.RenderResult;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -548,9 +549,9 @@ public class ComponentWarmerTest {
     }
 
     @Override
-    protected Component onCreateLayout(ComponentContext c) {
+    protected RenderResult render(ComponentContext c) {
       ranLayout.set(true);
-      return Column.create(c).build();
+      return new RenderResult(Column.create(c).build());
     }
 
     @Override

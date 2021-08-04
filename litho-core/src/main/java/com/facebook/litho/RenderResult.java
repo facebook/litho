@@ -26,7 +26,7 @@ import java.util.List;
  * transitions that should be applied.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-class RenderResult {
+public class RenderResult {
 
   public final @Nullable Component component;
   public final @Nullable List<Transition> transitions;

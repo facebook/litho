@@ -19,6 +19,7 @@ package com.facebook.litho.testing;
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.SpecGeneratedComponent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +31,9 @@ import java.util.Set;
  *     instead
  */
 @Deprecated
-public abstract class TestComponent extends Component {
+public abstract class TestComponent extends SpecGeneratedComponent {
 
   private final Map<EventHandler<?>, Object> mDispatchedEventHandlers = new HashMap<>();
-  private final String mSimpleName;
   private boolean mOnMountCalled;
   private boolean mMounted;
   private boolean mOnUnmountCalled;
@@ -47,11 +47,11 @@ public abstract class TestComponent extends Component {
   private boolean mIsEquivalentToCalled;
 
   protected TestComponent(String simpleName) {
-    mSimpleName = simpleName;
+    super(simpleName);
   }
 
   protected TestComponent() {
-    mSimpleName = "TestComponent";
+    super("TestComponent");
   }
 
   void onMountCalled() {
@@ -143,11 +143,6 @@ public abstract class TestComponent extends Component {
   public boolean isEquivalentTo(Component other) {
     mIsEquivalentToCalled = true;
     return super.isEquivalentTo(other);
-  }
-
-  @Override
-  public String getSimpleName() {
-    return mSimpleName;
   }
 
   /** Reset the tracking of which methods have been called on this component. */

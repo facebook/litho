@@ -19,7 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class StateUpdateTestComponent extends Component {
+class StateUpdateTestComponent extends SpecGeneratedComponent {
 
   private static final int STATE_UPDATE_TYPE_NOOP = 0;
   private static final int STATE_UPDATE_TYPE_INCREMENT = 1;
@@ -44,6 +44,7 @@ class StateUpdateTestComponent extends Component {
   private static final AtomicInteger finalCounterValue = new AtomicInteger(0);
 
   StateUpdateTestComponent() {
+    super("StateUpdateTest");
     setStateContainer(new TestStateContainer());
   }
 

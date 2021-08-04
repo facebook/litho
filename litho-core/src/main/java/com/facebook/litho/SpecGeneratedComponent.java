@@ -57,4 +57,28 @@ public abstract class SpecGeneratedComponent extends Component {
     }
     return current;
   }
+
+  @Override
+  protected RenderResult render(ComponentContext c) {
+    if (Component.isLayoutSpecWithSizeSpec(this)) {
+      return new RenderResult(onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec()));
+    } else {
+      return new RenderResult(onCreateLayout(c));
+    }
+  }
+
+  /**
+   * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
+   * Component} and its sub-components.
+   *
+   * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
+   */
+  protected Component onCreateLayout(ComponentContext c) {
+    return Column.create(c).build();
+  }
+
+  protected Component onCreateLayoutWithSizeSpec(
+      ComponentContext c, int widthSpec, int heightSpec) {
+    return Column.create(c).build();
+  }
 }

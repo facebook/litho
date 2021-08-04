@@ -2509,7 +2509,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(componentSpy.getLayoutCreatedInWillRender(state.getLayoutStateContext())).isNull();
 
-    verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
+    verify(componentSpy, times(1)).render((ComponentContext) any());
 
     ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
@@ -2599,7 +2599,7 @@ public class LayoutStateCalculateTest {
 
     calculateLayoutState(
         c.getAndroidContext(), root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
-    verify(componentSpy, times(1)).onCreateLayout((ComponentContext) any());
+    verify(componentSpy, times(1)).render((ComponentContext) any());
   }
 
   @Test

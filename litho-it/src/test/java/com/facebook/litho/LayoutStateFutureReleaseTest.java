@@ -243,7 +243,7 @@ public class LayoutStateFutureReleaseTest {
     }
 
     @Override
-    protected Component onCreateLayout(ComponentContext c) {
+    protected RenderResult render(ComponentContext c) {
       if (waitActions != null) {
         waitActions.unblock(c.getLayoutStateFuture());
       }
@@ -263,7 +263,7 @@ public class LayoutStateFutureReleaseTest {
         unlockFinishedLayout.countDown();
       }
 
-      return Column.create(c).build();
+      return new RenderResult(Column.create(c).build());
     }
   }
 }

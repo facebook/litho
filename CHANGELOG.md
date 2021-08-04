@@ -14,6 +14,7 @@ _release-date_
  * **Breaking:** Move `RunnableHandler`, `FutureInstrumenter`, and `HandlerInstrumenter` to core RenderCore artifact.
  * New: Almost all lifecycle methods are now covered by the `@OnError` lifecycle API. It's encouraged that high-level Specs implement `@OnError` callbacks in order to gracefully handle errors that may arise in their descendant Specs.
  * **Breaking:** `Component` and `ComponentLifecycle` are now merged as one class (`Component`). `ComponentLifecycle` is now removed. Anywhere `ComponentLifecycle` was directly referenced should be changed to `Component`. Generated components now extend `SpecGeneratedComponent` which extends `Component`.
+   * onCreateLayout/onCreateLayoutWithSizeSpec have been moved to SpecGeneratedComponent. Direct subclasses of Component should implement render() instead.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
 

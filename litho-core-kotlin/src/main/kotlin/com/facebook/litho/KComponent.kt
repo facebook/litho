@@ -32,10 +32,7 @@ abstract class KComponent : Component() {
         }
   }
 
-  final override fun onCreateLayout(c: ComponentContext) =
-      error("Render components should call render() not onCreateLayout()")
-
-  internal final override fun render(c: ComponentContext): RenderResult {
+  final override fun render(c: ComponentContext): RenderResult {
     val componentScope = ComponentScope(c)
     val componentResult = componentScope.render()
     return RenderResult(
@@ -180,12 +177,6 @@ abstract class KComponent : Component() {
 
   final override fun onBoundsDefined(c: ComponentContext?, layout: ComponentLayout?) =
       super.onBoundsDefined(c, layout)
-
-  final override fun onCreateLayoutWithSizeSpec(
-      c: ComponentContext?,
-      widthSpec: Int,
-      heightSpec: Int
-  ) = super.onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec)
 
   final override fun onCreateMountContent(context: Context?) = super.onCreateMountContent(context)
 

@@ -550,9 +550,10 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     }
   }
 
-  static class DummyComponent extends Component {
+  static class DummyComponent extends SpecGeneratedComponent {
 
     public DummyComponent() {
+      super("DummyComponent");
       setStateContainer(new DummyStateContainer());
     }
 

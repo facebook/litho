@@ -19,6 +19,7 @@ package com.facebook.litho.testing.inlinelayoutspec;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.SpecGeneratedComponent;
 import com.facebook.litho.Transition;
 
 /**
@@ -26,11 +27,14 @@ import com.facebook.litho.Transition;
  *     bugs.
  */
 @Deprecated
-public abstract class InlineLayoutSpec extends Component {
+public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
 
-  protected InlineLayoutSpec() {}
+  protected InlineLayoutSpec() {
+    super("InlineLayout");
+  }
 
   protected InlineLayoutSpec(ComponentContext c) {
+    super("InlineLayout");
     setScopedContext(c);
   }
 
@@ -48,10 +52,5 @@ public abstract class InlineLayoutSpec extends Component {
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
     return null;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "InlineLayout";
   }
 }

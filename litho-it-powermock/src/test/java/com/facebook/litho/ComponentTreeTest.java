@@ -178,7 +178,7 @@ public class ComponentTreeTest {
     boolean hasRunLayout;
 
     @Override
-    protected Component onCreateLayout(ComponentContext c) {
+    protected RenderResult render(ComponentContext c) {
       if (unlockWaitingOnCreateLayout != null) {
         unlockWaitingOnCreateLayout.countDown();
       }
@@ -192,7 +192,7 @@ public class ComponentTreeTest {
       }
 
       hasRunLayout = true;
-      return Column.create(c).build();
+      return new RenderResult(Column.create(c).build());
     }
   }
 }

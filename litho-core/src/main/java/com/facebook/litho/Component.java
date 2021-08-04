@@ -511,33 +511,15 @@ public abstract class Component
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
 
   /**
-   * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
-   * Component} and its sub-components.
-   *
-   * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
-   */
-  protected Component onCreateLayout(ComponentContext c) {
-    return Column.create(c).build();
-  }
-
-  protected Component onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec) {
-    return Column.create(c).build();
-  }
-
-  /**
    * Invokes the Component-specific render implementation, returning a RenderResult. The
    * RenderResult will have the Component this Component rendered to (which will then need to be
    * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
    * metadata from that render call such as transitions that should be applied.
    */
-  @ThreadSafe(enableChecks = false)
-  RenderResult render(ComponentContext c) {
-    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-      return new RenderResult(onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec()));
-    } else {
-      return new RenderResult(onCreateLayout(c));
-    }
+  protected RenderResult render(ComponentContext c) {
+    throw new RuntimeException(
+        "Render should not be called on a component which hasn't implemented render! "
+            + getSimpleName());
   }
 
   /**
