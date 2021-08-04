@@ -50,10 +50,11 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by useCached("hello") {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc("hello")
-        }
+        val expensiveString by
+            useCached("hello") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello")
+            }
         return Text(text = expensiveString)
       }
     }
@@ -77,10 +78,11 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by useCached("hello", 100) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc("hello", 100)
-        }
+        val expensiveString by
+            useCached("hello", 100) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello", 100)
+            }
         return Text(text = expensiveString)
       }
     }
@@ -104,10 +106,11 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by useCached("hello", 100, "litho") {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc("hello", 100, "litho")
-        }
+        val expensiveString by
+            useCached("hello", 100, "litho") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("hello", 100, "litho")
+            }
         return Text(text = expensiveString)
       }
     }
@@ -132,10 +135,11 @@ class KCachedTest {
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by useCached("count" + repeatNum.get()) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc("count" + repeatNum.get())
-        }
+        val expensiveString by
+            useCached("count" + repeatNum.get()) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("count" + repeatNum.get())
+            }
         return Text(text = expensiveString)
       }
     }
@@ -162,10 +166,11 @@ class KCachedTest {
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by useCached("world", repeatNum.get()) {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc("world", repeatNum.get())
-        }
+        val expensiveString by
+            useCached("world", repeatNum.get()) {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("world", repeatNum.get())
+            }
         return Text(text = expensiveString)
       }
     }
@@ -192,10 +197,11 @@ class KCachedTest {
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by useCached("world", repeatNum.get(), "litho") {
-          initCounter.incrementAndGet()
-          expensiveRepeatFunc("world", repeatNum.get(), "litho")
-        }
+        val expensiveString by
+            useCached("world", repeatNum.get(), "litho") {
+              initCounter.incrementAndGet()
+              expensiveRepeatFunc("world", repeatNum.get(), "litho")
+            }
         return Text(text = expensiveString)
       }
     }
@@ -278,10 +284,11 @@ class KCachedTest {
   private class Leaf1(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
       KComponent() {
     override fun ComponentScope.render(): Component? {
-      val expensiveString by useCached(str, repeatNum) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc(str, repeatNum)
-      }
+      val expensiveString by
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
       return Text(text = expensiveString)
     }
   }
@@ -289,10 +296,11 @@ class KCachedTest {
   private class Leaf2(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
       KComponent() {
     override fun ComponentScope.render(): Component? {
-      val expensiveString by useCached(str, repeatNum) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc(str, repeatNum)
-      }
+      val expensiveString by
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
       return Text(text = expensiveString)
     }
   }
@@ -303,15 +311,17 @@ class KCachedTest {
       val initCounter: AtomicInteger
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
-      val expensiveString1 by useCached(str, repeatNum) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc(str, repeatNum)
-      }
+      val expensiveString1 by
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
 
-      val expensiveString2 by useCached(str, repeatNum) {
-        initCounter.incrementAndGet()
-        expensiveRepeatFunc(str, repeatNum)
-      }
+      val expensiveString2 by
+          useCached(str, repeatNum) {
+            initCounter.incrementAndGet()
+            expensiveRepeatFunc(str, repeatNum)
+          }
 
       return Row() {
         child(Text(text = expensiveString1))
