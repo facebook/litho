@@ -303,8 +303,16 @@ class CollectionContainerScope {
   }
 
   private fun isComponentEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean {
-    if (event.previousItem.deps == null || event.nextItem.deps == null) {
-      return event.previousItem.component?.isEquivalentTo(event.nextItem.component) ?: false
+    val previousItemDeps = event.previousItem.deps
+    val nextItemDeps = event.nextItem.deps
+
+    if (previousItemDeps == null || nextItemDeps == null) {
+      if (event.previousItem.component?.isEquivalentTo(event.nextItem.component) == false) {
+        return false
+      }
+      return event.previousItem.component?.commonProps?.isEquivalentTo(
+          event.nextItem.component?.commonProps)
+          ?: false
     }
 
     return event.previousItem.deps?.contentDeepEquals(event.nextItem.deps) ?: false

@@ -29,6 +29,7 @@ import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sp
 import com.facebook.litho.useState
+import com.facebook.litho.view.alpha
 import com.facebook.litho.widget.Text
 
 class DepsCollectionKComponent : KComponent() {
@@ -36,6 +37,7 @@ class DepsCollectionKComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
     val color = useState { Color.RED }
     val size = useState { 14 }
+    val alpha = useState { 1f }
 
     return Column(style = Style.padding(16.dp)) {
       child(
@@ -45,22 +47,39 @@ class DepsCollectionKComponent : KComponent() {
                   color.update(if (color.value == Color.RED) Color.BLUE else Color.RED)
                 })
             child(Button("Toggle Size") { size.update(if (size.value == 14) 28 else 14) })
+            child(Button("Toggle Alpha") { alpha.update(if (alpha.value == 0.5f) 1f else 0.5f) })
           })
       child(
           Collection(
               style = Style.flex(grow = 1f),
           ) {
-            staticChild {
-              Text("deps = null (all props)", textColor = color.value, textSize = size.value.sp)
+            staticChild() {
+              Text(
+                  "deps = null (all props)",
+                  textColor = color.value,
+                  textSize = size.value.sp,
+                  style = Style.alpha(alpha.value))
             }
             staticChild(deps = arrayOf(color.value)) {
-              Text("deps = arrayOf(color.value)", textColor = color.value, textSize = size.value.sp)
+              Text(
+                  "deps = arrayOf(color.value)",
+                  textColor = color.value,
+                  textSize = size.value.sp,
+                  style = Style.alpha(alpha.value))
             }
             staticChild(deps = arrayOf(size.value)) {
-              Text("deps = arrayOf(size.value)", textColor = color.value, textSize = size.value.sp)
+              Text(
+                  "deps = arrayOf(size.value)",
+                  textColor = color.value,
+                  textSize = size.value.sp,
+                  style = Style.alpha(alpha.value))
             }
             staticChild(deps = arrayOf()) {
-              Text("deps = arrayOf()", textColor = color.value, textSize = size.value.sp)
+              Text(
+                  "deps = arrayOf()",
+                  textColor = color.value,
+                  textSize = size.value.sp,
+                  style = Style.alpha(alpha.value))
             }
           })
     }
