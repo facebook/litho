@@ -51,7 +51,6 @@ public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private final boolean mCanInterruptAndMoveLayoutsBetweenThreads;
-  private final boolean mUseCancelableLayoutFutures;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
@@ -136,7 +135,6 @@ public class ComponentTreeHolder {
     private @Nullable RunnableHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
-    private boolean useCancelableLayoutFutures;
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
@@ -187,11 +185,6 @@ public class ComponentTreeHolder {
 
     public Builder visibilityProcessingEnabled(boolean visibilityProcessingEnabled) {
       this.visibilityProcessingEnabled = visibilityProcessingEnabled;
-      return this;
-    }
-
-    public Builder useCancelableLayoutFutures(boolean isEnabled) {
-      this.useCancelableLayoutFutures = isEnabled;
       return this;
     }
 
@@ -250,7 +243,6 @@ public class ComponentTreeHolder {
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
-    mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mCanInterruptAndMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
@@ -500,7 +492,6 @@ public class ComponentTreeHolder {
           .incrementalMount(mIncrementalMount)
           .visibilityProcessing(mVisibilityProcessingEnabled)
           .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
-          .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
           .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
           .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
           .recyclingMode(mRecyclingMode)

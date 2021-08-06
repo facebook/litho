@@ -293,15 +293,34 @@ public class ComponentsConfiguration {
     return defaultComponentsConfiguration;
   }
 
-  private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {}
+  public static ComponentsConfiguration.Builder getDefaultComponentsConfigurationBuilder() {
+    return defaultBuilder;
+  }
+
+  public boolean mUseCancelableLayoutFutures;
+
+  public boolean getUseCancelableLayoutFutures() {
+    return mUseCancelableLayoutFutures;
+  }
+
+  private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
+    mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
+  }
 
   public static ComponentsConfiguration.Builder create() {
     return defaultBuilder;
   }
 
   public static class Builder {
+    boolean mUseCancelableLayoutFutures = useCancelableLayoutFutures;
 
     protected Builder() {}
+
+    public ComponentsConfiguration.Builder useCancelableLayoutFutures(
+        boolean useCancelableLayoutFutures) {
+      this.mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+      return this;
+    }
 
     public ComponentsConfiguration build() {
       return new ComponentsConfiguration(this);

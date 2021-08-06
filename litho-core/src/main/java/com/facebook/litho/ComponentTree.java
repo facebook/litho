@@ -116,6 +116,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseInputOnlyInternalNodes;
   private final boolean mIgnoreNullLayoutStateError;
+  private final ComponentsConfiguration mComponentsConfiguration;
 
   @GuardedBy("this")
   private boolean mReleased;
@@ -303,7 +304,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
   private final Object mLayoutStateFutureLock = new Object();
-  private final boolean mUseCancelableLayoutFutures;
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
@@ -431,7 +431,6 @@ public class ComponentTree implements LithoLifecycleListener {
     mHasMounted = builder.hasMounted;
     mIsFirstMount = builder.isFirstMount;
     addMeasureListener(builder.mMeasureListener);
-    mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
@@ -445,6 +444,7 @@ public class ComponentTree implements LithoLifecycleListener {
     shouldSkipShallowCopy = useStatelessComponent && builder.shouldSkipShallowCopy;
     shouldClearPrevContextWhenCommitted =
         useStatelessComponent && builder.shouldClearPrevContextWhenCommitted;
+    mComponentsConfiguration = builder.componentsConfiguration;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -2315,7 +2315,9 @@ public class ComponentTree implements LithoLifecycleListener {
             extraAttribution);
 
     if (localLayoutState == null) {
-      if (!isReleased() && isFromSyncLayout(source) && !mUseCancelableLayoutFutures) {
+      if (!isReleased()
+          && isFromSyncLayout(source)
+          && !mComponentsConfiguration.mUseCancelableLayoutFutures) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
@@ -2701,7 +2703,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * after that because it's in an incomplete state, so it needs to be released.
    */
   public void cancelLayoutAndReleaseTree() {
-    if (!mUseCancelableLayoutFutures) {
+    if (!mComponentsConfiguration.mUseCancelableLayoutFutures) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           TAG,
@@ -2941,7 +2943,7 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable
       LayoutStateFuture layoutStateFuture =
           ComponentTree.this.mMoveLayoutsBetweenThreads
-                  || ComponentTree.this.mUseCancelableLayoutFutures
+                  || ComponentTree.this.mComponentsConfiguration.mUseCancelableLayoutFutures
               ? LayoutStateFuture.this
               : null;
       final ComponentContext contextWithStateHandler;
@@ -3310,7 +3312,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private ErrorEventHandler errorEventHandler = DefaultErrorEventHandler.INSTANCE;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
-    private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private boolean shouldForceAsyncStateUpdate =
@@ -3508,15 +3510,6 @@ public class ComponentTree implements LithoLifecycleListener {
     /** Experimental, do not use!! If used recycling for components may not happen. */
     public Builder recyclingMode(@RecyclingMode int recyclingMode) {
       this.recyclingMode = recyclingMode;
-      return this;
-    }
-
-    /**
-     * Experimental, do not use! If enabled, cancel a layout calculation before it finishes if
-     * there's another layout pending with a newer state of the ComponentTree.
-     */
-    public Builder useCancelableLayoutFutures(boolean isEnabled) {
-      this.useCancelableLayoutFutures = isEnabled;
       return this;
     }
 

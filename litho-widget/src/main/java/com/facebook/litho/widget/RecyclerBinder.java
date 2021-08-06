@@ -144,7 +144,6 @@ public class RecyclerBinder
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
   private final boolean mEnableDetach;
-  private final boolean mUseCancelableLayoutFutures;
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
@@ -379,7 +378,6 @@ public class RecyclerBinder
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
-        boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
         boolean ignoreNullLayoutStateError,
         int recyclingMode,
@@ -401,7 +399,6 @@ public class RecyclerBinder
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
-            boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
             boolean ignoreNullLayoutStateError,
             int recyclingMode,
@@ -418,7 +415,6 @@ public class RecyclerBinder
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
-              .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
               .ignoreNullLayoutStateError(ignoreNullLayoutStateError)
               .recyclingMode(recyclingMode)
@@ -458,7 +454,6 @@ public class RecyclerBinder
     private boolean incrementalMount = true;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean enableDetach = false;
-    private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isSubAdapter;
@@ -719,15 +714,6 @@ public class RecyclerBinder
     /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
     public Builder enableDetach(boolean enableDetach) {
       this.enableDetach = enableDetach;
-      return this;
-    }
-
-    /**
-     * Experimental, do not use! If enabled, cancel a layout calculation before it finishes if
-     * there's another layout pending with a newer state of the ComponentTree.
-     */
-    public Builder useCancelableLayoutFutures(boolean isEnabled) {
-      this.useCancelableLayoutFutures = isEnabled;
       return this;
     }
 
@@ -1019,7 +1005,6 @@ public class RecyclerBinder
     mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mEnableDetach = builder.enableDetach;
-    mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
@@ -3918,7 +3903,6 @@ public class RecyclerBinder
         mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
         mMoveLayoutsBetweenThreads,
-        mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
         mIgnoreNullLayoutStateError,
         mRecyclingMode,

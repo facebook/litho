@@ -158,7 +158,12 @@ public class LayoutStateFutureReleaseTest {
     RunnableHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .componentsConfiguration(
+                ComponentsConfiguration.create().useCancelableLayoutFutures(true).build())
+            .layoutThreadHandler(handler)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
 

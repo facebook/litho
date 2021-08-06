@@ -44,7 +44,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
   private final boolean mMoveLayoutsBetweenThreads;
-  private final boolean mUseCancelableLayoutFutures;
   private final @Nullable ComponentWarmer mComponentWarmer;
   private final @ComponentTree.RecyclingMode int mRecyclingMode;
   private final @Nullable LithoViewFactory mLithoViewFactory;
@@ -88,7 +87,6 @@ public class RecyclerBinderConfiguration {
       boolean enableDetach,
       @Nullable RunnableHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
-      boolean useCancelableLayoutFutures,
       boolean isReconciliationEnabled,
       boolean ignoreNullLayoutStateError,
       @ComponentTree.RecyclingMode int recyclingMode,
@@ -112,7 +110,6 @@ public class RecyclerBinderConfiguration {
     mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
-    mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     mIsReconciliationEnabled = isReconciliationEnabled;
     mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
     mRecyclingMode = recyclingMode;
@@ -167,10 +164,6 @@ public class RecyclerBinderConfiguration {
 
   public @Nullable RunnableHandler getChangeSetThreadHandler() {
     return mChangeSetThreadHandler;
-  }
-
-  public boolean useCancelableLayoutFutures() {
-    return mUseCancelableLayoutFutures;
   }
 
   public boolean moveLayoutsBetweenThreads() {
@@ -239,8 +232,6 @@ public class RecyclerBinderConfiguration {
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-    private boolean mUseCancelableLayoutFutures =
-        ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean mEnableDetach = false;
@@ -270,7 +261,6 @@ public class RecyclerBinderConfiguration {
       this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
-      this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
       this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
@@ -381,11 +371,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder useCancelableLayoutFutures(boolean isEnabled) {
-      this.mUseCancelableLayoutFutures = isEnabled;
-      return this;
-    }
-
     public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
       this.mComponentsConfiguration = componentsConfiguration;
       return this;
@@ -473,7 +458,6 @@ public class RecyclerBinderConfiguration {
           mEnableDetach,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
-          mUseCancelableLayoutFutures,
           mIsReconciliationEnabled,
           mIgnoreNullLayoutStateError,
           mRecyclingMode,
