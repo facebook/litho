@@ -32,6 +32,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ErrorEventHandler;
 import com.facebook.litho.LithoLifecycleProvider;
 import com.facebook.litho.Size;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
@@ -80,6 +81,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               RunnableHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
+              ComponentsConfiguration componentsConfiguration,
               boolean incrementalMountEnabled,
               boolean visibilityProcessing,
               boolean canInterruptAndMoveLayoutsBetweenThreads,

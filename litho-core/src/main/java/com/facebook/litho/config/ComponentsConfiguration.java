@@ -293,6 +293,8 @@ public class ComponentsConfiguration {
     return defaultComponentsConfiguration;
   }
 
+  private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {}
+
   public static ComponentsConfiguration.Builder create() {
     return defaultBuilder;
   }
@@ -302,7 +304,7 @@ public class ComponentsConfiguration {
     protected Builder() {}
 
     public ComponentsConfiguration build() {
-      return new ComponentsConfiguration();
+      return new ComponentsConfiguration(this);
     }
   }
 }

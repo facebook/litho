@@ -61,6 +61,7 @@ public class ComponentTreeHolder {
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable ComponentTreeHolderLifecycleProvider mComponentTreeHolderLifecycleProvider;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
+  private final ComponentsConfiguration mComponentsConfiguration;
 
   private @Nullable Boolean mUseStateLessComponent;
   private @Nullable Boolean mShouldSkipShallowCopy;
@@ -128,6 +129,8 @@ public class ComponentTreeHolder {
   public static class Builder {
 
     private RenderInfo renderInfo;
+    private ComponentsConfiguration componentsConfiguration =
+        ComponentsConfiguration.getDefaultComponentsConfiguration();
     private RunnableHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private @Nullable RunnableHandler preallocateMountContentHandler;
@@ -147,6 +150,11 @@ public class ComponentTreeHolder {
 
     public Builder renderInfo(RenderInfo renderInfo) {
       this.renderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
+      return this;
+    }
+
+    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
+      this.componentsConfiguration = componentsConfiguration;
       return this;
     }
 
@@ -253,6 +261,7 @@ public class ComponentTreeHolder {
     mParentLifecycle = builder.parentLifecycle;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
+    mComponentsConfiguration = builder.componentsConfiguration;
   }
 
   @VisibleForTesting
@@ -495,6 +504,7 @@ public class ComponentTreeHolder {
           .ignoreNullLayoutStateError(mIgnoreNullLayoutStateError)
           .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
           .recyclingMode(mRecyclingMode)
+          .componentsConfiguration(mComponentsConfiguration)
           .build();
 
       if (mUseStateLessComponent != null) {

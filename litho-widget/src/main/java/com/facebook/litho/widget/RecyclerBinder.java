@@ -152,6 +152,7 @@ public class RecyclerBinder
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mRecyclerViewItemPrefetch;
   private final @Nullable ErrorEventHandler mErrorEventHandler;
+  private final ComponentsConfiguration mComponentsConfiguration;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -374,6 +375,7 @@ public class RecyclerBinder
         RenderInfo renderInfo,
         @Nullable RunnableHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
+        ComponentsConfiguration componentsConfiguration,
         boolean incrementalMountEnabled,
         boolean visibilityProcessingEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
@@ -395,6 +397,7 @@ public class RecyclerBinder
             RenderInfo renderInfo,
             @Nullable RunnableHandler layoutHandler,
             @Nullable ComponentTreeMeasureListenerFactory measureListenerFactory,
+            ComponentsConfiguration componentsConfiguration,
             boolean incrementalMountEnabled,
             boolean visibilityProcessingEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
@@ -411,6 +414,7 @@ public class RecyclerBinder
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
+              .componentsConfiguration(componentsConfiguration)
               .incrementalMount(incrementalMountEnabled)
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
@@ -432,6 +436,8 @@ public class RecyclerBinder
 
     private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
+    private ComponentsConfiguration componentsConfiguration =
+        ComponentsConfiguration.getDefaultComponentsConfiguration();
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
@@ -502,6 +508,11 @@ public class RecyclerBinder
      */
     public Builder layoutInfo(LayoutInfo layoutInfo) {
       this.layoutInfo = layoutInfo;
+      return this;
+    }
+
+    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
+      this.componentsConfiguration = componentsConfiguration;
       return this;
     }
 
@@ -934,6 +945,7 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
     mRecyclerViewItemPrefetch = builder.recyclerViewItemPrefetch;
+    mComponentsConfiguration = builder.componentsConfiguration;
 
     if (mLayoutHandlerFactory == null) {
 
@@ -3902,6 +3914,7 @@ public class RecyclerBinder
         renderInfo,
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
+        mComponentsConfiguration,
         mIncrementalMountEnabled,
         mVisibilityProcessingEnabled,
         mMoveLayoutsBetweenThreads,

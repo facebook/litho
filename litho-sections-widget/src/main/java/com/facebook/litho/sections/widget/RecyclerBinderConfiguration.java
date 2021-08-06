@@ -33,6 +33,12 @@ import java.util.List;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
+  /**
+   * Used to pass through configuration flags to the componentTree that can be read directly from
+   * this componentsConfiguration instance.
+   */
+  private final ComponentsConfiguration mComponentsConfiguration;
+
   private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsCircular;
@@ -70,6 +76,7 @@ public class RecyclerBinderConfiguration {
   private RecyclerBinderConfiguration(
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
+      ComponentsConfiguration componentsConfiguration,
       boolean circular,
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
@@ -93,6 +100,7 @@ public class RecyclerBinderConfiguration {
       @Nullable ErrorEventHandler errorEventHandler) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
+    mComponentsConfiguration = componentsConfiguration;
     mIsCircular = circular;
     mIsWrapContent = wrapContent;
     mInvalidStateLogParamsList = invalidStateLogParamsList;
@@ -209,6 +217,10 @@ public class RecyclerBinderConfiguration {
     return mErrorEventHandler;
   }
 
+  public ComponentsConfiguration getComponentsConfiguration() {
+    return mComponentsConfiguration;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -218,6 +230,8 @@ public class RecyclerBinderConfiguration {
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
     private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
+    private ComponentsConfiguration mComponentsConfiguration =
+        ComponentsConfiguration.getDefaultComponentsConfiguration();
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCircular = false;
     private boolean mWrapContent = false;
@@ -248,6 +262,7 @@ public class RecyclerBinderConfiguration {
       this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
       this.mInvalidStateLogParamsList = configuration.mInvalidStateLogParamsList;
       this.mThreadPoolConfiguration = configuration.mThreadPoolConfiguration;
+      this.mComponentsConfiguration = configuration.mComponentsConfiguration;
       this.mRangeRatio = configuration.mRangeRatio;
       this.mCircular = configuration.mIsCircular;
       this.mWrapContent = configuration.mIsWrapContent;
@@ -371,6 +386,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
+      this.mComponentsConfiguration = componentsConfiguration;
+      return this;
+    }
+
     public Builder changeSetThreadHandler(@Nullable RunnableHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
@@ -441,6 +461,7 @@ public class RecyclerBinderConfiguration {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
           mLayoutHandlerFactory,
+          mComponentsConfiguration,
           mCircular,
           mWrapContent,
           mInvalidStateLogParamsList,

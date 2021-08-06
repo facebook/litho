@@ -3290,6 +3290,8 @@ public class ComponentTree implements LithoLifecycleListener {
     private Component root;
 
     // optional
+    private ComponentsConfiguration componentsConfiguration =
+        ComponentsConfiguration.getDefaultComponentsConfiguration();
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
     private RunnableHandler layoutThreadHandler;
@@ -3326,6 +3328,13 @@ public class ComponentTree implements LithoLifecycleListener {
 
     protected Builder(ComponentContext context) {
       this.context = context;
+    }
+
+    public Builder componentsConfiguration(ComponentsConfiguration componentsConfiguration) {
+      if (componentsConfiguration != null) {
+        this.componentsConfiguration = componentsConfiguration;
+      }
+      return this;
     }
 
     /**

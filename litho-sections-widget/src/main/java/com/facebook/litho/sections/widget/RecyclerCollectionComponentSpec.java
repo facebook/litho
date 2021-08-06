@@ -322,6 +322,7 @@ public class RecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount)
             .enableDetach(binderConfiguration.getEnableDetach())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
+            .componentsConfiguration(binderConfiguration.getComponentsConfiguration())
             .useCancelableLayoutFutures(binderConfiguration.useCancelableLayoutFutures())
             .canInterruptAndMoveLayoutsBetweenThreads(
                 binderConfiguration.moveLayoutsBetweenThreads())
