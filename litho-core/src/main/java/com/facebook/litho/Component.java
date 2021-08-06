@@ -956,11 +956,15 @@ public abstract class Component
         && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
   }
 
-  public final @Nullable <K, V> V getMetadata(K key) {
-    if (mMetadata == null) {
+  @Nullable
+  public <T> T getMetaData(Class<T> key) {
+    if (mScopedContext == null) {
       return null;
     }
-    return (V) mMetadata.get(key);
+    if (mScopedContext.getTreeProps() == null) {
+      return null;
+    }
+    return mScopedContext.getTreeProps().get(key);
   }
 
   /**
