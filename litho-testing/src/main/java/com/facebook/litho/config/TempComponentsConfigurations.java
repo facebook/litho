@@ -63,7 +63,7 @@ public class TempComponentsConfigurations {
   }
 
   public static void setUseExtensionsWithMountDelegate(boolean value) {
-    ComponentsConfiguration.delegateToRenderCoreMount = value;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = value;
   }
 
   public static void restoreUseExtensionsWithMountDelegate() {
