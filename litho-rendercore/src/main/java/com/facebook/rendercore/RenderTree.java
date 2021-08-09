@@ -18,6 +18,8 @@ package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
+import java.util.Locale;
 import java.util.Map;
 
 /** TODO add javadoc */
@@ -93,5 +95,27 @@ public class RenderTree {
 
   public RenderTreeNode getRoot() {
     return mRoot;
+  }
+  
+  public String generateDebugString() {
+    final StringBuilder stringBuilder = new StringBuilder();
+    final Locale l = Locale.US;
+
+    final String widthSpecDesc = MeasureSpecUtils.getMeasureSpecDescription(mWidthSpec);
+    final String heightSpecDesc = MeasureSpecUtils.getMeasureSpecDescription(mHeightSpec);
+
+    stringBuilder.append("RenderTree details:\n");
+    stringBuilder.append(
+        String.format(l, "WidthSpec=%s; HeightSpec=%s\n", 
+            widthSpecDesc, heightSpecDesc));
+    
+    stringBuilder.append(
+        String.format(l, "Full child list (size = %d):\n", mFlatList.length));
+    
+    for (RenderTreeNode node : mFlatList) {
+      stringBuilder.append(String.format(l, "%s\n", node.generateDebugString(this)));
+    }
+
+    return stringBuilder.toString();
   }
 }

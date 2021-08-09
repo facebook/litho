@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @DoNotStrip
 public class RenderTreeNode {
@@ -120,5 +121,25 @@ public class RenderTreeNode {
   @Nullable
   public Object getLayoutData() {
     return mLayoutData;
+  }
+
+  public String generateDebugString(@Nullable RenderTree tree) {
+    final long id = mRenderUnit.getId();
+    final String contentType = mRenderUnit.getRenderContentType().toString();
+    final int index = tree != null ? tree.getRenderTreeNodeIndex(mRenderUnit.getId()) : -1;
+    final String bounds = mBounds.toShortString();
+    final int childCount = getChildrenCount();
+
+    return String.format(
+        Locale.US,
+        "Id=%d; contentType='%s'; indexInTree=%d; posInParent=%d; bounds=%s; absPosition=[%d, %d]; childCount=%d;",
+        id,
+        contentType,
+        index,
+        mPositionInParent,
+        bounds,
+        mAbsoluteX,
+        mAbsoluteY,
+        childCount);
   }
 }

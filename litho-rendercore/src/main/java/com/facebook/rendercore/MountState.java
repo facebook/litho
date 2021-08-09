@@ -507,7 +507,7 @@ public class MountState implements MountDelegateTarget {
 
     return item;
   }
-
+  
   private void mountRenderUnit(int index, RenderTreeNode renderTreeNode) {
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
@@ -522,17 +522,14 @@ public class MountState implements MountDelegateTarget {
           parentRenderUnit,
           "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
               + "Parent RenderUnit: "
-              + "id="
-              + parentRenderUnit.getId()
-              + "; contentType='"
-              + parentRenderUnit.getRenderContentType()
+              + hostTreeNode.generateDebugString(mRenderTree)
               + "'.\n"
               + "Child RenderUnit: "
-              + "id="
-              + renderUnit.getId()
-              + "; contentType='"
-              + renderUnit.getRenderContentType()
-              + "'.");
+              + renderTreeNode.generateDebugString(mRenderTree)
+              + "'.\n"
+              + "Entire tree:\n"
+              + mRenderTree.generateDebugString()
+              + ".\n");
     }
 
     final Object parentContent = mountItem.getContent();

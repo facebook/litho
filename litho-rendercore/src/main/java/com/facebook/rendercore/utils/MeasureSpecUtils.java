@@ -19,8 +19,11 @@ package com.facebook.rendercore.utils;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.View.MeasureSpec.getMode;
+import static android.view.View.MeasureSpec.getSize;
 
 import android.view.View;
+import java.util.Locale;
 
 /**
  * An utility class to verify that an old measured size is still compatible to be used with a new
@@ -85,5 +88,24 @@ public class MeasureSpecUtils {
         && newSizeSpecMode == AT_MOST
         && oldSizeSpecSize > newSizeSpecSize
         && oldMeasuredSize <= newSizeSpecSize;
+  }
+  
+  public static String getMeasureSpecDescription(int measureSpec) {
+    final int value = getSize(measureSpec);
+    final String mode = getModeDescription(getMode(measureSpec));
+    
+    return String.format(Locale.US, "[%d, %s]", value, mode);
+  }
+  
+  public static String getModeDescription(int mode) {
+    if (mode == AT_MOST) {
+      return "AT_MOST";
+    } else if (mode == EXACTLY) {
+      return "EXACTLY";
+    } else if (mode == UNSPECIFIED) {
+      return "UNSPECIFIED";
+    } else {
+      return "INVALID";
+    }
   }
 }
