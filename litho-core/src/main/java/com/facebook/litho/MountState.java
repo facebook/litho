@@ -922,7 +922,12 @@ class MountState implements MountDelegateTarget {
 
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
-      updateMountedContent(currentMountItem, nextLayoutOutput, currentLayoutOutput);
+      updateMountedContent(
+          currentMountItem,
+          layoutOutputComponent,
+          getComponentContext(node),
+          itemComponent,
+          getComponentContext(currentMountItem));
     }
 
     if (shouldUpdateViewInfo) {
@@ -1149,9 +1154,12 @@ class MountState implements MountDelegateTarget {
   }
 
   private void updateMountedContent(
-      MountItem item, LayoutOutput newLayoutOutput, LayoutOutput previousLayoutOutput) {
-    final Component newComponent = newLayoutOutput.getComponent();
-    final Component previousComponent = previousLayoutOutput.getComponent();
+      MountItem item,
+      final Component newComponent,
+      ComponentContext newContext,
+      final Component previousComponent,
+      final ComponentContext previousContext) {
+
     if (isHostSpec(newComponent)) {
       return;
     }
@@ -1161,9 +1169,8 @@ class MountState implements MountDelegateTarget {
     // Call unmount and mount in sequence to make sure all the the resources are correctly
     // de-allocated. It's possible for previousContent to equal null - when the root is
     // interactive we create a LayoutOutput without content in order to set up click handling.
-    previousComponent.unmount(
-        getContextForComponent(previousComponent, previousLayoutOutput), previousContent);
-    newComponent.mount(getContextForComponent(newComponent, newLayoutOutput), previousContent);
+    previousComponent.unmount(previousContext, previousContent);
+    newComponent.mount(newContext, previousContent);
   }
 
   private void mountLayoutOutput(
@@ -1195,7 +1202,7 @@ class MountState implements MountDelegateTarget {
         ComponentsPools.acquireMountContent(
             mContext.getAndroidContext(), component, mRecyclingMode);
 
-    final ComponentContext context = getContextForComponent(component, layoutOutput);
+    final ComponentContext context = getContextForComponent(node);
     component.mount(context, content);
 
     // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
@@ -1208,7 +1215,7 @@ class MountState implements MountDelegateTarget {
     final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
 
     // 5. Notify the component that mounting has completed
-    bindComponentToContent(item, component, getComponentContext(node), content);
+    bindComponentToContent(item, component, context, content);
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
@@ -2313,7 +2320,7 @@ class MountState implements MountDelegateTarget {
     final LayoutOutput layoutOutput = getLayoutOutput(item);
     final Component component = layoutOutput.getComponent();
     final Object content = item.getContent();
-    final ComponentContext context = getContextForComponent(component, layoutOutput);
+    final ComponentContext context = getContextForComponent(item.getRenderTreeNode());
 
     // Call the component's unmount() method.
     if (item.isBound()) {
@@ -2736,8 +2743,8 @@ class MountState implements MountDelegateTarget {
    * need one, as we could never call a state update on it. Instead it's okay to use the context
    * that is passed to MountState from the LithoView, which is not scoped.
    */
-  private ComponentContext getContextForComponent(Component component, LayoutOutput layoutOutput) {
-    ComponentContext c = layoutOutput.getScopedContext();
+  private ComponentContext getContextForComponent(RenderTreeNode node) {
+    ComponentContext c = getComponentContext(node);
     return c == null ? mContext : c;
   }
 
@@ -2747,17 +2754,15 @@ class MountState implements MountDelegateTarget {
       final ComponentContext context,
       final Object content) {
 
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
-    component.bind(getContextForComponent(component, layoutOutput), content);
+    component.bind(getContextForComponent(mountItem.getRenderTreeNode()), content);
     mDynamicPropsManager.onBindComponentToContent(component, context, content);
     mountItem.setIsBound(true);
   }
 
   private void unbindComponentFromContent(
       MountItem mountItem, Component component, Object content) {
-    final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     mDynamicPropsManager.onUnbindComponent(component, content);
-    component.unbind(getContextForComponent(component, layoutOutput), content);
+    component.unbind(getContextForComponent(mountItem.getRenderTreeNode()), content);
     mountItem.setIsBound(false);
   }
 
