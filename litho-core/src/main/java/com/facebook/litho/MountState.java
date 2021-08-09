@@ -893,6 +893,9 @@ class MountState implements MountDelegateTarget {
     final Component itemComponent = currentLayoutOutput.getComponent();
     final Object currentContent = currentMountItem.getContent();
     final ComponentHost host = (ComponentHost) currentMountItem.getHost();
+    final ComponentContext currentContext = getComponentContext(currentMountItem);
+    final ComponentContext nextContext = getComponentContext(node);
+
     if (layoutOutputComponent == null) {
       throw new RuntimeException("Trying to update a MountItem with a null Component.");
     }
@@ -901,9 +904,9 @@ class MountState implements MountDelegateTarget {
     final boolean shouldUpdate =
         shouldUpdateMountItem(
             nextLayoutOutput,
-            getComponentContext(node),
+            nextContext,
             currentLayoutOutput,
-            getComponentContext(currentMountItem),
+            currentContext,
             useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdateViewInfo =
@@ -927,11 +930,7 @@ class MountState implements MountDelegateTarget {
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
       updateMountedContent(
-          currentMountItem,
-          layoutOutputComponent,
-          getComponentContext(node),
-          itemComponent,
-          getComponentContext(currentMountItem));
+          currentMountItem, layoutOutputComponent, nextContext, itemComponent, currentContext);
     }
 
     if (shouldUpdateViewInfo) {
@@ -939,8 +938,7 @@ class MountState implements MountDelegateTarget {
     }
 
     // 6. Set the mounted content on the Component and call the bind callback.
-    bindComponentToContent(
-        currentMountItem, layoutOutputComponent, getComponentContext(node), currentContent);
+    bindComponentToContent(currentMountItem, layoutOutputComponent, nextContext, currentContent);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
