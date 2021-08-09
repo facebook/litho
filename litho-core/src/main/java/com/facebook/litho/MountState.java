@@ -38,6 +38,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLERS_TOTAL_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIME;
+import static com.facebook.litho.LayoutOutput.getComponentContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
@@ -929,7 +930,8 @@ class MountState implements MountDelegateTarget {
     }
 
     // 6. Set the mounted content on the Component and call the bind callback.
-    bindComponentToContent(currentMountItem, layoutOutputComponent, currentContent);
+    bindComponentToContent(
+        currentMountItem, layoutOutputComponent, getComponentContext(node), currentContent);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
@@ -1206,7 +1208,7 @@ class MountState implements MountDelegateTarget {
     final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
 
     // 5. Notify the component that mounting has completed
-    bindComponentToContent(item, component, content);
+    bindComponentToContent(item, component, getComponentContext(node), content);
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
@@ -2567,7 +2569,7 @@ class MountState implements MountDelegateTarget {
       final Component component = getLayoutOutput(mountItem).getComponent();
       final Object content = mountItem.getContent();
 
-      bindComponentToContent(mountItem, component, content);
+      bindComponentToContent(mountItem, component, getComponentContext(mountItem), content);
 
       if (content instanceof View
           && !(content instanceof ComponentHost)
@@ -2739,11 +2741,15 @@ class MountState implements MountDelegateTarget {
     return c == null ? mContext : c;
   }
 
-  private void bindComponentToContent(MountItem mountItem, Component component, Object content) {
+  private void bindComponentToContent(
+      final MountItem mountItem,
+      final Component component,
+      final ComponentContext context,
+      final Object content) {
+
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     component.bind(getContextForComponent(component, layoutOutput), content);
-    mDynamicPropsManager.onBindComponentToContent(
-        component, layoutOutput.getScopedContext(), content);
+    mDynamicPropsManager.onBindComponentToContent(component, context, content);
     mountItem.setIsBound(true);
   }
 
