@@ -98,15 +98,23 @@ public class ComponentsConfigurationTest {
   @Test
   public void testOverrideDefaultBuilder() {
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
-        ComponentsConfiguration.create().useCancelableLayoutFutures(true));
+        ComponentsConfiguration.create()
+            .useCancelableLayoutFutures(true)
+            .ignoreNullLayoutStateError(true));
     assertThat(
-            ComponentsConfiguration.getDefaultComponentsConfiguration().mUseCancelableLayoutFutures)
+            ComponentsConfiguration.getDefaultComponentsConfiguration()
+                .getUseCancelableLayoutFutures())
         .isTrue();
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
         ComponentsConfiguration.create().useCancelableLayoutFutures(false));
     assertThat(
-            ComponentsConfiguration.getDefaultComponentsConfiguration().mUseCancelableLayoutFutures)
+            ComponentsConfiguration.getDefaultComponentsConfiguration()
+                .getUseCancelableLayoutFutures())
         .isFalse();
+    assertThat(
+            ComponentsConfiguration.getDefaultComponentsConfiguration()
+                .getIgnoreNullLayoutStateError())
+        .isTrue();
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(mDefaultBuilder);
   }
 

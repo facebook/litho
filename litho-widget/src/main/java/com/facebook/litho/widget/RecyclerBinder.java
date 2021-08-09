@@ -137,7 +137,6 @@ public class RecyclerBinder
   private final int mRecyclingMode;
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
-  private final boolean mIgnoreNullLayoutStateError;
   private final @Nullable LithoLifecycleProvider mParentLifecycle;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
@@ -379,7 +378,6 @@ public class RecyclerBinder
         boolean visibilityProcessingEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean isReconciliationEnabled,
-        boolean ignoreNullLayoutStateError,
         int recyclingMode,
         boolean isLayoutDiffingEnabled,
         RunnableHandler preallocateHandler,
@@ -400,7 +398,6 @@ public class RecyclerBinder
             boolean visibilityProcessingEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean isReconciliationEnabled,
-            boolean ignoreNullLayoutStateError,
             int recyclingMode,
             boolean isLayoutDiffingEnabled,
             @Nullable RunnableHandler preallocateHandler,
@@ -416,7 +413,6 @@ public class RecyclerBinder
               .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .isReconciliationEnabled(isReconciliationEnabled)
-              .ignoreNullLayoutStateError(ignoreNullLayoutStateError)
               .recyclingMode(recyclingMode)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
@@ -469,7 +465,6 @@ public class RecyclerBinder
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
     private boolean recyclerViewItemPrefetch = false;
-    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
     private @Nullable LithoLifecycleProvider lifecycleProvider;
     private @Nullable ErrorEventHandler errorEventHandler;
 
@@ -753,11 +748,6 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
-      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
-      return this;
-    }
-
     public Builder recyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
       this.recyclingMode = recyclingMode;
       return this;
@@ -1008,7 +998,6 @@ public class RecyclerBinder
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
-    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
@@ -3904,7 +3893,6 @@ public class RecyclerBinder
         mVisibilityProcessingEnabled,
         mMoveLayoutsBetweenThreads,
         mIsReconciliationEnabled,
-        mIgnoreNullLayoutStateError,
         mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,

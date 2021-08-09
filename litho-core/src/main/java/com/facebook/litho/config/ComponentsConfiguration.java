@@ -298,13 +298,20 @@ public class ComponentsConfiguration {
   }
 
   public boolean mUseCancelableLayoutFutures;
+  public @Deprecated boolean mIgnoreNullLayoutStateError;
 
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
 
+  @Deprecated
+  public boolean getIgnoreNullLayoutStateError() {
+    return mIgnoreNullLayoutStateError;
+  }
+
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
+    mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -313,12 +320,19 @@ public class ComponentsConfiguration {
 
   public static class Builder {
     boolean mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+    @Deprecated boolean mIgnoreNullLayoutStateError = false;
 
     protected Builder() {}
 
     public ComponentsConfiguration.Builder useCancelableLayoutFutures(
         boolean useCancelableLayoutFutures) {
       this.mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+      return this;
+    }
+
+    public ComponentsConfiguration.Builder ignoreNullLayoutStateError(
+        boolean ignoreNullLayoutStateError) {
+      this.mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
       return this;
     }
 

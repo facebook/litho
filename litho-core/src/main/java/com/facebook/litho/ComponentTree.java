@@ -115,7 +115,6 @@ public class ComponentTree implements LithoLifecycleListener {
   private final boolean mReuseInternalNodes;
   private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseInputOnlyInternalNodes;
-  private final boolean mIgnoreNullLayoutStateError;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @GuardedBy("this")
@@ -433,7 +432,6 @@ public class ComponentTree implements LithoLifecycleListener {
     addMeasureListener(builder.mMeasureListener);
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
-    mIgnoreNullLayoutStateError = builder.ignoreNullLayoutStateError;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
@@ -2317,7 +2315,7 @@ public class ComponentTree implements LithoLifecycleListener {
     if (localLayoutState == null) {
       if (!isReleased()
           && isFromSyncLayout(source)
-          && !mComponentsConfiguration.mUseCancelableLayoutFutures) {
+          && !mComponentsConfiguration.getUseCancelableLayoutFutures()) {
         final String errorMessage =
             "LayoutState is null, but only async operations can return a null LayoutState. Source: "
                 + layoutSourceToString(source)
@@ -2328,7 +2326,7 @@ public class ComponentTree implements LithoLifecycleListener {
                 + ". Interruptible layouts: "
                 + mMoveLayoutsBetweenThreads;
 
-        if (mIgnoreNullLayoutStateError) {
+        if (mComponentsConfiguration.getIgnoreNullLayoutStateError()) {
           ComponentsReporter.emitMessage(
               ComponentsReporter.LogLevel.ERROR, "ComponentTree:LayoutStateNull", errorMessage);
         } else {
@@ -2703,7 +2701,7 @@ public class ComponentTree implements LithoLifecycleListener {
    * after that because it's in an incomplete state, so it needs to be released.
    */
   public void cancelLayoutAndReleaseTree() {
-    if (!mComponentsConfiguration.mUseCancelableLayoutFutures) {
+    if (!mComponentsConfiguration.getUseCancelableLayoutFutures()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           TAG,
@@ -2943,7 +2941,7 @@ public class ComponentTree implements LithoLifecycleListener {
       @Nullable
       LayoutStateFuture layoutStateFuture =
           ComponentTree.this.mMoveLayoutsBetweenThreads
-                  || ComponentTree.this.mComponentsConfiguration.mUseCancelableLayoutFutures
+                  || ComponentTree.this.mComponentsConfiguration.getUseCancelableLayoutFutures()
               ? LayoutStateFuture.this
               : null;
       final ComponentContext contextWithStateHandler;
@@ -3317,7 +3315,6 @@ public class ComponentTree implements LithoLifecycleListener {
     private @Nullable ComponentsLogger logger;
     private boolean shouldForceAsyncStateUpdate =
         ComponentsConfiguration.shouldForceAsyncStateUpdate;
-    private boolean ignoreNullLayoutStateError = ComponentsConfiguration.ignoreNullLayoutStateError;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
     private boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
@@ -3488,11 +3485,6 @@ public class ComponentTree implements LithoLifecycleListener {
     /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
-      return this;
-    }
-
-    public Builder ignoreNullLayoutStateError(boolean ignoreNullLayoutStateError) {
-      this.ignoreNullLayoutStateError = ignoreNullLayoutStateError;
       return this;
     }
 
