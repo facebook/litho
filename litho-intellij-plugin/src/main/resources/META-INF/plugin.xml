@@ -41,6 +41,10 @@
   <version>1.8.3-SNAPSHOT</version>
   <change-notes>
     <![CDATA[
+    <h3>1.8.3</h3>
+      <ul>
+        <li>Fix: Re-arrange litho actions in 'New' context menu</li>
+      </ul>
     <h3>1.8.2</h3>
       <ul>
         <li>Fix: Plugin is updated for new Component class inheritance (generated Components now extend `SpecGeneratedComponent`).</li>
@@ -140,7 +144,7 @@
     <group class="com.facebook.litho.intellij.actions.templates.LithoTemplateActionGroup"
       description="Create new Litho class" icon="LithoPluginIcons.BASE_ACTION" id="litho.NewGroup"
       popup="true" text="Litho Component">
-      <add-to-group anchor="after" group-id="NewGroup" relative-to-action="NewGroup1" />
+      <add-to-group anchor="after" group-id="NewGroup" relative-to-action="Kotlin.NewFile" />
     </group>
   </actions>
 </idea-plugin>
