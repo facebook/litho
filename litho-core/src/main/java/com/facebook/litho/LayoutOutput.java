@@ -293,6 +293,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return getLayoutOutput(item.getRenderTreeNode());
   }
 
+  static ComponentContext getComponentContext(RenderTreeNode node) {
+    return ((LithoRenderUnit) node.getRenderUnit()).output.getScopedContext();
+  }
+
+  static ComponentContext getComponentContext(MountItem item) {
+    return getComponentContext(item.getRenderTreeNode());
+  }
+
   static boolean isDuplicateParentState(int flags) {
     return (flags & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) == LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
   }
