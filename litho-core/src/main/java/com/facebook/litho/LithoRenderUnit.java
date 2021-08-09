@@ -97,7 +97,14 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final int previousIdFromNextOutput = (int) ((Map) nextData).get(KEY_PREVIOUS_LAYOUT_STATE_ID);
       final int idFromCurrentOutput = (int) ((Map) currentData).get(KEY_LAYOUT_STATE_ID);
       final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
-      return shouldUpdateMountItem(next.output, current.output, updateValueFromLayoutOutput);
+
+      // TODO: get the ComponentContext from the layout data parameter
+      return shouldUpdateMountItem(
+          next.output,
+          next.output.getScopedContext(),
+          current.output,
+          current.output.getScopedContext(),
+          updateValueFromLayoutOutput);
     }
 
     @Override

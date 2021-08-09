@@ -900,7 +900,11 @@ class MountState implements MountDelegateTarget {
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdate =
         shouldUpdateMountItem(
-            nextLayoutOutput, currentLayoutOutput, useUpdateValueFromLayoutOutput);
+            nextLayoutOutput,
+            getComponentContext(node),
+            currentLayoutOutput,
+            getComponentContext(currentMountItem),
+            useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdateViewInfo =
         shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentLayoutOutput);
@@ -973,7 +977,9 @@ class MountState implements MountDelegateTarget {
 
   static boolean shouldUpdateMountItem(
       final LayoutOutput nextLayoutOutput,
+      final ComponentContext nextContext,
       final LayoutOutput currentLayoutOutput,
+      final ComponentContext currentContext,
       final boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
     final Component currentComponent = currentLayoutOutput.getComponent();
@@ -996,22 +1002,20 @@ class MountState implements MountDelegateTarget {
         // Check for incompatible ReferenceLifecycle.
         return currentComponent instanceof DrawableComponent
             && nextComponent instanceof DrawableComponent
-            && shouldUpdate(currentComponent, currentLayoutOutput, nextComponent, nextLayoutOutput);
+            && shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    return shouldUpdate(currentComponent, currentLayoutOutput, nextComponent, nextLayoutOutput);
+    return shouldUpdate(currentComponent, currentContext, nextComponent, nextContext);
   }
 
   private static boolean shouldUpdate(
       Component currentComponent,
-      LayoutOutput currentLayoutOutput,
+      ComponentContext currentScopedContext,
       Component nextComponent,
-      LayoutOutput nextLayoutOutput) {
-    ComponentContext currentScopedContext = currentLayoutOutput.getScopedContext();
-    ComponentContext nextScopedContext = nextLayoutOutput.getScopedContext();
+      ComponentContext nextScopedContext) {
 
     try {
       return currentComponent.shouldComponentUpdate(
@@ -1234,7 +1238,7 @@ class MountState implements MountDelegateTarget {
       mMountStats.mountedNames.add(component.getSimpleName());
       mMountStats.mountedCount++;
 
-      final ComponentContext scopedContext = layoutOutput.getScopedContext();
+      final ComponentContext scopedContext = getComponentContext(node);
 
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(scopedContext, context.getLogger()));
