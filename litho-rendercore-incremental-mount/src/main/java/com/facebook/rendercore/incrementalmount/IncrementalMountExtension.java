@@ -83,7 +83,6 @@ public class IncrementalMountExtension
 
   @Override
   public void afterMount(final ExtensionState<IncrementalMountExtensionState> extensionState) {
-
     log("afterMount");
     RenderCoreSystrace.beginSection("IncrementalMountExtension.afterMount");
 
@@ -149,7 +148,7 @@ public class IncrementalMountExtension
         || localVisibleRect.isEmpty()
         || localVisibleRect.left != state.mPreviousLocalVisibleRect.left
         || localVisibleRect.right != state.mPreviousLocalVisibleRect.right) {
-      initIncrementalMount(extensionState, localVisibleRect, true);
+      initIncrementalMount(extensionState, localVisibleRect);
     } else {
       performIncrementalMount(extensionState, localVisibleRect);
     }
@@ -236,7 +235,7 @@ public class IncrementalMountExtension
 
     final IncrementalMountOutput host = output.getHostOutput();
 
-    final boolean ownsHostRef = host == null ? true : extensionState.ownsReference(host.getId());
+    final boolean ownsHostRef = host == null || extensionState.ownsReference(host.getId());
     final boolean needsHostMount = !ownsHostRef || !isHostMounted(extensionState, host);
 
     // If id is ROOT_HOST_ID then already at root host.
@@ -280,8 +279,7 @@ public class IncrementalMountExtension
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final IncrementalMountOutput hostOutput) {
     return hostOutput == null
-        ? true
-        : extensionState.getMountDelegate().getContentById(hostOutput.getId()) != null;
+        || extensionState.getMountDelegate().getContentById(hostOutput.getId()) != null;
   }
 
   private static String getHostNotMountedExceptionMessage(
@@ -292,11 +290,15 @@ public class IncrementalMountExtension
     String errorMessage = "Failed to mount item with id " + output.getId() + ".";
     errorMessage += host == null ? " Host is null." : " Host id is " + host.getId() + "\n";
 
+    final StringBuilder additionalMessageBuilder = new StringBuilder();
     if (additionalErrorMessages != null) {
       for (String source : additionalErrorMessages) {
-        errorMessage += source + "\n";
+        additionalMessageBuilder.append(source);
+        additionalMessageBuilder.append("\n");
       }
     }
+    
+    errorMessage += additionalMessageBuilder.toString();
 
     errorMessage += "MountDelegateTarget mounting info: ";
     errorMessage +=
@@ -377,12 +379,11 @@ public class IncrementalMountExtension
 
   private static void initIncrementalMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
-      final Rect localVisibleRect,
-      final boolean isMounting) {
+      final Rect localVisibleRect) {
     final IncrementalMountExtensionState state = extensionState.getState();
     final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
     for (IncrementalMountOutput output : outputs) {
-      maybeAcquireReference(extensionState, localVisibleRect, output, isMounting);
+      maybeAcquireReference(extensionState, localVisibleRect, output, true);
     }
 
     setupPreviousMountableOutputData(state, localVisibleRect);
@@ -423,13 +424,8 @@ public class IncrementalMountExtension
       state.mPreviousLocalVisibleRect.set(localVisibleRect);
     }
   }
-
-  /**
-   * @return true if this method did all the work that was necessary and there is no other content
-   *     that needs mounting/unmounting in this mount step. If false then a full mount step should
-   *     take place.
-   */
-  private static boolean performIncrementalMount(
+  
+  private static void performIncrementalMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {
     final IncrementalMountExtensionState state = extensionState.getState();
@@ -543,8 +539,6 @@ public class IncrementalMountExtension
     }
 
     state.mComponentIdsMountedInThisFrame.clear();
-
-    return true;
   }
 
   private static void setupPreviousMountableOutputData(

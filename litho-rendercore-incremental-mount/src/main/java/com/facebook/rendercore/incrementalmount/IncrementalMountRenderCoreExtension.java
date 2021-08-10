@@ -47,13 +47,13 @@ public class IncrementalMountRenderCoreExtension
         public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
           final int lhsTop = l.getBounds().top;
           final int rhsTop = r.getBounds().top;
-
-          // Lower indices should be higher for tops so that they are mounted first if possible.
+          
           if (lhsTop == rhsTop) {
             if (l.getIndex() == r.getIndex()) {
               return 0;
             }
 
+            // Lower indices should be higher for tops so that they are mounted first if possible.
             return l.getIndex() > r.getIndex() ? 1 : -1;
           } else {
             return lhsTop > rhsTop ? 1 : -1;
@@ -67,14 +67,14 @@ public class IncrementalMountRenderCoreExtension
         public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
           final int lhsBottom = l.getBounds().bottom;
           final int rhsBottom = r.getBounds().bottom;
-
-          // Lower indices should be lower for bottoms so that they are mounted first if possible.
+          
           if (lhsBottom == rhsBottom) {
-            if (r.getIndex() == l.getIndex()) {
+            if (l.getIndex() == r.getIndex()) {
               return 0;
             }
 
-            return r.getIndex() > l.getIndex() ? 1 : -1;
+            // Lower indices should be lower for bottoms so that they are mounted first if possible.
+            return l.getIndex() < r.getIndex() ? 1 : -1;
           } else {
             return lhsBottom > rhsBottom ? 1 : -1;
           }

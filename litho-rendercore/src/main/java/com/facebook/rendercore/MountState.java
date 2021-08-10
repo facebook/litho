@@ -33,7 +33,7 @@ public class MountState implements MountDelegateTarget {
 
   public static final long ROOT_HOST_ID = 0L;
 
-  private final LongSparseArray<MountItem> mIndexToMountedItemMap;
+  private final LongSparseArray<MountItem> mIdToMountedItemMap;
   private final Context mContext;
   private final Host mRootHost;
 
@@ -48,7 +48,7 @@ public class MountState implements MountDelegateTarget {
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
 
   public MountState(Host rootHost) {
-    mIndexToMountedItemMap = new LongSparseArray<>();
+    mIdToMountedItemMap = new LongSparseArray<>();
     mContext = rootHost.getContext();
     mRootHost = rootHost;
   }
@@ -80,11 +80,11 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public void notifyUnmount(long id) {
-    if (mIndexToMountedItemMap == null) {
+    if (mIdToMountedItemMap == null) {
       return;
     }
 
-    final MountItem mountItem = mIndexToMountedItemMap.get(id);
+    final MountItem mountItem = mIdToMountedItemMap.get(id);
     if (mountItem != null) {
       unmountItemRecursively(mountItem.getRenderTreeNode());
     }
@@ -121,7 +121,8 @@ public class MountState implements MountDelegateTarget {
     prepareMount();
     RenderCoreSystrace.endSection();
 
-    // Let's start from 1 as the RenderTreeNode in position 0 always represents the root.
+    // Starting from 1 as the RenderTreeNode in position 0 always represents the root which is
+    // handled in prepareMount()
     for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
 
@@ -168,12 +169,12 @@ public class MountState implements MountDelegateTarget {
     }
 
     // Let's unbind and unmount the root host.
-    MountItem item = mIndexToMountedItemMap.get(ROOT_HOST_ID);
+    MountItem item = mIdToMountedItemMap.get(ROOT_HOST_ID);
     if (item != null) {
       if (item.isBound()) {
         unbindRenderUnitFromContent(mMountDelegate, mContext, item);
       }
-      mIndexToMountedItemMap.remove(ROOT_HOST_ID);
+      mIdToMountedItemMap.remove(ROOT_HOST_ID);
       unmountRenderUnitFromContent(
           mContext,
           rootRenderTreeNode,
@@ -193,12 +194,12 @@ public class MountState implements MountDelegateTarget {
       return false;
     }
 
-    return mountItem == mIndexToMountedItemMap.get(ROOT_HOST_ID);
+    return mountItem == mIdToMountedItemMap.get(ROOT_HOST_ID);
   }
 
   @Override
   public @Nullable MountItem getRootItem() {
-    return mIndexToMountedItemMap != null ? mIndexToMountedItemMap.get(ROOT_HOST_ID) : null;
+    return mIdToMountedItemMap != null ? mIdToMountedItemMap.get(ROOT_HOST_ID) : null;
   }
 
   @Override
@@ -213,11 +214,11 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public @Nullable Object getContentById(long id) {
-    if (mIndexToMountedItemMap == null) {
+    if (mIdToMountedItemMap == null) {
       return null;
     }
 
-    final MountItem mountItem = mIndexToMountedItemMap.get(id);
+    final MountItem mountItem = mIdToMountedItemMap.get(id);
 
     if (mountItem == null) {
       return null;
@@ -250,8 +251,8 @@ public class MountState implements MountDelegateTarget {
   @Override
   public ArrayList<Host> getHosts() {
     final ArrayList<Host> hosts = new ArrayList<>();
-    for (int i = 0, size = mIndexToMountedItemMap.size(); i < size; i++) {
-      final MountItem item = mIndexToMountedItemMap.valueAt(i);
+    for (int i = 0, size = mIdToMountedItemMap.size(); i < size; i++) {
+      final MountItem item = mIdToMountedItemMap.valueAt(i);
       final Object content = item.getContent();
       if (content instanceof Host) {
         hosts.add((Host) content);
@@ -268,7 +269,7 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public int getMountItemCount() {
-    return mIndexToMountedItemMap.size();
+    return mIdToMountedItemMap.size();
   }
 
   @Override
@@ -329,7 +330,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     for (int i = 0, size = mRenderUnitIds.length; i < size; i++) {
-      MountItem mountItem = getItemAt(i);
+      final MountItem mountItem = getItemAt(i);
 
       if (mountItem == null || !mountItem.isBound()) {
         continue;
@@ -365,7 +366,6 @@ public class MountState implements MountDelegateTarget {
 
   /** Updates the extensions of this {@link MountState} from the new {@link RenderTree}. */
   private boolean updateRenderTree(RenderTree renderTree) {
-
     // If the trees are same or if no remount is required, then no update is required.
     if (renderTree == mRenderTree && !mNeedsRemount) {
       return false;
@@ -389,13 +389,12 @@ public class MountState implements MountDelegateTarget {
   private void prepareMount() {
     unmountOrMoveOldItems();
 
-    final MountItem rootItem = mIndexToMountedItemMap.get(ROOT_HOST_ID);
+    final MountItem rootItem = mIdToMountedItemMap.get(ROOT_HOST_ID);
     final RenderTreeNode rootNode = mRenderTree.getRenderTreeNodeAtIndex(0);
     final RenderUnit rootRenderUnit = rootNode.getRenderUnit();
 
     // If root mount item is null then mounting root node for the first time.
     if (rootItem == null) {
-
       // Run mount callbacks.
       mountRenderUnitToContent(mMountDelegate, mContext, rootNode, rootRenderUnit, mRootHost);
 
@@ -403,13 +402,12 @@ public class MountState implements MountDelegateTarget {
       final MountItem item = new MountItem(rootNode, mRootHost, mRootHost);
 
       // Adds root mount item to map.
-      mIndexToMountedItemMap.put(ROOT_HOST_ID, item);
+      mIdToMountedItemMap.put(ROOT_HOST_ID, item);
 
       // Run binder callbacks
       bindRenderUnitToContent(mMountDelegate, mContext, item);
 
     } else {
-
       // If root mount item is present then update it.
       updateMountItemIfNeeded(mMountDelegate, mContext, rootNode, rootItem);
     }
@@ -446,33 +444,32 @@ public class MountState implements MountDelegateTarget {
           newPosition > -1 ? mRenderTree.getRenderTreeNodeAtIndex(newPosition) : null;
       final MountItem oldItem = getItemAt(i);
 
-      final boolean hasUnmountDelegate =
-          mUnmountDelegateExtension != null && oldItem != null
-              ? mUnmountDelegateExtension.shouldDelegateUnmount(
-                  mMountDelegate.getUnmountDelegateExtensionState(), oldItem)
-              : false;
-
+      // if oldItem is null it was previously unmounted so there is nothing we need to do.
+      if (oldItem == null)
+        continue;
+      
+      final boolean hasUnmountDelegate = 
+          mUnmountDelegateExtension != null 
+              && mUnmountDelegateExtension.shouldDelegateUnmount(
+                  mMountDelegate.getUnmountDelegateExtensionState(), oldItem);
+      
       if (hasUnmountDelegate) {
         continue;
       }
 
       if (newPosition == -1) {
-        // if oldItem is null it was previously unmounted so there is nothing we need to do.
-        if (oldItem != null) {
-          unmountItemRecursively(oldItem.getRenderTreeNode());
-        }
+        unmountItemRecursively(oldItem.getRenderTreeNode());
       } else {
         final long newHostMarker =
             renderTreeNode.getParent() == null
                 ? 0L
                 : renderTreeNode.getParent().getRenderUnit().getId();
         final Host newHost =
-            mIndexToMountedItemMap.get(newHostMarker) == null
+            mIdToMountedItemMap.get(newHostMarker) == null
                 ? null
-                : (Host) mIndexToMountedItemMap.get(newHostMarker).getContent();
-        if (oldItem == null) {
-          // This was previously unmounted.
-        } else if (oldItem.getHost() != newHost) {
+                : (Host) mIdToMountedItemMap.get(newHostMarker).getContent();
+        
+        if (oldItem.getHost() != newHost) {
           // If the id is the same but the parent host is different we simply unmount the item and
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
@@ -482,7 +479,6 @@ public class MountState implements MountDelegateTarget {
           // If a MountItem for this id exists and its Host has not changed but its position
           // in the Host has changed we need to update the position in the Host to ensure
           // the z-ordering.
-
           oldItem
               .getHost()
               .moveItem(
@@ -502,7 +498,7 @@ public class MountState implements MountDelegateTarget {
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
-    mIndexToMountedItemMap.put(mRenderUnitIds[index], item);
+    mIdToMountedItemMap.put(mRenderUnitIds[index], item);
     host.mount(renderTreeNode.getPositionInParent(), item);
 
     return item;
@@ -515,7 +511,7 @@ public class MountState implements MountDelegateTarget {
     final RenderUnit parentRenderUnit = hostTreeNode.getRenderUnit();
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
 
-    final MountItem mountItem = mIndexToMountedItemMap.get(parentRenderUnit.getId());
+    final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
     if (mountItem == null) {
       throw new HostNotMountedException(
           renderUnit,
@@ -571,9 +567,8 @@ public class MountState implements MountDelegateTarget {
   }
 
   private void unmountItemRecursively(RenderTreeNode node) {
-
     final RenderUnit unit = node.getRenderUnit();
-    final MountItem item = mIndexToMountedItemMap.get(unit.getId());
+    final MountItem item = mIdToMountedItemMap.get(unit.getId());
     // Already has been unmounted.
     if (item == null) {
       return;
@@ -586,7 +581,8 @@ public class MountState implements MountDelegateTarget {
     if (unit.getId() == ROOT_HOST_ID) {
       return;
     }
-    mIndexToMountedItemMap.remove(unit.getId());
+    
+    mIdToMountedItemMap.remove(unit.getId());
 
     final boolean hasUnmountDelegate =
         mUnmountDelegateExtension != null
@@ -655,7 +651,7 @@ public class MountState implements MountDelegateTarget {
   }
 
   private @Nullable MountItem getItemAt(int i) {
-    if (mIndexToMountedItemMap == null || mRenderUnitIds == null) {
+    if (mIdToMountedItemMap == null || mRenderUnitIds == null) {
       return null;
     }
 
@@ -663,7 +659,7 @@ public class MountState implements MountDelegateTarget {
       return null;
     }
 
-    return mIndexToMountedItemMap.get(mRenderUnitIds[i]);
+    return mIdToMountedItemMap.get(mRenderUnitIds[i]);
   }
 
   private void addExtensions(@Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
