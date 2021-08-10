@@ -2601,4 +2601,22 @@ public class LayoutState
   LayoutOutput getLayoutOutput(IncrementalMountOutput output) {
     return LayoutOutput.getLayoutOutput(getRenderTreeNode(output));
   }
+
+  static int getId(ScopedComponentInfo info) {
+    final LayoutState state = info.getContext().getLayoutState();
+    if (state != null) {
+      return state.getId();
+    }
+
+    return 0;
+  }
+
+  static int getPreviousId(ScopedComponentInfo info) {
+    final LayoutState state = info.getContext().getLayoutState();
+    if (state != null) {
+      return state.getPreviousLayoutStateId();
+    }
+
+    return 0;
+  }
 }
