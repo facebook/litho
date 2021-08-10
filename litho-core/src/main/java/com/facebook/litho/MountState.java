@@ -975,9 +975,9 @@ class MountState implements MountDelegateTarget {
 
   static boolean shouldUpdateMountItem(
       final LayoutOutput nextLayoutOutput,
-      final ComponentContext nextContext,
+      final @Nullable ComponentContext nextContext,
       final LayoutOutput currentLayoutOutput,
-      final ComponentContext currentContext,
+      final @Nullable ComponentContext currentContext,
       final boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
     final Component currentComponent = currentLayoutOutput.getComponent();
