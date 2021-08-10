@@ -25,8 +25,7 @@ import java.util.Map;
 
 final class ScopedComponentInfo implements Cloneable {
 
-  // Can be final if Component is stateless and cloning is not needed anymore.
-  final Component mComponent;
+  private final Component mComponent;
   private ComponentContext mContext;
   private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
