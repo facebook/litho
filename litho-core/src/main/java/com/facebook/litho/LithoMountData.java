@@ -118,7 +118,6 @@ public class LithoMountData {
     LayoutOutput output =
         new LayoutOutput(
             null,
-            null,
             viewNodeInfo,
             HostComponent.create(),
             null,

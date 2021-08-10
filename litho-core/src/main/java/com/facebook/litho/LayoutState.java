@@ -358,7 +358,6 @@ public class LayoutState
         new LayoutOutput(
             null,
             null,
-            null,
             HostComponent.create(),
             null,
             new Rect(0, 0, result.getWidth(), result.getHeight()),
@@ -556,7 +555,6 @@ public class LayoutState
     }
 
     return new LayoutOutput(
-        context,
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
         component,

@@ -43,7 +43,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
   static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
   static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
-  private final ComponentContext mScopedContext;
   private final String mKey;
 
   @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
@@ -69,7 +68,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mUpdateState = STATE_UNKNOWN;
   /* TODO: (T81557408) Fix @Nullable issue */
   public LayoutOutput(
-      @Nullable ComponentContext context,
       @Nullable NodeInfo nodeInfo,
       @Nullable ViewNodeInfo viewNodeInfo,
       Component component,
@@ -90,7 +88,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
     mKey = key;
-    mScopedContext = context;
     mBounds = bounds;
     mHostTranslationX = hostTranslationX;
     mHostTranslationY = hostTranslationY;
