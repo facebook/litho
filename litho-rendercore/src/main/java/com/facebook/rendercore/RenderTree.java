@@ -96,7 +96,7 @@ public class RenderTree {
   public RenderTreeNode getRoot() {
     return mRoot;
   }
-  
+
   public String generateDebugString() {
     final StringBuilder stringBuilder = new StringBuilder();
     final Locale l = Locale.US;
@@ -106,12 +106,10 @@ public class RenderTree {
 
     stringBuilder.append("RenderTree details:\n");
     stringBuilder.append(
-        String.format(l, "WidthSpec=%s; HeightSpec=%s\n", 
-            widthSpecDesc, heightSpecDesc));
-    
-    stringBuilder.append(
-        String.format(l, "Full child list (size = %d):\n", mFlatList.length));
-    
+        String.format(l, "WidthSpec=%s; HeightSpec=%s\n", widthSpecDesc, heightSpecDesc));
+
+    stringBuilder.append(String.format(l, "Full child list (size = %d):\n", mFlatList.length));
+
     for (RenderTreeNode node : mFlatList) {
       stringBuilder.append(String.format(l, "%s\n", node.generateDebugString(this)));
     }

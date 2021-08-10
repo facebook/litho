@@ -507,7 +507,7 @@ public class MountState implements MountDelegateTarget {
 
     return item;
   }
-  
+
   private void mountRenderUnit(int index, RenderTreeNode renderTreeNode) {
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();

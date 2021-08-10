@@ -89,14 +89,14 @@ public class MeasureSpecUtils {
         && oldSizeSpecSize > newSizeSpecSize
         && oldMeasuredSize <= newSizeSpecSize;
   }
-  
+
   public static String getMeasureSpecDescription(int measureSpec) {
     final int value = getSize(measureSpec);
     final String mode = getModeDescription(getMode(measureSpec));
-    
+
     return String.format(Locale.US, "[%d, %s]", value, mode);
   }
-  
+
   public static String getModeDescription(int mode) {
     if (mode == AT_MOST) {
       return "AT_MOST";
