@@ -82,7 +82,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
     return (output.getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
   }
 
-  private static @Nullable ComponentContext getContext(@Nullable Object data) {
+  static @Nullable ComponentContext getContext(@Nullable Object data) {
     if (data == null) {
       return null;
     }

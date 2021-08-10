@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.LayoutOutput.getComponentContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.view.View;
@@ -75,20 +76,17 @@ public class LegacyComponentGlobalKeyTest {
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "$[Text2]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(0)).getScopedContext(),
-            getComponentAt(lithoView, 0)));
+            getComponentContext(lithoView.getMountItemAt(0)), getComponentAt(lithoView, 0)));
     // TestViewComponent in child layout
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[TestViewComponent1]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(1)).getScopedContext(),
-            getComponentAt(lithoView, 1)));
+            getComponentContext(lithoView.getMountItemAt(1)), getComponentAt(lithoView, 1)));
     // background in child
     Assert.assertNull(
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(2)).getScopedContext(),
-            getComponentAt(lithoView, 2)));
+            getComponentContext(lithoView.getMountItemAt(2)), getComponentAt(lithoView, 2)));
     // CardClip in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
@@ -99,34 +97,29 @@ public class LegacyComponentGlobalKeyTest {
             columnSpecId,
             "$[CardClip1]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(3)).getScopedContext(),
-            getComponentAt(lithoView, 3)));
+            getComponentContext(lithoView.getMountItemAt(3)), getComponentAt(lithoView, 3)));
     // Text in child
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[Text1]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(4)).getScopedContext(),
-            getComponentAt(lithoView, 4)));
+            getComponentContext(lithoView.getMountItemAt(4)), getComponentAt(lithoView, 4)));
     // background
     Assert.assertNull(
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(5)).getScopedContext(),
-            getComponentAt(lithoView, 5)));
+            getComponentContext(lithoView.getMountItemAt(5)), getComponentAt(lithoView, 5)));
     // CardClip
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, columnSpecId, "$[CardClip2]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(6)).getScopedContext(),
-            getComponentAt(lithoView, 6)));
+            getComponentContext(lithoView.getMountItemAt(6)), getComponentAt(lithoView, 6)));
     // TestViewComponent
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, "$[TestViewComponent2]"),
         Component.getGlobalKey(
-            getLayoutOutput(lithoView.getMountItemAt(7)).getScopedContext(),
-            getComponentAt(lithoView, 7)));
+            getComponentContext(lithoView.getMountItemAt(7)), getComponentAt(lithoView, 7)));
   }
 
   @Test

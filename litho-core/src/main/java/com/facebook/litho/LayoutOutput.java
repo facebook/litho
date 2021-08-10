@@ -108,10 +108,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mComponent;
   }
 
-  ComponentContext getScopedContext() {
-    return mScopedContext;
-  }
-
   String getKey() {
     return mKey;
   }
@@ -296,8 +292,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return getLayoutOutput(item.getRenderTreeNode());
   }
 
-  static ComponentContext getComponentContext(RenderTreeNode node) {
-    return ((LithoRenderUnit) node.getRenderUnit()).output.getScopedContext();
+  static @Nullable ComponentContext getComponentContext(RenderTreeNode node) {
+    return LithoRenderUnit.getContext(node.getLayoutData());
   }
 
   static ComponentContext getComponentContext(MountItem item) {
