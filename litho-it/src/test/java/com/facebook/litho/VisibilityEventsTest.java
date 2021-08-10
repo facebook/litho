@@ -28,12 +28,14 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.widget.HorizontalScroll;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.LayoutSpecVisibilityEventTester;
 import com.facebook.litho.widget.TextDrawable;
@@ -53,6 +55,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.util.ReflectionHelpers;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class VisibilityEventsTest {
@@ -1992,5 +1995,62 @@ public class VisibilityEventsTest {
     }
 
     return null;
+  }
+
+  private static Component createHorizontalScrollChildren(
+      ComponentContext c, final int numberOfItems, List<List<LifecycleStep.StepInfo>> stepsList) {
+    final Row.Builder rowBuilder = Row.create(c);
+    for (int i = 0; i < numberOfItems; ++i) {
+      List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+      final LayoutSpecLifecycleTester component =
+          LayoutSpecLifecycleTester.create(c)
+              .steps(steps)
+              .widthPx(10)
+              .heightPx(5)
+              .marginPx(YogaEdge.TOP, 5)
+              .build();
+      rowBuilder.child(component);
+
+      stepsList.add(steps);
+    }
+    return rowBuilder.build();
+  }
+
+  @Test
+  public void testVisibleEventHorizontalScroll() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<List<LifecycleStep.StepInfo>> stepsList = new ArrayList<>();
+    final int numberOfItems = 2;
+
+    final Component component =
+        HorizontalScroll.create(c)
+            .incrementalMountEnabled(true)
+            .contentProps(createHorizontalScrollChildren(c, numberOfItems, stepsList))
+            .build();
+
+    mLithoViewRule
+        .setRoot(component)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(10, EXACTLY))
+        .measure()
+        .layout();
+
+    assertThat(LifecycleStep.getSteps(stepsList.get(0)))
+        .describedAs("Visible event should not be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
+
+    assertThat(LifecycleStep.getSteps(stepsList.get(1)))
+        .describedAs("Visible event should be dispatched")
+        .doesNotContain(LifecycleStep.ON_EVENT_VISIBLE);
+
+    HorizontalScrollView lScrollView =
+        ((HorizontalScrollView) (mLithoViewRule.getLithoView().getMountItemAt(0).getContent()));
+    ReflectionHelpers.setField(lScrollView, "mScrollX", 10);
+    ReflectionHelpers.setField(lScrollView, "mScrollY", 0);
+    lScrollView.scrollBy(10, 0);
+
+    assertThat(LifecycleStep.getSteps(stepsList.get(1)))
+        .describedAs("Visible event should be dispatched")
+        .contains(LifecycleStep.ON_EVENT_VISIBLE);
   }
 }

@@ -68,6 +68,7 @@ class HorizontalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;
   @PropDefault static final int initialScrollPosition = LAST_SCROLL_POSITION_UNSET;
+  @PropDefault static final boolean incrementalMountEnabled = false;
 
   /** Scroll change listener invoked when the scroll position changes. */
   public interface OnScrollChangeListener {
@@ -179,6 +180,7 @@ class HorizontalScrollSpec {
       @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
+      @Prop(optional = true) boolean incrementalMountEnabled,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
@@ -192,7 +194,8 @@ class HorizontalScrollSpec {
         onScrollChangeListener,
         scrollStateListener,
         componentWidth,
-        componentHeight);
+        componentHeight,
+        incrementalMountEnabled);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -237,11 +240,14 @@ class HorizontalScrollSpec {
       StateValue<ScrollPosition> lastScrollPosition,
       StateValue<ComponentTree> childComponentTree,
       @Prop Component contentProps,
-      @Prop(optional = true) int initialScrollPosition) {
+      @Prop(optional = true) int initialScrollPosition,
+      @Prop(optional = true) boolean incrementalMountEnabled) {
 
     lastScrollPosition.set(new ScrollPosition(initialScrollPosition));
     childComponentTree.set(
-        ComponentTree.createNestedComponentTree(c, contentProps).incrementalMount(false).build());
+        ComponentTree.createNestedComponentTree(c, contentProps)
+            .incrementalMount(incrementalMountEnabled)
+            .build());
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView
@@ -250,6 +256,7 @@ class HorizontalScrollSpec {
 
     private int mComponentWidth;
     private int mComponentHeight;
+    private boolean mIsIncrementalMountEnabled;
 
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private HorizontalScrollSpec.OnScrollChangeListener mOnScrollChangeListener;
@@ -280,6 +287,15 @@ class HorizontalScrollSpec {
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
       super.onScrollChanged(l, t, oldl, oldt);
+
+      // We need to notify LithoView about the visibility bounds that has changed when View is
+      // scrolled so that correct visibility events are fired for the child components of
+      // HorizontalScroll. Incremental mount is by default false for HorizontalScroll and we want to
+      // notify only when incremental mount is enabled to keep the behaviour similar to what we have
+      // for VerticalScroll.
+      if (mIsIncrementalMountEnabled) {
+        mLithoView.notifyVisibleBoundsChanged();
+      }
 
       if (mScrollPosition != null) {
         if (mOnScrollChangeListener != null) {
@@ -330,12 +346,14 @@ class HorizontalScrollSpec {
         @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
         ScrollStateListener scrollStateListener,
         int width,
-        int height) {
+        int height,
+        boolean incrementalMountEnabled) {
       mLithoView.setComponentTree(componentTree);
       mScrollPosition = scrollPosition;
       mOnScrollChangeListener = onScrollChangeListener;
       mComponentWidth = width;
       mComponentHeight = height;
+      mIsIncrementalMountEnabled = incrementalMountEnabled;
 
       if (scrollStateListener != null) {
         if (mScrollStateDetector == null) {
