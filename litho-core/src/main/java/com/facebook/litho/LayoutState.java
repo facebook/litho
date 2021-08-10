@@ -921,7 +921,6 @@ public class LayoutState
                   node,
                   layoutState,
                   convertBackground,
-                  null,
                   hierarchy,
                   background,
                   OutputUnitType.BACKGROUND,
@@ -1024,7 +1023,6 @@ public class LayoutState
               node,
               layoutState,
               convertBorder,
-              null,
               hierarchy,
               getBorderColorDrawable(result, node),
               OutputUnitType.BORDER,
@@ -1051,7 +1049,6 @@ public class LayoutState
                   node,
                   layoutState,
                   convertForeground,
-                  null,
                   hierarchy,
                   foreground,
                   OutputUnitType.FOREGROUND,
@@ -1174,7 +1171,6 @@ public class LayoutState
             node,
             layoutState,
             null,
-            null,
             hierarchy,
             new DebugOverlayDrawable(mainThreadCalculations),
             OutputUnitType.FOREGROUND,
@@ -1269,7 +1265,6 @@ public class LayoutState
       InternalNode node,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
-      @Nullable ComponentContext recycleScopedContext,
       @Nullable DebugHierarchy.Node hierarchy,
       Drawable drawable,
       @OutputUnitType int type,
@@ -1280,7 +1275,7 @@ public class LayoutState
       try {
         isOutputUpdated =
             !drawableComponent.shouldComponentUpdate(
-                recycleScopedContext, recycle.getComponent(), null, drawableComponent);
+                null, recycle.getComponent(), null, drawableComponent);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(result.getContext(), drawableComponent, e);
         isOutputUpdated = false;
