@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getComponentContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.graphics.Rect;
@@ -76,11 +77,6 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     mNodeInfo = nodeInfo;
   }
 
-  private static ComponentContext getScopedContext(
-      final Component component, final LayoutOutput layoutOutput) {
-    return layoutOutput.getScopedContext();
-  }
-
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat node) {
     final MountItem mountItem = getAccessibleMountItem(mView);
@@ -95,7 +91,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // node in the accessibility framework.
       final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
       final Component component = layoutOutput.getComponent();
-      final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
+      final ComponentContext scopedContext = getComponentContext(mountItem.getRenderTreeNode());
       try {
         component.onPopulateAccessibilityNode(scopedContext, host, node);
       } catch (Exception e) {
@@ -138,7 +134,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final Component component = layoutOutput.getComponent();
-    final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
+    final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
       final int extraAccessibilityNodesCount =
@@ -172,7 +168,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final Component component = layoutOutput.getComponent();
-    final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
+    final ComponentContext scopedContext = getComponentContext(mountItem);
 
     node.setClassName(component.getClass().getName());
 
@@ -206,7 +202,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
     final Component component = layoutOutput.getComponent();
-    final ComponentContext scopedContext = getScopedContext(component, layoutOutput);
+    final ComponentContext scopedContext = getComponentContext(mountItem);
 
     try {
       if (component.getExtraAccessibilityNodesCount(scopedContext) == 0) {
