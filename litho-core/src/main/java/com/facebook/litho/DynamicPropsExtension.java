@@ -51,7 +51,7 @@ public class DynamicPropsExtension
       final DynamicPropsExtensionState state = extensionState.getState();
 
       state.mDynamicPropsManager.onBindComponentToContent(
-          output.getComponent(), output.getScopedContext(), content);
+          output.getComponent(), getContext(layoutData), content);
     }
   }
 
@@ -68,6 +68,18 @@ public class DynamicPropsExtension
 
       state.mDynamicPropsManager.onUnbindComponent(output.getComponent(), content);
     }
+  }
+
+  private static @Nullable ComponentContext getContext(@Nullable Object data) {
+    if (data == null) {
+      return null;
+    }
+
+    if (data instanceof ComponentContext) {
+      return (ComponentContext) data;
+    }
+
+    return ((ScopedComponentInfo) data).getContext();
   }
 
   static class DynamicPropsExtensionState {

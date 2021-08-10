@@ -371,7 +371,7 @@ public class LayoutState
             null);
 
     calculateAndSetHostOutputIdAndUpdateState(null, result, hostOutput, layoutState, hierarchy);
-    addMountableOutput(layoutState, hostOutput, null);
+    addMountableOutput(layoutState, hostOutput, null, null);
     addLayoutOutputIdToPositionsMap(layoutState.mOutputsIdToPositionMap, hostOutput, 0);
     maybeAddLayoutOutputToAffinityGroup(
         layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostOutput);
@@ -954,7 +954,7 @@ public class LayoutState
         }
       }
 
-      renderTreeNode = addMountableOutput(layoutState, layoutOutput, parent);
+      renderTreeNode = addMountableOutput(layoutState, layoutOutput, scopedContext, parent);
       addLayoutOutputIdToPositionsMap(
           layoutState.mOutputsIdToPositionMap,
           layoutOutput,
@@ -1431,7 +1431,7 @@ public class LayoutState
         isCachedOutputUpdated,
         hierarchy);
 
-    addMountableOutput(layoutState, drawableLayoutOutput, parent);
+    addMountableOutput(layoutState, drawableLayoutOutput, null, parent);
     addLayoutOutputIdToPositionsMap(
         layoutState.mOutputsIdToPositionMap,
         drawableLayoutOutput,
@@ -1473,7 +1473,7 @@ public class LayoutState
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
-    addMountableOutput(layoutState, hostLayoutOutput, parent);
+    addMountableOutput(layoutState, hostLayoutOutput, null, parent);
 
     final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
 
@@ -2393,13 +2393,18 @@ public class LayoutState
   private static RenderTreeNode addMountableOutput(
       final LayoutState layoutState,
       final LayoutOutput layoutOutput,
+      final @Nullable ComponentContext context,
       final @Nullable RenderTreeNode parent) {
 
     layoutOutput.setIndex(layoutState.mMountableOutputs.size());
 
     final RenderTreeNode node =
         LayoutOutput.create(
-            layoutOutput, layoutState.mLithoRenderUnitFactory, parent, layoutState.mLayoutData);
+            layoutOutput,
+            context,
+            layoutState.mLithoRenderUnitFactory,
+            parent,
+            layoutState.mLayoutData);
 
     if (parent != null) {
       parent.child(node);
@@ -2602,8 +2607,8 @@ public class LayoutState
     return LayoutOutput.getLayoutOutput(getRenderTreeNode(output));
   }
 
-  static int getId(ScopedComponentInfo info) {
-    final LayoutState state = info.getContext().getLayoutState();
+  static int getId(ComponentContext c) {
+    final LayoutState state = c.getLayoutState();
     if (state != null) {
       return state.getId();
     }
@@ -2611,8 +2616,8 @@ public class LayoutState
     return 0;
   }
 
-  static int getPreviousId(ScopedComponentInfo info) {
-    final LayoutState state = info.getContext().getLayoutState();
+  static int getPreviousId(ComponentContext c) {
+    final LayoutState state = c.getLayoutState();
     if (state != null) {
       return state.getPreviousLayoutStateId();
     }

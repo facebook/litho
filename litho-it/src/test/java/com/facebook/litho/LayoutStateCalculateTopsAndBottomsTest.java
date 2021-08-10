@@ -430,7 +430,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
             0,
             null);
     layoutOutput.setIndex(index);
-    return LayoutOutput.create(layoutOutput, null, null, null);
+    return LayoutOutput.create(layoutOutput, null, null, null, null);
   }
 
   private static IncrementalMountOutput createIncrementMountOutput(

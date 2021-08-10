@@ -51,7 +51,7 @@ public class MountItemTestHelper {
             importantForAccessibility,
             orientation,
             transitionId);
-    RenderTreeNode node = LayoutOutput.create(output, null, null, null);
+    RenderTreeNode node = LayoutOutput.create(output, null, null, null, null);
     MountItem item = new MountItem(node, host, content);
     item.setMountData(new LithoMountData(content));
     return item;

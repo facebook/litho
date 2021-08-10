@@ -267,6 +267,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   static RenderTreeNode create(
       final LayoutOutput output,
+      final @Nullable ComponentContext context,
       final @Nullable LithoRenderUnitFactory lithoRenderUnitFactory,
       final @Nullable RenderTreeNode parent,
       final @Nullable Map<String, Object> data) {
@@ -279,7 +280,9 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return new RenderTreeNode(
         parent,
         lithoRenderUnit,
-        data,
+        context != null
+            ? context.useStatelessComponent() ? context.getScopedComponentInfo() : context
+            : null,
         output.getMountBounds(new Rect()),
         output.getViewNodeInfo() != null ? output.getViewNodeInfo().getPadding() : null,
         parent != null ? parent.getChildrenCount() : 0);

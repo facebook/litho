@@ -17,17 +17,15 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
-import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
-import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
 import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
-import java.util.Map;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
@@ -84,6 +82,18 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
     return (output.getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0;
   }
 
+  private static @Nullable ComponentContext getContext(@Nullable Object data) {
+    if (data == null) {
+      return null;
+    }
+
+    if (data instanceof ComponentContext) {
+      return (ComponentContext) data;
+    }
+
+    return ((ScopedComponentInfo) data).getContext();
+  }
+
   public static class LithoMountBinder implements Binder<LithoRenderUnit, Object> {
 
     public static final LithoMountBinder INSTANCE = new LithoMountBinder();
@@ -94,16 +104,20 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit next,
         final Object currentData,
         final Object nextData) {
-      final int previousIdFromNextOutput = (int) ((Map) nextData).get(KEY_PREVIOUS_LAYOUT_STATE_ID);
-      final int idFromCurrentOutput = (int) ((Map) currentData).get(KEY_LAYOUT_STATE_ID);
+
+      // TODO: Evaluate if this is even relevant anymore
+      final int previousIdFromNextOutput =
+          nextData != null ? LayoutState.getPreviousId(getContext(nextData)) : 0;
+      final int idFromCurrentOutput =
+          currentData != null ? LayoutState.getId(getContext(currentData)) : 0;
+
       final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
 
-      // TODO: get the ComponentContext from the layout data parameter
       return shouldUpdateMountItem(
           next.output,
-          next.output.getScopedContext(),
+          getContext(nextData),
           current.output,
-          current.output.getScopedContext(),
+          getContext(currentData),
           updateValueFromLayoutOutput);
     }
 
@@ -114,7 +128,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().mount(output.getScopedContext(), content);
+      output.getComponent().mount(getContext(data), content);
     }
 
     @Override
@@ -124,7 +138,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unmount(output.getScopedContext(), content);
+      output.getComponent().unmount(getContext(data), content);
     }
   }
 
@@ -153,7 +167,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         }
       }
 
-      output.getComponent().bind(output.getScopedContext(), content);
+      output.getComponent().bind(getContext(data), content);
     }
 
     @Override
@@ -163,7 +177,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unbind(output.getScopedContext(), content);
+      output.getComponent().unbind(getContext(data), content);
     }
   }
 }
