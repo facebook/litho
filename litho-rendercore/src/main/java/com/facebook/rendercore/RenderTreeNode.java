@@ -129,10 +129,11 @@ public class RenderTreeNode {
     final int index = tree != null ? tree.getRenderTreeNodeIndex(mRenderUnit.getId()) : -1;
     final String bounds = mBounds.toShortString();
     final int childCount = getChildrenCount();
+    final long parentId = mParent != null ? mParent.getRenderUnit().getId() : -1;
 
     return String.format(
         Locale.US,
-        "Id=%d; contentType='%s'; indexInTree=%d; posInParent=%d; bounds=%s; absPosition=[%d, %d]; childCount=%d;",
+        "Id=%d; contentType='%s'; indexInTree=%d; posInParent=%d; bounds=%s; absPosition=[%d, %d]; childCount=%d; parentId=%d;",
         id,
         contentType,
         index,
@@ -140,6 +141,7 @@ public class RenderTreeNode {
         bounds,
         mAbsoluteX,
         mAbsoluteY,
-        childCount);
+        childCount,
+        parentId);
   }
 }
