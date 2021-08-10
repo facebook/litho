@@ -923,6 +923,7 @@ public class LayoutState
                   node,
                   layoutState,
                   convertBackground,
+                  null,
                   hierarchy,
                   background,
                   OutputUnitType.BACKGROUND,
@@ -1025,6 +1026,7 @@ public class LayoutState
               node,
               layoutState,
               convertBorder,
+              null,
               hierarchy,
               getBorderColorDrawable(result, node),
               OutputUnitType.BORDER,
@@ -1051,6 +1053,7 @@ public class LayoutState
                   node,
                   layoutState,
                   convertForeground,
+                  null,
                   hierarchy,
                   foreground,
                   OutputUnitType.FOREGROUND,
@@ -1173,6 +1176,7 @@ public class LayoutState
             node,
             layoutState,
             null,
+            null,
             hierarchy,
             new DebugOverlayDrawable(mainThreadCalculations),
             OutputUnitType.FOREGROUND,
@@ -1267,13 +1271,12 @@ public class LayoutState
       InternalNode node,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
+      @Nullable ComponentContext recycleScopedContext,
       @Nullable DebugHierarchy.Node hierarchy,
       Drawable drawable,
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(drawable);
-    final ComponentContext recycleScopedContext =
-        recycle == null ? null : recycle.getScopedContext();
     boolean isOutputUpdated;
     if (recycle != null) {
       try {
@@ -1281,7 +1284,7 @@ public class LayoutState
             !drawableComponent.shouldComponentUpdate(
                 recycleScopedContext, recycle.getComponent(), null, drawableComponent);
       } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(recycleScopedContext, drawableComponent, e);
+        ComponentUtils.handleWithHierarchy(result.getContext(), drawableComponent, e);
         isOutputUpdated = false;
       }
     } else {
