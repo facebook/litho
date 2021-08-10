@@ -34,10 +34,10 @@ final class ScopedComponentInfo implements Cloneable {
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  private final SparseIntArray mChildCounters;
+  private @Nullable SparseIntArray mChildCounters;
 
   /** Count the times a manual key is used so that clashes can be resolved. */
-  private final Map<String, Integer> mManualKeysCounter;
+  private @Nullable Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -61,8 +61,6 @@ final class ScopedComponentInfo implements Cloneable {
     mContext = context;
     mStateContainer = component.createStateContainer();
     mInterStagePropsContainer = component.createInterStagePropsContainer();
-    mChildCounters = new SparseIntArray(1);
-    mManualKeysCounter = new HashMap<>(1);
     mErrorEventHandler = errorEventHandler;
   }
 
@@ -82,13 +80,17 @@ final class ScopedComponentInfo implements Cloneable {
 
     mContext = info.mContext.createUpdatedComponentContext(context, handler);
 
-    mChildCounters = new SparseIntArray(info.mChildCounters.size());
-    for (int i = 0; i < info.mChildCounters.size(); i++) {
-      mChildCounters.put(info.mChildCounters.keyAt(i), info.mChildCounters.valueAt(i));
+    if (info.mChildCounters != null) {
+      mChildCounters = new SparseIntArray(info.mChildCounters.size());
+      for (int i = 0; i < info.mChildCounters.size(); i++) {
+        mChildCounters.put(info.mChildCounters.keyAt(i), info.mChildCounters.valueAt(i));
+      }
     }
 
-    mManualKeysCounter = new HashMap<>(info.mManualKeysCounter.size());
-    mManualKeysCounter.putAll(info.mManualKeysCounter);
+    if (info.mManualKeysCounter != null) {
+      mManualKeysCounter = new HashMap<>(info.mManualKeysCounter.size());
+      mManualKeysCounter.putAll(info.mManualKeysCounter);
+    }
 
     if (info.mWorkingRangeRegistrations != null) {
       mWorkingRangeRegistrations = new ArrayList<>(info.mWorkingRangeRegistrations.size());
@@ -117,6 +119,9 @@ final class ScopedComponentInfo implements Cloneable {
    * @return the number of children components of type {@param component}
    */
   int getChildCountAndIncrement(final Component component) {
+    if (mChildCounters == null) {
+      mChildCounters = new SparseIntArray(1);
+    }
     final int count = mChildCounters.get(component.getTypeId(), 0);
     mChildCounters.put(component.getTypeId(), count + 1);
 
@@ -131,6 +136,9 @@ final class ScopedComponentInfo implements Cloneable {
    * @return
    */
   int getManualKeyUsagesCountAndIncrement(String manualKey) {
+    if (mManualKeysCounter == null) {
+      mManualKeysCounter = new HashMap<>(1);
+    }
     Integer count = mManualKeysCounter.get(manualKey);
     if (count == null) {
       count = 0;
