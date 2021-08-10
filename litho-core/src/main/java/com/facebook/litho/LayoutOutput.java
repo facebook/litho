@@ -65,20 +65,22 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mIndex;
   private long mId;
   private int mUpdateState = STATE_UNKNOWN;
+
   /* TODO: (T81557408) Fix @Nullable issue */
   public LayoutOutput(
-      @Nullable NodeInfo nodeInfo,
-      @Nullable ViewNodeInfo viewNodeInfo,
-      Component component,
-      @Nullable String key,
-      Rect bounds,
-      int hostTranslationX,
-      int hostTranslationY,
-      int flags,
-      long hostMarker,
-      int importantForAccessibility,
-      int orientation,
-      @Nullable TransitionId transitionId) {
+      final Component component,
+      final @Nullable NodeInfo nodeInfo,
+      final @Nullable ViewNodeInfo viewNodeInfo,
+      final @Nullable String key,
+      final Rect bounds,
+      final int hostTranslationX,
+      final int hostTranslationY,
+      final int flags,
+      final long hostMarker,
+      final int importantForAccessibility,
+      final int orientation,
+      final @Nullable TransitionId transitionId) {
+
     if (component == null) {
       throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
     }

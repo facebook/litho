@@ -38,9 +38,9 @@ public class MountItemTestHelper {
       TransitionId transitionId) {
     LayoutOutput output =
         new LayoutOutput(
+            component,
             info,
             viewInfo,
-            component,
             globalKey,
             bounds != null ? bounds : new Rect(),
             hostTranslationX,

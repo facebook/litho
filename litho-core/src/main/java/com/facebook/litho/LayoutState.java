@@ -356,9 +356,9 @@ public class LayoutState
       final @Nullable DebugHierarchy.Node hierarchy) {
     final LayoutOutput hostOutput =
         new LayoutOutput(
-            null,
-            null,
             HostComponent.create(),
+            null,
+            null,
             null,
             new Rect(0, 0, result.getWidth(), result.getHeight()),
             0,
@@ -555,9 +555,9 @@ public class LayoutState
     }
 
     return new LayoutOutput(
+        component,
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
-        component,
         componentKey,
         bounds,
         hostTranslationX,

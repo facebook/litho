@@ -117,9 +117,9 @@ public class LithoMountData {
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
     LayoutOutput output =
         new LayoutOutput(
+            HostComponent.create(),
             null,
             viewNodeInfo,
-            HostComponent.create(),
             null,
             lithoView.getPreviousMountBounds(),
             0,
