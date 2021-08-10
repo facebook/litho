@@ -2397,12 +2397,7 @@ public class LayoutState
     layoutOutput.setIndex(layoutState.mMountableOutputs.size());
 
     final RenderTreeNode node =
-        LayoutOutput.create(
-            layoutOutput,
-            context,
-            layoutState.mLithoRenderUnitFactory,
-            parent,
-            layoutState.mLayoutData);
+        LayoutOutput.create(layoutOutput, context, layoutState.mLithoRenderUnitFactory, parent);
 
     if (parent != null) {
       parent.child(node);

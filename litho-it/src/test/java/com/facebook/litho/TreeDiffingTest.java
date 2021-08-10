@@ -58,7 +58,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaMeasureFunction;
-import java.util.HashMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -827,7 +826,7 @@ public class TreeDiffingTest {
   private static RenderTreeNode createNode(final Component component) {
     LayoutOutput output =
         new LayoutOutput(null, null, component, null, new Rect(), 0, 0, 0, 0, 0, 0, null);
-    return LayoutOutput.create(output, null, null, null, new HashMap<>());
+    return LayoutOutput.create(output, null, null, null);
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {

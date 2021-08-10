@@ -418,7 +418,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         new LayoutOutput(
             null, null, component, null, new Rect(0, top, 10, bottom), 0, 0, 0, 0, 0, 0, null);
     layoutOutput.setIndex(index);
-    return LayoutOutput.create(layoutOutput, null, null, null, null);
+    return LayoutOutput.create(layoutOutput, null, null, null);
   }
 
   private static IncrementalMountOutput createIncrementMountOutput(
