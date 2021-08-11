@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.view.View.OVER_SCROLL_ALWAYS;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
@@ -69,6 +70,7 @@ class HorizontalScrollSpec {
   @PropDefault static final boolean scrollbarEnabled = true;
   @PropDefault static final int initialScrollPosition = LAST_SCROLL_POSITION_UNSET;
   @PropDefault static final boolean incrementalMountEnabled = false;
+  @PropDefault static final int overScrollMode = OVER_SCROLL_ALWAYS;
 
   /** Scroll change listener invoked when the scroll position changes. */
   public interface OnScrollChangeListener {
@@ -181,6 +183,7 @@ class HorizontalScrollSpec {
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       @Prop(optional = true) @Nullable final ScrollStateListener scrollStateListener,
       @Prop(optional = true) boolean incrementalMountEnabled,
+      @Prop(optional = true) int overScrollMode,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
@@ -188,6 +191,7 @@ class HorizontalScrollSpec {
       @FromBoundsDefined final YogaDirection layoutDirection) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
+    horizontalScrollLithoView.setOverScrollMode(overScrollMode);
     horizontalScrollLithoView.mount(
         childComponentTree,
         lastScrollPosition,
