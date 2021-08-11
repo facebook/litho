@@ -132,7 +132,12 @@ public class LithoMountData {
 
     MountItem item =
         new MountItem(
-            LayoutOutput.create(output, null, lithoView.getLithoRenderUnitFactory(), null),
+            LayoutOutput.create(
+                output,
+                lithoView.getPreviousMountBounds(),
+                null,
+                lithoView.getLithoRenderUnitFactory(),
+                null),
             lithoView,
             lithoView);
     item.setMountData(new LithoMountData(lithoView));

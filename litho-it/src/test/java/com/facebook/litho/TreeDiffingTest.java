@@ -826,7 +826,7 @@ public class TreeDiffingTest {
   private static RenderTreeNode createNode(final Component component) {
     LayoutOutput output =
         new LayoutOutput(component, null, null, null, new Rect(), 0, 0, 0, 0, 0, 0, null);
-    return LayoutOutput.create(output, null, null, null);
+    return LayoutOutput.create(output, new Rect(), null, null, null);
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {
