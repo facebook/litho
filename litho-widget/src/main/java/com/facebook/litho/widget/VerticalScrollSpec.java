@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.view.View.OVER_SCROLL_ALWAYS;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -72,6 +73,7 @@ import com.facebook.litho.annotations.State;
 public class VerticalScrollSpec {
 
   @PropDefault static final boolean scrollbarFadingEnabled = true;
+  @PropDefault static final int overScrollMode = OVER_SCROLL_ALWAYS;
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -196,6 +198,7 @@ public class VerticalScrollSpec {
       @Prop(optional = true) @Nullable VerticalScrollEventsController eventsController,
       @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       @Prop(optional = true) ScrollStateListener scrollStateListener,
+      @Prop(optional = true) int overScrollMode,
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
       @Prop(optional = true) @Nullable OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
@@ -217,6 +220,7 @@ public class VerticalScrollSpec {
     }
     lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
     lithoScrollView.setOnInterceptTouchListener(onInterceptTouchListener);
+    lithoScrollView.setOverScrollMode(overScrollMode);
 
     if (eventsController != null) {
       eventsController.setScrollView(lithoScrollView);
