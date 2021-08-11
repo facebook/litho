@@ -143,6 +143,14 @@ public class IncrementalMountExtension
       return;
     }
 
+    if (IncrementalMountExtensionConfigs.shouldSkipBoundsInNegativeCoordinateSpace &&
+        ((localVisibleRect.top < 0 && localVisibleRect.bottom <= 0)
+            || (localVisibleRect.left < 0 && localVisibleRect.right < 0))) {
+      log("Skipping: Visible area is in negative coordinate space");
+      RenderCoreSystrace.endSection();
+      return;
+    }
+
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (state.mPreviousLocalVisibleRect.isEmpty()
         || localVisibleRect.isEmpty()
@@ -320,19 +328,19 @@ public class IncrementalMountExtension
       boolean ownsHostRef) {
     return ownsHostRef
         ? "Forcing acquired host mount in "
-            + localVisibleRect
-            + ", mounting "
-            + isMounting
-            + ". Item:  id = "
-            + output.getId()
-            + ", bounds = "
-            + output.getBounds()
-            + ". Host: id = "
-            + host.getId()
-            + ", originalBounds = "
-            + host.getOriginalBounds()
-            + ", bounds = "
-            + host.getBounds()
+        + localVisibleRect
+        + ", mounting "
+        + isMounting
+        + ". Item:  id = "
+        + output.getId()
+        + ", bounds = "
+        + output.getBounds()
+        + ". Host: id = "
+        + host.getId()
+        + ", originalBounds = "
+        + host.getOriginalBounds()
+        + ", bounds = "
+        + host.getBounds()
         : "Forcing unaacquired host mount in "
             + localVisibleRect
             + ", mounting "
@@ -442,7 +450,7 @@ public class IncrementalMountExtension
       // that has moved on/off the top of the screen.
       while (state.mPreviousBottomsIndex < count
           && localVisibleRect.top
-              >= byBottomBounds.get(state.mPreviousBottomsIndex).getBounds().bottom) {
+          >= byBottomBounds.get(state.mPreviousBottomsIndex).getBounds().bottom) {
 
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex);
         final long id = node.getId();
@@ -459,7 +467,7 @@ public class IncrementalMountExtension
 
       while (state.mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              <= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom) {
+          <= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom) {
 
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex - 1);
         final long id = node.getId();
@@ -507,7 +515,7 @@ public class IncrementalMountExtension
 
       while (state.mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              < byTopBounds.get(state.mPreviousTopsIndex - 1).getBounds().top) {
+          < byTopBounds.get(state.mPreviousTopsIndex - 1).getBounds().top) {
 
         final IncrementalMountOutput node = byTopBounds.get(state.mPreviousTopsIndex - 1);
         final long id = node.getId();
