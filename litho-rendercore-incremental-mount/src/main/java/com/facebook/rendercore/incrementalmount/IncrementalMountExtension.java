@@ -297,7 +297,7 @@ public class IncrementalMountExtension
         additionalMessageBuilder.append("\n");
       }
     }
-    
+
     errorMessage += additionalMessageBuilder.toString();
 
     errorMessage += "MountDelegateTarget mounting info: ";
@@ -424,7 +424,7 @@ public class IncrementalMountExtension
       state.mPreviousLocalVisibleRect.set(localVisibleRect);
     }
   }
-  
+
   private static void performIncrementalMount(
       final ExtensionState<IncrementalMountExtensionState> extensionState,
       final Rect localVisibleRect) {

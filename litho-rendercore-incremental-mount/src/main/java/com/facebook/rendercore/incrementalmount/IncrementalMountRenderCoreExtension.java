@@ -47,7 +47,7 @@ public class IncrementalMountRenderCoreExtension
         public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
           final int lhsTop = l.getBounds().top;
           final int rhsTop = r.getBounds().top;
-          
+
           if (lhsTop == rhsTop) {
             if (l.getIndex() == r.getIndex()) {
               return 0;
@@ -67,7 +67,7 @@ public class IncrementalMountRenderCoreExtension
         public int compare(IncrementalMountOutput l, IncrementalMountOutput r) {
           final int lhsBottom = l.getBounds().bottom;
           final int rhsBottom = r.getBounds().bottom;
-          
+
           if (lhsBottom == rhsBottom) {
             if (l.getIndex() == r.getIndex()) {
               return 0;

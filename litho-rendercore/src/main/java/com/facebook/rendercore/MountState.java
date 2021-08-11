@@ -445,14 +445,13 @@ public class MountState implements MountDelegateTarget {
       final MountItem oldItem = getItemAt(i);
 
       // if oldItem is null it was previously unmounted so there is nothing we need to do.
-      if (oldItem == null)
-        continue;
-      
-      final boolean hasUnmountDelegate = 
-          mUnmountDelegateExtension != null 
+      if (oldItem == null) continue;
+
+      final boolean hasUnmountDelegate =
+          mUnmountDelegateExtension != null
               && mUnmountDelegateExtension.shouldDelegateUnmount(
                   mMountDelegate.getUnmountDelegateExtensionState(), oldItem);
-      
+
       if (hasUnmountDelegate) {
         continue;
       }
@@ -468,7 +467,7 @@ public class MountState implements MountDelegateTarget {
             mIdToMountedItemMap.get(newHostMarker) == null
                 ? null
                 : (Host) mIdToMountedItemMap.get(newHostMarker).getContent();
-        
+
         if (oldItem.getHost() != newHost) {
           // If the id is the same but the parent host is different we simply unmount the item and
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
@@ -581,7 +580,7 @@ public class MountState implements MountDelegateTarget {
     if (unit.getId() == ROOT_HOST_ID) {
       return;
     }
-    
+
     mIdToMountedItemMap.remove(unit.getId());
 
     final boolean hasUnmountDelegate =
