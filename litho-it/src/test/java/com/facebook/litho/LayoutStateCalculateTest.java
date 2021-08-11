@@ -2494,7 +2494,7 @@ public class LayoutStateCalculateTest {
         spy(TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build());
     componentSpy.setGlobalKey("global_key");
 
-    c = ComponentContext.withComponentScope(c, componentSpy, "global_key");
+    c = ComponentContext.withComponentScope(layoutStateContext, c, componentSpy, "global_key");
 
     Component.willRender(c, componentSpy);
 
@@ -2524,7 +2524,7 @@ public class LayoutStateCalculateTest {
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
     component.setGlobalKey("global_key");
 
-    c = ComponentContext.withComponentScope(c, component, "global_key");
+    c = ComponentContext.withComponentScope(layoutStateContext, c, component, "global_key");
 
     Component.willRender(c, component);
 
@@ -2546,7 +2546,7 @@ public class LayoutStateCalculateTest {
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
     component.setGlobalKey("global_key");
 
-    c = ComponentContext.withComponentScope(c, component, "global_key");
+    c = ComponentContext.withComponentScope(layoutStateContext, c, component, "global_key");
 
     Component.willRender(c, component);
 
@@ -2568,7 +2568,7 @@ public class LayoutStateCalculateTest {
         TestLayoutComponent.create(c, 0, 0, true, true, false).key("global_key").build();
     component.setGlobalKey("global_key");
 
-    c = ComponentContext.withComponentScope(c, component, "global_key");
+    c = ComponentContext.withComponentScope(layoutStateContext, c, component, "global_key");
 
     Component.willRender(c, component);
 

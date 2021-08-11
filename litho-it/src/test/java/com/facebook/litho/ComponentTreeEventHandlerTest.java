@@ -33,11 +33,13 @@ import org.junit.runner.RunWith;
 public class ComponentTreeEventHandlerTest {
 
   private ComponentContext mContext;
+  private LayoutStateContext mLayoutStateContext;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
-    mContext.setLayoutStateContextForTesting();
+    mLayoutStateContext = LayoutStateContext.getTestInstance(mContext);
+    mContext.setLayoutStateContext(mLayoutStateContext);
   }
 
   @Test
@@ -45,7 +47,8 @@ public class ComponentTreeEventHandlerTest {
     Component component = mock(Component.class);
     final String componentGlobalKey = "component1";
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, component, componentGlobalKey);
+        ComponentContext.withComponentScope(
+            mLayoutStateContext, mContext, component, componentGlobalKey);
 
     when(component.getScopedContext(any(), eq(componentGlobalKey))).thenReturn(scopedContext);
 
@@ -86,7 +89,8 @@ public class ComponentTreeEventHandlerTest {
     final String componentGlobalKey1 = "component1";
     final String componentGlobalKey2 = "component2";
     ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, component, componentGlobalKey1);
+        ComponentContext.withComponentScope(
+            mLayoutStateContext, mContext, component, componentGlobalKey1);
     Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey1);
     when(component.getScopedContext(any(), eq(componentGlobalKey1))).thenReturn(scopedContext);
 
@@ -103,7 +107,8 @@ public class ComponentTreeEventHandlerTest {
 
     Whitebox.setInternalState(component, "mGlobalKey", componentGlobalKey2);
     ComponentContext scopedContext2 =
-        ComponentContext.withComponentScope(mContext, component, componentGlobalKey2);
+        ComponentContext.withComponentScope(
+            mLayoutStateContext, mContext, component, componentGlobalKey2);
     when(component.getScopedContext(any(), eq(componentGlobalKey2))).thenReturn(scopedContext2);
 
     componentTree.setRoot(component);

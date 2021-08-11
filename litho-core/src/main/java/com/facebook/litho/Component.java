@@ -1498,7 +1498,7 @@ public abstract class Component
     }
 
     final ComponentContext scopedContext =
-        ComponentContext.withComponentScope(parentContext, this, globalKey);
+        ComponentContext.withComponentScope(layoutStateContext, parentContext, this, globalKey);
 
     if (!parentContext.useStatelessComponent()) {
       setScopedContext(scopedContext);

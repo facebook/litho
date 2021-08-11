@@ -196,14 +196,16 @@ public class ComponentContext implements Cloneable {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentScope(
-      final ComponentContext parentContext, final Component scope, final String globalKey) {
+      final LayoutStateContext layoutContext,
+      final ComponentContext parentContext,
+      final Component scope,
+      final String globalKey) {
     ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mGlobalKey = null;
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
 
-    final LayoutStateContext layoutContext = componentContext.getLayoutStateContext();
     if (componentContext.useStatelessComponent()) {
       componentContext.mScopedComponentInfo =
           layoutContext.addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
