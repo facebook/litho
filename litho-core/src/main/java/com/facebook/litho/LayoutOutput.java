@@ -312,4 +312,12 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static boolean areDrawableOutputsDisabled(int flags) {
     return (flags & LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED) != 0;
   }
+
+  static Rect getMountBounds(Rect outRect, Rect bounds, int x, int y) {
+    outRect.left = bounds.left - x;
+    outRect.top = bounds.top - y;
+    outRect.right = bounds.right - x;
+    outRect.bottom = bounds.bottom - y;
+    return outRect;
+  }
 }

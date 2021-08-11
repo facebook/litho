@@ -174,13 +174,13 @@ public class LayoutStateCalculateTest {
 
     // Check total layout outputs.
     assertThat(layoutStateSpy.getMountableOutputCount()).isEqualTo(2);
-    final Rect mountBounds = new Rect();
+    Rect mountBounds = new Rect();
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutStateSpy, 0))).isTrue();
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(0)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
     assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(TestDrawableComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(1)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(1).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
@@ -246,17 +246,17 @@ public class LayoutStateCalculateTest {
 
     // Check total layout outputs.
     assertThat(layoutStateSpy.getMountableOutputCount()).isEqualTo(3);
-    final Rect mountBounds = new Rect();
+    Rect mountBounds = new Rect();
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutStateSpy, 0))).isTrue();
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(0)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
     // Check NestedTree
     assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(DrawableComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(1)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(1).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
     assertThat(getComponentAt(layoutStateSpy, 2)).isInstanceOf(TestDrawableComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(2)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(2).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
@@ -325,20 +325,20 @@ public class LayoutStateCalculateTest {
 
     // Check total layout outputs.
     assertThat(layoutStateSpy.getMountableOutputCount()).isEqualTo(4);
-    final Rect mountBounds = new Rect();
+    Rect mountBounds = new Rect();
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutStateSpy, 0))).isTrue();
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(0)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
     // Check NestedTree
     assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(DrawableComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(1)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(1).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
     assertThat(getComponentAt(layoutStateSpy, 2)).isInstanceOf(TestDrawableComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(2)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(2).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
     assertThat(getComponentAt(layoutStateSpy, 3)).isInstanceOf(TestViewComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(3)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(3).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(28, 8, 272, 8));
 
     validateMockitoUsage();
@@ -401,13 +401,13 @@ public class LayoutStateCalculateTest {
 
     // Check total layout outputs.
     assertThat(layoutStateSpy.getMountableOutputCount()).isEqualTo(2);
-    final Rect mountBounds = new Rect();
+    Rect mountBounds = new Rect();
     // Check host.
     assertThat(isHostComponent(getComponentAt(layoutStateSpy, 0))).isTrue();
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(0)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
     assertThat(getComponentAt(layoutStateSpy, 1)).isInstanceOf(TestDrawableComponent.class);
-    getLayoutOutput(layoutStateSpy.getMountableOutputAt(1)).getMountBounds(mountBounds);
+    mountBounds = layoutStateSpy.getMountableOutputAt(1).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
