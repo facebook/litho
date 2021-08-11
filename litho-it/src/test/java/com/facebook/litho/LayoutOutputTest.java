@@ -206,7 +206,11 @@ public class LayoutOutputTest {
         createLayoutOutputWithBoundsAndHostTranslation(new Rect(10, 10, 10, 10), 0, 0, 0, 0);
 
     Rect mountBounds = new Rect();
-    layoutOutput.getMountBounds(mountBounds);
+    LayoutOutput.getMountBounds(
+        mountBounds,
+        layoutOutput.getBounds(),
+        layoutOutput.mHostTranslationX,
+        layoutOutput.mHostTranslationY);
 
     assertThat(mountBounds).isEqualTo(layoutOutput.getBounds());
   }
@@ -217,7 +221,11 @@ public class LayoutOutputTest {
         createLayoutOutputWithBoundsAndHostTranslation(new Rect(10, 10, 10, 10), 5, 2, 0, 0);
 
     Rect mountBounds = new Rect();
-    layoutOutput.getMountBounds(mountBounds);
+    LayoutOutput.getMountBounds(
+        mountBounds,
+        layoutOutput.getBounds(),
+        layoutOutput.mHostTranslationX,
+        layoutOutput.mHostTranslationY);
 
     assertThat(mountBounds).isEqualTo(new Rect(5, 8, 5, 8));
   }

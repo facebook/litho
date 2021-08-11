@@ -53,8 +53,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private @Nullable DebugHierarchy.Node mHierarchy;
   private final Component mComponent;
   private final Rect mBounds;
-  private final int mHostTranslationX;
-  private final int mHostTranslationY;
+  final int mHostTranslationX;
+  final int mHostTranslationY;
   private final int mFlags;
 
   private final int mImportantForAccessibility;
