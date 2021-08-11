@@ -1475,8 +1475,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   @SuppressLint({"BadMethodUse-java.lang.Class.getName", "ReflectionMethodUse"})
   private Map<String, Object> getMountInfo(MountItem mountItem) {
     final Object content = mountItem.getContent();
-    final LayoutOutput output = getLayoutOutput(mountItem);
-    final Rect bounds = output.getMountBounds(new Rect());
+    final Rect bounds = mountItem.getRenderTreeNode().getBounds();
 
     final Map<String, Object> mountInfo = new HashMap<>();
     mountInfo.put("class", content.getClass().getName());

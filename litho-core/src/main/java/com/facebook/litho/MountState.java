@@ -943,7 +943,7 @@ class MountState implements MountDelegateTarget {
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
     // size and content but a different position.
-    updateBoundsForMountedLayoutOutput(nextLayoutOutput, currentMountItem);
+    updateBoundsForMountedLayoutOutput(node, nextLayoutOutput, currentMountItem);
 
     if (currentMountItem.getContent() instanceof Drawable) {
       maybeSetDrawableState(
@@ -1033,25 +1033,24 @@ class MountState implements MountDelegateTarget {
   }
 
   private static void updateBoundsForMountedLayoutOutput(
-      LayoutOutput layoutOutput, MountItem item) {
+      final RenderTreeNode node, final LayoutOutput layoutOutput, final MountItem item) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
     if (layoutOutput.getId() == ROOT_HOST_ID) {
       return;
     }
 
-    layoutOutput.getMountBounds(sTempRect);
-
+    final Rect bounds = node.getBounds();
     final boolean forceTraversal =
         Component.isMountViewSpec(layoutOutput.getComponent())
             && ((View) item.getContent()).isLayoutRequested();
 
     applyBoundsToMountContent(
         item.getContent(),
-        sTempRect.left,
-        sTempRect.top,
-        sTempRect.right,
-        sTempRect.bottom,
+        bounds.left,
+        bounds.top,
+        bounds.right,
+        bounds.bottom,
         forceTraversal /* force */);
   }
 
@@ -1221,14 +1220,9 @@ class MountState implements MountDelegateTarget {
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
-    layoutOutput.getMountBounds(sTempRect);
+    final Rect bounds = node.getBounds();
     applyBoundsToMountContent(
-        item.getContent(),
-        sTempRect.left,
-        sTempRect.top,
-        sTempRect.right,
-        sTempRect.bottom,
-        true /* force */);
+        item.getContent(), bounds.left, bounds.top, bounds.right, bounds.bottom, true /* force */);
 
     // 6. Update the mount stats
     if (mMountStats.isLoggingEnabled) {
@@ -1264,7 +1258,7 @@ class MountState implements MountDelegateTarget {
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
     }
 
-    mount(host, index, content, item, layoutOutput);
+    mount(host, index, content, item, node);
     setViewAttributes(item);
 
     return item;
@@ -1275,9 +1269,8 @@ class MountState implements MountDelegateTarget {
       final int index,
       final Object content,
       final MountItem item,
-      final LayoutOutput output) {
-    output.getMountBounds(sTempRect);
-    host.mount(index, item, sTempRect);
+      final RenderTreeNode node) {
+    host.mount(index, item, node.getBounds());
   }
 
   private static void unmount(
