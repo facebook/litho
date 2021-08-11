@@ -110,15 +110,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mKey;
   }
 
-  Rect getMountBounds(Rect outRect) {
-    outRect.left = mBounds.left - mHostTranslationX;
-    outRect.top = mBounds.top - mHostTranslationY;
-    outRect.right = mBounds.right - mHostTranslationX;
-    outRect.bottom = mBounds.bottom - mHostTranslationY;
-
-    return outRect;
-  }
-
   @Override
   public Rect getBounds() {
     return mBounds;
