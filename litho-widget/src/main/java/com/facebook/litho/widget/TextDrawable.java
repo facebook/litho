@@ -164,6 +164,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (action == ACTION_CANCEL) {
       clearSelection();
       resetLongClick();
+      if (mTouchableSpanListener != null) {
+        mTouchableSpanListener.onTouch(null, event, view);
+      }
       return false;
     }
 
@@ -210,7 +213,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         mTouchableSpanListener.onTouchDown(clickedSpan, view);
       }
     }
-
+    if (mTouchableSpanListener != null) {
+      mTouchableSpanListener.onTouch(clickedSpan, event, view);
+    }
     return true;
   }
 
