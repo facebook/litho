@@ -1886,11 +1886,9 @@ public class LayoutState
       final int size = unsorted.size();
       errorMessage.append("Error while sorting LayoutState tops. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = layoutState.getMountableOutputAt(unsorted.get(i).getIndex());
+        final RenderTreeNode node = layoutState.getMountableOutputAt(i);
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
-        errorMessage
-            .append("   Index " + layoutOutput.getIndex() + " top: " + layoutOutput.getBounds().top)
-            .append("\n");
+        errorMessage.append("   Index " + i + " top: " + layoutOutput.getBounds().top).append("\n");
       }
 
       throw new IllegalStateException(errorMessage.toString());
@@ -1910,14 +1908,10 @@ public class LayoutState
       final int size = unsorted.size();
       errorMessage.append("Error while sorting LayoutState bottoms. Size: " + size).append("\n");
       for (int i = 0; i < size; i++) {
-        final RenderTreeNode node = layoutState.getMountableOutputAt(unsorted.get(i).getIndex());
+        final RenderTreeNode node = layoutState.getMountableOutputAt(i);
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
         errorMessage
-            .append(
-                "   Index "
-                    + layoutOutput.getIndex()
-                    + " bottom: "
-                    + layoutOutput.getBounds().bottom)
+            .append("   Index " + i + " bottom: " + layoutOutput.getBounds().bottom)
             .append("\n");
       }
 
@@ -2414,16 +2408,16 @@ public class LayoutState
       ((HostComponent) output.getComponent()).setImplementsVirtualViews();
     }
 
-    layoutState.mMountableOutputs.add(node);
-
     final IncrementalMountOutput incrementalMountOutput =
         new IncrementalMountOutput(
             layoutOutput.getId(),
-            layoutOutput.getIndex(),
+            layoutState.mMountableOutputs.size(),
             layoutOutput.getBounds(),
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
+
+    layoutState.mMountableOutputs.add(node);
     layoutState.mIncrementalMountOutputs.put(layoutOutput.getId(), incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
