@@ -64,7 +64,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private long mId;
   private int mUpdateState = STATE_UNKNOWN;
 
-  /* TODO: (T81557408) Fix @Nullable issue */
   public LayoutOutput(
       final Component component,
       final @Nullable NodeInfo nodeInfo,
