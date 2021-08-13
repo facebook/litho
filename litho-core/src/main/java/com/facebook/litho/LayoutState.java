@@ -894,6 +894,7 @@ public class LayoutState
               ? currentDiffNode.getContentOutput().getId()
               : -1;
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
+          layoutOutput.getComponent(),
           layoutOutput,
           layoutState.mCurrentLevel,
           OutputUnitType.CONTENT,
@@ -1253,7 +1254,13 @@ public class LayoutState
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
-          hostOutput, layoutState.mCurrentLevel, OutputUnitType.HOST, -1, false, hierarchy);
+          hostOutput.getComponent(),
+          hostOutput,
+          layoutState.mCurrentLevel,
+          OutputUnitType.HOST,
+          -1,
+          false,
+          hierarchy);
     }
   }
 
@@ -1415,6 +1422,7 @@ public class LayoutState
             drawableComponent, layoutState, result, node, matchHostBoundsTransitions);
 
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
+        drawableComponent,
         drawableLayoutOutput,
         layoutState.mCurrentLevel,
         outputType,
@@ -2033,6 +2041,7 @@ public class LayoutState
   }
 
   private void calculateAndSetLayoutOutputIdAndUpdateState(
+      Component component,
       LayoutOutput layoutOutput,
       int level,
       @OutputUnitType int type,
@@ -2043,7 +2052,7 @@ public class LayoutState
       mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
     }
     mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
-        layoutOutput, level, type, previousId, isCachedOutputUpdated, hierarchy);
+        component, layoutOutput, level, type, previousId, isCachedOutputUpdated, hierarchy);
   }
 
   @Nullable
