@@ -70,7 +70,8 @@ class LayoutStateOutputIdCalculator {
     // the depth of this output in the view hierarchy and an incremental sequence number for
     // LayoutOutputs that have all the other parameters in common.
     long baseLayoutId =
-        LayoutStateOutputIdCalculator.calculateLayoutOutputBaseId(layoutOutput, level, type);
+        LayoutStateOutputIdCalculator.calculateLayoutOutputBaseId(
+            layoutOutput.getComponent(), level, type);
     int sequence;
     if (previousId > 0 && getLevelFromId(previousId) == level) {
       sequence = getSequenceFromId(previousId);
@@ -113,7 +114,7 @@ class LayoutStateOutputIdCalculator {
 
   /**
    * Calculates the final id for a LayoutOutput based on the baseId see {@link
-   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and on a
+   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(Component, int, int)} and on a
    * sequence number. The sequence number must be guaranteed to be unique for LayoutOutputs with the
    * same baseId.
    */
@@ -131,12 +132,12 @@ class LayoutStateOutputIdCalculator {
 
   /**
    * Calculates an id for a {@link LayoutOutput}. See {@link
-   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and {@link
+   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(Component, int, int)} and {@link
    * LayoutStateOutputIdCalculator#calculateId(long, int)}.
    */
   static long calculateLayoutOutputId(
-      LayoutOutput layoutOutput, int level, @OutputUnitType int type, int sequence) {
-    long baseId = calculateLayoutOutputBaseId(layoutOutput, level, type);
+      Component component, int level, @OutputUnitType int type, int sequence) {
+    long baseId = calculateLayoutOutputBaseId(component, level, type);
     return calculateId(baseId, sequence);
   }
 
@@ -164,14 +165,13 @@ class LayoutStateOutputIdCalculator {
    * the View hierarchy, and the type of output see {@link OutputUnitType}.
    */
   private static long calculateLayoutOutputBaseId(
-      LayoutOutput layoutOutput, int level, @OutputUnitType int type) {
+      Component component, int level, @OutputUnitType int type) {
     if (level < 0 || level > MAX_LEVEL) {
       throw new IllegalArgumentException(
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);
     }
 
-    long componentId =
-        layoutOutput.getComponent() != null ? layoutOutput.getComponent().getTypeId() : 0L;
+    long componentId = component.getTypeId();
 
     long componentShifted = componentId << COMPONENT_ID_SHIFT;
     long levelShifted = ((long) level) << LEVEL_SHIFT;

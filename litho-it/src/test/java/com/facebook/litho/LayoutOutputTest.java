@@ -102,10 +102,12 @@ public class LayoutOutputTest {
     LayoutOutput layoutOutput = createLayoutOutput();
 
     long stableId =
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST);
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST);
 
     long stableIdSeq2 =
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST + 1, OutputUnitType.CONTENT, SEQ_TEST + 1);
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST + 1, OutputUnitType.CONTENT, SEQ_TEST + 1);
 
     assertThat(toBinaryString(stableId))
         .isEqualTo(toBinaryString(mTestComponent.getTypeId()) + "000000010000000000000000001");
@@ -117,7 +119,8 @@ public class LayoutOutputTest {
   public void testStableIdBackgroundType() {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -128,7 +131,8 @@ public class LayoutOutputTest {
   public void testStableIdForegroundType() {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -139,7 +143,8 @@ public class LayoutOutputTest {
   public void testStableIdHostType() {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -150,7 +155,8 @@ public class LayoutOutputTest {
   public void testStableIdBorderType() {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -161,11 +167,13 @@ public class LayoutOutputTest {
   public void testGetIdLevel() {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
     assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(layoutOutput.getId()));
 
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, MAX_LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), MAX_LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST));
 
     assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(layoutOutput.getId()));
   }
@@ -174,11 +182,13 @@ public class LayoutOutputTest {
   public void testGetIdSequence() {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
     assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(layoutOutput.getId()));
 
     layoutOutput.setId(
-        calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.CONTENT, MAX_SEQ_TEST));
+        calculateLayoutOutputId(
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.CONTENT, MAX_SEQ_TEST));
 
     assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(layoutOutput.getId()));
   }
@@ -188,7 +198,7 @@ public class LayoutOutputTest {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            layoutOutput, MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST));
+            layoutOutput.getComponent(), MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -196,7 +206,7 @@ public class LayoutOutputTest {
     LayoutOutput layoutOutput = createLayoutOutput();
     layoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            layoutOutput, LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1));
+            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1));
   }
 
   @Test
