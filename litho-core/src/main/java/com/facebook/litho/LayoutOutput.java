@@ -76,7 +76,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       final int flags,
       final long hostMarker,
       final int importantForAccessibility,
-      final int orientation,
       final @Nullable TransitionId transitionId) {
 
     if (component == null) {

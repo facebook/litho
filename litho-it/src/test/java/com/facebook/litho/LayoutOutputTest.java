@@ -73,7 +73,6 @@ public class LayoutOutputTest {
         flags,
         hostMarker,
         0,
-        0,
         null);
   }
 

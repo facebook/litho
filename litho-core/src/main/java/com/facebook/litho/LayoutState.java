@@ -366,7 +366,6 @@ public class LayoutState
             0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            layoutState.mOrientation,
             null);
 
     calculateAndSetHostOutputIdAndUpdateState(null, result, hostOutput, layoutState, hierarchy);
@@ -565,7 +564,6 @@ public class LayoutState
         flags,
         hostMarker,
         importantForAccessibility,
-        layoutState.mOrientation,
         transitionId);
   }
 

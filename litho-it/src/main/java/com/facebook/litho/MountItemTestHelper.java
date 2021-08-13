@@ -48,7 +48,6 @@ public class MountItemTestHelper {
             flags,
             hostMarker,
             importantForAccessibility,
-            orientation,
             transitionId);
     RenderTreeNode node =
         LayoutOutput.create(output, bounds != null ? bounds : new Rect(), null, null, null);
