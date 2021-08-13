@@ -982,11 +982,6 @@ class MountState implements MountDelegateTarget {
     final Component currentComponent = currentLayoutOutput.getComponent();
     final Component nextComponent = nextLayoutOutput.getComponent();
 
-    if (ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange
-        && nextLayoutOutput.getOrientation() != currentLayoutOutput.getOrientation()) {
-      return true;
-    }
-
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
     if (nextComponent.isMountSizeDependent() && !sameSize(nextLayoutOutput, currentLayoutOutput)) {

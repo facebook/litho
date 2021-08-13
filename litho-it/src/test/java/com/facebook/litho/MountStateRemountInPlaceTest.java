@@ -25,6 +25,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -38,6 +39,7 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.widget.LayoutSpecConditionalReParenting;
+import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import java.util.Arrays;
@@ -131,30 +133,41 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testMountUnmountWithNewOrientation() {
-    mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
-    final TestComponent firstComponent = create(mContext).build();
+    final LifecycleTracker tracker = new LifecycleTracker();
+    final Component root =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(tracker).build();
 
-    final LithoView lithoView =
-        mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(20, SizeSpec.EXACTLY))
+        .measure()
+        .layout();
 
-    assertThat(firstComponent.wasOnMountCalled()).isTrue();
-    assertThat(firstComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
+    assertThat(tracker.getSteps())
+        .describedAs("Should call lifecycle methods")
+        .contains(LifecycleStep.ON_BIND, LifecycleStep.ON_MOUNT)
+        .doesNotContain(LifecycleStep.ON_UNMOUNT);
 
-    mContext.getResources().getConfiguration().orientation = ORIENTATION_LANDSCAPE;
-    final TestComponent secondComponent = create(mContext).build();
+    tracker.reset();
 
-    lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
+    mLithoViewRule
+        .setRootAndSizeSpec(
+            root, makeSizeSpec(20, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY))
+        .measure()
+        .layout();
 
-    assertThat(secondComponent.wasOnMountCalled()).isTrue();
-    assertThat(secondComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
+    assertThat(tracker.getSteps())
+        .describedAs("Should call lifecycle methods")
+        .contains(
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND);
   }
 
   @Test
   public void mountState_onNoForceShouldUpdateAndNewOrientation_shouldNotRemount() {
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = false;
 
     mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
     final TestComponent firstComponent = create(mContext).build();
@@ -175,14 +188,10 @@ public class MountStateRemountInPlaceTest {
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = true;
   }
 
   @Test
   public void mountState_onNoForceShouldUpdateAndNewOrientationAndSameSize_shouldNotRemount() {
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = false;
-
     mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
     final TestComponent firstComponent =
         create(mContext, 0, 0, true, true, false, true /*isMountSizeDependent*/)
@@ -208,8 +217,6 @@ public class MountStateRemountInPlaceTest {
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = true;
   }
 
   @Test

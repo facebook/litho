@@ -58,7 +58,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final int mFlags;
 
   private final int mImportantForAccessibility;
-  private final int mOrientation;
   private final @Nullable TransitionId mTransitionId;
   private final long mHostMarker;
 
@@ -97,7 +96,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
         importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
             ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
             : importantForAccessibility;
-    mOrientation = orientation;
     mTransitionId = transitionId;
   }
 
@@ -220,10 +218,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
     return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
         || mComponent.implementsAccessibility();
-  }
-
-  int getOrientation() {
-    return mOrientation;
   }
 
   @Nullable
