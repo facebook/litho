@@ -1110,8 +1110,11 @@ class MountState implements MountDelegateTarget {
     // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
     // all its mounted children.
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
-      final LayoutOutput newLayoutOutput = newLayoutState.getLayoutOutput(mLayoutOutputsIds[i]);
-      final int newPosition = newLayoutOutput == null ? -1 : newLayoutOutput.getIndex();
+      final int newPosition = newLayoutState.getPositionForId(mLayoutOutputsIds[i]);
+      final @Nullable RenderTreeNode newRenderTreeNode =
+          newPosition != -1 ? newLayoutState.getMountableOutputAt(newPosition) : null;
+      final @Nullable LayoutOutput newLayoutOutput =
+          newRenderTreeNode != null ? getLayoutOutput(newRenderTreeNode) : null;
 
       final MountItem oldItem = getItemAt(i);
       final boolean hasUnmountDelegate =
@@ -1139,11 +1142,17 @@ class MountState implements MountDelegateTarget {
           // recursively unmounted.
           unmountItem(i, mHostsByMarker);
           mPrepareMountStats.unmountedCount++;
-        } else if (newPosition != i) {
+        } else if (oldItem.getRenderTreeNode().getPositionInParent()
+            != newRenderTreeNode.getPositionInParent()) {
           // If a MountItem for this id exists and the hostMarker has not changed but its position
           // in the outputs array has changed we need to update the position in the Host to ensure
           // the z-ordering.
-          oldItem.getHost().moveItem(oldItem, i, newPosition);
+          oldItem
+              .getHost()
+              .moveItem(
+                  oldItem,
+                  oldItem.getRenderTreeNode().getPositionInParent(),
+                  newRenderTreeNode.getPositionInParent());
           mPrepareMountStats.movedCount++;
         } else {
           mPrepareMountStats.unchangedCount++;
@@ -1270,7 +1279,7 @@ class MountState implements MountDelegateTarget {
       final Object content,
       final MountItem item,
       final RenderTreeNode node) {
-    host.mount(index, item, node.getBounds());
+    host.mount(node.getPositionInParent(), item, node.getBounds());
   }
 
   private static void unmount(
@@ -1279,7 +1288,7 @@ class MountState implements MountDelegateTarget {
       final Object content,
       final MountItem item,
       final LayoutOutput output) {
-    host.unmount(index, item);
+    host.unmount(item.getRenderTreeNode().getPositionInParent(), item);
   }
 
   private static void applyBoundsToMountContent(

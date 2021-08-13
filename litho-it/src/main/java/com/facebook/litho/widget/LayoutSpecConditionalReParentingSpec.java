@@ -20,41 +20,41 @@ public class LayoutSpecConditionalReParentingSpec {
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext c, @Prop boolean reParent, @Prop Component firstComponent) {
+
+    Column.Builder builder =
+        Column.create(c).clickHandler(LayoutSpecConditionalReParenting.onClickEvent3(c));
+
     if (reParent) {
-      return Column.create(c)
+      builder
           .child(
-              Column.create(c)
-                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent3(c)) // 3
-                  .child(Text.create(c).widthPx(100).heightPx(100).text("test"))
-                  .child(
-                      Column.create(c)
-                          .clickHandler(LayoutSpecConditionalReParenting.onClickEvent1(c)) // 1
-                          .child(firstComponent)
-                          .child(
-                              SolidColor.create(c).widthPx(100).heightPx(100).color(Color.GREEN))))
+              Column.create(c) // Column added before Text(test1)
+                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent1(c))
+                  .child(firstComponent)
+                  .child(Text.create(c).text("test2")) // Text move up 1 position
+                  .child(SolidColor.create(c).widthPx(100).heightPx(100).color(Color.GREEN)))
           .child(
-              Column.create(c)
-                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent2(c)) // 2
-                  .child(Text.create(c).widthPx(100).heightPx(100).text("test2")))
-          .build();
+              Text.create(c)
+                  .widthPx(100)
+                  .heightPx(100)
+                  .text("test1")
+                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent2(c)));
     } else {
-      return Column.create(c)
+      builder
+          .child(
+              Text.create(c)
+                  .widthPx(100)
+                  .heightPx(100)
+                  .text("test1")
+                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent2(c)))
           .child(
               Column.create(c)
-                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent3(c)) // 3
-                  .child(Text.create(c).widthPx(100).heightPx(100).text("test")))
-          .child(
-              Column.create(c)
-                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent2(c)) // 2
-                  .child(Text.create(c).widthPx(100).heightPx(100).text("test2"))
-                  .child(
-                      Column.create(c)
-                          .clickHandler(LayoutSpecConditionalReParenting.onClickEvent1(c)) // 1
-                          .child(firstComponent)
-                          .child(
-                              SolidColor.create(c).widthPx(100).heightPx(100).color(Color.GREEN))))
-          .build();
+                  .clickHandler(LayoutSpecConditionalReParenting.onClickEvent1(c))
+                  .child(firstComponent)
+                  .child(SolidColor.create(c).widthPx(100).heightPx(100).color(Color.GREEN))
+                  .child(Text.create(c).text("test2")));
     }
+
+    return Column.create(c).child(builder).build();
   }
 
   @OnEvent(ClickEvent.class)
