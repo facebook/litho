@@ -819,7 +819,7 @@ public class TransitionsExtension
     BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
 
     // Mount to the root
-    rootHost.mount(rootHost.getMountItemCount(), mountItem);
+    rootHost.mount(index, mountItem);
 
     // Set new host to the MountItem
     mountItem.setHost(rootHost);
