@@ -61,6 +61,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final @Nullable TransitionId mTransitionId;
   private final long mHostMarker;
 
+  private int mIndex;
   private long mId;
   private int mUpdateState = STATE_UNKNOWN;
 
@@ -180,6 +181,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   void setId(long id) {
     mId = id;
+  }
+
+  int getIndex() {
+    return mIndex;
+  }
+
+  void setIndex(int index) {
+    mIndex = index;
   }
 
   @Nullable

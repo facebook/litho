@@ -2390,6 +2390,8 @@ public class LayoutState
       final @Nullable ComponentContext context,
       final @Nullable RenderTreeNode parent) {
 
+    layoutOutput.setIndex(layoutState.mMountableOutputs.size());
+
     final RenderTreeNode node =
         LayoutOutput.create(
             layoutOutput,
