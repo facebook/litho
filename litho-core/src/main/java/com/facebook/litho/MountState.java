@@ -667,7 +667,8 @@ class MountState implements MountDelegateTarget {
     if (item == null) {
       return;
     }
-    unmountItem(id, mHostsByMarker);
+    final int position = getLayoutOutput(item).getIndex();
+    unmountItem(position, mHostsByMarker);
   }
 
   private void logMountPerfEvent(
@@ -1276,7 +1277,12 @@ class MountState implements MountDelegateTarget {
     host.mount(node.getPositionInParent(), item, node.getBounds());
   }
 
-  private static void unmount(final ComponentHost host, final MountItem item) {
+  private static void unmount(
+      final ComponentHost host,
+      final int index,
+      final Object content,
+      final MountItem item,
+      final LayoutOutput output) {
     host.unmount(item.getRenderTreeNode().getPositionInParent(), item);
   }
 
@@ -2171,15 +2177,9 @@ class MountState implements MountDelegateTarget {
     clearVisibilityItems();
   }
 
-  private void unmountItem(final int index, LongSparseArray<ComponentHost> hostsByMarker) {
-    final long layoutOutputId = mLayoutOutputsIds[index];
-    unmountItem(layoutOutputId, hostsByMarker);
-  }
-
-  private void unmountItem(long layoutOutputId, LongSparseArray<ComponentHost> hostsByMarker) {
+  private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
+    final MountItem item = getItemAt(index);
     final long startTime = System.nanoTime();
-
-    final MountItem item = getItemWithId(layoutOutputId);
 
     // Already has been unmounted.
     if (item == null) {
@@ -2188,11 +2188,12 @@ class MountState implements MountDelegateTarget {
 
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
-    if (layoutOutputId == ROOT_HOST_ID) {
+    if (mLayoutOutputsIds[index] == ROOT_HOST_ID) {
       maybeUnsetViewAttributes(item);
       return;
     }
 
+    final long layoutOutputId = mLayoutOutputsIds[index];
     mIndexToItemMap.remove(layoutOutputId);
 
     final Object content = item.getContent();
@@ -2257,7 +2258,7 @@ class MountState implements MountDelegateTarget {
     final Component component = output.getComponent();
 
     if (component.hasChildLithoViews()) {
-      mCanMountIncrementallyMountItems.delete(layoutOutputId);
+      mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
     if (isHostSpec(component)) {
@@ -2284,7 +2285,7 @@ class MountState implements MountDelegateTarget {
         }
       }
 
-      unmount(host, item);
+      unmount(host, index, content, item, output);
       unbindMountItem(item);
     }
 
@@ -2342,10 +2343,6 @@ class MountState implements MountDelegateTarget {
   @Override
   public @Nullable MountItem getRootItem() {
     return mIndexToItemMap != null ? mIndexToItemMap.get(ROOT_HOST_ID) : null;
-  }
-
-  public @Nullable MountItem getItemWithId(long id) {
-    return mIndexToItemMap != null ? mIndexToItemMap.get(id) : null;
   }
 
   @Nullable
