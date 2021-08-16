@@ -33,7 +33,6 @@ import android.graphics.Rect;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
-import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtension;
 import java.util.ArrayList;
