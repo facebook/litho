@@ -252,6 +252,9 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   @Override
   public void onValueChange(DynamicValue value) {
     final Set<Component> dependentComponents = mDependentComponents.get(value);
+    if (dependentComponents == null) {
+      return;
+    }
 
     for (Component component : dependentComponents) {
       final Object content = mContents.get(component);
