@@ -297,8 +297,9 @@ public class ComponentsConfiguration {
     return defaultBuilder;
   }
 
-  public boolean mUseCancelableLayoutFutures;
-  public @Deprecated boolean mIgnoreNullLayoutStateError;
+  private final boolean mUseCancelableLayoutFutures;
+  private final @Deprecated boolean mIgnoreNullLayoutStateError;
+  private final boolean mUseInputOnlyInternalNodes;
 
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
@@ -309,18 +310,32 @@ public class ComponentsConfiguration {
     return mIgnoreNullLayoutStateError;
   }
 
+  public boolean getUseInputOnlyInternalNodes() {
+    return mUseInputOnlyInternalNodes;
+  }
+
   private ComponentsConfiguration(ComponentsConfiguration.Builder builder) {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
+    mUseInputOnlyInternalNodes = builder.mUseInputOnlyInternalNodes;
   }
 
   public static ComponentsConfiguration.Builder create() {
     return defaultBuilder;
   }
 
+  public static ComponentsConfiguration.Builder create(
+      ComponentsConfiguration componentsConfiguration) {
+    return new Builder()
+        .useCancelableLayoutFutures(componentsConfiguration.getUseCancelableLayoutFutures())
+        .ignoreNullLayoutStateError(componentsConfiguration.getIgnoreNullLayoutStateError())
+        .useInputOnlyInternalNodes(componentsConfiguration.getUseInputOnlyInternalNodes());
+  }
+
   public static class Builder {
     boolean mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
+    boolean mUseInputOnlyInternalNodes = false;
 
     protected Builder() {}
 
@@ -333,6 +348,12 @@ public class ComponentsConfiguration {
     public ComponentsConfiguration.Builder ignoreNullLayoutStateError(
         boolean ignoreNullLayoutStateError) {
       this.mIgnoreNullLayoutStateError = ignoreNullLayoutStateError;
+      return this;
+    }
+
+    public ComponentsConfiguration.Builder useInputOnlyInternalNodes(
+        boolean useInputOnlyInternalNodes) {
+      this.mUseInputOnlyInternalNodes = useInputOnlyInternalNodes;
       return this;
     }
 

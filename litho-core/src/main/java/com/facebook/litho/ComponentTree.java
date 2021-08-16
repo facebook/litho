@@ -414,6 +414,7 @@ public class ComponentTree implements LithoLifecycleListener {
   }
 
   protected ComponentTree(Builder builder) {
+    mComponentsConfiguration = builder.componentsConfiguration;
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = builder.root;
     if (builder.mLifecycleProvider != null) {
@@ -437,12 +438,12 @@ public class ComponentTree implements LithoLifecycleListener {
     mErrorEventHandler = builder.errorEventHandler;
     mIsLayoutCachingEnabled = builder.isLayoutCachingEnabled;
     mReuseInternalNodes = mIsLayoutCachingEnabled || builder.reuseInternalNodes;
-    mUseInputOnlyInternalNodes = mReuseInternalNodes || builder.useInputOnlyInternalNodes;
+    mUseInputOnlyInternalNodes =
+        mReuseInternalNodes || mComponentsConfiguration.getUseInputOnlyInternalNodes();
     useStatelessComponent = mReuseInternalNodes || builder.useStatelessComponent;
     shouldSkipShallowCopy = useStatelessComponent && builder.shouldSkipShallowCopy;
     shouldClearPrevContextWhenCommitted =
         useStatelessComponent && builder.shouldClearPrevContextWhenCommitted;
-    mComponentsConfiguration = builder.componentsConfiguration;
 
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
@@ -3319,7 +3320,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
     private boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     private boolean shouldSkipShallowCopy = ComponentsConfiguration.shouldSkipShallowCopy;
-    private boolean useInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
     private boolean reuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
     private boolean shouldClearPrevContextWhenCommitted =
@@ -3544,7 +3544,10 @@ public class ComponentTree implements LithoLifecycleListener {
         boolean isLayoutCachingEnabled) {
       this.useStatelessComponent = useStateLessComponent;
       this.shouldSkipShallowCopy = shouldSkipShallowCopy;
-      this.useInputOnlyInternalNodes = inputOnlyInternalNode;
+      this.componentsConfiguration =
+          ComponentsConfiguration.create(this.componentsConfiguration)
+              .useInputOnlyInternalNodes(inputOnlyInternalNode)
+              .build();
       this.reuseInternalNodes = internalNodeReuseEnabled;
       this.isLayoutCachingEnabled = isLayoutCachingEnabled;
       this.shouldClearPrevContextWhenCommitted = shouldClearPrevContextWhenCommitted;

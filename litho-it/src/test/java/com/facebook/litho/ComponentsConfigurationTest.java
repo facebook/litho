@@ -55,7 +55,7 @@ public class ComponentsConfigurationTest {
             .build();
     ComponentsConfiguration componentsConfiguration =
         Whitebox.getInternalState(componentTree, "mComponentsConfiguration");
-    assertThat(componentsConfiguration.mUseCancelableLayoutFutures).isTrue();
+    assertThat(componentsConfiguration.getUseCancelableLayoutFutures()).isTrue();
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(mDefaultBuilder);
   }
 
@@ -91,7 +91,7 @@ public class ComponentsConfigurationTest {
     assertThat(childView).isNotNull();
     ComponentsConfiguration componentsConfiguration =
         Whitebox.getInternalState(childView.getComponentTree(), "mComponentsConfiguration");
-    assertThat(componentsConfiguration.mUseCancelableLayoutFutures).isTrue();
+    assertThat(componentsConfiguration.getUseCancelableLayoutFutures()).isTrue();
     ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(mDefaultBuilder);
   }
 
