@@ -26,7 +26,6 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.CollectionUtils
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 import kotlin.random.Random
@@ -47,7 +46,7 @@ class PullToRefreshCollectionKComponent : KComponent() {
               style = Style.flex(grow = 1f),
               onPullToRefresh = {
                 list.update(generateRandomNumbers())
-                CollectionUtils.clearRefreshing(context, handle)
+                Collection.clearRefreshing(context, handle)
               },
           ) { list.value.forEach { child(id = idGenerator.value.next()) { Text("$it") } } })
     }

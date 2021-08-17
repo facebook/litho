@@ -27,7 +27,6 @@ import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.CollectionUtils
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 import com.facebook.litho.widget.Text
 
@@ -39,11 +38,11 @@ class ScrollToCollectionKComponent : KComponent() {
     return Column(style = Style.padding(16.dp)) {
       child(
           Row {
-            child(Button("First") { CollectionUtils.scrollTo(context, collectionHandle, 0) })
-            child(Button("Position 10") { CollectionUtils.scrollTo(context, collectionHandle, 10) })
+            child(Button("First") { Collection.scrollTo(context, collectionHandle, 0) })
+            child(Button("Position 10") { Collection.scrollTo(context, collectionHandle, 10) })
             child(
                 Button("50 to center") {
-                  CollectionUtils.smoothScrollTo(
+                  Collection.smoothScrollTo(
                       context,
                       collectionHandle,
                       50,
@@ -51,7 +50,7 @@ class ScrollToCollectionKComponent : KComponent() {
                 })
             child(
                 Button("End") {
-                  CollectionUtils.smoothScrollToHandle(
+                  Collection.smoothScrollToHandle(
                       context,
                       collectionHandle,
                       endItemHandle,
