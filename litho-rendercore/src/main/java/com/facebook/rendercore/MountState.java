@@ -27,6 +27,7 @@ import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 public class MountState implements MountDelegateTarget {
@@ -75,7 +76,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     final RenderTreeNode node = mRenderTree.getRenderTreeNodeAtIndex(position);
-    mountRenderUnit(position, node);
+    mountRenderUnit(position, node, null);
   }
 
   @Override
@@ -120,6 +121,11 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.beginSection("MountState.prepareMount");
     prepareMount();
     RenderCoreSystrace.endSection();
+    
+    // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is found.
+    final Locale lc = Locale.US;
+    final StringBuilder mountLoopLogBuilder = new StringBuilder();
+    mountLoopLogBuilder.append("Start of mount loop log:\n");
 
     // Starting from 1 as the RenderTreeNode in position 0 always represents the root which is
     // handled in prepareMount()
@@ -129,6 +135,8 @@ public class MountState implements MountDelegateTarget {
       final boolean isMountable = isMountable(renderTreeNode, i);
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
+      
+      mountLoopLogBuilder.append(String.format(lc, "Processing index %d: isMountable = %b, isMounted = %b\n", i, isMountable, isMounted));
 
       if (!isMountable) {
         if (isMounted) {
@@ -137,7 +145,7 @@ public class MountState implements MountDelegateTarget {
       } else if (!isMounted) {
         RenderCoreSystrace.beginSection(
             "MountItem: ", renderTreeNode.getRenderUnit().getDescription());
-        mountRenderUnit(i, renderTreeNode);
+        mountRenderUnit(i, renderTreeNode, mountLoopLogBuilder);
         RenderCoreSystrace.endSection();
       } else {
         updateMountItemIfNeeded(mMountDelegate, mContext, renderTreeNode, currentMountItem);
@@ -503,7 +511,9 @@ public class MountState implements MountDelegateTarget {
     return item;
   }
 
-  private void mountRenderUnit(int index, RenderTreeNode renderTreeNode) {
+  private void mountRenderUnit(int index, 
+      RenderTreeNode renderTreeNode, 
+      @Nullable StringBuilder processLogBuilder) {
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
 
@@ -512,6 +522,7 @@ public class MountState implements MountDelegateTarget {
 
     final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
     if (mountItem == null) {
+      final String additionalProcessLog = processLogBuilder != null ? processLogBuilder.toString() : "NA";
       throw new HostNotMountedException(
           renderUnit,
           parentRenderUnit,
@@ -524,6 +535,9 @@ public class MountState implements MountDelegateTarget {
               + "'.\n"
               + "Entire tree:\n"
               + mRenderTree.generateDebugString()
+              + ".\n"
+              + "Additional Process Log:\n"
+              + additionalProcessLog
               + ".\n");
     }
 
