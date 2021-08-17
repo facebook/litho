@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static android.view.View.OVER_SCROLL_ALWAYS;
+import static android.view.View.OVER_SCROLL_IF_CONTENT_SCROLLS;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -73,7 +73,7 @@ import com.facebook.litho.annotations.State;
 public class VerticalScrollSpec {
 
   @PropDefault static final boolean scrollbarFadingEnabled = true;
-  @PropDefault static final int overScrollMode = OVER_SCROLL_ALWAYS;
+  @PropDefault static final int overScrollMode = OVER_SCROLL_IF_CONTENT_SCROLLS;
 
   @OnCreateInitialState
   static void onCreateInitialState(
