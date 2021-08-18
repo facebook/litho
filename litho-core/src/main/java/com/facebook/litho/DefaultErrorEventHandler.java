@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.config.ComponentsConfiguration;
-
 /** Default implementation of ErrorEvent handler. */
 public class DefaultErrorEventHandler extends ErrorEventHandler {
 
@@ -42,9 +40,6 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
           ComponentsReporter.LogLevel.ERROR, categoryKey, e.getMessage());
     }
 
-    if (ComponentsConfiguration.swallowUnhandledExceptions) {
-      return;
-    }
     ComponentUtils.rethrow(e);
   }
 }

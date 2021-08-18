@@ -17,7 +17,6 @@
 package com.facebook.litho
 
 import android.graphics.Rect
-import android.util.Pair
 import android.view.View
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.sections.SectionContext
@@ -31,7 +30,6 @@ import com.facebook.litho.testing.error.TestCrasherOnCreateLayout
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec
 import com.facebook.litho.testing.error.TestCrasherOnMount
 import com.facebook.litho.testing.error.TestErrorBoundary
-import com.facebook.litho.testing.logging.TestComponentsReporter
 import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.CrashFromLayoutFromStyle
 import com.facebook.litho.widget.CrashKotlinComponent
@@ -45,7 +43,6 @@ import com.facebook.litho.widget.RootComponentWithTreeProps
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
-import com.facebook.rendercore.LogLevel
 import com.facebook.yoga.YogaEdge
 import java.lang.Exception
 import java.lang.RuntimeException
@@ -191,30 +188,6 @@ class ComponentErrorBoundaryTest {
     lithoViewRule.useComponentTree(componentTree)
     lithoViewRule.attachToWindow().measure().layout()
     Mockito.verify(errorEventHandler).onError(ArgumentMatchers.any(), ArgumentMatchers.any())
-  }
-
-  @Test
-  fun testDefaultErrorHandlerLoggingWhenUnhandledExceptionsSwallowed() {
-    ComponentsConfiguration.swallowUnhandledExceptions = true
-    val componentsReporter = TestComponentsReporter()
-    ComponentsReporter.provide(componentsReporter)
-    val component =
-        OnErrorPassUpParentTester.create(lithoViewRule.context)
-            .child(OnErrorNotPresentChild.create(lithoViewRule.context).build())
-            .info(ArrayList<String>())
-            .build()
-    lithoViewRule.setRoot(component).attachToWindow().measure().layout()
-
-    // the component hierarchy is OnErrorPassUpParentTester -> OnErrorNotPresentChild ->
-    // ThrowExceptionGrandChildTester (exception thrown here) and we want to verify that both root
-    // and the crashing component were logged in the categoryKey
-    assertThat(componentsReporter.loggedCategoryKeys)
-        .contains(
-            Pair(
-                LogLevel.ERROR,
-                "DefaultErrorEventHandler:OnErrorPassUpParentTester:ThrowExceptionGrandChildTester"))
-    ComponentsReporter.provide(null)
-    ComponentsConfiguration.swallowUnhandledExceptions = false
   }
 
   @Test
