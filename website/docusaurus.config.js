@@ -216,11 +216,15 @@ module.exports = {
         docs: {
           path: '../docs',
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/facebook/litho/edit/master/website/',
+          editUrl: fbContent({
+            internal: 'https://www.internalfb.com/intern/diffusion/FBS/browse/master/fbandroid/libraries/components/website/',
+            external: 'https://github.com/facebook/litho/edit/master/website/',
+          })
         },
         theme: {
           customCss: require.resolve('./src/css/custom.scss'),
         },
+        enableEditor: true,
       },
     ],
   ],
