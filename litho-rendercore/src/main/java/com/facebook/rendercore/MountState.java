@@ -121,7 +121,7 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.beginSection("MountState.prepareMount");
     prepareMount();
     RenderCoreSystrace.endSection();
-    
+
     // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is found.
     final Locale lc = Locale.US;
     final StringBuilder mountLoopLogBuilder = new StringBuilder();
@@ -135,8 +135,14 @@ public class MountState implements MountDelegateTarget {
       final boolean isMountable = isMountable(renderTreeNode, i);
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
-      
-      mountLoopLogBuilder.append(String.format(lc, "Processing index %d: isMountable = %b, isMounted = %b\n", i, isMountable, isMounted));
+
+      mountLoopLogBuilder.append(
+          String.format(
+              lc,
+              "Processing index %d: isMountable = %b, isMounted = %b\n",
+              i,
+              isMountable,
+              isMounted));
 
       if (!isMountable) {
         if (isMounted) {
@@ -511,9 +517,8 @@ public class MountState implements MountDelegateTarget {
     return item;
   }
 
-  private void mountRenderUnit(int index, 
-      RenderTreeNode renderTreeNode, 
-      @Nullable StringBuilder processLogBuilder) {
+  private void mountRenderUnit(
+      int index, RenderTreeNode renderTreeNode, @Nullable StringBuilder processLogBuilder) {
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
 
@@ -522,7 +527,8 @@ public class MountState implements MountDelegateTarget {
 
     final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
     if (mountItem == null) {
-      final String additionalProcessLog = processLogBuilder != null ? processLogBuilder.toString() : "NA";
+      final String additionalProcessLog =
+          processLogBuilder != null ? processLogBuilder.toString() : "NA";
       throw new HostNotMountedException(
           renderUnit,
           parentRenderUnit,
