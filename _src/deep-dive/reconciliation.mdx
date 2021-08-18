@@ -1,0 +1,34 @@
+---
+id: reconciliation
+title: Introduction
+---
+
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+
+Reconciliation is an implementation detail in Litho’s layout calculation process. Instead of
+recreating the entire layout tree for every update reconciliation enables Litho to clone the
+unmodified subtrees and only recreate the subtree which has changed.
+
+When using Litho, the component hierarchy is determined by what is returned by the
+`OnCreateLayout` method. On the next state or prop update, the `OnCreateLayout` may return a different
+tree of components. Litho uses reconciliation to figure out which components should be re-created
+and which can be re-used (read cloned).
+
+In essence, this means Litho will not call (most) lifecycle methods of components which were
+unaffected by the update. Reconciliation doubles down on the requirement that component specs must
+be immutable and should not rely on side effects to achieve any desired behaviour.
+
+:::note
+As of December 2020 reconciliation is only implemented for state updates.
+:::
+
+## Tradeoffs
+
+It is important to remember that the reconciliation algorithm is an implementation detail. Litho
+could re-create the whole hierarchy on every action; the end result would be the same. Just to be
+clear, re-creation in this context means calling `OnCreateLayout` for the modified component, it
+doesn’t mean Litho will unmount and remount them. Litho will only mount and unmount items which
+have changed.
+
+In order to reconcile changes, Litho keeps the previous component hierarchy in memory. This
+increases memory usage and can potentially increase OOMs.

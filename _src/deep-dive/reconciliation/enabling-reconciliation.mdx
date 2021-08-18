@@ -1,0 +1,119 @@
+---
+id: enabling-reconciliation
+title: Enabling Reconciliation
+---
+
+import {FbInternalOnly, OssOnly} from 'internaldocs-fb-helpers';
+
+:::info
+Reconciliation is enabled by default.
+:::
+
+<FbInternalOnly>
+
+:::tip
+It has been explicitly disabled throughout fbsource because reconciliation skips some lifecycle calls which some components may have (incorrectly) come to rely on. So, please remove the usages of the following deprecated APIs in your surface before proceeding.
+:::
+
+</FbInternalOnly>
+
+<OssOnly>
+
+:::tip
+Please remove the usages of the following deprecated APIs in your surface before proceeding.
+:::
+
+</OssOnly>
+
+```java
+// Remove usages of
+LithoView#create(Context, Component, boolean): LithoView
+LithoView#create(ComponentContext, Component, boolean): LithoView
+LithoView#setComponentWithoutReconciliation(Component): void
+LithoView#setComponentAsyncWithoutReconciliation(Component): void
+
+// Instead use
+LithoView#create(Context, Component): LithoView
+LithoView#create(ComponentContext, Component): LithoView
+LithoView#setComponent(Component): void
+LithoView#setComponentAsync(Component): void
+```
+
+<FbInternalOnly>
+
+:::info
+Please remove the usages of the prop `isReconciliationEnabled` from the following components in your surface before proceeding:
+* `FBInfiniteHScroll`
+:::info
+
+</FbInternalOnly>
+
+### ComponentTree
+
+The `ComponentTree` builder exposes an API to enable or disable reconciliation.
+
+```java
+ComponentTree.create(context)
+  .isReconciliationEnabled(true)
+  .build();
+```
+
+<FbInternalOnly>
+
+Example integrations:
+* [Feed](https://fburl.com/diffusion/azpz7q8u)
+* [Story Viewer](https://fburl.com/diffusion/xv0puz80)
+
+</FbInternalOnly>
+
+:::note
+In this integration the config is not passed into any Sections within the component
+hierarchy. It needs to be explicitly set in the Sections (see below). There are plans to enable
+propagation over the Section boundary in future milestones.**
+:::
+
+### RecyclerCollectionComponent
+
+The `RecyclerBinderConfiguration` and the `RecyclerBinder` builders both expose an API to enable or
+disable reconciliation.
+
+```java
+RecyclerBinderConfiguration.create()
+  .isReconciliationEnabled(false)
+  .build();
+```
+
+
+```java
+new RecyclerBinder.Builder()
+  .isReconciliationEnabled(true)
+  .build(context);
+```
+<FbInternalOnly>
+
+Example integrations:
+* [Notifications Tab](https://fburl.com/diffusion/l10jx2ys)
+* [Watch Tab](https://fburl.com/diffusion/ld30lvlm)
+* [Profile Tab](https://fburl.com/diffusion/tp4j1arg)
+
+</FbInternalOnly>
+
+### Sections
+
+The `ComponentRenderInfo` builder exposes an API to enable or disable reconciliation for individual
+Sections in a `GroupSectionSpec`.
+
+```java
+ComponentRenderInfo.create()
+  .component(component)
+  .customAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED, false)
+  .build();
+```
+
+<FbInternalOnly>
+
+Example integrations:
+* [PaginatedStoriesHScrollSectionSpec](https://fburl.com/diffusion/2h1npnoj)
+* [StoriesHScrollSectionSpec](https://fburl.com/diffusion/jhsnym17)
+
+</FbInternalOnly>

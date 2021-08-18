@@ -1,0 +1,36 @@
+---
+id: testing-overview
+title: Introduction
+---
+
+Litho provides a variety of tools to write different types of tests. This page provides
+a brief overview of them.
+
+## Unit Testing
+
+Litho provides a suite of helpers to make unit testing easier. Learn about the
+setup with our JUnit Rules and AssertJ helpers in [Unit Testing Basics](unit-testing).
+
+* [**Sub-Component Testing**](subcomponent-testing): A common way to test components
+is by testing assertions on the component hierarchy; *i.e. find components that are
+expected to be present or absent in the component tree*. The sub-component APIs provide
+utilities method to easily write such tests.
+
+* **Prop Matching**: Provides APIs to write tests for asserting the prop
+values set on the components in the hierarchy.
+  * [**Matching @Prop**](prop-matching)
+  * [**Matching @InjectProp**](injectprop-matching)
+  * [**Matching @TreeProp**](testing-treeprops)
+  * [**EventHandler Testing**](event-handler-testing)
+
+* [**Section Testing**](sections-testing): Section hierarchies can be tested similarly
+using the SectionComponentTestHelper and SubSection APIs.
+
+## End-to-End Testing
+
+Litho also provides utilities for writing end-to-end tests with powered by Espresso. Learn
+more in the [Litho Espresso](espresso-testing) section.
+
+## Android Studio
+
+To run unit tests in Android Studio please [follow this guide](tests-in-android-studio).

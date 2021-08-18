@@ -1,0 +1,61 @@
+---
+id: testing-treeprops
+title: Matching @TreeProp
+---
+
+:::note
+Checkout the [getting started](unit-testing) section to setup the test environment correctly.
+:::
+
+:::tip
+Checkout the [**sub-component testing**](subcomponent-testing) section before diving into `@TreeProp` testing.
+:::
+
+## Testing components with @TreeProp
+
+While `@Prop` are received from the immediate parent, [`@TreeProp`](/docs/mainconcepts/coordinate-state-actions/treeprops)
+can be passed down to a component from any of its ancestors in the current component hierarchy.
+When testing hierarchies containing components which contain `@TreeProp`, tree props should be be
+passed down to the components as expected.
+
+```java
+@LayoutSpec
+class ComponentWithTreePropSpec {
+  @OnCreateLayout
+  static Component onCreateLayout(
+      ComponentContext c,
+      @Prop String normalProp,
+      @TreeProp UserContext userContext) { // <- Should be passed down by ancestors.
+    // ...
+  }
+}
+```
+
+Use `LithoViewRule#setTreeProp(Class, Object)` to set a `@TreeProp`.
+
+```java
+@RunWith(LithoTestRunner.class)
+public class ComponentWithTreePropTest {
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  @Test
+  public void test() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component = ComponentWithTreeProp.create(c).build();
+
+    mLithoViewRule
+      .attachToWindow()
+      .setTreeProp(UserContext.class, new UserContext()) // setting tree props for the hierarchy.
+      .setRoot(component)
+      .measure()
+      .layout();
+
+    // test assertions as usual
+  }
+}
+```
+
+:::info
+`@TestSpec` does not support matching `@TreeProp`.
+:::
