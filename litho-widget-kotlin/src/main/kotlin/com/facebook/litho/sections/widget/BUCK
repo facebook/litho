@@ -22,6 +22,7 @@ load(
     "LITHO_SECTIONS_WIDGET_TARGET",
     "LITHO_WIDGET_TARGET",
     "litho_android_library",
+    "make_dep_path",
 )
 
 litho_android_library(
@@ -32,6 +33,7 @@ litho_android_library(
         LITHO_ANDROIDSUPPORT_TARGET,
     ],
     required_for_source_only_abi = True,
+    tests = [make_dep_path("litho-widget-kotlin/src/test/kotlin/com/facebook/litho/sections/widget:widget")],
     visibility = ["PUBLIC"],
     deps = [
         LITHO_KOTLIN_TARGET,

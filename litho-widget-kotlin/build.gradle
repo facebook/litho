@@ -55,6 +55,15 @@ dependencies {
 
     // Android Support Library
     compileOnly deps.supportAnnotations
+
+    testImplementation project(':litho-rendercore-testing')
+    testImplementation project(':litho-testing')
+    testImplementation deps.assertjCore
+    testImplementation deps.junit
+    testImplementation deps.robolectric
+    testImplementation deps.supportRecyclerView
+    testImplementation deps.supportTestJunit
+    testImplementation deps.mockitokotlin
 }
 
 apply from: rootProject.file('gradle/release.gradle')
