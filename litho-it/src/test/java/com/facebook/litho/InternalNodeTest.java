@@ -25,14 +25,10 @@ import static com.facebook.litho.it.R.drawable.background_without_padding;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.Whitebox;
@@ -51,7 +47,8 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class InternalNodeTest {
 
-  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoViewRule mLithoViewRule =
+      new LithoViewRule(ComponentsConfiguration.create().useInputOnlyInternalNodes(true).build());
 
   private final boolean mDefaultUseInputOnlyInternalNodes;
 
@@ -88,25 +85,11 @@ public class InternalNodeTest {
   @Before
   public void setup() {
     ComponentsConfiguration.useInputOnlyInternalNodes = true;
-    NodeConfig.sInternalNodeFactory =
-        new NodeConfig.InternalNodeFactory() {
-          @Override
-          public InternalNode create(ComponentContext componentContext) {
-            return new InputOnlyInternalNode<>(componentContext);
-          }
-
-          @Override
-          public InternalNode.NestedTreeHolder createNestedTreeHolder(
-              ComponentContext c, @Nullable TreeProps props) {
-            return new InputOnlyNestedTreeHolder(c, props);
-          }
-        };
     ComponentsReporter.provide(mComponentsReporter);
   }
 
   @After
   public void cleanup() {
-    NodeConfig.sInternalNodeFactory = null;
     ComponentsConfiguration.useInputOnlyInternalNodes = mDefaultUseInputOnlyInternalNodes;
   }
 
@@ -304,24 +287,21 @@ public class InternalNodeTest {
   public void testContextSpecificComponentAssertionFailFormatting() {
     final boolean value = ComponentsConfiguration.isDebugModeEnabled;
     ComponentsConfiguration.isDebugModeEnabled = true;
+
     final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
-    final PerfEvent perfEvent = mock(PerfEvent.class);
-    when(componentsLogger.newPerformanceEvent((ComponentContext) any(), anyInt()))
-        .thenReturn(perfEvent);
+    mLithoViewRule.useComponentTree(
+        ComponentTree.create(mLithoViewRule.getContext())
+            .componentsConfiguration(
+                ComponentsConfiguration.create().useInputOnlyInternalNodes(true).build())
+            .logger(componentsLogger, "TEST")
+            .build());
 
-    final ComponentContext context =
-        new ComponentContext(getApplicationContext(), "TEST", componentsLogger);
-
-    final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
-    context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
-
-    InternalNode node = Layout.create(layoutStateContext, context, Column.create(context).build());
-
-    final LayoutProps editor = node.getDebugLayoutEditor();
-    editor.alignSelf(YogaAlign.AUTO);
-    editor.flex(1f);
-
-    Layout.measure(layoutStateContext, context, node, UNSPECIFIED, UNSPECIFIED, null, null, null);
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext()).alignSelf(YogaAlign.AUTO).flex(1f).build())
+        .measure()
+        .layout()
+        .attachToWindow();
 
     assertThat(mComponentsReporter.getLoggedMessages().get(0).second)
         .isEqualTo("You should not set alignSelf, flex to a root layout.");
@@ -331,7 +311,9 @@ public class InternalNodeTest {
 
   @Test
   public void testDeepClone() {
-    final ComponentContext context = new ComponentContext(getApplicationContext());
+    final ComponentContext context =
+        ComponentContext.withComponentTree(
+            mLithoViewRule.getContext(), mLithoViewRule.getComponentTree());
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(context);
     context.setLayoutStateContext(layoutStateContext); // TODO: To be deleted
 

@@ -33,6 +33,7 @@ import com.facebook.litho.LithoLayoutResult;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.config.ComponentsConfiguration;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -71,11 +72,21 @@ public class LithoViewRule implements TestRule {
   public static final int DEFAULT_WIDTH_SPEC = makeMeasureSpec(1080, EXACTLY);
   public static final int DEFAULT_HEIGHT_SPEC = makeMeasureSpec(0, UNSPECIFIED);
 
+  private final @Nullable ComponentsConfiguration mComponentsConfiguration;
+
   private ComponentContext mContext;
   private ComponentTree mComponentTree;
   private LithoView mLithoView;
   private int mWidthSpec = DEFAULT_WIDTH_SPEC;
   private int mHeightSpec = DEFAULT_HEIGHT_SPEC;
+
+  public LithoViewRule() {
+    mComponentsConfiguration = null;
+  }
+
+  public LithoViewRule(@Nullable ComponentsConfiguration componentsConfiguration) {
+    mComponentsConfiguration = componentsConfiguration;
+  }
 
   @Override
   public Statement apply(final Statement base, Description description) {
@@ -143,7 +154,8 @@ public class LithoViewRule implements TestRule {
   /** Gets the current {@link ComponentTree}; creates a new instance if {@code null}. */
   public ComponentTree getComponentTree() {
     if (mComponentTree == null) {
-      mComponentTree = ComponentTree.create(mContext).build();
+      mComponentTree =
+          ComponentTree.create(mContext).componentsConfiguration(mComponentsConfiguration).build();
     }
     return mComponentTree;
   }
