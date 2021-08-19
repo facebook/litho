@@ -64,6 +64,22 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual));
   }
 
+  /**
+   * Avoid using this method. It lets you modify the state of a component in a different code path
+   * than the one used in production
+   *
+   * <p>As an alternative, try invoking the code that causes the real state update in your test.
+   *
+   * <p>For example, if your component updates the state to hide a piece of text once clicked,
+   * instead of calling that same test update, use {@link
+   * com.facebook.litho.testing.InteractionUtil} to fake a click on the component, which will cause
+   * the state update (and other effects that could be tested perhaps)
+   *
+   * <p>If you are unable to solve your problem that way, use this method as a last resort. This
+   * would be similar to cases when one resorts to reflection to make a test work. Ugly, but needed
+   * in rare cases.
+   */
+  @Deprecated
   public LithoViewAssert withStateUpdate(final StateUpdatesTestHelper.StateUpdater updater) {
     return LithoViewAssert.assertThat(
         StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual, updater));
