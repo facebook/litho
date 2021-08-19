@@ -7,9 +7,9 @@ In all the samples we have presented so far, we followed very common pattern whe
 
 If you try to do everything exactly how we did it up until now it will not work. It will simply look like there are no transitions defined.
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyParentComponentSpec.java start=not_working_start end=not_working_end
+```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyParentComponentSpec.java start=not_working_start end=not_working_end
 ```
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyTransitionComponentSpec.java start=not_working_start end=not_working_end
+```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyTransitionComponentSpec.java start=not_working_start end=not_working_end
 ```
 
 The reason is that, by default, transition keys are only visible within the scope of the component spec where it is used. This “visibility” of transition keys is determined by [`TransitionKeyType`](pathname:///javadoc/com/facebook/litho/Transition.TransitionKeyType.html). There are two options:
@@ -28,7 +28,7 @@ There are two steps to take to change transition key type:
 
 Here is how we would fix the sample using `TransitionKeyType.GLOBAL`:
 
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyParentComponentSpec.java start=start_working end=end_working
+```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyParentComponentSpec.java start=start_working end=end_working
 ```
-```java file=../../sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyTransitionComponentSpec.java start=start_working end=end_working
+```java file=sample/src/main/java/com/facebook/samples/litho/java/animations/docs/keyscope/GlobalKeyTransitionComponentSpec.java start=start_working end=end_working
 ```

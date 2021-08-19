@@ -221,6 +221,9 @@ module.exports = {
             external: 'https://github.com/facebook/litho/edit/master/website/',
           })
         },
+        'remark-code-snippets': {
+          baseDir: '..'
+        },
         theme: {
           customCss: require.resolve('./src/css/custom.scss'),
         },
