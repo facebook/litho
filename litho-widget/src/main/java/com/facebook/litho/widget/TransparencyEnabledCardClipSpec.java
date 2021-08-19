@@ -16,6 +16,12 @@
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.widget.CardClipDrawable.BOTTOM_LEFT;
+import static com.facebook.litho.widget.CardClipDrawable.BOTTOM_RIGHT;
+import static com.facebook.litho.widget.CardClipDrawable.NONE;
+import static com.facebook.litho.widget.CardClipDrawable.TOP_LEFT;
+import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
+
 import android.content.Context;
 import android.graphics.Color;
 import com.facebook.litho.ComponentContext;
@@ -38,6 +44,7 @@ import com.facebook.litho.annotations.ResType;
 class TransparencyEnabledCardClipSpec {
 
   @PropDefault static final int cardBackgroundColor = Color.WHITE;
+  @PropDefault static final int clippingColor = Color.TRANSPARENT;
 
   @OnCreateMountContent
   static TransparencyEnabledCardClipDrawable onCreateMountContent(Context c) {
@@ -49,14 +56,27 @@ class TransparencyEnabledCardClipSpec {
       ComponentContext c,
       TransparencyEnabledCardClipDrawable cardClipDrawable,
       @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius) {
+      @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
+      @Prop(optional = true) boolean disableClipTopLeft,
+      @Prop(optional = true) boolean disableClipTopRight,
+      @Prop(optional = true) boolean disableClipBottomLeft,
+      @Prop(optional = true) boolean disableClipBottomRight) {
     cardClipDrawable.setBackgroundColor(cardBackgroundColor);
+    cardClipDrawable.setClippingColor(clippingColor);
     cardClipDrawable.setCornerRadius(cornerRadius);
+    int clipEdge =
+        (disableClipTopLeft ? TOP_LEFT : NONE)
+            | (disableClipTopRight ? TOP_RIGHT : NONE)
+            | (disableClipBottomLeft ? BOTTOM_LEFT : NONE)
+            | (disableClipBottomRight ? BOTTOM_RIGHT : NONE);
+    cardClipDrawable.setDisableClip(clipEdge);
   }
 
   @OnUnmount
   static void onUnmount(ComponentContext c, TransparencyEnabledCardClipDrawable cardClipDrawable) {
     cardClipDrawable.setCornerRadius(0);
     cardClipDrawable.setBackgroundColor(Color.WHITE);
+    cardClipDrawable.resetCornerPaint();
   }
 }

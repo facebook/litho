@@ -32,6 +32,7 @@ import android.graphics.Color;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LayerType;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -148,7 +149,16 @@ class CardSpec {
       columnBuilder =
           columnBuilder
               .backgroundColor(realClippingColor)
-              .child(makeTransparencyEnabledCardClip(c, cardBackgroundColor, cornerRadius))
+              .child(
+                  makeTransparencyEnabledCardClip(
+                      c,
+                      cardBackgroundColor,
+                      realClippingColor,
+                      cornerRadius,
+                      disableClipTopLeft,
+                      disableClipTopRight,
+                      disableClipBottomLeft,
+                      disableClipBottomRight))
               .child(content);
     } else {
       final int realClippingColor = clippingColor == UNSET_CLIPPING ? Color.WHITE : clippingColor;
@@ -190,12 +200,36 @@ class CardSpec {
   }
 
   private static Component.Builder makeTransparencyEnabledCardClip(
-      ComponentContext c, int clippingColor, float cornerRadius) {
-    return TransparencyEnabledCardClip.create(c)
-        .cardBackgroundColor(clippingColor)
-        .cornerRadiusPx(cornerRadius)
-        .positionType(ABSOLUTE)
-        .positionPx(ALL, 0);
+      ComponentContext c,
+      int backgroundColor,
+      int clippingColor,
+      float cornerRadius,
+      boolean disableClipTopLeft,
+      boolean disableClipTopRight,
+      boolean disableClipBottomLeft,
+      boolean disableClipBottomRight) {
+    Component.Builder transparencyEnabledCardClipBuilder =
+        TransparencyEnabledCardClip.create(c)
+            .cardBackgroundColor(backgroundColor)
+            .clippingColor(clippingColor)
+            .cornerRadiusPx(cornerRadius)
+            .disableClipBottomLeft(disableClipBottomLeft)
+            .disableClipBottomRight(disableClipBottomRight)
+            .disableClipTopLeft(disableClipTopLeft)
+            .disableClipTopRight(disableClipTopRight)
+            .positionType(ABSOLUTE)
+            .positionPx(ALL, 0);
+
+    if ((disableClipBottomLeft
+            || disableClipBottomRight
+            || disableClipTopLeft
+            || disableClipTopRight)
+        && clippingColor == Color.TRANSPARENT) {
+      // For any of the above enclosing conditions, the TransparencyEnabledDrawable implementation
+      // relies on PorterDuffXfermode which only works on view layer type software
+      transparencyEnabledCardClipBuilder.layerType(LayerType.LAYER_TYPE_SOFTWARE, null);
+    }
+    return transparencyEnabledCardClipBuilder;
   }
 
   private static Component.Builder makeCardClip(
