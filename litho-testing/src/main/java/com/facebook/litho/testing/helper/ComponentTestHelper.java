@@ -32,7 +32,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.DefaultInternalNode;
 import com.facebook.litho.DefaultNestedTreeHolder;
-import com.facebook.litho.DiffNode;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
@@ -402,30 +401,6 @@ public final class ComponentTestHelper {
     }
 
     return null;
-  }
-
-  @Deprecated
-  private static List<Component> extractSubComponents(DiffNode root) {
-    if (root == null) {
-      return Collections.emptyList();
-    }
-
-    final List<Component> output = new ArrayList<>();
-
-    if (root.getChildCount() == 0) {
-      if (root.getComponent() != null && root.getComponent() instanceof TestComponent) {
-        TestComponent testSubcomponent = (TestComponent) root.getComponent();
-        output.add(testSubcomponent.getWrappedComponent());
-      }
-
-      return output;
-    }
-
-    for (DiffNode child : root.getChildren()) {
-      output.addAll(extractSubComponents(child));
-    }
-
-    return output;
   }
 
   @Deprecated
