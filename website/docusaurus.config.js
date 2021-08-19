@@ -228,6 +228,8 @@ module.exports = {
           customCss: require.resolve('./src/css/custom.scss'),
         },
         enableEditor: true,
+        staticDocsProject: 'litho',
+        trackingFile: 'xplat/staticdocs/WATCHED_FILES',
       },
     ],
   ],
