@@ -33,13 +33,13 @@ class StickyHeaderCollectionKComponent : KComponent() {
         style = Style.flex(grow = 1f),
     ) {
       staticChild(isSticky = true) { Text("Sticky Title 1", backgroundColor = Color.WHITE) }
-      (0..20).forEach { child(id = it, listTag = 1) { Text("$it") } }
+      (0..20).forEach { child(id = it) { Text("$it") } }
       staticChild(isSticky = true) { Text("Sticky Title 2", backgroundColor = Color.WHITE) }
-      (0..20).forEach { child(id = it, listTag = 2) { Text("$it") } }
+      (21..40).forEach { child(id = it) { Text("$it") } }
       staticChild(isSticky = false) { Text("Not sticky Title 3", backgroundColor = Color.WHITE) }
-      (0..20).forEach { child(id = it, listTag = 3) { Text("$it") } }
+      (41..60).forEach { child(id = it) { Text("$it") } }
       staticChild(isSticky = true) { Text("Sticky Title 4", backgroundColor = Color.WHITE) }
-      (0..20).forEach { child(id = it, listTag = 4) { Text("$it") } }
+      (61..80).forEach { child(id = it) { Text("$it") } }
     }
   }
 }

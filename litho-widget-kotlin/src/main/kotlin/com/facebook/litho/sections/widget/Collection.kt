@@ -233,7 +233,6 @@ class CollectionContainerScope {
 
   private data class CollectionData(
       val id: Any?,
-      val listTag: Any?,
       val component: Component?,
       val renderInfo: RenderInfo,
       val deps: Array<Any?>?,
@@ -252,25 +251,23 @@ class CollectionContainerScope {
       deps: Array<Any?>? = null,
       component: () -> Component?
   ) {
-    childInternal(component(), generateStaticId(), null, isSticky, isFullSpan, spanSize, deps)
+    childInternal(component(), generateStaticId(), isSticky, isFullSpan, spanSize, deps)
   }
 
   fun child(
       id: Any,
-      listTag: Any? = null,
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
       deps: Array<Any?>? = null,
       component: () -> Component?
   ) {
-    childInternal(component(), id, listTag, isSticky, isFullSpan, spanSize, deps)
+    childInternal(component(), id, isSticky, isFullSpan, spanSize, deps)
   }
 
   private fun childInternal(
       component: Component?,
       id: Any,
-      listTag: Any? = null,
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
@@ -279,7 +276,6 @@ class CollectionContainerScope {
     collectionChildrenModels.add(
         CollectionData(
             id,
-            listTag,
             component,
             ComponentRenderInfo.create()
                 .apply {
@@ -307,8 +303,7 @@ class CollectionContainerScope {
   }
 
   private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
-    return event.previousItem.id == event.nextItem.id &&
-        event.previousItem.listTag == event.nextItem.listTag
+    return event.previousItem.id == event.nextItem.id
   }
 
   private fun isComponentEquivalent(event: OnCheckIsSameContentEvent<CollectionData>): Boolean {

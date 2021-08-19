@@ -28,6 +28,8 @@ import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 
 class MultiListCollectionKComponent : KComponent() {
+  val ALL_FRIENDS_TAG = "all_friends"
+  val TOP_FRIENDS_TAG = "top_friends"
   val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
 
   override fun ComponentScope.render(): Component? {
@@ -43,19 +45,13 @@ class MultiListCollectionKComponent : KComponent() {
       child(
           Collection(style = Style.flex(grow = 1f)) {
             if (shouldShowTopFriends.value) {
-              child(id = "title", listTag = "Top Friends") {
-                Text("Top Friends", textStyle = Typeface.BOLD)
-              }
+              child(id = TOP_FRIENDS_TAG) { Text("Top Friends", textStyle = Typeface.BOLD) }
               topFriends.forEach {
-                child(id = it, listTag = "Top Friends") { Text("${friends[it]}") }
+                child(id = Pair(it, TOP_FRIENDS_TAG)) { Text("${friends[it]}") }
               }
             }
-            child(id = "title", listTag = "All Friends") {
-              Text("All Friends", textStyle = Typeface.BOLD)
-            }
-            allFriends.forEach {
-              child(id = it, listTag = "All Friends") { Text("${friends[it]}") }
-            }
+            child(id = ALL_FRIENDS_TAG) { Text("All Friends", textStyle = Typeface.BOLD) }
+            allFriends.forEach { child(id = Pair(it, ALL_FRIENDS_TAG)) { Text("${friends[it]}") } }
           })
     }
   }
