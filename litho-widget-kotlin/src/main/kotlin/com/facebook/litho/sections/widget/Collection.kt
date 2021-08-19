@@ -63,7 +63,7 @@ class Collection(
     private val itemAnimator: RecyclerView.ItemAnimator? =
         RecyclerCollectionComponentSpec.itemAnimator,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,
-    private val canMeasureRecycler: Boolean = false,
+    private val wrapContentCrossAxis: Boolean = false,
     private val loadingComponent: Component? = null,
     private val emptyComponent: Component? = null,
     private val errorComponent: Component? = null,
@@ -148,7 +148,7 @@ class Collection(
         recyclerConfiguration = recyclerConfiguration,
         itemAnimator = itemAnimator,
         itemDecoration = itemDecoration,
-        canMeasureRecycler = canMeasureRecycler,
+        canMeasureRecycler = wrapContentCrossAxis,
         loadingComponent = loadingComponent,
         emptyComponent = emptyComponent,
         errorComponent = errorComponent,
