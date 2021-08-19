@@ -24,8 +24,9 @@ import java.lang.Long.toHexString
 
 // 0x7FF8000000000000L is the mask used to indicate a quiet NaN, while the or'd flags below indicate
 // whether the value in the payload is a px or sp value. See Dimen.toPixels() for more info.
-const val PX_FLAG = 0x7FF8_0000_0000_0000L or 0x0001_0000_0000_0000L
-const val SP_FLAG = 0x7FF8_0000_0000_0000L or 0x0002_0000_0000_0000L
+const val NAN_MASK = 0x7FF8_0000_0000_0000L
+const val PX_FLAG = NAN_MASK or 0x0001_0000_0000_0000L
+const val SP_FLAG = NAN_MASK or 0x0002_0000_0000_0000L
 const val PAYLOAD_MASK = 0xFFFF_FFFFL
 
 /**
@@ -34,15 +35,18 @@ const val PAYLOAD_MASK = 0xFFFF_FFFFL
  *
  * To create a Dimen, use the [px], [dp], and [sp] extension functions below.
  */
-inline class Dimen(val encodedValue: Double) {
+inline class Dimen(val encodedValue: Long) {
 
   /**
    * Converts the given Dimen to pixels.
    *
    * Note on implementation: in order to not have to materialize an actual object for non-nullable
-   * usages of Dimen, we use an inline class (Dimen) that contains a Double. This double encodes
-   * both the type of the Dimen (PX, DP, SP) and its value. We can do this because all px/dp/sp
-   * values are 32-bits, while doubles are 64-bit. The encoding is as follows:
+   * usages of Dimen, we use an inline class (Dimen) that contains a Double represented as a Long
+   * (i.e. the bits of the double are the bits of the long). We don't directly use a Double since
+   * the JRE will sometimes canonicalize NaNs, losing the information we store in the mantissa.
+   *
+   * This Double encodes both the type of the Dimen (PX, DP, SP) and its value. We can do this
+   * because all px/dp/sp values are 32-bits, while doubles are 64-bit. The encoding is as follows:
    * - DP: The double is not NaN, and the double value can just be cast to a float
    * - PX: The double is a quiet NaN with PX_FLAG set in the mantissa, and the least significant
    * 32-bits (the payload) are the signed int value
@@ -51,36 +55,30 @@ inline class Dimen(val encodedValue: Double) {
    *
    * Read more about quiet NaN's here: https://www.doc.ic.ac.uk/~eedwards/compsys/float/nan.html
    */
-  fun toPixels(resourceResolver: ResourceResolver): Int {
-    if (encodedValue.isNaN()) {
-      val longBits = doubleToRawLongBits(encodedValue)
-
-      // We expect one of the PX or SP flags to be set, indicating that the payload encodes a
-      // integer PX value or a float SP value, respectively
-      if (longBits and PX_FLAG == PX_FLAG) {
-        return (longBits and PAYLOAD_MASK).toInt()
-      } else if (longBits and SP_FLAG == SP_FLAG) {
-        val spValue = intBitsToFloat((longBits and PAYLOAD_MASK).toInt())
-        return resourceResolver.sipsToPixels(spValue)
-      } else {
-        throw IllegalArgumentException(
-            "Got unexpected NaN: ${toHexString(encodedValue.toRawBits())}")
+  fun toPixels(resourceResolver: ResourceResolver): Int =
+      when {
+        // DP case
+        encodedValue and NAN_MASK != NAN_MASK ->
+            resourceResolver.dipsToPixels(longBitsToDouble(encodedValue).toFloat())
+        // PX case
+        encodedValue and PX_FLAG == PX_FLAG -> (encodedValue and PAYLOAD_MASK).toInt()
+        // SP case
+        encodedValue and SP_FLAG == SP_FLAG ->
+            resourceResolver.sipsToPixels(
+                intBitsToFloat((encodedValue and PAYLOAD_MASK).toInt()),
+            )
+        else -> throw IllegalArgumentException("Got unexpected NaN: ${toHexString(encodedValue)}")
       }
-    }
-
-    // DP case - DP is "encoded" as a regular, not-NaN double
-    return resourceResolver.dipsToPixels(encodedValue.toFloat())
-  }
 }
 
 inline val Int.dp: Dimen
-  get() = Dimen(this.toDouble())
+  get() = Dimen(doubleToRawLongBits(this.toDouble()))
 
 inline val Float.dp: Dimen
-  get() = Dimen(this.toDouble())
+  get() = Dimen(doubleToRawLongBits(this.toDouble()))
 
 inline val Double.dp: Dimen
-  get() = Dimen(this)
+  get() = Dimen(doubleToRawLongBits(this))
 
 inline val Int.sp: Dimen
   get() = Dimen(encodeSpFloat(this.toFloat()))
@@ -101,11 +99,11 @@ inline val Double.px: Dimen
   get() = Dimen(encodePxInt(this.toInt()))
 
 @PublishedApi
-internal inline fun encodePxInt(value: Int): Double {
-  return longBitsToDouble(value.toLong() or PX_FLAG)
+internal inline fun encodePxInt(value: Int): Long {
+  return value.toLong() or PX_FLAG
 }
 
 @PublishedApi
-internal inline fun encodeSpFloat(value: Float): Double {
-  return longBitsToDouble(value.toRawBits().toLong() or SP_FLAG)
+internal inline fun encodeSpFloat(value: Float): Long {
+  return value.toRawBits().toLong() or SP_FLAG
 }

@@ -19,8 +19,11 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.lang.IllegalArgumentException
 import org.assertj.core.api.Java6Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 
 const val DENSITY = 2f
@@ -29,6 +32,8 @@ const val SCALED_DENSITY = 10f
 /** Unit tests [Dimen]. */
 @RunWith(AndroidJUnit4::class)
 class DimenTest {
+
+  @Rule @JvmField val expectedException = ExpectedException.none()
 
   private val resourceResolver = MockResourceResolver(DENSITY, SCALED_DENSITY)
 
@@ -143,6 +148,13 @@ class DimenTest {
     assertThat((-1).px).isEqualTo((-1).px)
     assertThat(1.5f.px).isEqualTo(1.5f.px)
     assertThat((-1.5f).px).isEqualTo((-1.5f).px)
+
+    assertThat(1f.px).isEqualTo(1.px)
+
+    assertThat(0.px).isNotEqualTo(1.px)
+    assertThat(1.px).isNotEqualTo((-1).px)
+    assertThat(1.5f.px).isNotEqualTo((-1.5f).px)
+    assertThat(1.px).isNotEqualTo(10.px)
   }
 
   @Test
@@ -152,6 +164,13 @@ class DimenTest {
     assertThat((-1).dp).isEqualTo((-1).dp)
     assertThat(1.5f.dp).isEqualTo(1.5f.dp)
     assertThat((-1.5f).dp).isEqualTo((-1.5f).dp)
+
+    assertThat(1f.dp).isEqualTo(1.dp)
+
+    assertThat(0.dp).isNotEqualTo(1.dp)
+    assertThat(1.dp).isNotEqualTo((-1).dp)
+    assertThat(1.5f.dp).isNotEqualTo((-1.5f).dp)
+    assertThat(1.dp).isNotEqualTo(10.dp)
   }
 
   @Test
@@ -161,6 +180,21 @@ class DimenTest {
     assertThat((-1).sp).isEqualTo((-1).sp)
     assertThat(1.5f.sp).isEqualTo(1.5f.sp)
     assertThat((-1.5f).sp).isEqualTo((-1.5f).sp)
+
+    assertThat(1f.sp).isEqualTo(1.sp)
+
+    assertThat(0.sp).isNotEqualTo(1.sp)
+    assertThat(1.sp).isNotEqualTo((-1).sp)
+    assertThat(1.5f.sp).isNotEqualTo((-1.5f).sp)
+    assertThat(1.sp).isNotEqualTo(10.sp)
+  }
+
+  @Test
+  fun `invalid encoded Dimen throws`() {
+    expectedException.expect(IllegalArgumentException::class.java)
+    expectedException.expectMessage("Got unexpected NaN")
+
+    Dimen(Double.NaN.toRawBits()).toPixels(resourceResolver)
   }
 
   private class MockResourceResolver(val density: Float, val scaledDensity: Float) :
