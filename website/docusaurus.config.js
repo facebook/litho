@@ -151,6 +151,10 @@ module.exports = {
       additionalLanguages: ['java', 'groovy', 'kotlin'],
     },
   },
+  customFields: {
+    fbRepoName: 'fbsource',
+    ossRepoPath: 'fbandroid/libraries/components'
+  },
   plugins: [
     'docusaurus-plugin-sass',
     [
