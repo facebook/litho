@@ -35,6 +35,7 @@ import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -191,8 +192,24 @@ public class IncrementalMountExtension
       final RenderUnit<?> renderUnit,
       final Object content,
       final @Nullable Object layoutData) {
+    final long id = renderUnit.getId();
     final IncrementalMountExtensionState state = extensionState.getState();
-    state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(renderUnit.getId());
+    state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(id);
+
+    if (state.mInput.renderUnitWithIdHostsRenderTrees(id)) {
+      state.mMountedOutputIdsWithNestedContent.put(id, content); 
+    }
+  }
+
+  @Override
+  public void onUnmountItem(
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final RenderUnit<?> renderUnit,
+      final Object content,
+      final @Nullable Object layoutData) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    final long id = renderUnit.getId();
+    state.mMountedOutputIdsWithNestedContent.remove(id);
   }
 
   @Override
@@ -532,20 +549,18 @@ public class IncrementalMountExtension
     }
 
     log("Updates: [Items Mounted=" + itemsMounted + ", Items Unmounted=" + itemsUnmounted + "]");
+    
+    for (long id : state.mMountedOutputIdsWithNestedContent.keySet()) {
+      if (state.mComponentIdsMountedInThisFrame.contains(id)) {
+        continue;
+      }
 
-    final Collection<IncrementalMountOutput> outputs = state.mInput.getIncrementalMountOutputs();
-    for (IncrementalMountOutput output : outputs) {
-      final long id = output.getId();
-      if (!state.mComponentIdsMountedInThisFrame.contains(id)) {
-        if (isLockedForMount(extensionState, id)) {
-          final Object content = getContentWithId(extensionState, id);
-          if (content != null) {
-            recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
-          }
-        }
+      final Object content = state.mMountedOutputIdsWithNestedContent.get(id);
+      if (content != null) {
+        recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
       }
     }
-
+    
     state.mComponentIdsMountedInThisFrame.clear();
   }
 
@@ -601,6 +616,7 @@ public class IncrementalMountExtension
     private final Rect mPreviousLocalVisibleRect = new Rect();
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
+    private final HashMap<Long, Object> mMountedOutputIdsWithNestedContent = new HashMap<>(8);
     private final boolean mDisableForceAcquireHostMount;
 
     private IncrementalMountExtensionInput mInput;
