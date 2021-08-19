@@ -38,12 +38,13 @@
     </ul>
   ]]>
   </description>
-  <version>1.8.3-SNAPSHOT</version>
+  <version>1.8.3</version>
   <change-notes>
     <![CDATA[
     <h3>1.8.3</h3>
       <ul>
         <li>Fix: Re-arrange litho actions in 'New' context menu</li>
+        <li>Add: New extension point for post processing after template provider creates Litho file</li>
       </ul>
     <h3>1.8.2</h3>
       <ul>
@@ -63,8 +64,7 @@
       interface="com.facebook.litho.intellij.extensions.EventLogger" />
     <extensionPoint name="templateProvider"
       interface="com.facebook.litho.intellij.extensions.TemplateProvider" />
-    <extensionPoint name="actionPostProcess"
-                    interface="com.facebook.litho.intellij.extensions.ActionPostProcess" />
+    <extensionPoint name="actionPostProcess" interface="com.facebook.litho.intellij.extensions.ActionPostProcess" />
   </extensionPoints>
 
   <depends>com.intellij.modules.java</depends>
