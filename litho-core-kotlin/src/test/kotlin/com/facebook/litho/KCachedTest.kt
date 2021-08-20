@@ -50,7 +50,7 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by
+        val expensiveString =
             useCached("hello") {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("hello")
@@ -78,7 +78,7 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by
+        val expensiveString =
             useCached("hello", 100) {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("hello", 100)
@@ -106,7 +106,7 @@ class KCachedTest {
 
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by
+        val expensiveString =
             useCached("hello", 100, "litho") {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("hello", 100, "litho")
@@ -135,7 +135,7 @@ class KCachedTest {
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by
+        val expensiveString =
             useCached("count" + repeatNum.get()) {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("count" + repeatNum.get())
@@ -166,7 +166,7 @@ class KCachedTest {
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by
+        val expensiveString =
             useCached("world", repeatNum.get()) {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("world", repeatNum.get())
@@ -197,7 +197,7 @@ class KCachedTest {
     val repeatNum = AtomicInteger(100)
     class TestComponent : KComponent() {
       override fun ComponentScope.render(): Component? {
-        val expensiveString by
+        val expensiveString =
             useCached("world", repeatNum.get(), "litho") {
               initCounter.incrementAndGet()
               expensiveRepeatFunc("world", repeatNum.get(), "litho")
@@ -220,7 +220,7 @@ class KCachedTest {
   }
 
   @Test
-  fun cachedValueIsReusedBetweenComponentsOfSameTypeWhenInputsStayTheSame() {
+  fun cachedValueIsNotReusedBetweenComponentsOfSameTypeWhenInputsStayTheSame() {
     val initCounter = AtomicInteger(0)
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
@@ -236,8 +236,10 @@ class KCachedTest {
 
     ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
 
-    // CacheValue is shared between two `Leaf1` components.
-    assertThat(initCounter.get()).isEqualTo(1)
+    assertThat(initCounter.get())
+        .describedAs(
+            "CacheValue should not be shared between two `Leaf1` components under the same parent.")
+        .isEqualTo(2)
   }
 
   @Test
@@ -246,21 +248,31 @@ class KCachedTest {
     val lithoView = LithoView(context.androidContext)
     val componentTree = ComponentTree.create(context).build()
 
-    class TestComponent : KComponent() {
+    class TestComponent(val showLeaf1: Boolean, val dummyCacheBustingProp: Int) : KComponent() {
       override fun ComponentScope.render(): Component? {
-        return Row() {
-          child(Leaf1("hello", 100, initCounter))
-          child(Leaf1("hello", 100, initCounter))
-          child(Leaf2("hello", 100, initCounter))
+        return Row {
+          if (showLeaf1) {
+            child(Leaf1("hello", 100, initCounter))
+          } else {
+            child(Leaf2("hello", 100, initCounter))
+          }
         }
       }
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree, TestComponent())
+    ComponentTestHelper.mountComponent(
+        lithoView, componentTree, TestComponent(showLeaf1 = true, dummyCacheBustingProp = 0))
+    ComponentTestHelper.mountComponent(
+        lithoView, componentTree, TestComponent(showLeaf1 = true, dummyCacheBustingProp = 1))
 
-    // CacheValue is shared between two `Leaf1` components, but not shared with `Leaf2`, thus
-    // initCounter is 2.
-    assertThat(initCounter.get()).isEqualTo(2)
+    assertThat(initCounter.get()).isEqualTo(1)
+
+    ComponentTestHelper.mountComponent(
+        lithoView, componentTree, TestComponent(showLeaf1 = false, dummyCacheBustingProp = 2))
+
+    assertThat(initCounter.get())
+        .describedAs("CacheValue should not be shared between two components of different types")
+        .isEqualTo(2)
   }
 
   @Test
@@ -284,7 +296,7 @@ class KCachedTest {
   private class Leaf1(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
       KComponent() {
     override fun ComponentScope.render(): Component? {
-      val expensiveString by
+      val expensiveString =
           useCached(str, repeatNum) {
             initCounter.incrementAndGet()
             expensiveRepeatFunc(str, repeatNum)
@@ -296,7 +308,7 @@ class KCachedTest {
   private class Leaf2(val str: String, val repeatNum: Int, val initCounter: AtomicInteger) :
       KComponent() {
     override fun ComponentScope.render(): Component? {
-      val expensiveString by
+      val expensiveString =
           useCached(str, repeatNum) {
             initCounter.incrementAndGet()
             expensiveRepeatFunc(str, repeatNum)
@@ -311,13 +323,13 @@ class KCachedTest {
       val initCounter: AtomicInteger
   ) : KComponent() {
     override fun ComponentScope.render(): Component? {
-      val expensiveString1 by
+      val expensiveString1 =
           useCached(str, repeatNum) {
             initCounter.incrementAndGet()
             expensiveRepeatFunc(str, repeatNum)
           }
 
-      val expensiveString2 by
+      val expensiveString2 =
           useCached(str, repeatNum) {
             initCounter.incrementAndGet()
             expensiveRepeatFunc(str, repeatNum)

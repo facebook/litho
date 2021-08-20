@@ -16,74 +16,43 @@
 
 package com.facebook.litho
 
-import kotlin.reflect.KProperty
+import com.facebook.litho.annotations.Hook
 
 /**
  * Create a CachedValue variable within a Component. The [calculator] will provide the calculated
  * value if it hasn't already been calculated or if the inputs have changed since the previous
  * calculation.
  */
-fun <T> ComponentScope.useCached(calculator: () -> T): CachedDelegate<T> =
-    CachedDelegate(context, calculator = calculator)
+@Hook
+fun <T> ComponentScope.useCached(vararg inputs: Any, calculator: () -> T): T {
+  val globalKey = context.globalKey
+  val hookIndex = useCachedIndex++
+  val hookKey = "$globalKey:$hookIndex"
+  val cacheInputs = CachedInputs(hookKey, inputs)
+  val result =
+      context.getCachedValue(cacheInputs)
+          ?: calculator().also { context.putCachedValue(cacheInputs, it) }
 
-fun <T> ComponentScope.useCached(input1: Any, calculator: () -> T): CachedDelegate<T> =
-    CachedDelegate(context, input1, calculator = calculator)
-
-fun <T> ComponentScope.useCached(input1: Any, input2: Any, calculator: () -> T): CachedDelegate<T> =
-    CachedDelegate(context, input1, input2, calculator = calculator)
-
-fun <T> ComponentScope.useCached(vararg inputs: Any, calculator: () -> T): CachedDelegate<T> =
-    CachedDelegate(context, inputs = inputs, calculator = calculator)
-
-class CachedDelegate<T>
-internal constructor(
-    private val c: ComponentContext,
-    private val input1: Any? = null,
-    private val input2: Any? = null,
-    private val inputs: Array<out Any>? = null,
-    private val calculator: () -> T
-) {
-  operator fun getValue(nothing: Nothing?, property: KProperty<*>): T {
-    val cacheInputs =
-        CachedInputs(c.componentScope.javaClass, property.name, input1, input2, inputs)
-    val result =
-        c.getCachedValue(cacheInputs) ?: calculator().also { c.putCachedValue(cacheInputs, it) }
-
-    @Suppress("UNCHECKED_CAST") return result as T
-  }
+  @Suppress("UNCHECKED_CAST") return result as T
 }
 
-internal class CachedInputs(
-    val componentClz: Class<out Component>,
-    val propertyName: String,
-    val input1: Any? = null,
-    val input2: Any? = null,
-    val inputs: Array<out Any>? = null
-) {
+internal class CachedInputs(val hookKey: String, val inputs: Array<out Any>) {
   override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
+    if (this === other) {
+      return true
+    }
+    if (javaClass != other?.javaClass) {
+      return false
+    }
 
     other as CachedInputs
 
-    if (componentClz != other.componentClz) return false
-    if (propertyName != other.propertyName) return false
-    if (input1 != other.input1) return false
-    if (input2 != other.input2) return false
-    if (inputs != null) {
-      if (other.inputs == null) return false
-      if (!inputs.contentEquals(other.inputs)) return false
-    } else if (other.inputs != null) return false
-
-    return true
+    return hookKey == other.hookKey && inputs.contentEquals(other.inputs)
   }
 
   override fun hashCode(): Int {
-    var result = componentClz.hashCode()
-    result = 31 * result + propertyName.hashCode()
-    result = 31 * result + (input1?.hashCode() ?: 0)
-    result = 31 * result + (input2?.hashCode() ?: 0)
-    result = 31 * result + (inputs?.contentHashCode() ?: 0)
+    var result = hookKey.hashCode()
+    result = 31 * result + inputs.contentHashCode()
     return result
   }
 }
