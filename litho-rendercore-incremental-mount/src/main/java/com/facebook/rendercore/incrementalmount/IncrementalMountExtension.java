@@ -197,7 +197,7 @@ public class IncrementalMountExtension
     state.mItemsShouldNotNotifyVisibleBoundsChangedOnChildren.add(id);
 
     if (state.mInput.renderUnitWithIdHostsRenderTrees(id)) {
-      state.mMountedOutputIdsWithNestedContent.put(id, content); 
+      state.mMountedOutputIdsWithNestedContent.put(id, content);
     }
   }
 
@@ -549,7 +549,7 @@ public class IncrementalMountExtension
     }
 
     log("Updates: [Items Mounted=" + itemsMounted + ", Items Unmounted=" + itemsUnmounted + "]");
-    
+
     for (long id : state.mMountedOutputIdsWithNestedContent.keySet()) {
       if (state.mComponentIdsMountedInThisFrame.contains(id)) {
         continue;
@@ -560,7 +560,7 @@ public class IncrementalMountExtension
         recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
       }
     }
-    
+
     state.mComponentIdsMountedInThisFrame.clear();
   }
 
