@@ -21,6 +21,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import com.facebook.litho.AOSPLithoLifecycleProvider;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -75,7 +76,7 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
     final LinearLayout parent = new LinearLayout(this);
     parent.setOrientation(LinearLayout.VERTICAL);
     parent.setLayoutParams(new LayoutParams(MATCH_PARENT, MATCH_PARENT));
-
+    final AOSPLithoLifecycleProvider lifecycleProvider = new AOSPLithoLifecycleProvider(this);
     final ComponentContext componentContext = new ComponentContext(this);
     mLithoView =
         LithoView.create(
@@ -84,7 +85,8 @@ public class LifecycleDelegateActivity extends NavigatableDemoActivity {
                 .id(String.valueOf(mId.getAndIncrement()))
                 .delegateListener(mDelegateListener)
                 .consoleDelegateListener(mConsoleDelegateListener)
-                .build());
+                .build(),
+            lifecycleProvider);
     final LayoutParams params1 = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
     params1.weight = 1;
     mLithoView.setLayoutParams(params1);
