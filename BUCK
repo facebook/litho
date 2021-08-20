@@ -87,5 +87,5 @@ fb_native.genrule(
         "config/build_config_values",
     ],
     out = "extra_build_config_values",
-    cmd = "SRCARR=($SRCS); cat ${SRCARR[0]} | sed 's/{{IS_DEBUG}}/%s/' > $OUT" % (read_config("litho", "is_debug", "true")),
+    cmd = "SRCARR=($SRCS); cat ${SRCARR[0]} | sed 's/{{IS_DEBUG}}/%s/' > $OUT" % read_config("litho", "is_debug", "true"),
 )
