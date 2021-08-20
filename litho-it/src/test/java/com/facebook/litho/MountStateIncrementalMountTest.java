@@ -767,18 +767,18 @@ public class MountStateIncrementalMountTest {
     verify(childView3).notifyVisibleBoundsChanged();
 
     reset(childView1);
+    when(childView1.isIncrementalMountEnabled()).thenReturn(true);
     reset(childView2);
+    when(childView2.isIncrementalMountEnabled()).thenReturn(true);
     reset(childView3);
+    when(childView3.isIncrementalMountEnabled()).thenReturn(true);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    verify(childView1, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
-        .notifyVisibleBoundsChanged();
-    verify(childView2, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
-        .notifyVisibleBoundsChanged();
-    verify(childView3, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
-        .notifyVisibleBoundsChanged();
+    verify(childView1, times(2)).notifyVisibleBoundsChanged();
+    verify(childView2, times(2)).notifyVisibleBoundsChanged();
+    verify(childView3, times(2)).notifyVisibleBoundsChanged();
   }
 
   @Test
@@ -860,18 +860,18 @@ public class MountStateIncrementalMountTest {
     verify(childView3).notifyVisibleBoundsChanged();
 
     reset(childView1);
+    when(childView1.isIncrementalMountEnabled()).thenReturn(true);
     reset(childView2);
+    when(childView2.isIncrementalMountEnabled()).thenReturn(true);
     reset(childView3);
+    when(childView3.isIncrementalMountEnabled()).thenReturn(true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    verify(childView1, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
-        .notifyVisibleBoundsChanged();
-    verify(childView2, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
-        .notifyVisibleBoundsChanged();
-    verify(childView3, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
-        .notifyVisibleBoundsChanged();
+    verify(childView1, times(2)).notifyVisibleBoundsChanged();
+    verify(childView2, times(2)).notifyVisibleBoundsChanged();
+    verify(childView3, times(2)).notifyVisibleBoundsChanged();
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
