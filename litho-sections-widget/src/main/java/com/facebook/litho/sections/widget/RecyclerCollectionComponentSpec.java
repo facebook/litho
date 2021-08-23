@@ -36,7 +36,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.Component.ContainerBuilder;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.Handle;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TouchEvent;
@@ -70,7 +69,6 @@ import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SectionsRecyclerView;
-import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
@@ -436,35 +434,6 @@ public class RecyclerCollectionComponentSpec {
       @State SectionTree sectionTree,
       @State RecyclerCollectionEventsController internalEventsController) {
     sectionTree.requestFocusOnRoot(position);
-  }
-
-  @OnTrigger(ScrollToHandle.class)
-  static void onScrollToHandle(
-      ComponentContext c,
-      @FromTrigger Handle target,
-      @FromTrigger int offset,
-      @State SectionTree sectionTree) {
-    sectionTree.requestFocusOnRoot(target, offset);
-  }
-
-  @OnTrigger(SmoothScrollEvent.class)
-  static void onSmoothScroll(
-      ComponentContext c,
-      @FromTrigger int index,
-      @FromTrigger int offset,
-      @FromTrigger SmoothScrollAlignmentType type,
-      @State SectionTree sectionTree) {
-    sectionTree.requestSmoothFocusOnRoot(index, offset, type);
-  }
-
-  @OnTrigger(SmoothScrollToHandleEvent.class)
-  static void onSmoothScrollToHandle(
-      ComponentContext c,
-      @FromTrigger Handle target,
-      @FromTrigger int offset,
-      @FromTrigger SmoothScrollAlignmentType type,
-      @State SectionTree sectionTree) {
-    sectionTree.requestSmoothFocusOnRoot(target, offset, type);
   }
 
   @OnTrigger(RecyclerDynamicConfigEvent.class)

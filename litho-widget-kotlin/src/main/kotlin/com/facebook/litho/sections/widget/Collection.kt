@@ -28,6 +28,7 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
+import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
@@ -38,7 +39,6 @@ import com.facebook.litho.widget.LithoRecylerView
 import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SmoothScrollAlignmentType
-import com.facebook.litho.widget.StickyHeaderControllerFactory
 
 /**
  * A scrollable collection of components. A single [Component] can be added using
@@ -58,33 +58,25 @@ import com.facebook.litho.widget.StickyHeaderControllerFactory
  * ```
  */
 class Collection(
-    private val recyclerConfiguration: RecyclerConfiguration =
-        RecyclerCollectionComponentSpec.recyclerConfiguration,
-    private val itemAnimator: RecyclerView.ItemAnimator? =
-        RecyclerCollectionComponentSpec.itemAnimator,
+    private val recyclerConfiguration: RecyclerConfiguration? = null,
+    private val itemAnimator: RecyclerView.ItemAnimator? = null,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,
     private val wrapContentCrossAxis: Boolean = false,
-    private val loadingComponent: Component? = null,
-    private val emptyComponent: Component? = null,
-    private val errorComponent: Component? = null,
-    private val recyclerViewClipToPadding: Boolean = RecyclerCollectionComponentSpec.clipToPadding,
-    private val recyclerViewClipChildren: Boolean = RecyclerCollectionComponentSpec.clipChildren,
-    private val recyclerViewStartPadding: Dimen? = null,
-    private val recyclerViewEndPadding: Dimen? = null,
-    private val recyclerViewTopPadding: Dimen? = null,
-    private val recyclerViewBottomPadding: Dimen? = null,
-    private val nestedScrollingEnabled: Boolean =
-        RecyclerCollectionComponentSpec.nestedScrollingEnabled,
-    private val scrollBarStyle: Int = RecyclerCollectionComponentSpec.scrollBarStyle,
-    private val recyclerViewId: Int = RecyclerCollectionComponentSpec.recyclerViewId,
-    private val overScrollMode: Int = RecyclerCollectionComponentSpec.overScrollMode,
-    private val refreshProgressBarColor: Int =
-        RecyclerCollectionComponentSpec.refreshProgressBarColor,
+    private val clipToPadding: Boolean? = null,
+    private val clipChildren: Boolean? = null,
+    private val startPadding: Dimen? = null,
+    private val endPadding: Dimen? = null,
+    private val topPadding: Dimen? = null,
+    private val bottomPadding: Dimen? = null,
+    private val nestedScrollingEnabled: Boolean? = null,
+    private val scrollBarStyle: Int? = null,
+    private val recyclerViewId: Int? = null,
+    private val overScrollMode: Int? = null,
+    private val refreshProgressBarColor: Int? = null,
     private val touchInterceptor: LithoRecylerView.TouchInterceptor? = null,
     private val itemTouchListener: RecyclerView.OnItemTouchListener? = null,
     private val sectionTreeTag: String? = null,
     private val startupLogger: LithoStartupLogger? = null,
-    private val stickyHeaderControllerFactory: StickyHeaderControllerFactory? = null,
     private val style: Style? = null,
     private val onViewportChanged:
         ((
@@ -143,47 +135,43 @@ class Collection(
             .onPullToRefresh(onPullToRefresh)
             .build()
 
-    return RecyclerCollectionComponent(
-        section = section,
-        recyclerConfiguration = recyclerConfiguration,
-        itemAnimator = itemAnimator,
-        itemDecoration = itemDecoration,
-        canMeasureRecycler = wrapContentCrossAxis,
-        loadingComponent = loadingComponent,
-        emptyComponent = emptyComponent,
-        errorComponent = errorComponent,
-        recyclerViewClipToPadding = recyclerViewClipToPadding,
-        recyclerViewClipChildren = recyclerViewClipChildren,
-        recyclerViewStartPadding = recyclerViewStartPadding,
-        recyclerViewEndPadding = recyclerViewEndPadding,
-        recyclerViewTopPadding = recyclerViewTopPadding,
-        recyclerViewBottomPadding = recyclerViewBottomPadding,
-        disablePTR = onPullToRefresh == null,
-        nestedScrollingEnabled = nestedScrollingEnabled,
-        scrollBarStyle = scrollBarStyle,
-        recyclerViewId = recyclerViewId,
-        overScrollMode = overScrollMode,
-        refreshProgressBarColor = refreshProgressBarColor,
-        touchInterceptor = touchInterceptor,
-        itemTouchListener = itemTouchListener,
-        sectionTreeTag = sectionTreeTag,
-        startupLogger = startupLogger,
-        stickyHeaderControllerFactory = stickyHeaderControllerFactory,
-        handle = recyclerHandle,
-        style = style,
-    )
+    return CollectionRecycler.create(context)
+        .section(section)
+        .apply { recyclerConfiguration?.let { recyclerConfiguration(recyclerConfiguration) } }
+        .itemAnimator(itemAnimator)
+        .itemDecoration(itemDecoration)
+        .canMeasureRecycler(wrapContentCrossAxis)
+        .clipToPadding(clipToPadding)
+        .clipChildren(clipChildren)
+        .startPaddingPx(startPadding?.toPixels(resourceResolver) ?: 0)
+        .endPaddingPx(endPadding?.toPixels(resourceResolver) ?: 0)
+        .topPaddingPx(topPadding?.toPixels(resourceResolver) ?: 0)
+        .bottomPaddingPx(bottomPadding?.toPixels(resourceResolver) ?: 0)
+        .pullToRefreshEnabled(onPullToRefresh != null)
+        .nestedScrollingEnabled(nestedScrollingEnabled)
+        .scrollBarStyle(scrollBarStyle)
+        .recyclerViewId(recyclerViewId)
+        .overScrollMode(overScrollMode)
+        .refreshProgressBarColor(refreshProgressBarColor)
+        .touchInterceptor(touchInterceptor)
+        .itemTouchListener(itemTouchListener)
+        .sectionTreeTag(sectionTreeTag)
+        .startupLogger(startupLogger)
+        .handle(recyclerHandle)
+        .kotlinStyle(style)
+        .build()
   }
 
   companion object {
     fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
-        RecyclerCollectionComponent.onScroll(c, handle, position, false /* ignored */)
+        CollectionRecycler.onScroll(c, handle, position)
 
     fun scrollToHandle(
         c: ComponentContext,
         handle: Handle,
         target: Handle,
         @Px offset: Int = 0,
-    ): Unit = RecyclerCollectionComponent.onScrollToHandle(c, handle, target, offset)
+    ): Unit = CollectionRecycler.onScrollToHandle(c, handle, target, offset)
 
     fun smoothScrollTo(
         c: ComponentContext,
@@ -191,9 +179,7 @@ class Collection(
         index: Int,
         @Px offset: Int = 0,
         smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
-    ): Unit =
-        RecyclerCollectionComponent.onSmoothScroll(
-            c, handle, index, offset, smoothScrollAlignmentType)
+    ): Unit = CollectionRecycler.onSmoothScroll(c, handle, index, offset, smoothScrollAlignmentType)
 
     fun smoothScrollToHandle(
         c: ComponentContext,
@@ -202,12 +188,11 @@ class Collection(
         @Px offset: Int = 0,
         smoothScrollAlignmentType: SmoothScrollAlignmentType? = SmoothScrollAlignmentType.DEFAULT,
     ): Unit =
-        RecyclerCollectionComponent.onSmoothScrollToHandle(
+        CollectionRecycler.onSmoothScrollToHandle(
             c, handle, target, offset, smoothScrollAlignmentType)
 
-    fun clearRefreshing(c: ComponentContext, handle: Handle) {
-      RecyclerCollectionComponent.onClearRefreshing(c, handle)
-    }
+    fun clearRefreshing(c: ComponentContext, handle: Handle): Unit =
+        CollectionRecycler.onClearRefreshing(c, handle)
 
     /**
      * Create a manager for tail pagination, i.e. fetch more data when a [Collection] is scrolled
