@@ -23,6 +23,7 @@ import com.facebook.litho.intellij.extensions.EventLogger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class EventLoggerTest extends LithoPluginIntellijTest {
@@ -63,6 +64,7 @@ public class EventLoggerTest extends LithoPluginIntellijTest {
     assertThat(testLogger.event).isNull();
   }
 
+  @Ignore
   @Test
   public void log_withMetadata() {
     TestLogger testLogger = new TestLogger();
