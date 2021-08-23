@@ -156,9 +156,9 @@ import javax.annotation.Nullable;
  * @prop editable If set, allows the text to be editable.
  * @prop inputType Type of data being placed in a text field, used to help an input method decide
  *     how to let the user enter text. To add multiline use multiline(true) method.
- * @prop rawInputType Type of data being placed in a text field. Directly changes the content type 
- *     integer of the text view, without modifying any other state. This prop will override inputType
- *     if both are provided.
+ * @prop rawInputType Type of data being placed in a text field. Directly changes the content type
+ *     integer of the text view, without modifying any other state. This prop will override
+ *     inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
  * @prop inputFilters Used to filter the input to e.g. a max character count.
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
