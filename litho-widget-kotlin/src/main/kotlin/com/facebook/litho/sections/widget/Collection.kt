@@ -40,6 +40,15 @@ import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 
+typealias OnViewportChanged =
+    (
+        c: ComponentContext,
+        firstVisibleIndex: Int,
+        lastVisibleIndex: Int,
+        totalCount: Int,
+        firstFullyVisibleIndex: Int,
+        lastFullyVisibleIndex: Int) -> Unit
+
 /**
  * A scrollable collection of components. A single [Component] can be added using
  * [CollectionContainerScope.child].
@@ -78,15 +87,7 @@ class Collection(
     private val sectionTreeTag: String? = null,
     private val startupLogger: LithoStartupLogger? = null,
     private val style: Style? = null,
-    private val onViewportChanged:
-        ((
-            c: ComponentContext,
-            firstVisibleIndex: Int,
-            lastVisibleIndex: Int,
-            totalCount: Int,
-            firstFullyVisibleIndex: Int,
-            lastFullyVisibleIndex: Int) -> Unit)? =
-        null,
+    private val onViewportChanged: OnViewportChanged? = null,
     private val onDataBound: ((c: ComponentContext) -> Unit)? = null,
     handle: Handle? = null,
     private val onPullToRefresh: (() -> Unit)? = null,
@@ -102,14 +103,7 @@ class Collection(
     val containerScope = CollectionContainerScope()
     containerScope.init()
 
-    val combinedOnViewportChanged:
-        (
-            c: ComponentContext,
-            firstVisibleIndex: Int,
-            lastVisibleIndex: Int,
-            totalCount: Int,
-            firstFullyVisibleIndex: Int,
-            lastFullyVisibleIndex: Int) -> Unit =
+    val combinedOnViewportChanged: OnViewportChanged =
         {
         c,
         firstVisibleIndex,
