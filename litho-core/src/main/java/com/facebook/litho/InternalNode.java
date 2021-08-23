@@ -38,7 +38,6 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,13 +74,6 @@ public interface InternalNode extends Node<LithoRenderContext> {
   InternalNode border(Border border);
 
   void border(int[] widths, int[] colors, float[] radii, @Nullable PathEffect effect);
-
-  void freeze(
-      LayoutStateContext c,
-      YogaNode node,
-      boolean isCloned,
-      @Nullable YogaNode parent,
-      @Nullable LithoLayoutResult current);
 
   LithoLayoutResult calculateLayout(
       LayoutContext<LithoRenderContext> c, int widthSpec, int heightSpec);

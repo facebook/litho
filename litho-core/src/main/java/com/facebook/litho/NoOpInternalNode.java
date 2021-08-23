@@ -30,7 +30,6 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.List;
@@ -590,14 +589,6 @@ class NoOpInternalNode implements InternalNode {
       @Nullable String nextKey) {
     return this;
   }
-
-  @Override
-  public void freeze(
-      final LayoutStateContext c,
-      final YogaNode node,
-      final boolean isCloned,
-      final @Nullable YogaNode parent,
-      final LithoLayoutResult current) {}
 
   @Override
   public Copyable getLayoutParams() {

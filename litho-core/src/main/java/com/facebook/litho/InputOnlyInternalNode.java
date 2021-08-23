@@ -288,87 +288,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mBorderPathEffect = effect;
   }
 
-  @Override
-  public void freeze(
-      final LayoutStateContext c,
-      final YogaNode node,
-      final boolean isCloned,
-      final @Nullable YogaNode parent,
-      final @Nullable LithoLayoutResult current) {
-
-    final LithoLayoutResult result;
-
-    if (parent != null) {
-
-      final LithoLayoutResult parentResult = (LithoLayoutResult) parent.getData();
-
-      // Write properties to the YogaNode if the current node can be reused.
-      if (!isCloned) {
-
-        if (!mFrozen) {
-          freeze(parentResult.getInternalNode());
-        }
-
-        // Create a LayoutProps object to write to.
-        final Writer writer = (Writer) createYogaNodeWriter(node);
-
-        // Transfer the layout props to YogaNode
-        writeToYogaNode(c, writer, node);
-      }
-
-      // Create the layout result of 'this' InternalNode.
-      result = createLayoutResult(c, node, parentResult);
-
-      // Apply the diff node.
-      applyDiffNode(c, result, parentResult);
-
-      // Add the result to the parent result
-      parentResult.addChild(result);
-
-    } else {
-
-      if (!isCloned) {
-        if (!mFrozen) {
-          freeze(null);
-        }
-        if (isLayoutDirectionInherit() && isLayoutDirectionRTL(mContext)) {
-          node.setDirection(YogaDirection.RTL);
-        }
-      }
-
-      // Create the layout result of 'this' InternalNode.
-      result = createLayoutResult(c, node, null);
-
-      // Apply the diff node.
-      applyDiffNode(c, result, null);
-    }
-
-    // Replace input with the output
-    node.setData(result);
-
-    // Create Yoga Nodes for children
-    // YogaNode children are required here because unlike DefaultInternalNode
-    // which creates the YogaNode tree at the same time as the InternalNode
-    // tree, the input only InternalNode creates the YogaNode tree during
-    // layout calculation.
-    final int size = getChildCount();
-    for (int i = 0; i < size; i++) {
-      final YogaNode child;
-      final LithoLayoutResult childResult = isCloned ? current.getChildAt(i) : null;
-      final InternalNode layout = getChildAt(i);
-      final boolean isChildCloned = isCloned(c, layout, childResult);
-
-      if (isChildCloned) {
-        child = childResult.getYogaNode().cloneWithoutChildren();
-      } else {
-        child = NodeConfig.createYogaNode();
-      }
-
-      child.setData(new LayoutContextContainer(c, layout, isChildCloned, childResult));
-      node.addChildAt(child, i); // Add the child YogaNode to NodeYoga of this result.
-    }
-  }
-
   protected void applyDiffNode(
       final LayoutStateContext current,
       final LithoLayoutResult result,
@@ -455,44 +374,92 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     mFrozen = true;
   }
 
+  private static void freezeRecursive(
+      InputOnlyInternalNode node, @Nullable InputOnlyInternalNode parent) {
+    if (node.mFrozen) {
+      return;
+    }
+
+    node.freeze(parent);
+    for (int i = 0; i < node.getChildCount(); i++) {
+      freezeRecursive((InputOnlyInternalNode) node.getChildAt(i), node);
+    }
+  }
+
+  /**
+   * Builds the YogaNode tree from this tree of InternalNodes. At the same time, builds the
+   * LayoutResult tree and sets it in the data of the corresponding YogaNodes.
+   */
+  private static <Writer extends YogaLayoutProps> YogaNode buildYogaTree(
+      LithoRenderContext renderContext,
+      InputOnlyInternalNode<Writer> currentInternalNode,
+      @Nullable LithoLayoutResult previousLayoutResult,
+      @Nullable YogaNode parentNode) {
+    final boolean isCloned = isCloned(renderContext.c, currentInternalNode, previousLayoutResult);
+    final YogaNode node;
+    if (isCloned) {
+      node = previousLayoutResult.getYogaNode().cloneWithoutChildren();
+    } else {
+      node = NodeConfig.createYogaNode();
+
+      // Create a LayoutProps object to write to.
+      final Writer writer = (Writer) currentInternalNode.createYogaNodeWriter(node);
+
+      // Transfer the layout props to YogaNode
+      currentInternalNode.writeToYogaNode(renderContext.c, writer, node);
+
+      // Validate layout props for the root
+      if (parentNode == null) {
+        writer.validateLayoutPropsForRoot();
+      }
+    }
+
+    final @Nullable LithoLayoutResult parentLayoutResult =
+        parentNode != null ? (LithoLayoutResult) parentNode.getData() : null;
+    final LithoLayoutResult layoutResult =
+        currentInternalNode.createLayoutResult(renderContext.c, node, parentLayoutResult);
+    currentInternalNode.applyDiffNode(renderContext.c, layoutResult, parentLayoutResult);
+    node.setData(layoutResult);
+
+    for (int i = 0; i < currentInternalNode.getChildCount(); i++) {
+      final LithoLayoutResult previousChildLayoutResult =
+          isCloned && i < previousLayoutResult.getChildCount()
+              ? previousLayoutResult.getChildAt(i)
+              : null;
+      final YogaNode childNode =
+          buildYogaTree(
+              renderContext,
+              (InputOnlyInternalNode) currentInternalNode.getChildAt(i),
+              previousChildLayoutResult,
+              node);
+      node.addChildAt(childNode, i);
+      layoutResult.addChild((LithoLayoutResult) childNode.getData());
+    }
+
+    return node;
+  }
+
   @Override
   public LithoLayoutResult calculateLayout(
       final RenderState.LayoutContext<LithoRenderContext> c,
       final int widthSpec,
       final int heightSpec) {
+    applyOverridesRecursive(c.getRenderContext().c, this);
+    freezeRecursive(this, null);
 
-    final LithoLayoutResult current = c.getRenderContext().mCurrentLayoutRoot;
+    // Unlike DefaultInternalNode which creates the YogaNode tree at the same time as the
+    // InternalNode tree, InputOnlyInternalNode creates the YogaNode tree during layout calculation.
+    final YogaNode root =
+        buildYogaTree(c.getRenderContext(), this, c.getRenderContext().mCurrentLayoutRoot, null);
 
-    // A new YogaNode is required because unlike DefaultInternalNode
-    // which creates the YogaNode tree at the same time as the InternalNode
-    // tree, the input only InternalNode creates the YogaNode tree during
-    // layout calculation.
-    final YogaNode node;
-
-    final boolean isCloned = isCloned(c.getRenderContext().c, this, current);
-
-    if (isCloned) {
-      node = current.getYogaNode().cloneWithoutChildren();
-    } else {
-      node = NodeConfig.createYogaNode();
-
-      // Create a LayoutProps object to write to.
-      final Writer writer = (Writer) createYogaNodeWriter(node);
-
-      // Transfer the layout props to YogaNode
-      writeToYogaNode(c.getRenderContext().c, writer, node);
-
-      applyOverridesRecursive(c.getRenderContext().c, this);
-
-      // Validate layout props for the root
-      writer.validateLayoutPropsForRoot();
+    if (isLayoutDirectionInherit() && isLayoutDirectionRTL(mContext)) {
+      root.setDirection(YogaDirection.RTL);
     }
-
-    if (YogaConstants.isUndefined(node.getWidth().value)) {
-      Layout.setStyleWidthFromSpec(node, widthSpec);
+    if (YogaConstants.isUndefined(root.getWidth().value)) {
+      Layout.setStyleWidthFromSpec(root, widthSpec);
     }
-    if (YogaConstants.isUndefined(node.getHeight().value)) {
-      Layout.setStyleHeightFromSpec(node, heightSpec);
+    if (YogaConstants.isUndefined(root.getHeight().value)) {
+      Layout.setStyleHeightFromSpec(root, heightSpec);
     }
 
     final float width =
@@ -504,11 +471,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec);
 
-    node.setData(new LayoutContextContainer(c.getRenderContext().c, this, isCloned, current));
+    root.calculateLayout(width, height);
 
-    node.calculateLayout(width, height);
-
-    return (LithoLayoutResult) node.getData();
+    return (LithoLayoutResult) root.getData();
   }
 
   @Override
@@ -1741,34 +1706,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       return current.getInternalNode() == node || node.isClone();
     } else {
       return false;
-    }
-  }
-
-  /**
-   * Container to hold the current {@link LayoutStateContext} and the {@link InternalNode} to
-   * measure.
-   */
-  private static class LayoutContextContainer implements YogaNode.Inputs {
-
-    final LayoutStateContext context;
-    final InternalNode node;
-    final boolean isCloned;
-    final @Nullable LithoLayoutResult current;
-
-    public LayoutContextContainer(
-        final LayoutStateContext context,
-        final InternalNode node,
-        final boolean isCloned,
-        final @Nullable LithoLayoutResult current) {
-      this.context = context;
-      this.isCloned = isCloned;
-      this.node = node;
-      this.current = current;
-    }
-
-    @Override
-    public void freeze(YogaNode node, @Nullable YogaNode parent) {
-      this.node.freeze(context, node, isCloned, parent, current);
     }
   }
 }
