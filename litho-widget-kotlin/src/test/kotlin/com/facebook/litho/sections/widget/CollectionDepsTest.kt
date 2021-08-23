@@ -77,22 +77,22 @@ class CollectionDepsTest {
         KComponent() {
       override fun ComponentScope.render(): Component? {
         return Collection {
-          staticChild {
+          child {
             Text(
                 "deps_null",
                 style = Style.viewTag("deps_null").alpha(alpha).rotation(rotation).scale(scale))
           }
-          staticChild(deps = arrayOf(alpha)) {
+          child(deps = arrayOf(alpha)) {
             Text(
                 "deps_alpha",
                 style = Style.viewTag("deps_alpha").alpha(alpha).rotation(rotation).scale(scale))
           }
-          staticChild(deps = arrayOf(scale)) {
+          child(deps = arrayOf(scale)) {
             Text(
                 "deps_scale",
                 style = Style.viewTag("deps_scale").alpha(alpha).rotation(rotation).scale(scale))
           }
-          staticChild(deps = arrayOf()) {
+          child(deps = arrayOf()) {
             Text(
                 "deps_empty",
                 style = Style.viewTag("deps_empty").alpha(alpha).rotation(rotation).scale(scale))

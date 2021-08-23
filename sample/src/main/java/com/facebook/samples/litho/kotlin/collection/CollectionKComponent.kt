@@ -36,9 +36,9 @@ class CollectionKComponent : KComponent() {
     return Column(style = Style.padding(16.dp)) {
       child(
           Collection(style = Style.flex(grow = 1f)) {
-            staticChild { Text(text = "Header") }
+            child { Text(text = "Header") }
             friends.forEach { child(id = it) { Text(it) } }
-            staticChild { Text(text = "Footer") }
+            child { Text(text = "Footer") }
           })
     }
   }

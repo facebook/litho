@@ -48,7 +48,7 @@ class PaginationCollectionKComponent : KComponent() {
       list.value.forEach { child(id = it) { Text("$it") } }
 
       if (paginatedData.hasNext()) {
-        staticChild {
+        child {
           Column(alignItems = YogaAlign.CENTER) {
             child(Progress.create(context).heightDip(50f).widthDip(50f).build())
           }

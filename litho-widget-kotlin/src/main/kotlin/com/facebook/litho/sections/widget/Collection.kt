@@ -219,42 +219,18 @@ class CollectionContainerScope {
   private val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
 
-  /**
-   * Add a child where changes to position or content are not expected and will not be animated when
-   * the Collection is updated.
-   */
-  fun staticChild(
-      isSticky: Boolean = false,
-      isFullSpan: Boolean = false,
-      spanSize: Int? = null,
-      deps: Array<Any?>? = null,
-      component: () -> Component?
-  ) {
-    childInternal(component(), generateStaticId(), isSticky, isFullSpan, spanSize, deps)
-  }
-
   fun child(
-      id: Any,
+      id: Any? = null,
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
       deps: Array<Any?>? = null,
-      component: () -> Component?
+      componentFunction: () -> Component?
   ) {
-    childInternal(component(), id, isSticky, isFullSpan, spanSize, deps)
-  }
-
-  private fun childInternal(
-      component: Component?,
-      id: Any,
-      isSticky: Boolean = false,
-      isFullSpan: Boolean = false,
-      spanSize: Int? = null,
-      deps: Array<Any?>? = null,
-  ) {
+    val component = componentFunction()
     collectionChildrenModels.add(
         CollectionData(
-            id,
+            id ?: generateStaticId(),
             component,
             ComponentRenderInfo.create()
                 .apply {

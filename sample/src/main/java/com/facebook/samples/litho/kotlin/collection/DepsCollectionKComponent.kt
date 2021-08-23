@@ -53,28 +53,28 @@ class DepsCollectionKComponent : KComponent() {
           Collection(
               style = Style.flex(grow = 1f),
           ) {
-            staticChild() {
+            child {
               Text(
                   "deps = null (all props)",
                   textColor = color.value,
                   textSize = size.value.sp,
                   style = Style.alpha(alpha.value))
             }
-            staticChild(deps = arrayOf(color.value)) {
+            child(deps = arrayOf(color.value)) {
               Text(
                   "deps = arrayOf(color.value)",
                   textColor = color.value,
                   textSize = size.value.sp,
                   style = Style.alpha(alpha.value))
             }
-            staticChild(deps = arrayOf(size.value)) {
+            child(deps = arrayOf(size.value)) {
               Text(
                   "deps = arrayOf(size.value)",
                   textColor = color.value,
                   textSize = size.value.sp,
                   style = Style.alpha(alpha.value))
             }
-            staticChild(deps = arrayOf()) {
+            child(deps = arrayOf()) {
               Text(
                   "deps = arrayOf()",
                   textColor = color.value,
