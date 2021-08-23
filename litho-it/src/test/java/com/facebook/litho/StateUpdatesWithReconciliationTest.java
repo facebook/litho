@@ -64,7 +64,6 @@ public class StateUpdatesWithReconciliationTest {
   private final boolean mReuseInternalNodes;
   private final boolean mOriginalValueOfReuseInternalNodes;
   private final boolean mOriginalValueOfUseStatelessComponent;
-  private final boolean originalE2ETestRun;
 
   public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
       new BackgroundLayoutLooperRule();
@@ -91,7 +90,6 @@ public class StateUpdatesWithReconciliationTest {
   }
 
   public StateUpdatesWithReconciliationTest(boolean reuseInternalNodes) {
-    originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
     mReuseInternalNodes = reuseInternalNodes;
     mOriginalValueOfReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     mOriginalValueOfUseStatelessComponent = ComponentsConfiguration.useStatelessComponent;
@@ -109,9 +107,6 @@ public class StateUpdatesWithReconciliationTest {
   }
 
   public void before(Component component) {
-
-    ComponentsConfiguration.isEndToEndTestRun = true;
-
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
           @Override
@@ -143,7 +138,6 @@ public class StateUpdatesWithReconciliationTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
     ComponentsConfiguration.reuseInternalNodes = mOriginalValueOfReuseInternalNodes;
     ComponentsConfiguration.useStatelessComponent = mOriginalValueOfUseStatelessComponent;
     NodeConfig.sInternalNodeFactory = null;

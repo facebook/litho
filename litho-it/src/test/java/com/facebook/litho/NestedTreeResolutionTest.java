@@ -47,11 +47,9 @@ import org.junit.runner.RunWith;
 public class NestedTreeResolutionTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
-  private boolean originalE2ETestRun;
 
   @Before
   public void before() {
-    originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
     ComponentsConfiguration.isEndToEndTestRun = true;
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
@@ -70,7 +68,6 @@ public class NestedTreeResolutionTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
     NodeConfig.sInternalNodeFactory = null;
   }
 

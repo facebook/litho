@@ -54,7 +54,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   private ComponentTree mComponentTree;
   private ComponentsLogger mComponentsLogger;
   private LithoView mLithoView;
-  private boolean originalE2ETestRun;
 
   private static final int STATE_VALUE_INITIAL_COUNT = 4;
 
@@ -66,9 +65,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   @Before
   public void before() {
-    originalE2ETestRun = ComponentsConfiguration.isEndToEndTestRun;
-    ComponentsConfiguration.isEndToEndTestRun = true;
-
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
           @Override
@@ -91,7 +87,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.isEndToEndTestRun = originalE2ETestRun;
     NodeConfig.sInternalNodeFactory = null;
     NodeConfig.sYogaNodeFactory = null;
     root = null;
