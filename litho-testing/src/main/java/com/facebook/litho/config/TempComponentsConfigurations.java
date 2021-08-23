@@ -35,6 +35,9 @@ public class TempComponentsConfigurations {
   private static final boolean originalExtensionsWithMountDelegate =
       ComponentsConfiguration.useExtensionsWithMountDelegate;
 
+  private static final boolean originalEnsureParentMountedInRenderCore =
+      ComponentsConfiguration.ensureParentMountedInRenderCoreMountState;
+
   public static void setShouldAddHostViewForRootComponent(boolean value) {
     ComponentsConfiguration.shouldDisableBgFgOutputs = value;
     ComponentsConfiguration.shouldAddHostViewForRootComponent = value;
@@ -48,6 +51,10 @@ public class TempComponentsConfigurations {
 
   public static void setUseStatelessComponent(boolean value) {
     ComponentsConfiguration.useStatelessComponent = value;
+  }
+
+  public static void setEnsureParentMountedInRenderCoreMountState(boolean value) {
+    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState = value;
   }
 
   public static void restoreUseStatelessComponent() {
@@ -68,5 +75,10 @@ public class TempComponentsConfigurations {
 
   public static void restoreUseExtensionsWithMountDelegate() {
     ComponentsConfiguration.useExtensionsWithMountDelegate = originalExtensionsWithMountDelegate;
+  }
+
+  public static void restoreEnsureParentMountedInRenderCoreMountState() {
+    ComponentsConfiguration.ensureParentMountedInRenderCoreMountState =
+        originalEnsureParentMountedInRenderCore;
   }
 }

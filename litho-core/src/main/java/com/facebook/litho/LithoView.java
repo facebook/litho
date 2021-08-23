@@ -237,7 +237,13 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     if (mUseExtensions) {
       if (mDelegateToRenderCore) {
-        mMountDelegateTarget = new com.facebook.rendercore.MountState(this);
+        com.facebook.rendercore.MountState renderCoreMountState =
+            new com.facebook.rendercore.MountState(this);
+
+        renderCoreMountState.setEnsureParentMounted(
+            ComponentsConfiguration.ensureParentMountedInRenderCoreMountState);
+
+        mMountDelegateTarget = renderCoreMountState;
       } else {
         mMountDelegateTarget = new MountState(this);
       }

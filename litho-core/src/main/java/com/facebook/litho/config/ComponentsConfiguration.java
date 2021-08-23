@@ -187,6 +187,8 @@ public class ComponentsConfiguration {
 
   public static boolean delegateToRenderCoreMount = false;
 
+  public static boolean ensureParentMountedInRenderCoreMountState = false;
+
   public static boolean shouldDisableBgFgOutputs = false;
 
   public static boolean shouldAddHostViewForRootComponent = false;

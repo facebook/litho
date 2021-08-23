@@ -33,6 +33,8 @@ import com.facebook.litho.widget.Progress;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -227,5 +229,59 @@ public class MountStateTest {
     TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
     TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
     TempComponentsConfigurations.restoreUseStatelessComponent();
+  }
+
+  @Test
+  public void mountingChildForUnmountedParentInRenderCore_shouldMountWithoutCrashing() {
+    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
+    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(true);
+    TempComponentsConfigurations.setShouldAddHostViewForRootComponent(true);
+    TempComponentsConfigurations.setEnsureParentMountedInRenderCoreMountState(true);
+
+    final Component root =
+        Row.create(mContext)
+            .backgroundColor(Color.BLUE)
+            .widthPx(20)
+            .heightPx(20)
+            .viewTag("root")
+            .child(
+                Row.create(mContext) // Parent that will be unmounted
+                    .backgroundColor(Color.RED)
+                    .widthPx(20)
+                    .heightPx(20)
+                    .viewTag("parent")
+                    .border(
+                        Border.create(mContext) // Drawable to be mounted after parent unmounts
+                            .widthPx(YogaEdge.ALL, 2)
+                            .color(YogaEdge.ALL, Color.YELLOW)
+                            .build()))
+            .build();
+
+    mLithoViewRule
+        .attachToWindow()
+        .setRoot(root)
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final ComponentHost parentOfParent =
+        (ComponentHost) mLithoViewRule.findViewWithTagOrNull("root");
+
+    final RenderTreeNode parentNode = parentOfParent.getMountItemAt(0).getRenderTreeNode();
+
+    final long parentId = parentNode.getRenderUnit().getId();
+    final long childId = parentNode.getChildAt(0).getRenderUnit().getId();
+
+    // Unmount the parent
+    mLithoViewRule.getLithoView().getMountDelegateTarget().notifyUnmount(parentId);
+
+    // Attempt to mount the child (border drawable)
+    // If there is a problem, a crash will occur here.
+    mLithoViewRule.getLithoView().getMountDelegateTarget().notifyMount(childId);
+
+    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
+    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
+    TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
+    TempComponentsConfigurations.restoreEnsureParentMountedInRenderCoreMountState();
   }
 }

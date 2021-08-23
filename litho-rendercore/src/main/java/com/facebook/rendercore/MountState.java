@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MountState implements MountDelegateTarget {
-
+  
   public static final long ROOT_HOST_ID = 0L;
 
   private final LongSparseArray<MountItem> mIdToMountedItemMap;
@@ -47,11 +47,17 @@ public class MountState implements MountDelegateTarget {
   private RenderTree mRenderTree;
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
+  
+  private boolean mEnsureParentMounted;
 
   public MountState(Host rootHost) {
     mIdToMountedItemMap = new LongSparseArray<>();
     mContext = rootHost.getContext();
     mRootHost = rootHost;
+  }
+  
+  public void setEnsureParentMounted(boolean ensureParentMounted) {
+    mEnsureParentMounted = ensureParentMounted;
   }
 
   /**
@@ -516,6 +522,10 @@ public class MountState implements MountDelegateTarget {
 
     return item;
   }
+  
+  private boolean isMounted(final long id) {
+    return mIdToMountedItemMap.get(id) != null;
+  }
 
   private void mountRenderUnit(
       int index, RenderTreeNode renderTreeNode, @Nullable StringBuilder processLogBuilder) {
@@ -524,28 +534,36 @@ public class MountState implements MountDelegateTarget {
 
     final RenderUnit parentRenderUnit = hostTreeNode.getRenderUnit();
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
+    
+    // 2. Ensure render tree node's parent is mounted or throw exception depending on the
+    // ensure-parent-mounted flag.
+    if (!isMounted(parentRenderUnit.getId())) {
+      if (mEnsureParentMounted) {
+        final int parentIndex = mRenderTree.getRenderTreeNodeIndex(parentRenderUnit.getId());
+        mountRenderUnit(parentIndex, hostTreeNode, processLogBuilder);
+      } else {
+        final String additionalProcessLog =
+            processLogBuilder != null ? processLogBuilder.toString() : "NA";
+        throw new HostNotMountedException(
+            renderUnit,
+            parentRenderUnit,
+            "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
+                + "Parent RenderUnit: "
+                + hostTreeNode.generateDebugString(mRenderTree)
+                + "'.\n"
+                + "Child RenderUnit: "
+                + renderTreeNode.generateDebugString(mRenderTree)
+                + "'.\n"
+                + "Entire tree:\n"
+                + mRenderTree.generateDebugString()
+                + ".\n"
+                + "Additional Process Log:\n"
+                + additionalProcessLog
+                + ".\n");
+      }
+    }
 
     final MountItem mountItem = mIdToMountedItemMap.get(parentRenderUnit.getId());
-    if (mountItem == null) {
-      final String additionalProcessLog =
-          processLogBuilder != null ? processLogBuilder.toString() : "NA";
-      throw new HostNotMountedException(
-          renderUnit,
-          parentRenderUnit,
-          "Trying to mount a RenderTreeNode, but its host is not mounted.\n"
-              + "Parent RenderUnit: "
-              + hostTreeNode.generateDebugString(mRenderTree)
-              + "'.\n"
-              + "Child RenderUnit: "
-              + renderTreeNode.generateDebugString(mRenderTree)
-              + "'.\n"
-              + "Entire tree:\n"
-              + mRenderTree.generateDebugString()
-              + ".\n"
-              + "Additional Process Log:\n"
-              + additionalProcessLog
-              + ".\n");
-    }
 
     final Object parentContent = mountItem.getContent();
     if (!(parentContent instanceof Host)) {
@@ -569,18 +587,18 @@ public class MountState implements MountDelegateTarget {
 
     final Host host = (Host) parentContent;
 
-    // 2. call the RenderUnit's Mount bindings.
+    // 3. call the RenderUnit's Mount bindings.
     final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
 
     mountRenderUnitToContent(mMountDelegate, mContext, renderTreeNode, renderUnit, content);
 
-    // 3. Mount the content into the selected host.
+    // 4. Mount the content into the selected host.
     final MountItem item = mountContentInHost(index, content, host, renderTreeNode);
 
-    // 4. Call attach binding functions
+    // 5. Call attach binding functions
     bindRenderUnitToContent(mMountDelegate, mContext, item);
 
-    // 5. Apply the bounds to the Mount content now. It's important to do so after bind as calling
+    // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     BoundsUtils.applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
   }
