@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MountState implements MountDelegateTarget {
-  
+
   public static final long ROOT_HOST_ID = 0L;
 
   private final LongSparseArray<MountItem> mIdToMountedItemMap;
@@ -47,7 +47,7 @@ public class MountState implements MountDelegateTarget {
   private RenderTree mRenderTree;
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
-  
+
   private boolean mEnsureParentMounted;
 
   public MountState(Host rootHost) {
@@ -55,7 +55,7 @@ public class MountState implements MountDelegateTarget {
     mContext = rootHost.getContext();
     mRootHost = rootHost;
   }
-  
+
   public void setEnsureParentMounted(boolean ensureParentMounted) {
     mEnsureParentMounted = ensureParentMounted;
   }
@@ -522,7 +522,7 @@ public class MountState implements MountDelegateTarget {
 
     return item;
   }
-  
+
   private boolean isMounted(final long id) {
     return mIdToMountedItemMap.get(id) != null;
   }
@@ -534,7 +534,7 @@ public class MountState implements MountDelegateTarget {
 
     final RenderUnit parentRenderUnit = hostTreeNode.getRenderUnit();
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
-    
+
     // 2. Ensure render tree node's parent is mounted or throw exception depending on the
     // ensure-parent-mounted flag.
     if (!isMounted(parentRenderUnit.getId())) {
