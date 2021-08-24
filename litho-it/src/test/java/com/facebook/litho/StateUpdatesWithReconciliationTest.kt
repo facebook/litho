@@ -20,15 +20,12 @@ import com.facebook.litho.LifecycleStep.StepInfo
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.BackgroundLayoutLooperRule
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.assertj.LithoViewAssert.assertThat
 import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.TestWrapperComponent
-import com.facebook.litho.widget.TextDrawable
-import com.facebook.rendercore.testing.ViewAssertions
-import com.facebook.rendercore.testing.match.MatchNode
-import com.facebook.rendercore.testing.match.ViewMatchNode
 import java.util.ArrayList
 import org.assertj.core.api.Java6Assertions
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -138,13 +135,7 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Count: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -178,13 +169,7 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Count: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -194,7 +179,10 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     class TestComponent(val dummyProp: Int) : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Column {
-          child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
+          child(
+              com.facebook.litho.widget.LayoutSpecLifecycleTester.create(context)
+                  .steps(lifecycleSteps)
+                  .build())
           child(
               SimpleStateUpdateEmulator.create(context)
                   .caller(stateUpdater)
@@ -221,13 +209,7 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     assertThat(LifecycleStep.getSteps(lifecycleSteps))
         .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
 
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Count: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
   }
 
   @Test
@@ -237,7 +219,10 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     class TestComponent(val dummyProp: Int) : KComponent() {
       override fun ComponentScope.render(): Component? {
         return Column {
-          child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
+          child(
+              com.facebook.litho.widget.LayoutSpecLifecycleTester.create(context)
+                  .steps(lifecycleSteps)
+                  .build())
           child(
               SimpleStateUpdateEmulator.create(context)
                   .caller(stateUpdater)
@@ -263,13 +248,7 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
 
     assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
 
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Count: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
   }
 
   /**
@@ -315,14 +294,8 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper()
     lithoViewRule.layout()
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "First: 2"),
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Second: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("First: 2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Second: 2")
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode
   }
 
@@ -371,14 +344,8 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
     // Now drain the main thread queue and mount the result
     ShadowLooper.idleMainLooper()
     lithoViewRule.layout()
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "First: 2"),
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Second: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("First: 2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Second: 2")
     ComponentsConfiguration.reuseInternalNodes = defaultReuseInternalNode
     ComponentsConfiguration.useStatelessComponent = defaultStatelessness
   }
@@ -386,7 +353,8 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
   @Test
   fun `should not reconcile when setRoot with different props with pending update`() {
     val c = lithoViewRule.context
-    val child = ImmediateLazyStateUpdateDispatchingComponent.create(c).build()
+    val child =
+        com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent.create(c).build()
     val initial: Component = Column.create(c).child(child).build()
     lithoViewRule.attachToWindow().setRoot(initial).measure().layout()
     val info: MutableList<StepInfo> = ArrayList()
@@ -439,35 +407,17 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
 
     // trigger a state update
     caller_1.increment()
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Text: 2"),
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Text: 1"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 1")
 
     // trigger a state update
     caller_2.increment()
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Text: 2"),
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Text: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
 
     // trigger a state update
     caller_1.increment()
-    ViewAssertions.assertThat(lithoViewRule.lithoView)
-        .matches(
-            ViewMatchNode.forType(LithoView::class.java)
-                .prop(
-                    "drawables",
-                    MatchNode.list(
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Text: 3"),
-                        MatchNode.forType(TextDrawable::class.java).prop("text", "Text: 2"))))
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 3")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
   }
 }
