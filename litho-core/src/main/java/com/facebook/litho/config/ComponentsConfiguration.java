@@ -228,8 +228,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldSkipShallowCopy = false;
 
-  public static boolean shouldClearPrevContextWhenCommitted = false;
-
   public static int textureSizeWarningLimit = Integer.MAX_VALUE;
 
   public static int overlappingRenderingViewSizeLimit = Integer.MAX_VALUE;

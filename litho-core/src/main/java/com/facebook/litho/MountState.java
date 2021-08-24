@@ -446,12 +446,6 @@ class MountState implements MountDelegateTarget {
   }
 
   private void clearLastMountedLayoutState() {
-    if (mLithoView.getComponentTree() != null
-        && mLithoView.getComponentTree().shouldClearPrevContextWhenCommitted()
-        && mLastMountedLayoutState != null) {
-      mLastMountedLayoutState.clearPrevLayoutStateContext();
-    }
-
     mLastMountedLayoutState = null;
   }
 
