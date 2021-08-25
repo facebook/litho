@@ -27,6 +27,7 @@ import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.concurrent.ThreadSafe;
 
 /** todo: javadocs * */
 public class RenderState<State, RenderContext> {
@@ -42,6 +43,7 @@ public class RenderState<State, RenderContext> {
    * @param <State> Represents the State that this tree would like to commit when the tree itself is
    *     committed
    */
+  @ThreadSafe
   public interface LazyTree<State> {
     /**
      * Resolves the tree represented by this LazyTree. Results for resolve might be cached. The
