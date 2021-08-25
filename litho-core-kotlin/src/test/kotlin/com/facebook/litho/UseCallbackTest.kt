@@ -31,6 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.shadows.ShadowLooper
 
 /** Tests for [useCallback] and capturing of props/state within collections lambdas. */
 @RunWith(AndroidJUnit4::class)
@@ -38,10 +39,118 @@ class UseCallbackTest {
 
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
+  @Test
+  fun useCallbackWithCollection_whenUseCallbackCapturesState_stateInCallbackIsUpToDate() {
+    class CollectionWithSelectedRows(
+        private val data: List<Int>,
+        private val onSelectedChanged: (List<Int>) -> Unit
+    ) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        val selected = useState { listOf<Int>() }
+
+        useEffect(selected) {
+          onSelectedChanged(selected.value)
+          null
+        }
+
+        val clickCallback = useCallback { selectedItem: Int ->
+          selected.updateSync(selected.value + listOf(selectedItem))
+        }
+
+        return Collection {
+          data.forEach { item ->
+            child(id = item) {
+              CollectionRow(
+                  style = Style.viewTag("item_$item").onClick { clickCallback.current(item) })
+            }
+          }
+        }
+      }
+    }
+
+    val selectionEvents = mutableListOf<List<Int>>()
+    lithoViewRule
+        .setRoot {
+          CollectionWithSelectedRows(
+              data = listOf(1, 2, 3, 4, 5),
+              onSelectedChanged = { list -> selectionEvents.add(list) })
+        }
+        .setSizePx(1000, 1000)
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
+    ShadowLooper.idleMainLooper()
+
+    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
+    ShadowLooper.idleMainLooper()
+
+    assertThat(selectionEvents).containsExactly(listOf(), listOf(1), listOf(1, 2))
+  }
+
+  @Test
+  fun useCallbackWithCollection_whenUseCallbackCapturesProps_propsAreUpToDate() {
+    class CollectionWithUseCallback(
+        private val data: List<Int>,
+        private val rowClickedTag: String,
+        private val onRowClick: (String) -> Unit
+    ) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        val clickCallback = useCallback { clickEvent: ClickEvent -> onRowClick(rowClickedTag) }
+        return Collection {
+          data.forEach { item ->
+            child(id = item) {
+              CollectionRow(
+                  style = Style.viewTag("item_$item").onClick { clickCallback.current(it) })
+            }
+          }
+        }
+      }
+    }
+
+    val rowClickedEvents = mutableListOf<String>()
+    lithoViewRule
+        .setRoot {
+          CollectionWithUseCallback(
+              data = listOf(1, 2, 3, 4, 5),
+              rowClickedTag = "setRoot1",
+              onRowClick = { data -> rowClickedEvents.add(data) })
+        }
+        .setSizePx(1000, 1000)
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
+    ShadowLooper.idleMainLooper()
+
+    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
+    ShadowLooper.idleMainLooper()
+
+    lithoViewRule.setRoot {
+      CollectionWithUseCallback(
+          data = listOf(1, 2, 3, 4, 5),
+          rowClickedTag = "setRoot2",
+          onRowClick = { data -> rowClickedEvents.add(data) })
+    }
+
+    lithoViewRule.lithoView.findViewWithTag<View>("item_1").performClick()
+    ShadowLooper.idleMainLooper()
+
+    lithoViewRule.lithoView.findViewWithTag<View>("item_2").performClick()
+    ShadowLooper.idleMainLooper()
+
+    assertThat(rowClickedEvents).containsExactly("setRoot1", "setRoot1", "setRoot2", "setRoot2")
+  }
+
   /**
    * This isn't exactly desired behavior, but it's behavior we don't want to accidentally change.
    * Because onIsSameItem/onIsSameContent return true, the second click on item_2 invokes a callback
    * which has captured the initial state and not the updated state.
+   *
+   * See [useCallbackWithCollection_whenUseCallbackCapturesState_stateInCallbackIsUpToDate] for how
+   * to achieve the desired behavior correctly via [useCallback].
    */
   @Test
   fun collection_whenCallbackCapturesState_stateInCallbackIsStale() {
@@ -151,6 +260,9 @@ class UseCallbackTest {
    * This isn't exactly desired behavior, but it's behavior we don't want to accidentally change.
    * Because onIsSameItem/onIsSameContent return true, the second pair of clicks both use the stale
    * value of `clickEventData` even after the root has been updated.
+   *
+   * See [useCallbackWithCollection_whenUseCallbackCapturesProps_propsAreUpToDate] for how to
+   * achieve the desired behavior correctly via [useCallback].
    */
   @Test
   fun collection_whenCallbackCapturesProps_propInCallbackIsStale() {
