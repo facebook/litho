@@ -26,7 +26,6 @@ import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_AC
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES
-import com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
 import com.facebook.litho.eventHandler
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
@@ -125,7 +124,12 @@ inline fun Style.onInitializeAccessibilityNodeInfo(
             AccessibilityField.ON_INITIALIZE_ACCESSIBILITY_NODE_INFO,
             onInitializeAccessibilityNodeInfoHandler)
 
-/** Enum values for [importantForAccessibility]. */
+/**
+ * Enum values for [importantForAccessibility].
+ *
+ * Note: if you are looking for YES_HIDE_DESCENDANTS, it has been deprecated: prefer to add an
+ * intermediate child with `NO_HIDE_DESCENDANTS` instead.
+ */
 enum class ImportantForAccessibility(val asInt: Int) {
   /** Automatically determine whether a view is important for accessibility. */
   AUTO(IMPORTANT_FOR_ACCESSIBILITY_AUTO),
@@ -138,7 +142,4 @@ enum class ImportantForAccessibility(val asInt: Int) {
 
   /** The view is not important for accessibility, nor are any of its descendant views. */
   NO_HIDE_DESCENDANTS(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS),
-
-  /** The view is important for accessibility, but none of its descendant views are. */
-  YES_HIDE_DESCENDANTS(IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS),
 }

@@ -41,6 +41,11 @@ public @interface ImportantForAccessibility {
   /** The view is not important for accessibility, nor are any of its descendant views. */
   int IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS = 0x00000004;
 
-  /** The view is important for accessibility, but none of its descendant views are. */
-  int IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS = 0x00000008;
+  /**
+   * The view is important for accessibility, but none of its descendant views are.
+   *
+   * @deprecated prefer to add an intermediate child with
+   *     IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS instead
+   */
+  @Deprecated int IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS = 0x00000008;
 }
