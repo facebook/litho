@@ -118,7 +118,6 @@ public abstract class Component
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
-  private static final int WILL_RENDER_ERROR_SAMPLING_FREQUENCY = 100000;
   /**
    * @return the globally unique ID associated with {@param type}, creating one if necessary.
    *     Allocated IDs map 1-to-1 with objects passed to this method.
@@ -1137,24 +1136,6 @@ public abstract class Component
 
     if (layout == null) {
       return null;
-    }
-
-    if (context.getComponentScope() == null
-        || !layout.getHeadComponentKey().startsWith(context.getGlobalKey())) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          "WILL_RENDER_GLOBAL_KEY_DOES_NOT_MATCHES_PARENT",
-          "Will render layout global key does not match parent while consuming will render layout. Context's componentScope: "
-              + (context.getComponentScope() == null
-                  ? "null"
-                  : context.getComponentScope().getSimpleName())
-              + " , HeadComponent: "
-              + layout.getHeadComponent().getSimpleName()
-              + " , HeadComponentKey: "
-              + layout.getHeadComponentKey()
-              + " , parentKey: "
-              + context.getGlobalKey(),
-          WILL_RENDER_ERROR_SAMPLING_FREQUENCY);
     }
 
     return layout;
