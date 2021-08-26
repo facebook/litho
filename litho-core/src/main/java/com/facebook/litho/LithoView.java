@@ -64,7 +64,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private boolean mHasVisibilityHint;
   private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
-  private @Nullable LithoRenderUnitFactory mCustomLithoRenderUnitFactory;
   private boolean mSkipMountingIfNotVisible;
   private final boolean mRebindWhenVisibilityChanges;
   private @Nullable LithoLifecycleProvider mLifecycleProvider;
@@ -775,16 +774,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         mLithoHostListenerCoordinator.disableIncrementalMount();
       }
     }
-  }
-
-  @Nullable
-  LithoRenderUnitFactory getLithoRenderUnitFactory() {
-    return mCustomLithoRenderUnitFactory;
-  }
-
-  @VisibleForTesting
-  void setLithoRenderUnitFactory(LithoRenderUnitFactory renderUnitFactory) {
-    mCustomLithoRenderUnitFactory = renderUnitFactory;
   }
 
   /** Change the root component synchronously. */

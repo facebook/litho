@@ -149,7 +149,6 @@ public class LayoutState
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
   private @Nullable LayoutStateContext mLayoutStateContext;
   private @Nullable LayoutStateContext mPrevLayoutStateContext;
 
@@ -248,15 +247,7 @@ public class LayoutState
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
     mComponentKeys = new ArrayList<>();
-
-    if (context.getComponentTree() != null) {
-      mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
-    } else {
-      mLithoRenderUnitFactory = null;
-    }
-
     mVisibilityOutputs = new ArrayList<>(8);
-
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
   }

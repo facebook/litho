@@ -133,8 +133,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
 
-  private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
-
   @Override
   public void onMovedToState(LithoLifecycle state) {
     switch (state) {
@@ -1054,7 +1052,6 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     mLithoView = view;
-    mLithoRenderUnitFactory = view.getLithoRenderUnitFactory();
   }
 
   void clearLithoView() {
@@ -1070,7 +1067,6 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     mLithoView = null;
-    mLithoRenderUnitFactory = null;
   }
 
   @UiThread
@@ -1230,11 +1226,6 @@ public class ComponentTree implements LithoLifecycleListener {
   @Nullable
   RunnableHandler getMountContentPreallocationHandler() {
     return mPreAllocateMountContentHandler;
-  }
-
-  @Nullable
-  LithoRenderUnitFactory getLithoRenderUnitFactory() {
-    return mLithoRenderUnitFactory;
   }
 
   /** Returns the recycling mode. Please see {@link RecyclingMode for details of different modes} */
