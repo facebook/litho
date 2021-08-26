@@ -66,6 +66,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mUpdateState = STATE_UNKNOWN;
 
   public LayoutOutput(
+      final long id,
       final Component component,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
@@ -76,12 +77,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       final int flags,
       final long hostMarker,
       final int importantForAccessibility,
+      final @UpdateState int updateState,
       final @Nullable TransitionId transitionId) {
 
     if (component == null) {
       throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
     }
 
+    mId = id;
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
@@ -96,6 +99,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
             ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
             : importantForAccessibility;
     mTransitionId = transitionId;
+    mUpdateState = updateState;
   }
 
   Component getComponent() {

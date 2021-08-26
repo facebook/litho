@@ -38,6 +38,7 @@ public class MountItemTestHelper {
       TransitionId transitionId) {
     LayoutOutput output =
         new LayoutOutput(
+            0,
             component,
             info,
             viewInfo,
@@ -48,6 +49,7 @@ public class MountItemTestHelper {
             flags,
             hostMarker,
             importantForAccessibility,
+            LayoutOutput.STATE_UNKNOWN,
             transitionId);
     RenderTreeNode node =
         LayoutOutput.create(output, bounds != null ? bounds : new Rect(), null, null, null);

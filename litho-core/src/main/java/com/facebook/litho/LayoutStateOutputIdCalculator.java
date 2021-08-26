@@ -52,14 +52,8 @@ class LayoutStateOutputIdCalculator {
 
   public LayoutStateOutputIdCalculator() {}
 
-  void calculateAndSetLayoutOutputIdAndUpdateState(
-      Component component,
-      LayoutOutput layoutOutput,
-      int level,
-      @OutputUnitType int type,
-      long previousId,
-      boolean isCachedOutputUpdated,
-      @Nullable DebugHierarchy.Node hierarchy) {
+  long calculateAndSetLayoutOutputIdAndUpdateState(
+      Component component, int level, @OutputUnitType int type, long previousId) {
 
     if (mLayoutCurrentSequenceForBaseId == null) {
       mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(2);
@@ -87,23 +81,13 @@ class LayoutStateOutputIdCalculator {
       // If we failed re-using the same id from the previous LayoutOutput we default the
       // UpdateState to STATE_UNKNOWN
       sequence = currentSequence + 1;
-      layoutOutputUpdateState = LayoutOutput.STATE_UNKNOWN;
-    } else {
-      // If we successfully re-used the id from a previous LayoutOutput we can also set the
-      // UpdateState so that MountItem won't need to call shouldComponentUpdate.
-      layoutOutputUpdateState =
-          isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY;
     }
-    layoutOutput.setUpdateState(layoutOutputUpdateState);
 
     long layoutOutputId = LayoutStateOutputIdCalculator.calculateId(baseLayoutId, sequence);
-    layoutOutput.setId(layoutOutputId);
-    if (hierarchy != null) {
-      // Add the type to the debug hierarchy.
-      layoutOutput.setHierarchy(hierarchy.mutateType(type));
-    }
 
     mLayoutCurrentSequenceForBaseId.put(baseLayoutId, sequence + 1);
+
+    return layoutOutputId;
   }
 
   void clear() {

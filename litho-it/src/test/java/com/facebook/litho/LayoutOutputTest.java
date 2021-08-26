@@ -63,6 +63,7 @@ public class LayoutOutputTest {
   private LayoutOutput createLayoutOutputWithBoundsAndHostTranslation(
       Rect rect, int hostTranslationX, int hostTranslationY, int flags, long hostMarker) {
     return new LayoutOutput(
+        0,
         mTestComponent,
         null,
         null,
@@ -73,6 +74,7 @@ public class LayoutOutputTest {
         flags,
         hostMarker,
         0,
+        LayoutOutput.STATE_UNKNOWN,
         null);
   }
 

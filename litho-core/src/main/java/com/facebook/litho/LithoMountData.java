@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.content.Context;
 import android.view.View;
@@ -117,6 +118,7 @@ public class LithoMountData {
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
     LayoutOutput output =
         new LayoutOutput(
+            ROOT_HOST_ID,
             HostComponent.create(),
             null,
             viewNodeInfo,
@@ -127,6 +129,7 @@ public class LithoMountData {
             0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            LayoutOutput.STATE_DIRTY,
             null);
 
     MountItem item =
