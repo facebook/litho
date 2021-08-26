@@ -317,7 +317,7 @@ public class LayoutState
             : -1;
 
     final long newId =
-        layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
+        layoutState.calculateLayoutOutputId(
             component, layoutState.mCurrentLevel, OutputUnitType.CONTENT, previousId);
 
     return createLayoutOutput(
@@ -416,7 +416,7 @@ public class LayoutState
       updateState = LayoutOutput.STATE_DIRTY;
     } else {
       id =
-          layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
+          layoutState.calculateLayoutOutputId(
               hostComponent, layoutState.mCurrentLevel, OutputUnitType.HOST, -1);
       updateState = LayoutOutput.STATE_UNKNOWN;
     }
@@ -469,7 +469,7 @@ public class LayoutState
     long hostMarker = layoutState.mCurrentHostMarker;
 
     final long id =
-        layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
+        layoutState.calculateLayoutOutputId(
             component, layoutState.mCurrentLevel, outputType, previousId);
 
     return createLayoutOutput(
@@ -2058,13 +2058,13 @@ public class LayoutState
     }
   }
 
-  private long calculateAndSetLayoutOutputIdAndUpdateState(
+  private long calculateLayoutOutputId(
       Component component, int level, @OutputUnitType int type, long previousId) {
     if (mLayoutStateOutputIdCalculator == null) {
       mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
     }
 
-    return mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+    return mLayoutStateOutputIdCalculator.calculateLayoutOutputId(
         component, level, type, previousId);
   }
 

@@ -52,7 +52,7 @@ class LayoutStateOutputIdCalculator {
 
   public LayoutStateOutputIdCalculator() {}
 
-  long calculateAndSetLayoutOutputIdAndUpdateState(
+  long calculateLayoutOutputId(
       Component component, int level, @OutputUnitType int type, long previousId) {
 
     if (mLayoutCurrentSequenceForBaseId == null) {
