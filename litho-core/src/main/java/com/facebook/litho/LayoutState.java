@@ -2421,7 +2421,6 @@ public class LayoutState
                 layoutOutput.mHostTranslationX,
                 layoutOutput.mHostTranslationY),
             context,
-            layoutState.mLithoRenderUnitFactory,
             parent);
 
     if (parent != null) {

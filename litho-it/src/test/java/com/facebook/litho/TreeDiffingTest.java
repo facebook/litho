@@ -840,7 +840,7 @@ public class TreeDiffingTest {
             0,
             LayoutOutput.STATE_UNKNOWN,
             null);
-    return LayoutOutput.create(output, new Rect(), null, null, null);
+    return LayoutOutput.create(output, new Rect(), null, null);
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {

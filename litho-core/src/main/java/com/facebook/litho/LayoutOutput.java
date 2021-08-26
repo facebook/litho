@@ -240,17 +240,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       final LayoutOutput output,
       final Rect bounds,
       final @Nullable ComponentContext context,
-      final @Nullable LithoRenderUnitFactory lithoRenderUnitFactory,
       final @Nullable RenderTreeNode parent) {
-
-    final LithoRenderUnit lithoRenderUnit =
-        lithoRenderUnitFactory == null
-            ? new LithoRenderUnit(output)
-            : lithoRenderUnitFactory.getRenderUnit(output);
 
     return new RenderTreeNode(
         parent,
-        lithoRenderUnit,
+        new LithoRenderUnit(output),
         context != null
             ? context.useStatelessComponent() ? context.getScopedComponentInfo() : context
             : null,

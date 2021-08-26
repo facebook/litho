@@ -141,7 +141,7 @@ public class TransitionTest {
             null);
 
     when(layoutState.getMountableOutputAt(0))
-        .thenReturn(LayoutOutput.create(rootLayout, new Rect(0, 0, 300, 100), null, null, null));
+        .thenReturn(LayoutOutput.create(rootLayout, new Rect(0, 0, 300, 100), null, null));
 
     int animateFrom =
         (int)
@@ -197,7 +197,7 @@ public class TransitionTest {
     when(layoutState.getAnimatableRootItem())
         .thenReturn(
             ((LithoRenderUnit)
-                    LayoutOutput.create(rootLayout, new Rect(0, 0, 300, 100), null, null, null)
+                    LayoutOutput.create(rootLayout, new Rect(0, 0, 300, 100), null, null)
                         .getRenderUnit())
                 .output);
 
