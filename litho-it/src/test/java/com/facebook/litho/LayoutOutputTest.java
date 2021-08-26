@@ -69,6 +69,7 @@ public class LayoutOutputTest {
         null,
         null,
         rect,
+        0,
         hostTranslationX,
         hostTranslationY,
         flags,

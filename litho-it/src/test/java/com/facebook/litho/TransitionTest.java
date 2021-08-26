@@ -136,6 +136,7 @@ public class TransitionTest {
             0,
             0,
             0,
+            0,
             LayoutOutput.STATE_UNKNOWN,
             null);
 
@@ -184,6 +185,7 @@ public class TransitionTest {
             null,
             null,
             new Rect(0, 0, 300, 100),
+            0,
             0,
             0,
             0,

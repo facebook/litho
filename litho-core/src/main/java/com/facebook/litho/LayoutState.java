@@ -22,6 +22,7 @@ import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.MountType.NONE;
+import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
@@ -382,6 +383,7 @@ public class LayoutState
             0,
             0,
             0,
+            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
             null);
@@ -556,7 +558,12 @@ public class LayoutState
       layoutOutputNodeInfo = nodeInfo;
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
-      if (layoutState.mShouldDisableDrawableOutputs) {
+
+      // The following only applies if bg/fg outputs are NOT disabled:
+      // backgrounds and foregrounds should not be set for HostComponents
+      // because those will either be set on the content output or explicit outputs
+      // will be created for backgrounds and foreground.
+      if (layoutState.mShouldDisableDrawableOutputs || !isHostSpec(component)) {
         viewNodeInfo.setBackground(result.getBackground());
         if (SDK_INT >= M) {
           viewNodeInfo.setForeground(node.getForeground());
@@ -618,6 +625,7 @@ public class LayoutState
         layoutOutputViewNodeInfo,
         componentKey,
         bounds,
+        layoutState.mMountableOutputs.size(),
         hostTranslationX,
         hostTranslationY,
         flags,
@@ -942,6 +950,34 @@ public class LayoutState
             || layoutState.isLayoutRoot(result)
             || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
+    // 2. Add background if defined.
+    if (!layoutState.mShouldDisableDrawableOutputs) {
+      final Drawable background = result.getBackground();
+
+      // Only create a background output when the component does not mount a View because
+      // the background will get set in the output of the component.
+      if (background != null && !isMountViewSpec(component)) {
+        final LayoutOutput convertBackground =
+            (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
+
+        final LayoutOutput backgroundOutput =
+            addDrawableComponent(
+                parent,
+                result,
+                node,
+                layoutState,
+                convertBackground,
+                hierarchy,
+                background,
+                OutputUnitType.BACKGROUND,
+                needsHostView);
+
+        if (diffNode != null) {
+          diffNode.setBackgroundOutput(backgroundOutput);
+        }
+      }
+    }
+
     // Generate the layoutOutput for the given node.
     final LayoutOutput layoutOutput =
         createGenericLayoutOutput(
@@ -956,35 +992,6 @@ public class LayoutState
 
     if (layoutOutput != null && hierarchy != null) {
       layoutOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.CONTENT));
-    }
-
-    // 2. Add background if defined.
-    if (!layoutState.mShouldDisableDrawableOutputs) {
-      final Drawable background = result.getBackground();
-      if (background != null) {
-        if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
-          layoutOutput.getViewNodeInfo().setBackground(background);
-        } else {
-          final LayoutOutput convertBackground =
-              (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
-
-          final LayoutOutput backgroundOutput =
-              addDrawableComponent(
-                  parent,
-                  result,
-                  node,
-                  layoutState,
-                  convertBackground,
-                  hierarchy,
-                  background,
-                  OutputUnitType.BACKGROUND,
-                  needsHostView);
-
-          if (diffNode != null) {
-            diffNode.setBackgroundOutput(backgroundOutput);
-          }
-        }
-      }
     }
 
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
@@ -1089,28 +1096,27 @@ public class LayoutState
     // 6. Add foreground if defined.
     if (!layoutState.mShouldDisableDrawableOutputs) {
       final Drawable foreground = node.getForeground();
-      if (foreground != null) {
-        if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
-          layoutOutput.getViewNodeInfo().setForeground(foreground);
-        } else {
-          final LayoutOutput convertForeground =
-              (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
+      // Only create a foreground output when the component does not mount a View because
+      // the foreground has already been set in the output of the component.
+      if (foreground != null && (!isMountViewSpec(component) || SDK_INT < M)) {
 
-          final LayoutOutput foregroundOutput =
-              addDrawableComponent(
-                  parent,
-                  result,
-                  node,
-                  layoutState,
-                  convertForeground,
-                  hierarchy,
-                  foreground,
-                  OutputUnitType.FOREGROUND,
-                  needsHostView);
+        final LayoutOutput convertForeground =
+            (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
 
-          if (diffNode != null) {
-            diffNode.setForegroundOutput(foregroundOutput);
-          }
+        final LayoutOutput foregroundOutput =
+            addDrawableComponent(
+                parent,
+                result,
+                node,
+                layoutState,
+                convertForeground,
+                hierarchy,
+                foreground,
+                OutputUnitType.FOREGROUND,
+                needsHostView);
+
+        if (diffNode != null) {
+          diffNode.setForegroundOutput(foregroundOutput);
         }
       }
     }
@@ -2405,8 +2411,6 @@ public class LayoutState
       final LayoutOutput layoutOutput,
       final @Nullable ComponentContext context,
       final @Nullable RenderTreeNode parent) {
-
-    layoutOutput.setIndex(layoutState.mMountableOutputs.size());
 
     final RenderTreeNode node =
         LayoutOutput.create(

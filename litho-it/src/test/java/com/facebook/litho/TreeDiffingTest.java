@@ -837,6 +837,7 @@ public class TreeDiffingTest {
             0,
             0,
             0,
+            0,
             LayoutOutput.STATE_UNKNOWN,
             null);
     return LayoutOutput.create(output, new Rect(), null, null, null);

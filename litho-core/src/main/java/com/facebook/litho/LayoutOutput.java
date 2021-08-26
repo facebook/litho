@@ -72,6 +72,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       final @Nullable ViewNodeInfo viewNodeInfo,
       final @Nullable String key,
       final Rect bounds,
+      final int index,
       final int hostTranslationX,
       final int hostTranslationY,
       final int flags,
@@ -90,6 +91,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mComponent = component;
     mKey = key;
     mBounds = bounds;
+    mIndex = index;
     mHostTranslationX = hostTranslationX;
     mHostTranslationY = hostTranslationY;
     mFlags = flags;
