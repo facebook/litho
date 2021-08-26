@@ -51,19 +51,19 @@ public class LayoutOutputTest {
     mTestComponent = new TestComponent();
   }
 
-  private LayoutOutput createLayoutOutput() {
-    return createLayoutOutput(0, 0);
+  private LayoutOutput createLayoutOutput(long id) {
+    return createLayoutOutput(id, 0, 0);
   }
 
-  private LayoutOutput createLayoutOutput(int flags, long hostMarker) {
+  private LayoutOutput createLayoutOutput(long id, int flags, long hostMarker) {
     return createLayoutOutputWithBoundsAndHostTranslation(
-        new Rect(0, 1, 3, 4), 0, 0, flags, hostMarker);
+        id, new Rect(0, 1, 3, 4), 0, 0, flags, hostMarker);
   }
 
   private LayoutOutput createLayoutOutputWithBoundsAndHostTranslation(
-      Rect rect, int hostTranslationX, int hostTranslationY, int flags, long hostMarker) {
+      long id, Rect rect, int hostTranslationX, int hostTranslationY, int flags, long hostMarker) {
     return new LayoutOutput(
-        0,
+        id,
         mTestComponent,
         null,
         null,
@@ -80,7 +80,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testPositionAndSizeSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, -1);
+    LayoutOutput layoutOutput = createLayoutOutput(0, 0, -1);
     assertThat(layoutOutput.getBounds().left).isEqualTo(0);
     assertThat(layoutOutput.getBounds().top).isEqualTo(1);
     assertThat(layoutOutput.getBounds().right).isEqualTo(3);
@@ -89,19 +89,19 @@ public class LayoutOutputTest {
 
   @Test
   public void testHostMarkerSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, 10L);
+    LayoutOutput layoutOutput = createLayoutOutput(0, 0, 10L);
     assertThat(layoutOutput.getHostMarker()).isEqualTo(10);
   }
 
   @Test
   public void testFlagsSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(1, 0);
+    LayoutOutput layoutOutput = createLayoutOutput(0, 1, 0);
     assertThat(layoutOutput.getFlags()).isEqualTo(1);
   }
 
   @Test
   public void testStableIdCalculation() {
-    LayoutOutput layoutOutput = createLayoutOutput();
+    LayoutOutput layoutOutput = createLayoutOutput(0);
 
     long stableId =
         calculateLayoutOutputId(
@@ -119,10 +119,10 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdBackgroundType() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
+    LayoutOutput layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(
+                mTestComponent, LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -131,10 +131,10 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdForegroundType() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
+    LayoutOutput layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(
+                mTestComponent, LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -143,10 +143,9 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdHostType() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+    LayoutOutput layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -155,10 +154,9 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdBorderType() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST));
+    LayoutOutput layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST));
 
     long stableId = layoutOutput.getId();
     assertThat(toBinaryString(stableId))
@@ -167,54 +165,53 @@ public class LayoutOutputTest {
 
   @Test
   public void testGetIdLevel() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+    LayoutOutput layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
     assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(layoutOutput.getId()));
 
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), MAX_LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST));
+    layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(
+                mTestComponent, MAX_LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST));
 
     assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(layoutOutput.getId()));
   }
 
   @Test
   public void testGetIdSequence() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+    LayoutOutput layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(mTestComponent, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
+
     assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(layoutOutput.getId()));
 
-    layoutOutput.setId(
-        calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.CONTENT, MAX_SEQ_TEST));
+    layoutOutput =
+        createLayoutOutput(
+            calculateLayoutOutputId(
+                mTestComponent, LEVEL_TEST, OutputUnitType.CONTENT, MAX_SEQ_TEST));
 
     assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(layoutOutput.getId()));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void levelOutOfRangeTest() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
+    createLayoutOutput(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            layoutOutput.getComponent(), MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST));
+            mTestComponent, MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST));
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void sequenceOutOfRangeTest() {
-    LayoutOutput layoutOutput = createLayoutOutput();
-    layoutOutput.setId(
+    createLayoutOutput(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            layoutOutput.getComponent(), LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1));
+            mTestComponent, LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1));
   }
 
   @Test
   public void testGetMountBoundsNoHostTranslation() {
     LayoutOutput layoutOutput =
-        createLayoutOutputWithBoundsAndHostTranslation(new Rect(10, 10, 10, 10), 0, 0, 0, 0);
+        createLayoutOutputWithBoundsAndHostTranslation(0, new Rect(10, 10, 10, 10), 0, 0, 0, 0);
 
     Rect mountBounds = new Rect();
     LayoutOutput.getMountBounds(
@@ -229,7 +226,7 @@ public class LayoutOutputTest {
   @Test
   public void testGetMountBoundsWithHostTranslation() {
     LayoutOutput layoutOutput =
-        createLayoutOutputWithBoundsAndHostTranslation(new Rect(10, 10, 10, 10), 5, 2, 0, 0);
+        createLayoutOutputWithBoundsAndHostTranslation(0, new Rect(10, 10, 10, 10), 5, 2, 0, 0);
 
     Rect mountBounds = new Rect();
     LayoutOutput.getMountBounds(
