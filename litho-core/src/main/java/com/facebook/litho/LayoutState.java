@@ -150,7 +150,6 @@ public class LayoutState
   private int mHeightSpec;
 
   private @Nullable LayoutStateContext mLayoutStateContext;
-  private @Nullable LayoutStateContext mPrevLayoutStateContext;
 
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
@@ -276,11 +275,6 @@ public class LayoutState
   @Nullable
   LayoutStateContext getLayoutStateContext() {
     return mLayoutStateContext;
-  }
-
-  @Nullable
-  LayoutStateContext getPrevLayoutStateContext() {
-    return mPrevLayoutStateContext;
   }
 
   /**
@@ -1605,8 +1599,6 @@ public class LayoutState
       }
 
       layoutState = new LayoutState(c, currentLayoutState);
-
-      layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
 
       layoutStateContext =
           new LayoutStateContext(
