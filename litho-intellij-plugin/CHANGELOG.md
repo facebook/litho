@@ -2,9 +2,10 @@
 
 ## Version 1.8.3
 
-_2021-00-00_
+_2021-08-23_
 
 * New: Idea version increased to 201
+* New: New extension point for post processing after template provider creates Litho file
 * Fix: Documentation links in completed methods point to fblitho
 * Fix: Re-arrange litho actions in 'New' context menu below Kotlin
 
