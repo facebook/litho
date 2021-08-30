@@ -334,7 +334,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     result.setDiffNode(diff);
 
-    if (!Layout.shouldComponentUpdate(current, this, prev, diff)) {
+    if (!Layout.shouldComponentUpdate(current, this, diff)) {
       final String key = getTailComponentKey();
       if (component != null) {
         component.copyInterStageImpl(

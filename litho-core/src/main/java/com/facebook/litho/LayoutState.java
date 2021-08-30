@@ -858,8 +858,7 @@ public class LayoutState
               immediateParentContext,
               (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
-              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
-              layoutState.mPrevLayoutStateContext);
+              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY));
 
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -1651,7 +1650,6 @@ public class LayoutState
                 widthSpec,
                 heightSpec,
                 isReconcilable ? currentLayoutRoot : null,
-                layoutState.mPrevLayoutStateContext,
                 diffTreeRoot,
                 logLayoutState);
 
@@ -1680,7 +1678,6 @@ public class LayoutState
                 widthSpec,
                 heightSpec,
                 currentLayoutRoot,
-                layoutState.mPrevLayoutStateContext,
                 diffTreeRoot);
       }
 
@@ -1774,7 +1771,6 @@ public class LayoutState
               layoutState.mPartiallyResolvedLayoutRoot,
               widthSpec,
               heightSpec,
-              layoutState.mPrevLayoutStateContext,
               layoutState.mDiffTreeRoot,
               logLayoutState);
 
