@@ -298,11 +298,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       return;
     }
 
-    final @Nullable LayoutStateContext prev = state.getPrevLayoutStateContext();
-    if (prev == null) { // If first layout then no diff nodes to apply.
-      return;
-    }
-
     final @Nullable DiffNode diff;
 
     if (parent == null) { // If root, then get diff node root from the current layout state
@@ -339,7 +334,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       if (component != null) {
         component.copyInterStageImpl(
             component.getInterStagePropsContainer(current, key),
-            diff.getComponent().getInterStagePropsContainer(prev, diff.getComponentGlobalKey()));
+            diff.getComponent().getInterStagePropsContainer(diff.getComponentContext()));
       }
 
       result.setCachedMeasuresValid(true);
