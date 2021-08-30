@@ -30,6 +30,7 @@ public class DefaultDiffNode implements DiffNode {
   private @Nullable LayoutOutput mHost;
   private @Nullable VisibilityOutput mVisibilityOutput;
   private @Nullable Component mComponent;
+  private @Nullable ComponentContext mComponentContext;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
@@ -56,12 +57,21 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
+  public ComponentContext getComponentContext() {
+    return mComponentContext;
+  }
+
+  @Override
   public @Nullable String getComponentGlobalKey() {
     return mGlobalKey;
   }
 
   @Override
-  public void setComponent(@Nullable Component component, @Nullable String globalKey) {
+  public void setComponent(
+      final ComponentContext context,
+      final @Nullable Component component,
+      final @Nullable String globalKey) {
+    mComponentContext = context;
     mComponent = component;
     mGlobalKey = globalKey;
   }
