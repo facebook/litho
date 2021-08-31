@@ -96,9 +96,14 @@ public class LayoutStateCalculateTest {
           }
         };
 
+    final ComponentTree componentTree = ComponentTree.create(mBaseContext).build();
     final LayoutState layoutState =
         calculateLayoutState(
-            mBaseContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            componentTree.getContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -159,7 +164,8 @@ public class LayoutStateCalculateTest {
     // spy(ComponentsPools.class);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(
+        componentTree.getContext(), rootContainer, -1, widthSpecContainer, heightSpec);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(layoutStateSpy, times(1))
@@ -237,7 +243,8 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutStateSpy = spy(layoutState);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(
+        componentTree.getContext(), rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
@@ -316,7 +323,8 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutStateSpy = spy(layoutState);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(
+        componentTree.getContext(), rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
@@ -392,7 +400,8 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutStateSpy = spy(layoutState);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(
+        componentTree.getContext(), rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(componentSpy, times(1)).makeShallowCopy();
 

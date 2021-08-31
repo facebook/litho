@@ -16,10 +16,10 @@
 
 package com.facebook.litho;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.View;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
@@ -29,6 +29,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class UniqueTransitionKeysTest {
+
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private final InlineLayoutSpec mHasNonUniqueTransitionKeys =
       new InlineLayoutSpec() {
@@ -70,10 +72,9 @@ public class UniqueTransitionKeysTest {
 
   @Test
   public void testGetTransitionKeyMapping() {
-    ComponentContext c = new ComponentContext(getApplicationContext());
     LayoutState layoutState =
         LayoutState.calculate(
-            c,
+            mLithoViewRule.getComponentTree().getContext(),
             mHasUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
@@ -88,10 +89,9 @@ public class UniqueTransitionKeysTest {
     mExpectedException.expectMessage(
         "The transitionId 'TransitionId{\"test\", GLOBAL}' is defined multiple times in the same layout.");
 
-    ComponentContext c = new ComponentContext(getApplicationContext());
     LayoutState layoutState =
         LayoutState.calculate(
-            c,
+            mLithoViewRule.getComponentTree().getContext(),
             mHasNonUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),

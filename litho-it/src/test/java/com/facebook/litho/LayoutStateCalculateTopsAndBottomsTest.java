@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -28,8 +27,8 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.content.Context;
 import android.graphics.Rect;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
@@ -38,11 +37,14 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountRenderCoreExtens
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class LayoutStateCalculateTopsAndBottomsTest {
+
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Test
   public void testCalculateTopsAndBottoms() {
@@ -63,12 +65,13 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            getApplicationContext(),
+        LayoutState.calculate(
+            mLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, AT_MOST));
+            makeSizeSpec(100, AT_MOST),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
@@ -119,12 +122,13 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         };
 
     LayoutState layoutState =
-        calculateLayoutState(
-            getApplicationContext(),
+        LayoutState.calculate(
+            mLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, AT_MOST));
+            makeSizeSpec(100, AT_MOST),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
 
@@ -155,14 +159,6 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testTopsComparatorIsEquivalenceRelation() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return SimpleMountSpecTester.create(c).build();
-          }
-        };
-
     IncrementalMountOutput[] outputs = new IncrementalMountOutput[4];
     outputs[0] = createIncrementMountOutput(0, 10, 0);
     outputs[1] = createIncrementMountOutput(0, 10, 1);
@@ -201,15 +197,6 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testBottomsComparatorIsEquivalenceRelation() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return SimpleMountSpecTester.create(c).build();
-          }
-        };
-    ;
-
     IncrementalMountOutput[] outputs = new IncrementalMountOutput[4];
     outputs[0] = createIncrementMountOutput(0, 10, 0);
     outputs[1] = createIncrementMountOutput(0, 10, 1);
@@ -249,14 +236,6 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testTopsComparatorWithOverflow() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return SimpleMountSpecTester.create(c).build();
-          }
-        };
-
     final IncrementalMountOutput maxIntTop = createIncrementMountOutput(Integer.MAX_VALUE, 20, 0);
     final IncrementalMountOutput largeNegativeTop = createIncrementMountOutput(-2147483646, 20, 1);
     final IncrementalMountOutput minIntTop = createIncrementMountOutput(Integer.MIN_VALUE, 20, 2);
@@ -274,14 +253,6 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testBottomComparatorWithOverflow() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return SimpleMountSpecTester.create(c).build();
-          }
-        };
-
     final IncrementalMountOutput maxIntBottom =
         createIncrementMountOutput(20, Integer.MAX_VALUE, 0);
     final IncrementalMountOutput largeNegativeBottom =
@@ -397,18 +368,6 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     nodes.add(createIncrementMountOutput(20, 2147483647, currentIndex++));
 
     Collections.sort(nodes, sBottomsComparator);
-  }
-
-  private static LayoutState calculateLayoutState(
-      Context context, Component component, int componentTreeId, int widthSpec, int heightSpec) {
-
-    return LayoutState.calculate(
-        new ComponentContext(context),
-        component,
-        componentTreeId,
-        widthSpec,
-        heightSpec,
-        LayoutState.CalculateLayoutSource.TEST);
   }
 
   private static IncrementalMountOutput createIncrementMountOutput(

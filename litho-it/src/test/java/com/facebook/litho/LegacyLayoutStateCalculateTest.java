@@ -44,7 +44,6 @@ import static com.facebook.yoga.YogaJustify.SPACE_AROUND;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
@@ -83,7 +82,7 @@ public class LegacyLayoutStateCalculateTest {
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
-    mContext = mLithoViewRule.getContext();
+    mContext = mLithoViewRule.getComponentTree().getContext();
   }
 
   @Test
@@ -121,11 +120,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(7);
 
@@ -194,11 +189,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero =
@@ -236,7 +227,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         LayoutState.calculate(
-            new ComponentContext(getApplicationContext(), "test", logger),
+            ComponentTree.create(mContext).logger(logger, "test").build().getContext(),
             component,
             -1,
             makeSizeSpec(100, EXACTLY),
@@ -261,11 +252,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -337,11 +324,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Account for Android version in the foreground. If >= M the foreground is part of the
     // ViewLayoutOutput otherwise it has its own LayoutOutput.
@@ -433,11 +416,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -463,7 +442,7 @@ public class LegacyLayoutStateCalculateTest {
   public void testLayoutOutputForRootNestedTreeComponent() {
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
+            mContext,
             TestSizeDependentComponent.create(new ComponentContext(getApplicationContext()))
                 .setFixSizes(true)
                 .setDelegate(false)
@@ -504,11 +483,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
   }
@@ -553,11 +528,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(10);
 
@@ -607,11 +578,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero =
@@ -640,11 +607,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero =
@@ -681,11 +644,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
+            mContext, component, -1, makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED));
 
     Rect mountBounds = new Rect();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
@@ -711,11 +670,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -756,11 +711,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
@@ -794,11 +745,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
 
@@ -878,11 +825,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     Rect mountBounds = new Rect();
 
@@ -916,11 +859,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
+            mContext, component, -1, makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED));
 
     Rect mountBounds = new Rect();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
@@ -987,11 +926,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(350, EXACTLY),
-            makeSizeSpec(200, EXACTLY));
+            mContext, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(8);
 
@@ -1046,11 +981,7 @@ public class LegacyLayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            getApplicationContext(),
-            component,
-            -1,
-            makeSizeSpec(100, EXACTLY),
-            makeSizeSpec(100, EXACTLY));
+            mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero =
@@ -1100,22 +1031,6 @@ public class LegacyLayoutStateCalculateTest {
 
     return LayoutState.calculate(
         context,
-        component,
-        componentTreeId,
-        widthSpec,
-        heightSpec,
-        LayoutState.CalculateLayoutSource.TEST);
-  }
-
-  private LayoutState calculateLayoutState(
-      final Context context,
-      final Component component,
-      final int componentTreeId,
-      final int widthSpec,
-      final int heightSpec) {
-
-    return LayoutState.calculate(
-        new ComponentContext(context),
         component,
         componentTreeId,
         widthSpec,

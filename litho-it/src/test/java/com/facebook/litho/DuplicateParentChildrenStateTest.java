@@ -28,17 +28,21 @@ import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class DuplicateParentChildrenStateTest {
+
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private int mUnspecifiedSizeSpec;
 
@@ -86,7 +90,7 @@ public class DuplicateParentChildrenStateTest {
 
     LayoutState layoutState =
         calculate(
-            new ComponentContext(getApplicationContext()),
+            mLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             mUnspecifiedSizeSpec,

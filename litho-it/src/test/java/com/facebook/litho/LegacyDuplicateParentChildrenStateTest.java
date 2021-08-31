@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.RED;
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutOutput.isDuplicateParentState;
@@ -28,16 +27,20 @@ import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.TempComponentsConfigurations;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class LegacyDuplicateParentChildrenStateTest {
+
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private int mUnspecifiedSizeSpec;
 
@@ -84,7 +87,7 @@ public class LegacyDuplicateParentChildrenStateTest {
 
     LayoutState layoutState =
         calculate(
-            new ComponentContext(getApplicationContext()),
+            mLithoViewRule.getComponentTree().getContext(),
             component,
             -1,
             mUnspecifiedSizeSpec,

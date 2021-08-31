@@ -22,6 +22,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.view.View;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
@@ -31,6 +32,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class CollectTransitionsTest {
+
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private final InlineLayoutSpec mWrappingContentWithTransition =
       new InlineLayoutSpec() {
@@ -77,7 +80,7 @@ public class CollectTransitionsTest {
     ComponentContext c = new ComponentContext(getApplicationContext());
     LayoutState layoutState =
         LayoutState.calculate(
-            c,
+            mLithoViewRule.getComponentTree().getContext(),
             mWrappingContentWithTransition,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
