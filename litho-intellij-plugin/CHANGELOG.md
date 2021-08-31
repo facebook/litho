@@ -8,6 +8,7 @@ _2021-08-23_
 * New: New extension point for post processing after template provider creates Litho file
 * Fix: Documentation links in completed methods point to fblitho
 * Fix: Re-arrange litho actions in 'New' context menu below Kotlin
+* Fix: Change validation to reflect recently added support for @TreeProp inside @OnCalculateCachedValue method
 
 ## Version 1.8.2
 

@@ -167,7 +167,7 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(paramObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "@OnCalculateCachedValue methods may only take ComponentContext, Props, @InjectProps and State as params.");
+            "@OnCalculateCachedValue methods may only take ComponentContext, @Prop, @TreeProp, @InjectProp and @State as params.");
   }
 
   @Test

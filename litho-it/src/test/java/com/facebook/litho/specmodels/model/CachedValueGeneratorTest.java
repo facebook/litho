@@ -100,6 +100,11 @@ public class CachedValueGeneratorTest {
       return "JKL";
     }
 
+    @OnCalculateCachedValue(name = "expensiveValueWithTreeProp")
+    static String onCreateExpensiveValueWithTreeProp(@Prop boolean arg0, @TreeProp long arg6) {
+      return "MNO";
+    }
+
     @OnCreateLayout
     public <E extends CharSequence> void testDelegateMethod(
         @Prop boolean arg0,
@@ -745,6 +750,97 @@ public class CachedValueGeneratorTest {
                 + "    c.putCachedValue(inputs, moreExpensiveValueWithContext);\n"
                 + "  }\n"
                 + "  return moreExpensiveValueWithContext;\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateInputsClassWithTreeProp() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(m -> m.name.toString().equals("onCreateExpensiveValueWithTreeProp"))
+            .findFirst()
+            .get();
+    final String expensiveValueInputsClass =
+        CachedValueGenerator.createInputsClass(
+                CachedValueGenerator.getCachedValueInputs(specMethodModel),
+                "expensiveValueWithTreeProp",
+                RunMode.normal())
+            .toString();
+    assertThat(expensiveValueInputsClass)
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Generated\n"
+                + "private static class ExpensiveValueWithTreePropInputs {\n"
+                + "  private final String globalKey;\n"
+                + "\n"
+                + "  private final boolean arg0;\n"
+                + "\n"
+                + "  private final long arg6;\n"
+                + "\n"
+                + "  ExpensiveValueWithTreePropInputs(String globalKey, boolean arg0, long arg6) {\n"
+                + "    this.globalKey = globalKey;\n"
+                + "    this.arg0 = arg0;\n"
+                + "    this.arg6 = arg6;\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public int hashCode() {\n"
+                + "    return com.facebook.litho.CommonUtils.hash(globalKey, arg0, arg6, getClass());\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public boolean equals(java.lang.Object other) {\n"
+                + "    if (this == other) {\n"
+                + "      return true;\n"
+                + "    }\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithTreePropInputs)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    ExpensiveValueWithTreePropInputs cachedValueInputs = (ExpensiveValueWithTreePropInputs) other;\n"
+                + "    if (!com.facebook.litho.CommonUtils.equals(globalKey, cachedValueInputs.globalKey)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    if (arg0 != cachedValueInputs.arg0) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    if (arg6 != cachedValueInputs.arg6) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateGetterWithTreeProp() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(m -> m.name.toString().equals("onCreateExpensiveValueWithTreeProp"))
+            .findFirst()
+            .get();
+    final String expensiveValueWithTreeProp =
+        CachedValueGenerator.createGetterMethod(
+                mLayoutSpecModel,
+                specMethodModel,
+                CachedValueGenerator.getCachedValueInputs(specMethodModel),
+                "expensiveValueWithTreeProp")
+            .toString();
+    assertThat(expensiveValueWithTreeProp)
+        .isEqualTo(
+            "private java.lang.String getExpensiveValueWithTreeProp(com.facebook.litho.ComponentContext c) {\n"
+                + "  String globalKey = c.getGlobalKey();\n"
+                + "  final ExpensiveValueWithTreePropInputs inputs = new ExpensiveValueWithTreePropInputs(globalKey,arg0,(useTreePropsFromContext() ? c.getParentTreeProp(long.class) : arg6));\n"
+                + "  java.lang.String expensiveValueWithTreeProp = (java.lang.String) c.getCachedValue(inputs);\n"
+                + "  if (expensiveValueWithTreeProp == null) {\n"
+                + "    expensiveValueWithTreeProp = CachedValueTestSpec.onCreateExpensiveValueWithTreeProp(arg0,(useTreePropsFromContext() ? c.getParentTreeProp(long.class) : arg6));\n"
+                + "    c.putCachedValue(inputs, expensiveValueWithTreeProp);\n"
+                + "  }\n"
+                + "  return expensiveValueWithTreeProp;\n"
                 + "}\n");
   }
 }

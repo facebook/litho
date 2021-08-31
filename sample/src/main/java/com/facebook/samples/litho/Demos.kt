@@ -26,7 +26,6 @@ import com.facebook.samples.litho.java.animations.animatedbadge.AnimatedBadge
 import com.facebook.samples.litho.java.animations.animationcallbacks.AnimationCallbacksActivity
 import com.facebook.samples.litho.java.animations.animationcomposition.ComposedAnimationsComponent
 import com.facebook.samples.litho.java.animations.animationcookbook.AnimationCookBookActivity
-import com.facebook.samples.litho.java.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
 import com.facebook.samples.litho.java.animations.docs.AppearTransitionComponent
 import com.facebook.samples.litho.java.animations.docs.ParallelTransitionWithAnimatorsComponent
@@ -76,6 +75,7 @@ import com.facebook.samples.litho.java.viewpager.ViewPagerDemoComponent
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
+import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
