@@ -419,7 +419,11 @@ public class ComponentTree implements LithoLifecycleListener {
     mIncrementalMountEnabled =
         builder.incrementalMountEnabled && !incrementalMountGloballyDisabled();
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
-    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    if (ComponentsConfiguration.overrideLayoutDiffing != null) {
+      mIsLayoutDiffingEnabled = ComponentsConfiguration.overrideLayoutDiffing;
+    } else {
+      mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    }
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
@@ -428,7 +432,11 @@ public class ComponentTree implements LithoLifecycleListener {
     mIsFirstMount = builder.isFirstMount;
     addMeasureListener(builder.mMeasureListener);
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
-    isReconciliationEnabled = builder.isReconciliationEnabled;
+    if (ComponentsConfiguration.overrideReconciliation != null) {
+      isReconciliationEnabled = ComponentsConfiguration.overrideReconciliation;
+    } else {
+      isReconciliationEnabled = builder.isReconciliationEnabled;
+    }
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;

@@ -135,6 +135,10 @@ public class ComponentsConfiguration {
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = true;
 
+  public static @Nullable Boolean overrideReconciliation = null;
+
+  public static @Nullable Boolean overrideLayoutDiffing = null;
+
   /**
    * Sets if layout diffing is enabled. This should be used in conjugation with
    * {@link#isReconciliationEnabled}.
