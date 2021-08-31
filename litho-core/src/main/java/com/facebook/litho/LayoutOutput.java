@@ -23,6 +23,7 @@ import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
@@ -32,6 +33,7 @@ import java.lang.annotation.RetentionPolicy;
  * The output of a layout pass for a given {@link Component}. It's used by {@link MountState} to
  * mount a component.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class LayoutOutput implements Cloneable, AnimatableItem {
   public static final int STATE_UNKNOWN = 0;
   public static final int STATE_UPDATED = 1;
@@ -42,7 +44,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
   static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
   static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
-  private final String mKey;
+  private final @Nullable String mKey;
 
   @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
   @Retention(RetentionPolicy.SOURCE)
@@ -108,6 +110,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mComponent;
   }
 
+  @Nullable
   String getKey() {
     return mKey;
   }
@@ -194,7 +197,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mHierarchy;
   }
 
-  void setHierarchy(DebugHierarchy.Node node) {
+  void setHierarchy(@Nullable DebugHierarchy.Node node) {
     mHierarchy = node;
   }
 
@@ -265,7 +268,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return LithoRenderUnit.getContext(node.getLayoutData());
   }
 
-  static ComponentContext getComponentContext(MountItem item) {
+  static @Nullable ComponentContext getComponentContext(MountItem item) {
     return getComponentContext(item.getRenderTreeNode());
   }
 
