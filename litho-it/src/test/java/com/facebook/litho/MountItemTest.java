@@ -282,6 +282,7 @@ public class MountItemTest {
         new LayoutOutput(
             0,
             mComponent,
+            OutputUnitType.CONTENT,
             mNodeInfo,
             null,
             null,

@@ -40,6 +40,7 @@ public class MountItemTestHelper {
         new LayoutOutput(
             0,
             component,
+            OutputUnitType.CONTENT,
             info,
             viewInfo,
             globalKey,

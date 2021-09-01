@@ -26,6 +26,7 @@ import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.LayoutState.createDiffNode;
+import static com.facebook.litho.OutputUnitType.CONTENT;
 import static com.facebook.litho.SizeSpec.getMode;
 import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -821,6 +822,7 @@ public class TreeDiffingTest {
         new LayoutOutput(
             0,
             component,
+            CONTENT,
             null,
             null,
             null,

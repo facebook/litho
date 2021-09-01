@@ -51,20 +51,28 @@ public class LayoutOutputTest {
     mTestComponent = new TestComponent();
   }
 
-  private LayoutOutput createLayoutOutput(long id) {
-    return createLayoutOutput(id, 0, 0);
+  private LayoutOutput createLayoutOutput(long id, @OutputUnitType int outputType) {
+    return createLayoutOutput(id, outputType, 0, 0);
   }
 
-  private LayoutOutput createLayoutOutput(long id, int flags, long hostMarker) {
+  private LayoutOutput createLayoutOutput(
+      long id, @OutputUnitType int outputType, int flags, long hostMarker) {
     return createLayoutOutputWithBoundsAndHostTranslation(
-        id, new Rect(0, 1, 3, 4), 0, 0, flags, hostMarker);
+        id, outputType, new Rect(0, 1, 3, 4), 0, 0, flags, hostMarker);
   }
 
   private LayoutOutput createLayoutOutputWithBoundsAndHostTranslation(
-      long id, Rect rect, int hostTranslationX, int hostTranslationY, int flags, long hostMarker) {
+      long id,
+      @OutputUnitType int outputType,
+      Rect rect,
+      int hostTranslationX,
+      int hostTranslationY,
+      int flags,
+      long hostMarker) {
     return new LayoutOutput(
         id,
         mTestComponent,
+        outputType,
         null,
         null,
         null,
@@ -81,7 +89,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testPositionAndSizeSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, 0, -1);
+    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 0, -1);
     assertThat(layoutOutput.getBounds().left).isEqualTo(0);
     assertThat(layoutOutput.getBounds().top).isEqualTo(1);
     assertThat(layoutOutput.getBounds().right).isEqualTo(3);
@@ -90,19 +98,19 @@ public class LayoutOutputTest {
 
   @Test
   public void testHostMarkerSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, 0, 10L);
+    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 0, 10L);
     assertThat(layoutOutput.getHostMarker()).isEqualTo(10);
   }
 
   @Test
   public void testFlagsSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, 1, 0);
+    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 1, 0);
     assertThat(layoutOutput.getFlags()).isEqualTo(1);
   }
 
   @Test
   public void testStableIdCalculation() {
-    LayoutOutput layoutOutput = createLayoutOutput(0);
+    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT);
 
     long stableId =
         calculateLayoutOutputId(
@@ -179,20 +187,23 @@ public class LayoutOutputTest {
   public void levelOutOfRangeTest() {
     createLayoutOutput(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            mTestComponent, MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST));
+            mTestComponent, MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST),
+        OutputUnitType.HOST);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void sequenceOutOfRangeTest() {
     createLayoutOutput(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            mTestComponent, LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1));
+            mTestComponent, LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1),
+        OutputUnitType.FOREGROUND);
   }
 
   @Test
   public void testGetMountBoundsNoHostTranslation() {
     LayoutOutput layoutOutput =
-        createLayoutOutputWithBoundsAndHostTranslation(0, new Rect(10, 10, 10, 10), 0, 0, 0, 0);
+        createLayoutOutputWithBoundsAndHostTranslation(
+            0, OutputUnitType.CONTENT, new Rect(10, 10, 10, 10), 0, 0, 0, 0);
 
     Rect mountBounds = new Rect();
     LayoutOutput.getMountBounds(
@@ -207,7 +218,8 @@ public class LayoutOutputTest {
   @Test
   public void testGetMountBoundsWithHostTranslation() {
     LayoutOutput layoutOutput =
-        createLayoutOutputWithBoundsAndHostTranslation(0, new Rect(10, 10, 10, 10), 5, 2, 0, 0);
+        createLayoutOutputWithBoundsAndHostTranslation(
+            0, OutputUnitType.CONTENT, new Rect(10, 10, 10, 10), 5, 2, 0, 0);
 
     Rect mountBounds = new Rect();
     LayoutOutput.getMountBounds(

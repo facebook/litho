@@ -127,6 +127,7 @@ public class TransitionTest {
         new LayoutOutput(
             0,
             component,
+            OutputUnitType.CONTENT,
             null,
             null,
             null,
@@ -181,6 +182,7 @@ public class TransitionTest {
         new LayoutOutput(
             0,
             component,
+            OutputUnitType.CONTENT,
             null,
             null,
             null,

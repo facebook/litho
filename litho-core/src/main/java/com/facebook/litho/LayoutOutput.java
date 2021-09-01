@@ -64,6 +64,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final long mHostMarker; // TODO: remove
 
   private final long mId; // TODO: remove
+  private final @OutputUnitType int mOutputType;
   private final int mIndex; // TODO: remove
   private final int mUpdateState;
 
@@ -72,6 +73,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   public LayoutOutput(
       final long id,
       final Component component,
+      final @OutputUnitType int outputType,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
       final @Nullable String key,
@@ -90,6 +92,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     }
 
     mId = id;
+    mOutputType = outputType;
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
@@ -240,8 +243,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   @Override
-  public int getOutputType() {
-    return LayoutStateOutputIdCalculator.getTypeFromId(mId);
+  public @OutputUnitType int getOutputType() {
+    return mOutputType;
   }
 
   static RenderTreeNode create(

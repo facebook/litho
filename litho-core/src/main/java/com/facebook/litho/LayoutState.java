@@ -41,7 +41,6 @@ import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
-import static com.facebook.litho.OutputUnitType.MAX_TYPE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
@@ -319,6 +318,7 @@ public class LayoutState
     return createLayoutOutput(
         newId,
         component,
+        OutputUnitType.CONTENT,
         componentKey,
         context,
         hostMarker,
@@ -362,6 +362,7 @@ public class LayoutState
         new LayoutOutput(
             ROOT_HOST_ID,
             HostComponent.create(),
+            OutputUnitType.HOST,
             null,
             null,
             null,
@@ -425,6 +426,7 @@ public class LayoutState
         createLayoutOutput(
             id,
             hostComponent,
+            OutputUnitType.HOST,
             null,
             null,
             hostMarker,
@@ -476,6 +478,7 @@ public class LayoutState
     return createLayoutOutput(
         id,
         component,
+        outputType,
         null,
         null,
         hostMarker,
@@ -495,6 +498,7 @@ public class LayoutState
   private static LayoutOutput createLayoutOutput(
       long id,
       Component component,
+      @OutputUnitType int outputType,
       @Nullable String componentKey,
       @Nullable ComponentContext context,
       long hostMarker,
@@ -613,6 +617,7 @@ public class LayoutState
     return new LayoutOutput(
         id,
         component,
+        outputType,
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
         componentKey,
@@ -2082,7 +2087,7 @@ public class LayoutState
 
   private static long addTypeAndComponentTreeToId(
       int id, @OutputUnitType int type, int componentTreeId) {
-    return (long) id | 1L << (type + 32) | ((long) componentTreeId) << (32 + MAX_TYPE + 1);
+    return (long) id | ((long) type) << 32 | ((long) componentTreeId) << 35;
   }
 
   @Nullable

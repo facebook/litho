@@ -120,6 +120,7 @@ public class LithoMountData {
         new LayoutOutput(
             ROOT_HOST_ID,
             HostComponent.create(),
+            OutputUnitType.HOST,
             null,
             viewNodeInfo,
             null,
