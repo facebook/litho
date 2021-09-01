@@ -74,6 +74,7 @@ import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.TestNullLayoutComponent;
 import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.Function;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import org.junit.After;
@@ -749,8 +750,8 @@ public class LayoutStateCalculateTest {
         .isEqualTo(layoutState.getMountableOutputCount());
 
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      assertThat(getLayoutOutput(sameComponentLayoutState.getMountableOutputAt(i)).getId())
-          .isEqualTo(getLayoutOutput(layoutState.getMountableOutputAt(i)).getId());
+      assertThat(sameComponentLayoutState.getMountableOutputAt(i).getRenderUnit().getId())
+          .isEqualTo(layoutState.getMountableOutputAt(i).getRenderUnit().getId());
     }
   }
 
@@ -853,8 +854,8 @@ public class LayoutStateCalculateTest {
         .isEqualTo(layoutState.getMountableOutputCount());
 
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      assertThat(getLayoutOutput(sameComponentLayoutState.getMountableOutputAt(i)).getId())
-          .isEqualTo(getLayoutOutput(layoutState.getMountableOutputAt(i)).getId());
+      assertThat(sameComponentLayoutState.getMountableOutputAt(i).getRenderUnit().getId())
+          .isEqualTo(layoutState.getMountableOutputAt(i).getRenderUnit().getId());
     }
   }
 
@@ -900,10 +901,10 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY));
 
-    assertThat(getLayoutOutput(layoutState2.getMountableOutputAt(0)).getId())
-        .isEqualTo(getLayoutOutput(layoutState1.getMountableOutputAt(0)).getId());
-    assertThat(getLayoutOutput(layoutState2.getMountableOutputAt(1)).getId())
-        .isEqualTo(getLayoutOutput(layoutState1.getMountableOutputAt(1)).getId());
+    assertThat(layoutState2.getMountableOutputAt(0).getRenderUnit().getId())
+        .isEqualTo(layoutState1.getMountableOutputAt(0).getRenderUnit().getId());
+    assertThat(layoutState2.getMountableOutputAt(1).getRenderUnit().getId())
+        .isEqualTo(layoutState1.getMountableOutputAt(1).getRenderUnit().getId());
     assertThat(layoutState1.getMountableOutputCount()).isEqualTo(3);
     assertThat(layoutState2.getMountableOutputCount()).isEqualTo(4);
   }
@@ -951,8 +952,8 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(350, EXACTLY),
             makeSizeSpec(20, EXACTLY));
 
-    assertThat(getLayoutOutput(layoutState1.getMountableOutputAt(1)).getId())
-        .isNotEqualTo(getLayoutOutput(layoutState2.getMountableOutputAt(1)).getId());
+    assertThat(layoutState1.getMountableOutputAt(1).getRenderUnit().getId())
+        .isNotEqualTo(layoutState2.getMountableOutputAt(1).getRenderUnit().getId());
   }
 
   @Test
@@ -1202,8 +1203,8 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
-    final long hostMarkerRoot = getLayoutOutput(layoutState.getMountableOutputAt(0)).getId();
-    final long hostMarkerOne = getLayoutOutput(layoutState.getMountableOutputAt(1)).getId();
+    final long hostMarkerRoot = layoutState.getMountableOutputAt(0).getRenderUnit().getId();
+    final long hostMarkerOne = layoutState.getMountableOutputAt(1).getRenderUnit().getId();
 
     // First output is the inner host for the click handler
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
@@ -1397,12 +1398,14 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final LayoutOutput rootOutput = getLayoutOutput(layoutState.getMountableOutputAt(0));
-    final LayoutOutput hostOutput = getLayoutOutput(layoutState.getMountableOutputAt(1));
-    final LayoutOutput drawableOutput = getLayoutOutput(layoutState.getMountableOutputAt(2));
+    final RenderTreeNode rootOutput = layoutState.getMountableOutputAt(0);
+    final RenderTreeNode hostOutput = layoutState.getMountableOutputAt(1);
+    final RenderTreeNode drawableOutput = layoutState.getMountableOutputAt(2);
 
-    assertThat(hostOutput.getHostMarker()).isEqualTo(rootOutput.getId());
-    assertThat(drawableOutput.getHostMarker()).isEqualTo(hostOutput.getId());
+    assertThat(hostOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rootOutput.getRenderUnit().getId());
+    assertThat(drawableOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(hostOutput.getRenderUnit().getId());
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1733,28 +1736,35 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(10);
 
-    final LayoutOutput rootOutput = getLayoutOutput(layoutState.getMountableOutputAt(0));
-    final LayoutOutput rowOneOutput = getLayoutOutput(layoutState.getMountableOutputAt(1));
-    final LayoutOutput drawableOnetOutput = getLayoutOutput(layoutState.getMountableOutputAt(2));
-    final LayoutOutput drawableTwoHostOutput = getLayoutOutput(layoutState.getMountableOutputAt(3));
-    final LayoutOutput drawableTwoOutput = getLayoutOutput(layoutState.getMountableOutputAt(4));
-    final LayoutOutput rowTwoOutput = getLayoutOutput(layoutState.getMountableOutputAt(5));
-    final LayoutOutput drawableThreeHostOutput =
-        getLayoutOutput(layoutState.getMountableOutputAt(6));
-    final LayoutOutput drawableThreeOutput = getLayoutOutput(layoutState.getMountableOutputAt(7));
-    final LayoutOutput drawableFourHostOutput =
-        getLayoutOutput(layoutState.getMountableOutputAt(8));
-    final LayoutOutput drawableFourOutput = getLayoutOutput(layoutState.getMountableOutputAt(9));
+    final RenderTreeNode rootOutput = layoutState.getMountableOutputAt(0);
+    final RenderTreeNode rowOneOutput = layoutState.getMountableOutputAt(1);
+    final RenderTreeNode drawableOnetOutput = layoutState.getMountableOutputAt(2);
+    final RenderTreeNode drawableTwoHostOutput = layoutState.getMountableOutputAt(3);
+    final RenderTreeNode drawableTwoOutput = layoutState.getMountableOutputAt(4);
+    final RenderTreeNode rowTwoOutput = layoutState.getMountableOutputAt(5);
+    final RenderTreeNode drawableThreeHostOutput = layoutState.getMountableOutputAt(6);
+    final RenderTreeNode drawableThreeOutput = layoutState.getMountableOutputAt(7);
+    final RenderTreeNode drawableFourHostOutput = layoutState.getMountableOutputAt(8);
+    final RenderTreeNode drawableFourOutput = layoutState.getMountableOutputAt(9);
 
-    assertThat(rowOneOutput.getHostMarker()).isEqualTo(rootOutput.getId());
-    assertThat(drawableOnetOutput.getHostMarker()).isEqualTo(rowOneOutput.getId());
-    assertThat(drawableTwoHostOutput.getHostMarker()).isEqualTo(rowOneOutput.getId());
-    assertThat(drawableTwoOutput.getHostMarker()).isEqualTo(drawableTwoHostOutput.getId());
-    assertThat(rowTwoOutput.getHostMarker()).isEqualTo(rowOneOutput.getId());
-    assertThat(drawableThreeHostOutput.getHostMarker()).isEqualTo(rowTwoOutput.getId());
-    assertThat(drawableThreeOutput.getHostMarker()).isEqualTo(drawableThreeHostOutput.getId());
-    assertThat(drawableFourHostOutput.getHostMarker()).isEqualTo(rowTwoOutput.getId());
-    assertThat(drawableFourOutput.getHostMarker()).isEqualTo(drawableFourHostOutput.getId());
+    assertThat(rowOneOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rootOutput.getRenderUnit().getId());
+    assertThat(drawableOnetOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rowOneOutput.getRenderUnit().getId());
+    assertThat(drawableTwoHostOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rowOneOutput.getRenderUnit().getId());
+    assertThat(drawableTwoOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(drawableTwoHostOutput.getRenderUnit().getId());
+    assertThat(rowTwoOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rowOneOutput.getRenderUnit().getId());
+    assertThat(drawableThreeHostOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rowTwoOutput.getRenderUnit().getId());
+    assertThat(drawableThreeOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(drawableThreeHostOutput.getRenderUnit().getId());
+    assertThat(drawableFourHostOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rowTwoOutput.getRenderUnit().getId());
+    assertThat(drawableFourOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(drawableFourHostOutput.getRenderUnit().getId());
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1821,21 +1831,27 @@ public class LayoutStateCalculateTest {
     // getMountableOutputAt(6) = drawable two host
     // getMountableOutputAt(7) = drawable two
 
-    final LayoutOutput inlineLayoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(0));
-    final LayoutOutput rootHostOutput = getLayoutOutput(layoutState.getMountableOutputAt(1));
-    final LayoutOutput drawableZeroOutput = getLayoutOutput(layoutState.getMountableOutputAt(2));
-    final LayoutOutput drawableOneHostOutput = getLayoutOutput(layoutState.getMountableOutputAt(3));
-    final LayoutOutput drawableOneOutput = getLayoutOutput(layoutState.getMountableOutputAt(4));
-    final LayoutOutput rowOutput = getLayoutOutput(layoutState.getMountableOutputAt(5));
-    final LayoutOutput drawableTwoHostOutput = getLayoutOutput(layoutState.getMountableOutputAt(6));
-    final LayoutOutput drawableTwoOutput = getLayoutOutput(layoutState.getMountableOutputAt(7));
+    final RenderTreeNode inlineLayoutOutput = layoutState.getMountableOutputAt(0);
+    final RenderTreeNode rootHostOutput = layoutState.getMountableOutputAt(1);
+    final RenderTreeNode drawableZeroOutput = layoutState.getMountableOutputAt(2);
+    final RenderTreeNode drawableOneHostOutput = layoutState.getMountableOutputAt(3);
+    final RenderTreeNode drawableOneOutput = layoutState.getMountableOutputAt(4);
+    final RenderTreeNode rowOutput = layoutState.getMountableOutputAt(5);
+    final RenderTreeNode drawableTwoHostOutput = layoutState.getMountableOutputAt(6);
+    final RenderTreeNode drawableTwoOutput = layoutState.getMountableOutputAt(7);
 
-    assertThat(drawableZeroOutput.getHostMarker()).isEqualTo(rootHostOutput.getId());
-    assertThat(drawableOneHostOutput.getHostMarker()).isEqualTo(rootHostOutput.getId());
-    assertThat(drawableOneOutput.getHostMarker()).isEqualTo(drawableOneHostOutput.getId());
-    assertThat(rowOutput.getHostMarker()).isEqualTo(rootHostOutput.getId());
-    assertThat(drawableTwoHostOutput.getHostMarker()).isEqualTo(rowOutput.getId());
-    assertThat(drawableTwoOutput.getHostMarker()).isEqualTo(drawableTwoHostOutput.getId());
+    assertThat(drawableZeroOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rootHostOutput.getRenderUnit().getId());
+    assertThat(drawableOneHostOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rootHostOutput.getRenderUnit().getId());
+    assertThat(drawableOneOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(drawableOneHostOutput.getRenderUnit().getId());
+    assertThat(rowOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rootHostOutput.getRenderUnit().getId());
+    assertThat(drawableTwoHostOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(rowOutput.getRenderUnit().getId());
+    assertThat(drawableTwoOutput.getParent().getRenderUnit().getId())
+        .isEqualTo(drawableTwoHostOutput.getRenderUnit().getId());
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1847,21 +1863,21 @@ public class LayoutStateCalculateTest {
     assertThat(getComponentAt(layoutState, 7)).isInstanceOf(TestDrawableComponent.class);
 
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-        .isEqualTo(inlineLayoutOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(inlineLayoutOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-        .isEqualTo(rootHostOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(rootHostOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
-        .isEqualTo(drawableZeroOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(drawableZeroOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO)
-        .isEqualTo(drawableOneHostOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(drawableOneHostOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO)
-        .isEqualTo(drawableOneOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(drawableOneOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
-        .isEqualTo(rowOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(rowOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES)
-        .isEqualTo(drawableTwoHostOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(drawableTwoHostOutput).getImportantForAccessibility());
     assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES)
-        .isEqualTo(drawableTwoOutput.getImportantForAccessibility());
+        .isEqualTo(getLayoutOutput(drawableTwoOutput).getImportantForAccessibility());
   }
 
   @Test

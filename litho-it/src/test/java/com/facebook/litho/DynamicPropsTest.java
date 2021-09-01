@@ -326,12 +326,12 @@ public class DynamicPropsTest {
 
       if (mountItem != null) {
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
-        if (text1HostId == layoutOutput.getId()) {
+        if (text1HostId == MountItem.getId(mountItem)) {
           text1HostComponent = (HostComponent) layoutOutput.getComponent();
           text1Host = (ComponentHost) mountItem.getContent();
         }
 
-        if (text2HostId == layoutOutput.getId()) {
+        if (text2HostId == MountItem.getId(mountItem)) {
           text2HostComponent = (HostComponent) layoutOutput.getComponent();
           text2Host = (ComponentHost) mountItem.getContent();
         }
@@ -356,12 +356,12 @@ public class DynamicPropsTest {
 
       if (mountItem != null) {
         final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(mountItem);
-        if (text1HostId == layoutOutput.getId()) {
+        if (text1HostId == MountItem.getId(mountItem)) {
           stateUpdateText1HostComponent = (HostComponent) layoutOutput.getComponent();
           stateUpdateText1Host = (ComponentHost) mountItem.getContent();
         }
 
-        if (text2HostId == layoutOutput.getId()) {
+        if (text2HostId == MountItem.getId(mountItem)) {
           stateUpdateText2HostComponent = (HostComponent) layoutOutput.getComponent();
         }
       }

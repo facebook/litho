@@ -349,8 +349,8 @@ public class TreeDiffingTest {
     assertThat(layoutState.getMountableOutputCount())
         .isEqualTo(prevLayoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
-      assertThat(getLayoutOutput(layoutState.getMountableOutputAt(i)).getId())
-          .isEqualTo(getLayoutOutput(prevLayoutState.getMountableOutputAt(i)).getId());
+      assertThat(layoutState.getMountableOutputAt(i).getRenderUnit().getId())
+          .isEqualTo(prevLayoutState.getMountableOutputAt(i).getRenderUnit().getId());
     }
   }
 
@@ -397,9 +397,9 @@ public class TreeDiffingTest {
     assertNotEquals(
         prevLayoutState.getMountableOutputCount(), layoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
-      assertThat(getLayoutOutput(layoutState.getMountableOutputAt(i)).getId())
+      assertThat(layoutState.getMountableOutputAt(i).getRenderUnit().getId())
           .describedAs("Output " + i)
-          .isEqualTo(getLayoutOutput(prevLayoutState.getMountableOutputAt(i)).getId());
+          .isEqualTo(prevLayoutState.getMountableOutputAt(i).getRenderUnit().getId());
     }
   }
 
