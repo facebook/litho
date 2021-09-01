@@ -17,6 +17,7 @@
 package com.facebook.samples.litho.java.lifecycle;
 
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_ATTACHED;
+import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CALCULATE_CACHED_VALUE;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CREATE_INITIAL_STATE;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CREATE_LAYOUT;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CREATE_TRANSITION;
@@ -37,8 +38,10 @@ import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
@@ -97,13 +100,25 @@ class LifecycleDelegateComponentSpec {
     return sDummyTreeProp;
   }
 
+  @OnCalculateCachedValue(name = "cachedValue")
+  static DummyCachedValue onCalculateChild(
+      ComponentContext c,
+      @Prop String id,
+      @Prop(optional = true) DelegateListener delegateListener,
+      @Prop(optional = true) DelegateListener consoleDelegateListener) {
+    onDelegateMethodCalled(
+        delegateListener, consoleDelegateListener, ON_CALCULATE_CACHED_VALUE, id);
+    return new DummyCachedValue();
+  }
+
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext c,
       @Prop String id,
       @Prop(optional = true) DelegateListener delegateListener,
       @Prop(optional = true) DelegateListener consoleDelegateListener,
-      @State Integer colorIndex) {
+      @State Integer colorIndex,
+      @CachedValue DummyCachedValue cachedValue) {
     onDelegateMethodCalled(delegateListener, consoleDelegateListener, ON_CREATE_LAYOUT, id);
 
     return Column.create(c)
@@ -262,4 +277,6 @@ class LifecycleDelegateComponentSpec {
   }
 
   static class DummyTreeProp {}
+
+  static class DummyCachedValue {}
 }

@@ -19,6 +19,7 @@ package com.facebook.samples.litho.java.lifecycle;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_ATTACHED;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_BIND;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_BOUNDS_DEFINED;
+import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CALCULATE_CACHED_VALUE;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CREATE_INITIAL_STATE;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CREATE_LAYOUT;
 import static com.facebook.samples.litho.java.lifecycle.DelegateListener.ON_CREATE_TRANSITION;
@@ -88,6 +89,9 @@ public class LifecycleDelegateLog {
         break;
       case ON_UNMOUNT:
         log = "onUnmount";
+        break;
+      case ON_CALCULATE_CACHED_VALUE:
+        log = "onCalculateCachedValue";
         break;
       default:
         log = "invalid type=" + type;

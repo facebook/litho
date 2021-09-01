@@ -32,6 +32,7 @@ interface DelegateListener {
   int ON_BIND = 12;
   int ON_UNBIND = 13;
   int ON_UNMOUNT = 14;
+  int ON_CALCULATE_CACHED_VALUE = 15;
 
   void onDelegateMethodCalled(int type, Thread thread, long timestamp, String id);
 
