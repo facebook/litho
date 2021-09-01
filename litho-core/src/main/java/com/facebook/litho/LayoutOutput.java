@@ -52,20 +52,22 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   private final @Nullable NodeInfo mNodeInfo;
   private final @Nullable ViewNodeInfo mViewNodeInfo;
-  private @Nullable DebugHierarchy.Node mHierarchy;
+  private @Nullable DebugHierarchy.Node mHierarchy; // TODO: remove
   private final Component mComponent;
-  private final Rect mBounds;
-  final int mHostTranslationX;
-  final int mHostTranslationY;
+  private final Rect mBounds; // TODO: remove
+  final int mHostTranslationX; // TODO: remove
+  final int mHostTranslationY; // TODO: remove
   private final int mFlags;
 
   private final int mImportantForAccessibility;
   private final @Nullable TransitionId mTransitionId;
-  private final long mHostMarker;
+  private final long mHostMarker; // TODO: remove
 
-  private final long mId;
-  private final int mIndex;
+  private final long mId; // TODO: remove
+  private final int mIndex; // TODO: remove
   private final int mUpdateState;
+
+  private final LithoRenderUnit mRenderUnit; // TODO: remove
 
   public LayoutOutput(
       final long id,
@@ -104,6 +106,9 @@ class LayoutOutput implements Cloneable, AnimatableItem {
             : importantForAccessibility;
     mTransitionId = transitionId;
     mUpdateState = updateState;
+
+    // Initialise the RenderUnit only after completely initialising this LayoutOutput.
+    mRenderUnit = new LithoRenderUnit(this);
   }
 
   Component getComponent() {
@@ -247,7 +252,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
     return new RenderTreeNode(
         parent,
-        new LithoRenderUnit(output),
+        output.mRenderUnit,
         context != null
             ? context.useStatelessComponent() ? context.getScopedComponentInfo() : context
             : null,
