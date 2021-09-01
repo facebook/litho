@@ -41,6 +41,7 @@ import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
+import static com.facebook.litho.OutputUnitType.MAX_TYPE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
@@ -54,6 +55,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
@@ -312,7 +314,7 @@ public class LayoutState
 
     final long newId =
         layoutState.calculateLayoutOutputId(
-            component, layoutState.mCurrentLevel, OutputUnitType.CONTENT, previousId);
+            component, componentKey, layoutState.mCurrentLevel, OutputUnitType.CONTENT, previousId);
 
     return createLayoutOutput(
         newId,
@@ -411,7 +413,11 @@ public class LayoutState
     } else {
       id =
           layoutState.calculateLayoutOutputId(
-              hostComponent, layoutState.mCurrentLevel, OutputUnitType.HOST, -1);
+              hostComponent,
+              node.getTailComponentKey(),
+              layoutState.mCurrentLevel,
+              OutputUnitType.HOST,
+              -1);
       updateState = LayoutOutput.STATE_UNKNOWN;
     }
 
@@ -451,6 +457,7 @@ public class LayoutState
   /* TODO: (T81557408) Fix @Nullable issue */
   private static LayoutOutput createDrawableLayoutOutput(
       Component component,
+      String componentKey,
       LayoutState layoutState,
       LithoLayoutResult result,
       InternalNode node,
@@ -464,7 +471,7 @@ public class LayoutState
 
     final long id =
         layoutState.calculateLayoutOutputId(
-            component, layoutState.mCurrentLevel, outputType, previousId);
+            component, componentKey, layoutState.mCurrentLevel, outputType, previousId);
 
     return createLayoutOutput(
         id,
@@ -1312,6 +1319,7 @@ public class LayoutState
         addDrawableLayoutOutput(
             parent,
             drawableComponent,
+            node.getTailComponentKey(),
             layoutState,
             hierarchy,
             result,
@@ -1415,6 +1423,7 @@ public class LayoutState
   private static LayoutOutput addDrawableLayoutOutput(
       final @Nullable RenderTreeNode parent,
       Component drawableComponent,
+      @Nullable String ownerComponentKey, // the key of the component that owns this bg/fg/etc
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
       LithoLayoutResult result,
@@ -1442,6 +1451,7 @@ public class LayoutState
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
             drawableComponent,
+            ownerComponentKey,
             layoutState,
             result,
             node,
@@ -2047,13 +2057,32 @@ public class LayoutState
   }
 
   private long calculateLayoutOutputId(
-      Component component, int level, @OutputUnitType int type, long previousId) {
-    if (mLayoutStateOutputIdCalculator == null) {
-      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
-    }
+      Component component,
+      @Nullable String componentKey,
+      int level,
+      @OutputUnitType int type,
+      long previousId) {
+    final ComponentTree componentTree =
+        Preconditions.checkNotNull(
+            Preconditions.checkNotNull(mLayoutStateContext).getComponentTree());
+    if (componentTree.useRenderUnitIdMap()) {
+      return addTypeAndComponentTreeToId(
+          componentTree.getRenderUnitIdMap().getId(Preconditions.checkNotNull(componentKey)),
+          type,
+          componentTree.mId);
+    } else {
+      if (mLayoutStateOutputIdCalculator == null) {
+        mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+      }
 
-    return mLayoutStateOutputIdCalculator.calculateLayoutOutputId(
-        component, level, type, previousId);
+      return mLayoutStateOutputIdCalculator.calculateLayoutOutputId(
+          component, level, type, previousId);
+    }
+  }
+
+  private static long addTypeAndComponentTreeToId(
+      int id, @OutputUnitType int type, int componentTreeId) {
+    return (long) id | 1L << (type + 32) | ((long) componentTreeId) << (32 + MAX_TYPE + 1);
   }
 
   @Nullable

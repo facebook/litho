@@ -34,4 +34,5 @@ public @interface OutputUnitType {
   int FOREGROUND = 2;
   int HOST = 3;
   int BORDER = 4;
+  int MAX_TYPE = BORDER;
 }

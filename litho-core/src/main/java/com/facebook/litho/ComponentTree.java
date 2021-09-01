@@ -115,6 +115,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private final boolean mReuseInternalNodes;
   private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseInputOnlyInternalNodes;
+  private final boolean mUseRenderUnitIdMap = ComponentsConfiguration.useRenderUnitIdMap;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @GuardedBy("this")
@@ -132,6 +133,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private final @RecyclingMode int mRecyclingMode;
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
+  private final RenderUnitIdMap mRenderUnitIdMap = new RenderUnitIdMap();
 
   @Override
   public void onMovedToState(LithoLifecycle state) {
@@ -193,6 +195,14 @@ public class ComponentTree implements LithoLifecycleListener {
 
   public boolean isLayoutCachingEnabled() {
     return mIsLayoutCachingEnabled;
+  }
+
+  boolean useRenderUnitIdMap() {
+    return mUseRenderUnitIdMap;
+  }
+
+  RenderUnitIdMap getRenderUnitIdMap() {
+    return mRenderUnitIdMap;
   }
 
   public interface MeasureListener {

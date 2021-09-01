@@ -87,22 +87,36 @@ public class MountStateRemountTest {
     final TestComponent component3 = create(mContext).build();
     final TestComponent component4 = create(mContext).build();
 
-    final LithoView lithoView =
-        mountComponent(
-            mContext, Column.create(mContext).child(component1).child(component2).build());
+    mLithoViewRule
+        .setRoot(
+            Column.create(mContext)
+                .widthPx(100)
+                .heightPx(100)
+                .child(component1)
+                .child(component2)
+                .build())
+        .measure()
+        .layout()
+        .attachToWindow();
 
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    mountComponent(
-        mContext, lithoView, Column.create(mContext).child(component3).child(component4).build());
+    mLithoViewRule.setRoot(
+        Column.create(mContext)
+            .widthPx(100)
+            .heightPx(100)
+            .child(component3)
+            .child(component4)
+            .build());
 
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
     assertThat(component3.isMounted()).isFalse();
     assertThat(component4.isMounted()).isFalse();
 
-    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
+    final MountDelegateTarget mountDelegateTarget =
+        mLithoViewRule.getLithoView().getMountDelegateTarget();
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
@@ -194,17 +208,25 @@ public class MountStateRemountTest {
     final TestComponent component3 = create(mContext).build();
     final TestComponent component4 = create(mContext).build();
 
-    final LithoView lithoView =
-        mountComponent(
-            mContext, Column.create(mContext).child(component1).child(component2).build());
+    mLithoViewRule
+        .setRoot(
+            Column.create(mContext)
+                .widthPx(100)
+                .heightPx(100)
+                .child(component1)
+                .child(component2)
+                .build())
+        .measure()
+        .layout()
+        .attachToWindow();
 
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    mountComponent(
-        mContext,
-        lithoView,
+    mLithoViewRule.setRoot(
         Column.create(mContext)
+            .widthPx(100)
+            .heightPx(100)
             .child(component3)
             .child(Column.create(mContext).wrapInView().child(component4))
             .build());
