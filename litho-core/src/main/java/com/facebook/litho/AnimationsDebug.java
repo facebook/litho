@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.RenderTreeNode;
 
 /** Utilities for animations debug. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -47,13 +48,14 @@ public class AnimationsDebug {
 
     if (animationLockedIndices != null) {
       for (int i = 0; i < animationLockedIndices.length; i++) {
+        final RenderTreeNode node = layoutState.getMountableOutputAt(i);
         final LayoutOutput output = getLayoutOutput(layoutState.getMountableOutputAt(i));
         Log.d(
             TAG,
             ""
                 + i
                 + " ["
-                + output.getId()
+                + node.getRenderUnit().getId()
                 + "] ("
                 + output.getTransitionId()
                 + ") host => ("

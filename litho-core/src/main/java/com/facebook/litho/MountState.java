@@ -1025,7 +1025,7 @@ class MountState implements MountDelegateTarget {
       final RenderTreeNode node, final LayoutOutput layoutOutput, final MountItem item) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
-    if (layoutOutput.getId() == ROOT_HOST_ID) {
+    if (node.getRenderUnit().getId() == ROOT_HOST_ID) {
       return;
     }
 
@@ -1073,7 +1073,7 @@ class MountState implements MountDelegateTarget {
     }
 
     for (int i = 0; i < outputCount; i++) {
-      mLayoutOutputsIds[i] = getLayoutOutput(layoutState.getMountableOutputAt(i)).getId();
+      mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getRenderUnit().getId();
     }
 
     if (isTracing) {
@@ -1198,7 +1198,7 @@ class MountState implements MountDelegateTarget {
     // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
     if (isHostSpec(component)) {
       ComponentHost componentHost = (ComponentHost) content;
-      registerHost(layoutOutput.getId(), componentHost);
+      registerHost(node.getRenderUnit().getId(), componentHost);
     }
 
     // 4. Mount the content into the selected host.
@@ -2284,7 +2284,7 @@ class MountState implements MountDelegateTarget {
   @Override
   public void unbindMountItem(MountItem mountItem) {
     final LayoutOutput output = getLayoutOutput(mountItem);
-    final long layoutOutputId = output.getId();
+
     maybeUnsetViewAttributes(mountItem);
 
     unbindAndUnmountLifecycle(mountItem);
@@ -2374,30 +2374,6 @@ class MountState implements MountDelegateTarget {
 
   public androidx.collection.LongSparseArray<MountItem> getIndexToItemMap() {
     return mIndexToItemMap;
-  }
-
-  private static int findLastDescendantIndex(LayoutState layoutState, int index) {
-    final LayoutOutput host = getLayoutOutput(layoutState.getMountableOutputAt(index));
-    final long hostId = host.getId();
-
-    for (int i = index + 1, size = layoutState.getMountableOutputCount(); i < size; i++) {
-      final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
-
-      // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
-      // reach the root, then it's not a descendant and we can stop.
-      long curentHostId = layoutOutput.getHostMarker();
-      while (curentHostId != hostId) {
-        if (curentHostId == ROOT_HOST_ID) {
-          return i - 1;
-        }
-
-        final int parentIndex = layoutState.getPositionForId(curentHostId);
-        final LayoutOutput parent = getLayoutOutput(layoutState.getMountableOutputAt(parentIndex));
-        curentHostId = parent.getHostMarker();
-      }
-    }
-
-    return layoutState.getMountableOutputCount() - 1;
   }
 
   public void clearLastMountedTree() {
@@ -2615,7 +2591,7 @@ class MountState implements MountDelegateTarget {
                   .bottom) {
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
-        final long id = getLayoutOutput(node).getId();
+        final long id = node.getRenderUnit().getId();
         final int layoutOutputIndex = layoutState.getPositionForId(id);
         if (!isAnimationLocked(node)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
@@ -2633,11 +2609,14 @@ class MountState implements MountDelegateTarget {
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
         final LayoutOutput layoutOutput = getLayoutOutput(node);
-        final int layoutOutputIndex = layoutState.getPositionForId(layoutOutput.getId());
+        final int layoutOutputIndex = layoutState.getPositionForId(node.getRenderUnit().getId());
         if (getItemAt(layoutOutputIndex) == null) {
           mountLayoutOutput(
-              layoutState.getPositionForId(layoutOutput.getId()), node, layoutOutput, layoutState);
-          mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
+              layoutState.getPositionForId(node.getRenderUnit().getId()),
+              node,
+              layoutOutput,
+              layoutState);
+          mComponentIdsMountedInThisFrame.add(node.getRenderUnit().getId());
         }
       }
     }
@@ -2655,11 +2634,14 @@ class MountState implements MountDelegateTarget {
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
         final LayoutOutput layoutOutput = getLayoutOutput(node);
-        final int layoutOutputIndex = layoutState.getPositionForId(layoutOutput.getId());
+        final int layoutOutputIndex = layoutState.getPositionForId(node.getRenderUnit().getId());
         if (getItemAt(layoutOutputIndex) == null) {
           mountLayoutOutput(
-              layoutState.getPositionForId(layoutOutput.getId()), node, layoutOutput, layoutState);
-          mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
+              layoutState.getPositionForId(node.getRenderUnit().getId()),
+              node,
+              layoutOutput,
+              layoutState);
+          mComponentIdsMountedInThisFrame.add(node.getRenderUnit().getId());
         }
         mPreviousTopsIndex++;
       }
@@ -2673,7 +2655,7 @@ class MountState implements MountDelegateTarget {
         mPreviousTopsIndex--;
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
-        final long id = getLayoutOutput(node).getId();
+        final long id = node.getRenderUnit().getId();
         final int layoutOutputIndex = layoutState.getPositionForId(id);
         if (!isAnimationLocked(node)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);

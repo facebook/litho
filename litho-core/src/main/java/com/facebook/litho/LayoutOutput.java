@@ -241,7 +241,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   @Override
   public int getOutputType() {
-    return LayoutStateOutputIdCalculator.getTypeFromId(getId());
+    return LayoutStateOutputIdCalculator.getTypeFromId(mId);
   }
 
   static RenderTreeNode create(

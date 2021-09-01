@@ -108,8 +108,7 @@ public class EndToEndTestingExtension
   private @Nullable ComponentHost getHost(TestOutput testOutput) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = mInput.getMountableOutputAt(i);
-      final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(renderTreeNode);
-      if (layoutOutput.getId() == testOutput.getLayoutOutputId()) {
+      if (renderTreeNode.getRenderUnit().getId() == testOutput.getLayoutOutputId()) {
         final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
         if (hostTreeNode == null) {
           return null;

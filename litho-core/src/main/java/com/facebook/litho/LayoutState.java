@@ -920,7 +920,7 @@ public class LayoutState
       final LayoutOutput output = LayoutOutput.getLayoutOutput(parent);
 
       layoutState.mCurrentLevel++;
-      layoutState.mCurrentHostMarker = output.getId();
+      layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
       layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
     }
 
@@ -1856,7 +1856,7 @@ public class LayoutState
       addRootHostLayoutOutput(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
       layoutState.mCurrentLevel++;
-      layoutState.mCurrentHostMarker = LayoutOutput.getLayoutOutput(parent).getId();
+      layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
       layoutState.mCurrentHostOutputPosition = 0;
     }
 
@@ -2422,12 +2422,13 @@ public class LayoutState
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
 
+    final long id = node.getRenderUnit().getId();
     layoutState.mMountableOutputs.add(node);
-    layoutState.mIncrementalMountOutputs.put(layoutOutput.getId(), incrementalMountOutput);
+    layoutState.mIncrementalMountOutputs.put(id, incrementalMountOutput);
     layoutState.mMountableOutputTops.add(incrementalMountOutput);
     layoutState.mMountableOutputBottoms.add(incrementalMountOutput);
     if (layoutOutput.getComponent().hasChildLithoViews()) {
-      layoutState.mRenderUnitIdsWhichHostRenderTrees.add(layoutOutput.getId());
+      layoutState.mRenderUnitIdsWhichHostRenderTrees.add(id);
     }
 
     return node;
@@ -2519,12 +2520,13 @@ public class LayoutState
             + "\n";
 
     for (int i = 0; i < getMountableOutputCount(); i++) {
+      final RenderTreeNode node = getMountableOutputAt(i);
       final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(getMountableOutputAt(i));
       res +=
           "  ["
               + i
               + "] id: "
-              + layoutOutput.getId()
+              + node.getRenderUnit().getId()
               + ", host: "
               + layoutOutput.getHostMarker()
               + ", component: "
