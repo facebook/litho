@@ -694,7 +694,10 @@ class Layout {
     if (component != null) {
       component.copyInterStageImpl(
           component.getInterStagePropsContainer(nextLayoutStateContext, componentKey),
-          diffNode.getComponent().getInterStagePropsContainer(diffNode.getComponentContext()));
+          diffNode
+              .getComponent()
+              .getInterStagePropsContainer(
+                  diffNodeLayoutStateContext, diffNode.getComponentGlobalKey()));
     }
 
     result.setCachedMeasuresValid(true);
@@ -815,7 +818,10 @@ class Layout {
 
       try {
         return component.shouldComponentUpdate(
-            diffNode.getComponentContext(), diffNode.getComponent(), scopedContext, component);
+            getDiffNodeScopedContext(layoutStateContext, prevLayoutStateContext, diffNode),
+            diffNode.getComponent(),
+            scopedContext,
+            component);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       }

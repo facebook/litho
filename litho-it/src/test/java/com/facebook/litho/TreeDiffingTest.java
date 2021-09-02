@@ -179,7 +179,7 @@ public class TreeDiffingTest {
     diffNode.setLastWidthSpec(mUnspecifiedSpec);
     diffNode.setLastMeasuredWidth(10);
     diffNode.setLastMeasuredHeight(5);
-    diffNode.setComponent(mLithoViewRule.getContext(), component, "global_key");
+    diffNode.setComponent(component, "global_key");
 
     node.setCachedMeasuresValid(true);
     node.setDiffNode(diffNode);
@@ -203,7 +203,7 @@ public class TreeDiffingTest {
     diffNode.setLastHeightSpec(makeSizeSpec(5, SizeSpec.EXACTLY));
     diffNode.setLastMeasuredWidth(10f);
     diffNode.setLastMeasuredHeight(5f);
-    diffNode.setComponent(mLithoViewRule.getContext(), component, "global_key");
+    diffNode.setComponent(component, "global_key");
 
     node.setCachedMeasuresValid(true);
     node.setDiffNode(diffNode);
