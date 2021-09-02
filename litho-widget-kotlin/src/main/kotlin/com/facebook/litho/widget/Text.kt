@@ -56,8 +56,9 @@ inline fun ComponentScope.Text(
     clipToBounds: Boolean = CLIP_TO_BOUNDS,
     handle: Handle? = null,
     @ColorInt backgroundColor: Int? = null,
+    @ColorInt highlightColor: Int? = null,
     @StyleRes defStyleAttr: Int = 0,
-    @StyleRes defStyleRes: Int = 0
+    @StyleRes defStyleRes: Int = 0,
 ): Text =
     Text.create(context, defStyleAttr, defStyleRes)
         .text(text)
@@ -76,5 +77,6 @@ inline fun ComponentScope.Text(
         .apply { ellipsize?.let { ellipsize(it) } }
         .handle(handle)
         .apply { backgroundColor?.let { backgroundColor(backgroundColor) } }
+        .apply { highlightColor?.let { highlightColor(it) } }
         .kotlinStyle(style)
         .build()
