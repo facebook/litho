@@ -227,7 +227,7 @@ module.exports = {
           ],
           'Experimental': ['mount-extensions'],
           'Additional Resources': ['faq', 'glossary'],
-          'Tools': ['debugging', 'dev-options'],
+          'Tools': ['debugging'],
           'Contributing': [
             'contributing',
             'community-showcase',

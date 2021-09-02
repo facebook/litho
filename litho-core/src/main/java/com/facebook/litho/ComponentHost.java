@@ -744,8 +744,6 @@ public class ComponentHost extends Host implements DisappearingHost {
         ((Drawable) content).draw(canvas);
       }
     }
-
-    DebugDraw.draw(this, canvas);
   }
 
   @Override

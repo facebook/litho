@@ -79,17 +79,11 @@ public class ComponentsConfiguration {
   /** Lightweight tracking of component class hierarchy of MountItems. */
   public static boolean isDebugHierarchyEnabled = false;
 
-  /** Debug option to highlight interactive areas in mounted components. */
-  public static boolean debugHighlightInteractiveBounds = false;
-
   /**
    * LithoView overlay showing whether its ComponentTree was computed on UI thread (red) or bg
    * thread (green).
    */
   public static boolean enableLithoViewDebugOverlay = false;
-
-  /** Debug option to highlight mount bounds of mounted components. */
-  public static boolean debugHighlightMountBounds = false;
 
   /**
    * Populates additional metadata to find mounted components at runtime. Defaults to the presence
