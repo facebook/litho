@@ -22,10 +22,7 @@ import static com.facebook.rendercore.utils.ThreadUtils.assertMainThread;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import com.facebook.rendercore.ErrorReporter;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.HostNotMountedException;
-import com.facebook.rendercore.LogLevel;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -33,7 +30,6 @@ import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
 import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,22 +40,15 @@ import java.util.Set;
 public class IncrementalMountExtension
     extends MountExtension<IncrementalMountExtensionInput, IncrementalMountExtensionState> {
 
-  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension(false);
-  private static final IncrementalMountExtension sInstanceDisableForceAcquireMount =
-      new IncrementalMountExtension(true);
-  private final boolean mDisableForceAcquireHostMount;
+  private static final IncrementalMountExtension sInstance = new IncrementalMountExtension();
 
-  private IncrementalMountExtension(boolean disableForceAcquireHostMount) {
-    mDisableForceAcquireHostMount = disableForceAcquireHostMount;
-  }
-
-  public static IncrementalMountExtension getInstance(boolean disableForceAcquireMount) {
-    return disableForceAcquireMount ? sInstanceDisableForceAcquireMount : sInstance;
+  public static IncrementalMountExtension getInstance() {
+    return sInstance;
   }
 
   @Override
   public IncrementalMountExtensionState createState() {
-    return new IncrementalMountExtensionState(mDisableForceAcquireHostMount);
+    return new IncrementalMountExtensionState();
   }
 
   @Override
@@ -237,143 +226,6 @@ public class IncrementalMountExtension
     return true;
   }
 
-  private static void acquireMountReferenceEnsureHostIsMounted(
-      final Rect localVisibleRect,
-      final ExtensionState<IncrementalMountExtensionState> extensionState,
-      final IncrementalMountOutput output,
-      final boolean isMounting) {
-    if (extensionState.getState().mDisableForceAcquireHostMount) {
-      extensionState.acquireMountReference(output.getId(), isMounting);
-    } else {
-      acquireMountReferenceEnsureHostIsMounted(
-          localVisibleRect, extensionState, output, isMounting, false, null);
-    }
-  }
-
-  private static void acquireMountReferenceEnsureHostIsMounted(
-      final Rect localVisibleRect,
-      final ExtensionState<IncrementalMountExtensionState> extensionState,
-      final IncrementalMountOutput output,
-      final boolean isMounting,
-      final boolean forceAcquiredHostToMount,
-      @Nullable List<String> recursionSource) {
-
-    final IncrementalMountOutput host = output.getHostOutput();
-
-    final boolean ownsHostRef = host == null || extensionState.ownsReference(host.getId());
-    final boolean needsHostMount = !ownsHostRef || !isHostMounted(extensionState, host);
-
-    // If id is ROOT_HOST_ID then already at root host.
-    if (needsHostMount) {
-
-      if (recursionSource == null) {
-        recursionSource = new ArrayList<>();
-      }
-
-      final String errorMessage =
-          getHostNotMountedErrorMessage(localVisibleRect, isMounting, output, host, ownsHostRef);
-
-      // This should not happen, but we won't crash until we understand what's going on here.
-      // We'll force mounting on the host by bypassing ref count instead.
-      if (ownsHostRef) {
-        ErrorReporter.getInstance().report(LogLevel.ERROR, "IncrementalMount", errorMessage);
-      }
-
-      recursionSource.add(errorMessage);
-
-      // If not root host or if no reference was acquired, acquire it.
-      acquireMountReferenceEnsureHostIsMounted(
-          localVisibleRect, extensionState, host, true, ownsHostRef, recursionSource);
-      extensionState.getState().mComponentIdsMountedInThisFrame.add(host.getId());
-    }
-
-    try {
-      if (forceAcquiredHostToMount) {
-        extensionState.getMountDelegate().getMountDelegateTarget().notifyMount(output.getId());
-      } else {
-        extensionState.acquireMountReference(output.getId(), isMounting);
-      }
-    } catch (HostNotMountedException e) {
-      String errorMessage = getHostNotMountedExceptionMessage(e, recursionSource, output, host);
-
-      throw new RuntimeException(errorMessage);
-    }
-  }
-
-  private static boolean isHostMounted(
-      final ExtensionState<IncrementalMountExtensionState> extensionState,
-      final IncrementalMountOutput hostOutput) {
-    return hostOutput == null
-        || extensionState.getMountDelegate().getContentById(hostOutput.getId()) != null;
-  }
-
-  private static String getHostNotMountedExceptionMessage(
-      HostNotMountedException e,
-      List<String> additionalErrorMessages,
-      IncrementalMountOutput output,
-      IncrementalMountOutput host) {
-    String errorMessage = "Failed to mount item with id " + output.getId() + ".";
-    errorMessage += host == null ? " Host is null." : " Host id is " + host.getId() + "\n";
-
-    final StringBuilder additionalMessageBuilder = new StringBuilder();
-    if (additionalErrorMessages != null) {
-      for (String source : additionalErrorMessages) {
-        additionalMessageBuilder.append(source);
-        additionalMessageBuilder.append("\n");
-      }
-    }
-
-    errorMessage += additionalMessageBuilder.toString();
-
-    errorMessage += "MountDelegateTarget mounting info: ";
-    errorMessage +=
-        " renderUnit id "
-            + e.renderUnit.getId()
-            + ", host "
-            + (e.parentRenderUnit == null ? " null " : " id " + e.parentRenderUnit.getId())
-            + "\n";
-    errorMessage += e.getMessage();
-
-    return errorMessage;
-  }
-
-  private static String getHostNotMountedErrorMessage(
-      Rect localVisibleRect,
-      boolean isMounting,
-      IncrementalMountOutput output,
-      IncrementalMountOutput host,
-      boolean ownsHostRef) {
-    return ownsHostRef
-        ? "Forcing acquired host mount in "
-            + localVisibleRect
-            + ", mounting "
-            + isMounting
-            + ". Item:  id = "
-            + output.getId()
-            + ", bounds = "
-            + output.getBounds()
-            + ". Host: id = "
-            + host.getId()
-            + ", originalBounds = "
-            + host.getOriginalBounds()
-            + ", bounds = "
-            + host.getBounds()
-        : "Forcing unaacquired host mount in "
-            + localVisibleRect
-            + ", mounting "
-            + isMounting
-            + " . Item:  id = "
-            + output.getId()
-            + ", bounds = "
-            + output.getBounds()
-            + ". Host: id = "
-            + host.getId()
-            + ", originalBounds = "
-            + host.getOriginalBounds()
-            + ", bounds = "
-            + host.getBounds();
-  }
-
   static void recursivelyNotifyVisibleBoundsChanged(
       final IncrementalMountExtensionInput input, final long id, final Object content) {
     assertMainThread();
@@ -431,8 +283,7 @@ public class IncrementalMountExtension
             || isRootItem(id);
     final boolean hasAcquiredMountRef = extensionState.ownsReference(id);
     if (isMountable && !hasAcquiredMountRef) {
-      acquireMountReferenceEnsureHostIsMounted(
-          localVisibleRect, extensionState, incrementalMountOutput, isMounting);
+      extensionState.acquireMountReference(incrementalMountOutput.getId(), isMounting);
     } else if (!isMountable && hasAcquiredMountRef) {
       extensionState.releaseMountReference(id, isMounting);
     } else if (isMountable && hasAcquiredMountRef && isMounting) {
@@ -493,7 +344,7 @@ public class IncrementalMountExtension
         if (localVisibleRect.bottom
             >= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().top) {
           if (!extensionState.ownsReference(id)) {
-            acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
+            extensionState.acquireMountReference(node.getId(), true);
             state.mComponentIdsMountedInThisFrame.add(id);
             if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
               itemsMounted++;
@@ -519,7 +370,7 @@ public class IncrementalMountExtension
         // Item should still be in the view port.
         if (localVisibleRect.top <= byTopBounds.get(state.mPreviousTopsIndex).getBounds().bottom) {
           if (!extensionState.ownsReference(id)) {
-            acquireMountReferenceEnsureHostIsMounted(localVisibleRect, extensionState, node, true);
+            extensionState.acquireMountReference(node.getId(), true);
             state.mComponentIdsMountedInThisFrame.add(id);
             if (IncrementalMountExtensionConfigs.isDebugLoggingEnabled) {
               itemsMounted++;
@@ -592,11 +443,6 @@ public class IncrementalMountExtension
     }
   }
 
-  private static @Nullable Object getContentWithId(
-      final ExtensionState<IncrementalMountExtensionState> extensionState, final long id) {
-    return getMountTarget(extensionState).getContentById(id);
-  }
-
   @VisibleForTesting
   public static int getPreviousTopsIndex(final IncrementalMountExtensionState state) {
     return state.mPreviousTopsIndex;
@@ -617,14 +463,9 @@ public class IncrementalMountExtension
     private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
     private final Set<Long> mItemsShouldNotNotifyVisibleBoundsChangedOnChildren = new HashSet<>();
     private final HashMap<Long, Object> mMountedOutputIdsWithNestedContent = new HashMap<>(8);
-    private final boolean mDisableForceAcquireHostMount;
 
     private IncrementalMountExtensionInput mInput;
     private int mPreviousTopsIndex;
     private int mPreviousBottomsIndex;
-
-    private IncrementalMountExtensionState(boolean disableForceAcquireHostMount) {
-      mDisableForceAcquireHostMount = disableForceAcquireHostMount;
-    }
   }
 }
