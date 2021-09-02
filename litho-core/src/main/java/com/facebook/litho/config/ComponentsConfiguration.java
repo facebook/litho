@@ -80,12 +80,6 @@ public class ComponentsConfiguration {
   public static boolean isDebugHierarchyEnabled = false;
 
   /**
-   * LithoView overlay showing whether its ComponentTree was computed on UI thread (red) or bg
-   * thread (green).
-   */
-  public static boolean enableLithoViewDebugOverlay = false;
-
-  /**
    * Populates additional metadata to find mounted components at runtime. Defaults to the presence
    * of an
    *
