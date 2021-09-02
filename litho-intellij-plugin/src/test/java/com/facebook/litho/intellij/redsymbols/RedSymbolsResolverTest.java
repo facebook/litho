@@ -51,9 +51,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+@Ignore("t99683002")
 public class RedSymbolsResolverTest extends LithoPluginIntellijTest {
   private static final String RESOLVED_RED_SYMBOLS_KEY = "resolved_red_symbols";
   private Project project;
