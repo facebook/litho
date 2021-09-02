@@ -50,7 +50,7 @@ public class TestLayoutState {
       return root;
     }
 
-    Layout.measure(layoutStateContext, c, root, widthSpec, heightSpec, null, null);
+    Layout.measure(layoutStateContext, c, root, widthSpec, heightSpec, null, null, null);
 
     return root;
   }
