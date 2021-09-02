@@ -22,6 +22,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import com.facebook.litho.drawable.ComparableColorDrawable
 
@@ -89,3 +90,5 @@ fun ComponentScope.drawableColor(@ColorInt color: Long): Drawable =
 @ColorInt
 fun ComponentScope.colorAttr(@AttrRes id: Int, @ColorRes defResId: Int = 0): Int =
     resourceResolver.resolveColorAttr(id, defResId)
+
+fun ComponentScope.intRes(@IntegerRes id: Int): Int = resourceResolver.resolveIntRes(id)
