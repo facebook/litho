@@ -1469,13 +1469,11 @@ public abstract class Component
 
     String globalKey = existingGlobalKey;
 
-    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      if (globalKey == null) {
-        globalKey =
-            ComponentKeyUtils.generateGlobalKey(
-                parentContext, parentContext.getComponentScope(), this);
-        setGlobalKey(globalKey);
-      }
+    if (globalKey == null) {
+      globalKey =
+          ComponentKeyUtils.generateGlobalKey(
+              parentContext, parentContext.getComponentScope(), this);
+      setGlobalKey(globalKey);
     }
 
     final ComponentContext scopedContext =

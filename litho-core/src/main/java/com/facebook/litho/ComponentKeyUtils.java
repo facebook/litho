@@ -123,9 +123,7 @@ public class ComponentKeyUtils {
             + childComponent.getSimpleName()
             + " , but parent "
             + parentComponent.getSimpleName()
-            + " has a null global key \"."
-            + " This is most likely a configuration mistake,"
-            + " check the value of ComponentsConfiguration.useGlobalKeys.");
+            + " has a null global key \".");
   }
 
   private static void logDuplicateManualKeyWarning(Component component, String key) {

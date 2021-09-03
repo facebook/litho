@@ -469,7 +469,7 @@ class Layout {
         parent.shouldSkipShallowCopy() ? original : original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
-      if (ComponentsConfiguration.useGlobalKeys && globalKeyToReuse == null) {
+      if (globalKeyToReuse == null) {
         throw new IllegalStateException("Cannot reuse a null global key");
       }
       component.setGlobalKey(globalKeyToReuse);
