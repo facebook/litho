@@ -454,7 +454,7 @@ public final class ComponentTestHelper {
         new ComponentContext(
             ComponentContext.withComponentTree(new ComponentContext(context), tree));
 
-    final LayoutState layoutState = new LayoutState(c);
+    final LayoutState layoutState = LayoutState.createTestInstance(c);
     final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, tree);
     Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
     c.setLayoutStateContext(layoutStateContext); // TODO: to be deleted

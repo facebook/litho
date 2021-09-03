@@ -145,7 +145,7 @@ public class LayoutState
 
   private final ComponentContext mContext;
 
-  private Component mComponent;
+  private final Component mComponent;
 
   private int mWidthSpec;
   private int mHeightSpec;
@@ -230,13 +230,16 @@ public class LayoutState
   // Futures.
   private boolean mIsCommitted;
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public LayoutState(ComponentContext context) {
-    this(context, null);
+  /** @deprecated create a real instance with `calculate` instead */
+  @Deprecated
+  LayoutState(ComponentContext context) {
+    this(context, Column.create(context).build(), null);
   }
 
-  LayoutState(ComponentContext context, final @Nullable LayoutState current) {
+  LayoutState(
+      ComponentContext context, Component rootComponent, final @Nullable LayoutState current) {
     mContext = context;
+    mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mStateHandler = mContext.getStateHandler();
@@ -1580,7 +1583,7 @@ public class LayoutState
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
       }
 
-      layoutState = new LayoutState(c, currentLayoutState);
+      layoutState = new LayoutState(c, component, currentLayoutState);
 
       layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
 
@@ -1608,7 +1611,6 @@ public class LayoutState
           (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
       layoutState.mAccessibilityEnabled =
           AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
-      layoutState.mComponent = component;
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
       layoutState.mRootComponentName = component.getSimpleName();
@@ -2627,5 +2629,14 @@ public class LayoutState
     }
 
     return 0;
+  }
+
+  /**
+   * @deprecated kept around for old code, you should create a real instance instead with
+   *     `calculate`
+   */
+  @Deprecated
+  public static LayoutState createTestInstance(ComponentContext c) {
+    return new LayoutState(c);
   }
 }
