@@ -394,7 +394,7 @@ public class RenderState<State, RenderContext> {
         final Context androidContext,
         final @Nullable RenderContext renderContext,
         final int layoutVersion,
-        final LayoutCache layoutCache,
+        final @Nullable LayoutCache layoutCache,
         final @Nullable RenderCoreExtension<?, ?>[] extensions) {
       this.androidContext = androidContext;
       this.layoutVersion = layoutVersion;

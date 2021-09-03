@@ -32,6 +32,8 @@ import android.os.Build;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderState.LayoutContext;
@@ -40,6 +42,7 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaNode;
 import java.util.List;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class Layout {
 
   static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
@@ -85,7 +88,9 @@ class Layout {
       layout = create(layoutStateContext, c, component, true);
 
       // This needs to finish layout on the UI thread.
-      if (layoutStateContext != null && layoutStateContext.isLayoutInterrupted()) {
+      if (layout != null
+          && layoutStateContext != null
+          && layoutStateContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
@@ -97,7 +102,6 @@ class Layout {
           layoutStateContext.markLayoutUninterruptible();
         }
       }
-
     } else {
       final ComponentContext updatedScopedContext =
           update(layoutStateContext, c, component, true, globalKeyToReuse);
@@ -174,12 +178,6 @@ class Layout {
 
       // 2. Return immediately if cached layout is available.
       if (cached != null) {
-        if (parent.useStatelessComponent()) {
-          final ComponentContext context =
-              cached
-                  .getHeadComponent()
-                  .getScopedContext(layoutStateContext, cached.getHeadComponentKey());
-        }
         return cached;
       }
 
@@ -220,11 +218,13 @@ class Layout {
         final RenderResult renderResult = component.render(c);
         final Component root = renderResult.component;
 
-        // TODO: (T57741374) this step is required because of a bug in redex.
-        if (root == component) {
-          node = root.resolve(layoutStateContext, c);
-        } else if (root != null) {
-          node = create(layoutStateContext, c, root, false);
+        if (root != null) {
+          // TODO: (T57741374) this step is required because of a bug in redex.
+          if (root == component) {
+            node = root.resolve(layoutStateContext, c);
+          } else {
+            node = create(layoutStateContext, c, root, false);
+          }
         } else {
           node = null;
         }
@@ -333,12 +333,12 @@ class Layout {
 
     final InternalNode node = holder.getInternalNode();
     final Component component = node.getTailComponent();
-    final String globalKey = node.getTailComponentKey();
-    final LithoLayoutResult currentLayout = holder.getNestedResult();
-
     if (component == null) {
       throw new IllegalArgumentException("A component is required to resolve a nested tree.");
     }
+
+    final String globalKey = Preconditions.checkNotNull(node.getTailComponentKey());
+    final LithoLayoutResult currentLayout = holder.getNestedResult();
 
     // The resolved layout to return.
     final LithoLayoutResult layout;
@@ -366,9 +366,7 @@ class Layout {
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null
             && currentLayout != NullLayoutResult.INSTANCE
-            && currentLayout
-                .getInternalNode()
-                .getHeadComponent()
+            && Preconditions.checkNotNull(currentLayout.getInternalNode().getHeadComponent())
                 .canUsePreviousLayout(layoutStateContext, parentContext, globalKey)) {
           remeasure(
               layoutStateContext,
@@ -579,12 +577,13 @@ class Layout {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
-      final ComponentContext context =
-          root.getTailComponent().getScopedContext(c, root.getTailComponentKey());
+      final Component tailComponent = Preconditions.checkNotNull(root.getTailComponent());
+      final String tailKey = Preconditions.checkNotNull(root.getTailComponentKey());
+      final ComponentContext context = tailComponent.getScopedContext(c, tailKey);
       for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(c, context, unresolved.get(i));
+        root.child(c, Preconditions.checkNotNull(context), unresolved.get(i));
       }
-      root.getUnresolvedComponents().clear();
+      unresolved.clear();
     }
 
     for (int i = 0, size = root.getChildCount(); i < size; i++) {
@@ -642,7 +641,7 @@ class Layout {
         return;
       }
 
-      if (!hostIsCompatible(layoutNode, diffNode)) {
+      if (diffNode == null || !hostIsCompatible(layoutNode, diffNode)) {
         return;
       }
 
@@ -668,13 +667,16 @@ class Layout {
       }
     } catch (Throwable t) {
       final Component c = layoutNode.getTailComponent();
-      final ComponentContext ct =
-          c.getScopedContext(layoutStateContext, layoutNode.getTailComponentKey());
-      final LithoMetadataExceptionWrapper e = new LithoMetadataExceptionWrapper(ct, t);
       if (c != null) {
+        final ComponentContext ct =
+            c.getScopedContext(
+                layoutStateContext, Preconditions.checkNotNull(layoutNode.getTailComponentKey()));
+        final LithoMetadataExceptionWrapper e = new LithoMetadataExceptionWrapper(ct, t);
         e.addComponentForLayoutStack(c);
+        throw e;
+      } else {
+        throw t;
       }
-      throw e;
     }
   }
 
@@ -686,18 +688,19 @@ class Layout {
   private static void applyDiffNodeToLayoutNode(
       final LayoutStateContext nextLayoutStateContext,
       final LithoLayoutResult result,
-      final LayoutStateContext diffNodeLayoutStateContext,
+      final @Nullable LayoutStateContext diffNodeLayoutStateContext,
       final DiffNode diffNode) {
     final InternalNode layoutNode = result.getInternalNode();
     final Component component = layoutNode.getTailComponent();
     final String componentKey = layoutNode.getTailComponentKey();
     if (component != null) {
       component.copyInterStageImpl(
-          component.getInterStagePropsContainer(nextLayoutStateContext, componentKey),
-          diffNode
-              .getComponent()
+          component.getInterStagePropsContainer(
+              nextLayoutStateContext, Preconditions.checkNotNull(componentKey)),
+          Preconditions.checkNotNull(diffNode.getComponent())
               .getInterStagePropsContainer(
-                  diffNodeLayoutStateContext, diffNode.getComponentGlobalKey()));
+                  Preconditions.checkNotNull(diffNodeLayoutStateContext),
+                  Preconditions.checkNotNull(diffNode.getComponentGlobalKey())));
     }
 
     result.setCachedMeasuresValid(true);
@@ -792,11 +795,7 @@ class Layout {
    * Returns true either if the two nodes have the same Component type or if both don't have a
    * Component.
    */
-  static boolean hostIsCompatible(final InternalNode node, final @Nullable DiffNode diffNode) {
-    if (diffNode == null) {
-      return false;
-    }
-
+  static boolean hostIsCompatible(final InternalNode node, final DiffNode diffNode) {
     return ComponentUtils.isSameComponentType(node.getTailComponent(), diffNode.getComponent());
   }
 
@@ -812,7 +811,7 @@ class Layout {
     final Component component = layoutNode.getTailComponent();
 
     if (component != null) {
-      final String globalKey = layoutNode.getTailComponentKey();
+      final String globalKey = Preconditions.checkNotNull(layoutNode.getTailComponentKey());
       final ComponentContext scopedContext =
           component.getScopedContext(layoutStateContext, globalKey);
 
@@ -823,7 +822,7 @@ class Layout {
             scopedContext,
             component);
       } catch (Exception e) {
-        ComponentUtils.handleWithHierarchy(scopedContext, component, e);
+        ComponentUtils.handleWithHierarchy(Preconditions.checkNotNull(scopedContext), component, e);
       }
     }
 
@@ -831,7 +830,7 @@ class Layout {
   }
 
   /** DiffNode state should be retrieved from the committed LayoutState. */
-  private static ComponentContext getDiffNodeScopedContext(
+  private static @Nullable ComponentContext getDiffNodeScopedContext(
       LayoutStateContext currentLayoutStateContext,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       DiffNode diffNode) {
@@ -861,7 +860,8 @@ class Layout {
       return null;
     }
 
-    return diffNodeComponent.getScopedContext(committedContext, diffNode.getComponentGlobalKey());
+    return diffNodeComponent.getScopedContext(
+        committedContext, Preconditions.checkNotNull(diffNode.getComponentGlobalKey()));
   }
 
   static boolean isLayoutDirectionRTL(final Context context) {

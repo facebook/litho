@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 
 public class ComponentUtils {
 
-  public static boolean isSameComponentType(Component a, Component b) {
+  public static boolean isSameComponentType(@Nullable Component a, @Nullable Component b) {
     if (a == b) {
       return true;
     } else if (a == null || b == null) {

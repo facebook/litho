@@ -206,7 +206,7 @@ public class LayoutStateContext {
     return mCurrentDiffTree;
   }
 
-  void setNestedTreeDiffNode(DiffNode diff) {
+  void setNestedTreeDiffNode(@Nullable DiffNode diff) {
     mHasNestedTreeDiffNodeSet = true;
     mCurrentNestedTreeDiffNode = diff;
   }

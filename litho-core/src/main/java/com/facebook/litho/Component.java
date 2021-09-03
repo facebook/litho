@@ -695,9 +695,9 @@ public abstract class Component
 
   final boolean shouldComponentUpdate(
       final @Nullable ComponentContext previousScopedContext,
-      Component currentComponent,
+      @Nullable Component currentComponent,
       final @Nullable ComponentContext nextScopedContext,
-      Component nextComponent) {
+      @Nullable Component nextComponent) {
     final boolean useStatelessComponent =
         previousScopedContext != null
             ? previousScopedContext.useStatelessComponent()
@@ -1354,8 +1354,8 @@ public abstract class Component
 
   // This will not be needed anymore for stateless components.
   protected void copyInterStageImpl(
-      final InterStagePropsContainer copyIntoInterStagePropsContainer,
-      final InterStagePropsContainer copyFromInterStagePropsContainer) {}
+      final @Nullable InterStagePropsContainer copyIntoInterStagePropsContainer,
+      final @Nullable InterStagePropsContainer copyFromInterStagePropsContainer) {}
 
   protected DynamicValue[] getDynamicProps() {
     return sEmptyArray;
