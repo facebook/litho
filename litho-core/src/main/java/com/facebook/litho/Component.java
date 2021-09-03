@@ -307,7 +307,7 @@ public abstract class Component
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
-      TransitionUtils.setOwnerKey(transition, Component.getGlobalKey(c, ((Component) this)));
+      TransitionUtils.setOwnerKey(transition, Component.getGlobalKey(c, this));
     }
     return transition;
   }
@@ -1121,7 +1121,7 @@ public abstract class Component
 
   @Nullable
   final InternalNode consumeLayoutCreatedInWillRender(
-      final LayoutStateContext layoutStateContext, ComponentContext context) {
+      final @Nullable LayoutStateContext layoutStateContext, @Nullable ComponentContext context) {
     InternalNode layout;
 
     if (context == null || layoutStateContext == null) {

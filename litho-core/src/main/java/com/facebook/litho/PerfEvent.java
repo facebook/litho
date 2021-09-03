@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
+
 /**
  * A logging event created through {@link ComponentsLogger#newPerformanceEvent(ComponentContext,
  * int)} to track performance metrics in the framework.
@@ -32,7 +34,7 @@ public interface PerfEvent {
   int getMarkerId();
 
   /** Adds a key:value annotation to an already active marker. */
-  void markerAnnotate(String annotationKey, String annotationValue);
+  void markerAnnotate(String annotationKey, @Nullable String annotationValue);
 
   /** @see #markerAnnotate(String, String) */
   void markerAnnotate(String annotationKey, double annotationValue);

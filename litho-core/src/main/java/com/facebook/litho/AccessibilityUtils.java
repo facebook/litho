@@ -22,6 +22,7 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import androidx.annotation.Nullable;
 import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class AccessibilityUtils {
     return cachedIsAccessibilityEnabled;
   }
 
-  public static boolean isAccessibilityEnabled(AccessibilityManager manager) {
+  public static boolean isAccessibilityEnabled(@Nullable AccessibilityManager manager) {
     if (!isCachedIsAccessibilityEnabledSet) {
       updateCachedIsAccessibilityEnabled(manager);
     }
@@ -48,7 +49,7 @@ public class AccessibilityUtils {
   }
 
   private static synchronized void updateCachedIsAccessibilityEnabled(
-      AccessibilityManager manager) {
+      @Nullable AccessibilityManager manager) {
     cachedIsAccessibilityEnabled =
         Boolean.getBoolean("is_accessibility_enabled")
             || isRunningApplicableAccessibilityService(manager);
