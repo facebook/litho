@@ -90,8 +90,8 @@ public class TransitionUtils {
 
   public static @Nullable TransitionId createTransitionId(
       @Nullable final String transitionKey,
-      @Nullable final Transition.TransitionKeyType transitionKeyType,
-      @Nullable final String transitionOwnerKey,
+      final Transition.TransitionKeyType transitionKeyType,
+      final String transitionOwnerKey,
       @Nullable String transitionGlobalKey) {
     final @TransitionId.Type int type;
     final String reference;
