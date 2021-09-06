@@ -47,8 +47,6 @@ public class LayoutStateContext {
   private boolean mHasNestedTreeDiffNodeSet = false;
   private boolean wasReconciled = false;
 
-  private static @Nullable LayoutState sTestLayoutState;
-
   private boolean mIsLayoutStarted = false;
 
   private volatile boolean mIsFrozen = false;
@@ -58,11 +56,11 @@ public class LayoutStateContext {
   }
 
   public static LayoutStateContext getTestInstance(ComponentContext c) {
-    if (sTestLayoutState == null) {
-      sTestLayoutState = new LayoutState(c);
-    }
-
-    return new LayoutStateContext(sTestLayoutState, c.getComponentTree(), null, null);
+    final LayoutState layoutState = new LayoutState(c);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, c.getComponentTree(), null, null);
+    layoutState.setLayoutStateContextForTest(layoutStateContext);
+    return layoutStateContext;
   }
 
   void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {

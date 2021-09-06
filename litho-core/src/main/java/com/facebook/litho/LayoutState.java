@@ -2613,6 +2613,11 @@ public class LayoutState
     return LayoutOutput.getLayoutOutput(getRenderTreeNode(output));
   }
 
+  @VisibleForTesting
+  void setLayoutStateContextForTest(LayoutStateContext layoutStateContext) {
+    mLayoutStateContext = layoutStateContext;
+  }
+
   static int getId(ComponentContext c) {
     final LayoutState state = c.getLayoutState();
     if (state != null) {
