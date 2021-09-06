@@ -20,7 +20,6 @@ import android.content.Context;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -39,10 +38,7 @@ class HostComponent extends Component {
 
   @Override
   protected MountContentPool onCreateMountContentPool() {
-    if (ComponentsConfiguration.disableComponentHostPool) {
-      return new DisabledMountContentPool();
-    }
-    return super.onCreateMountContentPool();
+    return new DisabledMountContentPool();
   }
 
   @Override

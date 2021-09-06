@@ -93,6 +93,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   public Object getRenderContentType() {
     return getClass();
   }
+  
+  public boolean isRecyclingDisabled() {
+    return false;
+  }
 
   protected Class getDescription() {
     return getClass();

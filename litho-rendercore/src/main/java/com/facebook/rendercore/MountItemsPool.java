@@ -60,6 +60,10 @@ public class MountItemsPool {
   static boolean sIsManualCallbacks;
 
   static Object acquireMountContent(Context context, RenderUnit renderUnit) {
+    if (renderUnit.isRecyclingDisabled()) {
+      return renderUnit.createContent(context);
+    }
+    
     final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getRenderContentType());
     Object content = null;
     if (pool == null) {

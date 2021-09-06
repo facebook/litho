@@ -154,9 +154,6 @@ public class ComponentsConfiguration {
 
   public static boolean useSharedFutureOnParallel = true;
 
-  /** (Hopefully) temporary measure as we're investigating a major crash in libhwui. */
-  public static boolean disableComponentHostPool = true;
-
   public static @Nullable LithoPerfBoosterFactory perfBoosterFactory = null;
 
   /**
