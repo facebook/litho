@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 /** Empty implementation of {@link PerfEvent} performing no actions. */
@@ -32,7 +33,7 @@ public class NoOpPerfEvent implements PerfEvent {
   }
 
   @Override
-  public void markerAnnotate(String annotationKey, String annotationValue) {}
+  public void markerAnnotate(String annotationKey, @Nullable String annotationValue) {}
 
   @Override
   public void markerAnnotate(String annotationKey, int annotationValue) {}

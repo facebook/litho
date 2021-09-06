@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,7 +59,7 @@ public class TestPerfEvent implements PerfEvent {
    * @param annotationValue
    */
   @Override
-  public void markerAnnotate(String annotationKey, String annotationValue) {
+  public void markerAnnotate(String annotationKey, @Nullable String annotationValue) {
     mAnnotations.put(annotationKey, annotationValue);
   }
 

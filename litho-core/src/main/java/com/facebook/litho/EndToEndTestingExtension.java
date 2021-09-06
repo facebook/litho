@@ -41,6 +41,7 @@ public class EndToEndTestingExtension
   public interface EndToEndTestingExtensionInput extends MountDelegateInput {
     int getTestOutputCount();
 
+    @Nullable
     TestOutput getTestOutputAt(int position);
 
     int getPositionForId(long id);
