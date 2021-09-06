@@ -134,10 +134,10 @@ public class DefaultInternalNode
   private @Nullable LayoutStateContext mLayoutStateContext;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private List<Component> mComponents = new ArrayList<>(1);
+  private List<Component> mComponents = new ArrayList<>(8);
 
   @ThreadConfined(ThreadConfined.ANY)
-  private List<String> mComponentGlobalKeys = new ArrayList<>(1);
+  private List<String> mComponentGlobalKeys = new ArrayList<>(8);
 
   private @Nullable LithoLayoutResult mParent;
 

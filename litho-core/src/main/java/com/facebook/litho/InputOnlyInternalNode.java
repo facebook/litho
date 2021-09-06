@@ -113,15 +113,15 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
   protected static final long PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1L << 33;
 
-  private List<InternalNode> mChildren = new ArrayList<>(1);
+  private List<InternalNode> mChildren = new ArrayList<>(4);
 
   protected Context mContext;
 
   @ThreadConfined(ThreadConfined.ANY)
-  protected List<Component> mComponents = new ArrayList<>(1);
+  protected List<Component> mComponents = new ArrayList<>(8);
 
   @ThreadConfined(ThreadConfined.ANY)
-  private List<String> mComponentGlobalKeys = new ArrayList<>(1);
+  private List<String> mComponentGlobalKeys = new ArrayList<>(8);
 
   protected final int[] mBorderEdgeWidths = new int[Border.EDGE_COUNT];
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
@@ -1182,9 +1182,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
    */
   protected void clean() {
     // 1. Release or clone props.
-    mComponents = new ArrayList<>();
-    mChildren = new ArrayList<>(1);
-    mComponentGlobalKeys = new ArrayList<>();
+    mComponents = new ArrayList<>(8);
+    mChildren = new ArrayList<>(4);
+    mComponentGlobalKeys = new ArrayList<>(8);
     mDebugComponents = null;
     mFrozen = false;
   }
