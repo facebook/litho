@@ -1,7 +1,0 @@
-import com.facebook.litho.annotations.Event
-
-@Event
-class ${NAME}Event {
-  // TODO: describe event as a POJO (mark properties with @JvmField)
-  // https://fblitho.com/docs/events-overview
-}

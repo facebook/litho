@@ -1,6 +1,0 @@
-import com.facebook.litho.annotations.Event;
-
-@Event
-public class ${NAME}Event {
-  // TODO: describe event as POJO https://fblitho.com/docs/events-overview
-}
