@@ -96,12 +96,9 @@ public class LithoMountData {
     final Component mComponent = output.getComponent();
     if (mIsReleased) {
       final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
-      final String globalKey = mComponent != null ? output.getKey() : "<null>";
       throw new ReleasingReleasedMountContentException(
           "Releasing released mount content! component: "
               + componentName
-              + ", globalKey: "
-              + globalKey
               + ", transitionId: "
               + output.getTransitionId()
               + ", previousReleaseCause: "
@@ -123,7 +120,6 @@ public class LithoMountData {
             OutputUnitType.HOST,
             null,
             viewNodeInfo,
-            null,
             lithoView.getPreviousMountBounds(),
             0,
             0,

@@ -44,7 +44,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
   static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
   static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
-  private final @Nullable String mKey;
 
   @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
   @Retention(RetentionPolicy.SOURCE)
@@ -76,7 +75,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       final @OutputUnitType int outputType,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
-      final @Nullable String key,
       final Rect bounds,
       final int index,
       final int hostTranslationX,
@@ -96,7 +94,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
-    mKey = key;
     mBounds = bounds;
     mIndex = index;
     mHostTranslationX = hostTranslationX;
@@ -116,11 +113,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   Component getComponent() {
     return mComponent;
-  }
-
-  @Nullable
-  String getKey() {
-    return mKey;
   }
 
   @Override

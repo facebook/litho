@@ -75,7 +75,6 @@ public class LayoutOutputTest {
         outputType,
         null,
         null,
-        null,
         rect,
         0,
         hostTranslationX,

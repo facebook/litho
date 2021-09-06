@@ -837,7 +837,6 @@ public class TreeDiffingTest {
             CONTENT,
             null,
             null,
-            null,
             new Rect(),
             0,
             0,

@@ -285,7 +285,6 @@ public class MountItemTest {
             OutputUnitType.CONTENT,
             mNodeInfo,
             null,
-            null,
             new Rect(0, 0, 0, 0),
             0,
             0,

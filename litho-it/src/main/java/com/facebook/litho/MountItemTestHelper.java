@@ -43,7 +43,6 @@ public class MountItemTestHelper {
             OutputUnitType.CONTENT,
             info,
             viewInfo,
-            globalKey,
             bounds != null ? bounds : new Rect(),
             0,
             hostTranslationX,
