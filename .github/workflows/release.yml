@@ -105,18 +105,17 @@ jobs:
     needs: [test-job, sample-java-job, sample-kotlin-job]
     steps:
     - uses: actions/checkout@v2
-    - name: Fetch buck
-      run: |
-        wget https://jitpack.io/com/github/facebook/buck/master/buck-master.pex && \
-        chmod +x buck-master.pex && \
-        mv buck-master.pex buck && \
-        ls -l buck
-    - name: Publish to maven
-      env:
-        BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-        BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-      run: |
-        BUCK_PATH=`realpath buck` ./gradlew bintrayUpload -PbintrayUsername=$BINTRAY_USERNAME -PbintrayApiKey=$BINTRAY_API_KEY --stacktrace
+    - name: Write GPG Sec Ring
+      run: echo '${{ secrets.GPG_KEY_CONTENTS }}' | base64 -d > /tmp/secring.gpg
+    - name: Update gradle.properties
+      run: echo -e "signing.secretKeyRingFile=/tmp/secring.gpg\nsigning.keyId=${{ secrets.SIGNING_KEY_ID }}\nsigning.password=${{ secrets.SIGNING_PASSWORD }}\nmavenCentralPassword=${{ secrets.SONATYPE_NEXUS_PASSWORD }}\nmavenCentralUsername=${{ secrets.SONATYPE_NEXUS_USERNAME }}" >> gradle.properties
+    - name: Upload Android Archives
+      run: ./gradlew publish --no-daemon --no-parallel --info --stacktrace
+    - name: Release and close
+      run: ./gradlew closeAndReleaseRepository
+    - name: Clean secrets
+      if: always()
+      run: rm /tmp/secring.gpg
   push-tags-job:
     name: Push tags if release succeeded
     runs-on: ubuntu-latest

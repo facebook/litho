@@ -17,7 +17,6 @@
 import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -42,4 +41,4 @@ dependencies {
     }
 }
 
-apply from: rootProject.file('gradle/release.gradle')
+apply plugin: "com.vanniktech.maven.publish"

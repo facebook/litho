@@ -15,7 +15,6 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -47,10 +46,4 @@ dependencies {
     implementation deps.textlayoutbuilder
 }
 
-apply from: rootProject.file('gradle/release.gradle')
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    archiveClassifier.set('sources')
-}
-artifacts.add('archives', sourcesJar)
+apply plugin: "com.vanniktech.maven.publish"

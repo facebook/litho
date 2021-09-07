@@ -15,7 +15,6 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
 
 project.group = GROUP
 version = VERSION_NAME
@@ -50,10 +49,4 @@ dependencies {
     testImplementation deps.supportTestCore
 }
 
-apply from: rootProject.file('gradle/release.gradle')
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    archiveClassifier.set('sources')
-}
-artifacts.add('archives', sourcesJar)
+apply plugin: "com.vanniktech.maven.publish"

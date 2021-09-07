@@ -15,9 +15,8 @@
  */
 
 apply plugin: 'java'
-apply plugin: 'maven-publish'
 
 targetCompatibility = rootProject.targetCompatibilityVersion
 sourceCompatibility = rootProject.sourceCompatibilityVersion
 
-apply from: rootProject.file('gradle/release.gradle')
+apply plugin: "com.vanniktech.maven.publish"
