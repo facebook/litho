@@ -23,11 +23,11 @@ import java.util.List;
 
 public class DefaultDiffNode implements DiffNode {
 
-  private @Nullable LayoutOutput mContent;
-  private @Nullable LayoutOutput mBackground;
-  private @Nullable LayoutOutput mForeground;
-  private @Nullable LayoutOutput mBorder;
-  private @Nullable LayoutOutput mHost;
+  private @Nullable LithoRenderUnit mContent;
+  private @Nullable LithoRenderUnit mBackground;
+  private @Nullable LithoRenderUnit mForeground;
+  private @Nullable LithoRenderUnit mBorder;
+  private @Nullable LithoRenderUnit mHost;
   private @Nullable VisibilityOutput mVisibilityOutput;
   private @Nullable Component mComponent;
   private float mLastMeasuredWidth;
@@ -117,12 +117,12 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public @Nullable LayoutOutput getContentOutput() {
+  public @Nullable LithoRenderUnit getContentOutput() {
     return mContent;
   }
 
   @Override
-  public void setContentOutput(@Nullable LayoutOutput content) {
+  public void setContentOutput(@Nullable LithoRenderUnit content) {
     mContent = content;
   }
 
@@ -137,42 +137,42 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public @Nullable LayoutOutput getBackgroundOutput() {
+  public @Nullable LithoRenderUnit getBackgroundOutput() {
     return mBackground;
   }
 
   @Override
-  public void setBackgroundOutput(@Nullable LayoutOutput background) {
+  public void setBackgroundOutput(@Nullable LithoRenderUnit background) {
     mBackground = background;
   }
 
   @Override
-  public @Nullable LayoutOutput getForegroundOutput() {
+  public @Nullable LithoRenderUnit getForegroundOutput() {
     return mForeground;
   }
 
   @Override
-  public void setForegroundOutput(@Nullable LayoutOutput foreground) {
+  public void setForegroundOutput(@Nullable LithoRenderUnit foreground) {
     mForeground = foreground;
   }
 
   @Override
-  public @Nullable LayoutOutput getBorderOutput() {
+  public @Nullable LithoRenderUnit getBorderOutput() {
     return mBorder;
   }
 
   @Override
-  public void setBorderOutput(@Nullable LayoutOutput border) {
+  public void setBorderOutput(@Nullable LithoRenderUnit border) {
     mBorder = border;
   }
 
   @Override
-  public @Nullable LayoutOutput getHostOutput() {
+  public @Nullable LithoRenderUnit getHostOutput() {
     return mHost;
   }
 
   @Override
-  public void setHostOutput(@Nullable LayoutOutput host) {
+  public void setHostOutput(@Nullable LithoRenderUnit host) {
     mHost = host;
   }
 }

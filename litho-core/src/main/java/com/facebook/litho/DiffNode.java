@@ -80,9 +80,9 @@ public interface DiffNode extends Cloneable {
   void addChild(DiffNode node);
 
   @Nullable
-  LayoutOutput getContentOutput();
+  LithoRenderUnit getContentOutput();
 
-  void setContentOutput(@Nullable LayoutOutput content);
+  void setContentOutput(@Nullable LithoRenderUnit content);
 
   @Nullable
   VisibilityOutput getVisibilityOutput();
@@ -90,22 +90,22 @@ public interface DiffNode extends Cloneable {
   void setVisibilityOutput(@Nullable VisibilityOutput visibilityOutput);
 
   @Nullable
-  LayoutOutput getBackgroundOutput();
+  LithoRenderUnit getBackgroundOutput();
 
-  void setBackgroundOutput(@Nullable LayoutOutput background);
-
-  @Nullable
-  LayoutOutput getForegroundOutput();
-
-  void setForegroundOutput(@Nullable LayoutOutput foreground);
+  void setBackgroundOutput(@Nullable LithoRenderUnit background);
 
   @Nullable
-  LayoutOutput getBorderOutput();
+  LithoRenderUnit getForegroundOutput();
 
-  void setBorderOutput(@Nullable LayoutOutput border);
+  void setForegroundOutput(@Nullable LithoRenderUnit foreground);
 
   @Nullable
-  LayoutOutput getHostOutput();
+  LithoRenderUnit getBorderOutput();
 
-  void setHostOutput(@Nullable LayoutOutput host);
+  void setBorderOutput(@Nullable LithoRenderUnit border);
+
+  @Nullable
+  LithoRenderUnit getHostOutput();
+
+  void setHostOutput(@Nullable LithoRenderUnit host);
 }

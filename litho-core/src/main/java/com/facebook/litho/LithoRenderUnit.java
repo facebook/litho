@@ -31,14 +31,16 @@ import com.facebook.rendercore.transitions.TransitionRenderUnit;
 public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
 
   final LayoutOutput output;
+  final long mId;
 
   private int mDefaultViewAttributeFlags = -1;
 
-  public LithoRenderUnit(LayoutOutput output) {
+  public LithoRenderUnit(long id, LayoutOutput output) {
     super(getRenderType(output));
     addMountUnmountExtensions(extension(this, LithoMountBinder.INSTANCE));
     addAttachDetachExtension(extension(this, LithoBindBinder.INSTANCE));
     this.output = output;
+    this.mId = id;
   }
 
   @Override
@@ -54,7 +56,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
 
   @Override
   public long getId() {
-    return output.getId();
+    return mId;
   }
 
   @Override

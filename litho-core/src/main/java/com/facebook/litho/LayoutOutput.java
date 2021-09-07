@@ -67,7 +67,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final int mIndex; // TODO: remove
   private final int mUpdateState;
 
-  private final LithoRenderUnit mRenderUnit; // TODO: remove
+  final LithoRenderUnit mRenderUnit; // TODO: remove
 
   public LayoutOutput(
       final long id,
@@ -108,7 +108,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mUpdateState = updateState;
 
     // Initialise the RenderUnit only after completely initialising this LayoutOutput.
-    mRenderUnit = new LithoRenderUnit(this);
+    mRenderUnit = new LithoRenderUnit(mId, this);
   }
 
   Component getComponent() {

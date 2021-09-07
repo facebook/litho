@@ -311,7 +311,7 @@ public class LayoutState
     final boolean isCachedOutputUpdated = shouldUseCachedOutputs && result.areCachedMeasuresValid();
     long previousId = -1;
     if (shouldUseCachedOutputs) {
-      final LayoutOutput contentOutput = Preconditions.checkNotNull(diffNode).getContentOutput();
+      final LithoRenderUnit contentOutput = Preconditions.checkNotNull(diffNode).getContentOutput();
       if (contentOutput != null) {
         previousId = contentOutput.getId();
       }
@@ -678,7 +678,7 @@ public class LayoutState
       final LithoLayoutResult result,
       final InternalNode node,
       final LayoutState layoutState,
-      final @Nullable LayoutOutput layoutOutput) {
+      final @Nullable LithoRenderUnit renderUnit) {
     final int l = layoutState.mCurrentX + result.getX();
     final int t = layoutState.mCurrentY + result.getY();
     final int r = l + result.getWidth();
@@ -688,8 +688,8 @@ public class LayoutState
     output.setTestKey(Preconditions.checkNotNull(node.getTestKey()));
     output.setBounds(l, t, r, b);
     output.setHostMarker(layoutState.mCurrentHostMarker);
-    if (layoutOutput != null) {
-      output.setLayoutOutputId(layoutOutput.getId());
+    if (renderUnit != null) {
+      output.setLayoutOutputId(renderUnit.getId());
     }
 
     return output;
@@ -951,7 +951,7 @@ public class LayoutState
       // Only create a background output when the component does not mount a View because
       // the background will get set in the output of the component.
       if (background != null && !isMountViewSpec(component)) {
-        final LayoutOutput convertBackground =
+        final LithoRenderUnit convertBackground =
             (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
 
         final LayoutOutput backgroundOutput =
@@ -960,14 +960,14 @@ public class LayoutState
                 result,
                 node,
                 layoutState,
-                convertBackground,
+                convertBackground != null ? convertBackground.output : null,
                 hierarchy,
                 background,
                 OutputUnitType.BACKGROUND,
                 needsHostView);
 
         if (diffNode != null) {
-          diffNode.setBackgroundOutput(backgroundOutput);
+          diffNode.setBackgroundOutput(backgroundOutput.mRenderUnit);
         }
       }
     }
@@ -976,6 +976,8 @@ public class LayoutState
     final LayoutOutput layoutOutput =
         createGenericLayoutOutput(
             result, node, layoutState, needsHostView, shouldUseCachedOutputs, currentDiffNode);
+    final @Nullable LithoRenderUnit contentRenderUnit =
+        layoutOutput != null ? layoutOutput.mRenderUnit : null;
 
     if (layoutOutput != null && hierarchy != null) {
       layoutOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.CONTENT));
@@ -1013,7 +1015,7 @@ public class LayoutState
           layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.CONTENT, layoutOutput);
 
       if (diffNode != null) {
-        diffNode.setContentOutput(layoutOutput);
+        diffNode.setContentOutput(layoutOutput.mRenderUnit);
       }
     } else {
       renderTreeNode = needsHostView ? parent : null;
@@ -1067,7 +1069,7 @@ public class LayoutState
 
     // 5. Add border color if defined.
     if (result.shouldDrawBorders()) {
-      final LayoutOutput convertBorder =
+      final LithoRenderUnit convertBorder =
           (currentDiffNode != null) ? currentDiffNode.getBorderOutput() : null;
       final LayoutOutput borderOutput =
           addDrawableComponent(
@@ -1075,13 +1077,13 @@ public class LayoutState
               result,
               node,
               layoutState,
-              convertBorder,
+              convertBorder != null ? convertBorder.output : null,
               hierarchy,
               getBorderColorDrawable(result, node),
               OutputUnitType.BORDER,
               needsHostView);
       if (diffNode != null) {
-        diffNode.setBorderOutput(borderOutput);
+        diffNode.setBorderOutput(borderOutput.mRenderUnit);
       }
     }
 
@@ -1092,7 +1094,7 @@ public class LayoutState
       // the foreground has already been set in the output of the component.
       if (foreground != null && (!isMountViewSpec(component) || SDK_INT < M)) {
 
-        final LayoutOutput convertForeground =
+        final LithoRenderUnit convertForeground =
             (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
 
         final LayoutOutput foregroundOutput =
@@ -1101,14 +1103,14 @@ public class LayoutState
                 result,
                 node,
                 layoutState,
-                convertForeground,
+                convertForeground != null ? convertForeground.output : null,
                 hierarchy,
                 foreground,
                 OutputUnitType.FOREGROUND,
                 needsHostView);
 
         if (diffNode != null) {
-          diffNode.setForegroundOutput(foregroundOutput);
+          diffNode.setForegroundOutput(foregroundOutput.mRenderUnit);
         }
       }
     }
@@ -1128,7 +1130,7 @@ public class LayoutState
     // 8. If we're in a testing environment, maintain an additional data structure with
     // information about nodes that we can query later.
     if (layoutState.mTestOutputs != null && !TextUtils.isEmpty(node.getTestKey())) {
-      final TestOutput testOutput = createTestOutput(result, node, layoutState, layoutOutput);
+      final TestOutput testOutput = createTestOutput(result, node, layoutState, contentRenderUnit);
       layoutState.mTestOutputs.add(testOutput);
     }
 
@@ -1459,7 +1461,7 @@ public class LayoutState
         createHostLayoutOutput(layoutState, result, node, parent, hierarchy);
 
     if (diffNode != null) {
-      diffNode.setHostOutput(hostLayoutOutput);
+      diffNode.setHostOutput(hostLayoutOutput.mRenderUnit);
     }
 
     // The component of the hostLayoutOutput will be set later after all the
