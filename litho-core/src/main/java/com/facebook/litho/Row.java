@@ -101,9 +101,7 @@ public final class Row extends Component {
 
   public static Builder create(
       ComponentContext context, int defStyleAttr, int defStyleRes, String simpleName) {
-    final Builder builder = new Builder();
-    builder.init(context, defStyleAttr, defStyleRes, new Row(simpleName));
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, new Row(simpleName));
   }
 
   @Override
@@ -193,12 +191,10 @@ public final class Row extends Component {
 
   public static class Builder extends Component.ContainerBuilder<Builder> {
     Row mRow;
-    ComponentContext mContext;
 
-    void init(ComponentContext context, int defStyleAttr, int defStyleRes, Row row) {
-      super.init(context, defStyleAttr, defStyleRes, row);
+    Builder(ComponentContext context, int defStyleAttr, int defStyleRes, Row row) {
+      super(context, defStyleAttr, defStyleRes, row);
       mRow = row;
-      mContext = context;
     }
 
     @Override

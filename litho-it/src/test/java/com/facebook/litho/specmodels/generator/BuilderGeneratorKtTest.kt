@@ -100,9 +100,9 @@ class BuilderGeneratorKtTest {
 
                       private final java.util.BitSet mRequired = new java.util.BitSet(REQUIRED_PROPS_COUNT);
 
-                      private void init(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
+                      private Builder(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
                           WildcardOutPropTest wildcardOutPropTestRef) {
-                        super.init(context, defStyleAttr, defStyleRes, wildcardOutPropTestRef);
+                        super(context, defStyleAttr, defStyleRes, wildcardOutPropTestRef);
                         mWildcardOutPropTest = wildcardOutPropTestRef;
                         mContext = context;
                         mRequired.clear();
@@ -158,9 +158,9 @@ class BuilderGeneratorKtTest {
 
                       com.facebook.litho.ComponentContext mContext;
 
-                      private void init(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
+                      private Builder(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,
                           VarArgsWildcardPropTest varArgsWildcardPropTestRef) {
-                        super.init(context, defStyleAttr, defStyleRes, varArgsWildcardPropTestRef);
+                        super(context, defStyleAttr, defStyleRes, varArgsWildcardPropTestRef);
                         mVarArgsWildcardPropTest = varArgsWildcardPropTestRef;
                         mContext = context;
                       }

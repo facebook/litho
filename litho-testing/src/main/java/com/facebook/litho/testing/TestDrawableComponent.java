@@ -221,20 +221,18 @@ public class TestDrawableComponent extends TestComponent {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       TestDrawableComponent state) {
-    final Builder builder = new Builder();
-    builder.init(context, defStyleAttr, defStyleRes, state);
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, state);
   }
 
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestDrawableComponent mComponent;
 
-    private void init(
+    private Builder(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
         TestDrawableComponent component) {
-      super.init(context, defStyleAttr, defStyleRes, component);
+      super(context, defStyleAttr, defStyleRes, component);
       mComponent = component;
     }
 

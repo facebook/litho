@@ -1813,9 +1813,34 @@ public abstract class Component
    */
   public abstract static class Builder<T extends Builder<T>> {
 
-    protected ResourceResolver mResourceResolver;
-    @Nullable private ComponentContext mContext;
+    protected final ResourceResolver mResourceResolver;
+    private final ComponentContext mContext;
     private Component mComponent;
+
+    protected Builder(
+        ComponentContext c,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        Component component) {
+      mResourceResolver = c.getResourceResolver();
+      mComponent = component;
+      mContext = c;
+
+      final Component owner = getOwner();
+      if (owner != null) {
+        mComponent.mOwnerGlobalKey = Component.getGlobalKey(mContext, owner);
+      }
+
+      if (defStyleAttr != 0 || defStyleRes != 0) {
+        mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
+        try {
+          component.loadStyle(c, defStyleAttr, defStyleRes);
+        } catch (Exception e) {
+          ComponentUtils.handleWithHierarchy(c, component, e);
+        }
+      }
+      mComponent.setBuilderContext(c.getAndroidContext());
+    }
 
     @ReturnsOwnership
     public abstract Component build();
@@ -3019,31 +3044,6 @@ public abstract class Component
       return getThis();
     }
 
-    protected void init(
-        ComponentContext c,
-        @AttrRes int defStyleAttr,
-        @StyleRes int defStyleRes,
-        Component component) {
-      mResourceResolver = c.getResourceResolver();
-      mComponent = component;
-      mContext = c;
-
-      final Component owner = getOwner();
-      if (owner != null) {
-        mComponent.mOwnerGlobalKey = Component.getGlobalKey(mContext, owner);
-      }
-
-      if (defStyleAttr != 0 || defStyleRes != 0) {
-        mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
-        try {
-          component.loadStyle(c, defStyleAttr, defStyleRes);
-        } catch (Exception e) {
-          ComponentUtils.handleWithHierarchy(c, component, e);
-        }
-      }
-      mComponent.setBuilderContext(c.getAndroidContext());
-    }
-
     private @Nullable Component getOwner() {
       return mContext.getComponentScope();
     }
@@ -3081,6 +3081,12 @@ public abstract class Component
   }
 
   public abstract static class ContainerBuilder<T extends ContainerBuilder<T>> extends Builder<T> {
+
+    protected ContainerBuilder(
+        ComponentContext c, int defStyleAttr, int defStyleRes, Component component) {
+      super(c, defStyleAttr, defStyleRes, component);
+    }
+
     /**
      * The AlignSelf property has the same options and effect as AlignItems but instead of affecting
      * the children within a container, you can apply this property to a single child to change its

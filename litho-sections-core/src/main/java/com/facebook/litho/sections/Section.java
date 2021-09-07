@@ -92,10 +92,10 @@ public abstract class Section extends SectionLifecycle
    */
   public abstract static class Builder<T extends Builder<T>> {
 
-    private Section mSection;
-    protected ResourceResolver mResourceResolver;
+    private final Section mSection;
+    protected final ResourceResolver mResourceResolver;
 
-    protected void init(SectionContext context, Section section) {
+    protected Builder(SectionContext context, Section section) {
       mSection = section;
       mResourceResolver = context.getResourceResolver();
     }
@@ -120,11 +120,6 @@ public abstract class Section extends SectionLifecycle
 
     /** @return The immutable {@link Section}. */
     public abstract Section build();
-
-    protected void release() {
-      mSection = null;
-      mResourceResolver = null;
-    }
 
     /**
      * Checks that all the required props are supplied, and if not throws a useful exception

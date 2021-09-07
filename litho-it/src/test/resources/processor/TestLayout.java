@@ -501,10 +501,8 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
 
   public static <S extends View> Builder<S> create(
       ComponentContext context, int defStyleAttr, int defStyleRes) {
-    final Builder builder = new Builder();
     TestLayout instance = new TestLayout();
-    builder.init(context, defStyleAttr, defStyleRes, instance);
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, instance);
   }
 
   private int getCached(ComponentContext c) {
@@ -597,9 +595,9 @@ public final class TestLayout<S extends View> extends SpecGeneratedComponent imp
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private void init(
+    private Builder(
         ComponentContext context, int defStyleAttr, int defStyleRes, TestLayout testLayoutRef) {
-      super.init(context, defStyleAttr, defStyleRes, testLayoutRef);
+      super(context, defStyleAttr, defStyleRes, testLayoutRef);
       mTestLayout = testLayoutRef;
       mContext = context;
       mRequired.clear();

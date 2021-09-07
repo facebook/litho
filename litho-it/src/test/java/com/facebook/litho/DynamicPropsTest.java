@@ -232,44 +232,53 @@ public class DynamicPropsTest {
     assertThat(lithoView.getRotation()).isEqualTo(0.0f);
   }
 
+  private static class DynamicElevationBuilder extends Component.Builder<DynamicElevationBuilder> {
+
+    private Component component;
+
+    protected DynamicElevationBuilder(
+        ComponentContext c, int defStyleAttr, int defStyleRes, Component component) {
+      super(c, defStyleAttr, defStyleRes, component);
+      this.component = component;
+    }
+
+    @Override
+    public Component build() {
+      return component;
+    }
+
+    @Override
+    public DynamicElevationBuilder getThis() {
+      return this;
+    }
+
+    @Override
+    protected void setComponent(Component component) {
+      this.component = component;
+    }
+  }
+
   @Test
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testDynamicElevationApplied() {
-    final Component.Builder componentBuilder =
-        new Component.Builder() {
-          private Component component;
+    final LithoView lithoView = new LithoView(mContext);
 
-          {
-            component =
+    final float startValue = 1f;
+    final DynamicValue<Float> elevationDV = new DynamicValue<>(startValue);
+    final Component component =
+        new DynamicElevationBuilder(
+                mContext,
+                -1,
+                -1,
                 new Component() {
                   @Override
                   public MountType getMountType() {
                     return MountType.VIEW;
                   }
-                };
-            super.init(mContext, -1, -1, component);
-          }
-
-          @Override
-          public Component build() {
-            return component;
-          }
-
-          @Override
-          public Component.Builder getThis() {
-            return this;
-          }
-
-          @Override
-          protected void setComponent(Component component) {}
-        };
-
-    final LithoView lithoView = new LithoView(mContext);
-
-    final float startValue = 1f;
-    final DynamicValue<Float> elevationDV = new DynamicValue<>(startValue);
-    final Component component = componentBuilder.shadowElevation(elevationDV).build();
+                })
+            .shadowElevation(elevationDV)
+            .build();
 
     final DynamicPropsManager dynamicPropsManager = new DynamicPropsManager();
     dynamicPropsManager.onBindComponentToContent(component, mContext, lithoView);

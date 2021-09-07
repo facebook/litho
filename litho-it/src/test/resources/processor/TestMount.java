@@ -659,10 +659,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   public static <S extends View> Builder<S> create(
       ComponentContext context, int defStyleAttr, int defStyleRes) {
-    final Builder builder = new Builder();
     TestMount instance = new TestMount();
-    builder.init(context, defStyleAttr, defStyleRes, instance);
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, instance);
   }
 
   private int getCached(ComponentContext c) {
@@ -729,9 +727,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private void init(
+    private Builder(
         ComponentContext context, int defStyleAttr, int defStyleRes, TestMount testMountRef) {
-      super.init(context, defStyleAttr, defStyleRes, testMountRef);
+      super(context, defStyleAttr, defStyleRes, testMountRef);
       mTestMount = testMountRef;
       mContext = context;
       mRequired.clear();

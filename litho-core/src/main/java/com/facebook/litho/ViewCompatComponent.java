@@ -49,9 +49,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   public Builder<V> create(ComponentContext componentContext) {
-    Builder<V> builder = new Builder<>();
-    builder.init(componentContext, this);
-    return builder;
+    return new Builder<>(componentContext, this);
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
@@ -124,8 +122,8 @@ public class ViewCompatComponent<V extends View> extends Component {
 
     private ViewCompatComponent mViewCompatComponent;
 
-    private void init(ComponentContext context, ViewCompatComponent component) {
-      super.init(context, 0, 0, component);
+    private Builder(ComponentContext context, ViewCompatComponent component) {
+      super(context, 0, 0, component);
       mViewCompatComponent = component;
     }
 

@@ -101,9 +101,7 @@ public final class Column extends Component {
 
   public static Builder create(
       ComponentContext context, int defStyleAttr, int defStyleRes, String simpleName) {
-    final Builder builder = new Builder();
-    builder.init(context, defStyleAttr, defStyleRes, new Column(simpleName));
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, new Column(simpleName));
   }
 
   @Override
@@ -195,12 +193,10 @@ public final class Column extends Component {
 
   public static class Builder extends Component.ContainerBuilder<Builder> {
     Column mColumn;
-    ComponentContext mContext;
 
-    void init(ComponentContext context, int defStyleAttr, int defStyleRes, Column column) {
-      super.init(context, defStyleAttr, defStyleRes, column);
+    Builder(ComponentContext context, int defStyleAttr, int defStyleRes, Column column) {
+      super(context, defStyleAttr, defStyleRes, column);
       mColumn = column;
-      mContext = context;
     }
 
     @Override

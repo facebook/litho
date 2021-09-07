@@ -77,18 +77,12 @@ public class BuilderGenerator {
 
   static TypeSpecDataHolder generateFactoryMethods(SpecModel specModel) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
-
     final MethodSpec.Builder factoryMethod =
         MethodSpec.methodBuilder("create")
             .addModifiers(Modifier.PUBLIC)
             .addModifiers(Modifier.STATIC)
             .returns(getBuilderType(specModel))
-            .addParameter(specModel.getContextClass(), "context")
-            .addStatement("final $1T builder = new $1T()", BUILDER_CLASS_NAME);
-
-    if (!specModel.getTypeVariables().isEmpty()) {
-      factoryMethod.addTypeVariables(specModel.getTypeVariables());
-    }
+            .addParameter(specModel.getContextClass(), "context");
 
     if (specModel.hasInjectedDependencies()) {
       factoryMethod.addCode(
@@ -105,12 +99,17 @@ public class BuilderGenerator {
       factoryMethod
           .addParameter(int.class, "defStyleAttr")
           .addParameter(int.class, "defStyleRes")
-          .addStatement("builder.init(context, defStyleAttr, defStyleRes, $L)", "instance");
+          .addStatement(
+              "return new $T(context, defStyleAttr, defStyleRes, $L)",
+              BUILDER_CLASS_NAME,
+              "instance");
     } else {
-      factoryMethod.addStatement("builder.init(context, $L)", "instance");
+      factoryMethod.addStatement("return new $T(context, $L)", BUILDER_CLASS_NAME, "instance");
     }
 
-    factoryMethod.addStatement("return builder");
+    if (!specModel.getTypeVariables().isEmpty()) {
+      factoryMethod.addTypeVariables(specModel.getTypeVariables());
+    }
 
     return dataHolder.addMethod(factoryMethod.build()).build();
   }
@@ -136,8 +135,8 @@ public class BuilderGenerator {
     final String componentInstanceRefName = ComponentBodyGenerator.getInstanceRefName(specModel);
     final String componentMemberInstanceName = getComponentMemberInstanceName(specModel);
     final ClassName componentClass = ClassName.bestGuess(componentName);
-    final MethodSpec.Builder initMethodSpec =
-        MethodSpec.methodBuilder("init")
+    final MethodSpec.Builder ctorMethodSpec =
+        MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PRIVATE)
             .addParameter(specModel.getContextClass(), CONTEXT_PARAM_NAME);
 
@@ -152,24 +151,23 @@ public class BuilderGenerator {
     }
 
     if (specModel.isStylingSupported()) {
-      initMethodSpec
+      ctorMethodSpec
           .addParameter(int.class, "defStyleAttr")
           .addParameter(int.class, "defStyleRes")
           .addParameter(componentClass, componentInstanceRefName)
-          .addStatement(
-              "super.init(context, defStyleAttr, defStyleRes, $L)", componentInstanceRefName);
+          .addStatement("super(context, defStyleAttr, defStyleRes, $L)", componentInstanceRefName);
     } else {
-      initMethodSpec
+      ctorMethodSpec
           .addParameter(componentClass, componentInstanceRefName)
-          .addStatement("super.init(context, $L)", componentInstanceRefName);
+          .addStatement("super(context, $L)", componentInstanceRefName);
     }
 
-    initMethodSpec
+    ctorMethodSpec
         .addStatement("$L = $L", componentMemberInstanceName, componentInstanceRefName)
         .addStatement("$L = $L", CONTEXT_MEMBER_NAME, CONTEXT_PARAM_NAME);
 
     if (isResResolvable) {
-      initMethodSpec.addStatement("initPropDefaults()");
+      ctorMethodSpec.addStatement("initPropDefaults()");
     }
 
     final MethodSpec.Builder setComponentMethodSpec =
@@ -229,10 +227,10 @@ public class BuilderGenerator {
               .initializer("new $T($L)", BitSet.class, REQUIRED_PROPS_COUNT)
               .build());
 
-      initMethodSpec.addStatement("mRequired.clear()");
+      ctorMethodSpec.addStatement("mRequired.clear()");
     }
 
-    propsBuilderClassBuilder.addMethod(initMethodSpec.build());
+    propsBuilderClassBuilder.addMethod(ctorMethodSpec.build());
 
     if (specModel instanceof LayoutSpecModel || specModel instanceof MountSpecModel) {
       propsBuilderClassBuilder.addMethod(setComponentMethodSpec.build());

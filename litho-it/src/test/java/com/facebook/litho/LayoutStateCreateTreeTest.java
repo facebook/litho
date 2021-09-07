@@ -598,11 +598,8 @@ public class LayoutStateCreateTreeTest {
     }
 
     public static TestDrawableComponentWithMockInternalNode.Builder create(ComponentContext c) {
-      Builder builder = new Builder();
-      builder.mComponent = new TestDrawableComponentWithMockInternalNode();
-      builder.init(c, 0, 0, builder.mComponent);
-
-      return builder;
+      Component component = new TestDrawableComponentWithMockInternalNode();
+      return new Builder(c, 0, 0, component);
     }
 
     public static class Builder
@@ -610,6 +607,11 @@ public class LayoutStateCreateTreeTest {
             TestDrawableComponentWithMockInternalNode.Builder> {
 
       private Component mComponent;
+
+      private Builder(ComponentContext c, int defStyleAttr, int defStyleRes, Component component) {
+        super(c, defStyleAttr, defStyleRes, component);
+        mComponent = component;
+      }
 
       @Override
       protected void setComponent(Component component) {

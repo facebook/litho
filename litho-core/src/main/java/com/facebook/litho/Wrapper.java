@@ -43,9 +43,7 @@ public final class Wrapper extends SpecGeneratedComponent {
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
-    final Builder builder = new Builder();
-    builder.init(context, defStyleAttr, defStyleRes, new Wrapper());
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, new Wrapper());
   }
 
   @Override
@@ -92,9 +90,8 @@ public final class Wrapper extends SpecGeneratedComponent {
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
     private Wrapper mWrapper;
 
-    private void init(
-        ComponentContext context, int defStyleAttr, int defStyleRes, Wrapper wrapper) {
-      super.init(context, defStyleAttr, defStyleRes, wrapper);
+    Builder(ComponentContext context, int defStyleAttr, int defStyleRes, Wrapper wrapper) {
+      super(context, defStyleAttr, defStyleRes, wrapper);
       mWrapper = wrapper;
     }
 

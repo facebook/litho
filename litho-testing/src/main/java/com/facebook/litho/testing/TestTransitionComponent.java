@@ -84,20 +84,18 @@ public class TestTransitionComponent extends TestComponent {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       TestTransitionComponent state) {
-    final Builder builder = new Builder();
-    builder.init(context, defStyleAttr, defStyleRes, state);
-    return builder;
+    return new Builder(context, defStyleAttr, defStyleRes, state);
   }
 
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestTransitionComponent mState;
 
-    private void init(
+    private Builder(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
         TestTransitionComponent state) {
-      super.init(context, defStyleAttr, defStyleRes, state);
+      super(context, defStyleAttr, defStyleRes, state);
       mState = state;
     }
 

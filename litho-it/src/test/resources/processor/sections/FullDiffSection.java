@@ -131,10 +131,8 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   public static <T> Builder<T> create(SectionContext context) {
-    final Builder builder = new Builder();
     FullDiffSection instance = new FullDiffSection();
-    builder.init(context, instance);
-    return builder;
+    return new Builder(context, instance);
   }
 
   @Override
@@ -382,8 +380,8 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private void init(SectionContext context, FullDiffSection fullDiffSectionRef) {
-      super.init(context, fullDiffSectionRef);
+    private Builder(SectionContext context, FullDiffSection fullDiffSectionRef) {
+      super(context, fullDiffSectionRef);
       mFullDiffSection = fullDiffSectionRef;
       mContext = context;
       mRequired.clear();

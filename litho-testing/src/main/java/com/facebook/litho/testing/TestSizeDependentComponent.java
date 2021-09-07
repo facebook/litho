@@ -72,9 +72,7 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
   }
 
   public static Builder create(ComponentContext context) {
-    final Builder builder = new Builder();
-    builder.init(context, new TestSizeDependentComponent());
-    return builder;
+    return new Builder(context, new TestSizeDependentComponent());
   }
 
   boolean hasFixedSizes;
@@ -84,8 +82,8 @@ public class TestSizeDependentComponent extends SpecGeneratedComponent {
 
     TestSizeDependentComponent mTestSizeDependentComponent;
 
-    private void init(ComponentContext context, TestSizeDependentComponent state) {
-      super.init(context, 0, 0, state);
+    private Builder(ComponentContext context, TestSizeDependentComponent state) {
+      super(context, 0, 0, state);
       mTestSizeDependentComponent = state;
     }
 

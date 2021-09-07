@@ -139,10 +139,8 @@ final class FullGroupSection<T> extends Section {
   }
 
   public static <T> Builder<T> create(SectionContext context) {
-    final Builder builder = new Builder();
     FullGroupSection instance = new FullGroupSection();
-    builder.init(context, instance);
-    return builder;
+    return new Builder(context, instance);
   }
 
   @Override
@@ -476,8 +474,8 @@ final class FullGroupSection<T> extends Section {
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private void init(SectionContext context, FullGroupSection fullGroupSectionRef) {
-      super.init(context, fullGroupSectionRef);
+    private Builder(SectionContext context, FullGroupSection fullGroupSectionRef) {
+      super(context, fullGroupSectionRef);
       mFullGroupSection = fullGroupSectionRef;
       mContext = context;
       mRequired.clear();
