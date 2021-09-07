@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 /**
@@ -40,7 +41,7 @@ public class TestComponent extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(@Nullable Component other) {
     return this == other;
   }
 

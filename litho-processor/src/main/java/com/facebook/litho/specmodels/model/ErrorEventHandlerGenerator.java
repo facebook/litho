@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.specmodels.generator.EventCaseGenerator;
@@ -69,6 +70,7 @@ public final class ErrorEventHandlerGenerator {
                     new FieldModel(
                         FieldSpec.builder(
                                 ClassNames.COMPONENT_TREE, "componentTree", Modifier.PUBLIC)
+                            .addAnnotation(Nullable.class)
                             .build(),
                         null),
                     new FieldModel(

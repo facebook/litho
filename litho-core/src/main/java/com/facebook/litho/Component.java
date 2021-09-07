@@ -44,14 +44,17 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Preconditions;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -81,13 +84,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
 
 /**
  * Represents a unique instance of a component. To create new {@link Component} instances, use the
  * {@code create()} method in the generated subclass which returns a builder that allows you to set
  * values for individual props. {@link Component} instances are immutable after creation.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class Component
     implements Cloneable,
         HasEventDispatcher,
@@ -124,23 +127,24 @@ public abstract class Component
    */
   private static int getOrCreateId(Object type) {
     synchronized (sTypeIdByComponentType) {
-      if (!sTypeIdByComponentType.containsKey(type)) {
-        sTypeIdByComponentType.put(type, sComponentTypeId.incrementAndGet());
+      final Integer typeId = sTypeIdByComponentType.get(type);
+      if (typeId != null) {
+        return typeId;
       }
-
-      //noinspection ConstantConditions
-      return sTypeIdByComponentType.get(type);
+      final int nextTypeId = sComponentTypeId.incrementAndGet();
+      sTypeIdByComponentType.put(type, nextTypeId);
+      return nextTypeId;
     }
   }
 
   private final int mTypeId;
 
   private int mId = sIdGenerator.getAndIncrement();
-  @Nullable private String mOwnerGlobalKey;
-  private String mGlobalKey;
-  @Nullable private String mKey;
+  private @Nullable String mOwnerGlobalKey;
+  private @Nullable String mGlobalKey;
+  private @Nullable String mKey;
   private boolean mHasManualKey;
-  @Nullable private Handle mHandle;
+  private @Nullable Handle mHandle;
 
   @GuardedBy("this")
   private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
@@ -151,23 +155,23 @@ public abstract class Component
   private boolean mIsLayoutStarted = false;
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
-  @Nullable private CommonProps mCommonProps;
-  @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
+  private @Nullable CommonProps mCommonProps;
+  private @Nullable SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  @Nullable private SparseIntArray mChildCounters;
+  private @Nullable SparseIntArray mChildCounters;
 
   /** Count the times a manual key is used so that clashes can be resolved. */
-  @Nullable private Map<String, Integer> mManualKeysCounter;
+  private @Nullable Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
    * is a root component - a default handler that reraises the exception.
    */
-  @Nullable private EventHandler<ErrorEvent> mErrorEventHandler;
+  private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
 
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable Context mBuilderContext;
@@ -260,7 +264,9 @@ public abstract class Component
 
   protected @Nullable Object dispatchOnEventImpl(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      getErrorHandler((ComponentContext) eventHandler.params[0])
+      Preconditions.checkNotNull(
+              getErrorHandler(
+                  (ComponentContext) Preconditions.checkNotNull(eventHandler.params)[0]))
           .dispatchEvent((ErrorEvent) eventState);
     }
 
@@ -782,7 +788,12 @@ public abstract class Component
       return true;
     }
 
-    return !previous.isEquivalentTo(next)
+    if (previous == next) {
+      return false;
+    }
+
+    return previous == null
+        || !previous.isEquivalentTo(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
   }
 
@@ -933,7 +944,7 @@ public abstract class Component
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   @Nullable
   protected ComponentContext getScopedContext(
-      @Nullable LayoutStateContext layoutStateContext, String globalKey) {
+      LayoutStateContext layoutStateContext, String globalKey) {
     if (useStatelessComponent(layoutStateContext.getComponentTree())) {
       return layoutStateContext.getScopedContext(globalKey);
     }
@@ -977,7 +988,7 @@ public abstract class Component
    * @return true if the components are of the same type and have the same props
    */
   @Override
-  public boolean isEquivalentTo(Component other) {
+  public boolean isEquivalentTo(@Nullable Component other) {
     if (this == other) {
       return true;
     }
@@ -1035,7 +1046,11 @@ public abstract class Component
 
       final LayoutResultHolder container =
           Layout.createAndMeasureComponent(
-              layoutState.getLayoutStateContext(), c, this, widthSpec, heightSpec);
+              Preconditions.checkNotNull(layoutState.getLayoutStateContext()),
+              c,
+              this,
+              widthSpec,
+              heightSpec);
       if (container.wasLayoutInterrupted()) {
         return;
       }
@@ -1184,7 +1199,8 @@ public abstract class Component
   }
 
   /** Get a key that is unique to this component within its tree. */
-  static String getGlobalKey(@Nullable ComponentContext scopedContext, Component component) {
+  static @Nullable String getGlobalKey(
+      @Nullable ComponentContext scopedContext, Component component) {
     if (scopedContext != null && scopedContext.useStatelessComponent()) {
       if (scopedContext == null) {
         return null;
@@ -1219,7 +1235,11 @@ public abstract class Component
 
   /** @return a key that is local to the component's parent. */
   final String getKey() {
-    if (mKey == null && !mHasManualKey) {
+    if (mKey == null) {
+      if (mHasManualKey) {
+        throw new IllegalStateException(
+            "Should not have null manual key! (" + getSimpleName() + ")");
+      }
       mKey = Integer.toString(getTypeId());
     }
     return mKey;
@@ -1378,10 +1398,14 @@ public abstract class Component
     }
   }
 
-  final StateContainer getStateContainer(final @Nullable ComponentContext scopedContext) {
+  final @Nullable StateContainer getStateContainer(final @Nullable ComponentContext scopedContext) {
     if (scopedContext == null) {
       throw new IllegalStateException(
           "Cannot access a state container outside of a layout state calculation.");
+    }
+
+    if (!hasState()) {
+      return null;
     }
 
     if (useStatelessComponent(scopedContext.getComponentTree())) {
@@ -1434,7 +1458,7 @@ public abstract class Component
     }
   }
 
-  private static boolean useStatelessComponent(ComponentTree componentTree) {
+  private static boolean useStatelessComponent(@Nullable ComponentTree componentTree) {
     return componentTree != null && componentTree.useStatelessComponent();
   }
 
@@ -1514,7 +1538,8 @@ public abstract class Component
       final String globalKey) {
     scopedContext.setParentTreeProps(parentContext.getTreeProps());
     if (hasState()) {
-      parentContext.getStateHandler().applyStateUpdatesForComponent(scopedContext, this, globalKey);
+      Preconditions.checkNotNull(parentContext.getStateHandler())
+          .applyStateUpdatesForComponent(scopedContext, this, globalKey);
     }
   }
 
@@ -1636,7 +1661,8 @@ public abstract class Component
       return false;
     }
 
-    final LayoutStateContext layoutStateContext = c.getLayoutStateContext();
+    final LayoutStateContext layoutStateContext =
+        Preconditions.checkNotNull(c.getLayoutStateContext());
 
     final InternalNode componentLayoutCreatedInWillRender =
         component.getLayoutCreatedInWillRender(layoutStateContext);
@@ -1668,7 +1694,9 @@ public abstract class Component
   }
 
   static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
-    return (isLayoutSpec(component) && component.canMeasure());
+    return component != null
+        && component.getMountType() == MountType.NONE
+        && component.canMeasure();
   }
 
   static boolean isMountDrawableSpec(@Nullable Component component) {
@@ -1737,7 +1765,7 @@ public abstract class Component
       LayoutStateContext layoutStateContext, ComponentContext parentContext, String globalKey) {
     return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
         && !onShouldCreateLayoutWithNewSizeSpec(
-            getScopedContext(layoutStateContext, globalKey),
+            Preconditions.checkNotNull(getScopedContext(layoutStateContext, globalKey)),
             parentContext.getWidthSpec(),
             parentContext.getHeightSpec());
   }
@@ -1871,7 +1899,7 @@ public abstract class Component
       return getThis();
     }
 
-    public T accessibilityRoleDescription(CharSequence roleDescription) {
+    public T accessibilityRoleDescription(@Nullable CharSequence roleDescription) {
       mComponent.getOrCreateCommonProps().accessibilityRoleDescription(roleDescription);
       return getThis();
     }

@@ -87,7 +87,7 @@ public class LayoutStateContext {
 
   @VisibleForTesting
   LayoutStateContext(
-      final LayoutState layoutState,
+      final @Nullable LayoutState layoutState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
       final @Nullable DiffNode currentDiffTree) {

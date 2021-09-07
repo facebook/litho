@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.Component.ERROR_EVENT_HANDLER_ID;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 
 /**
@@ -40,7 +41,7 @@ public abstract class ErrorEventHandler extends EventHandler<ErrorEvent>
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     if (eventHandler.id == Component.ERROR_EVENT_HANDLER_ID) {
       final Exception e = ((ErrorEvent) eventState).exception;
-      final ComponentTree ct = ((ErrorEvent) eventState).componentTree;
+      final ComponentTree ct = Preconditions.checkNotNull(((ErrorEvent) eventState).componentTree);
       onError(ct, e);
     }
     return null;

@@ -110,7 +110,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void testKey(String testKey) {
+  public void testKey(@Nullable String testKey) {
     mPrivateFlags |= PFLAG_TEST_KEY_IS_SET;
     mTestKey = testKey;
   }
@@ -220,7 +220,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void border(Border border) {
+  public void border(@Nullable Border border) {
     getOrCreateOtherProps().border(border);
   }
 
@@ -642,7 +642,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void layerType(@LayerType int type, Paint paint) {
+  public void layerType(@LayerType int type, @Nullable Paint paint) {
     getOrCreateOtherProps().layerType(type, paint);
   }
 

@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.drawable.DrawableUtils;
 
@@ -82,7 +83,7 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  public boolean isEquivalentTo(Component o) {
+  public boolean isEquivalentTo(@Nullable Component o) {
     if (this == o) {
       return true;
     }

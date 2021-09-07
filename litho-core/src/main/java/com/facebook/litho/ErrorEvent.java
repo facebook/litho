@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -25,7 +26,7 @@ import com.facebook.litho.annotations.Event;
 @Event
 public class ErrorEvent {
   /** The {@link ComponentTree} the the error happened in. */
-  public ComponentTree componentTree;
+  public @Nullable ComponentTree componentTree;
 
   /** The exception that caused the error event to be raised. */
   public Exception exception;

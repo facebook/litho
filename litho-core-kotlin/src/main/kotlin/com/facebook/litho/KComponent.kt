@@ -45,7 +45,7 @@ abstract class KComponent : Component() {
    * Compare this component to a different one to check if they are equivalent. This is used to be
    * able to skip rendering a component again.
    */
-  final override fun isEquivalentTo(other: Component): Boolean {
+  final override fun isEquivalentTo(other: Component?): Boolean {
     if (this === other) {
       return true
     }
@@ -87,15 +87,15 @@ abstract class KComponent : Component() {
   // overriden.
 
   final override fun acceptTriggerEventImpl(
-      eventTrigger: EventTrigger<*>?,
-      eventState: Any?,
-      params: Array<out Any>?
+      eventTrigger: EventTrigger<*>,
+      eventState: Any,
+      params: Array<out Any>
   ) = super.acceptTriggerEventImpl(eventTrigger, eventState, params)
 
-  final override fun applyPreviousRenderData(previousRenderData: RenderData?) =
+  final override fun applyPreviousRenderData(previousRenderData: RenderData) =
       super.applyPreviousRenderData(previousRenderData)
 
-  final override fun bindDynamicProp(dynamicPropIndex: Int, value: Any?, content: Any?) =
+  final override fun bindDynamicProp(dynamicPropIndex: Int, value: Any?, content: Any) =
       super.bindDynamicProp(dynamicPropIndex, value, content)
 
   final override fun canMeasure() = false
@@ -109,41 +109,41 @@ abstract class KComponent : Component() {
       copyFromInterStagePropsContainer: InterStagePropsContainer?
   ) = super.copyInterStageImpl(copyIntoInterStagePropsContainer, copyFromInterStagePropsContainer)
 
-  final override fun createInitialState(c: ComponentContext?) = super.createInitialState(c)
+  final override fun createInitialState(c: ComponentContext) = super.createInitialState(c)
 
   final override fun createInterStagePropsContainer() = super.createInterStagePropsContainer()
 
   final override fun createStateContainer() = super.createStateContainer()
 
-  final override fun dispatchOnEnteredRange(c: ComponentContext?, name: String?) =
+  final override fun dispatchOnEnteredRange(c: ComponentContext, name: String) =
       super.dispatchOnEnteredRange(c, name)
 
-  final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>?, eventState: Any?) =
+  final override fun dispatchOnEventImpl(eventHandler: EventHandler<*>, eventState: Any) =
       super.dispatchOnEventImpl(eventHandler, eventState)
 
-  final override fun dispatchOnExitedRange(c: ComponentContext?, name: String?) =
+  final override fun dispatchOnExitedRange(c: ComponentContext, name: String) =
       super.dispatchOnExitedRange(c, name)
 
   internal final override fun getCommonDynamicProps() = super.getCommonDynamicProps()
 
   final override fun getDynamicProps() = super.getDynamicProps()
 
-  final override fun getExtraAccessibilityNodeAt(c: ComponentContext?, x: Int, y: Int) =
+  final override fun getExtraAccessibilityNodeAt(c: ComponentContext, x: Int, y: Int) =
       super.getExtraAccessibilityNodeAt(c, x, y)
 
-  final override fun getExtraAccessibilityNodesCount(c: ComponentContext?) =
+  final override fun getExtraAccessibilityNodesCount(c: ComponentContext) =
       super.getExtraAccessibilityNodesCount(c)
 
   final override fun getMountType() = super.getMountType()
 
   final override fun getScopedContext(
-      layoutStateContext: LayoutStateContext?,
-      globalKey: String?
+      layoutStateContext: LayoutStateContext,
+      globalKey: String
   ): ComponentContext? = super.getScopedContext(layoutStateContext, globalKey)
 
   final override fun getSimpleName(): String = super.getSimpleName()
 
-  final override fun getTreePropsForChildren(c: ComponentContext?, treeProps: TreeProps?) =
+  final override fun getTreePropsForChildren(c: ComponentContext, treeProps: TreeProps?) =
       super.getTreePropsForChildren(c, treeProps)
 
   final override fun hasAttachDetachCallback() = false
@@ -170,49 +170,49 @@ abstract class KComponent : Component() {
 
   final override fun needsPreviousRenderData() = false
 
-  final override fun onAttached(c: ComponentContext?) = super.onAttached(c)
+  final override fun onAttached(c: ComponentContext) = super.onAttached(c)
 
-  final override fun onBind(c: ComponentContext?, mountedContent: Any?) =
+  final override fun onBind(c: ComponentContext, mountedContent: Any) =
       super.onBind(c, mountedContent)
 
-  final override fun onBoundsDefined(c: ComponentContext?, layout: ComponentLayout?) =
+  final override fun onBoundsDefined(c: ComponentContext, layout: ComponentLayout) =
       super.onBoundsDefined(c, layout)
 
-  final override fun onCreateMountContent(context: Context?) = super.onCreateMountContent(context)
+  final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
   final override fun onCreateMountContentPool() = super.onCreateMountContentPool()
 
-  final override fun onCreateTransition(c: ComponentContext?) = super.onCreateTransition(c)
+  final override fun onCreateTransition(c: ComponentContext) = super.onCreateTransition(c)
 
-  final override fun onDetached(c: ComponentContext?) = super.onDetached(c)
+  final override fun onDetached(c: ComponentContext) = super.onDetached(c)
 
-  final override fun onError(c: ComponentContext?, e: Exception?) = super.onError(c, e)
+  final override fun onError(c: ComponentContext, e: Exception) = super.onError(c, e)
 
-  final override fun onLoadStyle(c: ComponentContext?) = super.onLoadStyle(c)
+  final override fun onLoadStyle(c: ComponentContext) = super.onLoadStyle(c)
 
   final override fun onMeasure(
-      c: ComponentContext?,
-      layout: ComponentLayout?,
+      c: ComponentContext,
+      layout: ComponentLayout,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size?
+      size: Size
   ) = super.onMeasure(c, layout, widthSpec, heightSpec, size)
 
-  final override fun onMeasureBaseline(c: ComponentContext?, width: Int, height: Int) =
+  final override fun onMeasureBaseline(c: ComponentContext, width: Int, height: Int) =
       super.onMeasureBaseline(c, width, height)
 
-  final override fun onMount(c: ComponentContext?, convertContent: Any?) =
+  final override fun onMount(c: ComponentContext, convertContent: Any) =
       super.onMount(c, convertContent)
 
   final override fun onPopulateAccessibilityNode(
-      c: ComponentContext?,
-      host: View?,
-      accessibilityNode: AccessibilityNodeInfoCompat?
+      c: ComponentContext,
+      host: View,
+      accessibilityNode: AccessibilityNodeInfoCompat
   ) = super.onPopulateAccessibilityNode(c, host, accessibilityNode)
 
   final override fun onPopulateExtraAccessibilityNode(
-      c: ComponentContext?,
-      accessibilityNode: AccessibilityNodeInfoCompat?,
+      c: ComponentContext,
+      accessibilityNode: AccessibilityNodeInfoCompat,
       extraNodeIndex: Int,
       componentBoundsX: Int,
       componentBoundsY: Int
@@ -220,18 +220,18 @@ abstract class KComponent : Component() {
       super.onPopulateExtraAccessibilityNode(
           c, accessibilityNode, extraNodeIndex, componentBoundsX, componentBoundsY)
 
-  final override fun onPrepare(c: ComponentContext?) = super.onPrepare(c)
+  final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
 
   final override fun onShouldCreateLayoutWithNewSizeSpec(
-      context: ComponentContext?,
+      context: ComponentContext,
       newWidthSpec: Int,
       newHeightSpec: Int
   ) = super.onShouldCreateLayoutWithNewSizeSpec(context, newWidthSpec, newHeightSpec)
 
-  final override fun onUnbind(c: ComponentContext?, mountedContent: Any?) =
+  final override fun onUnbind(c: ComponentContext, mountedContent: Any) =
       super.onUnbind(c, mountedContent)
 
-  final override fun onUnmount(c: ComponentContext?, mountedContent: Any?) =
+  final override fun onUnmount(c: ComponentContext, mountedContent: Any) =
       super.onUnmount(c, mountedContent)
 
   final override fun poolSize() = super.poolSize()
@@ -239,16 +239,14 @@ abstract class KComponent : Component() {
   final override fun populateTreeProps(parentTreeProps: TreeProps?) =
       super.populateTreeProps(parentTreeProps)
 
-  final override fun recordEventTrigger(c: ComponentContext?, container: EventTriggersContainer?) =
+  final override fun recordEventTrigger(c: ComponentContext, container: EventTriggersContainer) =
       super.recordEventTrigger(c, container)
 
-  final override fun recordRenderData(c: ComponentContext?, toRecycle: RenderData?) =
+  final override fun recordRenderData(c: ComponentContext, toRecycle: RenderData) =
       super.recordRenderData(c, toRecycle)
 
-  final override fun resolve(
-      layoutContext: LayoutStateContext,
-      c: ComponentContext
-  ): InternalNode? = super.resolve(layoutContext, c)
+  final override fun resolve(layoutContext: LayoutStateContext, c: ComponentContext): InternalNode =
+      super.resolve(layoutContext, c)
 
   final override fun shouldAlwaysRemeasure() = false
 
@@ -260,8 +258,8 @@ abstract class KComponent : Component() {
   ) = super.shouldUpdate(previous, prevStateContainer, next, nextStateContainer)
 
   final override fun transferState(
-      previousStateContainer: StateContainer?,
-      nextStateContainer: StateContainer?
+      previousStateContainer: StateContainer,
+      nextStateContainer: StateContainer
   ) = super.transferState(previousStateContainer, nextStateContainer)
 }
 

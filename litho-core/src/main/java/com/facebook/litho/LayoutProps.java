@@ -48,9 +48,9 @@ interface LayoutProps {
 
   void maxHeightPercent(float percent);
 
-  void layoutDirection(YogaDirection direction);
+  void layoutDirection(@Nullable YogaDirection direction);
 
-  void alignSelf(YogaAlign alignSelf);
+  void alignSelf(@Nullable YogaAlign alignSelf);
 
   void flex(float flex);
 
@@ -66,19 +66,19 @@ interface LayoutProps {
 
   void positionType(@Nullable YogaPositionType positionType);
 
-  void positionPx(YogaEdge edge, @Px int position);
+  void positionPx(@Nullable YogaEdge edge, @Px int position);
 
-  void positionPercent(YogaEdge edge, float percent);
+  void positionPercent(@Nullable YogaEdge edge, float percent);
 
-  void paddingPx(YogaEdge edge, @Px int padding);
+  void paddingPx(@Nullable YogaEdge edge, @Px int padding);
 
-  void paddingPercent(YogaEdge edge, float percent);
+  void paddingPercent(@Nullable YogaEdge edge, float percent);
 
-  void marginPx(YogaEdge edge, @Px int margin);
+  void marginPx(@Nullable YogaEdge edge, @Px int margin);
 
-  void marginPercent(YogaEdge edge, float percent);
+  void marginPercent(@Nullable YogaEdge edge, float percent);
 
-  void marginAuto(YogaEdge edge);
+  void marginAuto(@Nullable YogaEdge edge);
 
   void isReferenceBaseline(boolean isReferenceBaseline);
 

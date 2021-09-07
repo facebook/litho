@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RunnableHandler;
@@ -199,9 +200,8 @@ public class ComponentContext implements Cloneable {
       final LayoutStateContext layoutContext,
       final ComponentContext parentContext,
       final Component scope,
-      final String globalKey) {
+      final @Nullable String globalKey) {
     ComponentContext componentContext = parentContext.makeNewCopy();
-    componentContext.mGlobalKey = null;
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
@@ -674,9 +674,8 @@ public class ComponentContext implements Cloneable {
     return mLayoutStateContext != null ? mLayoutStateContext.get() : null;
   }
 
-  @Nullable
   public ScopedComponentInfo getScopedComponentInfo() {
-    return mScopedComponentInfo;
+    return Preconditions.checkNotNull(mScopedComponentInfo);
   }
 
   void setScopedComponentInfo(ScopedComponentInfo scopedComponentInfo) {

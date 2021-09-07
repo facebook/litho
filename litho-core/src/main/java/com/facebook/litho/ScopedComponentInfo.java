@@ -73,10 +73,14 @@ final class ScopedComponentInfo implements Cloneable {
     mComponent = info.mComponent;
 
     mStateContainer = mComponent.createStateContainer();
-    mComponent.transferState(info.mStateContainer, mStateContainer);
+    if (mStateContainer != null) {
+      mComponent.transferState(info.mStateContainer, mStateContainer);
+    }
 
     mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
-    mComponent.copyInterStageImpl(mInterStagePropsContainer, info.mInterStagePropsContainer);
+    if (mInterStagePropsContainer != null) {
+      mComponent.copyInterStageImpl(mInterStagePropsContainer, info.mInterStagePropsContainer);
+    }
 
     mContext = info.mContext.createUpdatedComponentContext(context, handler);
 

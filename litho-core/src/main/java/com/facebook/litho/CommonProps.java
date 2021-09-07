@@ -65,7 +65,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalen
   @Nullable
   String getTestKey();
 
-  void testKey(String testKey);
+  void testKey(@Nullable String testKey);
 
   @Nullable
   Object getComponentTag();
@@ -80,7 +80,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalen
 
   void duplicateChildrenStates(boolean duplicateChildrenStates);
 
-  void border(Border border);
+  void border(@Nullable Border border);
 
   void stateListAnimator(@Nullable StateListAnimator stateListAnimator);
 
@@ -199,7 +199,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps, Equivalen
 
   void transitionKeyType(@Nullable Transition.TransitionKeyType type);
 
-  void layerType(@LayerType int type, Paint paint);
+  void layerType(@LayerType int type, @Nullable Paint paint);
 
   @Nullable
   Transition.TransitionKeyType getTransitionKeyType();
