@@ -379,13 +379,14 @@ public class LayoutState
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
             null);
+    final LithoRenderUnit hostRenderUnit = hostOutput.mRenderUnit;
 
     if (hierarchy != null) {
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
     }
 
-    addMountableOutput(layoutState, hostOutput, null, null);
-    addLayoutOutputIdToPositionsMap(layoutState.mOutputsIdToPositionMap, hostOutput, 0);
+    addMountableOutput(layoutState, hostRenderUnit, null, null);
+    addLayoutOutputIdToPositionsMap(layoutState.mOutputsIdToPositionMap, hostRenderUnit, 0);
     maybeAddLayoutOutputToAffinityGroup(
         layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostOutput);
   }
@@ -960,7 +961,7 @@ public class LayoutState
                 result,
                 node,
                 layoutState,
-                convertBackground != null ? convertBackground.output : null,
+                convertBackground,
                 hierarchy,
                 background,
                 OutputUnitType.BACKGROUND,
@@ -973,7 +974,7 @@ public class LayoutState
     }
 
     // Generate the layoutOutput for the given node.
-    final LayoutOutput layoutOutput =
+    final @Nullable LayoutOutput layoutOutput =
         createGenericLayoutOutput(
             result, node, layoutState, needsHostView, shouldUseCachedOutputs, currentDiffNode);
     final @Nullable LithoRenderUnit contentRenderUnit =
@@ -1006,13 +1007,15 @@ public class LayoutState
 
       renderTreeNode =
           addMountableOutput(
-              layoutState, Preconditions.checkNotNull(layoutOutput), scopedContext, parent);
+              layoutState, Preconditions.checkNotNull(contentRenderUnit), scopedContext, parent);
       addLayoutOutputIdToPositionsMap(
           layoutState.mOutputsIdToPositionMap,
-          layoutOutput,
+          contentRenderUnit,
           layoutState.mMountableOutputs.size() - 1);
       maybeAddLayoutOutputToAffinityGroup(
-          layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.CONTENT, layoutOutput);
+          layoutState.mCurrentLayoutOutputAffinityGroup,
+          OutputUnitType.CONTENT,
+          Preconditions.checkNotNull(layoutOutput));
 
       if (diffNode != null) {
         diffNode.setContentOutput(layoutOutput.mRenderUnit);
@@ -1077,7 +1080,7 @@ public class LayoutState
               result,
               node,
               layoutState,
-              convertBorder != null ? convertBorder.output : null,
+              convertBorder,
               hierarchy,
               getBorderColorDrawable(result, node),
               OutputUnitType.BORDER,
@@ -1103,7 +1106,7 @@ public class LayoutState
                 result,
                 node,
                 layoutState,
-                convertForeground != null ? convertForeground.output : null,
+                convertForeground,
                 hierarchy,
                 foreground,
                 OutputUnitType.FOREGROUND,
@@ -1260,7 +1263,7 @@ public class LayoutState
       LithoLayoutResult result,
       InternalNode node,
       LayoutState layoutState,
-      @Nullable LayoutOutput recycle,
+      @Nullable LithoRenderUnit recycle,
       @Nullable DebugHierarchy.Node hierarchy,
       Drawable drawable,
       @OutputUnitType int type,
@@ -1271,7 +1274,7 @@ public class LayoutState
       try {
         isOutputUpdated =
             !drawableComponent.shouldComponentUpdate(
-                null, recycle.getComponent(), null, drawableComponent);
+                null, recycle.output.getComponent(), null, drawableComponent);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(result.getContext(), drawableComponent, e);
         isOutputUpdated = false;
@@ -1331,9 +1334,9 @@ public class LayoutState
   }
 
   private static void addLayoutOutputIdToPositionsMap(
-      LongSparseArray outputsIdToPositionMap, LayoutOutput layoutOutput, int position) {
+      LongSparseArray outputsIdToPositionMap, LithoRenderUnit unit, int position) {
     if (outputsIdToPositionMap != null) {
-      outputsIdToPositionMap.put(layoutOutput.getId(), position);
+      outputsIdToPositionMap.put(unit.getId(), position);
     }
   }
 
@@ -1425,11 +1428,12 @@ public class LayoutState
             outputType,
             previousId,
             isCachedOutputUpdated);
+    final LithoRenderUnit drawableRenderUnit = drawableLayoutOutput.mRenderUnit;
 
-    addMountableOutput(layoutState, drawableLayoutOutput, null, parent);
+    addMountableOutput(layoutState, drawableRenderUnit, null, parent);
     addLayoutOutputIdToPositionsMap(
         layoutState.mOutputsIdToPositionMap,
-        drawableLayoutOutput,
+        drawableRenderUnit,
         layoutState.mMountableOutputs.size() - 1);
 
     return drawableLayoutOutput;
@@ -1459,19 +1463,20 @@ public class LayoutState
 
     final LayoutOutput hostLayoutOutput =
         createHostLayoutOutput(layoutState, result, node, parent, hierarchy);
+    final LithoRenderUnit hostRenderUnit = hostLayoutOutput.mRenderUnit;
 
     if (diffNode != null) {
-      diffNode.setHostOutput(hostLayoutOutput.mRenderUnit);
+      diffNode.setHostOutput(hostRenderUnit);
     }
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
-    addMountableOutput(layoutState, hostLayoutOutput, null, parent);
+    addMountableOutput(layoutState, hostRenderUnit, null, parent);
 
     final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
 
     addLayoutOutputIdToPositionsMap(
-        layoutState.mOutputsIdToPositionMap, hostLayoutOutput, hostOutputPosition);
+        layoutState.mOutputsIdToPositionMap, hostRenderUnit, hostOutputPosition);
 
     maybeAddLayoutOutputToAffinityGroup(
         layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostLayoutOutput);
@@ -2393,9 +2398,11 @@ public class LayoutState
 
   private static RenderTreeNode addMountableOutput(
       final LayoutState layoutState,
-      final LayoutOutput layoutOutput,
+      final LithoRenderUnit unit,
       final @Nullable ComponentContext context,
       final @Nullable RenderTreeNode parent) {
+
+    final LayoutOutput layoutOutput = unit.output;
 
     final RenderTreeNode node =
         LayoutOutput.create(
@@ -2421,7 +2428,7 @@ public class LayoutState
 
     final IncrementalMountOutput incrementalMountOutput =
         new IncrementalMountOutput(
-            layoutOutput.getId(),
+            unit.getId(),
             layoutState.mMountableOutputs.size(),
             layoutOutput.getBounds(),
             parent != null
