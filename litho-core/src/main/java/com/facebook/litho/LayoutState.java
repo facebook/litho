@@ -361,8 +361,10 @@ public class LayoutState
 
   private static void addRootHostLayoutOutput(
       final LayoutState layoutState,
-      final LithoLayoutResult result,
+      final @Nullable LithoLayoutResult result,
       final @Nullable DebugHierarchy.Node hierarchy) {
+    final int width = result != null ? result.getWidth() : 0;
+    final int height = result != null ? result.getHeight() : 0;
     final LayoutOutput hostOutput =
         new LayoutOutput(
             ROOT_HOST_ID,
@@ -370,7 +372,7 @@ public class LayoutState
             OutputUnitType.HOST,
             null,
             null,
-            new Rect(0, 0, result.getWidth(), result.getHeight()),
+            new Rect(0, 0, width, height),
             0,
             0,
             0,
@@ -870,7 +872,7 @@ public class LayoutState
         ComponentsSystrace.endSection();
       }
 
-      if (nestedTree == NullLayoutResult.INSTANCE) {
+      if (nestedTree == null) {
         return;
       }
 
@@ -1614,7 +1616,7 @@ public class LayoutState
       layoutState.mRootComponentName = component.getSimpleName();
       layoutState.mIsCreateLayoutInProgress = true;
 
-      final LithoLayoutResult root;
+      final @Nullable LithoLayoutResult root;
       if (layoutCreatedInWillRender == null) {
 
         final LayoutResultHolder holder =
@@ -1663,7 +1665,7 @@ public class LayoutState
                 diffTreeRoot);
       }
 
-      final InternalNode node = root.getInternalNode();
+      final @Nullable InternalNode node = root != null ? root.getInternalNode() : null;
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(node);
@@ -1780,7 +1782,7 @@ public class LayoutState
     final RenderTreeNode root;
 
     if (mMountableOutputs.isEmpty()) {
-      addRootHostLayoutOutput(this, NullLayoutResult.INSTANCE, null);
+      addRootHostLayoutOutput(this, null, null);
     }
 
     root = mMountableOutputs.get(0);
@@ -1804,18 +1806,20 @@ public class LayoutState
     final boolean isTracing = ComponentsSystrace.isTracing();
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
-    final LithoLayoutResult root = Preconditions.checkNotNull(layoutState.mLayoutRoot);
-    final InternalNode node = root.getInternalNode();
+    final @Nullable LithoLayoutResult root = layoutState.mLayoutRoot;
+    final @Nullable InternalNode node = root != null ? root.getInternalNode() : null;
 
+    final int rootWidth = root != null ? root.getWidth() : 0;
+    final int rootHeight = root != null ? root.getHeight() : 0;
     switch (SizeSpec.getMode(widthSpec)) {
       case SizeSpec.EXACTLY:
         layoutState.mWidth = SizeSpec.getSize(widthSpec);
         break;
       case SizeSpec.AT_MOST:
-        layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
+        layoutState.mWidth = Math.min(rootWidth, SizeSpec.getSize(widthSpec));
         break;
       case SizeSpec.UNSPECIFIED:
-        layoutState.mWidth = root.getWidth();
+        layoutState.mWidth = rootWidth;
         break;
     }
 
@@ -1824,10 +1828,10 @@ public class LayoutState
         layoutState.mHeight = SizeSpec.getSize(heightSpec);
         break;
       case SizeSpec.AT_MOST:
-        layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
+        layoutState.mHeight = Math.min(rootHeight, SizeSpec.getSize(heightSpec));
         break;
       case SizeSpec.UNSPECIFIED:
-        layoutState.mHeight = root.getHeight();
+        layoutState.mHeight = rootHeight;
         break;
     }
 
@@ -1836,14 +1840,14 @@ public class LayoutState
     // Reset markers before collecting layout outputs.
     layoutState.mCurrentHostMarker = -1;
 
-    if (root == NullLayoutResult.INSTANCE) {
+    if (root == null) {
       return;
     }
 
     RenderTreeNode parent = null;
     DebugHierarchy.Node hierarchy = null;
     if (layoutState.mShouldAddHostViewForRootComponent) {
-      hierarchy = getDebugHierarchy(null, node);
+      hierarchy = node != null ? getDebugHierarchy(null, node) : null;
       addRootHostLayoutOutput(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
       layoutState.mCurrentLevel++;
@@ -1854,7 +1858,7 @@ public class LayoutState
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(c, root, node, layoutState, parent, null, hierarchy);
+    collectResults(c, root, Preconditions.checkNotNull(node), layoutState, parent, null, hierarchy);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1927,9 +1931,7 @@ public class LayoutState
       final Component nextRootComponent,
       final @Nullable LithoLayoutResult currentLayoutResult) {
 
-    if (currentLayoutResult == null
-        || currentLayoutResult == NullLayoutResult.INSTANCE
-        || !c.isReconciliationEnabled()) {
+    if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
       return false;
     }
 
@@ -2581,7 +2583,10 @@ public class LayoutState
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(getLayoutStateContext(), stateHandler);
   }
 
-  private static @Nullable TransitionId getTransitionIdForNode(InternalNode result) {
+  private static @Nullable TransitionId getTransitionIdForNode(@Nullable InternalNode result) {
+    if (result == null) {
+      return null;
+    }
     return TransitionUtils.createTransitionId(
         result.getTransitionKey(),
         result.getTransitionKeyType(),

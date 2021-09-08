@@ -304,7 +304,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   /**
    * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
-   * </code> method resolves to a {@link ComponentContext#NULL_LAYOUT}.
+   * </code> returns null.
    */
   public ComponentAssert wontRender() {
     Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
@@ -314,10 +314,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /**
-   * Assert that a given {@link Component} produces a layout that's not equivalent to {@link
-   * ComponentContext#NULL_LAYOUT}.
-   */
+  /** Assert that a given {@link Component} produces a non-null layout. */
   public ComponentAssert willRender() {
     Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
         .overridingErrorMessage("Expected Component to not render to null, but it did.")

@@ -19,7 +19,8 @@ package com.facebook.litho;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+
+import androidx.annotation.Nullable;
 
 /**
  * This should be only used with the deprecated DiffNode based testing infrastructure. This class
@@ -46,7 +47,7 @@ public class TestLayoutState {
 
     final InternalNode root = createImmediateLayout(layoutStateContext, c, component);
 
-    if (root == NULL_LAYOUT || layoutStateContext.isLayoutInterrupted()) {
+    if (root == null || layoutStateContext.isLayoutInterrupted()) {
       return root;
     }
 
@@ -55,7 +56,7 @@ public class TestLayoutState {
     return root;
   }
 
-  public static InternalNode newImmediateLayoutBuilder(
+  public static @Nullable InternalNode newImmediateLayoutBuilder(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component component) {
@@ -94,7 +95,7 @@ public class TestLayoutState {
     if (component instanceof Wrapper) {
       Component delegate = ((Wrapper) component).delegate;
       if (delegate == null) {
-        return NULL_LAYOUT;
+        return null;
       } else {
         return newImmediateLayoutBuilder(layoutStateContext, c, delegate);
       }
@@ -116,8 +117,8 @@ public class TestLayoutState {
       }
     }
 
-    if (node == null || node == NULL_LAYOUT) {
-      return NULL_LAYOUT;
+    if (node == null) {
+      return null;
     }
 
     final CommonPropsCopyable commonProps = component.getCommonPropsCopyable();
@@ -138,12 +139,12 @@ public class TestLayoutState {
     return node;
   }
 
-  static InternalNode resolveImmediateSubTree(
+  static @Nullable InternalNode resolveImmediateSubTree(
       LayoutStateContext layoutStateContext, final ComponentContext c, Component component) {
     if (component instanceof Wrapper) {
       Component delegate = ((Wrapper) component).delegate;
       if (delegate == null) {
-        return NULL_LAYOUT;
+        return null;
       } else {
         return newImmediateLayoutBuilder(layoutStateContext, c, delegate);
       }

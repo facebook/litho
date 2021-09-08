@@ -23,7 +23,6 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.Component.sMeasureFunction;
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -83,7 +82,7 @@ class Layout {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final InternalNode layout;
+    final @Nullable InternalNode layout;
     if (current == null) {
       layout = create(layoutStateContext, c, component, true);
 
@@ -121,15 +120,17 @@ class Layout {
     }
 
     LithoLayoutResult result =
-        measure(
-            layoutStateContext,
-            c,
-            layout,
-            widthSpec,
-            heightSpec,
-            current,
-            prevLayoutStateContext,
-            diff);
+        layout != null
+            ? measure(
+                layoutStateContext,
+                c,
+                layout,
+                widthSpec,
+                heightSpec,
+                current,
+                prevLayoutStateContext,
+                diff)
+            : null;
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -138,14 +139,14 @@ class Layout {
     return new LayoutResultHolder(result);
   }
 
-  public static InternalNode create(
+  public @Nullable static InternalNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component) {
     return create(layoutStateContext, parent, component, false, false, null);
   }
 
-  static InternalNode create(
+  static @Nullable InternalNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       final Component component,
@@ -153,7 +154,7 @@ class Layout {
     return create(layoutStateContext, parent, component, resolveNestedTree, false, null);
   }
 
-  static InternalNode create(
+  static @Nullable InternalNode create(
       final LayoutStateContext layoutStateContext,
       final ComponentContext parent,
       Component component,
@@ -240,13 +241,13 @@ class Layout {
       }
 
       // 7. If the layout is null then return immediately.
-      if (node == null || node == NULL_LAYOUT) {
-        return NULL_LAYOUT;
+      if (node == null) {
+        return null;
       }
 
     } catch (Exception e) {
       ComponentUtils.handleWithHierarchy(parent, component, e);
-      return NULL_LAYOUT;
+      return null;
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -323,7 +324,7 @@ class Layout {
     return node;
   }
 
-  static LithoLayoutResult create(
+  static @Nullable LithoLayoutResult create(
       final LayoutStateContext layoutStateContext,
       ComponentContext parentContext,
       final NestedTreeHolderResult holder,
@@ -365,7 +366,6 @@ class Layout {
 
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null
-            && currentLayout != NullLayoutResult.INSTANCE
             && Preconditions.checkNotNull(currentLayout.getInternalNode().getHeadComponent())
                 .canUsePreviousLayout(layoutStateContext, parentContext, globalKey)) {
           remeasure(
@@ -390,7 +390,7 @@ class Layout {
           parentContext.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          final InternalNode newNode =
+          final @Nullable InternalNode newNode =
               create(layoutStateContext, parentContext, component, true, true, globalKey);
 
           if (parentContext.useStatelessComponent()) {
@@ -398,32 +398,38 @@ class Layout {
             parentContext.setHeightSpec(prevHeightSpec);
           }
 
-          holder.getInternalNode().copyInto(newNode);
+          if (newNode != null) {
+            holder.getInternalNode().copyInto(newNode);
 
-          // If the resolved tree inherits the layout direction, then set it now.
-          if (newNode.isLayoutDirectionInherit()) {
-            newNode.layoutDirection(holder.getResolvedLayoutDirection());
+            // If the resolved tree inherits the layout direction, then set it now.
+            if (newNode.isLayoutDirectionInherit()) {
+              newNode.layoutDirection(holder.getResolvedLayoutDirection());
+            }
+
+            // Set the DiffNode for the nested tree's result to consume during measurement.
+            layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
+
+            layout =
+                measure(
+                    layoutStateContext,
+                    parentContext,
+                    newNode,
+                    widthSpec,
+                    heightSpec,
+                    null,
+                    prevLayoutStateContext,
+                    holder.getDiffNode());
+          } else {
+            layout = null;
           }
-
-          // Set the DiffNode for the nested tree's result to consume during measurement.
-          layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
-
-          layout =
-              measure(
-                  layoutStateContext,
-                  parentContext,
-                  newNode,
-                  widthSpec,
-                  heightSpec,
-                  null,
-                  prevLayoutStateContext,
-                  holder.getDiffNode());
         }
 
-        layout.setLastWidthSpec(widthSpec);
-        layout.setLastHeightSpec(heightSpec);
-        layout.setLastMeasuredHeight(layout.getHeight());
-        layout.setLastMeasuredWidth(layout.getWidth());
+        if (layout != null) {
+          layout.setLastWidthSpec(widthSpec);
+          layout.setLastHeightSpec(heightSpec);
+          layout.setLastMeasuredHeight(layout.getHeight());
+          layout.setLastMeasuredWidth(layout.getWidth());
+        }
       }
 
       holder.setNestedResult(layout);
@@ -433,8 +439,11 @@ class Layout {
       layout = currentLayout;
     }
 
-    // This is checking only nested tree roots however should be moved to check all the tree roots.
-    layout.getInternalNode().assertContextSpecificStyleNotSet();
+    if (layout != null) {
+      // This is checking only nested tree roots however should be moved to check all the tree
+      // roots.
+      layout.getInternalNode().assertContextSpecificStyleNotSet();
+    }
 
     return layout;
   }
@@ -535,18 +544,17 @@ class Layout {
     return result;
   }
 
-  static LithoLayoutResult resumeCreateAndMeasureComponent(
+  static @Nullable LithoLayoutResult resumeCreateAndMeasureComponent(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
-      final InternalNode root,
+      final @Nullable InternalNode root,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LayoutStateContext prevLayoutStateContext,
       final @Nullable DiffNode diff,
       final @Nullable PerfEvent logLayoutState) {
-
-    if (root == NULL_LAYOUT) {
-      return NullLayoutResult.INSTANCE;
+    if (root == null) {
+      return null;
     }
 
     resume(layoutStateContext, root);
@@ -594,12 +602,12 @@ class Layout {
   @VisibleForTesting
   static void remeasure(
       final LayoutStateContext layoutStateContext,
-      final LithoLayoutResult layout,
+      final @Nullable LithoLayoutResult layout,
       final int widthSpec,
       final int heightSpec,
       final @Nullable LithoLayoutResult current,
       final @Nullable LayoutStateContext prevLayoutStateContext) {
-    if (layout == NullLayoutResult.INSTANCE) { // If NULL layout result, then return immediately.
+    if (layout == null) {
       return;
     }
 

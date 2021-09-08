@@ -101,12 +101,12 @@ public final class DebugComponent {
     final LayoutState layoutState =
         componentTree == null ? null : componentTree.getMainThreadLayoutState();
     final LithoLayoutResult root = layoutState == null ? null : layoutState.getLayoutRoot();
-    if (root != null && root != NullLayoutResult.INSTANCE) {
-      final InternalNode node = root.getInternalNode();
-      final int outerWrapperComponentIndex = Math.max(0, node.getComponents().size() - 1);
-      return DebugComponent.getInstance(root, outerWrapperComponentIndex);
+    if (root == null) {
+      return null;
     }
-    return null;
+    final InternalNode node = root.getInternalNode();
+    final int outerWrapperComponentIndex = Math.max(0, node.getComponents().size() - 1);
+    return DebugComponent.getInstance(root, outerWrapperComponentIndex);
   }
 
   @Nullable

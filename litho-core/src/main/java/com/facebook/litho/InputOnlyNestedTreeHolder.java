@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-
 import android.graphics.PathEffect;
 import androidx.annotation.Nullable;
 import com.facebook.litho.InternalNode.NestedTreeHolder;
@@ -82,10 +80,6 @@ public class InputOnlyNestedTreeHolder extends InputOnlyInternalNode<NestedTreeY
 
   @Override
   public void copyInto(InternalNode target) {
-    if (target == NULL_LAYOUT) {
-      return;
-    }
-
     // If copying into an InputOnlyInternalNode the defer copying, and set this NestedTreeHolder
     // on the target. The props will be transferred to the nested result during layout calculation.
     if (target instanceof InputOnlyInternalNode) {

@@ -33,7 +33,6 @@ public class WrapperTest {
   public void testWrapperWithNullComponentReturnsNullLayout() {
     ComponentContext c = mLithoViewRule.getContext();
     Wrapper wrapper = Wrapper.create(c).delegate(null).build();
-    assertThat(NullLayoutResult.INSTANCE)
-        .isEqualTo(LithoViewRule.getRootLayout(mLithoViewRule, wrapper));
+    assertThat(LithoViewRule.getRootLayout(mLithoViewRule, wrapper)).isNull();
   }
 }

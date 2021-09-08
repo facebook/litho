@@ -354,13 +354,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
   private TestBaseComponent setUpSpyLayoutSpecWithNullLayout() {
     TestBaseComponent component =
-        spy(
-            new TestBaseComponent(
-                false,
-                MountType.NONE,
-                ComponentContext.NULL_LAYOUT,
-                false,
-                mPreviousOnErrorConfig));
+        spy(new TestBaseComponent(false, MountType.NONE, null, false, mPreviousOnErrorConfig));
 
     return component;
   }
@@ -410,7 +404,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
     @Override
     protected Component onCreateLayout(ComponentContext c) {
-      return mNode == ComponentContext.NULL_LAYOUT ? null : super.onCreateLayout(c);
+      return mNode == null ? null : super.onCreateLayout(c);
     }
 
     @Override

@@ -21,7 +21,6 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.Layout.isLayoutDirectionRTL;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -415,7 +414,8 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode child(LayoutStateContext layoutContext, ComponentContext c, Component child) {
+  public InternalNode child(
+      LayoutStateContext layoutContext, ComponentContext c, @Nullable Component child) {
     if (child != null) {
       return child(Layout.create(layoutContext, c, child));
     }
@@ -424,8 +424,8 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode child(InternalNode child) {
-    if (child != null && child != NULL_LAYOUT) {
+  public InternalNode child(@Nullable InternalNode child) {
+    if (child != null) {
       addChildAt(child, mYogaNode.getChildCount());
     }
 
@@ -1557,7 +1557,7 @@ public class DefaultInternalNode
   }
 
   @Override
-  public InternalNode reconcile(
+  public @Nullable InternalNode reconcile(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component next,
@@ -1789,7 +1789,7 @@ public class DefaultInternalNode
    * @param keys The keys of mutated components.
    * @return A new updated InternalNode.
    */
-  private static InternalNode reconcile(
+  private static @Nullable InternalNode reconcile(
       final LayoutStateContext context,
       final ComponentContext parentContext,
       final DefaultInternalNode current,

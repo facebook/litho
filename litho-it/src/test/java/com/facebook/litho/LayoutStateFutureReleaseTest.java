@@ -19,9 +19,9 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -101,7 +101,7 @@ public class LayoutStateFutureReleaseTest {
     final InternalNode result = row.resolve(layoutStateContext, c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
-    assertEquals(result, ComponentContext.NULL_LAYOUT);
+    assertNull(result);
   }
 
   @Test
@@ -135,7 +135,7 @@ public class LayoutStateFutureReleaseTest {
     final InternalNode result = column.resolve(layoutStateContext, c);
     assertTrue(child1.hasRunLayout);
     assertFalse(child2.hasRunLayout);
-    assertEquals(result, ComponentContext.NULL_LAYOUT);
+    assertNull(result);
   }
 
   // This test is similar to testMainWaitingOnBgBeforeRelease, except that the bg thread

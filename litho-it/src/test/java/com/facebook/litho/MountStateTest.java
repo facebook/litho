@@ -217,7 +217,7 @@ public class MountStateTest {
         .measure()
         .layout();
 
-    assertThat(mLithoViewRule.getCurrentRootNode()).isSameAs(NullLayoutResult.INSTANCE);
+    assertThat(mLithoViewRule.getCurrentRootNode()).isNull();
     assertThat(mLithoViewRule.getLithoView().getChildCount()).isEqualTo(0);
 
     final RenderTree tree = mLithoViewRule.getCommittedLayoutState().toRenderTree();

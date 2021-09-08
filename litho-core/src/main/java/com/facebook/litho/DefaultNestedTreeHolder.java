@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-
 import android.graphics.PathEffect;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -120,10 +118,6 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
 
   @Override
   public void copyInto(InternalNode target) {
-    if (target == NULL_LAYOUT) {
-      return;
-    }
-
     if (mNodeInfo != null) {
       if (target.getNodeInfo() == null) {
         target.setNodeInfo(mNodeInfo);

@@ -105,7 +105,7 @@ public final class Column extends Component {
   }
 
   @Override
-  protected InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
+  protected @Nullable InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
     InternalNode node =
         InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
@@ -129,7 +129,7 @@ public final class Column extends Component {
     if (children != null) {
       for (Component child : children) {
         if (layoutContext != null && layoutContext.isLayoutReleased()) {
-          return ComponentContext.NULL_LAYOUT;
+          return null;
         }
 
         if (layoutContext != null && layoutContext.isLayoutInterrupted()) {

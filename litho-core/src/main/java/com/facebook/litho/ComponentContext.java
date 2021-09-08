@@ -40,8 +40,6 @@ import java.lang.ref.WeakReference;
  */
 public class ComponentContext implements Cloneable {
 
-  public static final NoOpInternalNode NULL_LAYOUT = new NoOpInternalNode();
-
   final @Nullable Boolean mWasStatelessWhenCreated;
 
   static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";

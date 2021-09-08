@@ -52,9 +52,9 @@ public final class Wrapper extends SpecGeneratedComponent {
   }
 
   @Override
-  protected InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
+  protected @Nullable InternalNode resolve(LayoutStateContext layoutContext, ComponentContext c) {
     if (delegate == null) {
-      return ComponentContext.NULL_LAYOUT;
+      return null;
     }
 
     return Layout.create(layoutContext, c, delegate);

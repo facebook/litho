@@ -419,8 +419,8 @@ public final class ComponentTestHelper {
   }
 
   @Deprecated
-  private static List<Component> extractImmediateSubComponents(InternalNode root) {
-    if (root == null || root == ComponentContext.NULL_LAYOUT) {
+  private static List<Component> extractImmediateSubComponents(@Nullable InternalNode root) {
+    if (root == null) {
       return Collections.emptyList();
     }
 

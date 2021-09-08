@@ -679,8 +679,9 @@ public abstract class Component
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected InternalNode resolve(final LayoutStateContext layoutContext, final ComponentContext c) {
-    return Layout.create(layoutContext, c, (Component) this, false);
+  protected @Nullable InternalNode resolve(
+      final LayoutStateContext layoutContext, final ComponentContext c) {
+    return Layout.create(layoutContext, c, this, false);
   }
 
   protected final boolean useTreePropsFromContext() {
@@ -1057,7 +1058,7 @@ public abstract class Component
 
       lastMeasuredLayout = container.mResult;
 
-      if (lastMeasuredLayout == NullLayoutResult.INSTANCE) {
+      if (lastMeasuredLayout == null) {
         return;
       }
 
@@ -1124,8 +1125,9 @@ public abstract class Component
       outputSize.height = 0;
       outputSize.width = 0;
     } else {
-      outputSize.height = holder.mResult.getHeight();
-      outputSize.width = holder.mResult.getWidth();
+      final @Nullable LithoLayoutResult result = holder.mResult;
+      outputSize.height = result != null ? result.getHeight() : 0;
+      outputSize.width = result != null ? result.getWidth() : 0;
     }
   }
 
@@ -1792,8 +1794,8 @@ public abstract class Component
       final LayoutStateContext layoutStateContext,
       ComponentContext context,
       Component component,
-      InternalNode node) {
-    if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
+      @Nullable InternalNode node) {
+    if (node == null) {
       return false;
     }
 

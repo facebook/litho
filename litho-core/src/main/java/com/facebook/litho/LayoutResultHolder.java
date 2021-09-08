@@ -20,10 +20,10 @@ import androidx.annotation.Nullable;
 
 public class LayoutResultHolder {
 
-  final LithoLayoutResult mResult;
+  final @Nullable LithoLayoutResult mResult;
   final @Nullable InternalNode mPartiallyResolvedLayout;
 
-  public LayoutResultHolder(final LithoLayoutResult result) {
+  public LayoutResultHolder(final @Nullable LithoLayoutResult result) {
     mResult = result;
     mPartiallyResolvedLayout = null;
   }
