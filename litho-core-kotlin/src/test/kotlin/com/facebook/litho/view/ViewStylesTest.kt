@@ -318,9 +318,9 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent()).internalNode
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.shadowElevation).isEqualTo(elevation)
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.shadowElevation).isEqualTo(elevation)
   }
 
   /** See comment on [elevation_whenSet_isRespected] above. */
@@ -333,9 +333,9 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent()).internalNode
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.outlineProvider).isEqualTo(outlineProvider)
+    val node = LithoViewRule.getRootLayout(lithoViewRule, OutlineProviderComponent())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.outlineProvider).isEqualTo(outlineProvider)
   }
 
   /** See comment on [elevation_whenSet_isRespected] above. */
@@ -347,11 +347,11 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips()).internalNode
-    assertThat(node.getOrCreateNodeInfo().clipToOutline).isTrue
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentThatClips())?.internalNode
+    assertThat(node?.getOrCreateNodeInfo()?.clipToOutline).isTrue
 
-    node.getOrCreateNodeInfo().setClipToOutline(false)
-    assertThat(node.getOrCreateNodeInfo().clipToOutline).isFalse
+    node?.getOrCreateNodeInfo()?.setClipToOutline(false)
+    assertThat(node?.getOrCreateNodeInfo()?.clipToOutline).isFalse
   }
 
   /** See comment on [elevation_whenSet_isRespected] above. */
@@ -363,9 +363,9 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent()).internalNode
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.transitionName).isEqualTo("test")
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ElevationComponent())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.transitionName).isEqualTo("test")
   }
 
   /** See comment on [elevation_whenSet_isRespected] above. */
@@ -377,8 +377,8 @@ class ViewStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent()).internalNode
-    assertThat(node.testKey).isEqualTo("test")
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestKeyComponent())?.internalNode
+    assertThat(node?.testKey).isEqualTo("test")
   }
 
   private fun assertHasColorDrawableOfColor(componentHost: ComponentHost, color: Int) {

@@ -13,6 +13,7 @@ load(
     "LITHO_FRESCO_TARGET",
     "LITHO_JAVA_TARGET",
     "LITHO_JSR_TARGET",
+    "LITHO_KOTLIN_TARGET",
     "LITHO_PROCESSOR_TARGET",
     "LITHO_RES_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
@@ -39,17 +40,22 @@ litho_android_test_library(
 litho_android_test_library(
     name = "testing",
     srcs = glob(
-        ["*.java"],
+        [
+            "*.java",
+            "*.kt",
+        ],
         exclude = ["Whitebox.java"],
     ),
     autoglob = False,
     is_androidx = True,
+    language = "KOTLIN",
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
     ],
+    pure_kotlin = False,
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/testing:testing"),
         make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
@@ -63,6 +69,7 @@ litho_android_test_library(
         LITHO_RES_TARGET,
         LITHO_JSR_TARGET,
         LITHO_FRESCO_TARGET,
+        LITHO_KOTLIN_TARGET,
         LITHO_TESTING_WHITEBOX_TARGET,
         LITHO_YOGA_TARGET,
         LITHO_WIDGET_TARGET,

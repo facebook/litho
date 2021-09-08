@@ -87,9 +87,9 @@ class AccessibilityStylesTest {
         return Row(style = Style.width(200.px))
       }
     }
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent()).internalNode
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.onInitializeAccessibilityNodeInfoHandler).isNull()
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponent())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNull()
   }
 
   /** See comment on [onInitializeAccessibilityNodeInfo_whenNotSet_isNotSetOnView] above. */
@@ -102,8 +102,8 @@ class AccessibilityStylesTest {
         return Row(style = Style.onInitializeAccessibilityNodeInfo { eventHandler })
       }
     }
-    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler()).internalNode
-    val nodeInfo = node.orCreateNodeInfo
-    assertThat(nodeInfo.onInitializeAccessibilityNodeInfoHandler).isNotNull
+    val node = LithoViewRule.getRootLayout(lithoViewRule, TestComponentWithHandler())?.internalNode
+    val nodeInfo = node?.orCreateNodeInfo
+    assertThat(nodeInfo?.onInitializeAccessibilityNodeInfoHandler).isNotNull
   }
 }

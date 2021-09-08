@@ -16,6 +16,8 @@
 
 package com.facebook.litho.animation;
 
+import static com.facebook.litho.testing.LithoViewRuleKt.DEFAULT_HEIGHT_SPEC;
+import static com.facebook.litho.testing.LithoViewRuleKt.DEFAULT_WIDTH_SPEC;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.annotation.SuppressLint;
@@ -926,7 +928,7 @@ public class AnimationTest {
     ComponentTree nonAnimatingComponentTree = ComponentTree.create(componentContext).build();
     nonAnimatingComponentTree.setRoot(getNonAnimatingComponent());
     lithoView.setComponentTree(nonAnimatingComponentTree);
-    lithoView.measure(LithoViewRule.DEFAULT_WIDTH_SPEC, LithoViewRule.DEFAULT_HEIGHT_SPEC);
+    lithoView.measure(DEFAULT_WIDTH_SPEC, DEFAULT_HEIGHT_SPEC);
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
 
     // Now we need a new component tree that will hold a component tree that holds an animating root

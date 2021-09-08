@@ -48,7 +48,7 @@ import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
-import org.assertj.core.api.Java6Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -528,9 +528,9 @@ class FlexboxStylesTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder()).internalNode
-    Java6Assertions.assertThat(node.borderColors)
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.internalNode
+    assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
-    Java6Assertions.assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
+    assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
   }
 }

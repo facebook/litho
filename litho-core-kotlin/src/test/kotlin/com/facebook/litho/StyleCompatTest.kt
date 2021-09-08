@@ -405,10 +405,10 @@ class StyleCompatTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder()).internalNode
-    assertThat(node.borderColors)
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithBorder())?.internalNode
+    assertThat(node?.borderColors)
         .isEqualTo(intArrayOf(Color.BLUE, Color.RED, Color.BLACK, Color.WHITE))
-    assertThat(node.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
+    assertThat(node?.borderRadius).isEqualTo(floatArrayOf(5f, 6f, 7f, 8f))
   }
 
   /** See comment on [border_whenSet_isRespected] above. */
@@ -423,8 +423,8 @@ class StyleCompatTest {
       }
     }
 
-    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithTransition()).internalNode
-    assertThat(node.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
-    assertThat(node.transitionKey).isEqualTo("test")
+    val node = LithoViewRule.getRootLayout(lithoViewRule, ComponentWithTransition())?.internalNode
+    assertThat(node?.transitionKeyType).isEqualTo(Transition.TransitionKeyType.GLOBAL)
+    assertThat(node?.transitionKey).isEqualTo("test")
   }
 }

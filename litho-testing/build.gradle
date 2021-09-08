@@ -15,6 +15,8 @@
  */
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -51,8 +53,8 @@ dependencies {
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
     implementation project(':litho-processor')
-    annotationProcessor project(':litho-processor')
-    annotationProcessor project(':litho-sections-processor')
+    kapt project(':litho-processor')
+    kapt project(':litho-sections-processor')
 
     implementation deps.inferAnnotations
     implementation deps.javapoet
@@ -64,6 +66,7 @@ dependencies {
     implementation(deps.robolectric) {
         exclude group: "com.google.guava", module: "guava"
     }
+    implementation deps.kotlinStandardLib
     implementation deps.supportAppCompat
     implementation deps.textlayoutbuilder
     implementation deps.supportRecyclerView
