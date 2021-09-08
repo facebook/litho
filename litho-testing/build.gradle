@@ -50,6 +50,7 @@ android {
 dependencies {
     compileOnly project(':litho-sections-annotations')
     implementation project(':litho-core')
+    implementation project(':litho-core-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
     implementation project(':litho-processor')

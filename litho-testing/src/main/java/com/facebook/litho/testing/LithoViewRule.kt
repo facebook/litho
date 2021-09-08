@@ -17,6 +17,7 @@
 package com.facebook.litho.testing
 
 import android.content.Context
+import android.os.Looper
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentsPools
 import com.facebook.litho.LayoutState
@@ -31,9 +33,16 @@ import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor
+import com.facebook.litho.testing.subcomponents.InspectableComponent
+import com.facebook.litho.testing.viewtree.ViewPredicates
+import com.facebook.litho.testing.viewtree.ViewTree
+import com.google.common.base.Predicate
+import org.assertj.core.api.Condition
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import org.robolectric.Shadows.shadowOf
 
 @JvmField val DEFAULT_WIDTH_SPEC: Int = MeasureSpec.makeMeasureSpec(1080, MeasureSpec.EXACTLY)
 @JvmField val DEFAULT_HEIGHT_SPEC: Int = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
@@ -44,28 +53,19 @@ import org.junit.runners.model.Statement
  * ComponentTree}, width, and height specs.
  *
  * ```
- * @RunWith(LithoTestRunner.class)
- * public class LithoSampleTest {
+ *  @RunWith(AndroidJUnit4::class)
+ *  class LithoSampleTest {
  *
- *  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
- *
+ *  @Rule @JvmField val lithoViewRule = LithoViewRule()
  *  @Test
- *  public void test() {
- *     final ComponentContext c = mLithoViewRule.getContext();
- *     final Component component = MyComponent.create(c).build();
+ *  fun test() {
+ *    val testLithoView = lithoViewRule.render { TestComponent() }
  *
- *     mLithoViewRule.setRoot(component)
- *       .attachToWindow()
- *       .setRoot(component)
- *       .measure()
- *       .layout();
- *
- *     LithoView lithoView = mLithoViewRule.getLithoView();
- *
- *     // Test your assertions on the litho view.
- *  }
+ *    // or you can use setRoot/measure/layout for more fine-grained control
+ *    val lithoViewTest = lithoViewRule.attachToWindow().setRoot(TestComponent()).measure().layout()
+ *    // Test your assertions on the litho view.
+ *    }
  * }
- *
  * ```
  */
 class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null) : TestRule {
@@ -90,7 +90,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     }
   val committedLayoutState: LayoutState?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    get() = componentTree?.committedLayoutState
+    get() = componentTree.committedLayoutState
   val currentRootNode: LithoLayoutResult?
     @VisibleForTesting(otherwise = VisibleForTesting.NONE) get() = committedLayoutState?.layoutRoot
   var widthSpec = DEFAULT_WIDTH_SPEC
@@ -98,6 +98,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   lateinit var context: ComponentContext
   private var _lithoView: LithoView? = null
   private var _componentTree: ComponentTree? = null
+  private val threadLooperController: ThreadLooperController = ThreadLooperController()
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
@@ -105,8 +106,10 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         try {
           context = ComponentContext(getApplicationContext<Context>())
           context.setLayoutStateContextForTesting()
+          threadLooperController.init()
           base.evaluate()
         } finally {
+          threadLooperController.clean()
           ComponentsPools.clearMountContentPools()
           _componentTree = null
           _lithoView = null
@@ -231,6 +234,34 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     return this
   }
 
+  /** Sets the new root to render. */
+  fun render(componentFunction: ComponentScope.() -> Component): LithoView {
+    attachToWindow()
+        .setRoot(with(ComponentScope(context)) { componentFunction() })
+        .measure()
+        .layout()
+    return lithoView
+  }
+
+  /**
+   * Clicks on a [View] with the specified text in the rendered hierarchy, throwing if the view
+   * doesn't exists
+   */
+  fun clickOnText(text: String): Boolean? = findViewWithText(text)?.performClick()
+
+  /**
+   * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
+   * doesn't exists
+   */
+  fun clickOnTag(tag: String): Boolean? = findViewWithTag(tag)?.performClick()
+
+  /**
+   * Clicks on a [View] with the specified tag in the rendered hierarchy, throwing if the view
+   * doesn't exists
+   */
+  fun clickOnContentDescription(contentDescription: String): Boolean? =
+      findViewWithContentDescription(contentDescription)?.performClick()
+
   /**
    * Finds the first [View] with the specified tag in the rendered hierarchy, returning null if is
    * doesn't exist.
@@ -260,6 +291,76 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
       }
     }
     return null
+  }
+
+  /**
+   * Finds the first [View] with the specified text in the rendered hierarchy, returning null if is
+   * doesn't exist.
+   */
+  fun findViewWithTextOrNull(text: String): View? {
+    val viewTree = ViewTree.of(lithoView)
+    return findViewWithPredicateOrNull(viewTree, ViewPredicates.hasVisibleText(text))
+  }
+
+  /**
+   * Finds the first [View] with the specified text in the rendered hierarchy, throwing if it
+   * doesn't exist.
+   */
+  fun findViewWithText(text: String): View? {
+    return findViewWithTextOrNull(text)
+        ?: throw RuntimeException("Did not find view with text '$text'")
+  }
+  /**
+   * Finds the first [View] with the specified content description in the rendered hierarchy,
+   * returning null if is doesn't exist.
+   */
+  fun findViewWithContentDescriptionOrNull(contentDescription: String): View? {
+    val viewTree = ViewTree.of(lithoView)
+    return findViewWithPredicateOrNull(
+        viewTree, ViewPredicates.hasContentDescription(contentDescription))
+  }
+
+  /**
+   * Finds the first [View] with the specified content description in the rendered hierarchy,
+   * throwing if it doesn't exist.
+   */
+  fun findViewWithContentDescription(contentDescription: String): View? {
+    return findViewWithContentDescriptionOrNull(contentDescription)
+        ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
+  }
+
+  /**
+   * Returns sub-component wrapped into {@link InspectableComponent} of the given class or null if
+   * not found
+   */
+  fun findComponent(clazz: Class<out Component?>): Component? {
+    LithoViewSubComponentDeepExtractor.subComponentsDeeply().extract(lithoView).forEach {
+      if (it.componentClass == clazz) {
+        return it.component
+      }
+    }
+    return null
+  }
+  /**
+   * Returns sub-component wrapped into {@link InspectableComponent} that matched the given
+   * condition or null if not found
+   */
+  fun findComponent(condition: Condition<InspectableComponent>): InspectableComponent? {
+    return LithoViewSubComponentDeepExtractor.subComponentsDeeply().extract(lithoView).firstOrNull {
+      condition.matches(it)
+    }
+  }
+
+  private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
+    return viewTree.findChild(predicate)?.last()
+  }
+
+  /** Perform any interactions defined in this class */
+  fun act(action: LithoViewRule.() -> Unit): LithoViewRule {
+    action()
+    threadLooperController.runToEndOfTasksSync()
+    shadowOf(Looper.getMainLooper()).idle()
+    return this
   }
 
   companion object {

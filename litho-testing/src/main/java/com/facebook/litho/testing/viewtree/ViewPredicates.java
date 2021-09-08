@@ -34,7 +34,7 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowCanvas;
 
 /** A collection of useful predicates over Android views for tests */
-final class ViewPredicates {
+public final class ViewPredicates {
 
   private ViewPredicates() {}
 
