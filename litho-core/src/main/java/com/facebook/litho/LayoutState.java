@@ -2240,6 +2240,10 @@ public class LayoutState
     return mPreviousLayoutStateId;
   }
 
+  public ComponentContext getComponentContext() {
+    return mContext;
+  }
+
   /**
    * Returns the state handler instance currently held by LayoutState and nulls it afterwards.
    *

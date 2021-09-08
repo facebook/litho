@@ -79,23 +79,6 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       if (Component.isNestedTree(layoutStateContext, component)
           || result instanceof NestedTreeHolderResult) {
 
-        final int size = node.getComponents().size();
-        final ComponentContext parentContext;
-        if (size == 1) {
-          final String parentKey = result.getParent().getInternalNode().getTailComponentKey();
-          parentContext =
-              result
-                  .getParent()
-                  .getInternalNode()
-                  .getTailComponent()
-                  .getScopedContext(layoutStateContext, parentKey);
-        } else {
-          parentContext =
-              node.getComponents()
-                  .get(1)
-                  .getScopedContext(layoutStateContext, node.getComponentKeys().get(1));
-        }
-
         final LayoutState layoutState = layoutStateContext.getLayoutState();
         final @Nullable LayoutStateContext prevLayoutStateContext;
         if (layoutState == null) {
@@ -103,6 +86,27 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
               component.getSimpleName()
                   + ": To measure a component outside of a layout calculation use"
                   + " Component#measureMightNotCacheInternalNode.");
+        }
+
+        final int size = node.getComponents().size();
+        final ComponentContext parentContext;
+        if (size == 1) {
+          if (result.getParent() != null) {
+            final String parentKey = result.getParent().getInternalNode().getTailComponentKey();
+            parentContext =
+                result
+                    .getParent()
+                    .getInternalNode()
+                    .getTailComponent()
+                    .getScopedContext(layoutStateContext, parentKey);
+          } else {
+            parentContext = layoutState.getComponentContext();
+          }
+        } else {
+          parentContext =
+              node.getComponents()
+                  .get(1)
+                  .getScopedContext(layoutStateContext, node.getComponentKeys().get(1));
         }
 
         prevLayoutStateContext = layoutState.getPrevLayoutStateContext();
