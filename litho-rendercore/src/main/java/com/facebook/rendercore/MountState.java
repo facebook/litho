@@ -48,7 +48,7 @@ public class MountState implements MountDelegateTarget {
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
 
-  private boolean mEnsureParentMounted;
+  private boolean mEnsureParentMounted = true;
 
   public MountState(Host rootHost) {
     mIdToMountedItemMap = new LongSparseArray<>();
