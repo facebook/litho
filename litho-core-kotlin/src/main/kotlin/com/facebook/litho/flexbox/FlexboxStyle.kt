@@ -62,7 +62,8 @@ internal enum class FlexboxObjectField {
 
 /** Common style item for all dimen styles. See note on [FlexboxDimenField] about this pattern. */
 @PublishedApi
-internal class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dimen) : StyleItem {
+internal data class FlexboxDimenStyleItem(val field: FlexboxDimenField, val value: Dimen) :
+    StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(resourceResolver)

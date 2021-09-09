@@ -40,7 +40,7 @@ internal enum class VisibilityField {
 }
 
 @PublishedApi
-internal class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
+internal data class VisibilityStyleItem(val field: VisibilityField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

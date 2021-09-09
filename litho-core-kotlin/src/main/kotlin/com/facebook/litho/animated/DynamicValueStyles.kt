@@ -49,7 +49,8 @@ internal enum class DynamicField {
  * Common style item for all dynamic value styles. See note on [DynamicField] about this pattern.
  */
 @PublishedApi
-internal class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) : StyleItem {
+internal data class DynamicStyleItem(val field: DynamicField, val value: DynamicValue<*>) :
+    StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val dynamicProps = component.getOrCreateCommonDynamicPropsHolder()
     when (field) {

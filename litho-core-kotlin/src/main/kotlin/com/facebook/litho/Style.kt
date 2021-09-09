@@ -83,6 +83,23 @@ open class Style(
     forEach { it.applyToComponent(resourceResolver, component) }
   }
 
+  override fun equals(other: Any?): Boolean {
+    if (this === other) {
+      return true
+    }
+    if (javaClass != other?.javaClass) {
+      return false
+    }
+    other as Style
+    return previousStyle == other.previousStyle && item == other.item
+  }
+
+  override fun hashCode(): Int {
+    var result = previousStyle?.hashCode() ?: 0
+    result = 31 * result + (item?.hashCode() ?: 0)
+    return result
+  }
+
   /**
    * An empty Style singleton that can be used to build a chain of style items.
    *
@@ -102,7 +119,7 @@ open class Style(
  * Style take precedence if the two define different values for the same attribute, similar to
  * adding maps.
  */
-private class CombinedStyle(val first: Style?, val second: Style?) : Style(first, null) {
+private data class CombinedStyle(val first: Style?, val second: Style?) : Style(first, null) {
 
   override fun forEach(lambda: (StyleItem) -> Unit) {
     first?.forEach(lambda)

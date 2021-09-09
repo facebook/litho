@@ -68,7 +68,7 @@ internal enum class FloatField {
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
 @PublishedApi
-internal class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
+internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {
@@ -97,7 +97,7 @@ internal class ObjectStyleItem(val field: ObjectField, val value: Any?) : StyleI
 
 /** Common style item for all float styles. See note on [FloatField] about this pattern. */
 @PublishedApi
-internal class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
+internal data class FloatStyleItem(val field: FloatField, val value: Float) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

@@ -42,7 +42,8 @@ internal enum class AccessibilityField {
 }
 
 @PublishedApi
-internal class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) : StyleItem {
+internal data class AccessibilityStyleItem(val field: AccessibilityField, val value: Any?) :
+    StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     when (field) {

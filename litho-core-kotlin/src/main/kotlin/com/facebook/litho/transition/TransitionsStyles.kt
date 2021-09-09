@@ -28,7 +28,7 @@ import com.facebook.litho.Transition.TransitionKeyType
 import com.facebook.litho.getCommonPropsHolder
 
 @PublishedApi
-internal class TransitionKeyStyleItem(
+internal data class TransitionKeyStyleItem(
     val context: ComponentContext,
     val transitionKey: String?,
     val transitionKeyType: TransitionKeyType

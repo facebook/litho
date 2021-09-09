@@ -25,7 +25,7 @@ import org.junit.runners.JUnit4
 @RunWith(JUnit4::class)
 class StyleTest {
 
-  private class TestStyleItem(val name: String) : StyleItem {
+  private data class TestStyleItem(val name: String) : StyleItem {
     override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) = Unit
   }
 
@@ -57,6 +57,21 @@ class StyleTest {
     val combined = style1 + style2 + TestStyleItem("third")
 
     assertThat(combined.toStringList()).containsExactly("first", "second", "third")
+  }
+
+  fun Style.testStyleItem(name: String): Style = this + TestStyleItem(name)
+
+  @Test
+  fun style_equals_itemEquality() {
+    assertThat(Style.testStyleItem("A")).isEqualTo(Style.testStyleItem("A"))
+    assertThat(Style.testStyleItem("A")).isNotEqualTo(Style.testStyleItem("B"))
+
+    assertThat(Style.testStyleItem("A").testStyleItem("1"))
+        .isEqualTo(Style.testStyleItem("A").testStyleItem("1"))
+    assertThat(Style.testStyleItem("A").testStyleItem("1"))
+        .isNotEqualTo(Style.testStyleItem("B").testStyleItem("1"))
+    assertThat(Style.testStyleItem("A").testStyleItem("1"))
+        .isNotEqualTo(Style.testStyleItem("A").testStyleItem("2"))
   }
 
   private fun Style.toStringList(): List<String> {

@@ -67,7 +67,7 @@ internal enum class CoreFloatField {
 
 /** Common style item for all core dimen styles. See note on [CoreDimenField] about this pattern. */
 @PublishedApi
-internal class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : StyleItem {
+internal data class CoreDimenStyleItem(val field: CoreDimenField, val value: Dimen) : StyleItem {
   override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
     val commonProps = component.getCommonPropsHolder()
     val pixelValue = value.toPixels(resourceResolver)
