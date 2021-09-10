@@ -97,6 +97,11 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   public boolean isRecyclingDisabled() {
     return false;
   }
+  
+  @Nullable
+  public MountItemsPool.ItemPool getRecyclingPool() {
+    return null;
+  }
 
   protected Class getDescription() {
     return getClass();

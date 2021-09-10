@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
 
@@ -47,6 +48,13 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   public boolean isRecyclingDisabled() {
     // Avoid recycling hosts in Litho
     return this.output.getComponent() instanceof HostComponent;
+  }
+
+  @Override
+  @Nullable
+  public MountItemsPool.ItemPool getRecyclingPool() {
+    final MountContentPool mountContentPool = output.getComponent().onCreateMountContentPool();
+    return new MountContentPoolWrapper(mountContentPool);
   }
 
   @Override
@@ -186,6 +194,44 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final Object data) {
       final LayoutOutput output = unit.output;
       output.getComponent().unbind(getContext(data), content);
+    }
+  }
+
+  /**
+   * Default wrapper for Litho's MountContentPool to work with RenderCore's MountItemsPools. The
+   * MountContentPool is acquired via the Component's onCreateMountContentPool. RenderCore utilizes
+   * the MountItemsPool.ItemPool interface via RenderUnit's getRecyclingPool method.
+   */
+  private class MountContentPoolWrapper implements MountItemsPool.ItemPool {
+    private final MountContentPool mMountContentPool;
+
+    public MountContentPoolWrapper(MountContentPool mountContentPool) {
+      mMountContentPool = mountContentPool;
+    }
+
+    @Override
+    public Object acquire(Context c, RenderUnit renderUnit) {
+      if (!(renderUnit instanceof LithoRenderUnit)) {
+        return null;
+      }
+
+      final Component component = ((LithoRenderUnit) renderUnit).output.getComponent();
+      return mMountContentPool.acquire(c, component);
+    }
+
+    @Override
+    public void release(Object item) {
+      mMountContentPool.release(item);
+    }
+
+    @Override
+    public void maybePreallocateContent(Context c, RenderUnit renderUnit) {
+      if (!(renderUnit instanceof LithoRenderUnit)) {
+        return;
+      }
+
+      final Component component = ((LithoRenderUnit) renderUnit).output.getComponent();
+      mMountContentPool.maybePreallocateContent(c, component);
     }
   }
 }

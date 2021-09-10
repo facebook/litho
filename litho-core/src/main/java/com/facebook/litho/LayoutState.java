@@ -63,6 +63,7 @@ import com.facebook.litho.LithoLayoutResult.NestedTreeHolderResult;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
@@ -224,6 +225,8 @@ public class LayoutState
 
   final boolean mShouldDisableDrawableOutputs =
       mShouldAddHostViewForRootComponent || ComponentsConfiguration.shouldDisableBgFgOutputs;
+
+  final boolean mDelegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
 
   final Map<String, Object> mLayoutData = new HashMap<>();
 
@@ -2015,8 +2018,13 @@ public class LayoutState
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          ComponentsPools.maybePreallocateContent(
-              mContext.getAndroidContext(), component, recyclingMode);
+          if (mDelegateToRenderCoreMount) {
+            MountItemsPool.maybePreallocateContent(
+                mContext.getAndroidContext(), treeNode.getRenderUnit());
+          } else {
+            ComponentsPools.maybePreallocateContent(
+                mContext.getAndroidContext(), component, recyclingMode);
+          }
 
           if (isTracing) {
             ComponentsSystrace.endSection();

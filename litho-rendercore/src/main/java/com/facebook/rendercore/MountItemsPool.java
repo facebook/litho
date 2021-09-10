@@ -27,10 +27,13 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pools;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Pools of recycled resources.
@@ -44,7 +47,7 @@ public class MountItemsPool {
 
   private MountItemsPool() {}
 
-  private static final Map<Context, Map<Object, Pools.SimplePool>> sMountContentPoolsByContext =
+  private static final Map<Context, Map<Object, ItemPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
   // This Map is used as a set and the values are ignored.
@@ -64,12 +67,12 @@ public class MountItemsPool {
       return renderUnit.createContent(context);
     }
 
-    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getRenderContentType());
+    final ItemPool pool = getMountContentPool(context, renderUnit);
     Object content = null;
     if (pool == null) {
       return renderUnit.createContent(context);
     } else {
-      content = pool.acquire();
+      content = pool.acquire(context, renderUnit);
     }
 
     if (content == null) {
@@ -79,16 +82,23 @@ public class MountItemsPool {
     return content;
   }
 
-  static void release(Context context, RenderUnit renderUnit, Object mountContent) {
-    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getRenderContentType());
+  public static void release(Context context, RenderUnit renderUnit, Object mountContent) {
+    final ItemPool pool = getMountContentPool(context, renderUnit);
     if (pool != null) {
       pool.release(mountContent);
     }
   }
 
-  private static @Nullable Pools.SimplePool getMountContentPool(Context context, Object lifecycle) {
+  public static void maybePreallocateContent(
+      Context context, RenderUnit renderUnit) {
+    final ItemPool pool = getMountContentPool(context, renderUnit);
+    if (pool != null) {
+      pool.maybePreallocateContent(context, renderUnit);
+    }
+  }
 
-    Map<Object, Pools.SimplePool> poolsMap = sMountContentPoolsByContext.get(context);
+  private static @Nullable ItemPool getMountContentPool(Context context, RenderUnit renderUnit) {
+    Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
     if (poolsMap == null) {
       final Context rootContext = getRootContext(context);
       if (sDestroyedRootContexts.containsKey(rootContext)) {
@@ -96,15 +106,21 @@ public class MountItemsPool {
       }
 
       ensureActivityCallbacks(context);
-      poolsMap = new HashMap<Object, Pools.SimplePool>();
+      poolsMap = new HashMap<Object, ItemPool>();
       sMountContentPoolsByContext.put(context, poolsMap);
     }
+    final Object lifecycle = renderUnit.getRenderContentType();
 
-    Pools.SimplePool pool = poolsMap.get(lifecycle);
+    ItemPool pool = poolsMap.get(lifecycle);
     if (pool == null) {
-      pool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
-      poolsMap.put(lifecycle, pool);
+      pool = renderUnit.getRecyclingPool();
     }
+    
+    if (pool == null) {
+      pool = new DefaultItemPool();
+    }
+
+    poolsMap.put(lifecycle, pool);
 
     return pool;
   }
@@ -197,7 +213,7 @@ public class MountItemsPool {
     sMountContentPoolsByContext.remove(context);
 
     // Clear any context wrappers holding a reference to this activity.
-    final Iterator<Map.Entry<Context, Map<Object, Pools.SimplePool>>> it =
+    final Iterator<Map.Entry<Context, Map<Object, ItemPool>>> it =
         sMountContentPoolsByContext.entrySet().iterator();
 
     while (it.hasNext()) {
@@ -208,6 +224,19 @@ public class MountItemsPool {
     }
 
     sDestroyedRootContexts.put(getRootContext(context), true);
+  }
+  
+  @VisibleForTesting
+  public static List<ItemPool> getMountItemPools() {
+    final List<ItemPool> result = new ArrayList<>();
+    
+    for (Map<Object, ItemPool> poolMap : sMountContentPoolsByContext.values()) {
+      for (ItemPool pool : poolMap.values()) {
+        result.add(pool);
+      }
+    }
+    
+    return result;
   }
 
   /** Check whether contextWrapper is a wrapper of baseContext */
@@ -222,5 +251,52 @@ public class MountItemsPool {
     }
 
     return currentContext == baseContext;
+  }
+
+  /**
+   * Content item pools that RenderCore uses to recycle content (such as Views)
+   * @param <T> the type of content that the pool holds
+   */
+  public interface ItemPool<T> {
+    /**
+     * Acquire a pooled content item from the pool
+     * @param c the Android context
+     * @param renderUnit the RenderUnit for the item
+     * @return a pooled content item
+     */
+    T acquire(Context c, RenderUnit renderUnit);
+
+    /**
+     * Called when an item is released and can return to the pool
+     * @param item the item to release to the pool
+     */
+    void release(T item);
+
+    /**
+     * Called early in the lifecycle to allow the pool implementation to preallocate items
+     * in the pool (as released items)
+     * @param c the android context
+     * @param renderUnit the RenderUnit for the item
+     */
+    void maybePreallocateContent(Context c, RenderUnit renderUnit);
+  }
+  
+  private static class DefaultItemPool implements ItemPool {
+    private final Pools.SimplePool mPool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
+
+    @Override
+    public Object acquire(Context c, RenderUnit renderUnit) {
+      return mPool.acquire();
+    }
+
+    @Override
+    public void release(Object item) {
+      mPool.release(item);
+    }
+
+    @Override
+    public void maybePreallocateContent(Context c, RenderUnit component) {
+      // Do Nothing.
+    }
   }
 }

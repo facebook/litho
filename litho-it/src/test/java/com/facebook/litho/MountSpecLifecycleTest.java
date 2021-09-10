@@ -25,6 +25,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
@@ -33,6 +34,7 @@ import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.rendercore.MountDelegateTarget;
+import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RunnableHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -453,6 +455,53 @@ public class MountSpecLifecycleTest {
     assertThat(ComponentsPools.getMountContentPools().get(0).getName())
         .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
         .isEqualTo("PreallocatedMountSpecLifecycleTester");
+  }
+
+  @Test
+  public void onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethodsInRenderCore() {
+    // Only run when using mount delegate target - this test is specific for rendercore mountstate.
+    if (!mUseMountDelegateTarget) {
+      return;
+    }
+
+    TempComponentsConfigurations.setDelegateToRenderCoreMount(true);
+
+    final Looper looper = ShadowLooper.getLooperForThread(Thread.currentThread());
+    final ComponentTree tree =
+        ComponentTree.create(mLithoViewRule.getContext())
+            .shouldPreallocateMountContentPerMountSpec(true)
+            .preAllocateMountContentHandler(new RunnableHandler.DefaultHandler(looper))
+            .build();
+    mLithoViewRule.useComponentTree(tree);
+
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        PreallocatedMountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .steps(info)
+            .build();
+
+    mLithoViewRule
+        .getComponentTree()
+        .setRootAndSizeSpec(
+            component, mLithoViewRule.getWidthSpec(), mLithoViewRule.getHeightSpec());
+
+    mLithoViewRule.measure();
+
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods on new instance in expected order")
+        .containsExactly(
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED);
+
+    assertThat(MountItemsPool.getMountItemPools().size())
+        .describedAs("Should contain only 1 content pool")
+        .isEqualTo(1);
+
+    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
   }
 
   @Test
