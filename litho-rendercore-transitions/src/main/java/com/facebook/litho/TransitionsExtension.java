@@ -674,7 +674,7 @@ public class TransitionsExtension
       }
 
       // Moving item to the root if needed.
-      remountHostToRootIfNeeded(extensionState, index, disappearingItem);
+      remountHostToRootIfNeeded(extensionState, disappearingItem);
 
       mapDisappearingItemWithTransitionId(state, disappearingItem);
 
@@ -766,12 +766,12 @@ public class TransitionsExtension
   }
 
   private static void remountHostToRootIfNeeded(
-      ExtensionState<TransitionsExtensionState> extensionState, int index, MountItem mountItem) {
+      ExtensionState<TransitionsExtensionState> extensionState, MountItem mountItem) {
     final Host rootHost = getMountTarget(extensionState).getRootItem().getHost();
     final Host originalHost = mountItem.getHost();
     if (originalHost == null) {
       throw new IllegalStateException(
-          "Disappearing item host should never be null. Index: " + index);
+          "Disappearing item host should never be null.");
     }
 
     if (rootHost == originalHost) {
@@ -782,7 +782,7 @@ public class TransitionsExtension
     final Object content = mountItem.getContent();
     if (content == null) {
       throw new IllegalStateException(
-          "Disappearing item content should never be null. Index: " + index);
+          "Disappearing item content should never be null.");
     }
 
     // Before unmounting item get its position inside the root
@@ -819,7 +819,7 @@ public class TransitionsExtension
     BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
 
     // Mount to the root
-    rootHost.mount(index, mountItem);
+    rootHost.mount(rootHost.getMountItemCount(), mountItem);
 
     // Set new host to the MountItem
     mountItem.setHost(rootHost);
