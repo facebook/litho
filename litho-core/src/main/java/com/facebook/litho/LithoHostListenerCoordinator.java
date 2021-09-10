@@ -164,6 +164,7 @@ public class LithoHostListenerCoordinator {
     }
 
     mEndToEndTestingExtension = new EndToEndTestingExtension(mountDelegateTarget);
+    mMountDelegateTarget.registerMountDelegateExtension(mEndToEndTestingExtension);
     registerListener(mEndToEndTestingExtension);
   }
 
