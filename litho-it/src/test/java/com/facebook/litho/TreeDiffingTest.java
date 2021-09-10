@@ -61,6 +61,7 @@ import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -273,6 +274,7 @@ public class TreeDiffingTest {
     checkAllComponentsHaveMeasureCache(layoutTreeRoot);
   }
 
+  @Ignore("t100378826")
   @Test
   public void testPartiallyCachedMeasures() {
     final Component component1 = new TestLayoutSpec(false);
