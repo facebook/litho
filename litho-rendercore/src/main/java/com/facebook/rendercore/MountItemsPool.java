@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Pools of recycled resources.
@@ -89,8 +88,7 @@ public class MountItemsPool {
     }
   }
 
-  public static void maybePreallocateContent(
-      Context context, RenderUnit renderUnit) {
+  public static void maybePreallocateContent(Context context, RenderUnit renderUnit) {
     final ItemPool pool = getMountContentPool(context, renderUnit);
     if (pool != null) {
       pool.maybePreallocateContent(context, renderUnit);
@@ -115,7 +113,7 @@ public class MountItemsPool {
     if (pool == null) {
       pool = renderUnit.getRecyclingPool();
     }
-    
+
     if (pool == null) {
       pool = new DefaultItemPool();
     }
@@ -225,17 +223,17 @@ public class MountItemsPool {
 
     sDestroyedRootContexts.put(getRootContext(context), true);
   }
-  
+
   @VisibleForTesting
   public static List<ItemPool> getMountItemPools() {
     final List<ItemPool> result = new ArrayList<>();
-    
+
     for (Map<Object, ItemPool> poolMap : sMountContentPoolsByContext.values()) {
       for (ItemPool pool : poolMap.values()) {
         result.add(pool);
       }
     }
-    
+
     return result;
   }
 
@@ -255,11 +253,13 @@ public class MountItemsPool {
 
   /**
    * Content item pools that RenderCore uses to recycle content (such as Views)
+   *
    * @param <T> the type of content that the pool holds
    */
   public interface ItemPool<T> {
     /**
      * Acquire a pooled content item from the pool
+     *
      * @param c the Android context
      * @param renderUnit the RenderUnit for the item
      * @return a pooled content item
@@ -268,19 +268,21 @@ public class MountItemsPool {
 
     /**
      * Called when an item is released and can return to the pool
+     *
      * @param item the item to release to the pool
      */
     void release(T item);
 
     /**
-     * Called early in the lifecycle to allow the pool implementation to preallocate items
-     * in the pool (as released items)
+     * Called early in the lifecycle to allow the pool implementation to preallocate items in the
+     * pool (as released items)
+     *
      * @param c the android context
      * @param renderUnit the RenderUnit for the item
      */
     void maybePreallocateContent(Context c, RenderUnit renderUnit);
   }
-  
+
   private static class DefaultItemPool implements ItemPool {
     private final Pools.SimplePool mPool = new Pools.SimplePool(DEFAULT_POOL_SIZE);
 

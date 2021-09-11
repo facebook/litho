@@ -770,8 +770,7 @@ public class TransitionsExtension
     final Host rootHost = getMountTarget(extensionState).getRootItem().getHost();
     final Host originalHost = mountItem.getHost();
     if (originalHost == null) {
-      throw new IllegalStateException(
-          "Disappearing item host should never be null.");
+      throw new IllegalStateException("Disappearing item host should never be null.");
     }
 
     if (rootHost == originalHost) {
@@ -781,8 +780,7 @@ public class TransitionsExtension
 
     final Object content = mountItem.getContent();
     if (content == null) {
-      throw new IllegalStateException(
-          "Disappearing item content should never be null.");
+      throw new IllegalStateException("Disappearing item content should never be null.");
     }
 
     // Before unmounting item get its position inside the root
