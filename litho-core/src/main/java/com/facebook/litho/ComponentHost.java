@@ -1210,14 +1210,6 @@ public class ComponentHost extends Host implements DisappearingHost {
       }
     }
 
-    // Set a sentinel value for all indices we didn't set in this update - that way we can tell
-    // if we wrongly try to read the index of a child we weren't expecting. Using -2 since -1 is
-    // returned from indexOfChild
-    final int length = mChildDrawingOrder.length;
-    for (int i = index; i < length; i++) {
-      mChildDrawingOrder[i] = -2;
-    }
-
     mIsChildDrawingOrderDirty = false;
   }
 
