@@ -23,7 +23,6 @@ import com.facebook.litho.Transition;
 import com.facebook.litho.TransitionId;
 import com.facebook.rendercore.MountDelegateInput;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.rendercore.RenderUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -58,9 +57,11 @@ public interface TransitionsExtensionInput extends MountDelegateInput {
   @Nullable
   TransitionId getRootTransitionId();
 
+  @Nullable
   AnimatableItem getAnimatableRootItem();
 
-  AnimatableItem getAnimatableItem(RenderUnit renderUnit);
+  @Nullable
+  AnimatableItem getAnimatableItem(long id);
 
   boolean renderUnitWithIdHostsRenderTrees(long id);
 

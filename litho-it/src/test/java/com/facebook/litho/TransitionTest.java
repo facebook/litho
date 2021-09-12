@@ -123,11 +123,11 @@ public class TransitionTest {
           }
         };
 
-    LayoutOutput rootLayout =
-        new LayoutOutput(
+    LithoRenderUnit rootUnit =
+        LithoRenderUnit.create(
             0,
             component,
-            OutputUnitType.CONTENT,
+            null,
             null,
             null,
             new Rect(0, 0, 300, 100),
@@ -141,7 +141,7 @@ public class TransitionTest {
             null);
 
     when(layoutState.getMountableOutputAt(0))
-        .thenReturn(LayoutOutput.create(rootLayout, new Rect(0, 0, 300, 100), null, null));
+        .thenReturn(LithoRenderUnit.create(rootUnit, new Rect(0, 0, 300, 100), null));
 
     int animateFrom =
         (int)
@@ -177,11 +177,11 @@ public class TransitionTest {
           }
         };
 
-    LayoutOutput rootLayout =
-        new LayoutOutput(
+    LithoRenderUnit unit =
+        LithoRenderUnit.create(
             0,
             component,
-            OutputUnitType.CONTENT,
+            null,
             null,
             null,
             new Rect(0, 0, 300, 100),
@@ -196,17 +196,14 @@ public class TransitionTest {
 
     when(layoutState.getAnimatableRootItem())
         .thenReturn(
-            ((LithoRenderUnit)
-                    LayoutOutput.create(rootLayout, new Rect(0, 0, 300, 100), null, null)
-                        .getRenderUnit())
-                .output);
+            new LithoAnimtableItem(0, new Rect(0, 0, 300, 100), OutputUnitType.CONTENT, null, null));
 
     int animateFrom =
         (int)
             Transition.getRootAppearFromValue(
                 rootHeightTransition.appearTransition, layoutState, AnimatedProperties.HEIGHT);
 
-    float expectedAppearFrom = rootLayout.getBounds().height() * 1.5f;
+    float expectedAppearFrom = unit.output.getBounds().height() * 1.5f;
     assertThat(animateFrom).isEqualTo((int) expectedAppearFrom);
   }
 }

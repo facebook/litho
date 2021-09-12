@@ -38,7 +38,6 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLERS_TOTAL_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIME;
-import static com.facebook.litho.LayoutOutput.getComponentContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
@@ -46,6 +45,7 @@ import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.LithoMountData.isViewSelected;
+import static com.facebook.litho.LithoRenderUnit.getComponentContext;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
@@ -622,7 +622,7 @@ class MountState implements MountDelegateTarget {
           mTransitionsExtensionState,
           mountItem.getRenderTreeNode().getRenderUnit(),
           output,
-          mountItem.getContent());
+          mountItem.getRenderTreeNode().getLayoutData());
     } else if (mMountDelegate != null) {
       mMountDelegate.onUnmountItem(
           mountItem.getRenderTreeNode().getRenderUnit(), output, mountItem.getContent());

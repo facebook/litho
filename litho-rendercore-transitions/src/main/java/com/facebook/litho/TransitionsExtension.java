@@ -81,6 +81,7 @@ public class TransitionsExtension
   }
 
   static class TransitionsExtensionState {
+
     private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
         new LinkedHashMap<>();
     private static final int UNSET = -1;
@@ -257,7 +258,7 @@ public class TransitionsExtension
     final AnimatableItem animatableItem;
 
     if (state.mInput != null) {
-      animatableItem = state.mInput.getAnimatableItem(renderUnit);
+      animatableItem = state.mInput.getAnimatableItem(renderUnit.getId());
     } else {
       animatableItem = null;
     }
@@ -395,7 +396,7 @@ public class TransitionsExtension
         final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
         if (extensionState.ownsReference(renderTreeNode.getRenderUnit().getId())) {
           final AnimatableItem animatableItem =
-              input.getAnimatableItem(renderTreeNode.getRenderUnit());
+              input.getAnimatableItem(renderTreeNode.getRenderUnit().getId());
           Log.d(
               extensionState.getState().mDebugTag,
               ""
@@ -537,7 +538,11 @@ public class TransitionsExtension
 
     final AnimatableItem animatableItem =
         state.mLastTransitionsExtensionInput.getAnimatableItem(
-            state.mLastTransitionsExtensionInput.getMountableOutputAt(index).getRenderUnit());
+            state
+                .mLastTransitionsExtensionInput
+                .getMountableOutputAt(index)
+                .getRenderUnit()
+                .getId());
 
     final TransitionId transitionId = animatableItem.getTransitionId();
     if (transitionId == null) {
@@ -656,11 +661,12 @@ public class TransitionsExtension
       for (int i = index; i <= lastDescendantIndex; i++) {
         mountItemAtIndexIfNeeded(i, extensionState);
 
-        final RenderUnit renderUnit =
-            mountTarget.getMountItemAt(i).getRenderTreeNode().getRenderUnit();
+        final RenderTreeNode node = mountTarget.getMountItemAt(i).getRenderTreeNode();
+        final RenderUnit renderUnit = node.getRenderUnit();
 
         state.mLockedDisappearingMountitems.put(
-            renderUnit, state.mLastTransitionsExtensionInput.getAnimatableItem(renderUnit));
+            renderUnit,
+            state.mLastTransitionsExtensionInput.getAnimatableItem(node.getRenderUnit().getId()));
       }
 
       // Reference to the root of the disappearing subtree
@@ -740,7 +746,7 @@ public class TransitionsExtension
       TransitionsExtensionState state, MountItem item) {
     final AnimatableItem animatableItem =
         state.mLastTransitionsExtensionInput.getAnimatableItem(
-            item.getRenderTreeNode().getRenderUnit());
+            item.getRenderTreeNode().getRenderUnit().getId());
     final TransitionId transitionId = animatableItem.getTransitionId();
     OutputUnitsAffinityGroup<MountItem> disappearingGroup =
         state.mDisappearingMountItems.get(transitionId);
@@ -843,7 +849,7 @@ public class TransitionsExtension
         continue;
       }
       final AnimatableItem animatableItem =
-          state.mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit());
+          state.mInput.getAnimatableItem(mountItem.getRenderTreeNode().getRenderUnit().getId());
 
       if (animatableItem.getTransitionId() == null) {
         continue;

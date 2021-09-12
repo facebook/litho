@@ -34,7 +34,7 @@ import java.lang.annotation.RetentionPolicy;
  * mount a component.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-class LayoutOutput implements Cloneable, AnimatableItem {
+class LayoutOutput implements Cloneable {
   public static final int STATE_UNKNOWN = 0;
   public static final int STATE_UPDATED = 1;
   public static final int STATE_DIRTY = 2;
@@ -62,17 +62,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final @Nullable TransitionId mTransitionId;
   private final long mHostMarker; // TODO: remove
 
-  private final long mId; // TODO: remove
-  private final @OutputUnitType int mOutputType;
   private final int mIndex; // TODO: remove
   private final int mUpdateState;
 
-  final LithoRenderUnit mRenderUnit; // TODO: remove
-
   public LayoutOutput(
-      final long id,
       final Component component,
-      final @OutputUnitType int outputType,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
       final Rect bounds,
@@ -89,8 +83,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
     }
 
-    mId = id;
-    mOutputType = outputType;
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
@@ -106,68 +98,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
             : importantForAccessibility;
     mTransitionId = transitionId;
     mUpdateState = updateState;
-
-    // Initialise the RenderUnit only after completely initialising this LayoutOutput.
-    mRenderUnit = new LithoRenderUnit(mId, this);
   }
 
   Component getComponent() {
     return mComponent;
   }
 
-  @Override
   public Rect getBounds() {
     return mBounds;
-  }
-
-  @Override
-  public float getScale() {
-    return mNodeInfo != null ? mNodeInfo.getScale() : 1;
-  }
-
-  @Override
-  public float getAlpha() {
-    return mNodeInfo != null ? mNodeInfo.getAlpha() : 1;
-  }
-
-  @Override
-  public float getRotation() {
-    return mNodeInfo != null ? mNodeInfo.getRotation() : 0;
-  }
-
-  @Override
-  public float getRotationX() {
-    return mNodeInfo != null ? mNodeInfo.getRotationX() : 0;
-  }
-
-  @Override
-  public float getRotationY() {
-    return mNodeInfo != null ? mNodeInfo.getRotationY() : 0;
-  }
-
-  @Override
-  public boolean isScaleSet() {
-    return mNodeInfo != null && mNodeInfo.isScaleSet();
-  }
-
-  @Override
-  public boolean isAlphaSet() {
-    return mNodeInfo != null && mNodeInfo.isAlphaSet();
-  }
-
-  @Override
-  public boolean isRotationSet() {
-    return mNodeInfo != null && mNodeInfo.isRotationSet();
-  }
-
-  @Override
-  public boolean isRotationXSet() {
-    return mNodeInfo != null && mNodeInfo.isRotationXSet();
-  }
-
-  @Override
-  public boolean isRotationYSet() {
-    return mNodeInfo != null && mNodeInfo.isRotationYSet();
   }
 
   int getFlags() {
@@ -181,11 +119,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
    */
   long getHostMarker() {
     return mHostMarker;
-  }
-
-  @Override
-  public long getId() {
-    return mId;
   }
 
   int getIndex() {
@@ -229,31 +162,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mViewNodeInfo;
   }
 
-  @Nullable
-  public TransitionId getTransitionId() {
+  public @Nullable TransitionId getTransitionId() {
     return mTransitionId;
-  }
-
-  @Override
-  public @OutputUnitType int getOutputType() {
-    return mOutputType;
-  }
-
-  static RenderTreeNode create(
-      final LayoutOutput output,
-      final Rect bounds,
-      final @Nullable ComponentContext context,
-      final @Nullable RenderTreeNode parent) {
-
-    return new RenderTreeNode(
-        parent,
-        output.mRenderUnit,
-        context != null
-            ? context.useStatelessComponent() ? context.getScopedComponentInfo() : context
-            : null,
-        bounds,
-        output.getViewNodeInfo() != null ? output.getViewNodeInfo().getPadding() : null,
-        parent != null ? parent.getChildrenCount() : 0);
   }
 
   static LayoutOutput getLayoutOutput(RenderTreeNode node) {
@@ -262,14 +172,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   static LayoutOutput getLayoutOutput(MountItem item) {
     return getLayoutOutput(item.getRenderTreeNode());
-  }
-
-  static @Nullable ComponentContext getComponentContext(RenderTreeNode node) {
-    return LithoRenderUnit.getContext(node.getLayoutData());
-  }
-
-  static @Nullable ComponentContext getComponentContext(MountItem item) {
-    return getComponentContext(item.getRenderTreeNode());
   }
 
   static boolean isDuplicateParentState(int flags) {
@@ -286,13 +188,5 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   static boolean areDrawableOutputsDisabled(int flags) {
     return (flags & LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED) != 0;
-  }
-
-  static Rect getMountBounds(Rect outRect, Rect bounds, int x, int y) {
-    outRect.left = bounds.left - x;
-    outRect.top = bounds.top - y;
-    outRect.right = bounds.right - x;
-    outRect.bottom = bounds.bottom - y;
-    return outRect;
   }
 }

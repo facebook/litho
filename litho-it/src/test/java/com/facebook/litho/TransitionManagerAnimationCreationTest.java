@@ -377,12 +377,12 @@ public class TransitionManagerAnimationCreationTest {
 
   /** @return a mock LayoutState that only has a transition key -> LayoutOutput mapping. */
   private LayoutState createMockLayoutState(
-      TransitionSet transitions, LayoutOutput... layoutOutputs) {
+      TransitionSet transitions, AnimatableItem... animatableItems) {
     final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> transitionIdMapping =
         new LinkedHashMap<>();
-    for (int i = 0; i < layoutOutputs.length; i++) {
-      final LayoutOutput layoutOutput = layoutOutputs[i];
-      final TransitionId transitionId = layoutOutput.getTransitionId();
+    for (int i = 0; i < animatableItems.length; i++) {
+      final AnimatableItem animatableItem = animatableItems[i];
+      final TransitionId transitionId = animatableItem.getTransitionId();
       if (transitionId == null) {
         continue;
       }
@@ -392,8 +392,8 @@ public class TransitionManagerAnimationCreationTest {
         transitionIdMapping.put(transitionId, group);
       }
       final @OutputUnitType int type =
-          LayoutStateOutputIdCalculator.getLevelFromId(layoutOutput.getId());
-      group.add(type, layoutOutput);
+          LayoutStateOutputIdCalculator.getLevelFromId(animatableItem.getId());
+      group.add(type, animatableItem);
     }
 
     final LayoutState layoutState = mock(LayoutState.class);
@@ -414,18 +414,17 @@ public class TransitionManagerAnimationCreationTest {
   }
 
   /** @return a mock LayoutOutput with a transition key and dummy bounds. */
-  private static LayoutOutput createMockLayoutOutput(String transitionKey, int x, int y) {
+  private static AnimatableItem createMockLayoutOutput(String transitionKey, int x, int y) {
     return createMockLayoutOutput(transitionKey, x, y, 100, 100);
   }
 
   /** @return a mock LayoutOutput with a transition key and bounds. */
-  private static LayoutOutput createMockLayoutOutput(
+  private static AnimatableItem createMockLayoutOutput(
       String transitionKey, int x, int y, int width, int height) {
-    final LayoutOutput layoutOutput = mock(LayoutOutput.class);
     final TransitionId transitionId =
         new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
-    when(layoutOutput.getTransitionId()).thenReturn(transitionId);
-    when(layoutOutput.getBounds()).thenReturn(new Rect(x, y, x + width, y + height));
-    return layoutOutput;
+    final Rect bounds = new Rect(x, y, x + width, y + height);
+
+    return new LithoAnimtableItem(0, bounds, OutputUnitType.CONTENT, null, transitionId);
   }
 }

@@ -36,11 +36,11 @@ public class MountItemTestHelper {
       int importantForAccessibility,
       int orientation,
       TransitionId transitionId) {
-    LayoutOutput output =
-        new LayoutOutput(
+    LithoRenderUnit unit =
+        LithoRenderUnit.create(
             0,
             component,
-            OutputUnitType.CONTENT,
+            null,
             info,
             viewInfo,
             bounds != null ? bounds : new Rect(),
@@ -52,8 +52,7 @@ public class MountItemTestHelper {
             importantForAccessibility,
             LayoutOutput.STATE_UNKNOWN,
             transitionId);
-    RenderTreeNode node =
-        LayoutOutput.create(output, bounds != null ? bounds : new Rect(), null, null);
+    RenderTreeNode node = LithoRenderUnit.create(unit, bounds != null ? bounds : new Rect(), null);
     MountItem item = new MountItem(node, host, content);
     item.setMountData(new LithoMountData(content));
     return item;

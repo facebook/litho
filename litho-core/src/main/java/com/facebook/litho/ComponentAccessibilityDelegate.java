@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getComponentContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+import static com.facebook.litho.LithoRenderUnit.getComponentContext;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;

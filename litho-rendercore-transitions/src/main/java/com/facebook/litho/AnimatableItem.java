@@ -30,7 +30,7 @@ public interface AnimatableItem {
   @OutputUnitType
   int getOutputType();
 
-  Rect getBounds();
+  Rect getAbsoluteBounds();
 
   float getScale();
 

@@ -70,9 +70,7 @@ public class LayoutOutputTest {
       int flags,
       long hostMarker) {
     return new LayoutOutput(
-        id,
         mTestComponent,
-        outputType,
         null,
         null,
         rect,
@@ -205,7 +203,7 @@ public class LayoutOutputTest {
             0, OutputUnitType.CONTENT, new Rect(10, 10, 10, 10), 0, 0, 0, 0);
 
     Rect mountBounds = new Rect();
-    LayoutOutput.getMountBounds(
+    LithoRenderUnit.getMountBounds(
         mountBounds,
         layoutOutput.getBounds(),
         layoutOutput.mHostTranslationX,
@@ -221,7 +219,7 @@ public class LayoutOutputTest {
             0, OutputUnitType.CONTENT, new Rect(10, 10, 10, 10), 5, 2, 0, 0);
 
     Rect mountBounds = new Rect();
-    LayoutOutput.getMountBounds(
+    LithoRenderUnit.getMountBounds(
         mountBounds,
         layoutOutput.getBounds(),
         layoutOutput.mHostTranslationX,

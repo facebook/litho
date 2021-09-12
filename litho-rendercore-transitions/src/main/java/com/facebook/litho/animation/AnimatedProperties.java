@@ -125,7 +125,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(AnimatableItem animatableItem) {
-      return animatableItem.getBounds().left;
+      return animatableItem.getAbsoluteBounds().left;
     }
 
     @Override
@@ -182,7 +182,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(AnimatableItem animatableItem) {
-      return animatableItem.getBounds().top;
+      return animatableItem.getAbsoluteBounds().top;
     }
 
     @Override
@@ -235,7 +235,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(AnimatableItem animatableItem) {
-      return animatableItem.getBounds().width();
+      return animatableItem.getAbsoluteBounds().width();
     }
 
     @Override
@@ -302,7 +302,7 @@ public final class AnimatedProperties {
 
     @Override
     public float get(AnimatableItem animatableItem) {
-      return animatableItem.getBounds().height();
+      return animatableItem.getAbsoluteBounds().height();
     }
 
     @Override

@@ -278,11 +278,11 @@ public class MountItemTest {
 
   @Test
   public void testUpdateDoesntChangeFlags() {
-    LayoutOutput output =
-        new LayoutOutput(
+    LithoRenderUnit unit =
+        LithoRenderUnit.create(
             0,
             mComponent,
-            OutputUnitType.CONTENT,
+            mContext,
             mNodeInfo,
             null,
             new Rect(0, 0, 0, 0),
@@ -294,7 +294,7 @@ public class MountItemTest {
             0,
             LayoutOutput.STATE_UNKNOWN,
             null);
-    RenderTreeNode node = LayoutOutput.create(output, new Rect(0, 0, 0, 0), null, null);
+    RenderTreeNode node = LithoRenderUnit.create(unit, new Rect(0, 0, 0, 0), null);
 
     View view = new View(getApplicationContext());
 

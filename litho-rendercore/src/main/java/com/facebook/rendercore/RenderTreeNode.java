@@ -51,8 +51,8 @@ public class RenderTreeNode {
     mRenderUnit = renderUnit;
     mLayoutData = layoutData;
     mBounds = bounds;
-    mAbsoluteX = parent != null ? parent.getAbsoluteX() + bounds.left : 0;
-    mAbsoluteY = parent != null ? parent.getAbsoluteY() + bounds.top : 0;
+    mAbsoluteX = parent != null ? parent.getAbsoluteX() + bounds.left : bounds.left;
+    mAbsoluteY = parent != null ? parent.getAbsoluteY() + bounds.top : bounds.top;
     mResolvedPadding = resolvedPadding;
     mPositionInParent = positionInParent;
   }
@@ -69,11 +69,11 @@ public class RenderTreeNode {
     return mBounds;
   }
 
-  int getAbsoluteX() {
+  public int getAbsoluteX() {
     return mAbsoluteX;
   }
 
-  int getAbsoluteY() {
+  public int getAbsoluteY() {
     return mAbsoluteY;
   }
 

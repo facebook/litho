@@ -21,7 +21,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import androidx.annotation.Nullable;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountDelegate;
@@ -34,6 +36,7 @@ import com.facebook.rendercore.incrementalmount.IncrementalMountExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionInput;
 import com.facebook.rendercore.incrementalmount.IncrementalMountOutput;
+import com.facebook.rendercore.testing.SimpleDrawableUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -161,12 +164,12 @@ public class IncrementalMountExtensionTest {
 
         final LayoutOutput layoutOutput = mock(LayoutOutput.class);
         RenderTreeNode renderTreeNode = mock(RenderTreeNode.class);
-        when(renderTreeNode.getLayoutData()).thenReturn(layoutOutput);
+        when(renderTreeNode.getLayoutData()).thenReturn(mock(LithoAnimtableItem.class));
         when(renderTreeNode.getAbsoluteBounds(any(Rect.class))).thenReturn(bounds);
         when(layoutOutput.getComponent()).thenReturn(mock(Component.class));
         when(layoutOutput.getBounds()).thenReturn(bounds);
 
-        RenderUnit renderUnit = new LithoRenderUnit(i, layoutOutput);
+        RenderUnit renderUnit = new SimpleDrawableUnit(new ColorDrawable(Color.BLACK), i);
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);
 
         mountableOutputs.add(renderTreeNode);

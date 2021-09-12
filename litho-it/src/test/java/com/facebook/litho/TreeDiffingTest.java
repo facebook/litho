@@ -26,7 +26,6 @@ import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.LayoutState.createDiffNode;
-import static com.facebook.litho.OutputUnitType.CONTENT;
 import static com.facebook.litho.SizeSpec.getMode;
 import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -293,18 +292,25 @@ public class TreeDiffingTest {
     DiffNode node = prevLayoutState.getDiffTree();
     final LayoutStateContext prev = prevLayoutState.getLayoutStateContext();
 
+    ComponentContext context = new ComponentContext(mLithoViewRule.getContext());
+    context.setLayoutStateContext(LayoutStateContext.getTestInstance(context));
+    component2.setScopedContext(context);
+    DefaultInternalNode newInternalNode =
+        (DefaultInternalNode) Layout.create(context.getLayoutStateContext(), c, component2);
+    newInternalNode.setLayoutStateContextRecursively(context.getLayoutStateContext());
+
     LithoLayoutResult layoutTreeRoot =
         Layout.measure(
-            c.getLayoutStateContext(),
-            c,
-            createInternalNodeForMeasurableComponent(component2),
+            context.getLayoutStateContext(),
+            context,
+            newInternalNode,
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
             null,
             prev,
             node);
     Layout.applyDiffNodeToUnchangedNodes(
-        c.getLayoutStateContext(),
+        context.getLayoutStateContext(),
         layoutTreeRoot,
         true,
         prevLayoutState.getLayoutStateContext(),
@@ -832,11 +838,11 @@ public class TreeDiffingTest {
   }
 
   private static RenderTreeNode createNode(final Component component) {
-    LayoutOutput output =
-        new LayoutOutput(
+    LithoRenderUnit unit =
+        LithoRenderUnit.create(
             0,
             component,
-            CONTENT,
+            null,
             null,
             null,
             new Rect(),
@@ -848,7 +854,7 @@ public class TreeDiffingTest {
             0,
             LayoutOutput.STATE_UNKNOWN,
             null);
-    return LayoutOutput.create(output, new Rect(), null, null);
+    return LithoRenderUnit.create(unit, new Rect(), null);
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {

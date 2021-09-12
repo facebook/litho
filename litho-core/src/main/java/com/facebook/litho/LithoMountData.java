@@ -21,6 +21,7 @@ import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.View;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
@@ -113,11 +114,11 @@ public class LithoMountData {
   static MountItem createRootHostMountItem(LithoView lithoView) {
     final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-    LayoutOutput output =
-        new LayoutOutput(
+    final LithoRenderUnit unit =
+        LithoRenderUnit.create(
             ROOT_HOST_ID,
             HostComponent.create(),
-            OutputUnitType.HOST,
+            null,
             null,
             viewNodeInfo,
             lithoView.getPreviousMountBounds(),
@@ -130,11 +131,9 @@ public class LithoMountData {
             LayoutOutput.STATE_DIRTY,
             null);
 
-    MountItem item =
-        new MountItem(
-            LayoutOutput.create(output, lithoView.getPreviousMountBounds(), null, null),
-            lithoView,
-            lithoView);
+    final Rect bounds = lithoView.getPreviousMountBounds();
+
+    MountItem item = new MountItem(LithoRenderUnit.create(unit, bounds, null), lithoView, lithoView);
     item.setMountData(new LithoMountData(lithoView));
     return item;
   }
