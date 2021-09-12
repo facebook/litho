@@ -54,8 +54,6 @@ class LayoutOutput implements Cloneable {
   private @Nullable DebugHierarchy.Node mHierarchy; // TODO: remove
   private final Component mComponent;
   private final Rect mBounds; // TODO: remove
-  final int mHostTranslationX; // TODO: remove
-  final int mHostTranslationY; // TODO: remove
   private final int mFlags;
 
   private final int mImportantForAccessibility;
@@ -71,8 +69,6 @@ class LayoutOutput implements Cloneable {
       final @Nullable ViewNodeInfo viewNodeInfo,
       final Rect bounds,
       final int index,
-      final int hostTranslationX,
-      final int hostTranslationY,
       final int flags,
       final long hostMarker,
       final int importantForAccessibility,
@@ -88,8 +84,6 @@ class LayoutOutput implements Cloneable {
     mComponent = component;
     mBounds = bounds;
     mIndex = index;
-    mHostTranslationX = hostTranslationX;
-    mHostTranslationY = hostTranslationY;
     mFlags = flags;
     mHostMarker = hostMarker;
     mImportantForAccessibility =

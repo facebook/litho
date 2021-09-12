@@ -135,8 +135,6 @@ public class TransitionTest {
             0,
             0,
             0,
-            0,
-            0,
             LayoutOutput.STATE_UNKNOWN,
             null);
 
@@ -187,8 +185,6 @@ public class TransitionTest {
             null,
             null,
             bounds,
-            0,
-            0,
             0,
             0,
             0,

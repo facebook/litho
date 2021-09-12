@@ -850,8 +850,6 @@ public class TreeDiffingTest {
             0,
             0,
             0,
-            0,
-            0,
             LayoutOutput.STATE_UNKNOWN,
             null);
     return LithoRenderUnit.create(unit, new Rect(), null);

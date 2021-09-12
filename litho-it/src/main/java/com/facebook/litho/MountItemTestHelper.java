@@ -45,8 +45,6 @@ public class MountItemTestHelper {
             viewInfo,
             bounds != null ? bounds : new Rect(),
             0,
-            hostTranslationX,
-            hostTranslationY,
             flags,
             hostMarker,
             importantForAccessibility,
