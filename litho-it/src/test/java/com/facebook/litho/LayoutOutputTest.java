@@ -83,12 +83,6 @@ public class LayoutOutputTest {
   }
 
   @Test
-  public void testHostMarkerSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 0, 10L);
-    assertThat(layoutOutput.getHostMarker()).isEqualTo(10);
-  }
-
-  @Test
   public void testFlagsSet() {
     LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 1, 0);
     assertThat(layoutOutput.getFlags()).isEqualTo(1);

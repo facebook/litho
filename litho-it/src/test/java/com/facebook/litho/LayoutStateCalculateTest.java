@@ -1207,18 +1207,14 @@ public class LayoutStateCalculateTest {
     final long hostMarkerOne = layoutState.getMountableOutputAt(1).getRenderUnit().getId();
 
     // First output is the inner host for the click handler
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerRoot);
 
     // Second output is the child of the inner host
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getHostMarker())
-        .isEqualTo(hostMarkerOne);
+    assertThat(getHostId(layoutState.getMountableOutputAt(2))).isEqualTo(hostMarkerOne);
 
     // Third and fourth outputs are children of the root view.
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(3))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(4))).isEqualTo(hostMarkerRoot);
   }
 
   @Test
@@ -1284,24 +1280,16 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(9);
 
-    final long hostMarkerRoot =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker();
-    final long hostMarkerTwo = getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker();
-    final long hostMarkerThree =
-        getLayoutOutput(layoutState.getMountableOutputAt(7)).getHostMarker();
+    final long hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(0));
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(1));
+    final long hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(4));
+    final long hostMarkerThree = getHostId(layoutState.getMountableOutputAt(7));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker())
-        .isEqualTo(hostMarkerTwo);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(8)).getHostMarker())
-        .isEqualTo(hostMarkerThree);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(3))).isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(5))).isEqualTo(hostMarkerTwo);
+    assertThat(getHostId(layoutState.getMountableOutputAt(6))).isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(8))).isEqualTo(hostMarkerThree);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1348,24 +1336,16 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(9);
 
-    final long hostMarkerRoot =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker();
-    final long hostMarkerTwo = getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker();
-    final long hostMarkerThree =
-        getLayoutOutput(layoutState.getMountableOutputAt(7)).getHostMarker();
+    final long hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(0));
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(1));
+    final long hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(4));
+    final long hostMarkerThree = getHostId(layoutState.getMountableOutputAt(7));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker())
-        .isEqualTo(hostMarkerTwo);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(8)).getHostMarker())
-        .isEqualTo(hostMarkerThree);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(3))).isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(5))).isEqualTo(hostMarkerTwo);
+    assertThat(getHostId(layoutState.getMountableOutputAt(6))).isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(8))).isEqualTo(hostMarkerThree);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1460,11 +1440,9 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
@@ -1903,11 +1881,9 @@ public class LayoutStateCalculateTest {
             makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -1944,11 +1920,9 @@ public class LayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -2004,7 +1978,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -2090,7 +2064,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -2131,7 +2105,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -2172,7 +2146,7 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
 
     // Check NestedTree
     assertThat(isHostComponent(getComponentAt(layoutState, 1))).isTrue();
@@ -2820,5 +2794,9 @@ public class LayoutStateCalculateTest {
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
+  }
+
+  private static long getHostId(RenderTreeNode node) {
+    return node.getParent() != null ? node.getParent().getRenderUnit().getId() : 0;
   }
 }

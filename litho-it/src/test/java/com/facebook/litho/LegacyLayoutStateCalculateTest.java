@@ -60,6 +60,7 @@ import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.RenderTreeNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -124,23 +125,16 @@ public class LegacyLayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(7);
 
-    final long hostMarkerRoot =
-        getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker();
-    final long hostMarkerOne = getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker();
-    final long hostMarkerTwo = getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker();
+    final long hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(1));
+    final long hostMarkerOne = getHostId(layoutState.getMountableOutputAt(5));
+    final long hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(6));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getHostMarker())
-        .isEqualTo(hostMarkerOne);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker())
-        .isEqualTo(hostMarkerTwo);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(2))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(3))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(4))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(5))).isEqualTo(hostMarkerOne);
+    assertThat(getHostId(layoutState.getMountableOutputAt(6))).isEqualTo(hostMarkerTwo);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
@@ -192,11 +186,9 @@ public class LegacyLayoutStateCalculateTest {
             mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
@@ -261,7 +253,7 @@ public class LegacyLayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -425,7 +417,7 @@ public class LegacyLayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -458,7 +450,7 @@ public class LegacyLayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -532,27 +524,18 @@ public class LegacyLayoutStateCalculateTest {
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(10);
 
-    final long hostMarkerRoot =
-        getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker();
-    final long hostMarkerOne = getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker();
-    final long hostMarkerTwo = getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker();
-    final long hostMarkerThree =
-        getLayoutOutput(layoutState.getMountableOutputAt(7)).getHostMarker();
-    final long hostMarkerFour =
-        getLayoutOutput(layoutState.getMountableOutputAt(9)).getHostMarker();
+    final long hostMarkerRoot = getHostId(layoutState.getMountableOutputAt(1));
+    final long hostMarkerOne = getHostId(layoutState.getMountableOutputAt(3));
+    final long hostMarkerTwo = getHostId(layoutState.getMountableOutputAt(6));
+    final long hostMarkerThree = getHostId(layoutState.getMountableOutputAt(7));
+    final long hostMarkerFour = getHostId(layoutState.getMountableOutputAt(9));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerRoot);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getHostMarker())
-        .isEqualTo(hostMarkerOne);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(4)).getHostMarker())
-        .isEqualTo(hostMarkerOne);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(6)).getHostMarker())
-        .isEqualTo(hostMarkerTwo);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(7)).getHostMarker())
-        .isEqualTo(hostMarkerThree);
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(9)).getHostMarker())
-        .isEqualTo(hostMarkerFour);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerRoot);
+    assertThat(getHostId(layoutState.getMountableOutputAt(3))).isEqualTo(hostMarkerOne);
+    assertThat(getHostId(layoutState.getMountableOutputAt(4))).isEqualTo(hostMarkerOne);
+    assertThat(getHostId(layoutState.getMountableOutputAt(6))).isEqualTo(hostMarkerTwo);
+    assertThat(getHostId(layoutState.getMountableOutputAt(7))).isEqualTo(hostMarkerThree);
+    assertThat(getHostId(layoutState.getMountableOutputAt(9))).isEqualTo(hostMarkerFour);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
@@ -581,11 +564,9 @@ public class LegacyLayoutStateCalculateTest {
             mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
@@ -610,11 +591,9 @@ public class LegacyLayoutStateCalculateTest {
             mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
@@ -679,7 +658,7 @@ public class LegacyLayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     mountBounds = layoutState.getMountableOutputAt(0).getBounds();
     assertThat(mountBounds).isEqualTo(new Rect(0, 0, 350, 200));
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker()).isEqualTo(0);
+    assertThat(getHostId(layoutState.getMountableOutputAt(0))).isEqualTo(0);
     // Check NestedTree
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     mountBounds = layoutState.getMountableOutputAt(1).getBounds();
@@ -984,11 +963,9 @@ public class LegacyLayoutStateCalculateTest {
             mContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
-    final long hostMarkerZero =
-        getLayoutOutput(layoutState.getMountableOutputAt(0)).getHostMarker();
+    final long hostMarkerZero = getHostId(layoutState.getMountableOutputAt(0));
 
-    assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getHostMarker())
-        .isEqualTo(hostMarkerZero);
+    assertThat(getHostId(layoutState.getMountableOutputAt(1))).isEqualTo(hostMarkerZero);
 
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
@@ -1041,5 +1018,9 @@ public class LegacyLayoutStateCalculateTest {
   @After
   public void restoreConfiguration() {
     TempComponentsConfigurations.restoreShouldAddHostViewForRootComponent();
+  }
+
+  private static long getHostId(RenderTreeNode node) {
+    return node.getParent() != null ? node.getParent().getRenderUnit().getId() : 0;
   }
 }
