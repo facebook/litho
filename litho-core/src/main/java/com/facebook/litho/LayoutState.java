@@ -647,17 +647,12 @@ public class LayoutState
   }
 
   static AnimatableItem createAnimatableItem(
-      final RenderTreeNode node,
       final LithoRenderUnit unit,
-      final LayoutOutput output,
+      final Rect absoluteBounds,
       final @OutputUnitType int outputType,
       final @Nullable TransitionId transitionId) {
     return new LithoAnimtableItem(
-        unit.getId(),
-        node.getAbsoluteBounds(new Rect()),
-        outputType,
-        output.getNodeInfo(),
-        transitionId);
+        unit.getId(), absoluteBounds, outputType, unit.output.getNodeInfo(), transitionId);
   }
 
   /**
@@ -1205,10 +1200,11 @@ public class LayoutState
     }
 
     if (component != null) {
-      final Rect rect = new Rect();
-      if (contentLayoutOutput != null) {
-        rect.set(contentLayoutOutput.getBounds());
+      final Rect rect;
+      if (contentRenderTreeNode != null) {
+        rect = contentRenderTreeNode.getAbsoluteBounds(new Rect());
       } else {
+        rect = new Rect();
         rect.left = layoutState.mCurrentX + result.getX();
         rect.top = layoutState.mCurrentY + result.getY();
         rect.right = rect.left + result.getWidth();
@@ -1936,10 +1932,12 @@ public class LayoutState
       errorMessage.append(e.getMessage()).append("\n");
       final int size = unsorted.size();
       errorMessage.append("Error while sorting LayoutState tops. Size: " + size).append("\n");
+      final Rect rect = new Rect();
       for (int i = 0; i < size; i++) {
         final RenderTreeNode node = layoutState.getMountableOutputAt(i);
-        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
-        errorMessage.append("   Index " + i + " top: " + layoutOutput.getBounds().top).append("\n");
+        errorMessage
+            .append("   Index " + i + " top: " + node.getAbsoluteBounds(rect).top)
+            .append("\n");
       }
 
       throw new IllegalStateException(errorMessage.toString());
@@ -1958,11 +1956,11 @@ public class LayoutState
       errorMessage.append(e.getMessage()).append("\n");
       final int size = unsorted.size();
       errorMessage.append("Error while sorting LayoutState bottoms. Size: " + size).append("\n");
+      final Rect rect = new Rect();
       for (int i = 0; i < size; i++) {
         final RenderTreeNode node = layoutState.getMountableOutputAt(i);
-        final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
         errorMessage
-            .append("   Index " + i + " bottom: " + layoutOutput.getBounds().bottom)
+            .append("   Index " + i + " bottom: " + node.getAbsoluteBounds(rect).bottom)
             .append("\n");
       }
 
@@ -2472,12 +2470,13 @@ public class LayoutState
     }
 
     final int position = layoutState.mMountableOutputs.size();
+    final Rect absoluteBounds = node.getAbsoluteBounds(new Rect());
 
     final IncrementalMountOutput incrementalMountOutput =
         new IncrementalMountOutput(
             node.getRenderUnit().getId(),
             position,
-            layoutOutput.getBounds(),
+            absoluteBounds,
             parent != null
                 ? layoutState.mIncrementalMountOutputs.get(parent.getRenderUnit().getId())
                 : null);
@@ -2492,7 +2491,7 @@ public class LayoutState
     }
 
     final AnimatableItem animatableItem =
-        createAnimatableItem(node, unit, layoutOutput, type, transitionId);
+        createAnimatableItem(unit, absoluteBounds, type, transitionId);
 
     layoutState.mAnimatableItems.put(node.getRenderUnit().getId(), animatableItem);
 

@@ -339,6 +339,8 @@ class MountState implements MountDelegateTarget {
         || !performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs)) {
       final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
 
+      final Rect absoluteBounds = new Rect();
+
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
         final RenderTreeNode node = layoutState.getMountableOutputAt(i);
         final LayoutOutput layoutOutput = getLayoutOutput(node);
@@ -353,7 +355,7 @@ class MountState implements MountDelegateTarget {
         final boolean isMountable =
             !isIncrementalMountEnabled
                 || isMountedHostWithChildContent(currentMountItem)
-                || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
+                || Rect.intersects(localVisibleRect, node.getAbsoluteBounds(absoluteBounds))
                 || isAnimationLocked(node)
                 || isRoot;
 
@@ -832,8 +834,7 @@ class MountState implements MountDelegateTarget {
 
     mPreviousTopsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.bottom
-          <= layoutState.getLayoutOutput(layoutOutputTops.get(i)).getBounds().top) {
+      if (localVisibleRect.bottom <= layoutOutputTops.get(i).getBounds().top) {
         mPreviousTopsIndex = i;
         break;
       }
@@ -841,8 +842,7 @@ class MountState implements MountDelegateTarget {
 
     mPreviousBottomsIndex = layoutState.getMountableOutputCount();
     for (int i = 0; i < mountableOutputCount; i++) {
-      if (localVisibleRect.top
-          < layoutState.getLayoutOutput(layoutOutputBottoms.get(i)).getBounds().bottom) {
+      if (localVisibleRect.top < layoutOutputBottoms.get(i).getBounds().bottom) {
         mPreviousBottomsIndex = i;
         break;
       }
@@ -2585,10 +2585,7 @@ class MountState implements MountDelegateTarget {
       // that has moved on/off the top of the screen.
       while (mPreviousBottomsIndex < count
           && localVisibleRect.top
-              >= layoutState
-                  .getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex))
-                  .getBounds()
-                  .bottom) {
+              >= layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
         final long id = node.getRenderUnit().getId();
@@ -2601,10 +2598,7 @@ class MountState implements MountDelegateTarget {
 
       while (mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              <= layoutState
-                  .getLayoutOutput(layoutOutputBottoms.get(mPreviousBottomsIndex - 1))
-                  .getBounds()
-                  .bottom) {
+              <= layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
         mPreviousBottomsIndex--;
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputBottoms.get(mPreviousBottomsIndex));
@@ -2626,11 +2620,7 @@ class MountState implements MountDelegateTarget {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
       while (mPreviousTopsIndex < count
-          && localVisibleRect.bottom
-              >= layoutState
-                  .getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex))
-                  .getBounds()
-                  .top) {
+          && localVisibleRect.bottom >= layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
         final LayoutOutput layoutOutput = getLayoutOutput(node);
@@ -2648,10 +2638,7 @@ class MountState implements MountDelegateTarget {
 
       while (mPreviousTopsIndex > 0
           && localVisibleRect.bottom
-              < layoutState
-                  .getLayoutOutput(layoutOutputTops.get(mPreviousTopsIndex - 1))
-                  .getBounds()
-                  .top) {
+              < layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
         final RenderTreeNode node =
             layoutState.getRenderTreeNode(layoutOutputTops.get(mPreviousTopsIndex));
