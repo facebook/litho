@@ -20,7 +20,6 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.annotations.ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS;
 
-import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
@@ -53,7 +52,6 @@ class LayoutOutput implements Cloneable {
   private final @Nullable ViewNodeInfo mViewNodeInfo;
   private @Nullable DebugHierarchy.Node mHierarchy; // TODO: remove
   private final Component mComponent;
-  private final Rect mBounds; // TODO: remove
   private final int mFlags;
 
   private final int mImportantForAccessibility;
@@ -65,7 +63,6 @@ class LayoutOutput implements Cloneable {
       final Component component,
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
-      final Rect bounds,
       final int flags,
       final int importantForAccessibility,
       final @UpdateState int updateState,
@@ -78,7 +75,6 @@ class LayoutOutput implements Cloneable {
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
-    mBounds = bounds;
     mFlags = flags;
     mImportantForAccessibility =
         importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
@@ -90,10 +86,6 @@ class LayoutOutput implements Cloneable {
 
   Component getComponent() {
     return mComponent;
-  }
-
-  public Rect getBounds() {
-    return mBounds;
   }
 
   int getFlags() {

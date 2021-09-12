@@ -364,7 +364,6 @@ public class LayoutState
       final @Nullable DebugHierarchy.Node hierarchy) {
     final int width = result != null ? result.getWidth() : 0;
     final int height = result != null ? result.getHeight() : 0;
-    final Rect bounds = new Rect(0, 0, width, height);
 
     final LithoRenderUnit unit =
         LithoRenderUnit.create(
@@ -373,7 +372,6 @@ public class LayoutState
             null,
             null,
             null,
-            bounds,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
@@ -614,7 +612,6 @@ public class LayoutState
             context,
             layoutOutputNodeInfo,
             layoutOutputViewNodeInfo,
-            bounds,
             flags,
             importantForAccessibility,
             updateState,
