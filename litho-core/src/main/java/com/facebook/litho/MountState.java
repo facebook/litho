@@ -660,11 +660,14 @@ class MountState implements MountDelegateTarget {
   @Override
   public void notifyUnmount(long id) {
     final MountItem item = mIndexToItemMap.get(id);
-    if (item == null) {
+    if (item == null || mLayoutState == null) {
       return;
     }
-    final int position = getLayoutOutput(item).getIndex();
-    unmountItem(position, mHostsByMarker);
+
+    final int position = mLayoutState.getPositionForId(id);
+    if (position >= 0) {
+      unmountItem(position, mHostsByMarker);
+    }
   }
 
   private void logMountPerfEvent(
