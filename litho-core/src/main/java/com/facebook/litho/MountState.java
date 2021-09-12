@@ -1099,8 +1099,11 @@ class MountState implements MountDelegateTarget {
     // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
     // all its mounted children.
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
-      final LayoutOutput newLayoutOutput = newLayoutState.getLayoutOutput(mLayoutOutputsIds[i]);
-      final int newPosition = newLayoutOutput == null ? -1 : newLayoutOutput.getIndex();
+      final int newPosition = newLayoutState.getPositionForId(mLayoutOutputsIds[i]);
+      final @Nullable RenderTreeNode newRenderTreeNode =
+          newPosition != -1 ? newLayoutState.getMountableOutputAt(newPosition) : null;
+      final @Nullable LayoutOutput newLayoutOutput =
+          newRenderTreeNode != null ? getLayoutOutput(newRenderTreeNode) : null;
 
       final MountItem oldItem = getItemAt(i);
       final boolean hasUnmountDelegate =
@@ -1117,7 +1120,8 @@ class MountState implements MountDelegateTarget {
         unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
-        final long newHostMarker = newLayoutOutput.getHostMarker();
+        final long newHostMarker =
+            i != 0 ? newRenderTreeNode.getParent().getRenderUnit().getId() : -1;
 
         if (oldItem == null) {
           // This was previously unmounted.
@@ -1170,7 +1174,10 @@ class MountState implements MountDelegateTarget {
       final LayoutState layoutState) {
     // 1. Resolve the correct host to mount our content to.
     final long startTime = System.nanoTime();
-    final long hostMarker = layoutOutput.getHostMarker();
+
+    // parent should never be null
+    final long hostMarker = node.getParent().getRenderUnit().getId();
+
     ComponentHost host = mHostsByMarker.get(hostMarker);
 
     if (host == null) {

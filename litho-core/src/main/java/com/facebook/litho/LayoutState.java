@@ -2592,7 +2592,7 @@ public class LayoutState
               + "] id: "
               + node.getRenderUnit().getId()
               + ", host: "
-              + layoutOutput.getHostMarker()
+              + (node.getParent() != null ? node.getParent().getRenderUnit().getId() : -1)
               + ", component: "
               + layoutOutput.getComponent().getSimpleName()
               + "\n";
