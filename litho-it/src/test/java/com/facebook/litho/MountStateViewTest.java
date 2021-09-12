@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.it.R.style;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
@@ -187,23 +186,21 @@ public class MountStateViewTest {
     final LithoView root = mLithoViewRule.getLithoView();
 
     final View view = root.getChildAt(0);
-    final LayoutOutput viewOutput = getLayoutOutput(root.getMountItemAt(0));
-    final Rect viewBounds = viewOutput.getBounds();
+    final Rect viewBounds =
+        root.getMountItemAt(0).getRenderTreeNode().getAbsoluteBounds(new Rect());
 
     assertThat(view.getWidth()).isEqualTo(viewBounds.width());
     assertThat(view.getHeight()).isEqualTo(viewBounds.height());
 
     final MountItem item1 = root.getMountItemAt(1);
-    final LayoutOutput drawableOutput = getLayoutOutput(item1);
-    final Rect drawableOutputBounds = drawableOutput.getBounds();
+    final Rect drawableOutputBounds = item1.getRenderTreeNode().getAbsoluteBounds(new Rect());
     final Rect drawablesActualBounds = ((Drawable) item1.getContent()).getBounds();
 
     assertThat(drawablesActualBounds.width()).isEqualTo(drawableOutputBounds.width());
     assertThat(drawablesActualBounds.height()).isEqualTo(drawableOutputBounds.height());
 
     final MountItem item2 = root.getMountItemAt(2);
-    final LayoutOutput textOutput = getLayoutOutput(item2);
-    final Rect textOutputBounds = textOutput.getBounds();
+    final Rect textOutputBounds = item2.getRenderTreeNode().getAbsoluteBounds(new Rect());
     final Rect textActualBounds = ((Drawable) item2.getContent()).getBounds();
 
     assertThat(textActualBounds.width()).isEqualTo(textOutputBounds.width());

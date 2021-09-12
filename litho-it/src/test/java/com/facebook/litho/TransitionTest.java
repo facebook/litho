@@ -177,6 +177,8 @@ public class TransitionTest {
           }
         };
 
+    final Rect bounds = new Rect(0, 0, 300, 100);
+
     LithoRenderUnit unit =
         LithoRenderUnit.create(
             0,
@@ -184,7 +186,7 @@ public class TransitionTest {
             null,
             null,
             null,
-            new Rect(0, 0, 300, 100),
+            bounds,
             0,
             0,
             0,
@@ -203,7 +205,7 @@ public class TransitionTest {
             Transition.getRootAppearFromValue(
                 rootHeightTransition.appearTransition, layoutState, AnimatedProperties.HEIGHT);
 
-    float expectedAppearFrom = unit.output.getBounds().height() * 1.5f;
+    float expectedAppearFrom = bounds.height() * 1.5f;
     assertThat(animateFrom).isEqualTo((int) expectedAppearFrom);
   }
 }

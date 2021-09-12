@@ -167,7 +167,6 @@ public class IncrementalMountExtensionTest {
         when(renderTreeNode.getLayoutData()).thenReturn(mock(LithoAnimtableItem.class));
         when(renderTreeNode.getAbsoluteBounds(any(Rect.class))).thenReturn(bounds);
         when(layoutOutput.getComponent()).thenReturn(mock(Component.class));
-        when(layoutOutput.getBounds()).thenReturn(bounds);
 
         RenderUnit renderUnit = new SimpleDrawableUnit(new ColorDrawable(Color.BLACK), i);
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);

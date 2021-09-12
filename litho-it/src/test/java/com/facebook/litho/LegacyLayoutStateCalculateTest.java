@@ -955,9 +955,9 @@ public class LegacyLayoutStateCalculateTest {
     assertThat(getTextFromTextComponent(layoutState, 4)).isEqualTo("textRight1");
     assertThat(getTextFromTextComponent(layoutState, 6)).isEqualTo("textLeft2");
 
-    final Rect textLayoutBounds = getLayoutOutput(layoutState.getMountableOutputAt(6)).getBounds();
+    final Rect textLayoutBounds = layoutState.getMountableOutputAt(6).getAbsoluteBounds(new Rect());
     final Rect textBackgroundBounds =
-        getLayoutOutput(layoutState.getMountableOutputAt(5)).getBounds();
+        layoutState.getMountableOutputAt(5).getAbsoluteBounds(new Rect());
 
     assertThat(textLayoutBounds.left - paddingSize).isEqualTo(textBackgroundBounds.left);
     assertThat(textLayoutBounds.top - paddingSize).isEqualTo(textBackgroundBounds.top);

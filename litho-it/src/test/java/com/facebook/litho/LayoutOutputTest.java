@@ -85,15 +85,6 @@ public class LayoutOutputTest {
   }
 
   @Test
-  public void testPositionAndSizeSet() {
-    LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 0, -1);
-    assertThat(layoutOutput.getBounds().left).isEqualTo(0);
-    assertThat(layoutOutput.getBounds().top).isEqualTo(1);
-    assertThat(layoutOutput.getBounds().right).isEqualTo(3);
-    assertThat(layoutOutput.getBounds().bottom).isEqualTo(4);
-  }
-
-  @Test
   public void testHostMarkerSet() {
     LayoutOutput layoutOutput = createLayoutOutput(0, OutputUnitType.CONTENT, 0, 10L);
     assertThat(layoutOutput.getHostMarker()).isEqualTo(10);
@@ -198,33 +189,15 @@ public class LayoutOutputTest {
 
   @Test
   public void testGetMountBoundsNoHostTranslation() {
-    LayoutOutput layoutOutput =
-        createLayoutOutputWithBoundsAndHostTranslation(
-            0, OutputUnitType.CONTENT, new Rect(10, 10, 10, 10), 0, 0, 0, 0);
-
     Rect mountBounds = new Rect();
-    LithoRenderUnit.getMountBounds(
-        mountBounds,
-        layoutOutput.getBounds(),
-        layoutOutput.mHostTranslationX,
-        layoutOutput.mHostTranslationY);
-
-    assertThat(mountBounds).isEqualTo(layoutOutput.getBounds());
+    LithoRenderUnit.getMountBounds(mountBounds, new Rect(10, 10, 10, 10), 0, 0);
+    assertThat(mountBounds).isEqualTo(new Rect(10, 10, 10, 10));
   }
 
   @Test
   public void testGetMountBoundsWithHostTranslation() {
-    LayoutOutput layoutOutput =
-        createLayoutOutputWithBoundsAndHostTranslation(
-            0, OutputUnitType.CONTENT, new Rect(10, 10, 10, 10), 5, 2, 0, 0);
-
     Rect mountBounds = new Rect();
-    LithoRenderUnit.getMountBounds(
-        mountBounds,
-        layoutOutput.getBounds(),
-        layoutOutput.mHostTranslationX,
-        layoutOutput.mHostTranslationY);
-
+    LithoRenderUnit.getMountBounds(mountBounds, new Rect(10, 10, 10, 10), 5, 2);
     assertThat(mountBounds).isEqualTo(new Rect(5, 8, 5, 8));
   }
 }
