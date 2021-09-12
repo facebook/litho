@@ -130,7 +130,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final Rect bounds,
       final int index,
       final int flags,
-      final long hostMarker,
       final int importantForAccessibility,
       final @LayoutOutput.UpdateState int updateState,
       final @Nullable TransitionId transitionId) {
@@ -142,7 +141,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
             bounds,
             index,
             flags,
-            hostMarker,
             importantForAccessibility,
             updateState,
             transitionId);

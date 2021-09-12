@@ -308,10 +308,6 @@ public class LayoutState
       return null;
     }
 
-    // The mount operation will need both the marker for the target host and its matching
-    // parent host to ensure the correct hierarchy when nesting the host views.
-    long hostMarker = layoutState.mCurrentHostMarker;
-
     final boolean isCachedOutputUpdated = shouldUseCachedOutputs && result.areCachedMeasuresValid();
     long previousId = -1;
     if (shouldUseCachedOutputs) {
@@ -329,7 +325,6 @@ public class LayoutState
         newId,
         component,
         result.getContext(),
-        hostMarker,
         layoutState,
         result,
         node,
@@ -381,7 +376,6 @@ public class LayoutState
             bounds,
             0,
             0,
-            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
             null);
@@ -412,9 +406,6 @@ public class LayoutState
     // LayoutStates using same Components
     hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getComponents()));
 
-    long hostMarker =
-        layoutState.isLayoutRoot(result) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
-
     final long id;
     final @LayoutOutput.UpdateState int updateState;
     if (isLayoutRootThatRequiresHost(layoutState, result) || parent == null) {
@@ -438,7 +429,6 @@ public class LayoutState
             id,
             hostComponent,
             null,
-            hostMarker,
             layoutState,
             result,
             node,
@@ -480,9 +470,6 @@ public class LayoutState
       long previousId,
       boolean isCachedOutputUpdated,
       @Nullable RenderTreeNode parent) {
-    // The mount operation will need both the marker for the target host and its matching
-    // parent host to ensure the correct hierarchy when nesting the host views.
-    long hostMarker = layoutState.mCurrentHostMarker;
 
     final long id =
         layoutState.calculateLayoutOutputId(
@@ -492,7 +479,6 @@ public class LayoutState
         id,
         component,
         null,
-        hostMarker,
         layoutState,
         result,
         node,
@@ -511,7 +497,6 @@ public class LayoutState
       long id,
       Component component,
       @Nullable ComponentContext context,
-      long hostMarker,
       LayoutState layoutState,
       LithoLayoutResult result,
       InternalNode node,
@@ -631,7 +616,6 @@ public class LayoutState
             bounds,
             layoutState.mMountableOutputs.size(),
             flags,
-            hostMarker,
             importantForAccessibility,
             updateState,
             transitionId);

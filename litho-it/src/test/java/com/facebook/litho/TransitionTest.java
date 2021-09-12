@@ -134,7 +134,6 @@ public class TransitionTest {
             0,
             0,
             0,
-            0,
             LayoutOutput.STATE_UNKNOWN,
             null);
 
@@ -167,34 +166,12 @@ public class TransitionTest {
 
     LayoutState layoutState = mock(LayoutState.class);
 
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return SimpleMountSpecTester.create(c).build();
-          }
-        };
-
     final Rect bounds = new Rect(0, 0, 300, 100);
-
-    LithoRenderUnit unit =
-        LithoRenderUnit.create(
-            0,
-            component,
-            null,
-            null,
-            null,
-            bounds,
-            0,
-            0,
-            0,
-            0,
-            LayoutOutput.STATE_UNKNOWN,
-            null);
 
     when(layoutState.getAnimatableRootItem())
         .thenReturn(
-            new LithoAnimtableItem(0, new Rect(0, 0, 300, 100), OutputUnitType.CONTENT, null, null));
+            new LithoAnimtableItem(
+                0, new Rect(0, 0, 300, 100), OutputUnitType.CONTENT, null, null));
 
     int animateFrom =
         (int)

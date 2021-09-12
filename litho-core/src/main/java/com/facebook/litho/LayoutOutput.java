@@ -58,7 +58,6 @@ class LayoutOutput implements Cloneable {
 
   private final int mImportantForAccessibility;
   private final @Nullable TransitionId mTransitionId;
-  private final long mHostMarker; // TODO: remove
 
   private final int mIndex; // TODO: remove
   private final int mUpdateState;
@@ -70,7 +69,6 @@ class LayoutOutput implements Cloneable {
       final Rect bounds,
       final int index,
       final int flags,
-      final long hostMarker,
       final int importantForAccessibility,
       final @UpdateState int updateState,
       final @Nullable TransitionId transitionId) {
@@ -85,7 +83,6 @@ class LayoutOutput implements Cloneable {
     mBounds = bounds;
     mIndex = index;
     mFlags = flags;
-    mHostMarker = hostMarker;
     mImportantForAccessibility =
         importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
             ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
@@ -104,15 +101,6 @@ class LayoutOutput implements Cloneable {
 
   int getFlags() {
     return mFlags;
-  }
-
-  /**
-   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput. This host may
-   * be phantom, meaning that the mount content that represents this LayoutOutput may be hosted
-   * inside one of higher level hosts {@see MountState#getActualComponentHost()}
-   */
-  long getHostMarker() {
-    return mHostMarker;
   }
 
   int getIndex() {

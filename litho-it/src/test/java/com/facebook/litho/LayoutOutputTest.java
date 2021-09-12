@@ -70,16 +70,7 @@ public class LayoutOutputTest {
       int flags,
       long hostMarker) {
     return new LayoutOutput(
-        mTestComponent,
-        null,
-        null,
-        rect,
-        0,
-        flags,
-        hostMarker,
-        0,
-        LayoutOutput.STATE_UNKNOWN,
-        null);
+        mTestComponent, null, null, rect, 0, flags, 0, LayoutOutput.STATE_UNKNOWN, null);
   }
 
   @Test

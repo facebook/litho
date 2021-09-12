@@ -124,14 +124,14 @@ public class LithoMountData {
             lithoView.getPreviousMountBounds(),
             0,
             0,
-            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
             null);
 
     final Rect bounds = lithoView.getPreviousMountBounds();
 
-    MountItem item = new MountItem(LithoRenderUnit.create(unit, bounds, null), lithoView, lithoView);
+    MountItem item =
+        new MountItem(LithoRenderUnit.create(unit, bounds, null), lithoView, lithoView);
     item.setMountData(new LithoMountData(lithoView));
     return item;
   }
