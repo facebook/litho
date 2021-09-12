@@ -44,7 +44,6 @@ public class MountItemTestHelper {
             info,
             viewInfo,
             bounds != null ? bounds : new Rect(),
-            0,
             flags,
             importantForAccessibility,
             LayoutOutput.STATE_UNKNOWN,

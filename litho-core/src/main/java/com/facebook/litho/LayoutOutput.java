@@ -59,7 +59,6 @@ class LayoutOutput implements Cloneable {
   private final int mImportantForAccessibility;
   private final @Nullable TransitionId mTransitionId;
 
-  private final int mIndex; // TODO: remove
   private final int mUpdateState;
 
   public LayoutOutput(
@@ -67,7 +66,6 @@ class LayoutOutput implements Cloneable {
       final @Nullable NodeInfo nodeInfo,
       final @Nullable ViewNodeInfo viewNodeInfo,
       final Rect bounds,
-      final int index,
       final int flags,
       final int importantForAccessibility,
       final @UpdateState int updateState,
@@ -81,7 +79,6 @@ class LayoutOutput implements Cloneable {
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
     mBounds = bounds;
-    mIndex = index;
     mFlags = flags;
     mImportantForAccessibility =
         importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
@@ -101,10 +98,6 @@ class LayoutOutput implements Cloneable {
 
   int getFlags() {
     return mFlags;
-  }
-
-  int getIndex() {
-    return mIndex;
   }
 
   @Nullable

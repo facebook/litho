@@ -123,7 +123,6 @@ public class LithoMountData {
             viewNodeInfo,
             lithoView.getPreviousMountBounds(),
             0,
-            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
             null);

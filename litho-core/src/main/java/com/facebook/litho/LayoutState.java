@@ -375,7 +375,6 @@ public class LayoutState
             null,
             bounds,
             0,
-            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             LayoutOutput.STATE_DIRTY,
             null);
@@ -614,7 +613,6 @@ public class LayoutState
             layoutOutputNodeInfo,
             layoutOutputViewNodeInfo,
             bounds,
-            layoutState.mMountableOutputs.size(),
             flags,
             importantForAccessibility,
             updateState,
