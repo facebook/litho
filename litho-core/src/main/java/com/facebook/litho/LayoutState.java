@@ -379,7 +379,9 @@ public class LayoutState
             LayoutOutput.STATE_DIRTY,
             null);
 
-    final RenderTreeNode node = LithoRenderUnit.create(unit, new Rect(0, 0, width, height), null);
+    final RenderTreeNode node =
+        LithoRenderUnit.create(
+            unit, new Rect(0, 0, width, height), new LithoLayoutData(width, height), null);
 
     final LayoutOutput hostOutput = unit.output;
 
@@ -621,6 +623,7 @@ public class LayoutState
     return LithoRenderUnit.create(
         unit,
         LithoRenderUnit.getMountBounds(new Rect(), bounds, hostTranslationX, hostTranslationY),
+        new LithoLayoutData(bounds.width(), bounds.height()),
         parent);
   }
 

@@ -841,7 +841,7 @@ public class TreeDiffingTest {
     LithoRenderUnit unit =
         LithoRenderUnit.create(
             0, component, null, null, null, new Rect(), 0, 0, LayoutOutput.STATE_UNKNOWN, null);
-    return LithoRenderUnit.create(unit, new Rect(), null);
+    return LithoRenderUnit.create(unit, new Rect(), null, null);
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {

@@ -137,7 +137,7 @@ public class TransitionTest {
             null);
 
     when(layoutState.getMountableOutputAt(0))
-        .thenReturn(LithoRenderUnit.create(rootUnit, new Rect(0, 0, 300, 100), null));
+        .thenReturn(LithoRenderUnit.create(rootUnit, new Rect(0, 0, 300, 100), null, null));
 
     int animateFrom =
         (int)

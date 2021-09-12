@@ -130,7 +130,11 @@ public class LithoMountData {
     final Rect bounds = lithoView.getPreviousMountBounds();
 
     MountItem item =
-        new MountItem(LithoRenderUnit.create(unit, bounds, null), lithoView, lithoView);
+        new MountItem(
+            LithoRenderUnit.create(
+                unit, bounds, new LithoLayoutData(bounds.width(), bounds.height()), null),
+            lithoView,
+            lithoView);
     item.setMountData(new LithoMountData(lithoView));
     return item;
   }

@@ -62,6 +62,7 @@ import android.view.ViewOutlineProvider;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -901,8 +902,10 @@ class MountState implements MountDelegateTarget {
     final boolean shouldUpdate =
         shouldUpdateMountItem(
             nextLayoutOutput,
+            (LithoLayoutData) node.getLayoutData(),
             nextContext,
             currentLayoutOutput,
+            (LithoLayoutData) currentMountItem.getRenderTreeNode().getLayoutData(),
             currentContext,
             useUpdateValueFromLayoutOutput);
 
@@ -972,8 +975,10 @@ class MountState implements MountDelegateTarget {
 
   static boolean shouldUpdateMountItem(
       final LayoutOutput nextLayoutOutput,
+      final @Nullable LithoLayoutData nextLayoutData,
       final @Nullable ComponentContext nextContext,
       final LayoutOutput currentLayoutOutput,
+      final @Nullable LithoLayoutData currentLayoutData,
       final @Nullable ComponentContext currentContext,
       final boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
@@ -982,7 +987,10 @@ class MountState implements MountDelegateTarget {
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (nextComponent.isMountSizeDependent() && !sameSize(nextLayoutOutput, currentLayoutOutput)) {
+    if (nextComponent.isMountSizeDependent()
+        && !sameSize(
+            Preconditions.checkNotNull(nextLayoutData),
+            Preconditions.checkNotNull(currentLayoutData))) {
       return true;
     }
 
@@ -1016,12 +1024,8 @@ class MountState implements MountDelegateTarget {
     }
   }
 
-  static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {
-    final Rect nextBounds = nextOutput.getBounds();
-    final Rect currentBounds = currentOutput.getBounds();
-
-    return nextBounds.width() == currentBounds.width()
-        && nextBounds.height() == currentBounds.height();
+  static boolean sameSize(final LithoLayoutData next, final LithoLayoutData current) {
+    return next.width == current.width && next.height == current.height;
   }
 
   private static void updateBoundsForMountedLayoutOutput(
