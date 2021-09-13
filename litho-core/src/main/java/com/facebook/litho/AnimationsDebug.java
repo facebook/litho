@@ -24,7 +24,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.rendercore.MountState;
 import com.facebook.rendercore.RenderTreeNode;
 
 /** Utilities for animations debug. */
