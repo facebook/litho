@@ -37,6 +37,7 @@ import com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor
 import com.facebook.litho.testing.subcomponents.InspectableComponent
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
+import com.facebook.rendercore.MountItemsPool
 import com.google.common.base.Predicate
 import org.assertj.core.api.Condition
 import org.junit.rules.TestRule
@@ -111,6 +112,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         } finally {
           threadLooperController.clean()
           ComponentsPools.clearMountContentPools()
+          MountItemsPool.clear()
           _componentTree = null
           _lithoView = null
           widthSpec = DEFAULT_WIDTH_SPEC
