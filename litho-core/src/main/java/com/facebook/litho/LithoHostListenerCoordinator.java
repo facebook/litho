@@ -204,7 +204,9 @@ public class LithoHostListenerCoordinator {
     }
 
     mTransitionsExtension =
-        TransitionsExtension.getInstance((AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
+        TransitionsExtension.getInstance(
+            lithoView.delegateToRenderCore(),
+            (AnimationsDebug.ENABLED ? AnimationsDebug.TAG : null));
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
 
     registerListener(mTransitionsExtension);
