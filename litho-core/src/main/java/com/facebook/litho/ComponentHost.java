@@ -223,7 +223,6 @@ public class ComponentHost extends Host implements DisappearingHost {
       ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
     } else if (content instanceof View) {
       unmountView((View) content);
-
       ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
@@ -282,6 +281,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       unmountDrawable((Drawable) content);
     } else if (content instanceof View) {
       unmountView((View) content);
+      mIsChildDrawingOrderDirty = true;
     }
 
     updateAccessibilityState(getLayoutOutput(disappearingItem));
