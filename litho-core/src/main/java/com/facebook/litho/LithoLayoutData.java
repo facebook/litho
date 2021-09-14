@@ -34,9 +34,14 @@ public class LithoLayoutData {
 
   public final int width;
   public final int height;
+  public final int currentLayoutStateId;
+  public final int previousLayoutStateId;
 
-  public LithoLayoutData(int width, int height) {
+  public LithoLayoutData(
+      int width, int height, int currentLayoutStateId, int previousLayoutStateId) {
     this.width = width;
     this.height = height;
+    this.currentLayoutStateId = currentLayoutStateId;
+    this.previousLayoutStateId = previousLayoutStateId;
   }
 }

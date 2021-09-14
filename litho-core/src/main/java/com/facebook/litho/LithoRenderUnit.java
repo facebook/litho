@@ -157,14 +157,14 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit next,
         final @Nullable Object currentData,
         final @Nullable Object nextData) {
+      final LithoLayoutData currentLithoData = verifyAndGetLithoLayoutData(currentData);
+      final LithoLayoutData nextLithoData = verifyAndGetLithoLayoutData(nextData);
 
       final @Nullable ComponentContext nextContext = getComponentContext(next);
-      final int previousIdFromNextOutput =
-          nextContext != null ? LayoutState.getPreviousId(nextContext) : 0;
+      final int previousIdFromNextOutput = nextLithoData.previousLayoutStateId;
 
       final @Nullable ComponentContext currentContext = getComponentContext(current);
-      final int idFromCurrentOutput =
-          currentContext != null ? LayoutState.getId(currentContext) : 0;
+      final int idFromCurrentOutput = currentLithoData.currentLayoutStateId;
 
       final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
 
@@ -196,6 +196,25 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
       output.getComponent().unmount(getComponentContext(unit), content);
+    }
+
+    /**
+     * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
+     * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
+     */
+    private static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
+      if (layoutData == null) {
+        throw new RuntimeException("LayoutData is null in LithoMountBinder.shouldUpdate");
+      }
+
+      if (!(layoutData instanceof LithoLayoutData)) {
+        throw new RuntimeException(
+            "LayoutData is not LithoLayoutData in LithoMountBinder.shouldUpdate. ("
+                + layoutData.getClass().getSimpleName()
+                + ")");
+      }
+
+      return (LithoLayoutData) layoutData;
     }
   }
 
