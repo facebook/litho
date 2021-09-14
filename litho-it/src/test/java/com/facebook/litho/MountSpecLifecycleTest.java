@@ -124,12 +124,15 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
 
-    assertThat(ComponentsPools.getMountContentPools().size())
-        .describedAs("Should contain only 1 content pool")
-        .isEqualTo(1);
-    assertThat(ComponentsPools.getMountContentPools().get(0).getName())
-        .describedAs("Should contain content pool from MountSpecLifecycleTester")
-        .isEqualTo("MountSpecLifecycleTester");
+    // Rendercore Mount doesn't use ComponentPools.
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      assertThat(ComponentsPools.getMountContentPools().size())
+          .describedAs("Should contain only 1 content pool")
+          .isEqualTo(1);
+      assertThat(ComponentsPools.getMountContentPools().get(0).getName())
+          .describedAs("Should contain content pool from MountSpecLifecycleTester")
+          .isEqualTo("MountSpecLifecycleTester");
+    }
   }
 
   @Test
@@ -408,12 +411,15 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
 
-    assertThat(ComponentsPools.getMountContentPools().size())
-        .describedAs("Should still contain only 1 content pool")
-        .isEqualTo(1);
-    assertThat(ComponentsPools.getMountContentPools().get(0).getName())
-        .describedAs("Should still contain content pool from MountSpecLifecycleTester")
-        .isEqualTo("MountSpecLifecycleTester");
+    // Rendercore Mount doesn't use ComponentPools.
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      assertThat(ComponentsPools.getMountContentPools().size())
+          .describedAs("Should still contain only 1 content pool")
+          .isEqualTo(1);
+      assertThat(ComponentsPools.getMountContentPools().get(0).getName())
+          .describedAs("Should still contain content pool from MountSpecLifecycleTester")
+          .isEqualTo("MountSpecLifecycleTester");
+    }
   }
 
   @Test
@@ -449,12 +455,15 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_ATTACHED);
 
-    assertThat(ComponentsPools.getMountContentPools().size())
-        .describedAs("Should contain only 1 content pool")
-        .isEqualTo(1);
-    assertThat(ComponentsPools.getMountContentPools().get(0).getName())
-        .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
-        .isEqualTo("PreallocatedMountSpecLifecycleTester");
+    // Rendercore Mount doesn't use ComponentPools.
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      assertThat(ComponentsPools.getMountContentPools().size())
+          .describedAs("Should contain only 1 content pool")
+          .isEqualTo(1);
+      assertThat(ComponentsPools.getMountContentPools().get(0).getName())
+          .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
+          .isEqualTo("PreallocatedMountSpecLifecycleTester");
+    }
   }
 
   @Test
@@ -531,50 +540,6 @@ public class MountSpecLifecycleTest {
     assertThat(shouldUpdateCalls).hasSize(1);
     assertThat(shouldUpdateCalls.get(0).getPrevious()).isEqualTo(firstObject);
     assertThat(shouldUpdateCalls.get(0).getNext()).isEqualTo(secondObject);
-  }
-
-  @Test
-  public void unmountAll_unmountAllItemsExceptRoot() {
-    final LifecycleTracker info_child1 = new LifecycleTracker();
-    final LifecycleTracker info_child2 = new LifecycleTracker();
-
-    final Component root =
-        Column.create(mLithoViewRule.getContext())
-            .child(
-                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
-                    .intrinsicSize(new Size(800, 600))
-                    .lifecycleTracker(info_child1)
-                    .build())
-            .child(
-                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
-                    .intrinsicSize(new Size(800, 600))
-                    .lifecycleTracker(info_child2)
-                    .build())
-            .build();
-
-    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
-
-    final MountDelegateTarget mountDelegateTarget =
-        mLithoViewRule.getLithoView().getMountDelegateTarget();
-    assertThat(mountDelegateTarget.getMountItemCount()).isGreaterThan(1);
-    assertThat(mountDelegateTarget.getMountItemAt(1)).isNotNull();
-    assertThat(mountDelegateTarget.getMountItemAt(2)).isNotNull();
-
-    info_child1.reset();
-    info_child2.reset();
-    mLithoViewRule.getLithoView().unmountAllItems();
-
-    assertThat(mountDelegateTarget.getMountItemAt(1)).isNull();
-    assertThat(mountDelegateTarget.getMountItemAt(2)).isNull();
-    assertThat(mountDelegateTarget.getMountItemAt(0)).isNotNull();
-
-    assertThat(info_child1.getSteps())
-        .describedAs("Should call the following lifecycle methods in the following order:")
-        .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT);
-
-    assertThat(info_child2.getSteps())
-        .describedAs("Should call the following lifecycle methods in the following order:")
-        .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT);
   }
 
   /*
