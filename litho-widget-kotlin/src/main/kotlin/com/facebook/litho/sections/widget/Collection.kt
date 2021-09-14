@@ -92,6 +92,7 @@ class Collection(
     handle: Handle? = null,
     private val onPullToRefresh: (() -> Unit)? = null,
     private val pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
+    private val onScrollListener: RecyclerView.OnScrollListener? = null,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -152,6 +153,7 @@ class Collection(
         .sectionTreeTag(sectionTreeTag)
         .startupLogger(startupLogger)
         .handle(recyclerHandle)
+        .onScrollListener(onScrollListener)
         .kotlinStyle(style)
         .build()
   }
