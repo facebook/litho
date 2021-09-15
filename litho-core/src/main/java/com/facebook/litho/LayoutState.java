@@ -1603,7 +1603,11 @@ public class LayoutState
 
       layoutStateContext =
           new LayoutStateContext(
-              layoutState, c.getComponentTree(), layoutStateFuture, diffTreeRoot);
+              layoutState,
+              c.getComponentTree(),
+              layoutStateFuture,
+              diffTreeRoot,
+              c.getStateHandler());
 
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);

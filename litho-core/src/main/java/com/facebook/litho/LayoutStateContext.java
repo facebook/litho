@@ -51,6 +51,8 @@ public class LayoutStateContext {
 
   private volatile boolean mIsFrozen = false;
 
+  private StateHandler mStateHandler;
+
   void freeze() {
     mIsFrozen = true;
   }
@@ -58,7 +60,7 @@ public class LayoutStateContext {
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, c.getComponentTree(), null, null);
+        new LayoutStateContext(layoutState, c.getComponentTree(), null, null, new StateHandler());
     layoutState.setLayoutStateContextForTest(layoutStateContext);
     return layoutStateContext;
   }
@@ -79,10 +81,19 @@ public class LayoutStateContext {
     wasReconciled = true;
   }
 
+  /**
+   * This is only used in tests and marked as {@link Deprecated}. Use {@link
+   * LayoutStateContext(LayoutState, ComponentTree, LayoutStateFuture, DiffNode, StateHandler)}
+   * instead.
+   *
+   * @param layoutState
+   * @param componentTree
+   */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  @Deprecated
   public LayoutStateContext(
       final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, componentTree, null, null);
+    this(layoutState, componentTree, null, null, new StateHandler());
   }
 
   @VisibleForTesting
@@ -90,11 +101,13 @@ public class LayoutStateContext {
       final @Nullable LayoutState layoutState,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable DiffNode currentDiffTree) {
+      final @Nullable DiffNode currentDiffTree,
+      final StateHandler stateHandler) {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
     mCurrentDiffTree = currentDiffTree;
+    mStateHandler = stateHandler;
   }
 
   ScopedComponentInfo addScopedComponentInfo(
@@ -270,5 +283,9 @@ public class LayoutStateContext {
 
   boolean isFrozen() {
     return mIsFrozen;
+  }
+
+  StateHandler getStateHandler() {
+    return mStateHandler;
   }
 }
