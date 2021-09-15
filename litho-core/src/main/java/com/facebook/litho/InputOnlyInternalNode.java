@@ -1294,7 +1294,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final ComponentContext c,
       final Component next,
       final @Nullable String nextKey) {
-    final StateHandler stateHandler = c.getStateHandler();
+    final StateHandler stateHandler = layoutStateContext.getStateHandler();
     final Set<String> keys;
     if (stateHandler == null) {
       keys = Collections.emptySet();
@@ -1579,7 +1579,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     List<String> keys = node.getComponentKeys();
     for (String key : keys) {
       final ScopedComponentInfo info = c.getScopedComponentInfo(key);
-      info.commitToLayoutState();
+      info.commitToLayoutState(c.getStateHandler());
     }
   }
 

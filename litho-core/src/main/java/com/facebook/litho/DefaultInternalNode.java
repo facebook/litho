@@ -1562,7 +1562,7 @@ public class DefaultInternalNode
       final ComponentContext c,
       final Component next,
       final @Nullable String nextKey) {
-    final StateHandler stateHandler = c.getStateHandler();
+    final StateHandler stateHandler = layoutStateContext.getStateHandler();
     final Set<String> keys;
     if (stateHandler == null) {
       keys = Collections.emptySet();

@@ -183,10 +183,10 @@ final class ScopedComponentInfo implements Cloneable {
     return mErrorEventHandler;
   }
 
-  public void commitToLayoutState() {
+  public void commitToLayoutState(StateHandler stateHandler) {
     mIsBeingUsed = true;
     if (mComponent.hasState()) {
-      mContext.getStateHandler().addStateContainer(mContext.getGlobalKey(), mStateContainer);
+      stateHandler.addStateContainer(mContext.getGlobalKey(), mStateContainer);
     }
   }
 

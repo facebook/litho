@@ -1098,7 +1098,8 @@ public abstract class Component
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
 
-    if (c.getStateHandler() != null && c.hasLayoutState()) {
+    final StateHandler stateHandler = c.getStateHandler();
+    if (stateHandler != null && c.hasLayoutState()) {
       measure(c, widthSpec, heightSpec, outputSize);
       return;
     }
@@ -1108,14 +1109,10 @@ public abstract class Component
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final LayoutStateContext layoutStateContext =
         new LayoutStateContext(
-            null,
-            null,
-            null,
-            null,
-            c.getStateHandler() != null ? c.getStateHandler() : new StateHandler());
+            null, null, null, null, stateHandler != null ? stateHandler : new StateHandler());
 
     final ComponentContext contextForLayout;
-    if (c.getStateHandler() == null) {
+    if (stateHandler == null) {
       contextForLayout =
           new ComponentContext(c, new StateHandler(), c.getTreeProps(), layoutStateContext);
     } else {
@@ -1521,7 +1518,8 @@ public abstract class Component
       }
     }
 
-    applyStateUpdates(parentContext, scopedContext, globalKey);
+    applyStateUpdates(
+        layoutStateContext.getStateHandler(), parentContext, scopedContext, globalKey);
 
     if (!parentContext.useStatelessComponent()) {
       generateErrorEventHandler(parentContext, scopedContext);
@@ -1541,12 +1539,13 @@ public abstract class Component
    * pending state updates.
    */
   private final void applyStateUpdates(
+      final StateHandler stateHandler,
       final ComponentContext parentContext,
       final ComponentContext scopedContext,
       final String globalKey) {
     scopedContext.setParentTreeProps(parentContext.getTreeProps());
     if (hasState()) {
-      Preconditions.checkNotNull(parentContext.getStateHandler())
+      Preconditions.checkNotNull(stateHandler)
           .applyStateUpdatesForComponent(scopedContext, this, globalKey);
     }
   }

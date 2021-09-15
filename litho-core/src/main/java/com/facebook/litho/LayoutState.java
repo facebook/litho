@@ -237,16 +237,19 @@ public class LayoutState
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
-    this(context, Column.create(context).build(), null);
+    this(context, Column.create(context).build(), new StateHandler(), null);
   }
 
   LayoutState(
-      ComponentContext context, Component rootComponent, final @Nullable LayoutState current) {
+      ComponentContext context,
+      Component rootComponent,
+      final StateHandler stateHandler,
+      final @Nullable LayoutState current) {
     mContext = context;
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
     mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
-    mStateHandler = mContext.getStateHandler();
+    mStateHandler = stateHandler;
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
@@ -1536,6 +1539,7 @@ public class LayoutState
       @Nullable LayoutState currentLayoutState,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
+    final StateHandler stateHandler = c.getStateHandler();
 
     final ComponentsLogger logger = c.getLogger();
 
@@ -1568,7 +1572,9 @@ public class LayoutState
         diffTreeRoot = currentLayoutState.mDiffTreeRoot;
         currentLayoutRoot = currentLayoutState.mLayoutRoot;
         currentLayoutStateContext = currentLayoutState.getLayoutStateContext();
-        isReconcilable = isReconcilable(c, component, currentLayoutRoot);
+        isReconcilable =
+            isReconcilable(
+                c, component, Preconditions.checkNotNull(stateHandler), currentLayoutRoot);
         if (!isReconcilable) { // Release the current InternalNode tree if it is not reconcilable.
           currentLayoutState.mLayoutRoot = null;
         }
@@ -1597,17 +1603,13 @@ public class LayoutState
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
       }
 
-      layoutState = new LayoutState(c, component, currentLayoutState);
+      layoutState = new LayoutState(c, component, stateHandler, currentLayoutState);
 
       layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
 
       layoutStateContext =
           new LayoutStateContext(
-              layoutState,
-              c.getComponentTree(),
-              layoutStateFuture,
-              diffTreeRoot,
-              c.getStateHandler());
+              layoutState, c.getComponentTree(), layoutStateFuture, diffTreeRoot, stateHandler);
 
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
@@ -1615,7 +1617,7 @@ public class LayoutState
       if (isReconcilable) {
         layoutStateContext.copyScopedInfoFrom(
             Preconditions.checkNotNull(currentLayoutStateContext),
-            Preconditions.checkNotNull(c.getStateHandler()));
+            Preconditions.checkNotNull(stateHandler));
       }
 
       final InternalNode layoutCreatedInWillRender =
@@ -1951,13 +1953,13 @@ public class LayoutState
   private static boolean isReconcilable(
       final ComponentContext c,
       final Component nextRootComponent,
+      final StateHandler stateHandler,
       final @Nullable LithoLayoutResult currentLayoutResult) {
 
     if (currentLayoutResult == null || !c.isReconciliationEnabled()) {
       return false;
     }
 
-    StateHandler stateHandler = c.getStateHandler();
     if (stateHandler == null || !stateHandler.hasUncommittedUpdates()) {
       return false;
     }
