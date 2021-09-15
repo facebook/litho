@@ -1517,6 +1517,7 @@ public class LayoutState
         c,
         component,
         null,
+        new StateHandler(),
         componentTreeId,
         widthSpec,
         heightSpec,
@@ -1531,6 +1532,7 @@ public class LayoutState
       ComponentContext c,
       Component component,
       @Nullable LayoutStateFuture layoutStateFuture,
+      StateHandler stateHandler,
       int componentTreeId,
       int widthSpec,
       int heightSpec,
@@ -1539,7 +1541,6 @@ public class LayoutState
       @Nullable LayoutState currentLayoutState,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
-    final StateHandler stateHandler = c.getStateHandler();
 
     final ComponentsLogger logger = c.getLogger();
 

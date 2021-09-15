@@ -2949,9 +2949,9 @@ public class ComponentTree implements LithoLifecycleListener {
       final ComponentContext contextWithStateHandler;
       final LayoutState previousLayoutState;
 
+      final StateHandler stateHandler;
       synchronized (ComponentTree.this) {
-        final StateHandler stateHandler =
-            StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
+        stateHandler = StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
         previousLayoutState = mCommittedLayoutState;
         contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
@@ -2962,6 +2962,7 @@ public class ComponentTree implements LithoLifecycleListener {
           contextWithStateHandler,
           root,
           layoutStateFuture,
+          stateHandler,
           ComponentTree.this.mId,
           widthSpec,
           heightSpec,
