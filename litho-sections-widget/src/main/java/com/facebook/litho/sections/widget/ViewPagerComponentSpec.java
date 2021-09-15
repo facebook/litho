@@ -17,17 +17,24 @@
 package com.facebook.litho.sections.widget;
 
 import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.TouchEvent;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.widget.LinearLayoutInfo;
+import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SnapUtil;
 
@@ -40,7 +47,8 @@ public class ViewPagerComponentSpec<T> {
       ComponentContext c,
       @Prop DataDiffSection<T> dataDiffSection,
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
-      @Prop(optional = true) int initialPageIndex) {
+      @Prop(optional = true) int initialPageIndex,
+      @Prop(optional = true) boolean disableSwiping) {
     final RecyclerConfiguration recyclerConfiguration =
         ListRecyclerConfiguration.create()
             .orientation(LinearLayoutManager.HORIZONTAL)
@@ -55,17 +63,39 @@ public class ViewPagerComponentSpec<T> {
                 })
             .build();
 
-    return RecyclerCollectionComponent.create(c)
-        .flexGrow(1)
-        .disablePTR(true)
-        .section(
-            ViewPagerHelperSection.<T>create(new SectionContext(c))
-                .delegateSection(dataDiffSection)
-                .pageSelectedEventEventHandler(ViewPagerComponent.getPageSelectedEventHandler(c))
-                .initialPageIndex(initialPageIndex))
-        .eventsController(eventsController)
-        .recyclerConfiguration(recyclerConfiguration)
-        .build();
+    final RecyclerCollectionComponent.Builder builder =
+        RecyclerCollectionComponent.create(c)
+            .flexGrow(1)
+            .disablePTR(true)
+            .section(
+                ViewPagerHelperSection.<T>create(new SectionContext(c))
+                    .delegateSection(dataDiffSection)
+                    .pageSelectedEventEventHandler(
+                        ViewPagerComponent.getPageSelectedEventHandler(c))
+                    .initialPageIndex(initialPageIndex))
+            .eventsController(eventsController)
+            .recyclerConfiguration(recyclerConfiguration);
+
+    if (disableSwiping) {
+      // Consume the touch event before it can get to the RV to disable swiping, and also disable
+      // the RV's normal touchIntercept behavior by ignoring onInterceptTouchEvent.
+      builder
+          .touchInterceptor(
+              new LithoRecylerView.TouchInterceptor() {
+                @Override
+                public Result onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent ev) {
+                  return Result.IGNORE_TOUCH_EVENT;
+                }
+              })
+          .recyclerTouchEventHandler(ViewPagerComponent.onSwipeDisabledTouchEvent(c));
+    }
+
+    return builder.build();
+  }
+
+  @OnEvent(TouchEvent.class)
+  static boolean onSwipeDisabledTouchEvent(ComponentContext c, @FromEvent View view) {
+    return true;
   }
 
   /** Custom implementation of LinearLayout to assign parent's width to items. */
