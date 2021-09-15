@@ -31,6 +31,7 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
 import com.facebook.litho.sections.common.DataDiffSection;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 @GroupSectionSpec
@@ -38,8 +39,8 @@ import javax.annotation.Nullable;
 class ViewPagerHelperSectionSpec<T> {
 
   @OnCreateInitialState
-  static void onCreateInitialState(SectionContext c, StateValue<Integer> currentPageIndex) {
-    currentPageIndex.set(-1);
+  static void onCreateInitialState(SectionContext c, StateValue<AtomicInteger> currentPageIndex) {
+    currentPageIndex.set(new AtomicInteger(-1));
   }
 
   @OnCreateChildren
@@ -72,11 +73,11 @@ class ViewPagerHelperSectionSpec<T> {
       int lastFullyVisibleIndex,
       @Prop(optional = true) @Nullable
           EventHandler<PageSelectedEvent> pageSelectedEventEventHandler,
-      @State(canUpdateLazily = true) int currentPageIndex) {
-    if (currentPageIndex == firstFullyVisibleIndex || firstFullyVisibleIndex < 0) {
+      @State AtomicInteger currentPageIndex) {
+    if (currentPageIndex.get() == firstFullyVisibleIndex || firstFullyVisibleIndex < 0) {
       return;
     }
-    ViewPagerHelperSection.lazyUpdateCurrentPageIndex(c, firstFullyVisibleIndex);
+    currentPageIndex.set(firstFullyVisibleIndex);
     if (pageSelectedEventEventHandler != null) {
       ViewPagerComponent.dispatchPageSelectedEvent(
           pageSelectedEventEventHandler, firstFullyVisibleIndex);
