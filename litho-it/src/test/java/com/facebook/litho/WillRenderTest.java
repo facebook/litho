@@ -35,6 +35,7 @@ import com.facebook.litho.widget.LayoutSpecWillRenderReuseTester;
 import com.facebook.litho.widget.LayoutSpecWillRenderTester;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -83,6 +84,7 @@ public class WillRenderTest {
 
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
+  @Ignore("Flaky test")
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(getApplicationContext());
