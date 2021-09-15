@@ -62,10 +62,6 @@ public class MountItemsPool {
   static boolean sIsManualCallbacks;
 
   static Object acquireMountContent(Context context, RenderUnit renderUnit) {
-    if (renderUnit.isRecyclingDisabled()) {
-      return renderUnit.createContent(context);
-    }
-
     final ItemPool pool = getMountContentPool(context, renderUnit);
     Object content = null;
     if (pool == null) {
@@ -96,6 +92,10 @@ public class MountItemsPool {
   }
 
   private static @Nullable ItemPool getMountContentPool(Context context, RenderUnit renderUnit) {
+    if (renderUnit.isRecyclingDisabled()) {
+      return null;
+    }
+    
     Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
     if (poolsMap == null) {
       final Context rootContext = getRootContext(context);
