@@ -256,7 +256,11 @@ public class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
       return;
     }
 
-    for (Component component : dependentComponents) {
+    // It's possible that applying a dynamic prop could bind or unbind a component - snapshot the
+    // components here to prevent a ConcurrentModificationException during iteration
+    Component[] dependentComponentSnapshot =
+        dependentComponents.toArray(new Component[dependentComponents.size()]);
+    for (Component component : dependentComponentSnapshot) {
       final Object content = mContents.get(component);
 
       if (hasCommonDynamicPropsToBind(component)) {
