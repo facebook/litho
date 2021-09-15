@@ -268,12 +268,10 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   @Override
-  public void finaliseDisappearingItem(MountItem disappearingItem) {
+  public boolean finaliseDisappearingItem(MountItem disappearingItem) {
     ensureDisappearingItems();
     if (!mDisappearingItems.remove(disappearingItem)) {
-      final TransitionId transitionId = getLayoutOutput(disappearingItem).getTransitionId();
-      throw new RuntimeException(
-          "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
+      return false;
     }
 
     final Object content = disappearingItem.getContent();
@@ -285,23 +283,12 @@ public class ComponentHost extends Host implements DisappearingHost {
     }
 
     updateAccessibilityState(getLayoutOutput(disappearingItem));
+
+    return true;
   }
 
   boolean hasDisappearingItems() {
     return mDisappearingItems != null && !mDisappearingItems.isEmpty();
-  }
-
-  @Nullable
-  List<TransitionId> getDisappearingItemTransitionIds() {
-    if (!hasDisappearingItems()) {
-      return null;
-    }
-    final List<TransitionId> ids = new ArrayList<>();
-    for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      ids.add(getLayoutOutput(mDisappearingItems.get(i)).getTransitionId());
-    }
-
-    return ids;
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {

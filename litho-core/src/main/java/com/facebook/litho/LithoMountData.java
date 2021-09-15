@@ -96,12 +96,10 @@ public class LithoMountData {
     final LayoutOutput output = getLayoutOutput(node);
     final Component mComponent = output.getComponent();
     if (mIsReleased) {
-      final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
+      final String componentName = mComponent.getSimpleName();
       throw new ReleasingReleasedMountContentException(
           "Releasing released mount content! component: "
               + componentName
-              + ", transitionId: "
-              + output.getTransitionId()
               + ", previousReleaseCause: "
               + mReleaseCause);
     }

@@ -671,7 +671,10 @@ public class ComponentHostTest {
     assertThat(mHost.getChildCount()).isEqualTo(2);
     assertThat(mHost.hasDisappearingItems()).isTrue();
 
-    mHost.finaliseDisappearingItem(mountItem1);
+    boolean wasRemoved;
+
+    wasRemoved = mHost.finaliseDisappearingItem(mountItem1);
+    assertThat(wasRemoved).isTrue();
 
     assertThat(mHost.getMountItemCount()).isEqualTo(3);
     assertThat(mHost.getChildCount()).isEqualTo(2);
@@ -683,7 +686,8 @@ public class ComponentHostTest {
     assertThat(mHost.getChildCount()).isEqualTo(2);
     assertThat(mHost.hasDisappearingItems()).isTrue();
 
-    mHost.finaliseDisappearingItem(mountItem2);
+    wasRemoved = mHost.finaliseDisappearingItem(mountItem2);
+    assertThat(wasRemoved).isTrue();
 
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
     assertThat(mHost.getChildCount()).isEqualTo(1);
@@ -735,8 +739,11 @@ public class ComponentHostTest {
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(3);
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 3)).isEqualTo(2);
 
+    boolean wasRemoved;
+
     // mountItem4 finished disappearing
-    mHost.finaliseDisappearingItem(mountItem4);
+    wasRemoved = mHost.finaliseDisappearingItem(mountItem4);
+    assertThat(wasRemoved).isTrue();
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
     assertThat(mHost.getChildCount()).isEqualTo(3);
 
@@ -745,7 +752,8 @@ public class ComponentHostTest {
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 2)).isEqualTo(2);
 
     // mountItem3 finished disappearing
-    mHost.finaliseDisappearingItem(mountItem3);
+    wasRemoved = mHost.finaliseDisappearingItem(mountItem3);
+    assertThat(wasRemoved).isTrue();
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
     assertThat(mHost.getChildCount()).isEqualTo(2);
 

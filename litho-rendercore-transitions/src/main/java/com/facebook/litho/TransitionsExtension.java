@@ -735,7 +735,17 @@ public class TransitionsExtension
       throw new IllegalStateException("Disappearing mountItem has no host, can not be unmounted.");
     }
     if (isRoot) {
-      ((DisappearingHost) host).finaliseDisappearingItem(mountItem);
+      final boolean wasRemoved = ((DisappearingHost) host).finaliseDisappearingItem(mountItem);
+      if (!wasRemoved) {
+        final AnimatableItem item =
+            extensionState
+                .getState()
+                .mLockedDisappearingMountitems
+                .get(mountItem.getRenderTreeNode().getRenderUnit());
+        final TransitionId transitionId = item.getTransitionId();
+        throw new RuntimeException(
+            "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
+      }
     } else {
       host.unmount(mountItem);
     }

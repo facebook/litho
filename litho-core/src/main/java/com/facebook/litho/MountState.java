@@ -2136,11 +2136,7 @@ class MountState implements MountDelegateTarget {
         + "], contentType="
         + (item.getContent() != null ? item.getContent().getClass() : "<null_content>")
         + ", component="
-        + (getLayoutOutput(item).getComponent() != null
-            ? getLayoutOutput(item).getComponent().getSimpleName()
-            : "<null_component>")
-        + ", transitionId="
-        + getLayoutOutput(item).getTransitionId()
+        + getLayoutOutput(item).getComponent().getSimpleName()
         + ", host="
         + (item.getHost() != null ? item.getHost().getClass() : "<null_host>")
         + ", isRootHost="
@@ -2220,9 +2216,7 @@ class MountState implements MountDelegateTarget {
               "UnmountItem:ChildNotFound",
               "Child of mount item not found in MountSate mIndexToItemMap"
                   + ", child_component: "
-                  + (component != null ? component.getSimpleName() : null)
-                  + ", child_transitionId: "
-                  + output.getTransitionId());
+                  + component.getSimpleName());
         }
         final long childLayoutOutputId =
             mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
@@ -2243,9 +2237,7 @@ class MountState implements MountDelegateTarget {
             "UnmountItem:ChildsNotUnmounted",
             "Recursively unmounting items from a ComponentHost, left some items behind maybe because not tracked by its MountState"
                 + ", component: "
-                + (component != null ? component.getSimpleName() : null)
-                + ", transitionId: "
-                + output.getTransitionId());
+                + component.getSimpleName());
         throw new IllegalStateException(
             "Recursively unmounting items from a ComponentHost, left"
                 + " some items behind maybe because not tracked by its MountState");

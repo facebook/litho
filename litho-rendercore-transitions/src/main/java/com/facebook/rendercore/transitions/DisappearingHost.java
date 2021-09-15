@@ -36,6 +36,7 @@ public interface DisappearingHost {
    * In this method we finally remove the mountItem from the drawing pass.
    *
    * @param mountItem
+   * @return {@code true} iff the item was removed from the Host.
    */
-  void finaliseDisappearingItem(MountItem mountItem);
+  boolean finaliseDisappearingItem(MountItem mountItem);
 }

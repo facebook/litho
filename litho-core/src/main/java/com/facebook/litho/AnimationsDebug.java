@@ -16,15 +16,12 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.rendercore.RenderTreeNode;
 
 /** Utilities for animations debug. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -38,32 +35,6 @@ public class AnimationsDebug {
       return;
     }
     Log.d(TAG, layoutState.dumpAsString());
-  }
-
-  static void debugPrintAnimationLockedIndices(
-      LayoutState layoutState, int[] animationLockedIndices) {
-    if (!ENABLED) {
-      return;
-    }
-
-    if (animationLockedIndices != null) {
-      for (int i = 0; i < animationLockedIndices.length; i++) {
-        final RenderTreeNode node = layoutState.getMountableOutputAt(i);
-        final LayoutOutput output = getLayoutOutput(layoutState.getMountableOutputAt(i));
-        Log.d(
-            TAG,
-            ""
-                + i
-                + " ["
-                + node.getRenderUnit().getId()
-                + "] ("
-                + output.getTransitionId()
-                + ") host => ("
-                + (node.getParent() != null ? node.getParent().getRenderUnit().getId() : -1)
-                + "), locked ref count: "
-                + animationLockedIndices[i]);
-      }
-    }
   }
 
   static boolean areTransitionsEnabled(@Nullable Context context) {
