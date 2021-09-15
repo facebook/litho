@@ -533,7 +533,6 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(700);
   }
 
-  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
   @Test
   public void testWrapContentWithRemoveRangeAsyncOnVertical() {
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
