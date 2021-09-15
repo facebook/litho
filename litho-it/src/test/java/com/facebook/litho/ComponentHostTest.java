@@ -931,7 +931,7 @@ public class ComponentHostTest {
     when(result.getTouchExpansionRight()).thenReturn(1);
     when(result.getTouchExpansionBottom()).thenReturn(1);
 
-    viewNodeInfo.setExpandedTouchBounds(result, node, 1, 1, 1, 1);
+    viewNodeInfo.setExpandedTouchBounds(result);
 
     MountItem viewMountItem =
         MountItemTestHelper.create(

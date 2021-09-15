@@ -35,7 +35,7 @@ class ViewNodeInfo {
   private @Nullable Drawable mBackground;
   private @Nullable Drawable mForeground;
   private Rect mPadding;
-  private Rect mExpandedTouchBounds;
+  private Rect mTouchBoundsExpansion;
   private YogaDirection mLayoutDirection;
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
@@ -102,48 +102,31 @@ class ViewNodeInfo {
     return mLayoutDirection;
   }
 
-  void setExpandedTouchBounds(
-      final LithoLayoutResult result,
-      final InternalNode node,
-      final int l,
-      final int t,
-      final int r,
-      final int b) {
-    if (!node.hasTouchExpansion()) {
+  void setExpandedTouchBounds(final LithoLayoutResult result) {
+
+    final int left = result.getTouchExpansionLeft();
+    final int top = result.getTouchExpansionTop();
+    final int right = result.getTouchExpansionRight();
+    final int bottom = result.getTouchExpansionBottom();
+    if (left == 0 && top == 0 && right == 0 && bottom == 0) {
       return;
     }
 
-    final int touchExpansionLeft = result.getTouchExpansionLeft();
-    final int touchExpansionTop = result.getTouchExpansionTop();
-    final int touchExpansionRight = result.getTouchExpansionRight();
-    final int touchExpansionBottom = result.getTouchExpansionBottom();
-    if (touchExpansionLeft == 0
-        && touchExpansionTop == 0
-        && touchExpansionRight == 0
-        && touchExpansionBottom == 0) {
-      return;
-    }
-
-    if (mExpandedTouchBounds != null) {
+    if (mTouchBoundsExpansion != null) {
       throw new IllegalStateException(
           "ExpandedTouchBounds already initialized for this " + "ViewNodeInfo.");
     }
 
-    mExpandedTouchBounds = new Rect();
-    mExpandedTouchBounds.set(
-        l - touchExpansionLeft,
-        t - touchExpansionTop,
-        r + touchExpansionRight,
-        b + touchExpansionBottom);
+    mTouchBoundsExpansion = new Rect(left, top, right, bottom);
   }
 
   @Nullable
-  Rect getExpandedTouchBounds() {
-    if (mExpandedTouchBounds == null || mExpandedTouchBounds.isEmpty()) {
+  Rect getTouchBoundsExpansion() {
+    if (mTouchBoundsExpansion == null) {
       return null;
     }
 
-    return mExpandedTouchBounds;
+    return mTouchBoundsExpansion;
   }
 
   @Nullable
@@ -205,7 +188,7 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (!CommonUtils.equals(mExpandedTouchBounds, other.mExpandedTouchBounds)) {
+    if (!CommonUtils.equals(mTouchBoundsExpansion, other.mTouchBoundsExpansion)) {
       return false;
     }
 

@@ -186,7 +186,7 @@ public class LayoutStateCalculateTest {
 
     final ViewNodeInfo viewNodeInfo =
         getLayoutOutput(layoutState.getMountableOutputAt(4)).getViewNodeInfo();
-    assertThat(viewNodeInfo.getExpandedTouchBounds()).isEqualTo(new Rect(15, -5, 75, 55));
+    assertThat(viewNodeInfo.getTouchBoundsExpansion()).isEqualTo(new Rect(5, 5, 5, 5));
 
     final NodeInfo nodeInfo = getLayoutOutput(layoutState.getMountableOutputAt(4)).getNodeInfo();
     assertThat(nodeInfo).isNotNull();

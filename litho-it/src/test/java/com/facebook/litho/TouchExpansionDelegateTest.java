@@ -134,6 +134,11 @@ public class TouchExpansionDelegateTest {
             .build();
 
     mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    assertThat(mLithoViewRule.getLithoView().getTouchExpansionDelegate().size())
+        .describedAs("touch expansion delegates should be present")
+        .isEqualTo(1);
+
     mLithoViewRule.getLithoView().unmountAllItems();
 
     emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);

@@ -297,7 +297,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       return;
     }
 
-    final Rect expandedTouchBounds = viewNodeInfo.getExpandedTouchBounds();
+    final Rect expandedTouchBounds = viewNodeInfo.getTouchBoundsExpansion();
     if (expandedTouchBounds == null || mTouchExpansionDelegate == null) {
       return;
     }
@@ -312,7 +312,7 @@ public class ComponentHost extends Host implements DisappearingHost {
       return;
     }
 
-    final Rect expandedTouchBounds = viewNodeInfo.getExpandedTouchBounds();
+    final Rect expandedTouchBounds = viewNodeInfo.getTouchBoundsExpansion();
     if (expandedTouchBounds == null) {
       return;
     }

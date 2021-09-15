@@ -152,7 +152,17 @@ class TouchExpansionDelegate extends TouchDelegate {
         return null;
       }
 
-      return info.getExpandedTouchBounds();
+      final Rect expansion = info.getTouchBoundsExpansion();
+      if (expansion == null) {
+        return null;
+      }
+
+      final Rect bounds = mItem.getRenderTreeNode().getBounds();
+      return new Rect(
+          bounds.left - expansion.left,
+          bounds.top - expansion.top,
+          bounds.right + expansion.right,
+          bounds.bottom + expansion.bottom);
     }
 
     boolean onTouchEvent(MotionEvent event) {

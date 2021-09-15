@@ -562,13 +562,9 @@ public class LayoutState
         viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       }
       viewNodeInfo.setLayoutDirection(result.getResolvedLayoutDirection());
-      viewNodeInfo.setExpandedTouchBounds(
-          result,
-          node,
-          l - hostTranslationX,
-          t - hostTranslationY,
-          r - hostTranslationX,
-          b - hostTranslationY);
+      if (node.hasTouchExpansion()) {
+        viewNodeInfo.setExpandedTouchBounds(result);
+      }
       viewNodeInfo.setLayerType(node.getLayerType(), node.getLayerPaint());
       layoutOutputViewNodeInfo = viewNodeInfo;
     } else {
