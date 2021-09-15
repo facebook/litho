@@ -55,7 +55,6 @@ class LayoutOutput implements Cloneable {
   private final int mFlags;
 
   private final int mImportantForAccessibility;
-  private final @Nullable TransitionId mTransitionId;
 
   private final int mUpdateState;
 
@@ -65,8 +64,7 @@ class LayoutOutput implements Cloneable {
       final @Nullable ViewNodeInfo viewNodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @UpdateState int updateState,
-      final @Nullable TransitionId transitionId) {
+      final @UpdateState int updateState) {
 
     if (component == null) {
       throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
@@ -80,7 +78,6 @@ class LayoutOutput implements Cloneable {
         importantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS
             ? IMPORTANT_FOR_ACCESSIBILITY_YES // the A11Y prop for descendants has been corrected
             : importantForAccessibility;
-    mTransitionId = transitionId;
     mUpdateState = updateState;
   }
 
@@ -127,10 +124,6 @@ class LayoutOutput implements Cloneable {
   @Nullable
   ViewNodeInfo getViewNodeInfo() {
     return mViewNodeInfo;
-  }
-
-  public @Nullable TransitionId getTransitionId() {
-    return mTransitionId;
   }
 
   static LayoutOutput getLayoutOutput(RenderTreeNode node) {

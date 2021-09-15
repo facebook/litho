@@ -124,8 +124,7 @@ public class TransitionTest {
         };
 
     LithoRenderUnit rootUnit =
-        LithoRenderUnit.create(
-            0, component, null, null, null, 0, 0, LayoutOutput.STATE_UNKNOWN, null);
+        LithoRenderUnit.create(0, component, null, null, null, 0, 0, LayoutOutput.STATE_UNKNOWN);
 
     when(layoutState.getMountableOutputAt(0))
         .thenReturn(LithoRenderUnit.create(rootUnit, new Rect(0, 0, 300, 100), null, null));

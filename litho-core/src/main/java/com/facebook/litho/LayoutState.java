@@ -374,8 +374,7 @@ public class LayoutState
             null,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            LayoutOutput.STATE_DIRTY,
-            null);
+            LayoutOutput.STATE_DIRTY);
 
     final RenderTreeNode node =
         LithoRenderUnit.create(
@@ -617,8 +616,7 @@ public class LayoutState
             layoutOutputViewNodeInfo,
             flags,
             importantForAccessibility,
-            updateState,
-            transitionId);
+            updateState);
 
     return LithoRenderUnit.create(
         unit,

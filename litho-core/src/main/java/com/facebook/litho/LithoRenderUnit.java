@@ -133,17 +133,10 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final @Nullable ViewNodeInfo viewNodeInfo,
       final int flags,
       final int importantForAccessibility,
-      final @LayoutOutput.UpdateState int updateState,
-      final @Nullable TransitionId transitionId) {
+      final @LayoutOutput.UpdateState int updateState) {
     final LayoutOutput output =
         new LayoutOutput(
-            component,
-            nodeInfo,
-            viewNodeInfo,
-            flags,
-            importantForAccessibility,
-            updateState,
-            transitionId);
+            component, nodeInfo, viewNodeInfo, flags, importantForAccessibility, updateState);
 
     return new LithoRenderUnit(id, output, context);
   }

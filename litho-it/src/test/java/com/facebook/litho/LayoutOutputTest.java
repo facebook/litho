@@ -69,7 +69,7 @@ public class LayoutOutputTest {
       int hostTranslationY,
       int flags,
       long hostMarker) {
-    return new LayoutOutput(mTestComponent, null, null, flags, 0, LayoutOutput.STATE_UNKNOWN, null);
+    return new LayoutOutput(mTestComponent, null, null, flags, 0, LayoutOutput.STATE_UNKNOWN);
   }
 
   @Test
