@@ -1677,14 +1677,8 @@ public abstract class Component
       return willRender(layoutStateContext, c, component, componentLayoutCreatedInWillRender);
     }
 
-    // Missing StateHandler is only expected in tests
-    final ComponentContext contextForLayout =
-        c.getStateHandler() == null
-            ? new ComponentContext(c, new StateHandler(), null, layoutStateContext)
-            : c;
-
     final InternalNode newLayoutCreatedInWillRender =
-        Layout.create(layoutStateContext, contextForLayout, component);
+        Layout.create(layoutStateContext, c, component);
     boolean willRender = willRender(layoutStateContext, c, component, newLayoutCreatedInWillRender);
     if (willRender) { // do not cache NoOpInternalNode(NULL_LAYOUT)
       component.setLayoutCreatedInWillRender(layoutStateContext, newLayoutCreatedInWillRender);
