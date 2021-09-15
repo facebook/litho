@@ -85,7 +85,8 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
   @Override
   public boolean isRecyclingDisabled() {
     // Avoid recycling hosts in Litho
-    return this.output.getComponent() instanceof HostComponent;
+    return this.output.getComponent().poolSize() == 0
+        || this.output.getComponent() instanceof HostComponent;
   }
 
   @Override
