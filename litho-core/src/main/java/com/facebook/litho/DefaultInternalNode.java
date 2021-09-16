@@ -1573,10 +1573,6 @@ public class DefaultInternalNode
     return reconcile(layoutStateContext, c, this, next, nextKey, keys);
   }
 
-  void setComponentContext(ComponentContext c) {
-    mComponentContext = c;
-  }
-
   @Override
   public boolean isClone() {
     return mIsClone;
@@ -1708,10 +1704,12 @@ public class DefaultInternalNode
       mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
       for (WorkingRangeContainer.Registration old : ranges) {
         final String key = old.mKey;
-        final Component component =
-            old.mComponent.makeUpdatedShallowCopy(layoutStateContext, c, key);
-        mWorkingRangeRegistrations.add(
-            new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
+        final int index = componentKeys.indexOf(key);
+        if (index >= 0) {
+          final Component component = components.get(index);
+          mWorkingRangeRegistrations.add(
+              new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
+        }
       }
     }
   }
@@ -1935,9 +1933,11 @@ public class DefaultInternalNode
         current.getUpdatedComponents(layoutStateContext, head, headKey);
 
     // 4. Update the layout with the updated context, components, and YogaNode.
+    final Component tailComponent = updated.first.get(0);
+    final String tailKey = updated.second.get(0);
     layout.updateWith(
         layoutStateContext,
-        head.getScopedContext(layoutStateContext, headKey),
+        tailComponent.getScopedContext(layoutStateContext, tailKey),
         node,
         updated.first,
         updated.second,
