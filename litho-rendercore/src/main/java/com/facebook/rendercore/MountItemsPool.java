@@ -95,7 +95,7 @@ public class MountItemsPool {
     if (renderUnit.isRecyclingDisabled()) {
       return null;
     }
-    
+
     Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
     if (poolsMap == null) {
       final Context rootContext = getRootContext(context);
