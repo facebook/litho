@@ -789,10 +789,6 @@ public abstract class Component
       return true;
     }
 
-    if (previous == next) {
-      return false;
-    }
-
     return previous == null
         || !previous.isEquivalentTo(next)
         || !ComponentUtils.hasEquivalentState(prevStateContainer, nextStateContainer);
