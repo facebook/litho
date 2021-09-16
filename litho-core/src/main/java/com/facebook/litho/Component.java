@@ -1098,27 +1098,24 @@ public abstract class Component
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
 
-    final StateHandler stateHandler = c.getStateHandler();
-    if (stateHandler != null && c.hasLayoutState()) {
+    if (c.hasLayoutState()) {
       measure(c, widthSpec, heightSpec, outputSize);
       return;
     }
+
+    final StateHandler stateHandler =
+        c.getLayoutStateContext() == null || c.getLayoutStateContext().getStateHandler() == null
+            ? new StateHandler()
+            : c.getLayoutStateContext().getStateHandler();
 
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(
-            null, null, null, null, stateHandler != null ? stateHandler : new StateHandler());
+        new LayoutStateContext(null, null, null, null, stateHandler);
 
-    final ComponentContext contextForLayout;
-    if (stateHandler == null) {
-      contextForLayout =
-          new ComponentContext(c, new StateHandler(), c.getTreeProps(), layoutStateContext);
-    } else {
-      contextForLayout = c.makeNewCopy();
-      contextForLayout.setLayoutStateContext(layoutStateContext);
-    }
+    final ComponentContext contextForLayout =
+        new ComponentContext(c, stateHandler, c.getTreeProps(), layoutStateContext);
 
     final LayoutResultHolder holder =
         Layout.createAndMeasureComponent(

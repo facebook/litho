@@ -410,7 +410,9 @@ public class LegacyInternalNodeTest {
   public void testMeasureMightNotCacheInternalNode_ContextWithoutStateHandler_returnsMeasurement() {
     final ComponentContext c = new ComponentContext(getApplicationContext());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateContext(new LayoutStateContext(layoutState, null));
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, null);
+    c.setLayoutStateContext(layoutStateContext);
+    Whitebox.setInternalState(layoutState, "mLayoutStateContext", layoutStateContext);
 
     final Component component =
         Column.create(c)
