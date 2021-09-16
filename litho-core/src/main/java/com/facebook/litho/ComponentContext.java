@@ -716,8 +716,4 @@ public class ComponentContext implements Cloneable {
   boolean useStatelessComponent() {
     return mComponentTree != null && mComponentTree.useStatelessComponent();
   }
-
-  boolean shouldSkipShallowCopy() {
-    return mComponentTree != null && mComponentTree.shouldSkipShallowCopy();
-  }
 }

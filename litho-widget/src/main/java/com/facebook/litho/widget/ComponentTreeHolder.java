@@ -62,7 +62,6 @@ public class ComponentTreeHolder {
   private final ComponentsConfiguration mComponentsConfiguration;
 
   private @Nullable Boolean mUseStateLessComponent;
-  private @Nullable Boolean mShouldSkipShallowCopy;
   private @Nullable Boolean mInputOnlyInternalNode;
   private @Nullable Boolean mInternalNodeReuseEnabled;
   private @Nullable Boolean mIsLayoutCachingEnabled;
@@ -492,7 +491,6 @@ public class ComponentTreeHolder {
       if (mUseStateLessComponent != null) {
         builder.overrideStatelessConfigs(
             mUseStateLessComponent,
-            mShouldSkipShallowCopy,
             mInputOnlyInternalNode,
             mInternalNodeReuseEnabled,
             mIsLayoutCachingEnabled);
@@ -502,7 +500,6 @@ public class ComponentTreeHolder {
 
       if (mUseStateLessComponent == null) {
         mUseStateLessComponent = mComponentTree.useStatelessComponent();
-        mShouldSkipShallowCopy = mComponentTree.shouldSkipShallowCopy();
         mInputOnlyInternalNode = mComponentTree.isInputOnlyInternalNodeEnabled();
         mInternalNodeReuseEnabled = mComponentTree.isInternalNodeReuseEnabled();
         mIsLayoutCachingEnabled = mComponentTree.isLayoutCachingEnabled();

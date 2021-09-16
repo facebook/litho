@@ -473,7 +473,7 @@ class Layout {
       @Nullable final String globalKeyToReuse) {
 
     final Component component =
-        parent.shouldSkipShallowCopy() ? original : original.getThreadSafeInstance();
+        parent.useStatelessComponent() ? original : original.getThreadSafeInstance();
 
     if (reuseGlobalKey) {
       if (globalKeyToReuse == null) {

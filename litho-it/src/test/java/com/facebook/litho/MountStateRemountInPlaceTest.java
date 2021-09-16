@@ -422,7 +422,7 @@ public class MountStateRemountInPlaceTest {
 
     mountComponent(firstLithoView, secondTree);
 
-    if (!ComponentsConfiguration.shouldSkipShallowCopy) {
+    if (!ComponentsConfiguration.useStatelessComponent) {
       verify(thirdComponent).makeShallowCopy();
     }
 

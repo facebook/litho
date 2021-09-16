@@ -1310,7 +1310,7 @@ public abstract class Component
       final LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final String globalKeyToReuse) {
-    if (parentContext.shouldSkipShallowCopy()) {
+    if (parentContext.useStatelessComponent()) {
       return this;
     }
 

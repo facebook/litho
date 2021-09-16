@@ -47,17 +47,15 @@ public class ComponentPropThreadSafetyTest {
 
   private ComponentContext mContext;
   private ShadowLooper mLayoutThreadShadowLooper;
-  private boolean mShouldSkipShallowCopyConfig;
+  private boolean mUseStatelessComponentConfig;
 
   public ComponentPropThreadSafetyTest() {
-    mShouldSkipShallowCopyConfig =
-        ComponentsConfiguration.useStatelessComponent
-            && ComponentsConfiguration.shouldSkipShallowCopy;
+    mUseStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
   }
 
   @Before
   public void setup() throws Exception {
-    ComponentsConfiguration.shouldSkipShallowCopy = false;
+    ComponentsConfiguration.useStatelessComponent = false;
     mContext = new ComponentContext(new ContextWrapper(getApplicationContext()));
 
     mLayoutThreadShadowLooper =
@@ -67,7 +65,7 @@ public class ComponentPropThreadSafetyTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.shouldSkipShallowCopy = mShouldSkipShallowCopyConfig;
+    ComponentsConfiguration.useStatelessComponent = mUseStatelessComponentConfig;
   }
 
   @Test

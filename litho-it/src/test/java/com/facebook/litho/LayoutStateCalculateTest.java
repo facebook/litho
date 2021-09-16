@@ -1045,10 +1045,10 @@ public class LayoutStateCalculateTest {
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
     // Here we are checking if measure was called on Component object which was created
-    // in test (actually it is getting called on cloned object but in shouldSkipShallowCopy we don't
+    // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
-    // Therefore different behaviour in shouldSkipShallowCopy
-    if (ComponentsConfiguration.shouldSkipShallowCopy) {
+    // Therefore different behaviour in useStatelessComponent
+    if (ComponentsConfiguration.useStatelessComponent) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1100,10 +1100,10 @@ public class LayoutStateCalculateTest {
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
     // Here we are checking if measure was called on Component object which was created
-    // in test (actually it is getting called on cloned object but in shouldSkipShallowCopy we don't
+    // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
-    // Therefore different behaviour in shouldSkipShallowCopy
-    if (ComponentsConfiguration.shouldSkipShallowCopy) {
+    // Therefore different behaviour in useStatelessComponent
+    if (ComponentsConfiguration.useStatelessComponent) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1153,10 +1153,10 @@ public class LayoutStateCalculateTest {
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
     // Here we are checking if measure was called on Component object which was created
-    // in test (actually it is getting called on cloned object but in shouldSkipShallowCopy we don't
+    // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
-    // Therefore different behaviour in shouldSkipShallowCopy
-    if (ComponentsConfiguration.shouldSkipShallowCopy) {
+    // Therefore different behaviour in useStatelessComponent
+    if (ComponentsConfiguration.useStatelessComponent) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -1206,10 +1206,10 @@ public class LayoutStateCalculateTest {
     // Currently, we create a clone of Component object and measure gets called on that cloned
     // Component.
     // Here we are checking if measure was called on Component object which was created
-    // in test (actually it is getting called on cloned object but in shouldSkipShallowCopy we don't
+    // in test (actually it is getting called on cloned object but in useStatelessComponent we don't
     // clone the Component object)
-    // Therefore different behaviour in shouldSkipShallowCopy
-    if (ComponentsConfiguration.shouldSkipShallowCopy) {
+    // Therefore different behaviour in useStatelessComponent
+    if (ComponentsConfiguration.useStatelessComponent) {
       assertThat(innerComponent.wasMeasureCalled()).isTrue();
     } else {
       assertThat(innerComponent.wasMeasureCalled()).isFalse();
@@ -2513,9 +2513,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testWillRenderLayoutsOnce() {
     final boolean useStatelessComponentConfig = ComponentsConfiguration.useStatelessComponent;
-    final boolean shouldSkipShallowCopyConfig = ComponentsConfiguration.shouldSkipShallowCopy;
     ComponentsConfiguration.useStatelessComponent = false;
-    ComponentsConfiguration.shouldSkipShallowCopy = false;
 
     ComponentContext c = mLithoViewRule.getComponentTree().getContext();
     final LayoutStateContext layoutStateContext = LayoutStateContext.getTestInstance(c);
@@ -2543,7 +2541,6 @@ public class LayoutStateCalculateTest {
     verify(componentSpy, times(1)).render((ComponentContext) any());
 
     ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
-    ComponentsConfiguration.shouldSkipShallowCopy = shouldSkipShallowCopyConfig;
   }
 
   @Test
