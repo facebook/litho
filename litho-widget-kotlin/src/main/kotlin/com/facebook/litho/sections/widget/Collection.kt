@@ -54,7 +54,7 @@ typealias OnViewportChanged =
  * [CollectionContainerScope.child].
  * ```
  * Collection {
- *   staticChild { Text(text = "Foo") }
+ *   child { Text(text = "Foo") }
  * }
  * ```
  *
