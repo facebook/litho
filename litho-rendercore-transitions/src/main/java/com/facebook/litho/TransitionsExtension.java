@@ -693,14 +693,16 @@ public class TransitionsExtension
                 + index);
       }
 
-      final int remountIndex = remountAtEndOfHost ?
-          // Ensure index is at end of host for both the incoming and outgoing frame.
-          // This means either the mount-item-count of the root in the outgoing frame,
-          // or the child count of the root in the incoming frame. Whichever is greater.
-          Math.max(
-              mountTarget.getRootItem().getHost().getMountItemCount(),
-              newTransitionsExtensionInput.getMountableOutputAt(0).getChildrenCount()) : 
-          index;
+      final int remountIndex =
+          remountAtEndOfHost
+              ?
+              // Ensure index is at end of host for both the incoming and outgoing frame.
+              // This means either the mount-item-count of the root in the outgoing frame,
+              // or the child count of the root in the incoming frame. Whichever is greater.
+              Math.max(
+                  mountTarget.getRootItem().getHost().getMountItemCount(),
+                  newTransitionsExtensionInput.getMountableOutputAt(0).getChildrenCount())
+              : index;
 
       // Moving item to the root if needed.
       remountHostToRootIfNeeded(extensionState, remountIndex, disappearingItem);
