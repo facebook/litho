@@ -144,7 +144,6 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new HostView(c), 0))
             .width(100)
             .height(300)
             .child(
@@ -210,7 +209,6 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new HostView(c), 0))
             .width(100)
             .height(300)
             .child(
@@ -263,7 +261,6 @@ public class IncrementalMountExtensionTest {
 
     final LayoutResult root =
         SimpleLayoutResult.create()
-            .renderUnit(new SimpleViewUnit(new HostView(c), 0))
             .width(300)
             .height(100)
             .child(
