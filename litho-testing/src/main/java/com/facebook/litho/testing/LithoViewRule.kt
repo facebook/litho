@@ -28,18 +28,16 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.ComponentTree
 import com.facebook.litho.ComponentsPools
+import com.facebook.litho.InternalNode
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
-import com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor
-import com.facebook.litho.testing.subcomponents.InspectableComponent
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
 import com.google.common.base.Predicate
-import org.assertj.core.api.Condition
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -331,26 +329,35 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
   }
 
-  /**
-   * Returns sub-component wrapped into {@link InspectableComponent} of the given class or null if
-   * not found
-   */
+  /** Returns a component of the given class from the ComponentTree or null if not found */
   fun findComponent(clazz: Class<out Component?>): Component? {
-    LithoViewSubComponentDeepExtractor.subComponentsDeeply().extract(lithoView).forEach {
-      if (it.componentClass == clazz) {
-        return it.component
+    val internalNode =
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode ?: return null
+    return findComponentRecursively(clazz, internalNode)
+  }
+
+  /**
+   * Recursively goes through nodes in a component tree, returns a component of a given class or
+   * null if not found
+   */
+  private fun findComponentRecursively(
+      clazz: Class<out Component?>,
+      internalNode: InternalNode
+  ): Component? {
+
+    val component = internalNode.components.firstOrNull { it.javaClass == clazz }
+    if (component != null) {
+      return component
+    }
+
+    val childCount = internalNode.childCount
+    for (i in 0 until childCount) {
+      val childComponent = findComponentRecursively(clazz, internalNode.getChildAt(i))
+      if (childComponent != null) {
+        return childComponent
       }
     }
     return null
-  }
-  /**
-   * Returns sub-component wrapped into {@link InspectableComponent} that matched the given
-   * condition or null if not found
-   */
-  fun findComponent(condition: Condition<InspectableComponent>): InspectableComponent? {
-    return LithoViewSubComponentDeepExtractor.subComponentsDeeply().extract(lithoView).firstOrNull {
-      condition.matches(it)
-    }
   }
 
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
