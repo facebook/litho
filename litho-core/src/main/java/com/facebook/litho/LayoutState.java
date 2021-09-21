@@ -2682,24 +2682,6 @@ public class LayoutState
     mLayoutStateContext = layoutStateContext;
   }
 
-  static int getId(ComponentContext c) {
-    final LayoutState state = c.getLayoutState();
-    if (state != null) {
-      return state.getId();
-    }
-
-    return 0;
-  }
-
-  static int getPreviousId(ComponentContext c) {
-    final LayoutState state = c.getLayoutState();
-    if (state != null) {
-      return state.getPreviousLayoutStateId();
-    }
-
-    return 0;
-  }
-
   /**
    * @deprecated kept around for old code, you should create a real instance instead with
    *     `calculate`
