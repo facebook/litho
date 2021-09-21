@@ -47,7 +47,6 @@ public class ComponentContext implements Cloneable {
   // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
   private final @Nullable ComponentsLogger mLogger;
-  private @Nullable StateHandler mStateHandler;
 
   private @Nullable String mNoStateUpdatesMethod;
 
@@ -129,16 +128,14 @@ public class ComponentContext implements Cloneable {
     mTreeProps = treeProps;
     mLogger = logger;
     mLogTag = logTag;
-    mStateHandler = null;
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mTreeProps, context.getLayoutStateContext());
+    this(context, context.mTreeProps, context.getLayoutStateContext());
   }
 
   public ComponentContext(
       ComponentContext context,
-      @Nullable StateHandler stateHandler,
       @Nullable TreeProps treeProps,
       @Nullable LayoutStateContext layoutStateContext) {
 
@@ -155,8 +152,6 @@ public class ComponentContext implements Cloneable {
         context.mLogTag != null || mComponentTree == null
             ? context.mLogTag
             : mComponentTree.getSimpleName();
-
-    mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mParentTreeProps = context.mParentTreeProps;
     mGlobalKey = context.mGlobalKey;
@@ -177,8 +172,7 @@ public class ComponentContext implements Cloneable {
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static ComponentContext withComponentTree(
       ComponentContext context, ComponentTree componentTree) {
-    ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null);
+    ComponentContext componentContext = new ComponentContext(context, null, null);
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
 
@@ -629,11 +623,6 @@ public class ComponentContext implements Cloneable {
     mHeightSpec = heightSpec;
   }
 
-  @Nullable
-  StateHandler getStateHandler() {
-    return mStateHandler;
-  }
-
   void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
@@ -705,11 +694,9 @@ public class ComponentContext implements Cloneable {
     }
   }
 
-  public ComponentContext createUpdatedComponentContext(
-      LayoutStateContext layoutStateContext, StateHandler stateHandler) {
+  public ComponentContext createUpdatedComponentContext(LayoutStateContext layoutStateContext) {
     final ComponentContext cloned = clone();
     cloned.mLayoutStateContext = new WeakReference<>(layoutStateContext);
-    cloned.mStateHandler = stateHandler;
     return cloned;
   }
 

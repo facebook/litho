@@ -1637,8 +1637,7 @@ public class LayoutState
 
       if (isReconcilable) {
         layoutStateContext.copyScopedInfoFrom(
-            Preconditions.checkNotNull(currentLayoutStateContext),
-            Preconditions.checkNotNull(stateHandler));
+            Preconditions.checkNotNull(currentLayoutStateContext));
       }
 
       final InternalNode layoutCreatedInWillRender =

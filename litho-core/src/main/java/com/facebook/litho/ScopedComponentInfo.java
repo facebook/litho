@@ -65,10 +65,7 @@ final class ScopedComponentInfo implements Cloneable {
   }
 
   /** Copy constructor */
-  private ScopedComponentInfo(
-      final ScopedComponentInfo info,
-      final LayoutStateContext context,
-      final StateHandler handler) {
+  private ScopedComponentInfo(final ScopedComponentInfo info, final LayoutStateContext context) {
 
     mComponent = info.mComponent;
 
@@ -82,7 +79,7 @@ final class ScopedComponentInfo implements Cloneable {
       mComponent.copyInterStageImpl(mInterStagePropsContainer, info.mInterStagePropsContainer);
     }
 
-    mContext = info.mContext.createUpdatedComponentContext(context, handler);
+    mContext = info.mContext.createUpdatedComponentContext(context);
 
     if (info.mChildCounters != null) {
       mChildCounters = new SparseIntArray(info.mChildCounters.size());
@@ -207,8 +204,8 @@ final class ScopedComponentInfo implements Cloneable {
    * Create a copy of this ScopedInfo, in which the StateContainer and InterStagePropsContainer are
    * copied.
    */
-  ScopedComponentInfo copy(final LayoutStateContext context, final StateHandler handler) {
-    ScopedComponentInfo info = new ScopedComponentInfo(this, context, handler);
+  ScopedComponentInfo copy(final LayoutStateContext context) {
+    ScopedComponentInfo info = new ScopedComponentInfo(this, context);
     mContext.setScopedComponentInfo(info);
     return info;
   }

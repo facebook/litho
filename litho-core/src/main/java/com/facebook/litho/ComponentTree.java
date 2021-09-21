@@ -2947,7 +2947,7 @@ public class ComponentTree implements LithoLifecycleListener {
         stateHandler = StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
 
         previousLayoutState = mCommittedLayoutState;
-        contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
+        contextWithStateHandler = new ComponentContext(context, treeProps, null);
         mInitialStateContainer.registerStateHandler(stateHandler);
       }
 

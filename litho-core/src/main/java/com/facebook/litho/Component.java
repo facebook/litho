@@ -1116,7 +1116,7 @@ public abstract class Component
         new LayoutStateContext(null, null, null, null, stateHandler);
 
     final ComponentContext contextForLayout =
-        new ComponentContext(c, stateHandler, c.getTreeProps(), layoutStateContext);
+        new ComponentContext(c, c.getTreeProps(), layoutStateContext);
 
     final LayoutResultHolder holder =
         Layout.createAndMeasureComponent(

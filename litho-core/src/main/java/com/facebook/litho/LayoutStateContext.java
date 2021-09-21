@@ -65,13 +65,13 @@ public class LayoutStateContext {
     return layoutStateContext;
   }
 
-  void copyScopedInfoFrom(LayoutStateContext from, StateHandler stateHandler) {
+  void copyScopedInfoFrom(LayoutStateContext from) {
     checkIfFrozen();
 
     mGlobalKeyToScopedInfo.clear();
     for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
       final String key = e.getKey();
-      final ScopedComponentInfo info = e.getValue().copy(this, stateHandler);
+      final ScopedComponentInfo info = e.getValue().copy(this);
       mGlobalKeyToScopedInfo.put(key, info);
     }
 
