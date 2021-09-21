@@ -822,6 +822,21 @@ public class DefaultInternalNode
   }
 
   @Override
+  public @Nullable ComponentContext getTailComponentContext() {
+    return mScopedComponentInfos != null
+        ? mScopedComponentInfos.get(0).getContext()
+        : mComponents.get(0).getScopedContext();
+  }
+
+  @Nullable
+  @Override
+  public ComponentContext getComponentContextAt(int index) {
+    return mScopedComponentInfos != null
+        ? mScopedComponentInfos.get(index).getContext()
+        : mComponents.get(index).getScopedContext();
+  }
+
+  @Override
   public @Nullable StateListAnimator getStateListAnimator() {
     return mStateListAnimator;
   }

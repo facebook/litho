@@ -44,9 +44,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     final LayoutStateContext layoutStateContext = result.getLayoutStateContext();
 
     final Component component = node.getTailComponent();
-    final String componentGlobalKey = node.getTailComponentKey();
-    final ComponentContext componentScopedContext =
-        component.getScopedContext(layoutStateContext, componentGlobalKey);
+    final ComponentContext componentScopedContext = node.getTailComponentContext();
 
     try {
       if (layoutStateContext != null && layoutStateContext.isLayoutReleased()) {
@@ -92,21 +90,13 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
         final ComponentContext parentContext;
         if (size == 1) {
           if (result.getParent() != null) {
-            final String parentKey = result.getParent().getInternalNode().getTailComponentKey();
-            parentContext =
-                result
-                    .getParent()
-                    .getInternalNode()
-                    .getTailComponent()
-                    .getScopedContext(layoutStateContext, parentKey);
+            final InternalNode internalNode = result.getParent().getInternalNode();
+            parentContext = internalNode.getTailComponentContext();
           } else {
             parentContext = layoutState.getComponentContext();
           }
         } else {
-          parentContext =
-              node.getComponents()
-                  .get(1)
-                  .getScopedContext(layoutStateContext, node.getComponentKeys().get(1));
+          parentContext = node.getComponentContextAt(1);
         }
 
         prevLayoutStateContext = layoutState.getPrevLayoutStateContext();

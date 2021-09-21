@@ -714,6 +714,20 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return mComponentGlobalKeys.get(0);
   }
 
+  @Override
+  public @Nullable ComponentContext getTailComponentContext() {
+    return mScopedComponentInfos != null
+        ? mScopedComponentInfos.get(0).getContext()
+        : mComponents.get(0).getScopedContext();
+  }
+
+  @Override
+  public @Nullable ComponentContext getComponentContextAt(int index) {
+    return mScopedComponentInfos != null
+        ? mScopedComponentInfos.get(index).getContext()
+        : mComponents.get(index).getScopedContext();
+  }
+
   @Nullable
   @Override
   public List<Attachable> getAttachables() {
