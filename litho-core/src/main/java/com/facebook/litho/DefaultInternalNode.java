@@ -138,6 +138,9 @@ public class DefaultInternalNode
   @ThreadConfined(ThreadConfined.ANY)
   private List<String> mComponentGlobalKeys = new ArrayList<>(8);
 
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
+
   private @Nullable LithoLayoutResult mParent;
 
   protected final int[] mBorderColors = new int[Border.EDGE_COUNT];
@@ -200,6 +203,10 @@ public class DefaultInternalNode
     mYogaNode.setData(this);
 
     mDebugComponents = new HashSet<>();
+
+    if (componentContext.useStatelessComponent()) {
+      mScopedComponentInfos = new ArrayList<>(8);
+    }
   }
 
   @Override
@@ -269,6 +276,9 @@ public class DefaultInternalNode
       Component component, String key, @Nullable ScopedComponentInfo scopedComponentInfo) {
     mComponents.add(component);
     mComponentGlobalKeys.add(key);
+    if (mScopedComponentInfos != null) {
+      mScopedComponentInfos.add(scopedComponentInfo);
+    }
   }
 
   @Override
