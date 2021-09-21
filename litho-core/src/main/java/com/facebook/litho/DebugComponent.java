@@ -80,17 +80,6 @@ public final class DebugComponent {
     return debugComponent;
   }
 
-  /**
-   * @return The root {@link DebugComponent} of a LithoView. This should be the start of your
-   *     traversal.
-   */
-  @Nullable
-  public static DebugComponent getRootInstance(
-      LayoutStateContext layoutStateContext, Component component, String globalKey) {
-    return getRootInstance(
-        component.getScopedContext(layoutStateContext, globalKey).getComponentTree());
-  }
-
   @Nullable
   public static DebugComponent getRootInstance(LithoView view) {
     return getRootInstance(view.getComponentTree());
