@@ -32,8 +32,8 @@ abstract class KComponent : Component() {
         }
   }
 
-  final override fun render(c: ComponentContext): RenderResult {
-    val componentScope = ComponentScope(c)
+  final override fun render(c: ComponentContext, stateHandler: StateHandler): RenderResult {
+    val componentScope = ComponentScope(c, stateHandler)
     val componentResult = componentScope.render()
     return RenderResult(
         componentResult, componentScope.transitions, componentScope.useEffectEntries)

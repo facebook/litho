@@ -32,6 +32,7 @@ import com.facebook.litho.InternalNode
 import com.facebook.litho.LayoutState
 import com.facebook.litho.LithoLayoutResult
 import com.facebook.litho.LithoView
+import com.facebook.litho.StateHandler
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
 import com.facebook.litho.testing.viewtree.ViewPredicates
@@ -95,6 +96,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   var widthSpec = DEFAULT_WIDTH_SPEC
   var heightSpec = DEFAULT_HEIGHT_SPEC
   lateinit var context: ComponentContext
+  lateinit var stateHandler: StateHandler
   private var _lithoView: LithoView? = null
   private var _componentTree: ComponentTree? = null
   private val threadLooperController: ThreadLooperController = ThreadLooperController()
@@ -105,6 +107,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         try {
           context = ComponentContext(getApplicationContext<Context>())
           context.setLayoutStateContextForTesting()
+          stateHandler = StateHandler()
           threadLooperController.init()
           base.evaluate()
         } finally {
@@ -237,7 +240,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   /** Sets the new root to render. */
   fun render(componentFunction: ComponentScope.() -> Component): LithoView {
     attachToWindow()
-        .setRoot(with(ComponentScope(context)) { componentFunction() })
+        .setRoot(with(ComponentScope(context, stateHandler)) { componentFunction() })
         .measure()
         .layout()
     return lithoView

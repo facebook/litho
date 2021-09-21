@@ -33,7 +33,7 @@ fun unspecified() = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECI
 
 /** Shorthand helper to create a root component that needs a ComponentScope. */
 fun LithoViewRule.setRoot(componentFunction: ComponentScope.() -> Component) =
-    setRoot(with(ComponentScope(context)) { componentFunction() })
+    setRoot(with(ComponentScope(context, stateHandler)) { componentFunction() })
 
 /**
  * Measures/lays out/attaches to window if not already done, then matches the hierarchy against the

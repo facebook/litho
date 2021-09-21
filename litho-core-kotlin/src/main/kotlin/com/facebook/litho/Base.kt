@@ -18,9 +18,6 @@ package com.facebook.litho
 
 import android.app.Activity
 
-inline fun build(c: ComponentContext, content: ComponentScope.() -> Component?): Component? =
-    ComponentScope(c).content()
-
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))
 }

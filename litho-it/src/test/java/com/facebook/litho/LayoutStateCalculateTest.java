@@ -2543,7 +2543,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(componentSpy.getLayoutCreatedInWillRender(state.getLayoutStateContext())).isNull();
 
-    verify(componentSpy, times(1)).render((ComponentContext) any());
+    verify(componentSpy, times(1)).render((ComponentContext) any(), (StateHandler) any());
 
     ComponentsConfiguration.useStatelessComponent = useStatelessComponentConfig;
   }
@@ -2637,7 +2637,7 @@ public class LayoutStateCalculateTest {
         -1,
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY));
-    verify(componentSpy, times(1)).render((ComponentContext) any());
+    verify(componentSpy, times(1)).render((ComponentContext) any(), (StateHandler) any());
   }
 
   @Test

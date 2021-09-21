@@ -521,7 +521,7 @@ public abstract class Component
    * render()'ed or {@link #resolve(LayoutStateContext, ComponentContext)}'ed), as well as other
    * metadata from that render call such as transitions that should be applied.
    */
-  protected RenderResult render(ComponentContext c) {
+  protected RenderResult render(ComponentContext c, StateHandler stateHandler) {
     throw new RuntimeException(
         "Render should not be called on a component which hasn't implemented render! "
             + getSimpleName());
