@@ -746,6 +746,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
+  public @Nullable ScopedComponentInfo getTailScopedComponentInfo() {
+    return mScopedComponentInfos != null ? mScopedComponentInfos.get(0) : null;
+  }
+
+  @Override
   public @Nullable ComponentContext getComponentContextAt(int index) {
     return mScopedComponentInfos != null
         ? mScopedComponentInfos.get(index).getContext()

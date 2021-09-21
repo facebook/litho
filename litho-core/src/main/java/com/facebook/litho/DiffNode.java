@@ -39,7 +39,13 @@ public interface DiffNode extends Cloneable {
   @Nullable
   String getComponentGlobalKey();
 
-  void setComponent(@Nullable Component component, @Nullable String globalKey);
+  @Nullable
+  ScopedComponentInfo getScopedComponentInfo();
+
+  void setComponent(
+      @Nullable Component component,
+      @Nullable String globalKey,
+      @Nullable ScopedComponentInfo scopedComponentInfo);
 
   /**
    * The last value the measure funcion associated with this node {@link Component} returned for the

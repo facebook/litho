@@ -852,6 +852,11 @@ public class DefaultInternalNode
         : mComponents.get(0).getScopedContext();
   }
 
+  @Override
+  public @Nullable ScopedComponentInfo getTailScopedComponentInfo() {
+    return mScopedComponentInfos != null ? mScopedComponentInfos.get(0) : null;
+  }
+
   @Nullable
   @Override
   public ComponentContext getComponentContextAt(int index) {
