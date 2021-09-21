@@ -95,7 +95,6 @@ import javax.annotation.CheckReturnValue;
  * {@link InternalNode} for later use in {@link MountState}.
  */
 // This needs to be accessible to statically mock the class in tests.
-@VisibleForTesting
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutState
     implements IncrementalMountExtensionInput,
@@ -497,7 +496,7 @@ public class LayoutState
         parent);
   }
 
-  private static RenderTreeNode createRenderTreeNode(
+  static LithoRenderUnit createRenderUnit(
       long id,
       Component component,
       @Nullable ComponentContext context,
@@ -509,26 +508,11 @@ public class LayoutState
       @LayoutOutput.UpdateState int updateState,
       boolean duplicateParentState,
       boolean duplicateChildrenStates,
-      boolean hasHostView,
-      @Nullable RenderTreeNode parent) {
+      boolean hasHostView) {
+
     final boolean isMountViewSpec = isMountViewSpec(component);
 
-    final int hostTranslationX;
-    final int hostTranslationY;
-    if (parent != null) {
-      hostTranslationX = parent.getAbsoluteX();
-      hostTranslationY = parent.getAbsoluteY();
-    } else {
-      hostTranslationX = 0;
-      hostTranslationY = 0;
-    }
-
     int flags = 0;
-
-    int l = layoutState.mCurrentX + result.getX();
-    int t = layoutState.mCurrentY + result.getY();
-    int r = l + result.getWidth();
-    int b = t + result.getHeight();
 
     final int paddingLeft = useNodePadding ? result.getPaddingLeft() : 0;
     final int paddingTop = useNodePadding ? result.getPaddingTop() : 0;
@@ -571,19 +555,12 @@ public class LayoutState
       viewNodeInfo.setLayerType(node.getLayerType(), node.getLayerPaint());
       layoutOutputViewNodeInfo = viewNodeInfo;
     } else {
-      l += paddingLeft;
-      t += paddingTop;
-      r -= paddingRight;
-      b -= paddingBottom;
-
       if (nodeInfo != null && nodeInfo.getEnabledState() == ENABLED_SET_FALSE) {
         flags |= LAYOUT_FLAG_DISABLE_TOUCHABLE;
       }
       layoutOutputNodeInfo = null;
       layoutOutputViewNodeInfo = null;
     }
-
-    final Rect bounds = new Rect(l, t, r, b);
 
     if (duplicateParentState) {
       flags |= LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
@@ -593,33 +570,86 @@ public class LayoutState
       flags |= LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
     }
 
-    final TransitionId transitionId;
     if (hasHostView) {
       flags |= LAYOUT_FLAG_MATCH_HOST_BOUNDS;
-      transitionId = null;
-    } else {
-      // If there is a host view, the transition key will be set on the view's layout output
-      transitionId = layoutState.mCurrentTransitionId;
     }
 
     if (layoutState.mShouldDisableDrawableOutputs) {
       flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
     }
 
+    return LithoRenderUnit.create(
+        id,
+        component,
+        context,
+        layoutOutputNodeInfo,
+        layoutOutputViewNodeInfo,
+        flags,
+        importantForAccessibility,
+        updateState);
+  }
+
+  private static RenderTreeNode createRenderTreeNode(
+      long id,
+      Component component,
+      @Nullable ComponentContext context,
+      LayoutState layoutState,
+      LithoLayoutResult result,
+      InternalNode node,
+      boolean useNodePadding,
+      int importantForAccessibility,
+      @LayoutOutput.UpdateState int updateState,
+      boolean duplicateParentState,
+      boolean duplicateChildrenStates,
+      boolean hasHostView,
+      @Nullable RenderTreeNode parent) {
+
     final LithoRenderUnit unit =
-        LithoRenderUnit.create(
+        createRenderUnit(
             id,
             component,
             context,
-            layoutOutputNodeInfo,
-            layoutOutputViewNodeInfo,
-            flags,
+            layoutState,
+            result,
+            node,
+            useNodePadding,
             importantForAccessibility,
-            updateState);
+            updateState,
+            duplicateParentState,
+            duplicateChildrenStates,
+            hasHostView);
+
+    final int hostTranslationX;
+    final int hostTranslationY;
+    if (parent != null) {
+      hostTranslationX = parent.getAbsoluteX();
+      hostTranslationY = parent.getAbsoluteY();
+    } else {
+      hostTranslationX = 0;
+      hostTranslationY = 0;
+    }
+
+    int l = layoutState.mCurrentX - hostTranslationX + result.getX();
+    int t = layoutState.mCurrentY - hostTranslationY + result.getY();
+    int r = l + result.getWidth();
+    int b = t + result.getHeight();
+
+    if (!isMountViewSpec(component)) {
+      final int paddingLeft = useNodePadding ? result.getPaddingLeft() : 0;
+      final int paddingTop = useNodePadding ? result.getPaddingTop() : 0;
+      final int paddingRight = useNodePadding ? result.getPaddingRight() : 0;
+      final int paddingBottom = useNodePadding ? result.getPaddingBottom() : 0;
+      l += paddingLeft;
+      t += paddingTop;
+      r -= paddingRight;
+      b -= paddingBottom;
+    }
+
+    final Rect bounds = new Rect(l, t, r, b);
 
     return LithoRenderUnit.create(
         unit,
-        LithoRenderUnit.getMountBounds(new Rect(), bounds, hostTranslationX, hostTranslationY),
+        bounds,
         new LithoLayoutData(
             bounds.width(), bounds.height(), layoutState.mId, layoutState.mPreviousLayoutStateId),
         parent);
@@ -2070,7 +2100,7 @@ public class LayoutState
     }
   }
 
-  private long calculateLayoutOutputId(
+  long calculateLayoutOutputId(
       Component component,
       @Nullable String componentKey,
       int level,
@@ -2272,6 +2302,10 @@ public class LayoutState
 
   public ComponentContext getComponentContext() {
     return mContext;
+  }
+
+  int getCurrentLevel() {
+    return mCurrentLevel;
   }
 
   /**
