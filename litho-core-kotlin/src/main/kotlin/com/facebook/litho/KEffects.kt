@@ -104,14 +104,14 @@ private class UseEffectAttachable(
   override fun useLegacyUpdateBehavior() = false
 
   @UiThread
-  override fun attach(layoutStateContext: LayoutStateContext) {
+  override fun attach() {
     check(!isAttached) { "Attach should only be called when detached!" }
     detachHandler = attachCallback()
     isAttached = true
   }
 
   @UiThread
-  override fun detach(layoutStateContext: LayoutStateContext) {
+  override fun detach() {
     check(isAttached) { "Detach should only be called when attached!" }
     detachHandler?.onCleanup()
     isAttached = false

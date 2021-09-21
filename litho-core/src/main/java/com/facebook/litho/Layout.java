@@ -313,7 +313,7 @@ class Layout {
     // 12. Add attachable components
     if (component.hasAttachDetachCallback()) {
       // needs ComponentUtils.getGlobalKey?
-      node.addAttachable(new LayoutSpecAttachable(globalKey, component));
+      node.addAttachable(new LayoutSpecAttachable(globalKey, component, scopedComponentInfo));
     }
 
     // 13. Call onPrepare for MountSpecs.

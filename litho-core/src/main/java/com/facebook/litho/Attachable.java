@@ -32,14 +32,14 @@ interface Attachable {
    * Will be invoked when this Attachable becomes a committed part of the ComponentTree. E.g. for a
    * Component, when that Component first appears as part of a committed layout.
    */
-  void attach(LayoutStateContext layoutStateContext);
+  void attach();
 
   /**
    * Will be invoked when this Attachable is no longer part of the ComponentTree. This can be
    * because the ComponentTree is released (and all Attachables are detached), or because this
    * Attachable no longer appears in the ComponentTree in the most recent committed layout.
    */
-  void detach(LayoutStateContext layoutStateContext);
+  void detach();
 
   /**
    * Given an Attachable (nextAttachable) with the same unique id as this Attachable and which is in

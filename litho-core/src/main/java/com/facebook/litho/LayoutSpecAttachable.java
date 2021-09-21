@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.Nullsafe;
 
@@ -29,10 +30,13 @@ final class LayoutSpecAttachable implements Attachable {
 
   private final String mGlobalKey;
   private final Component mComponent;
+  private final @Nullable ScopedComponentInfo mScopedComponentInfo;
 
-  public LayoutSpecAttachable(String globalKey, Component component) {
+  public LayoutSpecAttachable(
+      String globalKey, Component component, @Nullable ScopedComponentInfo scopedComponentInfo) {
     mGlobalKey = globalKey;
     mComponent = component;
+    mScopedComponentInfo = scopedComponentInfo;
   }
 
   @Override
@@ -42,9 +46,12 @@ final class LayoutSpecAttachable implements Attachable {
 
   @SuppressWarnings("CatchGeneralException")
   @Override
-  public void attach(LayoutStateContext layoutStateContext) {
+  public void attach() {
     final ComponentContext scopedContext =
-        Preconditions.checkNotNull(mComponent.getScopedContext(layoutStateContext, mGlobalKey));
+        Preconditions.checkNotNull(
+            mScopedComponentInfo != null
+                ? mScopedComponentInfo.getContext()
+                : mComponent.getScopedContext());
 
     try {
       mComponent.onAttached(scopedContext);
@@ -55,9 +62,12 @@ final class LayoutSpecAttachable implements Attachable {
 
   @SuppressWarnings("CatchGeneralException")
   @Override
-  public void detach(LayoutStateContext layoutStateContext) {
+  public void detach() {
     final ComponentContext scopedContext =
-        Preconditions.checkNotNull(mComponent.getScopedContext(layoutStateContext, mGlobalKey));
+        Preconditions.checkNotNull(
+            mScopedComponentInfo != null
+                ? mScopedComponentInfo.getContext()
+                : mComponent.getScopedContext());
 
     try {
       mComponent.onDetached(scopedContext);

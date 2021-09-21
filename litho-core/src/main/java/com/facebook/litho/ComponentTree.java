@@ -1105,11 +1105,10 @@ public class ComponentTree implements LithoLifecycleListener {
   @GuardedBy("this")
   private void dispatchOnAttached() {
     final @Nullable List<Attachable> attachables = mMainThreadLayoutState.getAttachables();
-    final LayoutStateContext layoutStateContext = mMainThreadLayoutState.getLayoutStateContext();
     if (mAttachDetachHandler != null) {
-      mAttachDetachHandler.onAttached(layoutStateContext, attachables);
+      mAttachDetachHandler.onAttached(attachables);
     } else if (attachables != null) {
-      getOrCreateAttachDetachHandler().onAttached(layoutStateContext, attachables);
+      getOrCreateAttachDetachHandler().onAttached(attachables);
     }
   }
 

@@ -45,27 +45,20 @@ public class AttachDetachHandler {
 
   @Nullable private Map<String, Attachable> mAttached;
 
-  private @Nullable LayoutStateContext mLayoutStateContext;
-
   /**
    * Marks the given Attachables as attached, invoking attach if they weren't already attached. Any
    * Attachables that were attached and are no longer attached will be detached. Note that identity
    * is determined by {@link Attachable#getUniqueId()}.
    */
   @UiThread
-  void onAttached(LayoutStateContext layoutStateContext, @Nullable List<Attachable> attachables) {
+  void onAttached(@Nullable List<Attachable> attachables) {
     assertMainThread();
     if (mAttached == null && attachables == null) {
       return;
     }
 
-    final LayoutStateContext previousLayoutStateContext = mLayoutStateContext;
-    mLayoutStateContext = layoutStateContext;
-
     if (attachables == null) {
-      detachAll(
-          Preconditions.checkNotNull(previousLayoutStateContext),
-          Preconditions.checkNotNull(mAttached));
+      detachAll(Preconditions.checkNotNull(mAttached));
       mAttached = null;
       return;
     }
@@ -81,21 +74,19 @@ public class AttachDetachHandler {
       return;
     }
 
-    final LayoutStateContext safeLayoutStateContext =
-        Preconditions.checkNotNull(previousLayoutStateContext);
     for (Map.Entry<String, Attachable> attachedEntry : mAttached.entrySet()) {
       if (!attachableMap.containsKey(attachedEntry.getKey())) {
-        attachedEntry.getValue().detach(safeLayoutStateContext);
+        attachedEntry.getValue().detach();
       }
     }
 
     for (Map.Entry<String, Attachable> attachableEntry : attachableMap.entrySet()) {
       final Attachable existing = mAttached.get(attachableEntry.getKey());
       if (existing == null) {
-        attachableEntry.getValue().attach(mLayoutStateContext);
+        attachableEntry.getValue().attach();
       } else if (existing.shouldUpdate(attachableEntry.getValue())) {
-        existing.detach(safeLayoutStateContext);
-        attachableEntry.getValue().attach(mLayoutStateContext);
+        existing.detach();
+        attachableEntry.getValue().attach();
       } else if (!existing.useLegacyUpdateBehavior()) {
         // If the attachable already exists and it doesn't need to update, make sure to use the
         // existing one.
@@ -113,21 +104,19 @@ public class AttachDetachHandler {
     if (mAttached == null) {
       return;
     }
-    detachAll(Preconditions.checkNotNull(mLayoutStateContext), mAttached);
+    detachAll(mAttached);
     mAttached = null;
-    mLayoutStateContext = null;
   }
 
   private void attachAll(Map<String, Attachable> toAttach) {
-    final LayoutStateContext layoutStateContext = Preconditions.checkNotNull(mLayoutStateContext);
     for (Attachable entry : toAttach.values()) {
-      entry.attach(layoutStateContext);
+      entry.attach();
     }
   }
 
-  private void detachAll(LayoutStateContext layoutStateContext, Map<String, Attachable> toDetach) {
+  private void detachAll(Map<String, Attachable> toDetach) {
     for (Attachable entry : toDetach.values()) {
-      entry.detach(layoutStateContext);
+      entry.detach();
     }
   }
 
