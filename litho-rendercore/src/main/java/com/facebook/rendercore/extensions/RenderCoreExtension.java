@@ -117,7 +117,7 @@ public class RenderCoreExtension<Input, State> {
   public static void notifyVisibleBoundsChanged(
       final MountDelegateTarget mountDelegateTarget,
       final Host host,
-      final Map<RenderCoreExtension<?, ?>, Object> results) {
+      @Nullable final Map<RenderCoreExtension<?, ?>, Object> results) {
     if (results != null) {
       final Rect rect = new Rect();
       host.getLocalVisibleRect(rect);
