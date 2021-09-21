@@ -872,10 +872,7 @@ public class LayoutState
       if (size == 1) {
         immediateParentContext = parentContext;
       } else {
-        immediateParentContext =
-            node.getComponents()
-                .get(1)
-                .getScopedContext(layoutStateContext, node.getComponentKeys().get(1));
+        immediateParentContext = node.getComponentContextAt(1);
       }
 
       LithoLayoutResult nestedTree =
@@ -1023,8 +1020,7 @@ public class LayoutState
 
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
     final ComponentContext scopedContext =
-        Preconditions.checkNotNull(
-            component.getScopedContext(layoutState.getLayoutStateContext(), componentGlobalKey));
+        Preconditions.checkNotNull(node.getTailComponentContext());
     if (isMountSpec(component)) {
 
       renderTreeNode = contentRenderTreeNode;
@@ -1220,8 +1216,7 @@ public class LayoutState
         // might not be accessing the correct props and state on the event handlers. The null
         // checkers cover tests, the scope and tree should not be null at this point of the layout
         // calculation.
-        final ComponentContext delegateScopedContext =
-            delegate.getScopedContext(layoutStateContext, delegateKey);
+        final ComponentContext delegateScopedContext = node.getComponentContextAt(i);
         if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
