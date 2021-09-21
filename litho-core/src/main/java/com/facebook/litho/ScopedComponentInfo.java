@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-final class ScopedComponentInfo implements Cloneable {
+class ScopedComponentInfo implements Cloneable {
 
   private final Component mComponent;
   private ComponentContext mContext;
@@ -162,7 +162,7 @@ final class ScopedComponentInfo implements Cloneable {
       mWorkingRangeRegistrations = new ArrayList<>();
     }
     mWorkingRangeRegistrations.add(
-        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey));
+        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey, this));
   }
 
   void addWorkingRangeToNode(InternalNode node) {

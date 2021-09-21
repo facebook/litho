@@ -1270,8 +1270,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         final int index = componentKeys.indexOf(key);
         if (index >= 0) {
           final Component component = components.get(index);
+          // This method will not be called in stateless mode so it's safe to pass null
+          // scopedComponentInfo
           mWorkingRangeRegistrations.add(
-              new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component, key));
+              new WorkingRangeContainer.Registration(
+                  old.mName, old.mWorkingRange, component, key, null));
         }
       }
     }

@@ -40,6 +40,8 @@ public class WorkingRangeContainerTest {
   private WorkingRange mWorkingRange;
   private Component mComponent;
   private Component mComponent2;
+  private ScopedComponentInfo mScopedComponentInfo;
+  private ScopedComponentInfo mScopedComponentInfo2;
   private ComponentContext mComponentContext;
   private LayoutStateContext mLayoutStateContext;
 
@@ -55,15 +57,19 @@ public class WorkingRangeContainerTest {
     Whitebox.setInternalState(mComponent, "mGlobalKey", "component");
     mComponent2 = mock(Component.class);
     Whitebox.setInternalState(mComponent2, "mGlobalKey", "component2");
-    when(mComponent.getScopedContext(mLayoutStateContext, "component"))
-        .thenReturn(mComponentContext);
-    when(mComponent2.getScopedContext(mLayoutStateContext, "component2"))
-        .thenReturn(mComponentContext);
+    when(mComponent.getScopedContext()).thenReturn(mComponentContext);
+    when(mComponent2.getScopedContext()).thenReturn(mComponentContext);
+
+    mScopedComponentInfo = mock(ScopedComponentInfo.class);
+    mScopedComponentInfo2 = mock(ScopedComponentInfo.class);
+    when(mScopedComponentInfo.getContext()).thenReturn(mComponentContext);
+    when(mScopedComponentInfo2.getContext()).thenReturn(mComponentContext);
   }
 
   @Test
   public void testRegisterWorkingRange() {
-    mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mComponent, "component");
+    mWorkingRangeContainer.registerWorkingRange(
+        NAME, mWorkingRange, mComponent, "component", mScopedComponentInfo);
 
     final Map<String, RangeTuple> workingRanges =
         mWorkingRangeContainer.getWorkingRangesForTestOnly();
@@ -80,7 +86,8 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testIsEnteredRange() {
-    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mComponent, "component");
+    RangeTuple rangeTuple =
+        new RangeTuple(NAME, mWorkingRange, mComponent, "component", mScopedComponentInfo);
     WorkingRange workingRange = rangeTuple.mWorkingRange;
 
     assertThat(WorkingRangeContainer.isEnteringRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(true);
@@ -89,7 +96,8 @@ public class WorkingRangeContainerTest {
 
   @Test
   public void testIsExitedRange() {
-    RangeTuple rangeTuple = new RangeTuple(NAME, mWorkingRange, mComponent, "component");
+    RangeTuple rangeTuple =
+        new RangeTuple(NAME, mWorkingRange, mComponent, "component", mScopedComponentInfo);
     WorkingRange workingRange = rangeTuple.mWorkingRange;
 
     assertThat(WorkingRangeContainer.isExitingRange(workingRange, 0, 0, 1, 0, 1)).isEqualTo(false);
@@ -99,10 +107,12 @@ public class WorkingRangeContainerTest {
   @Test
   public void testDispatchOnExitedRangeIfNeeded() {
     TestWorkingRange workingRange = new TestWorkingRange();
-    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange, mComponent, "component");
+    mWorkingRangeContainer.registerWorkingRange(
+        NAME, workingRange, mComponent, "component", mScopedComponentInfo);
 
     TestWorkingRange workingRange2 = new TestWorkingRange();
-    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mComponent2, "component2");
+    mWorkingRangeContainer.registerWorkingRange(
+        NAME, workingRange2, mComponent2, "component2", mScopedComponentInfo2);
 
     final WorkingRangeStatusHandler statusHandler = new WorkingRangeStatusHandler();
     statusHandler.setStatus(

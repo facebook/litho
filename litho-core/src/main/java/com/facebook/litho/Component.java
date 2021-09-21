@@ -934,8 +934,9 @@ public abstract class Component
     return mScopedContext;
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   @Nullable
-  final ComponentContext getScopedContext() {
+  protected ComponentContext getScopedContext() {
     return mScopedContext;
   }
 
@@ -1733,8 +1734,9 @@ public abstract class Component
     if (component.mWorkingRangeRegistrations == null) {
       component.mWorkingRangeRegistrations = new ArrayList<>();
     }
+    // This method is not called in stateless so it's safe to pass null scopedComponentInfo here
     component.mWorkingRangeRegistrations.add(
-        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey));
+        new WorkingRangeContainer.Registration(name, workingRange, component, globalKey, null));
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */

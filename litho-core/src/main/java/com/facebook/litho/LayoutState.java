@@ -1202,7 +1202,8 @@ public class LayoutState
             registration.mName,
             registration.mWorkingRange,
             registration.mComponent,
-            registration.mKey);
+            registration.mKey,
+            registration.mScopedComponentInfo);
       }
     }
 
@@ -2651,7 +2652,6 @@ public class LayoutState
     }
 
     mWorkingRangeContainer.checkWorkingRangeAndDispatch(
-        getLayoutStateContext(),
         position,
         firstVisibleIndex,
         lastVisibleIndex,
