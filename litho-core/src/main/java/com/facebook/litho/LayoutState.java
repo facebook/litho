@@ -323,22 +323,24 @@ public class LayoutState
         layoutState.calculateLayoutOutputId(
             component, componentKey, layoutState.mCurrentLevel, OutputUnitType.CONTENT, previousId);
 
-    return createRenderTreeNode(
-        newId,
-        component,
-        result.getContext(),
-        layoutState,
-        result,
-        node,
-        true /* useNodePadding */,
-        node.getImportantForAccessibility(),
-        previousId != newId
-            ? LayoutOutput.STATE_UNKNOWN
-            : isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY,
-        layoutState.mShouldDuplicateParentState,
-        false,
-        hasHostView,
-        parent);
+    final LithoRenderUnit unit =
+        createRenderUnit(
+            newId,
+            component,
+            result.getContext(),
+            layoutState,
+            result,
+            node,
+            true /* useNodePadding */,
+            node.getImportantForAccessibility(),
+            previousId != newId
+                ? LayoutOutput.STATE_UNKNOWN
+                : isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY,
+            layoutState.mShouldDuplicateParentState,
+            false,
+            hasHostView);
+
+    return createRenderTreeNode(unit, component, layoutState, result, true, parent);
   }
 
   private static SparseArray<DynamicValue<?>> mergeCommonDynamicProps(List<Component> components) {
@@ -427,8 +429,8 @@ public class LayoutState
       updateState = LayoutOutput.STATE_UNKNOWN;
     }
 
-    final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(
+    final LithoRenderUnit unit =
+        createRenderUnit(
             id,
             hostComponent,
             null,
@@ -440,10 +442,12 @@ public class LayoutState
             updateState,
             node.isDuplicateParentStateEnabled(),
             node.isDuplicateChildrenStatesEnabled(),
-            false,
-            parent);
+            false);
 
-    final LayoutOutput hostOutput = ((LithoRenderUnit) renderTreeNode.getRenderUnit()).output;
+    final RenderTreeNode renderTreeNode =
+        createRenderTreeNode(unit, hostComponent, layoutState, result, false, parent);
+
+    final LayoutOutput hostOutput = unit.output;
 
     if (hierarchy != null) {
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
@@ -478,22 +482,24 @@ public class LayoutState
         layoutState.calculateLayoutOutputId(
             component, componentKey, layoutState.mCurrentLevel, outputType, previousId);
 
-    return createRenderTreeNode(
-        id,
-        component,
-        null,
-        layoutState,
-        result,
-        node,
-        false /* useNodePadding */,
-        IMPORTANT_FOR_ACCESSIBILITY_NO,
-        previousId != id
-            ? LayoutOutput.STATE_UNKNOWN
-            : isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY,
-        layoutState.mShouldDuplicateParentState,
-        false,
-        hasHostView,
-        parent);
+    final LithoRenderUnit unit =
+        createRenderUnit(
+            id,
+            component,
+            null,
+            layoutState,
+            result,
+            node,
+            false /* useNodePadding */,
+            IMPORTANT_FOR_ACCESSIBILITY_NO,
+            previousId != id
+                ? LayoutOutput.STATE_UNKNOWN
+                : isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY,
+            layoutState.mShouldDuplicateParentState,
+            false,
+            hasHostView);
+
+    return createRenderTreeNode(unit, component, layoutState, result, false, parent);
   }
 
   static LithoRenderUnit createRenderUnit(
@@ -590,34 +596,12 @@ public class LayoutState
   }
 
   private static RenderTreeNode createRenderTreeNode(
-      long id,
-      Component component,
-      @Nullable ComponentContext context,
-      LayoutState layoutState,
-      LithoLayoutResult result,
-      InternalNode node,
-      boolean useNodePadding,
-      int importantForAccessibility,
-      @LayoutOutput.UpdateState int updateState,
-      boolean duplicateParentState,
-      boolean duplicateChildrenStates,
-      boolean hasHostView,
-      @Nullable RenderTreeNode parent) {
-
-    final LithoRenderUnit unit =
-        createRenderUnit(
-            id,
-            component,
-            context,
-            layoutState,
-            result,
-            node,
-            useNodePadding,
-            importantForAccessibility,
-            updateState,
-            duplicateParentState,
-            duplicateChildrenStates,
-            hasHostView);
+      final LithoRenderUnit unit,
+      final Component component,
+      final LayoutState layoutState,
+      final LithoLayoutResult result,
+      final boolean useNodePadding,
+      final @Nullable RenderTreeNode parent) {
 
     final int hostTranslationX;
     final int hostTranslationY;
