@@ -711,15 +711,19 @@ class Layout {
       final DiffNode diffNode) {
     final InternalNode layoutNode = result.getInternalNode();
     final Component component = layoutNode.getTailComponent();
-    final String componentKey = layoutNode.getTailComponentKey();
     if (component != null) {
+      final @Nullable ScopedComponentInfo scopedComponentInfo =
+          layoutNode.getTailScopedComponentInfo();
+      final @Nullable ScopedComponentInfo diffNodeScopedComponentInfo =
+          diffNode.getScopedComponentInfo();
+
       component.copyInterStageImpl(
-          component.getInterStagePropsContainer(
-              nextLayoutStateContext, Preconditions.checkNotNull(componentKey)),
-          Preconditions.checkNotNull(diffNode.getComponent())
-              .getInterStagePropsContainer(
-                  Preconditions.checkNotNull(diffNodeLayoutStateContext),
-                  Preconditions.checkNotNull(diffNode.getComponentGlobalKey())));
+          scopedComponentInfo != null
+              ? scopedComponentInfo.getInterStagePropsContainer()
+              : component.getInterStagePropsContainer(),
+          diffNodeScopedComponentInfo != null
+              ? diffNodeScopedComponentInfo.getInterStagePropsContainer()
+              : Preconditions.checkNotNull(diffNode.getComponent()).getInterStagePropsContainer());
     }
 
     result.setCachedMeasuresValid(true);
@@ -878,8 +882,11 @@ class Layout {
       return null;
     }
 
-    return diffNodeComponent.getScopedContext(
-        committedContext, Preconditions.checkNotNull(diffNode.getComponentGlobalKey()));
+    final @Nullable ScopedComponentInfo scopedComponentInfo = diffNode.getScopedComponentInfo();
+
+    return scopedComponentInfo != null
+        ? scopedComponentInfo.getContext()
+        : diffNodeComponent.getScopedContext();
   }
 
   static boolean isLayoutDirectionRTL(final Context context) {

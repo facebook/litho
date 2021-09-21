@@ -1332,9 +1332,7 @@ public abstract class Component
 
     // copy the inter-stage props so that they are set again.
     if (!parentContext.useStatelessComponent()) {
-      clone.copyInterStageImpl(
-          clone.getInterStagePropsContainer(layoutStateContext, globalKeyToReuse),
-          getInterStagePropsContainer(layoutStateContext, globalKeyToReuse));
+      clone.copyInterStageImpl(clone.getInterStagePropsContainer(), getInterStagePropsContainer());
     }
 
     // update the cloned component with the new context.
@@ -1451,10 +1449,6 @@ public abstract class Component
     return getSimpleName();
   }
 
-  private ScopedComponentInfo getScopedInfo(LayoutStateContext context, String globalKey) {
-    return context.getScopedComponentInfo(globalKey);
-  }
-
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
       ComponentContext scopedContext) {
     if (scopedContext.useStatelessComponent()) {
@@ -1472,21 +1466,11 @@ public abstract class Component
   }
 
   @Nullable
-  final InterStagePropsContainer getInterStagePropsContainer(
-      LayoutStateContext layoutStateContext, String globalKey) {
-
-    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
-      if (globalKey == null) {
-        return null;
-      }
-
-      return getScopedInfo(layoutStateContext, globalKey).getInterStagePropsContainer();
-    } else {
-      if (mInterStagePropsContainer == null) {
-        mInterStagePropsContainer = createInterStagePropsContainer();
-      }
-      return mInterStagePropsContainer;
+  final InterStagePropsContainer getInterStagePropsContainer() {
+    if (mInterStagePropsContainer == null) {
+      mInterStagePropsContainer = createInterStagePropsContainer();
     }
+    return mInterStagePropsContainer;
   }
 
   protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {

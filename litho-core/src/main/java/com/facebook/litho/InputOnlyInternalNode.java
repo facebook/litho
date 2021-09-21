@@ -358,9 +358,17 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     if (!Layout.shouldComponentUpdate(current, this, prev, diff)) {
       final String key = getTailComponentKey();
       if (component != null) {
+        final @Nullable ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
+        final @Nullable ScopedComponentInfo diffNodeScopedComponentInfo =
+            diff.getScopedComponentInfo();
+
         component.copyInterStageImpl(
-            component.getInterStagePropsContainer(current, key),
-            diff.getComponent().getInterStagePropsContainer(prev, diff.getComponentGlobalKey()));
+            scopedComponentInfo != null
+                ? scopedComponentInfo.getInterStagePropsContainer()
+                : component.getInterStagePropsContainer(),
+            diffNodeScopedComponentInfo != null
+                ? diffNodeScopedComponentInfo.getInterStagePropsContainer()
+                : Preconditions.checkNotNull(diff.getComponent()).getInterStagePropsContainer());
       }
 
       result.setCachedMeasuresValid(true);
