@@ -35,6 +35,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.RenderState;
+import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RootHost;
 import com.facebook.rendercore.transitions.AnimatedRootHost;
 import com.facebook.rendercore.visibility.VisibilityMountExtension;
@@ -1304,11 +1305,15 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     if (currentVisibleArea != null && !needsMount) {
       mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleArea);
     } else {
+      // Generate the renderTree here so that any operations that occur in toRenderTree() happen
+      // prior to "beforeMount".
+      final RenderTree renderTree = mDelegateToRenderCore ? layoutState.toRenderTree() : null;
+
       if (mLithoHostListenerCoordinator != null) {
         mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
       }
       if (mDelegateToRenderCore) {
-        mMountDelegateTarget.mount(layoutState.toRenderTree());
+        mMountDelegateTarget.mount(renderTree);
       } else {
         ((MountState) mMountDelegateTarget).mount(layoutState, true);
       }
