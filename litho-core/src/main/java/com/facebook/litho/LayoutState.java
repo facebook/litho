@@ -93,8 +93,9 @@ import javax.annotation.CheckReturnValue;
  * #collectResults(ComponentContext, LithoLayoutResult, InternalNode, LayoutState, RenderTreeNode,
  * DiffNode, DebugHierarchy.Node)} which prepares the before-mentioned outputs based on the provided
  * {@link InternalNode} for later use in {@link MountState}.
+ *
+ * <p>This needs to be accessible to statically mock the class in tests.
  */
-// This needs to be accessible to statically mock the class in tests.
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutState
     implements IncrementalMountExtensionInput,
@@ -236,14 +237,16 @@ public class LayoutState
   /** @deprecated create a real instance with `calculate` instead */
   @Deprecated
   LayoutState(ComponentContext context) {
-    this(context, Column.create(context).build(), new StateHandler(), null);
+    this(context, Column.create(context).build(), new StateHandler(), null, null, null);
   }
 
   LayoutState(
       ComponentContext context,
       Component rootComponent,
       final StateHandler stateHandler,
-      final @Nullable LayoutState current) {
+      final @Nullable LayoutStateFuture layoutStateFuture,
+      final @Nullable LayoutState current,
+      final @Nullable DiffNode diffTreeRoot) {
     mContext = context;
     mComponent = rootComponent;
     mId = sIdGenerator.getAndIncrement();
@@ -256,6 +259,9 @@ public class LayoutState
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
+    mLayoutStateContext =
+        new LayoutStateContext(
+            this, context.getComponentTree(), layoutStateFuture, diffTreeRoot, stateHandler);
   }
 
   @VisibleForTesting
@@ -1618,13 +1624,13 @@ public class LayoutState
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
       }
 
-      layoutState = new LayoutState(c, component, stateHandler, currentLayoutState);
+      layoutState =
+          new LayoutState(
+              c, component, stateHandler, layoutStateFuture, currentLayoutState, diffTreeRoot);
 
       layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
 
-      layoutStateContext =
-          new LayoutStateContext(
-              layoutState, c.getComponentTree(), layoutStateFuture, diffTreeRoot, stateHandler);
+      layoutStateContext = layoutState.getLayoutStateContext();
 
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
@@ -1638,7 +1644,6 @@ public class LayoutState
       final InternalNode layoutCreatedInWillRender =
           component.consumeLayoutCreatedInWillRender(currentLayoutStateContext, c);
 
-      layoutState.mLayoutStateContext = layoutStateContext;
       c.setLayoutStateContext(layoutStateContext);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
@@ -2122,8 +2127,7 @@ public class LayoutState
     return mLastMeasuredLayouts.containsKey(component.getId());
   }
 
-  @VisibleForTesting
-  protected void clearCachedLayout(Component component) {
+  void clearCachedLayout(Component component) {
     mLastMeasuredLayouts.remove(component.getId());
   }
 

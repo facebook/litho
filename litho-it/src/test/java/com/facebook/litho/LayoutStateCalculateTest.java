@@ -68,15 +68,20 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.ComponentCaching;
 import com.facebook.litho.widget.ItemCardComponent;
 import com.facebook.litho.widget.ItemCardComponentSpec;
+import com.facebook.litho.widget.LayoutSpecLifecycleTester;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.TestNullLayoutComponent;
 import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -2805,6 +2810,40 @@ public class LayoutStateCalculateTest {
 
     assertThat(view.get()).isNotNull();
     assertThat(view.get().isEnabled()).isFalse();
+  }
+
+  @Test
+  public void onLayoutCreateInMeasure_shouldBeReusedDuringLayoutIfCompatibleMeasures() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final Component component =
+        ComponentCaching.create(c)
+            .component(
+                LayoutSpecLifecycleTester.create(c).widthPx(100).heightPx(100).steps(steps).build())
+            .widthSpec(MeasureSpecUtils.exactly(100))
+            .heightSpec(MeasureSpecUtils.exactly(100))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+
+    assertThat(LifecycleStep.getSteps(steps)).containsOnlyOnce(LifecycleStep.ON_CREATE_LAYOUT);
+  }
+
+  @Test
+  public void onLayoutCreateInMeasure_shouldBeNotReusedDuringLayoutIfIncompatibleMeasures() {
+    final ComponentContext c = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
+    final Component component =
+        ComponentCaching.create(c)
+            .component(LayoutSpecLifecycleTester.create(c).steps(steps).build())
+            .widthSpec(MeasureSpecUtils.exactly(100))
+            .heightSpec(MeasureSpecUtils.exactly(100))
+            .build();
+
+    mLithoViewRule.attachToWindow().setRoot(component).layout().measure();
+
+    assertThat(LifecycleStep.getSteps(steps))
+        .contains(LifecycleStep.ON_CREATE_LAYOUT, LifecycleStep.ON_CREATE_LAYOUT);
   }
 
   private void enableAccessibility() {

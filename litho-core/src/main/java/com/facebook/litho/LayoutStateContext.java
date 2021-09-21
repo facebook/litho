@@ -96,7 +96,6 @@ public class LayoutStateContext {
     this(layoutState, componentTree, null, null, new StateHandler());
   }
 
-  @VisibleForTesting
   LayoutStateContext(
       final @Nullable LayoutState layoutState,
       final @Nullable ComponentTree componentTree,

@@ -911,21 +911,6 @@ public abstract class Component
    */
   public interface RenderData {}
 
-  /**
-   * Only use if absolutely needed! This removes the cached layout so this component will be
-   * remeasured even if it has alread been measured with the same size specs.
-   */
-  public final void clearCachedLayout(ComponentContext c) {
-    final LayoutState layoutState = c.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          getSimpleName()
-              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
-    }
-
-    layoutState.clearCachedLayout(this);
-  }
-
   @Nullable
   public final CommonProps getCommonProps() {
     return mCommonProps;
@@ -1026,11 +1011,27 @@ public abstract class Component
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public final void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    final LayoutState layoutState = c.getLayoutState();
-    if (layoutState == null) {
+    measure(c, widthSpec, heightSpec, outputSize, true);
+  }
+
+  public final void measure(
+      final ComponentContext c,
+      final int widthSpec,
+      final int heightSpec,
+      final Size outputSize,
+      final boolean shouldCacheResult) {
+
+    final LayoutState layoutState;
+
+    if (shouldCacheResult && c.getLayoutState() != null) {
+      layoutState = c.getLayoutState();
+    } else if (!shouldCacheResult) {
+      layoutState = new LayoutState(c, this, new StateHandler(), null, null, null);
+    } else {
       throw new IllegalStateException(
           getSimpleName()
-              + ": Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+              + ": Trying to measure a component outside of a LayoutState calculation. "
+              + "If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
     LithoLayoutResult lastMeasuredLayout = layoutState.getCachedLayout(this);
@@ -1072,6 +1073,10 @@ public abstract class Component
     }
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();
+
+    if (!shouldCacheResult) {
+      layoutState.clearCachedLayout(this);
+    }
   }
 
   /**
