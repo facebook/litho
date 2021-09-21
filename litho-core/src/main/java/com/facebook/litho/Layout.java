@@ -170,6 +170,7 @@ class Layout {
     final InternalNode node;
     final ComponentContext c;
     final String globalKey;
+    final @Nullable ScopedComponentInfo scopedComponentInfo;
 
     try {
 
@@ -189,6 +190,7 @@ class Layout {
 
       component = c.getComponentScope();
 
+      scopedComponentInfo = c.useStatelessComponent() ? c.getScopedComponentInfo() : null;
       // 6. Resolve the component into an InternalNode tree.
 
       final boolean shouldDeferNestedTreeResolution =
@@ -280,7 +282,7 @@ class Layout {
     }
 
     // 10. Add the component to the InternalNode.
-    node.appendComponent(component, globalKey);
+    node.appendComponent(component, globalKey, scopedComponentInfo);
 
     // 11. Create and add transition to this component's InternalNode.
     if (areTransitionsEnabled(c)) {

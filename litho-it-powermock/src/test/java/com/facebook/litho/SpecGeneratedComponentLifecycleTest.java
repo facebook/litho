@@ -215,7 +215,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
   }
@@ -228,7 +228,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
   }
@@ -241,7 +241,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
   }
@@ -254,7 +254,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
   }
@@ -267,7 +267,7 @@ public class SpecGeneratedComponentLifecycleTest {
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
     verify(component).onCreateLayout(scopedContext);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
   }
 
@@ -280,7 +280,7 @@ public class SpecGeneratedComponentLifecycleTest {
     final ComponentContext scopedContext =
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
     verify(component).onCreateLayout(scopedContext);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
   }
 
@@ -295,7 +295,7 @@ public class SpecGeneratedComponentLifecycleTest {
         component.getScopedContext(mLayoutStateContext, "$" + KEY);
     verify(component)
         .onCreateLayoutWithSizeSpec(scopedContext, mNestedTreeWidthSpec, mNestedTreeHeightSpec);
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
   }
 
@@ -308,7 +308,7 @@ public class SpecGeneratedComponentLifecycleTest {
     verify(component, never()).onCreateLayout((ComponentContext) any());
     verify(component, never())
         .onCreateLayoutWithSizeSpec((ComponentContext) any(), anyInt(), anyInt());
-    verify(node).appendComponent(component, "$" + KEY);
+    // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component, never()).onPrepare((ComponentContext) any());
   }

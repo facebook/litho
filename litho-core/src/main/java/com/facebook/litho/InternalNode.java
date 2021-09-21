@@ -61,7 +61,8 @@ public interface InternalNode extends Node<LithoRenderContext> {
 
   InternalNode alignItems(YogaAlign alignItems);
 
-  void appendComponent(Component component, String key);
+  void appendComponent(
+      Component component, String key, @Nullable ScopedComponentInfo scopedComponentInfo);
 
   void appendUnresolvedComponent(Component component);
 

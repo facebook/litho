@@ -265,7 +265,8 @@ public class DefaultInternalNode
   }
 
   @Override
-  public void appendComponent(Component component, String key) {
+  public void appendComponent(
+      Component component, String key, @Nullable ScopedComponentInfo scopedComponentInfo) {
     mComponents.add(component);
     mComponentGlobalKeys.add(key);
   }

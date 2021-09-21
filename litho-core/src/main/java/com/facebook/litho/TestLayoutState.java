@@ -71,7 +71,7 @@ public class TestLayoutState {
     final ComponentContext scopedContext =
         component.updateInternalChildState(layoutStateContext, c, null);
 
-    node.appendComponent(new TestComponent(component), scopedContext.getGlobalKey());
+    node.appendComponent(new TestComponent(component), scopedContext.getGlobalKey(), null);
 
     return node;
   }
@@ -112,7 +112,7 @@ public class TestLayoutState {
       } else {
         node = resolveImmediateSubTree(layoutStateContext, c, root);
         if (Component.isLayoutSpec(root) && root.canResolve()) {
-          node.appendComponent(root, root.getKey());
+          node.appendComponent(root, root.getKey(), null);
         }
       }
     }
@@ -133,7 +133,7 @@ public class TestLayoutState {
       }
     }
 
-    node.appendComponent(component, component.getKey());
+    node.appendComponent(component, component.getKey(), null);
     component.onPrepare(c);
 
     return node;
@@ -153,7 +153,7 @@ public class TestLayoutState {
     }
 
     InternalNode node = InternalNodeUtils.create(c);
-    node.appendComponent(new TestComponent(component), component.getKey());
+    node.appendComponent(new TestComponent(component), component.getKey(), null);
 
     return node;
   }

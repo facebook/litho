@@ -120,6 +120,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected List<Component> mComponents = new ArrayList<>(8);
 
   @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
+
+  @ThreadConfined(ThreadConfined.ANY)
   private List<String> mComponentGlobalKeys = new ArrayList<>(8);
 
   protected final int[] mBorderEdgeWidths = new int[Border.EDGE_COUNT];
@@ -185,6 +188,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected InputOnlyInternalNode(ComponentContext componentContext) {
     mContext = componentContext.getAndroidContext();
     mDebugComponents = new HashSet<>();
+    if (componentContext.useStatelessComponent()) {
+      mScopedComponentInfos = new ArrayList<>(8);
+    }
   }
 
   @Override
@@ -237,9 +243,13 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public void appendComponent(Component component, String key) {
+  public void appendComponent(
+      Component component, String key, @Nullable ScopedComponentInfo scopedComponentInfo) {
     mComponents.add(component);
     mComponentGlobalKeys.add(key);
+    if (mScopedComponentInfos != null) {
+      mScopedComponentInfos.add(scopedComponentInfo);
+    }
   }
 
   @Override
