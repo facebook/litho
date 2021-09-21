@@ -144,6 +144,7 @@ public class LayoutState
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
   private @Nullable List<Component> mComponents;
   private @Nullable List<String> mComponentKeys;
+  private @Nullable List<ScopedComponentInfo> mScopedComponentInfos;
 
   private final ComponentContext mContext;
 
@@ -257,6 +258,8 @@ public class LayoutState
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
     mComponentKeys = new ArrayList<>();
+    mScopedComponentInfos =
+        context.useStatelessComponent() ? new ArrayList<ScopedComponentInfo>() : null;
     mVisibilityOutputs = new ArrayList<>(8);
     mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
@@ -1238,6 +1241,9 @@ public class LayoutState
           if (layoutState.mComponents != null) {
             layoutState.mComponents.add(delegate);
             Preconditions.checkNotNull(layoutState.mComponentKeys).add(delegateKey);
+            if (layoutState.mScopedComponentInfos != null) {
+              layoutState.mScopedComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
+            }
           }
         }
         if (delegateKey != null || delegate.hasHandle()) {
@@ -1288,6 +1294,14 @@ public class LayoutState
     mComponentKeys = null;
 
     return componentKeys;
+  }
+
+  @Nullable
+  List<ScopedComponentInfo> consumeScopedComponentInfos() {
+    final List<ScopedComponentInfo> scopedComponentInfos = mScopedComponentInfos;
+    mScopedComponentInfos = null;
+
+    return scopedComponentInfos;
   }
 
   @Nullable

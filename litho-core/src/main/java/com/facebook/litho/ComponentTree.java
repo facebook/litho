@@ -50,6 +50,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.LithoLifecycleProvider.LithoLifecycle;
@@ -2340,6 +2341,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
     List<Component> components = null;
     List<String> componentKeys = null;
+    @Nullable List<ScopedComponentInfo> scopedComponentInfos = null;
     @Nullable Map<String, Component> attachables = null;
     LayoutStateContext layoutStateContext = null;
 
@@ -2370,6 +2372,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
         components = localLayoutState.consumeComponents();
         componentKeys = localLayoutState.consumeComponentKeys();
+        scopedComponentInfos = localLayoutState.consumeScopedComponentInfos();
 
         if (layoutStateStateHandler != null) {
           final StateHandler stateHandler = mStateHandler;
@@ -2430,7 +2433,8 @@ public class ComponentTree implements LithoLifecycleListener {
     }
 
     if (components != null) {
-      bindEventAndTriggerHandlers(layoutStateContext, components, componentKeys, extraAttribution);
+      bindEventAndTriggerHandlers(
+          layoutStateContext, components, componentKeys, scopedComponentInfos, extraAttribution);
     }
 
     if (committedNewLayout) {
@@ -2455,6 +2459,7 @@ public class ComponentTree implements LithoLifecycleListener {
       final LayoutStateContext layoutStateContext,
       final List<Component> components,
       final List<String> componentKeys,
+      final @Nullable List<ScopedComponentInfo> scopedComponentInfos,
       final @Nullable String extraAttribution) {
 
     if (!layoutStateContext.isFrozen()) {
@@ -2466,12 +2471,13 @@ public class ComponentTree implements LithoLifecycleListener {
 
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
-
       for (int i = 0, size = components.size(); i < size; i++) {
         final Component component = components.get(i);
         final String globalKey = componentKeys.get(i);
         final ComponentContext scopedContext =
-            component.getScopedContext(layoutStateContext, globalKey);
+            scopedComponentInfos != null
+                ? scopedComponentInfos.get(i).getContext()
+                : Preconditions.checkNotNull(component.getScopedContext());
         mEventHandlersController.bindEventHandlers(scopedContext, component, globalKey);
         bindTriggerHandler(scopedContext, component);
       }
