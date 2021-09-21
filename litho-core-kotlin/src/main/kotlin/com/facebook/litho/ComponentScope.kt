@@ -27,6 +27,8 @@ class ComponentScope(val context: ComponentContext) {
     get() = context.androidContext
   val resourceResolver: ResourceResolver
     get() = context.resourceResolver
+  val layoutStateContext: LayoutStateContext?
+    get() = context.layoutStateContext
 
   // TODO: Extract into more generic container to track hooks when needed
   internal var useStateIndex = 0

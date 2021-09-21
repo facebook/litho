@@ -29,7 +29,7 @@ import com.facebook.litho.annotations.Hook
 fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
-  val stateHandler = context.stateHandler!!
+  val stateHandler = layoutStateContext?.stateHandler!!
   val kState = stateHandler.getStateContainer(globalKey) as KStateContainer?
 
   if (kState == null || kState.mStates.size <= hookIndex) {
