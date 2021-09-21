@@ -49,7 +49,8 @@ public interface InternalNode extends Node<LithoRenderContext> {
 
   void addChildAt(InternalNode child, int index);
 
-  void addComponentNeedingPreviousRenderData(String globalKey, Component component);
+  void addComponentNeedingPreviousRenderData(
+      String globalKey, Component component, @Nullable ScopedComponentInfo scopedComponentInfo);
 
   void addTransition(Transition transition);
 
@@ -223,6 +224,9 @@ public interface InternalNode extends Node<LithoRenderContext> {
 
   @Nullable
   Map<String, Component> getComponentsNeedingPreviousRenderData();
+
+  @Nullable
+  Map<String, ScopedComponentInfo> getScopedComponentInfosNeedingPreviousRenderData();
 
   @Nullable
   ArrayList<WorkingRangeContainer.Registration> getWorkingRangeRegistrations();

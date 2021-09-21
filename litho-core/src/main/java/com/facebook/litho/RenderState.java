@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,15 +35,18 @@ public class RenderState {
   private final Set<String> mSeenGlobalKeys = new HashSet<>();
 
   void recordRenderData(
-      final LayoutStateContext layoutStateContext,
       final List<Component> components,
-      final List<String> componentGlobalKeys) {
+      final List<String> componentGlobalKeys,
+      final @Nullable List<ScopedComponentInfo> scopedComponentInfos) {
     if (components == null) {
       return;
     }
 
     for (int i = 0, size = components.size(); i < size; i++) {
-      recordRenderData(layoutStateContext, components.get(i), componentGlobalKeys.get(i));
+      recordRenderData(
+          components.get(i),
+          componentGlobalKeys.get(i),
+          scopedComponentInfos != null ? scopedComponentInfos.get(i) : null);
     }
     mSeenGlobalKeys.clear();
   }
@@ -57,9 +62,9 @@ public class RenderState {
   }
 
   private void recordRenderData(
-      final LayoutStateContext layoutStateContext,
       final Component component,
-      final String globalKey) {
+      final String globalKey,
+      final @Nullable ScopedComponentInfo scopedComponentInfo) {
     if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
@@ -77,7 +82,9 @@ public class RenderState {
     mSeenGlobalKeys.add(globalKey);
 
     final ComponentContext scopedContext =
-        component.getScopedContext(layoutStateContext, globalKey);
+        scopedComponentInfo != null
+            ? scopedComponentInfo.getContext()
+            : Preconditions.checkNotNull(component.getScopedContext());
     final Component.RenderData existingInfo = mRenderData.get(globalKey);
     final Component.RenderData newInfo = component.recordRenderData(scopedContext, existingInfo);
 

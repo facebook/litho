@@ -999,6 +999,8 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private void recordRenderData(LayoutState layoutState) {
     final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
+    final @Nullable List<ScopedComponentInfo> scopedComponentInfos =
+        layoutState.getScopedComponentInfosNeedingPreviousRenderData();
     final List<String> keys = layoutState.getComponentKeysNeedingPreviousRenderData();
     if (components == null || components.isEmpty()) {
       return;
@@ -1008,7 +1010,7 @@ public class ComponentTree implements LithoLifecycleListener {
       mPreviousRenderState = new RenderState();
     }
 
-    mPreviousRenderState.recordRenderData(layoutState.getLayoutStateContext(), components, keys);
+    mPreviousRenderState.recordRenderData(components, keys, scopedComponentInfos);
   }
 
   void detach() {

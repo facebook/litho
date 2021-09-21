@@ -205,6 +205,7 @@ public class LayoutState
   private @Nullable StateHandler mStateHandler;
   private @Nullable List<Component> mComponentsNeedingPreviousRenderData;
   private @Nullable List<String> mComponentKeysNeedingPreviousRenderData;
+  private @Nullable List<ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable TransitionId mCurrentTransitionId;
   private @Nullable OutputUnitsAffinityGroup<AnimatableItem> mCurrentLayoutOutputAffinityGroup;
   private final Map<TransitionId, OutputUnitsAffinityGroup<AnimatableItem>> mTransitionIdMapping =
@@ -1085,6 +1086,22 @@ public class LayoutState
         for (Map.Entry<String, Component> entry : componentsNeedingPreviousRenderData.entrySet()) {
           layoutState.mComponentKeysNeedingPreviousRenderData.add(entry.getKey());
           layoutState.mComponentsNeedingPreviousRenderData.add(entry.getValue());
+        }
+      }
+
+      final @Nullable Map<String, ScopedComponentInfo>
+          scopedComponentInfosNeedingPreviousRenderData =
+              node.getScopedComponentInfosNeedingPreviousRenderData();
+
+      if (scopedComponentInfosNeedingPreviousRenderData != null) {
+
+        if (layoutState.mScopedComponentInfosNeedingPreviousRenderData == null) {
+          layoutState.mScopedComponentInfosNeedingPreviousRenderData = new ArrayList<>();
+        }
+
+        for (Map.Entry<String, ScopedComponentInfo> entry :
+            scopedComponentInfosNeedingPreviousRenderData.entrySet()) {
+          layoutState.mScopedComponentInfosNeedingPreviousRenderData.add(entry.getValue());
         }
       }
     }
@@ -2513,6 +2530,11 @@ public class LayoutState
     return mComponentKeysNeedingPreviousRenderData;
   }
 
+  @Nullable
+  public List<ScopedComponentInfo> getScopedComponentInfosNeedingPreviousRenderData() {
+    return mScopedComponentInfosNeedingPreviousRenderData;
+  }
+
   @Override
   public void setInitialRootBoundsForAnimation(
       @Nullable Transition.RootBoundsTransition rootWidth,
@@ -2539,11 +2561,10 @@ public class LayoutState
       mountTimeTransitions = new ArrayList<>();
       for (int i = 0, size = mComponentsNeedingPreviousRenderData.size(); i < size; i++) {
         final Component component = mComponentsNeedingPreviousRenderData.get(i);
-        final String globalKey =
-            Preconditions.checkNotNull(mComponentKeysNeedingPreviousRenderData).get(i);
         final ComponentContext scopedContext =
-            Preconditions.checkNotNull(
-                component.getScopedContext(getLayoutStateContext(), globalKey));
+            mScopedComponentInfosNeedingPreviousRenderData != null
+                ? mScopedComponentInfosNeedingPreviousRenderData.get(i).getContext()
+                : Preconditions.checkNotNull(component.getScopedContext());
         try {
           final Transition transition = component.createTransition(scopedContext);
           if (transition != null) {

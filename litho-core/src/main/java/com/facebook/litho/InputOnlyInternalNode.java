@@ -147,6 +147,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   protected @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
   private @Nullable Map<String, Component> mComponentsNeedingPreviousRenderData;
+  private @Nullable Map<String, ScopedComponentInfo> mScopedComponentInfosNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable ArrayList<Attachable> mAttachables;
   protected @Nullable String mTestKey;
@@ -200,11 +201,21 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
-  public void addComponentNeedingPreviousRenderData(String globalKey, Component component) {
+  public void addComponentNeedingPreviousRenderData(
+      final String globalKey,
+      final Component component,
+      final @Nullable ScopedComponentInfo scopedComponentInfo) {
     if (mComponentsNeedingPreviousRenderData == null) {
       mComponentsNeedingPreviousRenderData = new HashMap<>(1);
     }
     mComponentsNeedingPreviousRenderData.put(globalKey, component);
+
+    if (scopedComponentInfo != null && mScopedComponentInfosNeedingPreviousRenderData == null) {
+      mScopedComponentInfosNeedingPreviousRenderData = new HashMap<>(1);
+    }
+    if (mScopedComponentInfosNeedingPreviousRenderData != null) {
+      mScopedComponentInfosNeedingPreviousRenderData.put(globalKey, scopedComponentInfo);
+    }
   }
 
   @Override
@@ -643,6 +654,12 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   @Override
   public @Nullable Map<String, Component> getComponentsNeedingPreviousRenderData() {
     return mComponentsNeedingPreviousRenderData;
+  }
+
+  @Override
+  public @Nullable Map<String, ScopedComponentInfo>
+      getScopedComponentInfosNeedingPreviousRenderData() {
+    return mScopedComponentInfosNeedingPreviousRenderData;
   }
 
   @Override
@@ -1238,7 +1255,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final Component component = components.get(i);
       final String key = componentKeys.get(i);
       if (component.needsPreviousRenderData()) {
-        addComponentNeedingPreviousRenderData(key, component);
+        // This method will not be called in stateless mode so it's safe to pass null
+        // scopedComponentInfo
+        addComponentNeedingPreviousRenderData(key, component, null);
       }
     }
 
