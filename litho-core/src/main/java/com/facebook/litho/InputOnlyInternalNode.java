@@ -1552,7 +1552,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     switch (mode) {
       case ReconciliationMode.REUSE:
-        if (isInternalNodeReuseEnabled) {
+        if (isInternalNodeReuseEnabled || context.useStatelessComponent()) {
           commitToLayoutStateRecursively(context, current);
         }
         layout = current;
@@ -1561,7 +1561,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
         layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
-        if (isInternalNodeReuseEnabled) {
+        if (isInternalNodeReuseEnabled || context.useStatelessComponent()) {
           commitToLayoutState(context, current);
         }
         layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
@@ -1603,9 +1603,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 2. Shallow copy this layout.
     final InputOnlyInternalNode<?> layout;
 
-    if (layoutStateContext.isInternalNodeReuseEnabled()) {
+    if (layoutStateContext.isInternalNodeReuseEnabled()
+        || layoutStateContext.useStatelessComponent()) {
       layout = current.clone();
       layout.mChildren = new ArrayList<>(current.getChildCount());
+      layout.mDebugComponents = null;
     } else {
       layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey);
     }

@@ -1928,12 +1928,18 @@ public class DefaultInternalNode
     }
 
     // 2. Shallow copy this layout.
-    final DefaultInternalNode layout =
-        getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey, copiedNode);
-    ComponentContext parentContext =
-        layout
-            .getTailComponent()
-            .getScopedContext(layoutStateContext, layout.getTailComponentKey());
+    final DefaultInternalNode layout;
+    if (layoutStateContext.useStatelessComponent()) {
+      layout = current.clone();
+      layout.mYogaNode = copiedNode;
+      layout.mYogaNode.setData(layout);
+      layout.mDebugComponents = null;
+      layout.mDiffNode = null;
+    } else {
+      layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey, copiedNode);
+    }
+
+    ComponentContext parentContext = layout.getTailComponentContext();
 
     // 3. Iterate over children.
     int count = currentNode.getChildCount();

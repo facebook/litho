@@ -287,4 +287,8 @@ public class LayoutStateContext {
   StateHandler getStateHandler() {
     return mStateHandler;
   }
+
+  boolean useStatelessComponent() {
+    return mComponentTree != null && mComponentTree.useStatelessComponent();
+  }
 }
