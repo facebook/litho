@@ -33,6 +33,7 @@ import java.util.Map;
 public class MountState implements MountDelegateTarget {
 
   public static final long ROOT_HOST_ID = 0L;
+  private static final String TAG = "MountState";
 
   private final LongSparseArray<MountItem> mIdToMountedItemMap;
   private final Context mContext;
@@ -135,7 +136,61 @@ public class MountState implements MountDelegateTarget {
       final boolean isMountable = isMountable(renderTreeNode, i);
       final MountItem currentMountItem =
           mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
-      final boolean isMounted = currentMountItem != null;
+      boolean isMounted = currentMountItem != null;
+
+      // There is a bug (T99579422) happening where we try to incorrectly update an already mounted
+      // render unit.
+      // TODO: T101249557
+      if (isMounted) {
+        final RenderUnit currentRenderUnit = currentMountItem.getRenderUnit();
+        boolean needsRecovery = false;
+        // The old render unit we try to update is the root host which should not be updated (that's
+        // why we start from index 1).
+        if (currentRenderUnit.getId() != renderTreeNode.getRenderUnit().getId()) {
+          needsRecovery = true;
+          ErrorReporter.getInstance()
+              .report(
+                  LogLevel.ERROR,
+                  TAG,
+                  "The current render unit id does not match the new one. "
+                      + " index: "
+                      + i
+                      + " mountableOutputCounts: "
+                      + renderTree.getMountableOutputCount()
+                      + " currentRenderUnitId: "
+                      + currentRenderUnit.getId()
+                      + " newRenderUnitId: "
+                      + renderTreeNode.getRenderUnit().getId());
+        }
+
+        // The new render unit is not the same type as the old one.
+        if (!currentRenderUnit
+            .getRenderContentType()
+            .equals(renderTreeNode.getRenderUnit().getRenderContentType())) {
+          needsRecovery = true;
+          ErrorReporter.getInstance()
+              .report(
+                  LogLevel.ERROR,
+                  TAG,
+                  "Trying to update a MountItem with different ContentType. "
+                      + "index: "
+                      + i
+                      + " currentRenderUnitId: "
+                      + currentRenderUnit.getId()
+                      + " newRenderUnitId: "
+                      + renderTreeNode.getRenderUnit().getId()
+                      + " currentRenderUnitContentType: "
+                      + currentRenderUnit.getRenderContentType()
+                      + " newRenderUnitContentType: "
+                      + renderTreeNode.getRenderUnit().getRenderContentType());
+        }
+        if (needsRecovery) {
+          recreateMountedItemMap(previousRenderTree);
+          // reset the loop to start over.
+          i = 1;
+          continue;
+        }
+      }
 
       mountLoopLogBuilder.append(
           String.format(
@@ -166,6 +221,39 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.beginSection("RenderCoreExtension.afterMount");
     RenderCoreExtension.afterMount(this, mRenderTree.getExtensionResults());
     RenderCoreSystrace.endSection();
+  }
+
+  /**
+   * This method will unmount everything and recreate the mIdToMountedItemMap.
+   *
+   * @param previousRenderTree
+   */
+  private void recreateMountedItemMap(RenderTree previousRenderTree) {
+    // We keep a pointer to the rootHost.
+    MountItem rootHost = null;
+    final long[] keysToUnmount = new long[mIdToMountedItemMap.size()];
+    // We unmount all everything but the root host.
+    for (int j = 0, mountedItems = mIdToMountedItemMap.size(); j < mountedItems; j++) {
+      keysToUnmount[j] = mIdToMountedItemMap.keyAt(j);
+    }
+    for (long keyAt : keysToUnmount) {
+      final MountItem mountItem = mIdToMountedItemMap.get(keyAt);
+      if (mountItem != null) {
+        if (mountItem.getRenderUnit().getId() == ROOT_HOST_ID) {
+          rootHost = mountItem;
+          mIdToMountedItemMap.remove(keyAt);
+        } else if (mountItem.getRenderUnit().getId() != keyAt) {
+          // This checks if the item was in the wrong position in the map. If it was we need to
+          // unmount that item.
+          unmountItemRecursively(
+              previousRenderTree.getRenderTreeNodeAtIndex(
+                  previousRenderTree.getRenderTreeNodeIndex(keyAt)));
+        } else {
+          unmountItemRecursively(mountItem.getRenderTreeNode());
+        }
+      }
+    }
+    mIdToMountedItemMap.put(ROOT_HOST_ID, rootHost);
   }
 
   @Override
@@ -615,14 +703,13 @@ public class MountState implements MountDelegateTarget {
       return;
     }
 
-    final Object content = item.getContent();
-
     // The root host item should never be unmounted as it's a reference
-    // to the top-level LithoView.
+    // to the top-level Host.
     if (unit.getId() == ROOT_HOST_ID) {
       return;
     }
 
+    final Object content = item.getContent();
     mIdToMountedItemMap.remove(unit.getId());
 
     final boolean hasUnmountDelegate =
