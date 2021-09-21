@@ -66,6 +66,8 @@ public class LithoHostListenerCoordinator {
         mountExtension.afterMount(state);
       }
     }
+
+    LithoStats.incrementComponentMountCount();
   }
 
   public void processVisibilityOutputs(Rect localVisibleRect) {
