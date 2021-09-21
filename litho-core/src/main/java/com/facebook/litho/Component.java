@@ -1766,12 +1766,10 @@ public abstract class Component
   }
 
   final boolean canUsePreviousLayout(
-      LayoutStateContext layoutStateContext, ComponentContext parentContext, String globalKey) {
+      ComponentContext scopedContext, ComponentContext parentContext) {
     return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
         && !onShouldCreateLayoutWithNewSizeSpec(
-            Preconditions.checkNotNull(getScopedContext(layoutStateContext, globalKey)),
-            parentContext.getWidthSpec(),
-            parentContext.getHeightSpec());
+            scopedContext, parentContext.getWidthSpec(), parentContext.getHeightSpec());
   }
 
   protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {

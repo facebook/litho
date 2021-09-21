@@ -201,6 +201,9 @@ public interface InternalNode extends Node<LithoRenderContext> {
   String getHeadComponentKey();
 
   @Nullable
+  ComponentContext getHeadComponentContext();
+
+  @Nullable
   Component getTailComponent();
 
   @Nullable

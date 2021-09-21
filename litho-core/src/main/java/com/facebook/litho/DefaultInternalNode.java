@@ -706,6 +706,13 @@ public class DefaultInternalNode
   }
 
   @Override
+  public @Nullable ComponentContext getHeadComponentContext() {
+    return mScopedComponentInfos != null
+        ? mScopedComponentInfos.get(mScopedComponentInfos.size() - 1).getContext()
+        : mComponents.get(mComponents.size() - 1).getScopedContext();
+  }
+
+  @Override
   public int getImportantForAccessibility() {
     return mImportantForAccessibility;
   }

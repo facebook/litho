@@ -378,7 +378,10 @@ class Layout {
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null
             && Preconditions.checkNotNull(currentLayout.getInternalNode().getHeadComponent())
-                .canUsePreviousLayout(layoutStateContext, parentContext, globalKey)) {
+                .canUsePreviousLayout(
+                    Preconditions.checkNotNull(
+                        currentLayout.getInternalNode().getHeadComponentContext()),
+                    parentContext)) {
           remeasure(
               layoutStateContext,
               currentLayout,
