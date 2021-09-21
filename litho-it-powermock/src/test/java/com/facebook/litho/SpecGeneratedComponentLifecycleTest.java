@@ -167,9 +167,7 @@ public class SpecGeneratedComponentLifecycleTest {
     TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
-    final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(component).onCreateLayout(scopedContext);
+    verify(component).onCreateLayout((ComponentContext) any());
     verify(component, never()).onPrepare((ComponentContext) any());
   }
 
@@ -178,9 +176,7 @@ public class SpecGeneratedComponentLifecycleTest {
     TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
-    final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(component).onCreateLayout(scopedContext);
+    verify(component).onCreateLayout((ComponentContext) any());
     verify(component, never()).onPrepare((ComponentContext) any());
   }
 
@@ -189,9 +185,7 @@ public class SpecGeneratedComponentLifecycleTest {
     TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
-    final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(component).onCreateLayout(scopedContext);
+    verify(component).onCreateLayout((ComponentContext) any());
     verify(component, never()).onPrepare((ComponentContext) any());
   }
 
@@ -200,10 +194,7 @@ public class SpecGeneratedComponentLifecycleTest {
     TestBaseComponent component = setUpSpyLayoutSpecWithNullLayout();
     Layout.create(mLayoutStateContext, mContext, component, false);
 
-    final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
-    verify(component).onCreateLayout(scopedContext);
-    verify(component).onCreateLayout(scopedContext);
+    verify(component).onCreateLayout((ComponentContext) any());
     verify(component, never()).onPrepare((ComponentContext) any());
   }
 
@@ -214,7 +205,7 @@ public class SpecGeneratedComponentLifecycleTest {
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -227,7 +218,7 @@ public class SpecGeneratedComponentLifecycleTest {
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -240,7 +231,7 @@ public class SpecGeneratedComponentLifecycleTest {
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
 
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -253,7 +244,7 @@ public class SpecGeneratedComponentLifecycleTest {
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node).setMeasureFunction((YogaMeasureFunction) any());
     verify(component).onPrepare(scopedContext);
@@ -265,7 +256,7 @@ public class SpecGeneratedComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     verify(component).onCreateLayout(scopedContext);
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
@@ -278,7 +269,7 @@ public class SpecGeneratedComponentLifecycleTest {
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, false);
 
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     verify(component).onCreateLayout(scopedContext);
     // verify(node).appendComponent(component, "$" + KEY, null);
     verify(node, never()).setMeasureFunction((YogaMeasureFunction) any());
@@ -292,7 +283,7 @@ public class SpecGeneratedComponentLifecycleTest {
     mContext.setHeightSpec(mNestedTreeHeightSpec);
     InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
     verify(component)
         .onCreateLayoutWithSizeSpec(scopedContext, mNestedTreeWidthSpec, mNestedTreeHeightSpec);
     // verify(node).appendComponent(component, "$" + KEY, null);
@@ -328,9 +319,9 @@ public class SpecGeneratedComponentLifecycleTest {
             .isLayoutSpecWithSizeSpecCheck(true)
             .build(mContext);
 
-    Layout.create(mLayoutStateContext, mContext, component, true);
+    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
     final ComponentContext scopedContext =
-        component.getScopedContext(mLayoutStateContext, "$" + KEY);
+        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
 
     // onShouldCreateLayoutWithNewSizeSpec should not be called the first time
     verify(component, never())

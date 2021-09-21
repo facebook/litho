@@ -17,8 +17,8 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.LithoKeyTestingUtil.getGlobalKeysInfo;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static com.facebook.litho.LithoKeyTestingUtil.getScopedComponentInfos;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -32,7 +32,6 @@ import com.facebook.litho.widget.Text;
 import java.util.List;
 import java.util.Map;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,22 +61,22 @@ public class LegacyStatelessComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(component);
     final LayoutStateContext layoutStateContext =
         lithoView.getComponentTree().getLayoutStateContext();
-    final Map<String, List<String>> globalKeysInfo = getGlobalKeysInfo(lithoView);
+    final Map<String, List<ScopedComponentInfo>> globalKeysInfo =
+        getScopedComponentInfos(lithoView);
 
     // Text
     final String expectedGlobalKeyText =
         ComponentKeyUtils.getKeyWithSeparatorForTest(layoutSpecId, columnSpecId, "$[Text2]");
-    final String globalKeyText = globalKeysInfo.get("Text").get(0);
-    Assert.assertEquals(globalKeyText, expectedGlobalKeyText);
-    assertThat(layoutStateContext.getScopedContext(globalKeyText).getGlobalKey())
+    final ScopedComponentInfo scopedComponentInfoText = globalKeysInfo.get("Text").get(0);
+    assertThat(scopedComponentInfoText.getContext().getGlobalKey())
         .isEqualTo(expectedGlobalKeyText);
     // TestViewComponent in child layout
     final String expectedGlobalKeyTestViewComponent =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[TestViewComponent1]");
-    final String globalKeyTestViewComponent = globalKeysInfo.get("TestViewComponent").get(0);
-    Assert.assertEquals(globalKeyTestViewComponent, expectedGlobalKeyTestViewComponent);
-    assertThat(layoutStateContext.getScopedContext(globalKeyTestViewComponent).getGlobalKey())
+    final ScopedComponentInfo scopedComponentInfoTestViewComponent =
+        globalKeysInfo.get("TestViewComponent").get(0);
+    assertThat(scopedComponentInfoTestViewComponent.getContext().getGlobalKey())
         .isEqualTo(expectedGlobalKeyTestViewComponent);
     // CardClip in child
     final String expectedGlobalKeyCardClip =
@@ -88,36 +87,33 @@ public class LegacyStatelessComponentGlobalKeyTest {
             columnSpecId,
             columnSpecId,
             "$[CardClip1]");
-    final String globalKeyCardClip = globalKeysInfo.get("CardClip").get(0);
-    Assert.assertEquals(globalKeyCardClip, expectedGlobalKeyCardClip);
-    assertThat(layoutStateContext.getScopedContext(globalKeyCardClip).getGlobalKey())
+    final ScopedComponentInfo scopedComponentInfoCardClip = globalKeysInfo.get("CardClip").get(0);
+    assertThat(scopedComponentInfoCardClip.getContext().getGlobalKey())
         .isEqualTo(expectedGlobalKeyCardClip);
 
     // Text in child
     final String expectedGlobalKeyTextChild =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "$[Text1]");
-    final String globalKeyTextChild = globalKeysInfo.get("Text").get(1);
-    Assert.assertEquals(globalKeyTextChild, expectedGlobalKeyTextChild);
-    assertThat(layoutStateContext.getScopedContext(globalKeyTextChild).getGlobalKey())
+    final ScopedComponentInfo scopedComponentInfoTextChild = globalKeysInfo.get("Text").get(1);
+    assertThat(scopedComponentInfoTextChild.getContext().getGlobalKey())
         .isEqualTo(expectedGlobalKeyTextChild);
 
     // CardClip
     final String expectedGlobalKeyCardClip2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, columnSpecId, "$[CardClip2]");
-    final String globalKeyCardClip2 = globalKeysInfo.get("CardClip").get(1);
-    Assert.assertEquals(globalKeyCardClip2, expectedGlobalKeyCardClip2);
-    assertThat(layoutStateContext.getScopedContext(globalKeyCardClip2).getGlobalKey())
+    final ScopedComponentInfo scopedComponentInfoCardClip2 = globalKeysInfo.get("CardClip").get(1);
+    assertThat(scopedComponentInfoCardClip2.getContext().getGlobalKey())
         .isEqualTo(expectedGlobalKeyCardClip2);
 
     // TestViewComponent
     final String expectedGlobalKeyTestViewComponent2 =
         ComponentKeyUtils.getKeyWithSeparatorForTest(
             layoutSpecId, columnSpecId, "$[TestViewComponent2]");
-    final String globalKeyTestViewComponent2 = globalKeysInfo.get("TestViewComponent").get(1);
-    Assert.assertEquals(globalKeyTestViewComponent2, expectedGlobalKeyTestViewComponent2);
-    assertThat(layoutStateContext.getScopedContext(globalKeyTestViewComponent2).getGlobalKey())
+    final ScopedComponentInfo scopedComponentInfoTestViewComponent2 =
+        globalKeysInfo.get("TestViewComponent").get(1);
+    assertThat(scopedComponentInfoTestViewComponent2.getContext().getGlobalKey())
         .isEqualTo(expectedGlobalKeyTestViewComponent2);
   }
 

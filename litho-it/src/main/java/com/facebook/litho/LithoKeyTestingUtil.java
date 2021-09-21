@@ -29,31 +29,32 @@ public class LithoKeyTestingUtil {
    * order in which they are added to the hierarchy.
    */
   @SuppressLint("RestrictedApi")
-  public static Map<String, List<String>> getGlobalKeysInfo(LithoView lithoView) {
-    final Map<String, List<String>> globalKeys = new HashMap<>();
-    addKeysForNode(
+  public static Map<String, List<ScopedComponentInfo>> getScopedComponentInfos(
+      LithoView lithoView) {
+    final Map<String, List<ScopedComponentInfo>> scopedComponentInfos = new HashMap<>();
+    addScopedComponentInfoForNode(
         lithoView.getComponentTree().getCommittedLayoutState().getLayoutRoot().getInternalNode(),
-        globalKeys);
+        scopedComponentInfos);
 
-    return globalKeys;
+    return scopedComponentInfos;
   }
 
-  public static void addKeysForNode(InternalNode node, Map<String, List<String>> globalKeys) {
+  public static void addScopedComponentInfoForNode(
+      InternalNode node, Map<String, List<ScopedComponentInfo>> scopedComponentInfos) {
     for (int i = 0, size = node.getComponents().size(); i < size; i++) {
       final Component component = node.getComponents().get(i);
-      final String globalKey = node.getComponentKeys().get(i);
       final String componentType = component.getSimpleName();
 
-      List<String> sameTypeKeys = globalKeys.get(componentType);
+      List<ScopedComponentInfo> sameTypeKeys = scopedComponentInfos.get(componentType);
       if (sameTypeKeys == null) {
         sameTypeKeys = new ArrayList<>();
-        globalKeys.put(componentType, sameTypeKeys);
+        scopedComponentInfos.put(componentType, sameTypeKeys);
       }
-      sameTypeKeys.add(globalKey);
+      sameTypeKeys.add(node.getScopedComponentInfos().get(i));
     }
 
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
-      addKeysForNode(node.getChildAt(i), globalKeys);
+      addScopedComponentInfoForNode(node.getChildAt(i), scopedComponentInfos);
     }
   }
 }
