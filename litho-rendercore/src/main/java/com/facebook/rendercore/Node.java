@@ -50,15 +50,6 @@ public interface Node<RenderContext> extends Copyable {
   LayoutResult calculateLayout(LayoutContext<RenderContext> context, int widthSpec, int heightSpec);
 
   /**
-   * Returns the layout params of this Node. The layout params are useful to inform the parent of
-   * this node, about how this Node should be laid-out. The layout params implement {@link
-   * Copyable}, and can be copied to be reused but another node.
-   *
-   * @return the layout params for this Node.
-   */
-  Copyable getLayoutParams();
-
-  /**
    * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
    * and all the layout information needed to position the content of such Node.
    */

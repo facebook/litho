@@ -163,7 +163,6 @@ public class YogaLayoutFunction {
     final YogaNode yogaNode = YogaNodeFactory.create(yogaConfig);
 
     yogaLayoutDataProvider.applyYogaPropsFromNode(node, context, yogaNode);
-    yogaLayoutDataProvider.applyYogaPropsFromLayoutParams(node, context, yogaNode);
 
     if (yogaNode.getDisplay() == YogaDisplay.NONE) {
       final YogaNode emptyYogaNode = YogaNodeFactory.create(yogaConfig);

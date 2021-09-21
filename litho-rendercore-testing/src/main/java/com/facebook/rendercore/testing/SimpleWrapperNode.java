@@ -34,11 +34,6 @@ public class SimpleWrapperNode implements Node {
   }
 
   @Override
-  public Copyable getLayoutParams() {
-    return null;
-  }
-
-  @Override
   public Copyable makeCopy() {
     return new SimpleWrapperNode(mLayoutResult);
   }

@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.testing;
 
-import androidx.annotation.Nullable;
 import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
@@ -35,7 +34,6 @@ public class TestNode implements Node {
   private Object mLayoutData;
   private RenderUnit mRenderUnit;
   private long mId = sIdGenerator.getAndIncrement();
-  private @Nullable Copyable mLayoutParams;
 
   public TestNode() {
     super();
@@ -87,15 +85,6 @@ public class TestNode implements Node {
     return mId;
   }
 
-  public void setLayoutParams(@Nullable Copyable layoutParams) {
-    mLayoutParams = layoutParams;
-  }
-
-  @Override
-  public @Nullable Copyable getLayoutParams() {
-    return mLayoutParams;
-  }
-
   @Override
   public Copyable makeCopy() {
     final TestNode node;
@@ -104,8 +93,6 @@ public class TestNode implements Node {
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException("This should not be possible", e);
     }
-    node.mLayoutParams = mLayoutParams != null ? mLayoutParams.makeCopy() : null;
-
     return node;
   }
 }

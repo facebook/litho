@@ -1696,11 +1696,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return null;
   }
 
-  @Override
-  public Copyable getLayoutParams() {
-    return null;
-  }
-
   private static boolean isCloned(
       final LayoutStateContext context,
       final InternalNode node,

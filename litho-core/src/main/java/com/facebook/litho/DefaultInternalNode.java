@@ -1987,11 +1987,6 @@ public class DefaultInternalNode
   }
 
   @Override
-  public Copyable getLayoutParams() {
-    throw new UnsupportedOperationException("This API is not yet implemented");
-  }
-
-  @Override
   public Copyable makeCopy() {
     return null;
   }

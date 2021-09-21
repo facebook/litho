@@ -31,9 +31,6 @@ public interface YogaLayoutDataProvider<RenderContext> {
   void applyYogaPropsFromNode(
       Node node, RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
 
-  void applyYogaPropsFromLayoutParams(
-      Node node, RenderState.LayoutContext<RenderContext> context, YogaNode yogaNode);
-
   @Nullable
   RenderUnit getRenderUnitForNode(
       Node node, RenderState.LayoutContext<RenderContext> layoutContext);
