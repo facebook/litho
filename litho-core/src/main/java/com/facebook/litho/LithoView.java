@@ -1501,6 +1501,18 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     return mUseExtensions ? mMountDelegateTarget : mMountState;
   }
 
+  @Nullable
+  @VisibleForTesting
+  public DynamicPropsManager getDynamicPropsManager() {
+    if (mMountState != null) {
+      return mMountState.getDynamicPropsManager();
+    } else if (mLithoHostListenerCoordinator != null) {
+      return mLithoHostListenerCoordinator.getDynamicPropsManager();
+    } else {
+      return null;
+    }
+  }
+
   public void setMountStartupLoggingInfo(
       LithoStartupLogger startupLogger,
       String startupLoggerAttribution,

@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
@@ -74,5 +75,10 @@ public class DynamicPropsExtension
 
   static class DynamicPropsExtensionState {
     private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
+
+    @VisibleForTesting
+    public DynamicPropsManager getDynamicPropsManager() {
+      return mDynamicPropsManager;
+    }
   }
 }
