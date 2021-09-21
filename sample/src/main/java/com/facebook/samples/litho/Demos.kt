@@ -90,6 +90,7 @@ import com.facebook.samples.litho.kotlin.collection.ScrollToCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SelectionCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.SubCollectionsKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
@@ -159,6 +160,8 @@ class Demos {
                             SingleDemo(name = "Deps", component = DepsCollectionKComponent()),
                             SingleDemo(
                                 name = "Selection", component = SelectionCollectionKComponent()),
+                            SingleDemo(
+                                name = "SubCollections", component = SubCollectionsKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),

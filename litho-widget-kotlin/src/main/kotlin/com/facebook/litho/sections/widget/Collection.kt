@@ -251,6 +251,14 @@ class CollectionContainerScope {
             deps))
   }
 
+  /**
+   * Add a [SubCollection] to the [Collection], i.e. a group of [Collection] children that do not
+   * need to be defined inline.
+   */
+  fun subCollection(subCollection: SubCollection) {
+    subCollection.collectionScope.invoke(this)
+  }
+
   /** This is a temporary api, that will soon be removed. Please do not use it */
   fun section_DO_NOT_USE(section: Section) {
     collectionChildrenModels.add(CollectionData(section = section))
@@ -310,3 +318,27 @@ class CollectionContainerScope {
     return "staticId:${nextStaticId++}"
   }
 }
+
+/**
+ * A [SubCollection] is a group of [Collection] children that can be added to a [Collection]. They
+ * allow [Collection]s to be composed from smaller parts.
+ *
+ * A [SubCollection] can be created using the same functions for building a Collection.
+ * ```
+ * val header = SubCollection {
+ *   child { Text("Title") }
+ *   child { Text("SubTitle") }
+ * }
+ *
+ * val body = SubCollection {
+ *   models.forEach { child(id = it.id) { Text("${model.text}") } }
+ *   subCollection(anotherSubCollection)
+ * }
+ *
+ * val collection = Collection {
+ *   subCollection(header)
+ *   subCollection(body)
+ * }
+ * ```
+ */
+class SubCollection(val collectionScope: CollectionContainerScope.() -> Unit)
