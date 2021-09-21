@@ -30,6 +30,7 @@ import com.facebook.litho.Style
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.Children
+import com.facebook.litho.sections.Section
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.OnCheckIsSameContentEvent
@@ -121,10 +122,9 @@ class Collection(
           firstFullyVisibleIndex,
           lastFullyVisibleIndex)
     }
-    val children = Children.Builder().child(containerScope.getSection(sectionContext))
     val section =
         CollectionGroupSection.create(sectionContext)
-            .childrenBuilder(children)
+            .childrenBuilder(containerScope.getChildren(sectionContext))
             .apply { onDataBound?.let { onDataBound(it) } }
             .onViewportChanged(combinedOnViewportChanged)
             .onPullToRefresh(onPullToRefresh)
@@ -213,10 +213,11 @@ class Collection(
 class CollectionContainerScope {
 
   private data class CollectionData(
-      val id: Any?,
-      val component: Component?,
-      val renderInfo: RenderInfo,
-      val deps: Array<Any?>?,
+      val id: Any? = null,
+      val component: Component? = null,
+      val renderInfo: RenderInfo? = null,
+      val deps: Array<Any?>? = null,
+      val section: Section? = null,
   )
   private val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
@@ -250,13 +251,39 @@ class CollectionContainerScope {
             deps))
   }
 
-  fun getSection(sectionContext: SectionContext): DataDiffSection<*> {
+  /** This is a temporary api, that will soon be removed. Please do not use it */
+  fun section_DO_NOT_USE(section: Section) {
+    collectionChildrenModels.add(CollectionData(section = section))
+  }
+
+  private fun createDataDiffSection(
+      sectionContext: SectionContext,
+      forDataDiffSection: List<CollectionData>
+  ): Section {
     return DataDiffSection.create<CollectionData>(sectionContext)
-        .data(collectionChildrenModels)
+        .data(forDataDiffSection.toList())
         .renderEventHandler(eventHandlerWithReturn { it.model.renderInfo })
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
         .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isComponentEquivalent))
         .build()
+  }
+
+  internal fun getChildren(sectionContext: SectionContext): Children.Builder {
+    val children = Children.create()
+    val forDataDiffSection = mutableListOf<CollectionData>()
+    collectionChildrenModels.forEach { item ->
+      if (item.section != null) {
+        children.child(createDataDiffSection(sectionContext, forDataDiffSection))
+        forDataDiffSection.clear()
+        children.child(item.section)
+      } else {
+        forDataDiffSection.add(item)
+      }
+    }
+    if (forDataDiffSection.isNotEmpty()) {
+      children.child(createDataDiffSection(sectionContext, forDataDiffSection))
+    }
+    return children
   }
 
   private fun isSameID(event: OnCheckIsSameItemEvent<CollectionData>): Boolean {
