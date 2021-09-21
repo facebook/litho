@@ -599,9 +599,7 @@ class Layout {
     final List<Component> unresolved = root.getUnresolvedComponents();
 
     if (unresolved != null) {
-      final Component tailComponent = Preconditions.checkNotNull(root.getTailComponent());
-      final String tailKey = Preconditions.checkNotNull(root.getTailComponentKey());
-      final ComponentContext context = tailComponent.getScopedContext(c, tailKey);
+      final ComponentContext context = Preconditions.checkNotNull(root.getTailComponentContext());
       for (int i = 0, size = unresolved.size(); i < size; i++) {
         root.child(c, Preconditions.checkNotNull(context), unresolved.get(i));
       }
@@ -691,8 +689,7 @@ class Layout {
       final Component c = layoutNode.getTailComponent();
       if (c != null) {
         final ComponentContext ct =
-            c.getScopedContext(
-                layoutStateContext, Preconditions.checkNotNull(layoutNode.getTailComponentKey()));
+            Preconditions.checkNotNull(layoutNode.getTailComponentContext());
         final LithoMetadataExceptionWrapper e = new LithoMetadataExceptionWrapper(ct, t);
         e.addComponentForLayoutStack(c);
         throw e;
@@ -833,9 +830,8 @@ class Layout {
     final Component component = layoutNode.getTailComponent();
 
     if (component != null) {
-      final String globalKey = Preconditions.checkNotNull(layoutNode.getTailComponentKey());
       final ComponentContext scopedContext =
-          component.getScopedContext(layoutStateContext, globalKey);
+          Preconditions.checkNotNull(layoutNode.getTailComponentContext());
 
       try {
         return component.shouldComponentUpdate(
