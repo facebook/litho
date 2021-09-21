@@ -1439,7 +1439,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
           final int styleAttr = props.getDefStyleAttr();
           final int styleRes = props.getDefStyleRes();
           if (styleAttr != 0 || styleRes != 0) {
-            final Context context = getContext(c, this).getAndroidContext();
+            final Context context =
+                Preconditions.checkNotNull(getTailComponentContext()).getAndroidContext();
             final TypedArray a =
                 context.obtainStyledAttributes(
                     null, com.facebook.litho.R.styleable.ComponentLayout, styleAttr, styleRes);
@@ -1494,7 +1495,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final LayoutStateContext context,
       final YogaNode node,
       final @Nullable LithoLayoutResult parent) {
-    return new DefaultLayoutResult(context, getContext(context, this), this, node, parent);
+    return new DefaultLayoutResult(
+        context, Preconditions.checkNotNull(getTailComponentContext()), this, node, parent);
   }
 
   protected static void setPaddingFromDrawable(YogaLayoutProps target, Drawable drawable) {
@@ -1602,7 +1604,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey);
     }
 
-    ComponentContext parentContext = getContext(layoutStateContext, layout);
+    ComponentContext parentContext = layout.getTailComponentContext();
 
     // 3. Iterate over children.
     int count = current.getChildCount();
@@ -1759,13 +1761,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return isInternalNodeReuseEnabled ? ReconciliationMode.REUSE : ReconciliationMode.COPY;
   }
 
-  protected static ComponentContext getContext(LayoutStateContext c, InternalNode node) {
-    return node.getTailComponent().getScopedContext(c, node.getTailComponentKey());
-  }
-
   private static void applyOverridesRecursive(LayoutStateContext c, InternalNode node) {
     if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(getContext(c, node), node);
+      DebugComponent.applyOverrides(
+          Preconditions.checkNotNull(node.getTailComponentContext()), node);
       for (int i = 0, count = node.getChildCount(); i < count; i++) {
         applyOverridesRecursive(c, node.getChildAt(i));
       }
