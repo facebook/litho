@@ -38,10 +38,6 @@ public class MountState implements MountDelegateTarget {
   private final Context mContext;
   private final Host mRootHost;
 
-  // Updated in prepareMount(), thus during mounting they hold the information
-  // about the LayoutState that is being mounted, not mLastMountedLayoutState
-  @Nullable private long[] mRenderUnitIds;
-
   private boolean mIsMounting;
   private boolean mNeedsRemount;
   private RenderTree mRenderTree;
@@ -72,15 +68,11 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public void notifyMount(long id) {
-    if (mRenderTree == null) {
+    if (mIdToMountedItemMap.get(id) != null) {
       return;
     }
 
     final int position = mRenderTree.getRenderTreeNodeIndex(id);
-    if (getItemAt(position) != null) {
-      return;
-    }
-
     final RenderTreeNode node = mRenderTree.getRenderTreeNodeAtIndex(position);
     mountRenderUnit(position, node, null);
   }
@@ -112,6 +104,8 @@ public class MountState implements MountDelegateTarget {
       throw new IllegalStateException("Trying to mount while already mounting!");
     }
 
+    final RenderTree previousRenderTree = mRenderTree;
+
     if (!updateRenderTree(renderTree)) {
       return;
     }
@@ -125,7 +119,7 @@ public class MountState implements MountDelegateTarget {
     RenderCoreSystrace.endSection();
 
     RenderCoreSystrace.beginSection("MountState.prepareMount");
-    prepareMount();
+    prepareMount(previousRenderTree);
     RenderCoreSystrace.endSection();
 
     // TODO: Remove this additional logging when root cause of crash in mountRenderUnit is found.
@@ -139,7 +133,8 @@ public class MountState implements MountDelegateTarget {
       final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
 
       final boolean isMountable = isMountable(renderTreeNode, i);
-      final MountItem currentMountItem = getItemAt(i);
+      final MountItem currentMountItem =
+          mIdToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
       final boolean isMounted = currentMountItem != null;
 
       mountLoopLogBuilder.append(
@@ -177,7 +172,7 @@ public class MountState implements MountDelegateTarget {
   public void unmountAllItems() {
     unregisterAllExtensions();
 
-    if (mRenderUnitIds == null) {
+    if (mRenderTree == null) {
       return;
     }
     // Let's unmount all the content from the Root host. Everything else will be recursively
@@ -203,13 +198,16 @@ public class MountState implements MountDelegateTarget {
           mMountDelegate);
     }
 
-    mRenderUnitIds = null;
     mNeedsRemount = true;
   }
 
   @Override
   public boolean isRootItem(int position) {
-    final MountItem mountItem = getItemAt(position);
+    if (mRenderTree == null || position >= mRenderTree.getMountableOutputCount()) {
+      return false;
+    }
+    final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(position).getRenderUnit();
+    final MountItem mountItem = mIdToMountedItemMap.get(renderUnit.getId());
     if (mountItem == null) {
       return false;
     }
@@ -223,8 +221,14 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
-  public Object getContentAt(int position) {
-    final MountItem mountItem = getItemAt(position);
+  public @Nullable Object getContentAt(int position) {
+    if (mRenderTree == null || position >= mRenderTree.getMountableOutputCount()) {
+      return null;
+    }
+
+    final MountItem mountItem =
+        mIdToMountedItemMap.get(
+            mRenderTree.getRenderTreeNodeAtIndex(position).getRenderUnit().getId());
     if (mountItem == null) {
       return null;
     }
@@ -284,7 +288,8 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public @Nullable MountItem getMountItemAt(int position) {
-    return getItemAt(position);
+    return mIdToMountedItemMap.get(
+        mRenderTree.getRenderTreeNodeAtIndex(position).getRenderUnit().getId());
   }
 
   @Override
@@ -294,7 +299,7 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public int getRenderUnitCount() {
-    return mRenderUnitIds == null ? 0 : mRenderUnitIds.length;
+    return mRenderTree == null ? 0 : mRenderTree.getMountableOutputCount();
   }
 
   @Override
@@ -319,12 +324,13 @@ public class MountState implements MountDelegateTarget {
    */
   @Override
   public void attach() {
-    if (mRenderUnitIds == null) {
+    if (mRenderTree == null) {
       return;
     }
 
-    for (int i = 0, size = mRenderUnitIds.length; i < size; i++) {
-      final MountItem mountItem = getItemAt(i);
+    for (int i = 0, size = mRenderTree.getMountableOutputCount(); i < size; i++) {
+      final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
+      final MountItem mountItem = mIdToMountedItemMap.get(renderUnit.getId());
       if (mountItem == null || mountItem.isBound()) {
         continue;
       }
@@ -345,12 +351,13 @@ public class MountState implements MountDelegateTarget {
   /** Unbinds all the MountItems currently mounted on this MountState. */
   @Override
   public void detach() {
-    if (mRenderUnitIds == null) {
+    if (mRenderTree == null) {
       return;
     }
 
-    for (int i = 0, size = mRenderUnitIds.length; i < size; i++) {
-      final MountItem mountItem = getItemAt(i);
+    for (int i = 0, size = mRenderTree.getMountableOutputCount(); i < size; i++) {
+      final RenderUnit renderUnit = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
+      final MountItem mountItem = mIdToMountedItemMap.get(renderUnit.getId());
 
       if (mountItem == null || !mountItem.isBound()) {
         continue;
@@ -405,9 +412,13 @@ public class MountState implements MountDelegateTarget {
     return true;
   }
 
-  /** Prepare the {@link MountState} to mount a new {@link RenderTree}. */
-  private void prepareMount() {
-    unmountOrMoveOldItems();
+  /**
+   * Prepare the {@link MountState} to mount a new {@link RenderTree}.
+   *
+   * @param previousRenderTree
+   */
+  private void prepareMount(@Nullable RenderTree previousRenderTree) {
+    unmountOrMoveOldItems(previousRenderTree);
 
     final MountItem rootItem = mIdToMountedItemMap.get(ROOT_HOST_ID);
     final RenderTreeNode rootNode = mRenderTree.getRenderTreeNodeAtIndex(0);
@@ -431,15 +442,6 @@ public class MountState implements MountDelegateTarget {
       // If root mount item is present then update it.
       updateMountItemIfNeeded(mMountDelegate, mContext, rootNode, rootItem);
     }
-
-    final int outputCount = mRenderTree.getMountableOutputCount();
-    if (mRenderUnitIds == null || outputCount != mRenderUnitIds.length) {
-      mRenderUnitIds = new long[outputCount];
-    }
-
-    for (int i = 0; i < outputCount; i++) {
-      mRenderUnitIds[i] = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit().getId();
-    }
   }
 
   /**
@@ -449,8 +451,8 @@ public class MountState implements MountDelegateTarget {
    * treatment here since we mark them as removed and re-added when calculating the new
    * LayoutOutputs
    */
-  private void unmountOrMoveOldItems() {
-    if (mRenderUnitIds == null) {
+  private void unmountOrMoveOldItems(@Nullable RenderTree previousRenderTree) {
+    if (mRenderTree == null || previousRenderTree == null) {
       return;
     }
 
@@ -458,11 +460,13 @@ public class MountState implements MountDelegateTarget {
     // but only from mIndexToMountedItemMap. If an host changes we're going to unmount it and
     // recursively
     // all its mounted children.
-    for (int i = 0; i < mRenderUnitIds.length; i++) {
-      final int newPosition = mRenderTree.getRenderTreeNodeIndex(mRenderUnitIds[i]);
+    for (int i = 0; i < previousRenderTree.getMountableOutputCount(); i++) {
+      final RenderUnit previousRenderUnit =
+          previousRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit();
+      final int newPosition = mRenderTree.getRenderTreeNodeIndex(previousRenderUnit.getId());
       final RenderTreeNode renderTreeNode =
           newPosition > -1 ? mRenderTree.getRenderTreeNodeAtIndex(newPosition) : null;
-      final MountItem oldItem = getItemAt(i);
+      final MountItem oldItem = mIdToMountedItemMap.get(previousRenderUnit.getId());
 
       // if oldItem is null it was previously unmounted so there is nothing we need to do.
       if (oldItem == null) continue;
@@ -517,7 +521,7 @@ public class MountState implements MountDelegateTarget {
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
-    mIdToMountedItemMap.put(mRenderUnitIds[index], item);
+    mIdToMountedItemMap.put(renderTreeNode.getRenderUnit().getId(), item);
     host.mount(renderTreeNode.getPositionInParent(), item);
 
     return item;
@@ -685,18 +689,6 @@ public class MountState implements MountDelegateTarget {
         mMountDelegate);
 
     mountItem.releaseMountContent(mContext);
-  }
-
-  private @Nullable MountItem getItemAt(int i) {
-    if (mIdToMountedItemMap == null || mRenderUnitIds == null) {
-      return null;
-    }
-
-    if (i >= mRenderUnitIds.length) {
-      return null;
-    }
-
-    return mIdToMountedItemMap.get(mRenderUnitIds[i]);
   }
 
   private void addExtensions(@Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
