@@ -922,18 +922,6 @@ public abstract class Component
     return this;
   }
 
-  /** This shouldn't be overridden, but is not final because it's mocked in unit tests. */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  @Nullable
-  protected ComponentContext getScopedContext(
-      LayoutStateContext layoutStateContext, String globalKey) {
-    if (useStatelessComponent(layoutStateContext.getComponentTree())) {
-      return layoutStateContext.getScopedContext(globalKey);
-    }
-
-    return mScopedContext;
-  }
-
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   @Nullable
   protected ComponentContext getScopedContext() {

@@ -64,45 +64,6 @@ class ScopedComponentInfo implements Cloneable {
     mErrorEventHandler = errorEventHandler;
   }
 
-  /** Copy constructor */
-  private ScopedComponentInfo(final ScopedComponentInfo info, final LayoutStateContext context) {
-
-    mComponent = info.mComponent;
-
-    mStateContainer = mComponent.createStateContainer();
-    if (mStateContainer != null) {
-      mComponent.transferState(info.mStateContainer, mStateContainer);
-    }
-
-    mInterStagePropsContainer = mComponent.createInterStagePropsContainer();
-    if (mInterStagePropsContainer != null) {
-      mComponent.copyInterStageImpl(mInterStagePropsContainer, info.mInterStagePropsContainer);
-    }
-
-    mContext = info.mContext.createUpdatedComponentContext(context);
-
-    if (info.mChildCounters != null) {
-      mChildCounters = new SparseIntArray(info.mChildCounters.size());
-      for (int i = 0; i < info.mChildCounters.size(); i++) {
-        mChildCounters.put(info.mChildCounters.keyAt(i), info.mChildCounters.valueAt(i));
-      }
-    }
-
-    if (info.mManualKeysCounter != null) {
-      mManualKeysCounter = new HashMap<>(info.mManualKeysCounter.size());
-      mManualKeysCounter.putAll(info.mManualKeysCounter);
-    }
-
-    if (info.mWorkingRangeRegistrations != null) {
-      mWorkingRangeRegistrations = new ArrayList<>(info.mWorkingRangeRegistrations.size());
-      mWorkingRangeRegistrations.addAll(info.mWorkingRangeRegistrations);
-    }
-
-    mErrorEventHandler = info.mErrorEventHandler;
-
-    mIsBeingUsed = false;
-  }
-
   public ComponentContext getContext() {
     return mContext;
   }
@@ -198,26 +159,5 @@ class ScopedComponentInfo implements Cloneable {
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  /**
-   * Create a copy of this ScopedInfo, in which the StateContainer and InterStagePropsContainer are
-   * copied.
-   */
-  ScopedComponentInfo copy(final LayoutStateContext context) {
-    ScopedComponentInfo info = new ScopedComponentInfo(this, context);
-    mContext.setScopedComponentInfo(info);
-    return info;
-  }
-
-  /**
-   * Transfer the contents of this ScopedInfo to {@param info}. This should only be used when
-   * replacing an existing ScopedInfo with a new instance during the same layout pass. Currently,
-   * the only unknown usecase is during reconciliation.
-   *
-   * @param info The destination ScopedInfo.
-   */
-  void transferInto(ScopedComponentInfo info) {
-    info.mInterStagePropsContainer = mInterStagePropsContainer;
   }
 }

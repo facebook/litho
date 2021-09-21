@@ -19,14 +19,8 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Wraps objects which should only be available for the duration of a LayoutState, to access them in
@@ -40,7 +34,6 @@ public class LayoutStateContext {
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable ComponentTree mComponentTree;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
-  private final Map<String, ScopedComponentInfo> mGlobalKeyToScopedInfo = new ConcurrentHashMap<>();
   private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
   private @Nullable DiffNode mCurrentDiffTree;
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
@@ -67,13 +60,6 @@ public class LayoutStateContext {
 
   void copyScopedInfoFrom(LayoutStateContext from) {
     checkIfFrozen();
-
-    mGlobalKeyToScopedInfo.clear();
-    for (Map.Entry<String, ScopedComponentInfo> e : from.mGlobalKeyToScopedInfo.entrySet()) {
-      final String key = e.getKey();
-      final ScopedComponentInfo info = e.getValue().copy(this);
-      mGlobalKeyToScopedInfo.put(key, info);
-    }
 
     mComponentIdToWillRenderLayout.clear();
     mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
@@ -109,8 +95,7 @@ public class LayoutStateContext {
     mStateHandler = stateHandler;
   }
 
-  ScopedComponentInfo addScopedComponentInfo(
-      final String globalKey,
+  ScopedComponentInfo createScopedComponentInfo(
       final Component component,
       final ComponentContext scopedContext,
       final ComponentContext parentContext) {
@@ -119,34 +104,7 @@ public class LayoutStateContext {
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
 
-    final ScopedComponentInfo info =
-        new ScopedComponentInfo(component, scopedContext, errorEventHandler);
-
-    final ScopedComponentInfo previous = mGlobalKeyToScopedInfo.put(globalKey, info);
-    if (previous != null) {
-      previous.transferInto(info);
-    }
-
-    return info;
-  }
-
-  ScopedComponentInfo getScopedComponentInfo(String globalKey) {
-    if (globalKey == null) {
-      return null;
-    }
-
-    final ScopedComponentInfo scopedComponentInfo = mGlobalKeyToScopedInfo.get(globalKey);
-    if (scopedComponentInfo == null) {
-      throw new IllegalStateException(
-          "ScopedComponentInfo is null for key " + globalKey + getDebugString());
-    }
-
-    return scopedComponentInfo;
-  }
-
-  ComponentContext getScopedContext(String globalKey) {
-    final ScopedComponentInfo info = getScopedComponentInfo(globalKey);
-    return info.getContext();
+    return new ScopedComponentInfo(component, scopedContext, errorEventHandler);
   }
 
   @Nullable
@@ -234,43 +192,6 @@ public class LayoutStateContext {
 
   boolean isInternalNodeReuseEnabled() {
     return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
-  }
-
-  private String getDebugString() {
-    final StringBuilder builder = new StringBuilder();
-    final List<String> keys = new ArrayList<>(mGlobalKeyToScopedInfo.keySet());
-
-    // Sorts the keys by length so the keys closer to the root are in the beginning.
-    Collections.sort(
-        keys,
-        new Comparator<String>() {
-          public int compare(String o1, String o2) {
-            return Integer.compare(o1.length(), o2.length());
-          }
-        });
-
-    for (String key : keys) {
-      builder.append("\n  ").append(key);
-    }
-
-    // Truncate at 200 characters.
-    String string = builder.substring(0, Math.min(builder.length(), 200));
-
-    return String.format("\nsize: %d\nkeys: %s", keys.size(), string);
-  }
-
-  /** Remove scoped info of components which are not part of the hierarchy. */
-  public void prune() {
-    final Iterator<Map.Entry<String, ScopedComponentInfo>> iterator =
-        mGlobalKeyToScopedInfo.entrySet().iterator();
-    if (wasReconciled) {
-      while (iterator.hasNext()) {
-        Map.Entry<String, ScopedComponentInfo> info = iterator.next();
-        if (!info.getValue().isBeingUsed()) {
-          iterator.remove();
-        }
-      }
-    }
   }
 
   private void checkIfFrozen() {

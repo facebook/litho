@@ -200,7 +200,7 @@ public class ComponentContext implements Cloneable {
 
     if (componentContext.useStatelessComponent()) {
       componentContext.mScopedComponentInfo =
-          layoutContext.addScopedComponentInfo(globalKey, scope, componentContext, parentContext);
+          layoutContext.createScopedComponentInfo(scope, componentContext, parentContext);
     }
 
     return componentContext;

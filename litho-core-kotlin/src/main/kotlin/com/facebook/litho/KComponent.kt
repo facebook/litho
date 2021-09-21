@@ -136,10 +136,7 @@ abstract class KComponent : Component() {
 
   final override fun getMountType() = super.getMountType()
 
-  final override fun getScopedContext(
-      layoutStateContext: LayoutStateContext,
-      globalKey: String
-  ): ComponentContext? = super.getScopedContext(layoutStateContext, globalKey)
+  final override fun getScopedContext(): ComponentContext? = super.getScopedContext()
 
   final override fun getSimpleName(): String = super.getSimpleName()
 

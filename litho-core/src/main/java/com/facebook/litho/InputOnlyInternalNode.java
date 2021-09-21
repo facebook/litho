@@ -1320,7 +1320,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     }
 
     // 2. Set parent context for descendants.
-    ComponentContext parentContext = head.getScopedContext(layoutStateContext, headKey);
+    ComponentContext parentContext = head.getScopedContext();
 
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
@@ -1330,8 +1330,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       updated.add(component);
       updatedKeys.add(key);
 
-      parentContext =
-          component.getScopedContext(layoutStateContext, key); // set parent context for descendant
+      parentContext = component.getScopedContext(); // set parent context for descendant
     }
 
     // 4. Reverse the list so that the root component is at index 0.
@@ -1717,10 +1716,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     // 4. Update the layout with the updated context, components, and YogaNode.
     final Component tailComponent = updated.first.get(0);
-    final String tailKey = updated.second.get(0);
     layout.updateWith(
         layoutStateContext,
-        tailComponent.getScopedContext(layoutStateContext, tailKey),
+        Preconditions.checkNotNull(tailComponent.getScopedContext()),
         updated.first,
         updated.second,
         null);
