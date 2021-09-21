@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.LithoViewRule;
@@ -72,11 +73,15 @@ public class MountStateRemountTest {
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
 
-    final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
+    // RenderCore MountState does not set MountData. The attribute information is instead held
+    // via the Attributes extension.
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      final MountDelegateTarget mountDelegateTarget = lithoView.getMountDelegateTarget();
 
-    for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
-      MountItem item = mountDelegateTarget.getMountItemAt(i);
-      assertThat(item.getMountData()).isOfAnyClassIn(LithoMountData.class);
+      for (int i = 0; i < mountDelegateTarget.getMountItemCount(); i++) {
+        MountItem item = mountDelegateTarget.getMountItemAt(i);
+        assertThat(item.getMountData()).isOfAnyClassIn(LithoMountData.class);
+      }
     }
   }
 

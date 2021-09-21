@@ -25,6 +25,7 @@ import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +51,17 @@ public class MountStateLoggingTest {
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
+
+    // These tests assume ComponentsLogger usage which RenderCore MountState does not use.
+    // Ensure rendercore mountstate is disabled for all these tests.
+    TempComponentsConfigurations.setDelegateToRenderCoreMount(false);
+    TempComponentsConfigurations.setUseExtensionsWithMountDelegate(false);
+  }
+
+  @After
+  public void restoreConfiguration() {
+    TempComponentsConfigurations.restoreDelegateToRenderCoreMount();
+    TempComponentsConfigurations.restoreUseExtensionsWithMountDelegate();
   }
 
   @Test

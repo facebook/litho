@@ -433,6 +433,12 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testRemountSameSubTreeWithDifferentParentHost() {
+    // RenderCore MountState does not use ComponentsLogger, so this test cannot work when it is
+    // enabled.
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
     ComponentContext c = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
     mLithoViewRule.useContext(c);
 
