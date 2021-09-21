@@ -652,6 +652,12 @@ public class DefaultInternalNode
   }
 
   @Override
+  @Nullable
+  public List<ScopedComponentInfo> getScopedComponentInfos() {
+    return mScopedComponentInfos;
+  }
+
+  @Override
   public @Nullable List<Component> getUnresolvedComponents() {
     return mUnresolvedComponents;
   }

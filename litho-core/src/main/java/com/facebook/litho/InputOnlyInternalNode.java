@@ -655,6 +655,12 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   @Override
+  @Nullable
+  public List<ScopedComponentInfo> getScopedComponentInfos() {
+    return mScopedComponentInfos;
+  }
+
+  @Override
   public @Nullable List<Component> getUnresolvedComponents() {
     return mUnresolvedComponents;
   }
@@ -1661,10 +1667,12 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   static void commitToLayoutState(LayoutStateContext c, InternalNode node) {
-    List<String> keys = node.getComponentKeys();
-    for (String key : keys) {
-      final ScopedComponentInfo info = c.getScopedComponentInfo(key);
-      info.commitToLayoutState(c.getStateHandler());
+    final @Nullable List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
+
+    if (scopedComponentInfos != null) {
+      for (ScopedComponentInfo info : scopedComponentInfos) {
+        info.commitToLayoutState(c.getStateHandler());
+      }
     }
   }
 
