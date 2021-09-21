@@ -74,9 +74,6 @@ public class StateHandler {
   @Nullable
   private Map<Object, Object> mCachedValues;
 
-  /** Hook key (global key + hook index) -> state object */
-  private Map<String, Object> mHookState;
-
   // These are both lists of (globalKey, updateMethod) pairs, where globalKey is the global key
   // of the component the update applies to
   private List<Pair<String, HookUpdater>> mPendingHookUpdates;
@@ -98,7 +95,7 @@ public class StateHandler {
           stateHandler.getAppliedStateUpdates());
       copyCurrentStateContainers(stateHandler.getStateContainers());
       copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
-      copyAndRunHooks(stateHandler);
+      runHooks(stateHandler);
     }
   }
 
@@ -115,8 +112,7 @@ public class StateHandler {
   }
 
   public synchronized boolean isEmpty() {
-    return (mStateContainers == null || mStateContainers.isEmpty())
-        && (mHookState == null || mHookState.isEmpty());
+    return (mStateContainers == null || mStateContainers.isEmpty());
   }
 
   /**
@@ -161,6 +157,17 @@ public class StateHandler {
     }
 
     pendingStateUpdatesForKey.add(stateUpdate);
+  }
+
+  /**
+   * StateContainer in this StateHandler should be accessed using this method as it will also ensure
+   * that the state is marked as needed
+   */
+  StateContainer getStateContainer(String key) {
+    maybeInitStateContainers();
+    maybeInitNeededStateContainers();
+    mNeededStateContainers.add(key);
+    return mStateContainers.get(key);
   }
 
   /**
@@ -366,8 +373,8 @@ public class StateHandler {
     return list;
   }
 
-  @Nullable
   synchronized Map<String, StateContainer> getStateContainers() {
+    maybeInitStateContainers();
     return mStateContainers;
   }
 
@@ -555,14 +562,6 @@ public class StateHandler {
   // Hooks - Experimental - see KState.kt
   //
 
-  /** Returns the mapping of hook keys to values. */
-  Map<String, Object> getHookState() {
-    if (mHookState == null) {
-      mHookState = new HashMap<>();
-    }
-    return mHookState;
-  }
-
   /**
    * Registers the given block to be run before the next layout calculation to update hook state.
    */
@@ -583,11 +582,7 @@ public class StateHandler {
    *     collected
    */
   @SuppressWarnings("unchecked")
-  private void copyAndRunHooks(StateHandler other) {
-    if (other.mHookState != null) {
-      mHookState = new HashMap<>(other.mHookState);
-    }
-
+  private void runHooks(StateHandler other) {
     if (other.mPendingHookUpdates != null) {
       List<Pair<String, HookUpdater>> updates = new ArrayList<>(other.mPendingHookUpdates);
       for (Pair<String, HookUpdater> hookUpdate : updates) {
@@ -606,18 +601,6 @@ public class StateHandler {
    * @param stateHandler the StateHandler whose layout is being committed
    */
   private void commitHookState(StateHandler stateHandler) {
-    if (mHookState != null) {
-      mHookState.clear();
-    }
-
-    if (stateHandler.mHookState != null && !stateHandler.mHookState.isEmpty()) {
-      if (mHookState == null) {
-        mHookState = new HashMap<>(stateHandler.mHookState);
-      } else {
-        mHookState.putAll(stateHandler.mHookState);
-      }
-    }
-
     if (mPendingHookUpdates != null && stateHandler.mAppliedHookUpdates != null) {
       mPendingHookUpdates.removeAll(stateHandler.mAppliedHookUpdates);
     }

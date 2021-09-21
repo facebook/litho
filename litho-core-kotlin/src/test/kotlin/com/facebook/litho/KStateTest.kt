@@ -154,7 +154,7 @@ class KStateTest {
 
     assertThat(initCounter.get()).describedAs("initCounter is initialized only once").isEqualTo(1)
     val componentTree = lithoViewRule.componentTree
-    assertThat(componentTree.initialStateContainer?.mInitialHookStates)
+    assertThat(componentTree.initialStateContainer?.mInitialStates)
         .describedAs("Initial hook state container is empty")
         .isEmpty()
     assertThat(componentTree.initialStateContainer?.mPendingStateHandlers)

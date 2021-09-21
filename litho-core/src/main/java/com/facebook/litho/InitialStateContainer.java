@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,15 +43,8 @@ public class InitialStateContainer {
   final Map<String, StateContainer> mInitialStates =
       Collections.synchronizedMap(new HashMap<String, StateContainer>());
 
-  // For hook state, all the initial states that have been created and can not yet be released.
-  @Nullable @VisibleForTesting Map<String, Object> mInitialHookStates;
-
   @GuardedBy("this")
   private final Map<String, Object> mCreateInitialStateLocks = new HashMap<>();
-
-  @GuardedBy("this")
-  @Nullable
-  private Map<String, Object> mCreateInitialHookStateLocks;
 
   @GuardedBy("this")
   @VisibleForTesting
@@ -99,31 +91,46 @@ public class InitialStateContainer {
    * execute the initializer and cache the result.
    */
   @SuppressWarnings("unchecked")
-  <T> T createOrGetInitialHookState(String hookStateKey, HookInitializer<T> initializer) {
+  <T> KStateContainer createOrGetInitialHookState(
+      final String key, int hookIndex, HookInitializer<T> initializer) {
     Object stateLock;
     synchronized (this) {
-      if (mCreateInitialHookStateLocks == null) {
-        mCreateInitialHookStateLocks = new HashMap<>();
-      }
-      stateLock = mCreateInitialHookStateLocks.get(hookStateKey);
+      stateLock = mCreateInitialStateLocks.get(key);
       if (stateLock == null) {
         stateLock = new Object();
-        mCreateInitialHookStateLocks.put(hookStateKey, stateLock);
-      }
-      if (mInitialHookStates == null) {
-        mInitialHookStates = Collections.synchronizedMap(new HashMap<String, Object>());
+        mCreateInitialStateLocks.put(key, stateLock);
       }
     }
 
-    T initialState;
+    KStateContainer hookStates;
     synchronized (stateLock) {
-      initialState = (T) mInitialHookStates.get(hookStateKey);
-      if (initialState == null) {
-        initialState = initializer.init();
-        mInitialHookStates.put(hookStateKey, initialState);
+      hookStates = (KStateContainer) mInitialStates.get(key);
+
+      // sequences are guaranteed to be used in oreder. If the states list size is greater than
+      // hookIndex we should be guaranteed to find the state
+      if (hookStates != null && hookStates.mStates.size() > hookIndex) {
+        return hookStates;
       }
+
+      final T initialState = initializer.init();
+
+      // If the state needed to be initialised it should be guaranteed that it needs to be added at
+      // the end of the list. Let's create a new KStateContainer to guarantee immutability of state
+      // containers.
+      hookStates = KStateContainer.withNewState(hookStates, initialState);
+
+      if (hookIndex >= hookStates.mStates.size()) {
+        throw new IllegalStateException(
+            "Hook state initialisation for sequence "
+                + hookIndex
+                + " But there were only "
+                + hookStates.mStates.size()
+                + " elements in the hook state container");
+      }
+      mInitialStates.put(key, hookStates);
     }
-    return initialState;
+
+    return hookStates;
   }
 
   /**
@@ -138,10 +145,6 @@ public class InitialStateContainer {
       // and therefore we can not be executing createOrGetInitialStateForComponent or
       // createOrGetInitialHookState from any thread.
       mInitialStates.clear();
-
-      if (mInitialHookStates != null) {
-        mInitialHookStates.clear();
-      }
     }
   }
 }

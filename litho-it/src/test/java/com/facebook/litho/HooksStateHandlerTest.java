@@ -19,12 +19,15 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests for the hooks state (useState) integration with StateHandler. */
 @RunWith(LithoTestRunner.class)
 public class HooksStateHandlerTest {
+
+  private static final String GLOBAL_KEY = "globalKey";
 
   @Test
   public void copyHandler_copyingEmptyStateHandler_createsEmptyStateHandler() {
@@ -36,38 +39,28 @@ public class HooksStateHandlerTest {
   }
 
   @Test
-  public void copyHandler_copyingStateHandler_copiesAllStateValues() {
-    final Object bazState = new Object();
-    final StateHandler first = new StateHandler();
-    first.getHookState().put("foo", "test");
-    first.getHookState().put("bar", 4);
-    first.getHookState().put("baz", bazState);
-
-    final StateHandler second = new StateHandler(first);
-
-    assertThat(second.hasUncommittedUpdates()).isFalse();
-    assertThat(second.isEmpty()).isFalse();
-    assertThat(second.getHookState())
-        .hasSize(3)
-        .extracting("foo", "bar", "baz")
-        .containsExactly("test", 4, bazState);
-  }
-
-  @Test
   public void
       commit_copyingHandlerWithPendingStateUpdateAndCommittingIt_copiesAllOldStateValuesAndAppliesStateUpdate() {
     final Object bazState = new Object();
+    KStateContainer kStateContainer = KStateContainer.withNewState(null, "test");
+    kStateContainer = KStateContainer.withNewState(kStateContainer, 4);
+    kStateContainer = KStateContainer.withNewState(kStateContainer, bazState);
+
     final StateHandler first = new StateHandler();
-    first.getHookState().put("foo", "test");
-    first.getHookState().put("bar", 4);
-    first.getHookState().put("baz", bazState);
+    first.getStateContainers().put(GLOBAL_KEY, kStateContainer);
+
     first.queueHookStateUpdate(
-        "globalKey",
+        GLOBAL_KEY,
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
-            stateHandler.getHookState().put("newKey", "newValue");
-            stateHandler.getHookState().put("bar", 5);
+            stateHandler
+                .getStateContainers()
+                .put(
+                    GLOBAL_KEY,
+                    KStateContainer.withNewState(
+                        (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY),
+                        "newValue"));
           }
         });
 
@@ -78,18 +71,22 @@ public class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isTrue();
     assertThat(second.hasUncommittedUpdates()).isTrue();
 
-    assertThat(second.getHookState())
+    final KStateContainer secondKstate =
+        (KStateContainer) second.getStateContainers().get(GLOBAL_KEY);
+
+    assertThat(secondKstate.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 5, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"));
 
     first.commit(second);
 
     assertThat(first.hasUncommittedUpdates()).isFalse();
-    assertThat(first.getHookState())
+
+    final KStateContainer firstState = (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+
+    assertThat(firstState.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 5, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 4, bazState, "newValue"));
   }
 
   @Test
@@ -97,27 +94,44 @@ public class HooksStateHandlerTest {
       commit_copyingHandlerWithMultiplePendingStateUpdatesAndCommittingIt_copiesAllOldStateValuesAndAppliesAllStateUpdates() {
     final Object bazState = new Object();
     final StateHandler first = new StateHandler();
-    first.getHookState().put("foo", "test");
-    first.getHookState().put("bar", 4);
-    first.getHookState().put("baz", bazState);
-    first.queueHookStateUpdate(
-        "globalKey",
-        new HookUpdater() {
-          @Override
-          public void apply(StateHandler stateHandler) {
-            stateHandler.getHookState().put("newKey", "newValue");
-            stateHandler.getHookState().put("bar", 5);
-          }
-        });
+    KStateContainer kStateContainer = KStateContainer.withNewState(null, "test");
+    kStateContainer = KStateContainer.withNewState(kStateContainer, 4);
+    kStateContainer = KStateContainer.withNewState(kStateContainer, bazState);
 
+    first.getStateContainers().put(GLOBAL_KEY, kStateContainer);
     first.queueHookStateUpdate(
-        "globalKey",
+        GLOBAL_KEY,
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler
-                .getHookState()
-                .put("bar", (int) stateHandler.getHookState().get("bar") + 1);
+                .getStateContainers()
+                .put(
+                    GLOBAL_KEY,
+                    KStateContainer.withNewState(
+                        (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY),
+                        "newValue"));
+            stateHandler
+                .getStateContainers()
+                .put(
+                    GLOBAL_KEY,
+                    ((KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY))
+                        .copyAndMutate(1, 5));
+          }
+        });
+
+    first.queueHookStateUpdate(
+        GLOBAL_KEY,
+        new HookUpdater() {
+          @Override
+          public void apply(StateHandler stateHandler) {
+            final KStateContainer currentState =
+                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
+            stateHandler
+                .getStateContainers()
+                .put(
+                    GLOBAL_KEY,
+                    currentState.copyAndMutate(1, 1 + (int) currentState.mStates.get(1)));
           }
         });
 
@@ -128,18 +142,22 @@ public class HooksStateHandlerTest {
     assertThat(first.hasUncommittedUpdates()).isTrue();
     assertThat(second.hasUncommittedUpdates()).isTrue();
 
-    assertThat(second.getHookState())
+    assertThat(second.getStateContainers()).hasSize(1);
+
+    final KStateContainer secondKstate =
+        (KStateContainer) second.getStateContainers().get(GLOBAL_KEY);
+    assertThat(secondKstate.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 6, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
 
     first.commit(second);
 
     assertThat(first.hasUncommittedUpdates()).isFalse();
-    assertThat(first.getHookState())
+    final KStateContainer kState = (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+
+    assertThat(kState.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 6, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
   }
 
   @Test
@@ -147,64 +165,76 @@ public class HooksStateHandlerTest {
       commit_committingHandlerFirstWithPartOfStateUpdatesAndSecondTimeWithAllStateUpdates_atFirstAppliesOnlyStateUpdatesFromFirstCommitAndKeepOthersPendingAndThenAppliesAllStateUpdates() {
     final Object bazState = new Object();
     final StateHandler first = new StateHandler();
-    first.getHookState().put("foo", "test");
-    first.getHookState().put("bar", 4);
-    first.getHookState().put("baz", bazState);
+    KStateContainer kStateContainer = KStateContainer.withNewState(null, "test");
+    kStateContainer = KStateContainer.withNewState(kStateContainer, 4);
+    kStateContainer = KStateContainer.withNewState(kStateContainer, bazState);
+
+    first.getStateContainers().put(GLOBAL_KEY, kStateContainer);
     first.queueHookStateUpdate(
-        "globalKey",
+        GLOBAL_KEY,
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
-            stateHandler.getHookState().put("newKey", "newValue");
-            stateHandler.getHookState().put("bar", 5);
+            KStateContainer current =
+                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
+            current = KStateContainer.withNewState(current, "newValue");
+            current = current.copyAndMutate(1, 5);
+            stateHandler.getStateContainers().put(GLOBAL_KEY, current);
           }
         });
 
     first.queueHookStateUpdate(
-        "globalKey",
+        GLOBAL_KEY,
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
-            stateHandler
-                .getHookState()
-                .put("bar", (int) stateHandler.getHookState().get("bar") + 1);
+            KStateContainer current =
+                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
+            current = current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
+            stateHandler.getStateContainers().put(GLOBAL_KEY, current);
           }
         });
 
     final StateHandler second = new StateHandler(first);
 
     first.queueHookStateUpdate(
-        "globalKey",
+        GLOBAL_KEY,
         new HookUpdater() {
           @Override
           public void apply(StateHandler stateHandler) {
-            stateHandler
-                .getHookState()
-                .put("bar", (int) stateHandler.getHookState().get("bar") + 1);
+            KStateContainer current =
+                (KStateContainer) stateHandler.getStateContainers().get(GLOBAL_KEY);
+            current = current.copyAndMutate(1, ((Integer) current.mStates.get(1)) + 1);
+            stateHandler.getStateContainers().put(GLOBAL_KEY, current);
           }
         });
 
     final StateHandler third = new StateHandler(first);
 
-    assertThat(second.getHookState())
+    final KStateContainer secondKstate =
+        (KStateContainer) second.getStateContainers().get(GLOBAL_KEY);
+
+    assertThat(secondKstate.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 6, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
 
     first.commit(second);
 
     assertThat(first.hasUncommittedUpdates()).isTrue();
-    assertThat(first.getHookState())
+
+    final KStateContainer kState = (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+    assertThat(kState.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 6, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 6, bazState, "newValue"));
 
     first.commit(third);
 
     assertThat(first.hasUncommittedUpdates()).isFalse();
-    assertThat(first.getHookState())
+
+    final KStateContainer firstStateUpdated =
+        (KStateContainer) first.getStateContainers().get(GLOBAL_KEY);
+    assertThat(firstStateUpdated.mStates)
         .hasSize(4)
-        .extracting("foo", "bar", "baz", "newKey")
-        .containsExactly("test", 7, bazState, "newValue");
+        .isEqualTo(Lists.newArrayList("test", 7, bazState, "newValue"));
   }
 }

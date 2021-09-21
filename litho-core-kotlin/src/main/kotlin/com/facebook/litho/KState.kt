@@ -29,19 +29,28 @@ import com.facebook.litho.annotations.Hook
 fun <T> ComponentScope.useState(initializer: () -> T): State<T> {
   val globalKey = context.globalKey
   val hookIndex = useStateIndex++
-  val hookKey = "$globalKey:$hookIndex"
+  val stateHandler = context.stateHandler!!
+  val kState = stateHandler.getStateContainer(globalKey) as KStateContainer?
 
-  val value =
-      context.stateHandler!!.hookState.getOrPut(hookKey) {
+  if (kState == null || kState.mStates.size <= hookIndex) {
+    // The initial state was not computed yet. let's create it and put it in the state
+    val state =
         context.componentTree.initialStateContainer.createOrGetInitialHookState(
-            hookKey, initializer)
-      } as
-          T
-  return State(context, hookKey, value)
+            globalKey, hookIndex, initializer)
+    stateHandler.stateContainers[globalKey] = state
+
+    return State(context, hookIndex, state.mStates[hookIndex] as T)
+  }
+
+  return State(context, hookIndex, kState.mStates[hookIndex] as T)
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
-class State<T>(private val context: ComponentContext, private val hookKey: String, val value: T) {
+class State<T>(
+    private val context: ComponentContext,
+    private val hookStateIndex: Int,
+    val value: T
+) {
 
   /**
    * Updates this state value and enqueues a new layout calculation reflecting it to execute in the
@@ -49,7 +58,13 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    */
   fun update(newValue: T) {
     context.updateHookStateAsync(context.globalKey) { stateHandler ->
-      stateHandler.hookState[hookKey] = newValue
+      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
+      // currentState could be null if the state is removed from the StateHandler before the update
+      // runs
+      if (currentState != null) {
+        stateHandler.mStateContainers[context.globalKey] =
+            currentState.copyAndMutate(hookStateIndex, newValue)
+      }
     }
   }
 
@@ -67,7 +82,14 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    */
   fun update(newValueFunction: (T) -> T) {
     context.updateHookStateAsync(context.globalKey) { stateHandler ->
-      stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
+      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
+      // currentState could be null if the state is removed from the StateHandler before the update
+      // runs
+      if (currentState != null) {
+        stateHandler.mStateContainers[context.globalKey] =
+            currentState.copyAndMutate(
+                hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
+      }
     }
   }
 
@@ -82,7 +104,13 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    */
   fun updateSync(newValue: T) {
     context.updateHookStateSync(context.globalKey) { stateHandler ->
-      stateHandler.hookState[hookKey] = newValue
+      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
+      // currentState could be null if the state is removed from the StateHandler before the update
+      // runs
+      if (currentState != null) {
+        stateHandler.mStateContainers[context.globalKey] =
+            currentState.copyAndMutate(hookStateIndex, newValue)
+      }
     }
   }
 
@@ -104,7 +132,14 @@ class State<T>(private val context: ComponentContext, private val hookKey: Strin
    */
   fun updateSync(newValueFunction: (T) -> T) {
     context.updateHookStateSync(context.globalKey) { stateHandler ->
-      stateHandler.hookState[hookKey] = newValueFunction(stateHandler.hookState[hookKey] as T)
+      val currentState = stateHandler.mStateContainers[context.globalKey] as KStateContainer?
+      // currentState could be null if the state is removed from the StateHandler before the update
+      // runs
+      if (currentState != null) {
+        stateHandler.mStateContainers[context.globalKey] =
+            currentState.copyAndMutate(
+                hookStateIndex, newValueFunction(currentState.mStates[hookStateIndex] as T))
+      }
     }
   }
 }
