@@ -934,6 +934,11 @@ public abstract class Component
     return mScopedContext;
   }
 
+  @Nullable
+  final ComponentContext getScopedContext() {
+    return mScopedContext;
+  }
+
   public final void setScopedContext(ComponentContext scopedContext) {
     mScopedContext = scopedContext;
   }

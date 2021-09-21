@@ -52,6 +52,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
+import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -1572,6 +1573,7 @@ public class DefaultInternalNode
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component next,
+      final @Nullable ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey) {
     final StateHandler stateHandler = layoutStateContext.getStateHandler();
     final Set<String> keys;
@@ -1581,7 +1583,7 @@ public class DefaultInternalNode
       keys = stateHandler.getKeysForPendingUpdates();
     }
 
-    return reconcile(layoutStateContext, c, this, next, nextKey, keys);
+    return reconcile(layoutStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
   }
 
   @Override
@@ -1803,9 +1805,17 @@ public class DefaultInternalNode
       final ComponentContext parentContext,
       final DefaultInternalNode current,
       final Component next,
+      final @Nullable ScopedComponentInfo nextScopedComponentInfo,
       @Nullable final String nextKey,
       final Set<String> keys) {
-    int mode = getReconciliationMode(next.getScopedContext(context, nextKey), current, keys);
+    int mode =
+        getReconciliationMode(
+            Preconditions.checkNotNull(
+                nextScopedComponentInfo != null
+                    ? nextScopedComponentInfo.getContext()
+                    : next.getScopedContext()),
+            current,
+            keys);
     final InternalNode layout;
 
     switch (mode) {
@@ -1881,6 +1891,8 @@ public class DefaultInternalNode
       int index = Math.max(0, components.size() - 1);
       final Component component = components.get(index);
       final String key = componentKeys == null ? null : componentKeys.get(index);
+      final ScopedComponentInfo scopedComponentInfo =
+          child.mScopedComponentInfos != null ? child.mScopedComponentInfos.get(index) : null;
 
       // 3.2 Update the head component of the child layout.
       final Component updated =
@@ -1891,7 +1903,9 @@ public class DefaultInternalNode
       if (mode == ReconciliationMode.COPY) {
         copy = reconcile(layoutStateContext, child, updated, key, keys, ReconciliationMode.COPY);
       } else {
-        copy = reconcile(layoutStateContext, parentContext, child, updated, key, keys);
+        copy =
+            reconcile(
+                layoutStateContext, parentContext, child, updated, scopedComponentInfo, key, keys);
       }
 
       // 3.3 Add the child to the cloned yoga node

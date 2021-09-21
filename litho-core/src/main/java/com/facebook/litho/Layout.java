@@ -107,7 +107,16 @@ class Layout {
       final Component updated = updatedScopedContext.getComponentScope();
 
       layout =
-          current.getInternalNode().reconcile(layoutStateContext, c, updated, globalKeyToReuse);
+          current
+              .getInternalNode()
+              .reconcile(
+                  layoutStateContext,
+                  c,
+                  updated,
+                  updatedScopedContext.useStatelessComponent()
+                      ? updatedScopedContext.getScopedComponentInfo()
+                      : null,
+                  globalKeyToReuse);
     }
 
     if (layoutStatePerfEvent != null) {

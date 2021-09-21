@@ -53,6 +53,7 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
+import androidx.core.util.Preconditions;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -1305,6 +1306,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final Component next,
+      final @Nullable ScopedComponentInfo nextScopedComponentInfo,
       final @Nullable String nextKey) {
     final StateHandler stateHandler = layoutStateContext.getStateHandler();
     final Set<String> keys;
@@ -1314,7 +1316,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       keys = stateHandler.getKeysForPendingUpdates();
     }
 
-    return reconcile(layoutStateContext, c, this, next, nextKey, keys);
+    return reconcile(layoutStateContext, c, this, next, nextScopedComponentInfo, nextKey, keys);
   }
 
   @Override
@@ -1469,12 +1471,19 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final ComponentContext parentContext,
       final InputOnlyInternalNode current,
       final Component next,
+      final @Nullable ScopedComponentInfo nextScopedComponentInfo,
       @Nullable final String nextKey,
       final Set<String> keys) {
     final boolean isInternalNodeReuseEnabled = parentContext.isInternalNodeReuseEnabled();
     final int mode =
         getReconciliationMode(
-            next.getScopedContext(context, nextKey), current, keys, isInternalNodeReuseEnabled);
+            Preconditions.checkNotNull(
+                nextScopedComponentInfo != null
+                    ? nextScopedComponentInfo.getContext()
+                    : next.getScopedContext()),
+            current,
+            keys,
+            isInternalNodeReuseEnabled);
     final InternalNode layout;
 
     switch (mode) {
@@ -1545,11 +1554,15 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final InputOnlyInternalNode child = (InputOnlyInternalNode) current.getChildAt(i);
 
       // 3.1 Get the head component of the child layout.
-      List<Component> components = child.getComponents();
-      List<String> componentKeys = child.getComponentKeys();
+      final List<Component> components = child.getComponents();
+      final List<String> componentKeys = child.getComponentKeys();
       int index = Math.max(0, components.size() - 1);
       final Component component = components.get(index);
       final String key = componentKeys == null ? null : componentKeys.get(index);
+      final ScopedComponentInfo scopedComponentInfo =
+          child.mScopedComponentInfos != null
+              ? (ScopedComponentInfo) child.mScopedComponentInfos.get(index)
+              : null;
 
       // 3.2 Update the head component of the child layout.
       final Component updated;
@@ -1565,7 +1578,9 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       if (mode == ReconciliationMode.COPY) {
         copy = reconcile(layoutStateContext, child, updated, key, keys, ReconciliationMode.COPY);
       } else {
-        copy = reconcile(layoutStateContext, parentContext, child, updated, key, keys);
+        copy =
+            reconcile(
+                layoutStateContext, parentContext, child, updated, scopedComponentInfo, key, keys);
       }
 
       // 3.3 Add the child to the cloned yoga node

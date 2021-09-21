@@ -175,6 +175,7 @@ public interface InternalNode extends Node<LithoRenderContext> {
       LayoutStateContext layoutStateContext,
       ComponentContext c,
       Component next,
+      @Nullable ScopedComponentInfo nextScopedComponentInfo,
       @Nullable String nextKey);
 
   InternalNode deepClone();
