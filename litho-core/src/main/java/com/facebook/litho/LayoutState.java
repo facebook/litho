@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
@@ -29,9 +28,6 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
-import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
-import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
-import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
@@ -483,83 +479,6 @@ public class LayoutState
     }
 
     return output;
-  }
-
-  /**
-   * Determine if a given {@link InternalNode} within the context of a given {@link LayoutState}
-   * requires to be wrapped inside a view.
-   *
-   * @see #needsHostView(LithoLayoutResult, InternalNode, LayoutState)
-   */
-  private static boolean hasViewContent(final InternalNode node, final LayoutState layoutState) {
-    final Component component = node.getTailComponent();
-    final NodeInfo nodeInfo = node.getNodeInfo();
-
-    final boolean implementsAccessibility =
-        (nodeInfo != null && nodeInfo.needsAccessibilityDelegate())
-            || (component != null && component.implementsAccessibility());
-
-    final int importantForAccessibility = node.getImportantForAccessibility();
-
-    // A component has accessibility content if:
-    //   1. Accessibility is currently enabled.
-    //   2. Accessibility hasn't been explicitly disabled on it
-    //      i.e. IMPORTANT_FOR_ACCESSIBILITY_NO.
-    //   3. Any of these conditions are true:
-    //      - It implements accessibility support.
-    //      - It has a content description.
-    //      - It has importantForAccessibility set as either IMPORTANT_FOR_ACCESSIBILITY_YES
-    //        or IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS.
-    // IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS should trigger an inner host
-    // so that such flag is applied in the resulting view hierarchy after the component
-    // tree is mounted. Click handling is also considered accessibility content but
-    // this is already covered separately i.e. click handler is not null.
-    final boolean hasBackgroundOrForeground =
-        layoutState.mShouldDisableDrawableOutputs
-            && (node.getBackground() != null || node.getForeground() != null);
-    final boolean hasAccessibilityContent =
-        layoutState.mAccessibilityEnabled
-            && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
-            && (implementsAccessibility
-                || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
-                || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-
-    return hasBackgroundOrForeground
-        || hasAccessibilityContent
-        || node.isDuplicateChildrenStatesEnabled()
-        || hasViewAttributes(nodeInfo)
-        || node.getLayerType() != LayerType.LAYER_TYPE_NOT_SET;
-  }
-
-  private static boolean hasViewAttributes(@Nullable NodeInfo nodeInfo) {
-    if (nodeInfo == null) {
-      return false;
-    }
-
-    final boolean hasFocusChangeHandler = nodeInfo.hasFocusChangeHandler();
-    final boolean hasEnabledTouchEventHandlers =
-        nodeInfo.hasTouchEventHandlers() && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
-    final boolean hasViewTag = nodeInfo.getViewTag() != null;
-    final boolean hasViewTags = nodeInfo.getViewTags() != null;
-    final boolean hasShadowElevation = nodeInfo.getShadowElevation() != 0;
-    final boolean hasOutlineProvider = nodeInfo.getOutlineProvider() != null;
-    final boolean hasClipToOutline = nodeInfo.getClipToOutline();
-    final boolean isFocusableSetTrue = nodeInfo.getFocusState() == FOCUS_SET_TRUE;
-    final boolean isClickableSetTrue = nodeInfo.getClickableState() == CLICKABLE_SET_TRUE;
-    final boolean hasClipChildrenSet = nodeInfo.isClipChildrenSet();
-    final boolean hasTransitionName = nodeInfo.getTransitionName() != null;
-
-    return hasFocusChangeHandler
-        || hasEnabledTouchEventHandlers
-        || hasViewTag
-        || hasViewTags
-        || hasShadowElevation
-        || hasOutlineProvider
-        || hasClipToOutline
-        || hasClipChildrenSet
-        || isFocusableSetTrue
-        || isClickableSetTrue
-        || hasTransitionName;
   }
 
   @Nullable
@@ -1045,18 +964,6 @@ public class LayoutState
   @Nullable
   List<Attachable> getAttachables() {
     return mAttachables;
-  }
-
-  /**
-   * Returns true when the layout state is the root, and shouldDisableDrawableOutputs flag is false
-   * When this flag is set to true, layout roots don't need their own host unless some other
-   * conditions apply, in which case they will need their own dedicated host other than the
-   * LithoView.
-   *
-   * @see #needsHostView(LithoLayoutResult, InternalNode, LayoutState)
-   */
-  static boolean isLayoutRootThatRequiresHost(LayoutState layoutState, LithoLayoutResult result) {
-    return !layoutState.mShouldAddHostViewForRootComponent && layoutState.isLayoutRoot(result);
   }
 
   private static RenderTreeNode addDrawableComponent(
@@ -1955,6 +1862,10 @@ public class LayoutState
     return mShouldDuplicateParentState;
   }
 
+  boolean isAccessibilityEnabled() {
+    return mAccessibilityEnabled;
+  }
+
   /**
    * Returns the state handler instance currently held by LayoutState and nulls it afterwards.
    *
@@ -1981,89 +1892,6 @@ public class LayoutState
     return mLayoutRoot instanceof NestedTreeHolderResult
         ? result == ((NestedTreeHolderResult) mLayoutRoot).getNestedResult()
         : result == mLayoutRoot;
-  }
-
-  /**
-   * Returns true if this is the root node (which always generates a matching layout output), if the
-   * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
-   * been forced to be wrapped in a view.
-   */
-  static boolean needsHostView(
-      final LithoLayoutResult result, final InternalNode node, final LayoutState layoutState) {
-    if (isLayoutRootThatRequiresHost(layoutState, result)) {
-      // Need a View for the Root component.
-      return true;
-    }
-
-    final Component component = node.getTailComponent();
-    if (isMountViewSpec(component)) {
-      // Component already represents a View.
-      return false;
-    }
-
-    if (node.isForceViewWrapping()) {
-      // Wrapping into a View requested.
-      return true;
-    }
-
-    if (hasViewContent(node, layoutState)) {
-      // Has View content (e.g. Accessibility content, Focus change listener, shadow, view tag etc)
-      // thus needs a host View.
-      return true;
-    }
-
-    if (needsHostViewForCommonDynamicProps(node)) {
-      return true;
-    }
-
-    if (needsHostViewForTransition(node)) {
-      return true;
-    }
-
-    if (hasSelectedStateWhenDisablingDrawableOutputs(layoutState, node)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private static boolean hasSelectedStateWhenDisablingDrawableOutputs(
-      final LayoutState layoutState, final InternalNode node) {
-    return layoutState.mShouldAddHostViewForRootComponent
-        && !isMountViewSpec(node.getTailComponent())
-        && node.getNodeInfo() != null
-        && node.getNodeInfo().getSelectedState() != NodeInfo.SELECTED_UNSET;
-  }
-
-  private static boolean needsHostViewForCommonDynamicProps(final InternalNode node) {
-    final List<Component> components = node.getComponents();
-    for (Component comp : components) {
-      if (comp != null && comp.hasCommonDynamicProps()) {
-        // Need a host View to apply the dynamic props to
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean needsHostViewForTransition(final InternalNode node) {
-    return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getTailComponent());
-  }
-
-  /**
-   * Similar to {@link #needsHostView(LithoLayoutResult, InternalNode, LayoutState)} but without
-   * dependency to {@link LayoutState} instance. This will be used for debugging tools to indicate
-   * whether the mountable output is a wrapped View or View MountSpec. Unlike {@link
-   * #needsHostView(LithoLayoutResult, InternalNode, LayoutState)} this does not consider
-   * accessibility also does not consider root component, but this approximation is good enough for
-   * debugging purposes.
-   */
-  static boolean hasViewOutput(InternalNode node) {
-    return node.isForceViewWrapping()
-        || isMountViewSpec(node.getTailComponent())
-        || hasViewAttributes(node.getNodeInfo())
-        || needsHostViewForCommonDynamicProps(node)
-        || needsHostViewForTransition(node);
   }
 
   /**

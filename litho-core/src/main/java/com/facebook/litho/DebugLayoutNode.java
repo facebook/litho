@@ -52,7 +52,7 @@ public final class DebugLayoutNode {
   }
 
   public boolean hasViewOutput() {
-    return LayoutState.hasViewOutput(mNode);
+    return InternalNodeUtils.hasViewOutput(mNode);
   }
 
   public float getRotation() {
