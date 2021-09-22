@@ -229,21 +229,6 @@ public class ComponentContext implements Cloneable {
     setLayoutStateContext(LayoutStateContext.getTestInstance(this));
   }
 
-  /**
-   * Returns true if this method is called during a layout state calculation and the LayoutState
-   * reference hasn't been nullified.
-   */
-  boolean hasLayoutState() {
-    final LayoutStateContext context;
-    if (mLayoutStateContext != null) {
-      context = mLayoutStateContext.get();
-    } else {
-      context = null;
-    }
-
-    return context != null && context.getLayoutState() != null;
-  }
-
   /** Returns true if this method is called during layout creation. */
   boolean isCreateLayoutInProgress() {
     final LayoutStateContext context;
@@ -665,10 +650,6 @@ public class ComponentContext implements Cloneable {
     return Preconditions.checkNotNull(mScopedComponentInfo);
   }
 
-  void setScopedComponentInfo(ScopedComponentInfo scopedComponentInfo) {
-    mScopedComponentInfo = scopedComponentInfo;
-  }
-
   public @ComponentTree.RecyclingMode int getRecyclingMode() {
     if (mComponentTree == null) {
       return ComponentTree.RecyclingMode.DEFAULT;
@@ -692,12 +673,6 @@ public class ComponentContext implements Cloneable {
       // Should not be possible!
       throw new RuntimeException(e);
     }
-  }
-
-  public ComponentContext createUpdatedComponentContext(LayoutStateContext layoutStateContext) {
-    final ComponentContext cloned = clone();
-    cloned.mLayoutStateContext = new WeakReference<>(layoutStateContext);
-    return cloned;
   }
 
   boolean useStatelessComponent() {

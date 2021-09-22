@@ -1093,7 +1093,7 @@ public abstract class Component
   public final void measureMightNotCacheInternalNode(
       ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
 
-    if (c.hasLayoutState()) {
+    if (c.getLayoutState() != null) {
       measure(c, widthSpec, heightSpec, outputSize);
       return;
     }
