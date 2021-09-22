@@ -86,8 +86,6 @@ public class LayoutState
         EndToEndTestingExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
-  private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
-  private static final String NULL_PARENT_KEY = "LayoutState:NullParentKey";
 
   static final String KEY_LAYOUT_STATE_ID = "layoutId";
   static final String KEY_PREVIOUS_LAYOUT_STATE_ID = "previousLayoutId";
@@ -1914,13 +1912,6 @@ public class LayoutState
     return mRenderUnitIdsWhichHostRenderTrees;
   }
 
-  /** @return a {@link LayoutOutput} for a given {@param layoutOutputId} */
-  @Nullable
-  LayoutOutput getLayoutOutput(long layoutOutputId) {
-    final int position = getPositionForId(layoutOutputId);
-    return position < 0 ? null : LayoutOutput.getLayoutOutput(getMountableOutputAt(position));
-  }
-
   @Override
   @Nullable
   public List<Transition> getTransitions() {
@@ -2165,10 +2156,6 @@ public class LayoutState
 
   RenderTreeNode getRenderTreeNode(IncrementalMountOutput output) {
     return getMountableOutputAt(output.getIndex());
-  }
-
-  LayoutOutput getLayoutOutput(IncrementalMountOutput output) {
-    return LayoutOutput.getLayoutOutput(getRenderTreeNode(output));
   }
 
   @VisibleForTesting
