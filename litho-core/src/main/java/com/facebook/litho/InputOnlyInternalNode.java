@@ -319,11 +319,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       return;
     }
 
-    final @Nullable LayoutStateContext prev = state.getPrevLayoutStateContext();
-    if (prev == null) { // If first layout then no diff nodes to apply.
-      return;
-    }
-
     final @Nullable DiffNode diff;
 
     if (parent == null) { // If root, then get diff node root from the current layout state
@@ -355,7 +350,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     result.setDiffNode(diff);
 
-    if (!Layout.shouldComponentUpdate(current, this, prev, diff)) {
+    if (!Layout.shouldComponentUpdate(current, this, null, diff)) {
       final String key = getTailComponentKey();
       if (component != null) {
         final @Nullable ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
