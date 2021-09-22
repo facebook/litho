@@ -251,7 +251,6 @@ public class TreeDiffingTest {
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
-    final LayoutStateContext prev = prevLayoutState.getLayoutStateContext();
 
     ComponentContext c = mLithoViewRule.getComponentTree().getContext();
     LithoLayoutResult layoutTreeRoot =
@@ -262,14 +261,8 @@ public class TreeDiffingTest {
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
             null,
-            prev,
             node);
-    Layout.applyDiffNodeToUnchangedNodes(
-        c.getLayoutStateContext(),
-        layoutTreeRoot,
-        true,
-        prevLayoutState.getLayoutStateContext(),
-        node);
+    Layout.applyDiffNodeToUnchangedNodes(layoutTreeRoot, true, node);
     checkAllComponentsHaveMeasureCache(layoutTreeRoot);
   }
 
@@ -290,7 +283,6 @@ public class TreeDiffingTest {
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
-    final LayoutStateContext prev = prevLayoutState.getLayoutStateContext();
 
     ComponentContext context = new ComponentContext(mLithoViewRule.getContext());
     context.setLayoutStateContext(LayoutStateContext.getTestInstance(context));
@@ -307,14 +299,8 @@ public class TreeDiffingTest {
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
             null,
-            prev,
             node);
-    Layout.applyDiffNodeToUnchangedNodes(
-        context.getLayoutStateContext(),
-        layoutTreeRoot,
-        true,
-        prevLayoutState.getLayoutStateContext(),
-        node);
+    Layout.applyDiffNodeToUnchangedNodes(layoutTreeRoot, true, node);
     LithoLayoutResult child_1 = layoutTreeRoot.getChildAt(0);
     assertCachedMeasurementsDefined(child_1);
 

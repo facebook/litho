@@ -154,7 +154,6 @@ public class LayoutState
   private int mHeightSpec;
 
   private @Nullable LayoutStateContext mLayoutStateContext;
-  private @Nullable LayoutStateContext mPrevLayoutStateContext;
 
   private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
@@ -291,11 +290,6 @@ public class LayoutState
 
   LayoutStateContext getLayoutStateContext() {
     return Preconditions.checkNotNull(mLayoutStateContext);
-  }
-
-  @Nullable
-  LayoutStateContext getPrevLayoutStateContext() {
-    return mPrevLayoutStateContext;
   }
 
   /**
@@ -885,8 +879,7 @@ public class LayoutState
               Preconditions.checkNotNull(immediateParentContext),
               (NestedTreeHolderResult) result,
               SizeSpec.makeSizeSpec(result.getWidth(), EXACTLY),
-              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY),
-              layoutState.mPrevLayoutStateContext);
+              SizeSpec.makeSizeSpec(result.getHeight(), EXACTLY));
 
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -1655,8 +1648,6 @@ public class LayoutState
           new LayoutState(
               c, component, stateHandler, layoutStateFuture, currentLayoutState, diffTreeRoot);
 
-      layoutState.mPrevLayoutStateContext = currentLayoutStateContext;
-
       layoutStateContext = layoutState.getLayoutStateContext();
 
       // Detect errors internal to components
@@ -1695,7 +1686,6 @@ public class LayoutState
                 widthSpec,
                 heightSpec,
                 isReconcilable ? currentLayoutRoot : null,
-                layoutState.mPrevLayoutStateContext,
                 diffTreeRoot,
                 logLayoutState);
 
@@ -1724,7 +1714,6 @@ public class LayoutState
                 widthSpec,
                 heightSpec,
                 currentLayoutRoot,
-                layoutState.mPrevLayoutStateContext,
                 diffTreeRoot);
       }
 
@@ -1818,7 +1807,6 @@ public class LayoutState
               Preconditions.checkNotNull(layoutState.mPartiallyResolvedLayoutRoot),
               widthSpec,
               heightSpec,
-              layoutState.mPrevLayoutStateContext,
               layoutState.mDiffTreeRoot,
               logLayoutState);
 

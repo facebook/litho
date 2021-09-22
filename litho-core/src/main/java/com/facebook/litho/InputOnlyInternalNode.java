@@ -349,8 +349,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     }
 
     result.setDiffNode(diff);
-
-    if (!Layout.shouldComponentUpdate(current, this, null, diff)) {
+    
+    if (!Layout.shouldComponentUpdate(this, diff)) {
       final String key = getTailComponentKey();
       if (component != null) {
         final @Nullable ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();

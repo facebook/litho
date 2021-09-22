@@ -78,7 +78,6 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           || result instanceof NestedTreeHolderResult) {
 
         final LayoutState layoutState = layoutStateContext.getLayoutState();
-        final @Nullable LayoutStateContext prevLayoutStateContext;
         if (layoutState == null) {
           throw new IllegalStateException(
               component.getSimpleName()
@@ -99,16 +98,13 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
           parentContext = node.getComponentContextAt(1);
         }
 
-        prevLayoutStateContext = layoutState.getPrevLayoutStateContext();
-
         final @Nullable LithoLayoutResult nestedTree =
             Layout.create(
                 layoutStateContext,
                 parentContext,
                 (NestedTreeHolderResult) result,
                 widthSpec,
-                heightSpec,
-                prevLayoutStateContext);
+                heightSpec);
 
         outputWidth = nestedTree != null ? nestedTree.getWidth() : 0;
         outputHeight = nestedTree != null ? nestedTree.getHeight() : 0;
