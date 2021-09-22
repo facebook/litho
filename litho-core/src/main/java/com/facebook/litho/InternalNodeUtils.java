@@ -119,7 +119,6 @@ public class InternalNodeUtils {
         layoutState,
         result,
         node,
-        true,
         node.getImportantForAccessibility(),
         previousId != id
             ? LayoutOutput.STATE_UNKNOWN
@@ -179,7 +178,6 @@ public class InternalNodeUtils {
         layoutState,
         result,
         node,
-        false /* useNodePadding */,
         node.getImportantForAccessibility(),
         updateState,
         node.isDuplicateParentStateEnabled(),
@@ -312,7 +310,6 @@ public class InternalNodeUtils {
         layoutState,
         result,
         node,
-        false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         previousId != id
             ? LayoutOutput.STATE_UNKNOWN
@@ -330,7 +327,6 @@ public class InternalNodeUtils {
       LayoutState layoutState,
       LithoLayoutResult result,
       InternalNode node,
-      boolean useNodePadding,
       int importantForAccessibility,
       @LayoutOutput.UpdateState int updateState,
       boolean duplicateParentState,
@@ -340,11 +336,6 @@ public class InternalNodeUtils {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     int flags = 0;
-
-    final int paddingLeft = useNodePadding ? result.getPaddingLeft() : 0;
-    final int paddingTop = useNodePadding ? result.getPaddingTop() : 0;
-    final int paddingRight = useNodePadding ? result.getPaddingRight() : 0;
-    final int paddingBottom = useNodePadding ? result.getPaddingBottom() : 0;
 
     final NodeInfo layoutOutputNodeInfo;
     final ViewNodeInfo layoutOutputViewNodeInfo;
@@ -371,8 +362,12 @@ public class InternalNodeUtils {
           viewNodeInfo.setForeground(node.getForeground());
         }
       }
-      if (useNodePadding && result.isPaddingSet()) {
-        viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+      if (result.isPaddingSet()) {
+        viewNodeInfo.setPadding(
+            result.getPaddingLeft(),
+            result.getPaddingTop(),
+            result.getPaddingRight(),
+            result.getPaddingBottom());
       }
       viewNodeInfo.setLayoutDirection(result.getResolvedLayoutDirection());
       if (node.hasTouchExpansion()) {

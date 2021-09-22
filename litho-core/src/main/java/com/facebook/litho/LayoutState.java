@@ -386,15 +386,11 @@ public class LayoutState
     int r = l + result.getWidth();
     int b = t + result.getHeight();
 
-    if (!isMountViewSpec(component)) {
-      final int paddingLeft = useNodePadding ? result.getPaddingLeft() : 0;
-      final int paddingTop = useNodePadding ? result.getPaddingTop() : 0;
-      final int paddingRight = useNodePadding ? result.getPaddingRight() : 0;
-      final int paddingBottom = useNodePadding ? result.getPaddingBottom() : 0;
-      l += paddingLeft;
-      t += paddingTop;
-      r -= paddingRight;
-      b -= paddingBottom;
+    if (!isMountViewSpec(component) && useNodePadding) {
+      l += result.getPaddingLeft();
+      t += result.getPaddingTop();
+      r -= result.getPaddingRight();
+      b -= result.getPaddingBottom();
     }
 
     final Rect bounds = new Rect(l, t, r, b);
