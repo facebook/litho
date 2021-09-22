@@ -19,6 +19,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Preconditions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,14 +31,15 @@ import java.util.Map;
  * the instances directly helps with clearing out the reference from all objects that hold on to it,
  * without having to keep track of all these objects to clear out the references.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class LayoutStateContext {
 
   private final @Nullable ComponentTree mComponentTree;
-  private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
 
   private @Nullable LayoutState mLayoutStateRef;
   private @Nullable StateHandler mStateHandler;
   private @Nullable LayoutStateFuture mLayoutStateFuture;
+  private @Nullable Map<Integer, InternalNode> mComponentIdToWillRenderLayout;
   private @Nullable DiffNode mCurrentDiffTree;
 
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
@@ -46,6 +48,7 @@ public class LayoutStateContext {
   private boolean mIsLayoutStarted = false;
   private volatile boolean mIsFrozen = false;
 
+  @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
@@ -96,15 +99,26 @@ public class LayoutStateContext {
 
   @Nullable
   InternalNode consumeLayoutCreatedInWillRender(int componentId) {
-    return mComponentIdToWillRenderLayout.remove(componentId);
+    if (mComponentIdToWillRenderLayout != null) {
+      return mComponentIdToWillRenderLayout.remove(componentId);
+    } else {
+      return null;
+    }
   }
 
   @Nullable
   InternalNode getLayoutCreatedInWillRender(int componentId) {
-    return mComponentIdToWillRenderLayout.get(componentId);
+    if (mComponentIdToWillRenderLayout != null) {
+      return mComponentIdToWillRenderLayout.get(componentId);
+    } else {
+      return null;
+    }
   }
 
   void setLayoutCreatedInWillRender(int componentId, final @Nullable InternalNode node) {
+    if (mComponentIdToWillRenderLayout == null) {
+      mComponentIdToWillRenderLayout = new HashMap<>();
+    }
     mComponentIdToWillRenderLayout.put(componentId, node);
   }
 
@@ -113,6 +127,7 @@ public class LayoutStateContext {
     mStateHandler = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
+    mComponentIdToWillRenderLayout = null;
   }
 
   /** Returns the LayoutState instance or null if the layout state has been released. */
