@@ -70,7 +70,7 @@ public class LayoutStateContext {
   }
 
   LayoutStateContext(
-      final @Nullable LayoutState layoutState,
+      final LayoutState layoutState,
       final StateHandler stateHandler,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,

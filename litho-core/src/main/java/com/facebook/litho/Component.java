@@ -1098,17 +1098,11 @@ public abstract class Component
       return;
     }
 
-    final StateHandler stateHandler =
-        c.getLayoutStateContext() == null || c.getLayoutStateContext().getStateHandler() == null
-            ? new StateHandler()
-            : c.getLayoutStateContext().getStateHandler();
-
     // At this point we're trying to measure the Component outside of a LayoutState calculation.
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
-    final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(null, stateHandler, null, null, null);
-
+    final LayoutState layoutState = new LayoutState(c, this, new StateHandler(), null, null, null);
+    final LayoutStateContext layoutStateContext = layoutState.getLayoutStateContext();
     final ComponentContext contextForLayout =
         new ComponentContext(c, c.getTreeProps(), layoutStateContext);
 
