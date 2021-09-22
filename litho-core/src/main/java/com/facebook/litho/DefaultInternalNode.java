@@ -60,7 +60,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.Copyable;
 import com.facebook.rendercore.RenderState;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -582,8 +581,28 @@ public class DefaultInternalNode
   }
 
   @Override
-  public @Nullable RenderUnit<?> getRenderUnit() {
-    throw new UnsupportedOperationException("This API is not yet implemented");
+  public @Nullable LithoRenderUnit getRenderUnit() {
+    return InternalNodeUtils.createContentRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getHostRenderUnit() {
+    return InternalNodeUtils.createHostRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getBackgroundRenderUnit() {
+    return InternalNodeUtils.createBackgroundRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getForegroundRenderUnit() {
+    return InternalNodeUtils.createForegroundRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getBorderRenderUnit() {
+    return InternalNodeUtils.createBorderRenderUnit(this);
   }
 
   @Override

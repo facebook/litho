@@ -24,7 +24,6 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -327,8 +326,28 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   }
 
   @Override
-  public @Nullable RenderUnit<?> getRenderUnit() {
-    throw new UnsupportedOperationException("This API is not yet implemented");
+  public @Nullable LithoRenderUnit getRenderUnit() {
+    return InternalNodeUtils.createContentRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getHostRenderUnit() {
+    return InternalNodeUtils.createHostRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getBackgroundRenderUnit() {
+    return InternalNodeUtils.createBackgroundRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getForegroundRenderUnit() {
+    return InternalNodeUtils.createForegroundRenderUnit(this);
+  }
+
+  @Override
+  public @Nullable LithoRenderUnit getBorderRenderUnit() {
+    return InternalNodeUtils.createBorderRenderUnit(this);
   }
 
   @Nullable

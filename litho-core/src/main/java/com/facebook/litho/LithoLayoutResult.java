@@ -26,6 +26,21 @@ import com.facebook.yoga.YogaNode;
 /** The {@link LayoutResult} class for Litho */
 public interface LithoLayoutResult extends ComponentLayout, LayoutResult {
 
+  @Nullable
+  LithoRenderUnit getRenderUnit();
+
+  @Nullable
+  LithoRenderUnit getHostRenderUnit();
+
+  @Nullable
+  LithoRenderUnit getBackgroundRenderUnit();
+
+  @Nullable
+  LithoRenderUnit getForegroundRenderUnit();
+
+  @Nullable
+  LithoRenderUnit getBorderRenderUnit();
+
   LayoutStateContext getLayoutStateContext();
 
   ComponentContext getContext();
