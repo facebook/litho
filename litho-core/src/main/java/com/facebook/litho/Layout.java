@@ -861,27 +861,6 @@ class Layout {
       return null;
     }
 
-    final LayoutStateContext committedContext;
-    if (currentLayoutStateContext.getComponentTree() != null
-        && currentLayoutStateContext.getComponentTree().useStatelessComponent()) {
-      committedContext = prevLayoutStateContext;
-    } else {
-      if (currentLayoutStateContext == null) {
-        return null;
-      }
-
-      final ComponentTree componentTree = currentLayoutStateContext.getComponentTree();
-      if (componentTree == null) {
-        return null;
-      }
-
-      committedContext = componentTree.getLayoutStateContext();
-    }
-
-    if (committedContext == null) {
-      return null;
-    }
-
     final @Nullable ScopedComponentInfo scopedComponentInfo = diffNode.getScopedComponentInfo();
 
     return scopedComponentInfo != null
