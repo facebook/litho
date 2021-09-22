@@ -429,7 +429,7 @@ public class RenderState<State, RenderContext> {
     }
 
     @Nullable
-    RenderCoreExtension<?, ?>[] getExtensions() {
+    public RenderCoreExtension<?, ?>[] getExtensions() {
       return extensions;
     }
   }
