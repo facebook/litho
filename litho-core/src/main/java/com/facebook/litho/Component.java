@@ -1107,7 +1107,7 @@ public abstract class Component
     // The state values are irrelevant in this scenario - outside of a LayoutState they should be
     // the default/initial values. The LayoutStateContext is not expected to contain any info.
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(null, null, null, null, stateHandler);
+        new LayoutStateContext(null, stateHandler, null, null, null);
 
     final ComponentContext contextForLayout =
         new ComponentContext(c, c.getTreeProps(), layoutStateContext);

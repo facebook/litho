@@ -265,7 +265,7 @@ public class LayoutState
     mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
     mLayoutStateContext =
         new LayoutStateContext(
-            this, context.getComponentTree(), layoutStateFuture, diffTreeRoot, stateHandler);
+            this, stateHandler, context.getComponentTree(), layoutStateFuture, diffTreeRoot);
   }
 
   @VisibleForTesting
@@ -1661,11 +1661,6 @@ public class LayoutState
 
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
-
-      if (isReconcilable) {
-        layoutStateContext.copyScopedInfoFrom(
-            Preconditions.checkNotNull(currentLayoutStateContext));
-      }
 
       final InternalNode layoutCreatedInWillRender =
           component.consumeLayoutCreatedInWillRender(currentLayoutStateContext, c);

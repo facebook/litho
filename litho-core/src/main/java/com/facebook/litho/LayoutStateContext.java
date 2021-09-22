@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,40 +32,26 @@ import java.util.Map;
  */
 public class LayoutStateContext {
 
-  private @Nullable LayoutState mLayoutStateRef;
-  private @Nullable ComponentTree mComponentTree;
-  private @Nullable LayoutStateFuture mLayoutStateFuture;
+  private final @Nullable ComponentTree mComponentTree;
   private final Map<Integer, InternalNode> mComponentIdToWillRenderLayout = new HashMap<>();
+
+  private @Nullable LayoutState mLayoutStateRef;
+  private @Nullable StateHandler mStateHandler;
+  private @Nullable LayoutStateFuture mLayoutStateFuture;
   private @Nullable DiffNode mCurrentDiffTree;
+
   private @Nullable DiffNode mCurrentNestedTreeDiffNode;
   private boolean mHasNestedTreeDiffNodeSet = false;
-  private boolean wasReconciled = false;
 
   private boolean mIsLayoutStarted = false;
-
   private volatile boolean mIsFrozen = false;
-
-  private StateHandler mStateHandler;
-
-  void freeze() {
-    mIsFrozen = true;
-  }
 
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, c.getComponentTree(), null, null, new StateHandler());
+        new LayoutStateContext(layoutState, new StateHandler(), c.getComponentTree(), null, null);
     layoutState.setLayoutStateContextForTest(layoutStateContext);
     return layoutStateContext;
-  }
-
-  void copyScopedInfoFrom(LayoutStateContext from) {
-    checkIfFrozen();
-
-    mComponentIdToWillRenderLayout.clear();
-    mComponentIdToWillRenderLayout.putAll(from.mComponentIdToWillRenderLayout);
-
-    wasReconciled = true;
   }
 
   /**
@@ -79,15 +66,15 @@ public class LayoutStateContext {
   @Deprecated
   public LayoutStateContext(
       final LayoutState layoutState, @Nullable final ComponentTree componentTree) {
-    this(layoutState, componentTree, null, null, new StateHandler());
+    this(layoutState, new StateHandler(), componentTree, null, null);
   }
 
   LayoutStateContext(
       final @Nullable LayoutState layoutState,
+      final StateHandler stateHandler,
       final @Nullable ComponentTree componentTree,
       final @Nullable LayoutStateFuture layoutStateFuture,
-      final @Nullable DiffNode currentDiffTree,
-      final StateHandler stateHandler) {
+      final @Nullable DiffNode currentDiffTree) {
     mLayoutStateRef = layoutState;
     mLayoutStateFuture = layoutStateFuture;
     mComponentTree = componentTree;
@@ -123,6 +110,7 @@ public class LayoutStateContext {
 
   void releaseReference() {
     mLayoutStateRef = null;
+    mStateHandler = null;
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
   }
@@ -205,8 +193,12 @@ public class LayoutStateContext {
     return mIsFrozen;
   }
 
+  void freeze() {
+    mIsFrozen = true;
+  }
+
   StateHandler getStateHandler() {
-    return mStateHandler;
+    return Preconditions.checkNotNull(mStateHandler);
   }
 
   boolean useStatelessComponent() {

@@ -79,7 +79,7 @@ public class LayoutStateFutureReleaseTest {
 
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, null, layoutStateFuture, null, null);
+        new LayoutStateContext(layoutState, new StateHandler(), null, layoutStateFuture, null);
     c.setLayoutStateContext(layoutStateContext);
 
     final CountDownLatch wait = new CountDownLatch(1);
@@ -113,7 +113,7 @@ public class LayoutStateFutureReleaseTest {
     final ComponentContext c = new ComponentContext(mContext);
     final LayoutState layoutState = new LayoutState(c);
     final LayoutStateContext layoutStateContext =
-        new LayoutStateContext(layoutState, null, layoutStateFuture, null, null);
+        new LayoutStateContext(layoutState, new StateHandler(), null, layoutStateFuture, null);
     c.setLayoutStateContext(layoutStateContext);
 
     final CountDownLatch wait = new CountDownLatch(1);
