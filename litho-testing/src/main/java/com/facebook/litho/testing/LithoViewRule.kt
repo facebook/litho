@@ -35,6 +35,8 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.StateHandler
 import com.facebook.litho.TreeProps
 import com.facebook.litho.config.ComponentsConfiguration
+import com.facebook.litho.testing.assertj.ComponentAssert
+import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
@@ -373,6 +375,16 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     threadLooperController.runToEndOfTasksSync()
     shadowOf(Looper.getMainLooper()).idle()
     return this
+  }
+
+  /** Exposes assertion methods from [ComponentAssert] for [Component]s. */
+  fun assertThat(component: Component?): ComponentAssert {
+    return ComponentAssert.assertThat(context, component)
+  }
+
+  /** Exposes assertion methods from [LithoViewAssert] for [LithoView]. */
+  fun assertThat(lithoView: LithoView): LithoViewAssert {
+    return LithoViewAssert.assertThat(lithoView)
   }
 
   companion object {

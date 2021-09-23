@@ -28,11 +28,14 @@ import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.List;
+import kotlin.reflect.KProperty1;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.CheckReturnValue;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsEqual;
 
 /**
  * Assertion methods for {@link Component}s.
@@ -320,6 +323,11 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         .overridingErrorMessage("Expected Component to not render to null, but it did.")
         .isTrue();
 
+    return this;
+  }
+
+  public <T1, T2> ComponentAssert hasProps(KProperty1<T2, T1> property, T1 value) {
+    MatcherAssert.assertThat(property.get((T2) actual), IsEqual.equalTo(value));
     return this;
   }
 

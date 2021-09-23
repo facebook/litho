@@ -18,6 +18,7 @@
 
 package com.facebook.litho.examples
 
+import androidx.annotation.VisibleForTesting
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -68,8 +69,8 @@ class LithoViewRuleExampleTest {
     }
 
     val lithoView = lithoViewRule.render { TestComponent() }
-    LithoViewAssert.assertThat(lithoView).isNotNull
-    LithoViewAssert.assertThat(lithoView).hasVisibleText("some_text_2")
+    lithoViewRule.assertThat(lithoView).isNotNull
+    lithoViewRule.assertThat(lithoView).hasVisibleText("some_text_2")
     /** can use all of the assertions from: [LithoViewAssert] class */
     val nullComponent = lithoViewRule.findComponent(InnerComponent::class.java)
     Assertions.assertThat(nullComponent).isNull()
@@ -78,5 +79,34 @@ class LithoViewRuleExampleTest {
 
     val component = lithoViewRule.findComponent(InnerComponent::class.java)
     Assertions.assertThat(component).isNotNull
+  }
+
+  @Test
+  fun `verify InnerComponent has given props`() {
+    class InnerComponent(
+        @VisibleForTesting val style: Style = Style.height(100.dp).width(100.dp),
+        @VisibleForTesting val value: String = "some_value"
+    ) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row(style = style) { child(Text(text = value)) }
+      }
+    }
+
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Row {
+          child(Text(text = "some_text_2"))
+          child(InnerComponent())
+        }
+      }
+    }
+    lithoViewRule.render { TestComponent() }
+    val component = lithoViewRule.findComponent(InnerComponent::class.java)
+    Assertions.assertThat(component).isNotNull
+
+    lithoViewRule
+        .assertThat(component)
+        .hasProps(InnerComponent::value, "some_value")
+        .hasProps(InnerComponent::style, Style.height(100.dp).width(100.dp))
   }
 }
