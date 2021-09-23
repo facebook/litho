@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentScope
 import com.facebook.litho.Dimen
 import com.facebook.litho.Handle
 import com.facebook.litho.Style
+import com.facebook.litho.dp
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sp
 
@@ -45,6 +46,8 @@ inline fun ComponentScope.Text(
     textSize: Dimen = 14.sp,
     textStyle: Int = NORMAL,
     typeface: Typeface? = DEFAULT,
+    @ColorInt shadowColor: Int = Color.GRAY,
+    shadowRadius: Dimen = 0.dp,
     alignment: TextAlignment = TextAlignment.TEXT_START,
     verticalGravity: VerticalGravity = VerticalGravity.TOP,
     isSingleLine: Boolean = false,
@@ -66,6 +69,8 @@ inline fun ComponentScope.Text(
         .textSizePx(textSize.toPixels())
         .textStyle(textStyle)
         .typeface(typeface)
+        .shadowColor(shadowColor)
+        .shadowRadiusPx(shadowRadius.toPixels().toFloat())
         .alignment(alignment)
         .verticalGravity(verticalGravity)
         .spacingMultiplier(lineSpacingMultiplier)
