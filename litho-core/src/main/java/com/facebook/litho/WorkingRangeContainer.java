@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Preconditions;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,7 +74,7 @@ class WorkingRangeContainer {
     }
 
     for (String key : mWorkingRanges.keySet()) {
-      final RangeTuple rangeTuple = mWorkingRanges.get(key);
+      final RangeTuple rangeTuple = Preconditions.checkNotNull(mWorkingRanges.get(key));
 
       for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
         Component component = rangeTuple.mComponents.get(i);
@@ -105,10 +106,10 @@ class WorkingRangeContainer {
                 lastVisibleIndex,
                 firstFullyVisibleIndex,
                 lastFullyVisibleIndex)) {
-          ComponentContext scopedContext =
+          final ComponentContext scopedContext =
               rangeTuple.mScopedComponentInfos != null
                   ? rangeTuple.mScopedComponentInfos.get(i).getContext()
-                  : component.getScopedContext();
+                  : Preconditions.checkNotNull(component.getScopedContext());
           try {
             component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {
@@ -124,14 +125,13 @@ class WorkingRangeContainer {
    * Dispatch onExitRange if the status of the component is in the range. This method should only be
    * called when releasing a ComponentTree, thus no status update needed.
    */
-  void dispatchOnExitedRangeIfNeeded(
-      LayoutStateContext layoutStateContext, WorkingRangeStatusHandler statusHandler) {
+  void dispatchOnExitedRangeIfNeeded(WorkingRangeStatusHandler statusHandler) {
     if (mWorkingRanges == null) {
       return;
     }
 
     for (String key : mWorkingRanges.keySet()) {
-      final RangeTuple rangeTuple = mWorkingRanges.get(key);
+      final RangeTuple rangeTuple = Preconditions.checkNotNull(mWorkingRanges.get(key));
 
       for (int i = 0, size = rangeTuple.mComponents.size(); i < size; i++) {
         Component component = rangeTuple.mComponents.get(i);
@@ -140,7 +140,7 @@ class WorkingRangeContainer {
           ComponentContext scopedContext =
               rangeTuple.mScopedComponentInfos != null
                   ? rangeTuple.mScopedComponentInfos.get(i).getContext()
-                  : component.getScopedContext();
+                  : Preconditions.checkNotNull(component.getScopedContext());
           try {
             component.dispatchOnExitedRange(scopedContext, rangeTuple.mName);
           } catch (Exception e) {

@@ -1482,7 +1482,7 @@ public abstract class Component
       setScopedContext(scopedContext);
 
       final InternalNode layoutCreatedInWillRender =
-          layoutStateContext != null ? getLayoutCreatedInWillRender(layoutStateContext) : null;
+          getLayoutCreatedInWillRender(layoutStateContext);
       if (layoutCreatedInWillRender != null) {
         assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
       }
@@ -1613,13 +1613,11 @@ public abstract class Component
     return mCommonProps;
   }
 
-  private final boolean hasCachedLayout(final LayoutStateContext layoutStateContext) {
-    if (layoutStateContext != null) {
-      final LayoutState layoutState = layoutStateContext.getLayoutState();
+  private boolean hasCachedLayout(final LayoutStateContext layoutStateContext) {
+    final LayoutState layoutState = layoutStateContext.getLayoutState();
 
-      if (layoutState != null) {
-        return layoutState.hasCachedLayout(this);
-      }
+    if (layoutState != null) {
+      return layoutState.hasCachedLayout(this);
     }
 
     return false;

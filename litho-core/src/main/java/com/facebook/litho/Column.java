@@ -128,11 +128,11 @@ public final class Column extends Component {
 
     if (children != null) {
       for (Component child : children) {
-        if (layoutContext != null && layoutContext.isLayoutReleased()) {
+        if (layoutContext.isLayoutReleased()) {
           return null;
         }
 
-        if (layoutContext != null && layoutContext.isLayoutInterrupted()) {
+        if (layoutContext.isLayoutInterrupted()) {
           node.appendUnresolvedComponent(child);
         } else {
           node.child(layoutContext, c, child);

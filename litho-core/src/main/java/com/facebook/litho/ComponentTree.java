@@ -553,13 +553,6 @@ public class ComponentTree implements LithoLifecycleListener {
     return mCommittedLayoutState;
   }
 
-  @VisibleForTesting
-  @Nullable
-  public LayoutStateContext getLayoutStateContext() {
-    final LayoutState layoutState = getCommittedLayoutState();
-    return layoutState == null ? null : layoutState.getLayoutStateContext();
-  }
-
   /** Whether this ComponentTree has been mounted at least once. */
   public boolean hasMounted() {
     return mHasMounted;

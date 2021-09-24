@@ -1754,7 +1754,6 @@ public class DefaultInternalNode
   }
 
   void updateWith(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final YogaNode node,
       final List<Component> components,
@@ -2039,7 +2038,6 @@ public class DefaultInternalNode
     // 4. Update the layout with the updated context, components, and YogaNode.
     final Component tailComponent = updated.first.get(0);
     layout.updateWith(
-        layoutStateContext,
         Preconditions.checkNotNull(tailComponent.getScopedContext()),
         node,
         updated.first,

@@ -351,7 +351,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     result.setDiffNode(diff);
 
     if (!Layout.shouldComponentUpdate(this, diff)) {
-      final String key = getTailComponentKey();
       if (component != null) {
         final @Nullable ScopedComponentInfo scopedComponentInfo = getTailScopedComponentInfo();
         final @Nullable ScopedComponentInfo diffNodeScopedComponentInfo =
@@ -430,7 +429,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final Writer writer = (Writer) currentInternalNode.createYogaNodeWriter(node);
 
       // Transfer the layout props to YogaNode
-      currentInternalNode.writeToYogaNode(renderContext.c, writer, node);
+      currentInternalNode.writeToYogaNode(writer, node);
 
       // Validate layout props for the root
       if (parentNode == null) {
@@ -1253,7 +1252,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   }
 
   void updateWith(
-      final LayoutStateContext layoutStateContext,
       final ComponentContext c,
       final List<Component> components,
       final List<String> componentKeys,
@@ -1399,7 +1397,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     return new YogaLayoutProps(node);
   }
 
-  void writeToYogaNode(LayoutStateContext c, final Writer target, final YogaNode node) {
+  void writeToYogaNode(final Writer target, final YogaNode node) {
 
     // Apply the extra layout props
     if (mLayoutDirection != null) {
@@ -1712,7 +1710,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     // 4. Update the layout with the updated context, components, and YogaNode.
     final Component tailComponent = updated.first.get(0);
     layout.updateWith(
-        layoutStateContext,
         Preconditions.checkNotNull(tailComponent.getScopedContext()),
         updated.first,
         updated.second,

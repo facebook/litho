@@ -2110,7 +2110,7 @@ public class LayoutState
       return;
     }
 
-    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(getLayoutStateContext(), stateHandler);
+    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler);
   }
 
   private static @Nullable TransitionId getTransitionIdForNode(@Nullable InternalNode result) {

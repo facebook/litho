@@ -127,7 +127,7 @@ public class WorkingRangeContainerTest {
         .when(mComponent2)
         .dispatchOnExitedRange(isA(ComponentContext.class), isA(String.class));
 
-    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(mLayoutStateContext, statusHandler);
+    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler);
 
     verify(mComponent, times(1)).dispatchOnExitedRange(mComponentContext, NAME);
     verify(mComponent2, times(0)).dispatchOnExitedRange(mComponentContext, NAME);

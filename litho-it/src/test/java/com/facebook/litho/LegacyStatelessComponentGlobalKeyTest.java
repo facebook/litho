@@ -59,8 +59,6 @@ public class LegacyStatelessComponentGlobalKeyTest {
     final int columnSpecId = column.getTypeId();
 
     final LithoView lithoView = getLithoView(component);
-    final LayoutStateContext layoutStateContext =
-        lithoView.getComponentTree().getLayoutStateContext();
     final Map<String, List<ScopedComponentInfo>> globalKeysInfo =
         getScopedComponentInfos(lithoView);
 
