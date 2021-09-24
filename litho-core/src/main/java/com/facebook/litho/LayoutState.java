@@ -278,7 +278,7 @@ public class LayoutState
    * that will potentially mount content into the component host.
    */
   @Nullable
-  private static RenderTreeNode createGenericLayoutOutput(
+  private static RenderTreeNode createContentRenderTreeNode(
       LithoLayoutResult result,
       InternalNode node,
       LayoutState layoutState,
@@ -298,7 +298,7 @@ public class LayoutState
         parent);
   }
 
-  private static void addRootHostLayoutOutput(
+  private static void addRootHostRenderTreeNode(
       final LayoutState layoutState,
       final @Nullable LithoLayoutResult result,
       final @Nullable DebugHierarchy.Node hierarchy) {
@@ -329,10 +329,10 @@ public class LayoutState
       hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
     }
 
-    addMountableOutput(layoutState, node, unit, hostOutput, OutputUnitType.HOST, null, null);
+    addRenderTreeNode(layoutState, node, unit, hostOutput, OutputUnitType.HOST, null, null);
   }
 
-  private static RenderTreeNode createHostLayoutOutput(
+  private static RenderTreeNode createHostRenderTreeNode(
       final LithoRenderUnit unit,
       LayoutState layoutState,
       LithoLayoutResult result,
@@ -531,7 +531,6 @@ public class LayoutState
     }
 
     final Component component = Preconditions.checkNotNull(node.getTailComponent());
-    final String componentGlobalKey = Preconditions.checkNotNull(node.getTailComponentKey());
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     final DebugHierarchy.Node hierarchy = getDebugHierarchy(parentHierarchy, node);
@@ -622,7 +621,7 @@ public class LayoutState
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (hostRenderUnit != null) {
       final int hostLayoutPosition =
-          addHostLayoutOutput(
+          addHostRenderTreeNode(
               hostRenderUnit, parent, result, node, layoutState, diffNode, hierarchy);
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
@@ -648,7 +647,7 @@ public class LayoutState
       final LithoRenderUnit backgroundRenderUnit = result.getBackgroundRenderUnit();
       if (backgroundRenderUnit != null) {
         final RenderTreeNode backgroundRenderTreeNode =
-            addDrawableComponent(
+            addDrawableRenderTreeNode(
                 backgroundRenderUnit,
                 parent,
                 result,
@@ -667,7 +666,7 @@ public class LayoutState
 
     // Generate the layoutOutput for the given node.
     final @Nullable RenderTreeNode contentRenderTreeNode =
-        createGenericLayoutOutput(result, node, layoutState, parent);
+        createContentRenderTreeNode(result, node, layoutState, parent);
     final @Nullable LithoRenderUnit contentRenderUnit;
     final @Nullable LayoutOutput contentLayoutOutput;
 
@@ -705,7 +704,7 @@ public class LayoutState
         }
       }
 
-      addMountableOutput(
+      addRenderTreeNode(
           layoutState,
           Preconditions.checkNotNull(contentRenderTreeNode),
           Preconditions.checkNotNull(contentRenderUnit),
@@ -787,7 +786,7 @@ public class LayoutState
     final LithoRenderUnit borderRenderUnit = result.getBorderRenderUnit();
     if (borderRenderUnit != null) {
       final RenderTreeNode borderRenderTreeNode =
-          addDrawableComponent(
+          addDrawableRenderTreeNode(
               borderRenderUnit,
               parent,
               result,
@@ -806,7 +805,7 @@ public class LayoutState
       final @Nullable LithoRenderUnit foregroundRenderUnit = result.getForegroundRenderUnit();
       if (foregroundRenderUnit != null) {
         final RenderTreeNode foregroundRenderTreeNode =
-            addDrawableComponent(
+            addDrawableRenderTreeNode(
                 foregroundRenderUnit,
                 parent,
                 result,
@@ -865,46 +864,44 @@ public class LayoutState
       layoutState.mAttachables.addAll(attachables);
     }
 
-    if (component != null) {
-      final Rect rect;
-      if (contentRenderTreeNode != null) {
-        rect = contentRenderTreeNode.getAbsoluteBounds(new Rect());
-      } else {
-        rect = new Rect();
-        rect.left = layoutState.mCurrentX + result.getX();
-        rect.top = layoutState.mCurrentY + result.getY();
-        rect.right = rect.left + result.getWidth();
-        rect.bottom = rect.top + result.getHeight();
-      }
+    final Rect rect;
+    if (contentRenderTreeNode != null) {
+      rect = contentRenderTreeNode.getAbsoluteBounds(new Rect());
+    } else {
+      rect = new Rect();
+      rect.left = layoutState.mCurrentX + result.getX();
+      rect.top = layoutState.mCurrentY + result.getY();
+      rect.right = rect.left + result.getWidth();
+      rect.bottom = rect.top + result.getHeight();
+    }
 
-      final List<String> componentKeys = node.getComponentKeys();
-      for (int i = 0, size = node.getComponents().size(); i < size; i++) {
-        final Component delegate = node.getComponents().get(i);
-        final String delegateKey = componentKeys.get(i);
-        // Keep a list of the components we created during this layout calculation. If the layout is
-        // valid, the ComponentTree will update the event handlers that have been created in the
-        // previous ComponentTree with the new component dispatched, otherwise Section children
-        // might not be accessing the correct props and state on the event handlers. The null
-        // checkers cover tests, the scope and tree should not be null at this point of the layout
-        // calculation.
-        final ComponentContext delegateScopedContext = node.getComponentContextAt(i);
-        if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
-          if (layoutState.mComponents != null) {
-            layoutState.mComponents.add(delegate);
-            Preconditions.checkNotNull(layoutState.mComponentKeys).add(delegateKey);
-            if (layoutState.mScopedComponentInfos != null) {
-              layoutState.mScopedComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
-            }
+    final List<String> componentKeys = node.getComponentKeys();
+    for (int i = 0, size = node.getComponents().size(); i < size; i++) {
+      final Component delegate = node.getComponents().get(i);
+      final String delegateKey = componentKeys.get(i);
+      // Keep a list of the components we created during this layout calculation. If the layout is
+      // valid, the ComponentTree will update the event handlers that have been created in the
+      // previous ComponentTree with the new component dispatched, otherwise Section children
+      // might not be accessing the correct props and state on the event handlers. The null
+      // checkers cover tests, the scope and tree should not be null at this point of the layout
+      // calculation.
+      final ComponentContext delegateScopedContext = node.getComponentContextAt(i);
+      if (delegateScopedContext != null && delegateScopedContext.getComponentTree() != null) {
+        if (layoutState.mComponents != null) {
+          layoutState.mComponents.add(delegate);
+          Preconditions.checkNotNull(layoutState.mComponentKeys).add(delegateKey);
+          if (layoutState.mScopedComponentInfos != null) {
+            layoutState.mScopedComponentInfos.add(delegateScopedContext.getScopedComponentInfo());
           }
         }
-        if (delegateKey != null || delegate.hasHandle()) {
-          Rect copyRect = new Rect(rect);
-          if (delegateKey != null) {
-            layoutState.mComponentKeyToBounds.put(delegateKey, copyRect);
-          }
-          if (delegate.hasHandle()) {
-            layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);
-          }
+      }
+      if (delegateKey != null || delegate.hasHandle()) {
+        Rect copyRect = new Rect(rect);
+        if (delegateKey != null) {
+          layoutState.mComponentKeyToBounds.put(delegateKey, copyRect);
+        }
+        if (delegate.hasHandle()) {
+          layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);
         }
       }
     }
@@ -960,7 +957,7 @@ public class LayoutState
     return mAttachables;
   }
 
-  private static RenderTreeNode addDrawableComponent(
+  private static RenderTreeNode addDrawableRenderTreeNode(
       LithoRenderUnit unit,
       final @Nullable RenderTreeNode parent,
       LithoLayoutResult result,
@@ -975,7 +972,7 @@ public class LayoutState
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
     final LayoutOutput output = drawableRenderUnit.output;
 
-    addMountableOutput(
+    addRenderTreeNode(
         layoutState,
         renderTreeNode,
         drawableRenderUnit,
@@ -992,10 +989,10 @@ public class LayoutState
   }
 
   private static void addLayoutOutputIdToPositionsMap(
-      LongSparseArray outputsIdToPositionMap, LithoRenderUnit unit, int position) {
-    if (outputsIdToPositionMap != null) {
-      outputsIdToPositionMap.put(unit.getId(), position);
-    }
+      final LongSparseArray<Integer> outputsIdToPositionMap,
+      final LithoRenderUnit unit,
+      final int position) {
+    outputsIdToPositionMap.put(unit.getId(), position);
   }
 
   private static void maybeAddLayoutOutputToAffinityGroup(
@@ -1054,7 +1051,7 @@ public class LayoutState
    *
    * @return The position the HostLayoutOutput was inserted.
    */
-  private static int addHostLayoutOutput(
+  private static int addHostRenderTreeNode(
       final LithoRenderUnit hostRenderUnit,
       final @Nullable RenderTreeNode parent,
       LithoLayoutResult result,
@@ -1071,7 +1068,7 @@ public class LayoutState
     }
 
     final RenderTreeNode hostRenderTreeNode =
-        createHostLayoutOutput(hostRenderUnit, layoutState, result, node, parent, hierarchy);
+        createHostRenderTreeNode(hostRenderUnit, layoutState, result, node, parent, hierarchy);
     final LayoutOutput hostLayoutOutput = hostRenderUnit.output;
 
     if (diffNode != null) {
@@ -1080,7 +1077,7 @@ public class LayoutState
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
-    addMountableOutput(
+    addRenderTreeNode(
         layoutState,
         hostRenderTreeNode,
         hostRenderUnit,
@@ -1380,7 +1377,7 @@ public class LayoutState
     final RenderTreeNode root;
 
     if (mMountableOutputs.isEmpty()) {
-      addRootHostLayoutOutput(this, null, null);
+      addRootHostRenderTreeNode(this, null, null);
     }
 
     root = mMountableOutputs.get(0);
@@ -1446,7 +1443,7 @@ public class LayoutState
     DebugHierarchy.Node hierarchy = null;
     if (layoutState.mShouldAddHostViewForRootComponent) {
       hierarchy = node != null ? getDebugHierarchy(null, node) : null;
-      addRootHostLayoutOutput(layoutState, root, hierarchy);
+      addRootHostRenderTreeNode(layoutState, root, hierarchy);
       parent = layoutState.mMountableOutputs.get(0);
       layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker = parent.getRenderUnit().getId();
@@ -1928,7 +1925,7 @@ public class LayoutState
     return mTransitionIdMapping.get(transitionId);
   }
 
-  private static void addMountableOutput(
+  private static void addRenderTreeNode(
       final LayoutState layoutState,
       final RenderTreeNode node,
       final LithoRenderUnit unit,

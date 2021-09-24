@@ -44,8 +44,6 @@ import java.util.List;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class Layout {
 
-  static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
-
   private static final String EVENT_START_CREATE_LAYOUT = "start_create_layout";
   private static final String EVENT_END_CREATE_LAYOUT = "end_create_layout";
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
@@ -86,9 +84,7 @@ class Layout {
       layout = create(layoutStateContext, c, component, true);
 
       // This needs to finish layout on the UI thread.
-      if (layout != null
-          && layoutStateContext != null
-          && layoutStateContext.isLayoutInterrupted()) {
+      if (layout != null && layoutStateContext.isLayoutInterrupted()) {
         if (layoutStatePerfEvent != null) {
           layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
         }
@@ -96,9 +92,7 @@ class Layout {
         return LayoutResultHolder.interrupted(layout);
       } else {
         // Layout is complete, disable interruption from this point on.
-        if (layoutStateContext != null) {
-          layoutStateContext.markLayoutUninterruptible();
-        }
+        layoutStateContext.markLayoutUninterruptible();
       }
     } else {
       final ComponentContext updatedScopedContext =

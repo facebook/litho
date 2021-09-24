@@ -66,10 +66,6 @@ class LayoutOutput implements Cloneable {
       final int importantForAccessibility,
       final @UpdateState int updateState) {
 
-    if (component == null) {
-      throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
-    }
-
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
     mComponent = component;
