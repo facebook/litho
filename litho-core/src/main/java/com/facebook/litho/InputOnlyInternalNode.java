@@ -349,7 +349,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     }
 
     result.setDiffNode(diff);
-    
+
     if (!Layout.shouldComponentUpdate(this, diff)) {
       final String key = getTailComponentKey();
       if (component != null) {
