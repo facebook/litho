@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
@@ -662,32 +661,18 @@ public class LayoutState
       }
     }
 
-    final @Nullable RenderTreeNode renderTreeNode;
-
-    // Generate the layoutOutput for the given node.
-    final @Nullable RenderTreeNode contentRenderTreeNode =
-        createContentRenderTreeNode(result, node, layoutState, parent);
-    final @Nullable LithoRenderUnit contentRenderUnit;
-    final @Nullable LayoutOutput contentLayoutOutput;
-
-    if (contentRenderTreeNode != null) {
-      contentRenderUnit = (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
-      contentLayoutOutput = contentRenderUnit.output;
-    } else {
-      contentRenderUnit = null;
-      contentLayoutOutput = null;
-    }
-
-    if (contentLayoutOutput != null && hierarchy != null) {
-      contentLayoutOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.CONTENT));
-    }
-
-    // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
     final ComponentContext scopedContext =
         Preconditions.checkNotNull(node.getTailComponentContext());
-    if (isMountSpec(component)) {
 
-      renderTreeNode = contentRenderTreeNode;
+    // Generate the RenderTreeNode for the given node.
+    final @Nullable RenderTreeNode contentRenderTreeNode =
+        createContentRenderTreeNode(result, node, layoutState, parent);
+
+    // 3. Now add the MountSpec (either View or Drawable) to the outputs.
+    if (contentRenderTreeNode != null) {
+      final LithoRenderUnit contentRenderUnit =
+          (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
+      final LayoutOutput contentLayoutOutput = contentRenderUnit.output;
 
       // Notify component about its final size.
       if (isTracing) {
@@ -706,9 +691,9 @@ public class LayoutState
 
       addRenderTreeNode(
           layoutState,
-          Preconditions.checkNotNull(contentRenderTreeNode),
-          Preconditions.checkNotNull(contentRenderUnit),
-          Preconditions.checkNotNull(contentLayoutOutput),
+          contentRenderTreeNode,
+          contentRenderUnit,
+          contentLayoutOutput,
           OutputUnitType.CONTENT,
           !needsHostView ? layoutState.mCurrentTransitionId : null,
           parent);
@@ -716,8 +701,10 @@ public class LayoutState
       if (diffNode != null) {
         diffNode.setContentOutput(contentRenderUnit);
       }
-    } else {
-      renderTreeNode = needsHostView ? parent : null;
+
+      if (hierarchy != null) {
+        contentLayoutOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.CONTENT));
+      }
     }
 
     // 4. Extract the Transitions.
@@ -823,7 +810,13 @@ public class LayoutState
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
     if (node.hasVisibilityHandlers()) {
       final VisibilityOutput visibilityOutput =
-          createVisibilityOutput(result, node, layoutState, renderTreeNode);
+          createVisibilityOutput(
+              result,
+              node,
+              layoutState,
+              contentRenderTreeNode != null
+                  ? contentRenderTreeNode
+                  : needsHostView ? parent : null);
 
       layoutState.mVisibilityOutputs.add(visibilityOutput);
 
@@ -835,7 +828,14 @@ public class LayoutState
     // 8. If we're in a testing environment, maintain an additional data structure with
     // information about nodes that we can query later.
     if (layoutState.mTestOutputs != null && !TextUtils.isEmpty(node.getTestKey())) {
-      final TestOutput testOutput = createTestOutput(result, node, layoutState, contentRenderUnit);
+      final TestOutput testOutput =
+          createTestOutput(
+              result,
+              node,
+              layoutState,
+              contentRenderTreeNode != null
+                  ? (LithoRenderUnit) contentRenderTreeNode.getRenderUnit()
+                  : null);
       layoutState.mTestOutputs.add(testOutput);
     }
 
