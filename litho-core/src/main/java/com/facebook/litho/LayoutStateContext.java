@@ -46,7 +46,6 @@ public class LayoutStateContext {
   private boolean mHasNestedTreeDiffNodeSet = false;
 
   private boolean mIsLayoutStarted = false;
-  private volatile boolean mIsFrozen = false;
 
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
@@ -89,7 +88,6 @@ public class LayoutStateContext {
       final Component component,
       final ComponentContext scopedContext,
       final ComponentContext parentContext) {
-    checkIfFrozen();
 
     final EventHandler<ErrorEvent> errorEventHandler =
         ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
@@ -195,21 +193,6 @@ public class LayoutStateContext {
 
   boolean isInternalNodeReuseEnabled() {
     return mComponentTree != null && mComponentTree.isInternalNodeReuseEnabled();
-  }
-
-  private void checkIfFrozen() {
-    if (mIsFrozen) {
-      throw new IllegalStateException(
-          "Cannot modify this LayoutStateContext, it's already been committed.");
-    }
-  }
-
-  boolean isFrozen() {
-    return mIsFrozen;
-  }
-
-  void freeze() {
-    mIsFrozen = true;
   }
 
   StateHandler getStateHandler() {
