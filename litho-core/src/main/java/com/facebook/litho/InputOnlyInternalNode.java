@@ -1515,7 +1515,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
    * Internal method to <b>try</b> and reconcile the {@param current} InternalNode with a new {@link
    * ComponentContext} and an updated head {@link Component}.
    *
-   * @param context
+   * @param layoutStateContext
    * @param parentContext The ComponentContext.
    * @param current The current InternalNode which should be updated.
    * @param next The updated component to be used to reconcile this InternalNode.
@@ -1523,7 +1523,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
    * @return A new updated InternalNode.
    */
   private static @Nullable InternalNode reconcile(
-      final LayoutStateContext context,
+      final LayoutStateContext layoutStateContext,
       final ComponentContext parentContext,
       final InputOnlyInternalNode current,
       final Component next,
@@ -1544,22 +1544,25 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
     switch (mode) {
       case ReconciliationMode.REUSE:
-        if (isInternalNodeReuseEnabled || context.useStatelessComponent()) {
-          commitToLayoutStateRecursively(context, current);
+        if (isInternalNodeReuseEnabled || layoutStateContext.useStatelessComponent()) {
+          commitToLayoutStateRecursively(layoutStateContext, current);
         }
         layout = current;
         break;
       case ReconciliationMode.COPY:
-        layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.COPY);
+        layout =
+            reconcile(layoutStateContext, current, next, nextKey, keys, ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
-        if (isInternalNodeReuseEnabled || context.useStatelessComponent()) {
-          commitToLayoutState(context, current);
+        if (isInternalNodeReuseEnabled || layoutStateContext.useStatelessComponent()) {
+          commitToLayoutState(layoutStateContext, current);
         }
-        layout = reconcile(context, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
+        layout =
+            reconcile(
+                layoutStateContext, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        layout = Layout.create(context, parentContext, next, false, true, nextKey);
+        layout = Layout.create(layoutStateContext, parentContext, next, false, true, nextKey);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
