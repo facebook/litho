@@ -708,6 +708,8 @@ class Layout {
 
       layoutState.clearCachedLayout(component);
 
+      final boolean isFromCurrentLayout =
+          cachedLayout.getLayoutStateContext() == layoutStateContext;
       final boolean hasValidDirection =
           InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
       final boolean hasCompatibleSizeSpec =
@@ -720,7 +722,7 @@ class Layout {
               cachedLayout.getLastMeasuredHeight());
 
       // Transfer the cached layout to the node it if it's compatible.
-      if (hasValidDirection && hasCompatibleSizeSpec) {
+      if (isFromCurrentLayout && hasValidDirection && hasCompatibleSizeSpec) {
         return cachedLayout;
       }
     }
