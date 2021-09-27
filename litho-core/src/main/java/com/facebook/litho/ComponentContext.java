@@ -197,6 +197,7 @@ public class ComponentContext implements Cloneable {
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
     componentContext.mGlobalKey = globalKey;
+    componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
 
     if (componentContext.useStatelessComponent()) {
       componentContext.mScopedComponentInfo =
