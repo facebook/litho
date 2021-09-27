@@ -25,6 +25,8 @@ import com.facebook.litho.widget.ImmediateLazyStateUpdateDispatchingComponent
 import com.facebook.litho.widget.LayoutSpecLifecycleTester
 import com.facebook.litho.widget.SimpleStateUpdateEmulator
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
+import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRender
+import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRenderSpec
 import com.facebook.litho.widget.TestWrapperComponent
 import java.util.ArrayList
 import org.assertj.core.api.Java6Assertions
@@ -148,6 +150,40 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
           child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
           child(
               SimpleStateUpdateEmulator.create(context)
+                  .caller(stateUpdater)
+                  .widthPx(100)
+                  .heightPx(100)
+                  .prefix("Count: ")
+                  .build())
+        }
+      }
+    }
+
+    lithoViewRule.setRoot(TestComponent()).measure().layout().attachToWindow()
+
+    assertThat(LifecycleStep.getSteps(lifecycleSteps)).contains(LifecycleStep.ON_CREATE_LAYOUT)
+    lifecycleSteps.clear()
+
+    stateUpdater.incrementAsync()
+    backgroundLayoutLooperRule.runToEndOfTasksSync()
+    ShadowLooper.idleMainLooper()
+
+    assertThat(LifecycleStep.getSteps(lifecycleSteps))
+        .doesNotContain(LifecycleStep.ON_CREATE_LAYOUT)
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Count: 2")
+  }
+
+  @Test
+  fun `should reuse unaffected part of layout when async state update occurs child component using will render`() {
+    val stateUpdater = SimpleStateUpdateEmulatorWillRenderSpec.Caller()
+    val lifecycleSteps: MutableList<StepInfo> = mutableListOf()
+    class TestComponent() : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        return Column {
+          child(LayoutSpecLifecycleTester.create(context).steps(lifecycleSteps).build())
+          child(
+              SimpleStateUpdateEmulatorWillRender.create(context)
                   .caller(stateUpdater)
                   .widthPx(100)
                   .heightPx(100)
