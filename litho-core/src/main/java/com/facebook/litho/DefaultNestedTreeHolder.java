@@ -117,6 +117,13 @@ public class DefaultNestedTreeHolder extends DefaultInternalNode
   }
 
   @Override
+  protected DefaultNestedTreeHolder clone() {
+    DefaultNestedTreeHolder node = (DefaultNestedTreeHolder) super.clone();
+    node.mNestedTree = null;
+    return node;
+  }
+
+  @Override
   public void copyInto(InternalNode target) {
     if (mNodeInfo != null) {
       if (target.getNodeInfo() == null) {

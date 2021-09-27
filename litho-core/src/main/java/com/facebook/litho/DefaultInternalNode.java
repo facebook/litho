@@ -1948,6 +1948,7 @@ public class DefaultInternalNode
     final DefaultInternalNode layout;
     if (layoutStateContext.useStatelessComponent()) {
       layout = current.clone();
+      layout.mLayoutStateContext = layoutStateContext;
       layout.mYogaNode = copiedNode;
       layout.mYogaNode.setData(layout);
       layout.mDebugComponents = null;
