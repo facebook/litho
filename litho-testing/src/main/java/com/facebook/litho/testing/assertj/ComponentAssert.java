@@ -61,7 +61,13 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ComponentAssert(context, builder.build());
   }
 
-  /** Performs a state update and returns the new view. */
+  /**
+   * Avoid using this method, as an alternative, try invoking the code that causes the real state
+   * update in your test.
+   *
+   * <p>For more details see {@link #withStateUpdate(StateUpdatesTestHelper.StateUpdater)}
+   */
+  @Deprecated
   public LithoViewAssert afterStateUpdate() {
     return LithoViewAssert.assertThat(
         StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual));
