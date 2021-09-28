@@ -467,6 +467,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final RenderState.LayoutContext<LithoRenderContext> c,
       final int widthSpec,
       final int heightSpec) {
+
+    if (c.getRenderContext().c.getLayoutState() == null) {
+      throw new IllegalStateException("Cannot calculate a layout without a layout state.");
+    }
+
     applyOverridesRecursive(c.getRenderContext().c, this);
     freezeRecursive(this, null);
 

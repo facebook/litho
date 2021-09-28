@@ -147,7 +147,9 @@ public class TreeDiffingTest {
 
   private DefaultInternalNode createInternalNodeForMeasurableComponent(Component component) {
     ComponentContext context = new ComponentContext(mLithoViewRule.getContext());
-    context.setLayoutStateContext(LayoutStateContext.getTestInstance(context));
+    LayoutState layoutState =
+        new LayoutState(context, component, new StateHandler(), null, null, null);
+    context.setLayoutStateContext(layoutState.getLayoutStateContext());
     component.setScopedContext(context);
     final ComponentContext c = new ComponentContext(context);
     DefaultInternalNode node =
@@ -253,11 +255,12 @@ public class TreeDiffingTest {
     DiffNode node = prevLayoutState.getDiffTree();
 
     ComponentContext c = mLithoViewRule.getComponentTree().getContext();
+    InternalNode newInternalNode = createInternalNodeForMeasurableComponent(component2);
     LithoLayoutResult layoutTreeRoot =
         Layout.measure(
-            c.getLayoutStateContext(),
+            newInternalNode.getTailComponentContext().getLayoutStateContext(),
             c,
-            createInternalNodeForMeasurableComponent(component2),
+            newInternalNode,
             SizeSpec.UNSPECIFIED,
             SizeSpec.UNSPECIFIED,
             null,
