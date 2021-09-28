@@ -405,11 +405,11 @@ public class DefaultInternalNode
       final int widthSpec,
       final int heightSpec) {
 
-    if (c.getRenderContext().c.getLayoutState() == null) {
+    if (c.getRenderContext().mLayoutStateContext.getLayoutState() == null) {
       throw new IllegalStateException("Cannot calculate a layout without a layout state.");
     }
 
-    setLayoutStateContextRecursively(c.getRenderContext().c);
+    setLayoutStateContextRecursively(c.getRenderContext().mLayoutStateContext);
 
     if (mYogaNode.getStyleDirection() == YogaDirection.INHERIT
         && isLayoutDirectionRTL(c.getAndroidContext())) {

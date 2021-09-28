@@ -19,15 +19,15 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 
 public class LithoRenderContext {
-  final LayoutStateContext c;
+  final LayoutStateContext mLayoutStateContext;
   final @Nullable LithoLayoutResult mCurrentLayoutRoot;
   final @Nullable DiffNode mDiffRoot;
 
   public LithoRenderContext(
-      final LayoutStateContext c,
+      final LayoutStateContext layoutStateContext,
       final @Nullable LithoLayoutResult currentLayoutRoot,
       final @Nullable DiffNode diffRoot) {
-    this.c = c;
+    this.mLayoutStateContext = layoutStateContext;
     this.mCurrentLayoutRoot = currentLayoutRoot;
     mDiffRoot = diffRoot;
   }

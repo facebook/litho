@@ -418,7 +418,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       InputOnlyInternalNode<Writer> currentInternalNode,
       @Nullable LithoLayoutResult previousLayoutResult,
       @Nullable YogaNode parentNode) {
-    final boolean isCloned = isCloned(renderContext.c, currentInternalNode, previousLayoutResult);
+    final boolean isCloned =
+        isCloned(renderContext.mLayoutStateContext, currentInternalNode, previousLayoutResult);
     final YogaNode node;
     if (isCloned) {
       node = previousLayoutResult.getYogaNode().cloneWithoutChildren();
@@ -440,8 +441,10 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
     final @Nullable LithoLayoutResult parentLayoutResult =
         parentNode != null ? (LithoLayoutResult) parentNode.getData() : null;
     final LithoLayoutResult layoutResult =
-        currentInternalNode.createLayoutResult(renderContext.c, node, parentLayoutResult);
-    currentInternalNode.applyDiffNode(renderContext.c, layoutResult, parentLayoutResult);
+        currentInternalNode.createLayoutResult(
+            renderContext.mLayoutStateContext, node, parentLayoutResult);
+    currentInternalNode.applyDiffNode(
+        renderContext.mLayoutStateContext, layoutResult, parentLayoutResult);
     node.setData(layoutResult);
 
     for (int i = 0; i < currentInternalNode.getChildCount(); i++) {
@@ -468,11 +471,11 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       final int widthSpec,
       final int heightSpec) {
 
-    if (c.getRenderContext().c.getLayoutState() == null) {
+    if (c.getRenderContext().mLayoutStateContext.getLayoutState() == null) {
       throw new IllegalStateException("Cannot calculate a layout without a layout state.");
     }
 
-    applyOverridesRecursive(c.getRenderContext().c, this);
+    applyOverridesRecursive(c.getRenderContext().mLayoutStateContext, this);
     freezeRecursive(this, null);
 
     // Unlike DefaultInternalNode which creates the YogaNode tree at the same time as the
