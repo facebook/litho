@@ -200,8 +200,10 @@ public class ComponentContext implements Cloneable {
     componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
 
     if (componentContext.useStatelessComponent()) {
+      final EventHandler<ErrorEvent> errorEventHandler =
+          ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
       componentContext.mScopedComponentInfo =
-          layoutContext.createScopedComponentInfo(scope, componentContext, parentContext);
+          new ScopedComponentInfo(scope, componentContext, errorEventHandler);
     }
 
     return componentContext;

@@ -84,17 +84,6 @@ public class LayoutStateContext {
     mStateHandler = stateHandler;
   }
 
-  ScopedComponentInfo createScopedComponentInfo(
-      final Component component,
-      final ComponentContext scopedContext,
-      final ComponentContext parentContext) {
-
-    final EventHandler<ErrorEvent> errorEventHandler =
-        ComponentUtils.createOrGetErrorEventHandler(component, parentContext, scopedContext);
-
-    return new ScopedComponentInfo(component, scopedContext, errorEventHandler);
-  }
-
   @Nullable
   InternalNode consumeLayoutCreatedInWillRender(int componentId) {
     if (mComponentIdToWillRenderLayout != null) {
