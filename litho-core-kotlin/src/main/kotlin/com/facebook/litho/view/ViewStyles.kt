@@ -28,6 +28,7 @@ import com.facebook.litho.LongClickEvent
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
+import com.facebook.litho.TouchEvent
 import com.facebook.litho.drawable.ComparableColorDrawable
 import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
@@ -45,6 +46,7 @@ internal enum class ObjectField {
   FOREGROUND,
   ON_CLICK,
   ON_LONG_CLICK,
+  ON_TOUCH,
   OUTLINE_PROVIDER,
   SELECTED,
   STATE_LIST_ANIMATOR,
@@ -83,6 +85,8 @@ internal data class ObjectStyleItem(val field: ObjectField, val value: Any?) : S
       ObjectField.ON_LONG_CLICK ->
           commonProps.longClickHandler(
               eventHandlerWithReturn(value as ((LongClickEvent) -> Boolean)))
+      ObjectField.ON_TOUCH ->
+          commonProps.touchHandler(eventHandler(value as ((TouchEvent) -> Unit)))
       ObjectField.SELECTED -> commonProps.selected(value as Boolean)
       ObjectField.STATE_LIST_ANIMATOR -> commonProps.stateListAnimator(value as StateListAnimator?)
       ObjectField.TEST_KEY -> commonProps.testKey(value as String?)
@@ -209,6 +213,14 @@ inline fun Style.onClick(noinline onClick: (ClickEvent) -> Unit): Style =
  */
 inline fun Style.onLongClick(noinline onLongClick: (LongClickEvent) -> Boolean): Style =
     this + ObjectStyleItem(ObjectField.ON_LONG_CLICK, onLongClick)
+
+/**
+ * Sets a listener that will invoke the given lambda when this Component is touched. Setting this
+ * property will cause the Component to be represented as a View at mount time if it wasn't going to
+ * already.
+ */
+inline fun Style.onTouch(noinline onTouch: (TouchEvent) -> Boolean): Style =
+    this + ObjectStyleItem(ObjectField.ON_TOUCH, onTouch)
 
 /**
  * Sets the degree that this component is rotated around the pivot point. Increasing the value
