@@ -26,6 +26,7 @@ import com.facebook.samples.litho.java.animations.animatedbadge.AnimatedBadge
 import com.facebook.samples.litho.java.animations.animationcallbacks.AnimationCallbacksActivity
 import com.facebook.samples.litho.java.animations.animationcomposition.ComposedAnimationsComponent
 import com.facebook.samples.litho.java.animations.animationcookbook.AnimationCookBookActivity
+import com.facebook.samples.litho.java.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
 import com.facebook.samples.litho.java.animations.docs.AppearTransitionComponent
 import com.facebook.samples.litho.java.animations.docs.ParallelTransitionWithAnimatorsComponent
@@ -40,6 +41,7 @@ import com.facebook.samples.litho.java.animations.pageindicators.PageIndicatorsR
 import com.facebook.samples.litho.java.animations.sharedelements.SharedElementsComponent
 import com.facebook.samples.litho.java.animations.sharedelements.SharedElementsFragmentActivity
 import com.facebook.samples.litho.java.animations.transitions.TransitionsActivity
+import com.facebook.samples.litho.java.bordereffects.BorderEffectsComponent
 import com.facebook.samples.litho.java.changesetdebug.ItemsRerenderingActivity
 import com.facebook.samples.litho.java.changesetdebug.PropUpdatingActivity
 import com.facebook.samples.litho.java.changesetdebug.ScrollingToBottomActivity
@@ -75,11 +77,10 @@ import com.facebook.samples.litho.java.viewpager.ViewPagerDemoComponent
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
-import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
-import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponent
+import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponentKotlin
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
@@ -172,9 +173,9 @@ class Demos {
                     DemoGrouping(
                         name = "Common Props",
                         listOf(
-                            SingleDemo(name = "Border Effects") { context ->
-                              BorderEffectsComponent.create(context).build()
-                            })),
+                            SingleDemo(
+                                name = "Border Effects",
+                                component = BorderEffectsComponentKotlin()))),
                     DemoGrouping(
                         name = "Logging",
                         listOf(

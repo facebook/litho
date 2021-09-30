@@ -18,26 +18,32 @@ package com.facebook.samples.litho.kotlin.bordereffects
 
 import com.facebook.litho.Border
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
 import com.facebook.litho.Row
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.Style
+import com.facebook.litho.dp
+import com.facebook.litho.flexbox.border
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 
-@LayoutSpec
-object DashPathEffectBorderSpec {
+class AlternateWidthBorder : KComponent() {
 
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      Row.create(c)
-          .child(
-              Text.create(c).textSizeSp(20f).text("This component has a dash path effect applied"))
-          .border(
-              Border.create(c)
-                  .color(YogaEdge.ALL, NiceColor.BLUE)
-                  .widthDip(YogaEdge.ALL, 5f)
-                  .dashEffect(floatArrayOf(10f, 5f), 0f)
-                  .build())
-          .build()
+  override fun ComponentScope.render(): Component {
+    return Row(
+        style =
+            Style.border(
+                Border.create(context)
+                    .color(YogaEdge.ALL, NiceColor.MAGENTA)
+                    .widthDip(YogaEdge.LEFT, 2f)
+                    .widthDip(YogaEdge.TOP, 4f)
+                    .widthDip(YogaEdge.RIGHT, 8f)
+                    .widthDip(YogaEdge.BOTTOM, 16f)
+                    .build())) {
+      child(
+          Text(
+              "This component has all borders specified to the same color, but not width",
+              textSize = 20f.dp))
+    }
+  }
 }

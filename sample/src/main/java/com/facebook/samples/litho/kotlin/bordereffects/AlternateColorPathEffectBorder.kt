@@ -18,31 +18,30 @@ package com.facebook.samples.litho.kotlin.bordereffects
 
 import com.facebook.litho.Border
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
 import com.facebook.litho.Row
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.Style
+import com.facebook.litho.dp
+import com.facebook.litho.flexbox.border
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 
-@LayoutSpec
-object AlternateWidthBorderSpec {
+class AlternateColorPathEffectBorder : KComponent() {
 
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      Row.create(c)
-          .child(
-              Text.create(c)
-                  .textSizeSp(20f)
-                  .text(
-                      "This component has all borders specified to the same color, but not width"))
-          .border(
-              Border.create(c)
-                  .color(YogaEdge.ALL, NiceColor.MAGENTA)
-                  .widthDip(YogaEdge.LEFT, 2f)
-                  .widthDip(YogaEdge.TOP, 4f)
-                  .widthDip(YogaEdge.RIGHT, 8f)
-                  .widthDip(YogaEdge.BOTTOM, 16f)
-                  .build())
-          .build()
+  override fun ComponentScope.render(): Component? {
+    return Row(
+        style =
+            Style.border(
+                Border.create(context)
+                    .color(YogaEdge.LEFT, NiceColor.RED)
+                    .color(YogaEdge.TOP, NiceColor.ORANGE)
+                    .color(YogaEdge.RIGHT, NiceColor.GREEN)
+                    .color(YogaEdge.BOTTOM, NiceColor.BLUE)
+                    .widthDip(YogaEdge.ALL, 5f)
+                    .discreteEffect(5f, 10f)
+                    .build())) {
+      child(Text("This component has a path effect with multiple colors", textSize = 20f.dp))
+    }
+  }
 }
