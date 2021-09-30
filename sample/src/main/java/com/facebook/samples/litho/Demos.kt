@@ -121,9 +121,7 @@ class Demos {
                         name = "Animations",
                         listOf(
                             SingleDemo(name = "Animated API Demo", component = AnimatedComponent()),
-                            SingleDemo(name = "Animated Badge") { context ->
-                              AnimatedBadgeKotlin.create(context).build()
-                            },
+                            SingleDemo(name = "Animated Badge", component = AnimatedBadgeKotlin()),
                             SingleDemo(
                                 name = "Animated Counter",
                                 component = AnimatingCounterRootComponent()),
