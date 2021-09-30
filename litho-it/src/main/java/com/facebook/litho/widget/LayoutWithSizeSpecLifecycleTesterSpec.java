@@ -29,7 +29,6 @@ import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
@@ -74,18 +73,5 @@ class LayoutWithSizeSpecLifecycleTesterSpec {
                             .build()))
         .child(causeYogaRemeasure ? Row.create(c).heightPx(SizeSpec.getSize(h)) : null)
         .build();
-  }
-
-  @OnShouldCreateLayoutWithNewSizeSpec
-  static boolean onShouldCreateLayoutWithNewSizeSpec(
-      ComponentContext c,
-      int newWidthSpec,
-      int newHeightSpec,
-      @Prop(optional = true) Boolean shouldReusePreviousLayout) {
-    if (shouldReusePreviousLayout != null) {
-      return shouldReusePreviousLayout;
-    } else {
-      return false;
-    }
   }
 }

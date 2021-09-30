@@ -353,73 +353,59 @@ class Layout {
               layoutStateContext, parentContext, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
-
         // Use the cached layout.
         layout = cachedLayout;
       } else {
+        final int prevWidthSpec = parentContext.getWidthSpec();
+        final int prevHeightSpec = parentContext.getHeightSpec();
 
-        // Check if previous layout can be remeasured and used.
-        if (currentLayout != null
-            && Preconditions.checkNotNull(currentLayout.getInternalNode().getHeadComponent())
-                .canUsePreviousLayout(
-                    Preconditions.checkNotNull(
-                        currentLayout.getInternalNode().getHeadComponentContext()),
-                    parentContext)) {
-          remeasure(layoutStateContext, currentLayout, widthSpec, heightSpec, currentLayout);
-          layout = currentLayout;
+        if (!parentContext.useStatelessComponent()) {
+          parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
+        }
+
+        // Set the size specs in ComponentContext for the nested tree
+        parentContext.setWidthSpec(widthSpec);
+        parentContext.setHeightSpec(heightSpec);
+
+        // Create a new layout.
+        final @Nullable InternalNode newNode =
+            create(layoutStateContext, parentContext, component, true, true, globalKey);
+
+        if (parentContext.useStatelessComponent()) {
+          parentContext.setWidthSpec(prevWidthSpec);
+          parentContext.setHeightSpec(prevHeightSpec);
+        }
+
+        if (newNode != null) {
+          holder.getInternalNode().copyInto(newNode);
+
+          // If the resolved tree inherits the layout direction, then set it now.
+          if (newNode.isLayoutDirectionInherit()) {
+            newNode.layoutDirection(holder.getResolvedLayoutDirection());
+          }
+
+          // Set the DiffNode for the nested tree's result to consume during measurement.
+          layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
+
+          layout =
+              measure(
+                  layoutStateContext,
+                  parentContext,
+                  newNode,
+                  widthSpec,
+                  heightSpec,
+                  null,
+                  holder.getDiffNode());
         } else {
-
-          final int prevWidthSpec = parentContext.getWidthSpec();
-          final int prevHeightSpec = parentContext.getHeightSpec();
-
-          if (!parentContext.useStatelessComponent()) {
-            parentContext.setTreeProps(holder.getInternalNode().getPendingTreeProps());
-          }
-
-          // Set the size specs in ComponentContext for the nested tree
-          parentContext.setWidthSpec(widthSpec);
-          parentContext.setHeightSpec(heightSpec);
-
-          // Create a new layout.
-          final @Nullable InternalNode newNode =
-              create(layoutStateContext, parentContext, component, true, true, globalKey);
-
-          if (parentContext.useStatelessComponent()) {
-            parentContext.setWidthSpec(prevWidthSpec);
-            parentContext.setHeightSpec(prevHeightSpec);
-          }
-
-          if (newNode != null) {
-            holder.getInternalNode().copyInto(newNode);
-
-            // If the resolved tree inherits the layout direction, then set it now.
-            if (newNode.isLayoutDirectionInherit()) {
-              newNode.layoutDirection(holder.getResolvedLayoutDirection());
-            }
-
-            // Set the DiffNode for the nested tree's result to consume during measurement.
-            layoutStateContext.setNestedTreeDiffNode(holder.getDiffNode());
-
-            layout =
-                measure(
-                    layoutStateContext,
-                    parentContext,
-                    newNode,
-                    widthSpec,
-                    heightSpec,
-                    null,
-                    holder.getDiffNode());
-          } else {
-            layout = null;
-          }
+          layout = null;
         }
+      }
 
-        if (layout != null) {
-          layout.setLastWidthSpec(widthSpec);
-          layout.setLastHeightSpec(heightSpec);
-          layout.setLastMeasuredHeight(layout.getHeight());
-          layout.setLastMeasuredWidth(layout.getWidth());
-        }
+      if (layout != null) {
+        layout.setLastWidthSpec(widthSpec);
+        layout.setLastHeightSpec(heightSpec);
+        layout.setLastMeasuredHeight(layout.getHeight());
+        layout.setLastMeasuredWidth(layout.getWidth());
       }
 
       holder.setNestedResult(layout);

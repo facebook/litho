@@ -98,7 +98,6 @@ public class NestedTreeResolutionTest {
         RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
 
     final ExtraProps props = new ExtraProps();
-    props.shouldCreateNewLayout = true;
     props.steps = new ArrayList<>();
 
     mLithoViewRule
@@ -123,41 +122,12 @@ public class NestedTreeResolutionTest {
   }
 
   @Test
-  public void onRenderComponentWithSizeSpecWithReuse_shouldCallOnCreateLayoutOnlyOnce() {
-    final ComponentContext c = mLithoViewRule.getContext();
-    final RootComponentWithTreeProps component =
-        RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
-
-    final ExtraProps props = new ExtraProps();
-    props.shouldCreateNewLayout = false;
-    props.steps = new ArrayList<>();
-
-    mLithoViewRule
-        .setTreeProp(ExtraProps.class, props)
-        .attachToWindow()
-        .setSizePx(100, 100)
-        .measure()
-        .setRoot(component)
-        .layout();
-
-    final LithoLayoutResult root = mLithoViewRule.getCurrentRootNode();
-
-    assertThat(root).isNotNull();
-    assertThat(root.getChildAt(1)).isInstanceOf(NestedTreeHolderResult.class);
-    assertThat(props.steps).containsExactly(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-
-    NestedTreeHolderResult holder = (NestedTreeHolderResult) root.getChildAt(1);
-    verify(holder.getInternalNode()).copyInto(any(InternalNode.class));
-  }
-
-  @Test
   public void onRenderComponentWithSizeSpec_shouldNotTransferLayoutDirectionIfExplicitlySet() {
     final ComponentContext c = mLithoViewRule.getContext();
     final RootComponentWithTreeProps component =
         RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
 
     final ExtraProps props = new ExtraProps();
-    props.shouldCreateNewLayout = true;
     props.steps = new ArrayList<>();
     props.mDirection = YogaDirection.RTL;
 
@@ -187,7 +157,6 @@ public class NestedTreeResolutionTest {
         RootComponentWithTreeProps.create(c).shouldNotUpdateState(true).build();
 
     final ExtraProps props = new ExtraProps();
-    props.shouldCreateNewLayout = true;
     props.steps = new ArrayList<>();
 
     mLithoViewRule
@@ -218,7 +187,6 @@ public class NestedTreeResolutionTest {
             .build();
 
     final ExtraProps props = new ExtraProps();
-    props.shouldCreateNewLayout = true;
     props.steps = new ArrayList<>();
 
     mLithoViewRule
@@ -267,11 +235,7 @@ public class NestedTreeResolutionTest {
     final Component root_0 =
         Row.create(c)
             .heightPx(100) // Ensures that nested tree is resolved only twice
-            .child(
-                LayoutWithSizeSpecLifecycleTester.create(c)
-                    .steps(info_0)
-                    .body(mountable_0)
-                    .shouldReusePreviousLayout(true))
+            .child(LayoutWithSizeSpecLifecycleTester.create(c).steps(info_0).body(mountable_0))
             .child(Text.create(c).text("Hello World"))
             .build();
 
@@ -319,11 +283,7 @@ public class NestedTreeResolutionTest {
     final Component root_1 =
         Row.create(c)
             .heightPx(100) // Ensures that nested tree is resolved only twice
-            .child(
-                LayoutWithSizeSpecLifecycleTester.create(c)
-                    .steps(info_1)
-                    .body(mountable_1)
-                    .shouldReusePreviousLayout(true))
+            .child(LayoutWithSizeSpecLifecycleTester.create(c).steps(info_1).body(mountable_1))
             .child(Text.create(c).text("Hello World"))
             .build();
 
@@ -388,11 +348,7 @@ public class NestedTreeResolutionTest {
         MountSpecPureRenderLifecycleTester.create(c).lifecycleTracker(tracker_0).build();
 
     final Component root_0 =
-        LayoutWithSizeSpecLifecycleTester.create(c)
-            .steps(info_0)
-            .body(mountable_0)
-            .shouldReusePreviousLayout(false)
-            .build();
+        LayoutWithSizeSpecLifecycleTester.create(c).steps(info_0).body(mountable_0).build();
 
     mLithoViewRule.setRoot(root_0).attachToWindow().measure().layout();
 
@@ -430,11 +386,7 @@ public class NestedTreeResolutionTest {
             .build();
 
     final Component root_1 =
-        LayoutWithSizeSpecLifecycleTester.create(c)
-            .steps(info_1)
-            .body(mountable_1)
-            .shouldReusePreviousLayout(false)
-            .build();
+        LayoutWithSizeSpecLifecycleTester.create(c).steps(info_1).body(mountable_1).build();
 
     mLithoViewRule.setRoot(root_1);
 
@@ -473,11 +425,7 @@ public class NestedTreeResolutionTest {
             .build();
 
     final Component root_2 =
-        LayoutWithSizeSpecLifecycleTester.create(c)
-            .steps(info_2)
-            .body(mountable_2)
-            .shouldReusePreviousLayout(false)
-            .build();
+        LayoutWithSizeSpecLifecycleTester.create(c).steps(info_2).body(mountable_2).build();
 
     mLithoViewRule.setRoot(root_2);
 

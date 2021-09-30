@@ -20,12 +20,9 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LifecycleStep;
-import com.facebook.litho.Output;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.annotations.FromPreviousCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.events.EventWithoutAnnotation;
 import java.util.List;
@@ -35,27 +32,8 @@ public class LayoutSpecInterStagePropsTesterSpec {
 
   @OnCreateLayoutWithSizeSpec
   static Component onCreateLayout(
-      ComponentContext c,
-      int widthSpec,
-      int heightSpec,
-      @Prop List<LifecycleStep.StepInfo> steps,
-      Output<Boolean> shouldLayoutWithSizeSpec) {
-    shouldLayoutWithSizeSpec.set(true);
+      ComponentContext c, int widthSpec, int heightSpec, @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new LifecycleStep.StepInfo(LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC));
     return Column.create(c).widthPx(SizeSpec.getSize(widthSpec)).build();
-  }
-
-  @OnShouldCreateLayoutWithNewSizeSpec
-  static boolean onShouldCreateLayoutWithNewSizeSpec(
-      ComponentContext c,
-      int newWidthSpec,
-      int newHeightSpec,
-      @Prop List<LifecycleStep.StepInfo> steps,
-      @FromPreviousCreateLayout Boolean shouldLayoutWithSizeSpec) {
-    if (shouldLayoutWithSizeSpec) {
-      steps.add(
-          new LifecycleStep.StepInfo(LifecycleStep.ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC));
-    }
-    return shouldLayoutWithSizeSpec;
   }
 }

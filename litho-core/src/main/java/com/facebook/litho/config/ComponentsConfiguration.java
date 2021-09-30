@@ -107,12 +107,6 @@ public class ComponentsConfiguration {
 
   public static boolean enableThreadTracingStacktrace = false;
 
-  /**
-   * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This
-   * will also disable the associated layout caching.
-   */
-  public static boolean enableShouldCreateLayoutWithNewSizeSpec = true;
-
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = true;
 

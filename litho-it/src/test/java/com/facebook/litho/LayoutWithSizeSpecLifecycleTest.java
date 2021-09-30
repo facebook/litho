@@ -94,11 +94,7 @@ public class LayoutWithSizeSpecLifecycleTest {
     final Component component =
         Row.create(c)
             .heightPx(100) // Ensures that nested tree is resolved only twice
-            .child(
-                LayoutWithSizeSpecLifecycleTester.create(c)
-                    .steps(info)
-                    .body(mountable_0)
-                    .shouldReusePreviousLayout(true))
+            .child(LayoutWithSizeSpecLifecycleTester.create(c).steps(info).body(mountable_0))
             .child(Text.create(c).text("Hello World"))
             .build();
 

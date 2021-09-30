@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static com.facebook.litho.LifecycleStep.ON_BIND;
 import static com.facebook.litho.LifecycleStep.ON_CREATE_LAYOUT_WITH_SIZE_SPEC;
 import static com.facebook.litho.LifecycleStep.ON_MOUNT;
-import static com.facebook.litho.LifecycleStep.ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC;
 import static com.facebook.litho.LifecycleStep.ON_UNBIND;
 import static com.facebook.litho.LifecycleStep.ON_UNMOUNT;
 import static com.facebook.litho.LifecycleStep.getSteps;
@@ -157,10 +156,7 @@ public class InterStagePropsTest {
     mLithoViewRule.setRoot(component).attachToWindow().setSizePx(100, 100).measure().layout();
 
     assertThat(getSteps(info))
-        .containsExactly(
-            ON_CREATE_LAYOUT_WITH_SIZE_SPEC,
-            ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC,
-            ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
+        .containsExactly(ON_CREATE_LAYOUT_WITH_SIZE_SPEC, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
   }
 
   private Component createComponent(

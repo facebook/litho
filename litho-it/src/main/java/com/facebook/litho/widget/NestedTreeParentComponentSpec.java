@@ -18,11 +18,9 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
@@ -36,11 +34,9 @@ public class NestedTreeParentComponentSpec {
   }
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c, @Prop(optional = true) LifecycleStep crashFromStep) {
+  static Component onCreateLayout(ComponentContext c) {
     return NestedTreeComponent.create(c)
         .paddingPx(YogaEdge.ALL, 5)
-        .crashFromStep(crashFromStep)
         .key("NestedTreeComponent")
         .build();
   }

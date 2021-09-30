@@ -39,7 +39,6 @@ import com.facebook.litho.widget.DynamicPropCrasher
 import com.facebook.litho.widget.OnErrorNotPresentChild
 import com.facebook.litho.widget.OnErrorPassUpChildTester
 import com.facebook.litho.widget.OnErrorPassUpParentTester
-import com.facebook.litho.widget.RootComponentWithTreeProps
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
@@ -317,25 +316,6 @@ class ComponentErrorBoundaryTest {
     assertThat(errorOutput[0])
         .isInstanceOf(RuntimeException::class.java)
         .hasMessage("onCreateLayoutWithSizeSpec crash")
-  }
-
-  @Test
-  fun testOnShouldCreateLayoutWithNewSizeSpecCrashWithTestErrorBoundary() {
-    val crashingComponent =
-        RootComponentWithTreeProps.create(lithoViewRule.context)
-            .crashFromStep(LifecycleStep.ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC)
-            .build()
-    val errorOutput: List<Exception> = ArrayList()
-    val component =
-        TestErrorBoundary.create(lithoViewRule.context)
-            .errorOutput(errorOutput)
-            .child(crashingComponent)
-            .build()
-    lithoViewRule.attachToWindow().setSizePx(100, 100).measure().setRoot(component).layout()
-    assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage("onShouldCreateLayoutWithSizeSpec crash")
   }
 
   @Test

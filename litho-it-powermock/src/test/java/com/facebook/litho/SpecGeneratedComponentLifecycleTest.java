@@ -304,35 +304,6 @@ public class SpecGeneratedComponentLifecycleTest {
     verify(component, never()).onPrepare((ComponentContext) any());
   }
 
-  @Test
-  public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
-    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
-
-    TestBaseComponent component;
-
-    component =
-        new SpyComponentBuilder()
-            .setNode(mNode)
-            .canMeasure(true)
-            .isMountSpec(false)
-            .hasState(true)
-            .isLayoutSpecWithSizeSpecCheck(true)
-            .build(mContext);
-
-    InternalNode node = Layout.create(mLayoutStateContext, mContext, component, true);
-    final ComponentContext scopedContext =
-        node.getComponentContextAt(node.getComponentKeys().indexOf("$" + KEY));
-
-    // onShouldCreateLayoutWithNewSizeSpec should not be called the first time
-    verify(component, never())
-        .onShouldCreateLayoutWithNewSizeSpec((ComponentContext) any(), anyInt(), anyInt());
-    verify(component)
-        .onCreateLayoutWithSizeSpec(
-            scopedContext, scopedContext.getWidthSpec(), scopedContext.getHeightSpec());
-
-    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-  }
-
   private TestBaseComponent setUpSpyComponentForCreateLayout(
       boolean isMountSpec, boolean canMeasure) {
 

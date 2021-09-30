@@ -1731,13 +1731,6 @@ public abstract class Component
     }
   }
 
-  final boolean canUsePreviousLayout(
-      ComponentContext scopedContext, ComponentContext parentContext) {
-    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
-        && !onShouldCreateLayoutWithNewSizeSpec(
-            scopedContext, parentContext.getWidthSpec(), parentContext.getHeightSpec());
-  }
-
   protected static @Nullable <T> T retrieveValue(@Nullable DynamicValue<T> dynamicValue) {
     return dynamicValue != null ? dynamicValue.get() : null;
   }
