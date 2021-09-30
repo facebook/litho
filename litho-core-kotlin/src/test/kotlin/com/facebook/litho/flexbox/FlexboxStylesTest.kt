@@ -46,6 +46,7 @@ import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
 import com.facebook.litho.view.wrapInView
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 import org.assertj.core.api.Assertions.assertThat
@@ -500,6 +501,21 @@ class FlexboxStylesTest {
               bounds(0, 0, 100, 100)
               child<ComponentHost> { bounds(all, vertical, 100 - 2 * all, 100 - 2 * vertical) }
             })
+  }
+
+  @Test
+  fun layoutDirection_whenSet_isRespected() {
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(style = Style.width(100.px).height(100.px).layoutDirection(YogaDirection.RTL))
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(lithoViewRule.currentRootNode?.getYogaNode()?.getLayoutDirection())
+        .isEqualTo(YogaDirection.RTL)
   }
 
   /**

@@ -25,6 +25,7 @@ import com.facebook.litho.StyleItem
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
 import com.facebook.yoga.YogaAlign
+import com.facebook.yoga.YogaDirection
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
@@ -57,6 +58,7 @@ internal enum class FlexboxFloatField {
 internal enum class FlexboxObjectField {
   ALIGN_SELF,
   BORDER,
+  LAYOUT_DIRECTION,
   POSITION_TYPE,
 }
 
@@ -105,6 +107,7 @@ internal class FlexboxObjectStyleItem(val field: FlexboxObjectField, val value: 
     when (field) {
       FlexboxObjectField.ALIGN_SELF -> value?.let { commonProps.alignSelf(it as YogaAlign) }
       FlexboxObjectField.BORDER -> commonProps.border(value as Border?)
+      FlexboxObjectField.LAYOUT_DIRECTION -> commonProps.layoutDirection(value as YogaDirection)
       FlexboxObjectField.POSITION_TYPE ->
           value?.let { commonProps.positionType(it as YogaPositionType) }
     }.exhaustive
@@ -205,3 +208,14 @@ inline fun Style.positionType(positionType: YogaPositionType): Style =
  */
 inline fun Style.border(border: Border): Style =
     this + FlexboxObjectStyleItem(FlexboxObjectField.BORDER, border)
+
+/**
+ * Describes the RTL/LTR direction of component. Determines whether {@link YogaEdge#START} and
+ * {@link YogaEdge#END} will resolve to the left or right side, among other things. INHERIT
+ * indicates this setting will be inherited from this component's parent. Setting this property will
+ * cause the Component to be represented as a View at mount time if it wasn't going to already.
+ *
+ * <p>Default: {@link YogaDirection#INHERIT}
+ */
+inline fun Style.layoutDirection(layoutDirection: YogaDirection): Style =
+    this + FlexboxObjectStyleItem(FlexboxObjectField.LAYOUT_DIRECTION, layoutDirection)
