@@ -29,10 +29,12 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LayerType;
+import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -42,6 +44,8 @@ import com.facebook.litho.annotations.ResType;
 /**
  * A component that renders a given component into a card border with shadow.
  *
+ * @prop cardBackgroundTransitionKey TransitionKey for the Background. If set, enables adding a
+ *     global transition for animating the card background.
  * @prop cardBackgroundColor Background color for the card.
  * @prop clippingColor Color for corner clipping.
  * @prop shadowStartColor Start color for shadow drawn underneath the card.
@@ -89,6 +93,7 @@ class CardSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop Component content,
+      @Prop(optional = true) @Nullable String cardBackgroundTransitionKey,
       @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
       @Prop(optional = true, resType = ResType.COLOR) int shadowStartColor,
@@ -158,13 +163,23 @@ class CardSpec {
                       disableClipTopLeft,
                       disableClipTopRight,
                       disableClipBottomLeft,
-                      disableClipBottomRight))
+                      disableClipBottomRight,
+                      cardBackgroundTransitionKey))
               .child(content);
     } else {
       final int realClippingColor = clippingColor == UNSET_CLIPPING ? Color.WHITE : clippingColor;
       columnBuilder =
           columnBuilder
-              .backgroundColor(cardBackgroundColor)
+              .child(
+                  Column.create(c)
+                      .backgroundColor(cardBackgroundColor)
+                      .flexGrow(1)
+                      .flexShrink(0)
+                      .positionType(ABSOLUTE)
+                      .positionPx(ALL, 0)
+                      .transitionKey(cardBackgroundTransitionKey)
+                      .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
+                      .build())
               .child(content)
               .child(
                   makeCardClip(
@@ -207,7 +222,8 @@ class CardSpec {
       boolean disableClipTopLeft,
       boolean disableClipTopRight,
       boolean disableClipBottomLeft,
-      boolean disableClipBottomRight) {
+      boolean disableClipBottomRight,
+      @Nullable String cardBackgroundTransitionKey) {
     Component.Builder transparencyEnabledCardClipBuilder =
         TransparencyEnabledCardClip.create(c)
             .cardBackgroundColor(backgroundColor)
@@ -218,7 +234,9 @@ class CardSpec {
             .disableClipTopLeft(disableClipTopLeft)
             .disableClipTopRight(disableClipTopRight)
             .positionType(ABSOLUTE)
-            .positionPx(ALL, 0);
+            .positionPx(ALL, 0)
+            .transitionKey(cardBackgroundTransitionKey)
+            .transitionKeyType(Transition.TransitionKeyType.GLOBAL);
 
     if ((disableClipBottomLeft
             || disableClipBottomRight

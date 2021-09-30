@@ -88,7 +88,7 @@ public class FeedItemCardSpecTest {
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)
         .extractingSubComponentsDeeply(c)
-        .hasSize(22) // TODO: T53372437 Remove or rewrite test.
+        .hasSize(23) // TODO: T53372437 Remove or rewrite test.
         .has(
             new Condition<InspectableComponent>() {
               @Override
