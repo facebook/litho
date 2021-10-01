@@ -168,12 +168,10 @@ public class SingleComponentSectionSpec {
       builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT, component.getNext());
     }
 
-    if (attributes == null) {
-      return builder;
-    }
-
-    for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-      builder.customAttribute(entry.getKey(), entry.getValue());
+    if (attributes != null) {
+      for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+        builder.customAttribute(entry.getKey(), entry.getValue());
+      }
     }
 
     builder.componentsLogger(componentsLogger != null ? componentsLogger.getNext() : null);
