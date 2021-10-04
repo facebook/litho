@@ -268,6 +268,15 @@ public class ComponentsConfiguration {
 
   public static boolean useRenderUnitIdMap = false;
 
+  /**
+   * For mount content pools disabled due to native RenderThread crashes, instead enables them to
+   * re-use content unmounted in the same frame.
+   */
+  public static boolean enableAutoClearingMountContentPoolExternalComponents = false;
+
+  /** This allows us to also capture the baseline of allowing recycling as normal. */
+  public static boolean autoClearingMountContentPoolShouldClear = true;
+
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 
   private static ComponentsConfiguration defaultComponentsConfiguration = defaultBuilder.build();
