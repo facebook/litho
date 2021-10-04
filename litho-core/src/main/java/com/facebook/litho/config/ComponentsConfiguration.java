@@ -274,6 +274,9 @@ public class ComponentsConfiguration {
    */
   public static boolean enableAutoClearingMountContentPoolExternalComponents = false;
 
+  /** Same as above but for HostComponent. */
+  public static boolean enableAutoClearingMountContentPoolHostComponent = false;
+
   /** This allows us to also capture the baseline of allowing recycling as normal. */
   public static boolean autoClearingMountContentPoolShouldClear = true;
 
