@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
-import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static com.facebook.rendercore.RenderUnit.Extension.extension;
 
 import android.content.Context;
@@ -142,6 +141,55 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
     return new LithoRenderUnit(id, output, context);
   }
 
+  public static boolean shouldUpdateMountItem(
+      final LithoRenderUnit current,
+      final LithoRenderUnit next,
+      final @Nullable Object currentData,
+      final @Nullable Object nextData) {
+    if (next.output.getComponent() instanceof HostComponent) {
+      return false;
+    }
+
+    final LithoLayoutData currentLithoData = verifyAndGetLithoLayoutData(currentData);
+    final LithoLayoutData nextLithoData = verifyAndGetLithoLayoutData(nextData);
+
+    final @Nullable ComponentContext nextContext = getComponentContext(next);
+    final int previousIdFromNextOutput = nextLithoData.previousLayoutStateId;
+
+    final @Nullable ComponentContext currentContext = getComponentContext(current);
+    final int idFromCurrentOutput = currentLithoData.currentLayoutStateId;
+
+    final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
+
+    return MountState.shouldUpdateMountItem(
+        next.output,
+        (LithoLayoutData) nextData,
+        nextContext,
+        current.output,
+        (LithoLayoutData) currentData,
+        currentContext,
+        updateValueFromLayoutOutput);
+  }
+
+  /**
+   * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
+   * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
+   */
+  private static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
+    if (layoutData == null) {
+      throw new RuntimeException("LayoutData is null in LithoMountBinder.shouldUpdate");
+    }
+
+    if (!(layoutData instanceof LithoLayoutData)) {
+      throw new RuntimeException(
+          "LayoutData is not LithoLayoutData in LithoMountBinder.shouldUpdate. ("
+              + layoutData.getClass().getSimpleName()
+              + ")");
+    }
+
+    return (LithoLayoutData) layoutData;
+  }
+
   public static class LithoMountBinder implements Binder<LithoRenderUnit, Object> {
 
     public static final LithoMountBinder INSTANCE = new LithoMountBinder();
@@ -152,29 +200,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit next,
         final @Nullable Object currentData,
         final @Nullable Object nextData) {
-      if (next.output.getComponent() instanceof HostComponent) {
-        return false;
-      }
-
-      final LithoLayoutData currentLithoData = verifyAndGetLithoLayoutData(currentData);
-      final LithoLayoutData nextLithoData = verifyAndGetLithoLayoutData(nextData);
-
-      final @Nullable ComponentContext nextContext = getComponentContext(next);
-      final int previousIdFromNextOutput = nextLithoData.previousLayoutStateId;
-
-      final @Nullable ComponentContext currentContext = getComponentContext(current);
-      final int idFromCurrentOutput = currentLithoData.currentLayoutStateId;
-
-      final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
-
-      return shouldUpdateMountItem(
-          next.output,
-          (LithoLayoutData) nextData,
-          nextContext,
-          current.output,
-          (LithoLayoutData) currentData,
-          currentContext,
-          updateValueFromLayoutOutput);
+      return shouldUpdateMountItem(current, next, currentData, nextData);
     }
 
     @Override
@@ -205,25 +231,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
           lithoView.unmountAllItems();
         }
       }
-    }
-
-    /**
-     * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
-     * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
-     */
-    private static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
-      if (layoutData == null) {
-        throw new RuntimeException("LayoutData is null in LithoMountBinder.shouldUpdate");
-      }
-
-      if (!(layoutData instanceof LithoLayoutData)) {
-        throw new RuntimeException(
-            "LayoutData is not LithoLayoutData in LithoMountBinder.shouldUpdate. ("
-                + layoutData.getClass().getSimpleName()
-                + ")");
-      }
-
-      return (LithoLayoutData) layoutData;
     }
   }
 

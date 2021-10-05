@@ -111,6 +111,8 @@ public class LithoViewAttributesExtension
     final LithoRenderUnit prevLithoRenderUnit = (LithoRenderUnit) previousRenderUnit;
     final LithoRenderUnit nextLithoRenderUnit = (LithoRenderUnit) nextRenderUnit;
 
-    return MountState.shouldUpdateViewInfo(nextLithoRenderUnit.output, prevLithoRenderUnit.output);
+    return LithoRenderUnit.shouldUpdateMountItem(
+            prevLithoRenderUnit, nextLithoRenderUnit, previousLayoutData, nextLayoutData)
+        || MountState.shouldUpdateViewInfo(nextLithoRenderUnit.output, prevLithoRenderUnit.output);
   }
 }
