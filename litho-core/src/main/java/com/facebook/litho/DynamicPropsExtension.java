@@ -73,6 +73,15 @@ public class DynamicPropsExtension
     }
   }
 
+  @Override
+  public boolean shouldUpdateItem(
+      final RenderUnit<?> previousRenderUnit,
+      final @Nullable Object previousLayoutData,
+      final RenderUnit<?> nextRenderUnit,
+      final @Nullable Object nextLayoutData) {
+    return true;
+  }
+
   static class DynamicPropsExtensionState {
     private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
 
