@@ -30,6 +30,7 @@ import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
+import java.util.ArrayList;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
@@ -194,6 +195,16 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
       output.getComponent().unmount(getComponentContext(unit), content);
+
+      if (content instanceof HasLithoViewChildren) {
+        final ArrayList<LithoView> lithoViews = new ArrayList<>();
+        ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
+
+        for (int i = lithoViews.size() - 1; i >= 0; i--) {
+          final LithoView lithoView = lithoViews.get(i);
+          lithoView.unmountAllItems();
+        }
+      }
     }
 
     /**
