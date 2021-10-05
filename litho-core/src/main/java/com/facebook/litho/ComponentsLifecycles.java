@@ -21,6 +21,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.MountItemsPool;
 import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
@@ -71,7 +73,7 @@ public class ComponentsLifecycles {
   }
 
   public static void onContextCreated(Activity activity) {
-    ComponentsPools.sIsManualCallbacks = true;
+    setManualCallbacksEnabledForPool();
     onContextCreated((Context) activity);
   }
 
@@ -85,7 +87,7 @@ public class ComponentsLifecycles {
       throw new RuntimeException("Duplicate onContextCreated call for: " + context);
     }
 
-    ComponentsPools.onContextCreated(context);
+    onContextCreatedForPool(context);
   }
 
   public static void onContextDestroyed(Context context) {
@@ -102,6 +104,30 @@ public class ComponentsLifecycles {
       removed.clear();
     }
 
-    ComponentsPools.onContextDestroyed(context);
+    onContextDestroyedForPool(context);
+  }
+
+  private static void setManualCallbacksEnabledForPool() {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      MountItemsPool.sIsManualCallbacks = true;
+    } else {
+      ComponentsPools.sIsManualCallbacks = true;
+    }
+  }
+
+  private static void onContextCreatedForPool(Context context) {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      MountItemsPool.onContextCreated(context);
+    } else {
+      ComponentsPools.onContextCreated(context);
+    }
+  }
+
+  private static void onContextDestroyedForPool(Context context) {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      MountItemsPool.onContextDestroyed(context);
+    } else {
+      ComponentsPools.onContextDestroyed(context);
+    }
   }
 }

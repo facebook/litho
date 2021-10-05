@@ -26,6 +26,9 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.MountItemsPool;
+import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,6 +100,13 @@ public class ComponentsPools {
    */
   public static void maybePreallocateContent(
       Context context, Component component, int recyclingMode) {
+    // When Rendercore MountState is enabled, delegate these calls to MountItemsPool.
+    // Needed since this API is called from product layer.
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      MountItemsPool.maybePreallocateContent(context, wrapComponentInRenderUnit(component));
+      return;
+    }
+
     final MountContentPool pool = getMountContentPool(context, component, recyclingMode);
     if (pool != null) {
       pool.maybePreallocateContent(context, component);
@@ -220,6 +230,11 @@ public class ComponentsPools {
 
   /** Call from tests to clear external references. */
   public static void clearMountContentPools() {
+    if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      MountItemsPool.clear();
+      return;
+    }
+
     synchronized (sMountContentLock) {
       sMountContentPoolsByContext.clear();
     }
@@ -264,5 +279,15 @@ public class ComponentsPools {
    */
   public interface LoggingMountContent {
     void onMountContentRecycled();
+  }
+
+  /**
+   * RenderUnit wrapper for delegating maybePreallocateContent calls to RenderCore's Pooling system
+   * when the configuration is enabled. Since this pooling mechanism only requires a component
+   * within the RenderUnit, this is the only parameter passed here.
+   */
+  private static RenderUnit wrapComponentInRenderUnit(Component component) {
+    return new LithoRenderUnit(
+        0, new LayoutOutput(component, null, null, 0, 0, LayoutOutput.STATE_UNKNOWN), null);
   }
 }

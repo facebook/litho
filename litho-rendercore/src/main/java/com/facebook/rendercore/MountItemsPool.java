@@ -59,7 +59,7 @@ public class MountItemsPool {
    * allow apps to explicitly invoke activity callbacks. If this is enabled we'll throw if we are
    * passed a context for which we have no record.
    */
-  static boolean sIsManualCallbacks;
+  public static boolean sIsManualCallbacks;
 
   static Object acquireMountContent(Context context, RenderUnit renderUnit) {
     final ItemPool pool = getMountContentPool(context, renderUnit);
@@ -200,14 +200,14 @@ public class MountItemsPool {
     }
   }
 
-  static void onContextCreated(Context context) {
+  public static void onContextCreated(Context context) {
     if (sMountContentPoolsByContext.containsKey(context)) {
       throw new IllegalStateException(
           "The MountContentPools has a reference to an activity that has just been created");
     }
   }
 
-  static void onContextDestroyed(Context context) {
+  public static void onContextDestroyed(Context context) {
     sMountContentPoolsByContext.remove(context);
 
     // Clear any context wrappers holding a reference to this activity.
