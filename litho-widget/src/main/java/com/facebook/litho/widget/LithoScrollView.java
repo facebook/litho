@@ -188,7 +188,7 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
 
   void unmount() {
     mLithoView.unbind();
-
+    mLithoView.setComponentTree(null, false);
     mScrollPosition = null;
     getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     mOnPreDrawListener = null;

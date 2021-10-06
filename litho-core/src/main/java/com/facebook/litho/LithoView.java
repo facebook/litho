@@ -666,6 +666,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   }
 
   public void setComponentTree(@Nullable ComponentTree componentTree) {
+    setComponentTree(componentTree, true);
+  }
+
+  public void setComponentTree(
+      @Nullable ComponentTree componentTree, boolean unmountAllWhenComponentTreeSetToNull) {
     assertMainThread();
     assertNotInMeasure();
 
@@ -682,9 +687,9 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
     setMountStateDirty();
 
     if (mComponentTree != null) {
-      if (componentTree == null) {
+      if (componentTree == null && unmountAllWhenComponentTreeSetToNull) {
         unmountAllItems();
-      } else {
+      } else if (componentTree != null) {
         clearVisibilityItems();
         clearLastMountedTree();
       }
