@@ -543,6 +543,38 @@ public class VisibilityEventsTest {
   }
 
   @Test
+  public void whenItemIsFullyVisible_VisibleTopAndLeftShouldBe0() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content, 3);
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(content)
+                    .marginPx(YogaEdge.TOP, 10)
+                    .visibilityChangedHandler(visibilityChangedHandler)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    VisibilityChangedEvent visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+    assertThat(visibilityChangedEvent.visibleTop).isEqualTo(0);
+    assertThat(visibilityChangedEvent.visibleLeft).isEqualTo(0);
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(10);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(100f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+  }
+
+  @Test
   public void testVisibleRectChangedEventLargeView() {
     final TestComponent content = create(mContext).build();
     final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =

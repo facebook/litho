@@ -319,12 +319,12 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
         }
 
         if (visibilityChangedHandler != null) {
-          final int visibleWidth = intersection.right - intersection.left;
-          final int visibleHeight = intersection.bottom - intersection.top;
+          final int visibleWidth = getVisibleWidth(intersection);
+          final int visibleHeight = getVisibleHeight(intersection);
           VisibilityUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
-              intersection.top,
-              intersection.left,
+              getVisibleTop(visibilityOutputBounds, intersection),
+              getVisibleLeft(visibilityOutputBounds, intersection),
               visibleWidth,
               visibleHeight,
               100f * visibleWidth / visibilityOutputBounds.width(),
@@ -476,5 +476,21 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
     @Deprecated private @Nullable Host mRootHost;
 
     private VisibilityMountExtensionState() {}
+  }
+
+  public static int getVisibleTop(Rect itemBounds, Rect itemIntersection) {
+    return itemIntersection.top - itemBounds.top;
+  }
+
+  public static int getVisibleLeft(Rect itemBounds, Rect itemIntersection) {
+    return itemIntersection.left - itemBounds.left;
+  }
+
+  public static int getVisibleWidth(Rect itemIntersection) {
+    return itemIntersection.width();
+  }
+
+  public static int getVisibleHeight(Rect itemIntersection) {
+    return itemIntersection.height();
   }
 }
