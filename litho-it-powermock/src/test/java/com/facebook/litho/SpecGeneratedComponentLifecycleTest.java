@@ -316,7 +316,7 @@ public class SpecGeneratedComponentLifecycleTest {
 
   private TestBaseComponent setUpSpyLayoutSpecWithNullLayout() {
     TestBaseComponent component =
-        spy(new TestBaseComponent(false, MountType.NONE, null, false, mPreviousOnErrorConfig));
+        spy(new TestBaseComponent(false, MountType.NONE, null, mPreviousOnErrorConfig));
 
     return component;
   }
@@ -341,20 +341,14 @@ public class SpecGeneratedComponentLifecycleTest {
     private final boolean mCanMeasure;
     private final MountType mMountType;
     private final InternalNode mNode;
-    private final boolean mIsLayoutSpecWithSizeSpecCheck;
     private final boolean mHasState;
 
     TestBaseComponent(
-        boolean canMeasure,
-        MountType mountType,
-        InternalNode node,
-        boolean isLayoutSpecWithSizeSpecCheck,
-        boolean hasState) {
+        boolean canMeasure, MountType mountType, InternalNode node, boolean hasState) {
       super("TestBaseComponent");
       mCanMeasure = canMeasure;
       mMountType = mountType;
       mNode = node;
-      mIsLayoutSpecWithSizeSpecCheck = isLayoutSpecWithSizeSpecCheck;
       mHasState = hasState;
       setKey(KEY);
     }
@@ -389,18 +383,12 @@ public class SpecGeneratedComponentLifecycleTest {
     protected boolean hasState() {
       return mHasState;
     }
-
-    @Override
-    protected boolean isLayoutSpecWithSizeSpecCheck() {
-      return mIsLayoutSpecWithSizeSpecCheck;
-    }
   }
 
   static class SpyComponentBuilder {
     private boolean mCanMeasure = false;
     private MountType mMountType = MountType.NONE;
     private InternalNode mNode = null;
-    private boolean mIsLayoutSpecWithSizeSpecCheck = false;
     private boolean mHasState = false;
 
     SpyComponentBuilder canMeasure(boolean canMeasure) {
@@ -418,11 +406,6 @@ public class SpecGeneratedComponentLifecycleTest {
       return this;
     }
 
-    SpyComponentBuilder isLayoutSpecWithSizeSpecCheck(boolean isLayoutSpecWithSizeSpecCheck) {
-      this.mIsLayoutSpecWithSizeSpecCheck = isLayoutSpecWithSizeSpecCheck;
-      return this;
-    }
-
     SpyComponentBuilder hasState(boolean hasState) {
       this.mHasState = hasState;
       return this;
@@ -430,16 +413,14 @@ public class SpecGeneratedComponentLifecycleTest {
 
     TestBaseComponent build(ComponentContext context) {
       return createSpyComponent(
-          context,
-          new TestBaseComponent(
-              mCanMeasure, mMountType, mNode, mIsLayoutSpecWithSizeSpecCheck, mHasState));
+          context, new TestBaseComponent(mCanMeasure, mMountType, mNode, mHasState));
     }
   }
 
   private static class TestMountSpecWithEmptyOnMeasure extends TestBaseComponent {
 
     TestMountSpecWithEmptyOnMeasure(InternalNode node) {
-      super(true, MountType.DRAWABLE, node, false, false);
+      super(true, MountType.DRAWABLE, node, false);
     }
 
     @Override

@@ -157,8 +157,6 @@ abstract class KComponent : Component() {
 
   final override fun implementsExtraAccessibilityNodes() = false
 
-  final override fun isLayoutSpecWithSizeSpecCheck() = false
-
   final override fun isMountSizeDependent() = false
 
   final override fun isPureRender() = false
@@ -218,12 +216,6 @@ abstract class KComponent : Component() {
           c, accessibilityNode, extraNodeIndex, componentBoundsX, componentBoundsY)
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
-
-  final override fun onShouldCreateLayoutWithNewSizeSpec(
-      context: ComponentContext,
-      newWidthSpec: Int,
-      newHeightSpec: Int
-  ) = super.onShouldCreateLayoutWithNewSizeSpec(context, newWidthSpec, newHeightSpec)
 
   final override fun onUnbind(c: ComponentContext, mountedContent: Any) =
       super.onUnbind(c, mountedContent)

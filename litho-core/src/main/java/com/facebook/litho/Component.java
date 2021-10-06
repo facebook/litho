@@ -59,11 +59,9 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.InternalNode.NestedTreeHolder;
-import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
-import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
@@ -472,14 +470,6 @@ public abstract class Component
     return false;
   }
 
-  /**
-   * @return {@code true} iff the {@link LayoutSpec} implements {@link
-   *     OnShouldCreateLayoutWithNewSizeSpec} to {@code true}.
-   */
-  protected boolean isLayoutSpecWithSizeSpecCheck() {
-    return false;
-  }
-
   /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
   protected boolean isMountSizeDependent() {
     return false;
@@ -641,11 +631,6 @@ public abstract class Component
 
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
-  }
-
-  protected boolean onShouldCreateLayoutWithNewSizeSpec(
-      ComponentContext context, int newWidthSpec, int newHeightSpec) {
-    return true;
   }
 
   protected void onUnbind(ComponentContext c, Object mountedContent) {

@@ -4,6 +4,7 @@
 
 _release-date_
 
+ * **Breaking:** Remove `@OnShouldCreateLayoutWithNewSizeSpec` API. We hope to provide replacements for it in the future, please let us know if you were relying on it.
  * **Breaking:** Add new `ComponentTree` parameter to `ErrorEventHandler.onError()` method.
  * **Breaking:** Add UI thread call assertion to `ComponentTree.release()` method.
  * **Breaking:** Make `getErrorHandler`, `getHandle`, `getId`, and `getKey` package-private for `Component` and `Section`. This is for compatibility with the Kotlin API.

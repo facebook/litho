@@ -33,7 +33,6 @@ import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
-import com.facebook.litho.annotations.FromPreviousCreateLayout;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.OnAttached;
@@ -54,7 +53,6 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnPrepare;
-import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
@@ -132,29 +130,6 @@ public final class DelegateMethodDescriptions {
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("canMeasure")
-                      .addAnnotation(Override.class)
-                      .addModifiers(Modifier.PROTECTED)
-                      .returns(TypeName.BOOLEAN)
-                      .addStatement("return true")
-                      .build()))
-          .build();
-
-  public static final DelegateMethodDescription ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC =
-      DelegateMethodDescription.newBuilder()
-          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
-          .accessType(Modifier.PROTECTED)
-          .returnType(TypeName.BOOLEAN)
-          .name("onShouldCreateLayoutWithNewSizeSpec")
-          .definedParameterTypes(
-              ImmutableList.of(ClassNames.COMPONENT_CONTEXT, TypeName.INT, TypeName.INT))
-          .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
-          .interStageInputAnnotations(
-              ImmutableList.<Class<? extends Annotation>>of(FromPreviousCreateLayout.class))
-          .extraMethods(
-              ImmutableList.of(
-                  MethodSpec.methodBuilder("isLayoutSpecWithSizeSpecCheck")
                       .addAnnotation(Override.class)
                       .addModifiers(Modifier.PROTECTED)
                       .returns(TypeName.BOOLEAN)
@@ -523,8 +498,6 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(OnCreateLayout.class, ON_CREATE_LAYOUT);
     layoutSpecDelegateMethodsMap.put(
         OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-    layoutSpecDelegateMethodsMap.put(
-        OnShouldCreateLayoutWithNewSizeSpec.class, ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC);
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     layoutSpecDelegateMethodsMap.put(OnCreateTransition.class, ON_CREATE_TRANSITION);
     layoutSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
@@ -575,7 +548,6 @@ public final class DelegateMethodDescriptions {
                 return lhs.toString().compareTo(rhs.toString());
               }
             });
-    interStageInputsMap.put(FromPreviousCreateLayout.class, OnCreateLayoutWithSizeSpec.class);
     interStageInputsMap.put(FromPrepare.class, OnPrepare.class);
     interStageInputsMap.put(FromMeasure.class, OnMeasure.class);
     interStageInputsMap.put(FromMeasureBaseline.class, OnMeasureBaseline.class);
