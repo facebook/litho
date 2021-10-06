@@ -41,6 +41,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.squareup.javapoet.TypeName;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -177,7 +178,11 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
         ComponentGenerateService.getInstance().getOrCreateSpecModel(specClass);
     if (specModel != null && !specModel.getStateValues().isEmpty()) {
       final StateParamModel stateParamModel = specModel.getStateValues().get(0);
-      return new Pair<>(stateParamModel.getTypeName().toString(), stateParamModel.getName());
+      TypeName typename = stateParamModel.getTypeName();
+      if (typename.isPrimitive()) {
+        typename = typename.box();
+      }
+      return new Pair<>(typename.toString(), stateParamModel.getName());
     }
     return new Pair<>("StateType", "stateName");
   }
