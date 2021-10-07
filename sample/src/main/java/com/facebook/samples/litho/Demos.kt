@@ -28,6 +28,7 @@ import com.facebook.samples.litho.java.animations.animationcomposition.ComposedA
 import com.facebook.samples.litho.java.animations.animationcookbook.AnimationCookBookActivity
 import com.facebook.samples.litho.java.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
+import com.facebook.samples.litho.java.animations.docs.AlphaTransitionComponent
 import com.facebook.samples.litho.java.animations.docs.AppearTransitionComponent
 import com.facebook.samples.litho.java.animations.docs.ParallelTransitionWithAnimatorsComponent
 import com.facebook.samples.litho.java.animations.docs.SequenceTransitionLoopComponent
@@ -59,7 +60,6 @@ import com.facebook.samples.litho.java.lifecycle.LifecycleDelegateActivity
 import com.facebook.samples.litho.java.lifecycle.LifecycleFragmentActivity
 import com.facebook.samples.litho.java.lifecycle.ViewPagerLifecycleActivity
 import com.facebook.samples.litho.java.lithography.LithographyActivity
-import com.facebook.samples.litho.java.onboarding.AlphaTransitionComponent
 import com.facebook.samples.litho.java.onboarding.FirstComponentSpecActivity
 import com.facebook.samples.litho.java.onboarding.HelloWorldActivity
 import com.facebook.samples.litho.java.onboarding.IntroducingLayoutComponent
@@ -77,6 +77,7 @@ import com.facebook.samples.litho.java.viewpager.ViewPagerDemoComponent
 import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponent
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
+import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
@@ -126,9 +127,9 @@ class Demos {
                             SingleDemo(
                                 name = "Animated Counter",
                                 component = AnimatingCounterRootComponent()),
-                            SingleDemo(name = "Animations Composition") { context ->
-                              ComposedAnimationsComponent.create(context).build()
-                            },
+                            SingleDemo(
+                                name = "Animations Composition",
+                                component = ComposedAnimationsComponentKotlin()),
                             SingleDemo(
                                 name = "Expandable Element",
                                 component =
@@ -186,9 +187,9 @@ class Demos {
                     DemoGrouping(
                         name = "Animations",
                         listOf(
-                            SingleDemo(name = "Animations Composition") { context ->
-                              ComposedAnimationsComponent.create(context).build()
-                            },
+                            SingleDemo(
+                                name = "Animations Composition",
+                            ) { context -> ComposedAnimationsComponent.create(context).build() },
                             SingleDemo(
                                 name = "Expandable Element", ExpandableElementActivity::class.java),
                             SingleDemo(name = "Animated Badge") { context ->

@@ -17,11 +17,10 @@
 package com.facebook.samples.litho.kotlin.animations.animationcomposition
 
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.FromEvent
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.KComponent
+import com.facebook.litho.eventHandler
+import com.facebook.litho.key
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
@@ -30,43 +29,37 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
 
-@LayoutSpec
-object ComposedAnimationsComponentSpec {
+class ComposedAnimationsComponentKotlin : KComponent() {
 
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      RecyclerCollectionComponent.create(c)
-          .disablePTR(true)
-          .section(
-              DataDiffSection.create<Data>(SectionContext(c))
-                  .data(generateData(20))
-                  .renderEventHandler(ComposedAnimationsComponent.onRender(c))
-                  .onCheckIsSameItemEventHandler(ComposedAnimationsComponent.isSameItem(c))
-                  .build())
-          .build()
+  override fun ComponentScope.render(): Component? {
+    return com.facebook.litho.sections.widget.RecyclerCollectionComponent.create(context)
+        .disablePTR(true)
+        .section(
+            DataDiffSection.create<Data>(SectionContext(context))
+                .data(generateData(20))
+                .renderEventHandler(eventHandler<RenderEvent<Data>> { e -> onRender(e.index) })
+                .onCheckIsSameItemEventHandler(
+                    eventHandler<OnCheckIsSameItemEvent<Data>> { e ->
+                      e.previousItem.number == e.nextItem.number
+                    })
+                .build())
+        .build()
+  }
 
-  @OnEvent(RenderEvent::class)
-  fun onRender(c: ComponentContext, @FromEvent index: Int): RenderInfo {
+  private fun onRender(index: Int): RenderInfo {
     val numDemos = 5
     // Keep alternating between demos
     val component: Component =
         when (index % numDemos) {
-          0 -> StoryFooterComponent.create(c).key("footer").build()
-          1 -> UpDownBlocksComponent.create(c).build()
-          2 -> LeftRightBlocksComponent.create(c).build()
-          3 -> OneByOneLeftRightBlocksComponent.create(c).build()
-          4 -> LeftRightBlocksSequenceComponent.create(c).build()
+          0 -> key("footer") { StoryFooterComponent() }
+          1 -> UpDownBlocksComponent()
+          2 -> LeftRightBlocksComponent()
+          3 -> OneByOneLeftRightBlocksComponent()
+          4 -> LeftRightBlocksSequenceComponent()
           else -> throw RuntimeException("Bad index: $index")
         }
     return ComponentRenderInfo.create().component(component).build()
   }
-
-  @OnEvent(OnCheckIsSameItemEvent::class)
-  fun isSameItem(
-      c: ComponentContext,
-      @FromEvent previousItem: Data,
-      @FromEvent nextItem: Data
-  ): Boolean = previousItem.number == nextItem.number
 
   private fun generateData(number: Int): List<Data> {
     val dummyData = mutableListOf<Data>()
