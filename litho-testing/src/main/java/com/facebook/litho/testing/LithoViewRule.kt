@@ -334,6 +334,13 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
         ?: throw RuntimeException("Did not find view with contentDescription '$contentDescription'")
   }
 
+  /** Returns a component of the given class only if it is a direct child of the root component */
+  fun findDirectComponent(clazz: Class<out Component?>): Component? {
+    val internalNode =
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode ?: return null
+    return internalNode.components.firstOrNull { it.javaClass == clazz }
+  }
+
   /** Returns a component of the given class from the ComponentTree or null if not found */
   fun findComponent(clazz: Class<out Component?>): Component? {
     val internalNode =
