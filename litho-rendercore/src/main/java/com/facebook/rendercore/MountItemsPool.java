@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Pools of recycled resources.
@@ -46,10 +47,14 @@ public class MountItemsPool {
 
   private MountItemsPool() {}
 
+  private static final Object sMountContentLock = new Object();
+
+  @GuardedBy("sMountContentLock")
   private static final Map<Context, Map<Object, ItemPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
   // This Map is used as a set and the values are ignored.
+  @GuardedBy("sMountContentLock")
   private static final WeakHashMap<Context, Boolean> sDestroyedRootContexts = new WeakHashMap<>();
 
   private static PoolsActivityCallback sActivityCallbacks;
@@ -96,37 +101,42 @@ public class MountItemsPool {
       return null;
     }
 
-    Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
-    if (poolsMap == null) {
-      final Context rootContext = getRootContext(context);
-      if (sDestroyedRootContexts.containsKey(rootContext)) {
-        return null;
+    synchronized (sMountContentLock) {
+      Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
+      if (poolsMap == null) {
+        final Context rootContext = getRootContext(context);
+        if (sDestroyedRootContexts.containsKey(rootContext)) {
+          return null;
+        }
+
+        ensureActivityCallbacks(context);
+        poolsMap = new HashMap<Object, ItemPool>();
+        sMountContentPoolsByContext.put(context, poolsMap);
+      }
+      final Object lifecycle = renderUnit.getRenderContentType();
+
+      ItemPool pool = poolsMap.get(lifecycle);
+      if (pool == null) {
+        pool = renderUnit.getRecyclingPool();
+        
+        // RenderUnit might produce a null pool. In this case, just create a default one.
+        if (pool == null) {
+          pool = new DefaultItemPool();
+        }
+
+        poolsMap.put(lifecycle, pool);
       }
 
-      ensureActivityCallbacks(context);
-      poolsMap = new HashMap<Object, ItemPool>();
-      sMountContentPoolsByContext.put(context, poolsMap);
+      return pool;
     }
-    final Object lifecycle = renderUnit.getRenderContentType();
-
-    ItemPool pool = poolsMap.get(lifecycle);
-    if (pool == null) {
-      pool = renderUnit.getRecyclingPool();
-    }
-
-    if (pool == null) {
-      pool = new DefaultItemPool();
-    }
-
-    poolsMap.put(lifecycle, pool);
-
-    return pool;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public static void clear() {
-    sMountContentPoolsByContext.clear();
-    sDestroyedRootContexts.clear();
+    synchronized (sMountContentLock) {
+      sMountContentPoolsByContext.clear();
+      sDestroyedRootContexts.clear();
+    }
   }
 
   /**
@@ -201,27 +211,31 @@ public class MountItemsPool {
   }
 
   public static void onContextCreated(Context context) {
-    if (sMountContentPoolsByContext.containsKey(context)) {
-      throw new IllegalStateException(
-          "The MountContentPools has a reference to an activity that has just been created");
+    synchronized (sMountContentLock) {
+      if (sMountContentPoolsByContext.containsKey(context)) {
+        throw new IllegalStateException(
+            "The MountContentPools has a reference to an activity that has just been created");
+      }
     }
   }
 
   public static void onContextDestroyed(Context context) {
-    sMountContentPoolsByContext.remove(context);
+    synchronized (sMountContentLock) {
+      sMountContentPoolsByContext.remove(context);
 
-    // Clear any context wrappers holding a reference to this activity.
-    final Iterator<Map.Entry<Context, Map<Object, ItemPool>>> it =
-        sMountContentPoolsByContext.entrySet().iterator();
+      // Clear any context wrappers holding a reference to this activity.
+      final Iterator<Map.Entry<Context, Map<Object, ItemPool>>> it =
+          sMountContentPoolsByContext.entrySet().iterator();
 
-    while (it.hasNext()) {
-      final Context contextKey = it.next().getKey();
-      if (isContextWrapper(contextKey, context)) {
-        it.remove();
+      while (it.hasNext()) {
+        final Context contextKey = it.next().getKey();
+        if (isContextWrapper(contextKey, context)) {
+          it.remove();
+        }
       }
-    }
 
-    sDestroyedRootContexts.put(getRootContext(context), true);
+      sDestroyedRootContexts.put(getRootContext(context), true);
+    }
   }
 
   @VisibleForTesting
