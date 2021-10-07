@@ -42,15 +42,19 @@ import org.robolectric.shadows.ShadowLooper
 
 @LooperMode(LooperMode.Mode.LEGACY)
 @RunWith(ParameterizedRobolectricTestRunner::class)
-class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean) {
+class StateUpdatesWithReconciliationTest(
+    private val useStatelessComponent: Boolean,
+    private val reuseInternalNodes: Boolean
+) {
   private val originalValueOfReuseInternalNodes = ComponentsConfiguration.reuseInternalNodes
   private val originalValueOfUseStatelessComponent = ComponentsConfiguration.useStatelessComponent
 
   companion object {
-    @ParameterizedRobolectricTestRunner.Parameters(name = "reuseInternalNodes={0}")
+    @ParameterizedRobolectricTestRunner.Parameters(
+        name = "useStatelessComponent={0}, reuseInternalNodes={1}")
     @JvmStatic
     fun data(): List<Array<Boolean>> {
-      return mutableListOf(arrayOf(true), arrayOf(false))
+      return mutableListOf(arrayOf(false, false), arrayOf(true, false), arrayOf(true, true))
     }
   }
 
@@ -60,7 +64,7 @@ class StateUpdatesWithReconciliationTest(private val reuseInternalNodes: Boolean
   @Before
   fun setup() {
     ComponentsConfiguration.reuseInternalNodes = reuseInternalNodes
-    ComponentsConfiguration.useStatelessComponent = reuseInternalNodes
+    ComponentsConfiguration.useStatelessComponent = reuseInternalNodes || useStatelessComponent
   }
 
   @After
