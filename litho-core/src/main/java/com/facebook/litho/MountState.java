@@ -1066,7 +1066,7 @@ class MountState implements MountDelegateTarget {
       perfEvent.markerAnnotate(PARAM_UNCHANGED_COUNT, stats.unchangedCount);
     }
 
-    if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
+    if (mIndexToItemMap.get(ROOT_HOST_ID) == null || mHostsByMarker.get(ROOT_HOST_ID) == null) {
       // Mounting always starts with the root host.
       registerHost(ROOT_HOST_ID, mLithoView);
 

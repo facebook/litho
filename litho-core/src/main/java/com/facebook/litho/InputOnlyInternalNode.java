@@ -1562,9 +1562,6 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
             reconcile(layoutStateContext, current, next, nextKey, keys, ReconciliationMode.COPY);
         break;
       case ReconciliationMode.RECONCILE:
-        if (isInternalNodeReuseEnabled || layoutStateContext.useStatelessComponent()) {
-          commitToLayoutState(layoutStateContext, current);
-        }
         layout =
             reconcile(
                 layoutStateContext, current, next, nextKey, keys, ReconciliationMode.RECONCILE);
@@ -1611,6 +1608,7 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
       layout = current.clone();
       layout.mChildren = new ArrayList<>(current.getChildCount());
       layout.mDebugComponents = null;
+      commitToLayoutState(layoutStateContext, current);
     } else {
       layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey);
     }

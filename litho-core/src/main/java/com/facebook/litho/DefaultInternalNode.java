@@ -1960,6 +1960,7 @@ public class DefaultInternalNode
       layout.mYogaNode.setData(layout);
       layout.mDebugComponents = null;
       layout.mDiffNode = null;
+      commitToLayoutState(layoutStateContext, current);
     } else {
       layout = getCleanUpdatedShallowCopy(layoutStateContext, current, next, nextKey, copiedNode);
     }
@@ -2003,6 +2004,24 @@ public class DefaultInternalNode
     }
 
     return layout;
+  }
+
+  static void commitToLayoutStateRecursively(LayoutStateContext c, InternalNode node) {
+    final int count = node.getChildCount();
+    commitToLayoutState(c, node);
+    for (int i = 0; i < count; i++) {
+      commitToLayoutStateRecursively(c, node.getChildAt(i));
+    }
+  }
+
+  static void commitToLayoutState(LayoutStateContext c, InternalNode node) {
+    final @Nullable List<ScopedComponentInfo> scopedComponentInfos = node.getScopedComponentInfos();
+
+    if (scopedComponentInfos != null) {
+      for (ScopedComponentInfo info : scopedComponentInfos) {
+        info.commitToLayoutState(c.getStateHandler());
+      }
+    }
   }
 
   /**
