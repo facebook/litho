@@ -267,10 +267,31 @@ inline fun key(key: String, componentLambda: () -> Component): Component {
 }
 
 /**
+ * Sets a handle on the given Component returned in the lambda, e.g.
+ * ```
+ * handle(Handle()) { Text(...) }
+ * ```
+ */
+inline fun handle(handle: Handle, componentLambda: () -> Component): Component {
+  val component = componentLambda()
+  setHandleForComponentInternal(component, handle)
+  return component
+}
+
+/**
  * This is extracted out since we don't want to expose Component.setKey in the public API and will
  * hopefully change this implementation in the future.
  */
 @PublishedApi
 internal fun setKeyForComponentInternal(component: Component, key: String) {
   component.key = key
+}
+
+/**
+ * This is extracted out since we don't want to expose Component.handle in the public API and will
+ * hopefully change this implementation in the future.
+ */
+@PublishedApi
+internal fun setHandleForComponentInternal(component: Component, handle: Handle) {
+  component.handle = handle
 }
