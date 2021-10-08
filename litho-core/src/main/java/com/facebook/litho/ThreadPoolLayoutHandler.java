@@ -46,10 +46,14 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
     static final ThreadPoolLayoutHandler INSTANCE =
         new ThreadPoolLayoutHandler(
             new LayoutThreadPoolConfigurationImpl(
-                CPU_CORES * CPU_CORES_MULTIPLIER
-                    + ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresSubtractor,
-                CPU_CORES * CPU_CORES_MULTIPLIER
-                    + ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresSubtractor,
+                Math.max(
+                    CPU_CORES * CPU_CORES_MULTIPLIER
+                        + ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresSubtractor,
+                    1),
+                Math.max(
+                    CPU_CORES * CPU_CORES_MULTIPLIER
+                        + ComponentsConfiguration.layoutCalculationThreadPoolCpuCoresSubtractor,
+                    1),
                 ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY));
   }
 
