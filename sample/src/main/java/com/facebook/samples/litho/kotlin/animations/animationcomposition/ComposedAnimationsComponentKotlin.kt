@@ -19,12 +19,10 @@ package com.facebook.samples.litho.kotlin.animations.animationcomposition
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
-import com.facebook.litho.eventHandler
+import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.key
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
-import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
-import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
@@ -32,16 +30,14 @@ import com.facebook.litho.widget.RenderInfo
 class ComposedAnimationsComponentKotlin : KComponent() {
 
   override fun ComponentScope.render(): Component? {
-    return com.facebook.litho.sections.widget.RecyclerCollectionComponent.create(context)
+    return RecyclerCollectionComponent.create(context)
         .disablePTR(true)
         .section(
             DataDiffSection.create<Data>(SectionContext(context))
                 .data(generateData(20))
-                .renderEventHandler(eventHandler<RenderEvent<Data>> { e -> onRender(e.index) })
+                .renderEventHandler(eventHandlerWithReturn { e -> onRender(e.index) })
                 .onCheckIsSameItemEventHandler(
-                    eventHandler<OnCheckIsSameItemEvent<Data>> { e ->
-                      e.previousItem.number == e.nextItem.number
-                    })
+                    eventHandlerWithReturn { e -> isSameItem(e.previousItem, e.nextItem) })
                 .build())
         .build()
   }
@@ -60,6 +56,9 @@ class ComposedAnimationsComponentKotlin : KComponent() {
         }
     return ComponentRenderInfo.create().component(component).build()
   }
+
+  private fun isSameItem(previousItem: Data, nextItem: Data): Boolean =
+      previousItem.number == nextItem.number
 
   private fun generateData(number: Int): List<Data> {
     val dummyData = mutableListOf<Data>()

@@ -77,9 +77,10 @@ class StoryFooterComponent : KComponent() {
                 alignItems = YogaAlign.CENTER,
                 justifyContent = YogaJustify.CENTER,
                 style =
-                    Style.widthPercent(33.3f).testKey("like_button").onClick { event ->
-                      commentText.update(!commentText.value)
-                    }) {
+                    Style.widthPercent(33.3f)
+                        .onClick { commentText.update(!commentText.value) }
+                        .testKey("like_button")
+                        .transitionKey(context, "icon_like", Transition.TransitionKeyType.GLOBAL)) {
               child(
                   Column(
                       style =
@@ -87,55 +88,48 @@ class StoryFooterComponent : KComponent() {
                               .width(24f.dp)
                               .backgroundColor(Color.RED)
                               .transitionKey(
-                                  context, "icon_like", Transition.TransitionKeyType.GLOBAL),
-                  ))
+                                  context, "icon_like", Transition.TransitionKeyType.GLOBAL)))
               child(
                   Text(
-                      textSize = 16f.dp,
+                      textSize = 16f.sp,
                       text = "Like",
                       style =
-                          Style.margin(left = 8f.dp)
-                              .transitionKey(
-                                  context, "text_like", Transition.TransitionKeyType.GLOBAL)))
+                          Style.transitionKey(
+                                  context, "text_like", Transition.TransitionKeyType.GLOBAL)
+                              .margin(left = 8f.dp)))
             })
         child(
             Row(
                 alignItems = YogaAlign.CENTER,
                 justifyContent = YogaJustify.CENTER,
                 style =
-                    Style.widthPercent(33.3f)
-                        .transitionKey(
-                            context, "cont_comment", Transition.TransitionKeyType.GLOBAL)) {
-              child(
-                  Column(style = Style.height(24f.dp).width(24f.dp).backgroundColor(Color.RED)) {
-                    child(
-                        Text(
-                            textSize = 16f.dp,
-                            text = "Comment",
-                            style = Style.margin(left = 8f.dp)))
-                  })
+                    Style.transitionKey(
+                            context, "cont_comment", Transition.TransitionKeyType.GLOBAL)
+                        .widthPercent(33.3f)) {
+              child(Column(style = Style.height(24f.dp).width(24f.dp).backgroundColor(Color.RED)))
+              child(Text(textSize = 16f.sp, text = "Comment", style = Style.margin(left = 8f.dp)))
             })
         child(
             Row(
                 alignItems = YogaAlign.CENTER,
                 justifyContent = YogaJustify.CENTER,
-                style =
-                    Style.widthPercent(33.3f)
-                        .transitionKey(
-                            context, "icon_share", Transition.TransitionKeyType.GLOBAL)) {
+                style = Style.widthPercent(33.3f)) {
               child(
-                  Column(style = Style.height(24f.dp).width(24f.dp).backgroundColor(Color.RED)) {
-                    child(
-                        Text(
-                            textSize = 16f.dp,
-                            text = "Share",
-                            style =
-                                Style.margin(left = 8f.dp)
-                                    .transitionKey(
-                                        context,
-                                        "text_share",
-                                        Transition.TransitionKeyType.GLOBAL)))
-                  })
+                  Column(
+                      style =
+                          Style.transitionKey(
+                                  context, "icon_share", Transition.TransitionKeyType.GLOBAL)
+                              .height(24f.dp)
+                              .width(24f.dp)
+                              .backgroundColor(Color.RED)))
+              child(
+                  Text(
+                      textSize = 16f.sp,
+                      text = "Share",
+                      style =
+                          Style.transitionKey(
+                                  context, "text_share", Transition.TransitionKeyType.GLOBAL)
+                              .margin(left = 8f.dp)))
             })
       }
     } else {
@@ -145,18 +139,17 @@ class StoryFooterComponent : KComponent() {
                 alignItems = YogaAlign.CENTER,
                 justifyContent = YogaJustify.CENTER,
                 style =
-                    Style.padding(horizontal = 16f.dp).testKey("like_button").onClick { event ->
-                      commentText.update(!commentText.value)
-                    }) {
+                    Style.onClick { commentText.update(!commentText.value) }
+                        .padding(horizontal = 16f.dp)
+                        .testKey("like_button")) {
               child(
                   Column(
                       style =
-                          Style.height(24f.dp)
+                          Style.transitionKey(
+                                  context, "icon_like", Transition.TransitionKeyType.GLOBAL)
+                              .height(24f.dp)
                               .width(24f.dp)
-                              .backgroundColor(Color.RED)
-                              .transitionKey(
-                                  context, "icon_like", Transition.TransitionKeyType.GLOBAL),
-                  ))
+                              .backgroundColor(Color.RED)))
             })
         child(
             Column(
@@ -170,18 +163,18 @@ class StoryFooterComponent : KComponent() {
             Row(
                 alignItems = YogaAlign.CENTER,
                 style =
-                    Style.padding(all = 16f.dp)
-                        .backgroundColor(0xFF0000FF.toInt())
-                        .transitionKey(context, "cont_share", Transition.TransitionKeyType.GLOBAL)
-                        .onClick { event -> commentText.update(!commentText.value) }) {
+                    Style.transitionKey(context, "cont_share", Transition.TransitionKeyType.GLOBAL)
+                        .onClick { commentText.update(!commentText.value) }
+                        .padding(all = 16f.dp)
+                        .backgroundColor(0xFF0000FF.toInt())) {
               child(
                   Column(
                       style =
-                          Style.backgroundColor(Color.RED)
+                          Style.transitionKey(
+                                  context, "icon_share", Transition.TransitionKeyType.GLOBAL)
                               .height(24f.dp)
                               .width(24f.dp)
-                              .transitionKey(
-                                  context, "icon_share", Transition.TransitionKeyType.GLOBAL)))
+                              .backgroundColor(Color.RED)))
             })
       }
     }

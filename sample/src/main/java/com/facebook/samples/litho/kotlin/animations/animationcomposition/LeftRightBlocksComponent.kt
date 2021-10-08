@@ -50,7 +50,7 @@ class LeftRightBlocksComponent : KComponent() {
                 .animator(Transition.timing(1000, AccelerateDecelerateInterpolator())),
             Transition.create(Transition.TransitionKeyType.GLOBAL, "blue")
                 .animate(AnimatedProperties.X)
-                .animator(Transition.timing(1000)),
+                .animator(Transition.timing(1500)),
             Transition.create(Transition.TransitionKeyType.GLOBAL, "green")
                 .animate(AnimatedProperties.X)
                 .animator(Transition.timing(1000, BounceInterpolator()))))
