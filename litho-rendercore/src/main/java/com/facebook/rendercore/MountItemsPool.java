@@ -118,7 +118,7 @@ public class MountItemsPool {
       ItemPool pool = poolsMap.get(lifecycle);
       if (pool == null) {
         pool = renderUnit.getRecyclingPool();
-        
+
         // RenderUnit might produce a null pool. In this case, just create a default one.
         if (pool == null) {
           pool = new DefaultItemPool();
