@@ -39,7 +39,8 @@ object Animated {
       duration: Long = 300,
       easing: Interpolator = Easing.accelerateDecelerate(),
       onUpdate: ((Float) -> Unit)? = null,
-      onFinish: (() -> Unit)? = null
+      onFinish: (() -> Unit)? = null,
+      onCancel: (() -> Unit)? = null
   ): AnimatedAnimation {
 
     val animator = ValueAnimator.ofFloat(target.get(), to)
@@ -50,11 +51,14 @@ object Animated {
       target.set(animatedValue)
       onUpdate?.invoke(animatedValue)
     }
-    onFinish?.let {
+    if (onFinish != null || onCancel != null) {
       animator.addListener(
           object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-              onFinish()
+              onFinish?.invoke()
+            }
+            override fun onAnimationCancel(animation: Animator) {
+              onCancel?.invoke()
             }
           })
     }
@@ -72,7 +76,8 @@ object Animated {
       to: Float,
       springConfig: SpringConfig = SpringConfig(),
       onUpdate: ((Float) -> Unit)? = null,
-      onFinish: (() -> Unit)? = null
+      onFinish: (() -> Unit)? = null,
+      onCancel: (() -> Unit)? = null
   ): AnimatedAnimation {
     val springAnimation = SpringAnimation(DynamicFloatValueHolder(target))
     val springForce = SpringForce()
@@ -81,7 +86,20 @@ object Animated {
     springForce.dampingRatio = springConfig.dampingRatio
     springAnimation.spring = springForce
     onUpdate?.let { springAnimation.addUpdateListener { _, value, _ -> onUpdate(value) } }
-    onFinish?.let { springAnimation.addEndListener { _, _, _, _ -> onFinish() } }
+    onFinish?.let {
+      springAnimation.addEndListener { _, canceled, _, _ ->
+        if (!canceled) {
+          onFinish()
+        }
+      }
+    }
+    onCancel?.let {
+      springAnimation.addEndListener { _, canceled, _, _ ->
+        if (canceled) {
+          onCancel()
+        }
+      }
+    }
 
     return AnimatedSpringAnimation(springAnimation)
   }
@@ -143,7 +161,13 @@ interface AnimatedAnimation {
  */
 interface AnimationListener {
   /** triggers when animation or set of animations is completed */
-  fun onFinish()
+  fun onFinish() = Unit
+
+  /**
+   * triggers when animation is cancelled. This callback is not invoked for animations with repeat
+   * count set to INFINITE
+   */
+  fun onCancel() = Unit
 }
 
 private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : AnimatedAnimation {
@@ -155,7 +179,13 @@ private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : An
   }
 
   override fun addListener(animationListener: AnimationListener) {
-    springAnimation.addEndListener { _, _, _, _ -> animationListener.onFinish() }
+    springAnimation.addEndListener { _, canceled, _, _ ->
+      if (canceled) {
+        animationListener.onCancel()
+      } else {
+        animationListener.onFinish()
+      }
+    }
   }
 }
 
@@ -172,6 +202,9 @@ internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimatio
         object : AnimatorListenerAdapter() {
           override fun onAnimationEnd(animation: Animator) {
             animatorListener.onFinish()
+          }
+          override fun onAnimationCancel(animation: Animator) {
+            animatorListener.onCancel()
           }
         })
   }
