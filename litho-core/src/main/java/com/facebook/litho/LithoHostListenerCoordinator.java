@@ -70,10 +70,16 @@ public class LithoHostListenerCoordinator {
     LithoStats.incrementComponentMountCount();
   }
 
-  public void processVisibilityOutputs(Rect localVisibleRect) {
+  public void processVisibilityOutputs(Rect localVisibleRect, boolean isDirty) {
     if (mVisibilityExtension != null) {
-      ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
-      if (state != null) {
+      final ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
+      if (state == null) {
+        return;
+      }
+
+      if (isDirty) {
+        mVisibilityExtension.afterMount(state);
+      } else {
         mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
       }
     }
