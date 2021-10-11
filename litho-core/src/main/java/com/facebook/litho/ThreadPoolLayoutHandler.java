@@ -37,6 +37,10 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
       new LayoutThreadPoolConfigurationImpl(
           2, 2, ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY);
 
+  public static final LayoutThreadPoolConfiguration SINGLE_THREADED_THREAD_POOL_CONFIGURATION =
+      new LayoutThreadPoolConfigurationImpl(
+          1, 1, ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY);
+
   private static class DefaultThreadPoolHolder {
     static final ThreadPoolLayoutHandler INSTANCE =
         new ThreadPoolLayoutHandler(DEFAULT_LAYOUT_THREAD_POOL_CONFIGURATION);
@@ -84,6 +88,9 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
     if (CPU_CORES_MULTIPLIER > 0) {
       return CpuCoresThreadPoolHolder.INSTANCE;
     }
+    if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThreadedThreadPool) {
+      return new ThreadPoolLayoutHandler(SINGLE_THREADED_THREAD_POOL_CONFIGURATION);
+    }
 
     return DefaultThreadPoolHolder.INSTANCE;
   }
@@ -105,6 +112,8 @@ public class ThreadPoolLayoutHandler implements RunnableHandler {
       return DefaultThreadPoolHolder.INSTANCE;
     } else if (CPU_CORES_MULTIPLIER > 0) {
       return CpuCoresThreadPoolHolder.INSTANCE;
+    } else if (ComponentsConfiguration.layoutCalculationAlwaysUseSingleThreadedThreadPool) {
+      return new ThreadPoolLayoutHandler(SINGLE_THREADED_THREAD_POOL_CONFIGURATION);
     } else {
       return new ThreadPoolLayoutHandler(configuration);
     }

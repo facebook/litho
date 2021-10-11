@@ -244,6 +244,12 @@ public class ComponentsConfiguration {
   public static boolean layoutCalculationAlwaysUseDefaultThreadPool = false;
 
   /**
+   * If set to true a thread pool with a single thread will always be used for background layout
+   * calculation by ThreadPoolLayoutHandler.getNewInstance().
+   */
+  public static boolean layoutCalculationAlwaysUseSingleThreadedThreadPool = false;
+
+  /**
    * If set to a positive value, this multiplier will be used to create and enforce a thread pool of
    * size #CPU_CORES * multiplier for background layout calculation by
    * ThreadPoolLayoutHandler.getNewInstance().
