@@ -425,7 +425,12 @@ public class SpecGeneratedComponentLifecycleTest {
 
     @Override
     protected void onMeasure(
-        ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {}
+        ComponentContext c,
+        ComponentLayout layout,
+        int widthSpec,
+        int heightSpec,
+        Size size,
+        InterStagePropsContainer interStagePropsContainer) {}
   }
 
   private static class TestMountSpecSettingSizesInOnMeasure
@@ -441,7 +446,8 @@ public class SpecGeneratedComponentLifecycleTest {
         ComponentLayout layout,
         int widthSpec,
         int heightSpec,
-        Size size) {
+        Size size,
+        InterStagePropsContainer interStagePropsContainer) {
       size.width = A_WIDTH;
       size.height = A_HEIGHT;
     }

@@ -282,7 +282,10 @@ public abstract class Component
     return com.facebook.litho.Component.MountType.NONE;
   }
 
-  final void bind(ComponentContext c, Object mountedContent) {
+  final void bind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     if (c != null) {
       c.enterNoStateUpdatesMethod("bind");
     }
@@ -291,7 +294,7 @@ public abstract class Component
       ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
     }
     try {
-      onBind(c, mountedContent);
+      onBind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       if (c != null) {
         ComponentUtils.handle(c, e);
@@ -330,7 +333,10 @@ public abstract class Component
     onLoadStyle(c);
   }
 
-  final void mount(ComponentContext c, Object convertContent) {
+  final void mount(
+      final ComponentContext c,
+      final Object convertContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     if (c != null) {
       c.enterNoStateUpdatesMethod("mount");
     }
@@ -339,7 +345,7 @@ public abstract class Component
       ComponentsSystrace.beginSection("onMount:" + ((Component) this).getSimpleName());
     }
     try {
-      onMount(c, convertContent);
+      onMount(c, convertContent, interStagePropsContainer);
     } catch (Exception e) {
       if (c != null) {
         ComponentUtils.handle(c, e);
@@ -356,17 +362,23 @@ public abstract class Component
     }
   }
 
-  final void unbind(ComponentContext c, Object mountedContent) {
+  final void unbind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     try {
-      onUnbind(c, mountedContent);
+      onUnbind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       ComponentUtils.handle(c, e);
     }
   }
 
-  final void unmount(ComponentContext c, Object mountedContent) {
+  final void unmount(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     try {
-      onUnmount(c, mountedContent);
+      onUnmount(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
       ComponentUtils.handle(c, e);
     }
@@ -490,7 +502,10 @@ public abstract class Component
    */
   protected void onAttached(ComponentContext c) {}
 
-  protected void onBind(ComponentContext c, Object mountedContent) {
+  protected void onBind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
 
@@ -503,7 +518,10 @@ public abstract class Component
    * @param c The {@link Context} used by this component.
    * @param layout The {@link ComponentLayout} with defined position and size.
    */
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
+  protected void onBoundsDefined(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
    * Invokes the Component-specific render implementation, returning a RenderResult. The
@@ -577,7 +595,12 @@ public abstract class Component
   protected void onLoadStyle(ComponentContext c) {}
 
   protected void onMeasure(
-      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
+      final ComponentContext c,
+      final ComponentLayout layout,
+      final int widthSpec,
+      final int heightSpec,
+      final Size size,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     throw new IllegalStateException(
         "You must override onMeasure() if you return true in canMeasure(), "
             + "Component is: "
@@ -590,8 +613,13 @@ public abstract class Component
    * @param c The {@link Context} used by this component.
    * @param width The width of this component.
    * @param height The height of this component.
+   * @param interStagePropsContainer
    */
-  protected int onMeasureBaseline(ComponentContext c, int width, int height) {
+  protected int onMeasureBaseline(
+      final ComponentContext c,
+      final int width,
+      final int height,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     return height;
   }
 
@@ -602,7 +630,10 @@ public abstract class Component
    *
    * @param c The {@link ComponentContext} to mount the component into.
    */
-  protected void onMount(ComponentContext c, Object convertContent) {
+  protected void onMount(
+      final ComponentContext c,
+      final Object convertContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
 
@@ -633,7 +664,10 @@ public abstract class Component
     // do nothing, by default
   }
 
-  protected void onUnbind(ComponentContext c, Object mountedContent) {
+  protected void onUnbind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
 
@@ -642,8 +676,12 @@ public abstract class Component
    *
    * @param c The {@link Context} for this mount operation.
    * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
+   * @param interStagePropsContainer
    */
-  protected void onUnmount(ComponentContext c, Object mountedContent) {
+  protected void onUnmount(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     // Do nothing by default.
   }
 
@@ -1071,8 +1109,9 @@ public abstract class Component
    * a LayoutState calculation reach out to the Litho team to discuss an alternative solution.
    *
    * <p>If this is called during a LayoutState calculation, it will delegate to {@link
-   * Component#onMeasure(ComponentContext, ComponentLayout, int, int, Size)}, which does cache the
-   * measurement result for the duration of this LayoutState.
+   * Component#onMeasure(ComponentContext, ComponentLayout, int, int, Size,
+   * InterStagePropsContainer)}, which does cache the measurement result for the duration of this
+   * LayoutState.
    */
   @Deprecated
   public final void measureMightNotCacheInternalNode(

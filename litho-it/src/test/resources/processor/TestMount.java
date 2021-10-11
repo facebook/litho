@@ -50,49 +50,93 @@ import javax.annotation.Nullable;
  * @prop-required prop6 long
  * @prop-required prop7 java.lang.CharSequence
  * @prop-required prop8 long
+ *
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
 @Generated
 public final class TestMount<S extends View> extends SpecGeneratedComponent implements TestTag {
-  @Prop(resType = ResType.NONE, optional = false)
-  @Comparable(type = 3)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  @Comparable(
+      type = 3
+  )
   int prop1;
 
-  @Prop(resType = ResType.NONE, optional = true)
-  @Comparable(type = 3)
+  @Prop(
+      resType = ResType.NONE,
+      optional = true
+  )
+  @Comparable(
+      type = 3
+  )
   boolean prop2 = TestMountSpec.prop2;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  @Comparable(type = 13)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  @Comparable(
+      type = 13
+  )
   Object prop3;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  @Comparable(type = 2)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  @Comparable(
+      type = 2
+  )
   char[] prop4;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  @Comparable(type = 3)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  @Comparable(
+      type = 3
+  )
   char prop5;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  @Comparable(type = 3)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  @Comparable(
+      type = 3
+  )
   long prop6;
 
   @Nullable
-  @Prop(resType = ResType.STRING, optional = false)
-  @Comparable(type = 13)
+  @Prop(
+      resType = ResType.STRING,
+      optional = false
+  )
+  @Comparable(
+      type = 13
+  )
   CharSequence prop7;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  @Comparable(type = 3)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  @Comparable(
+      type = 3
+  )
   long prop8;
 
   @TreeProp
-  @Comparable(type = 13)
+  @Comparable(
+      type = 13
+  )
   TestTreeProp treeProp;
 
-  @androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler;
+  @androidx.annotation.Nullable
+  EventHandler<TestEvent> testEventHandler;
 
   EventTrigger onClickEventTriggerTrigger;
 
@@ -152,9 +196,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return false;
     }
     if (!useTreePropsFromContext()) {
-      if (treeProp != null
-          ? !treeProp.equals(testMountRef.treeProp)
-          : testMountRef.treeProp != null) {
+      if (treeProp != null ? !treeProp.equals(testMountRef.treeProp) : testMountRef.treeProp != null) {
         return false;
       }
     }
@@ -163,35 +205,19 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   protected boolean isEqualivalentTreeProps(ComponentContext current, ComponentContext next) {
-    if (current.getParentTreeProp(
-                com.facebook.litho.processor.integration.resources.TestTreeProp.class)
-            != null
-        ? !current
-            .getParentTreeProp(
-                com.facebook.litho.processor.integration.resources.TestTreeProp.class)
-            .equals(
-                next.getParentTreeProp(
-                    com.facebook.litho.processor.integration.resources.TestTreeProp.class))
-        : next.getParentTreeProp(
-                com.facebook.litho.processor.integration.resources.TestTreeProp.class)
-            != null) {
+    if (current.getParentTreeProp(com.facebook.litho.processor.integration.resources.TestTreeProp.class) != null ? !current.getParentTreeProp(com.facebook.litho.processor.integration.resources.TestTreeProp.class).equals(next.getParentTreeProp(com.facebook.litho.processor.integration.resources.TestTreeProp.class)) : next.getParentTreeProp(com.facebook.litho.processor.integration.resources.TestTreeProp.class) != null) {
       return false;
     }
     return true;
   }
 
   @Override
-  protected void copyInterStageImpl(
-      InterStagePropsContainer copyIntoInterStagePropsContainer,
+  protected void copyInterStageImpl(InterStagePropsContainer copyIntoInterStagePropsContainer,
       InterStagePropsContainer copyFromInterStagePropsContainer) {
-    TestMountInterStagePropsContainer copyIntoInterStagePropsContainer_ref =
-        (TestMountInterStagePropsContainer) copyIntoInterStagePropsContainer;
-    TestMountInterStagePropsContainer copyFromInterStagePropsContainer_ref =
-        (TestMountInterStagePropsContainer) copyFromInterStagePropsContainer;
-    copyIntoInterStagePropsContainer_ref.boundsDefinedOutput =
-        copyFromInterStagePropsContainer_ref.boundsDefinedOutput;
-    copyIntoInterStagePropsContainer_ref.measureOutput =
-        copyFromInterStagePropsContainer_ref.measureOutput;
+    TestMountInterStagePropsContainer copyIntoInterStagePropsContainer_ref = (TestMountInterStagePropsContainer) copyIntoInterStagePropsContainer;
+    TestMountInterStagePropsContainer copyFromInterStagePropsContainer_ref = (TestMountInterStagePropsContainer) copyFromInterStagePropsContainer;
+    copyIntoInterStagePropsContainer_ref.boundsDefinedOutput = copyFromInterStagePropsContainer_ref.boundsDefinedOutput;
+    copyIntoInterStagePropsContainer_ref.measureOutput = copyFromInterStagePropsContainer_ref.measureOutput;
   }
 
   @Override
@@ -213,9 +239,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
-    childTreeProps.put(
-        com.facebook.litho.processor.integration.resources.TestTreeProp.class,
-        TestMountSpec.onCreateFeedPrefetcherProp((ComponentContext) c, prop6));
+    childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestMountSpec.onCreateFeedPrefetcherProp(
+        (ComponentContext) c,
+        prop6));
     return childTreeProps;
   }
 
@@ -225,7 +251,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     Output<Boolean> prop2Tmp = new Output<>();
     Output<Object> prop3Tmp = new Output<>();
     TestMountSpec.onLoadStyle(
-        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
+      (ComponentContext) c,
+      (Output<Boolean>) prop2Tmp,
+      (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
@@ -238,23 +266,26 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   protected void createInitialState(ComponentContext c) {
     TestMountStateContainer _state = getStateContainerImpl(c);
     StateValue<S> state2 = new StateValue<>();
-    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
+    TestMountSpec.createInitialState(
+      (ComponentContext) c,
+      (int) prop1,
+      (StateValue<S>) state2);
     if (state2.get() != null) {
       _state.state2 = state2.get();
     }
   }
 
   @Override
-  protected void onMeasure(
-      ComponentContext context, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
+  protected void onMeasure(ComponentContext context, ComponentLayout layout, int widthSpec,
+      int heightSpec, Size size, InterStagePropsContainer _5) {
     Output<Long> measureOutputTmp = new Output<>();
     TestMountSpec.onMeasure(
-        (ComponentContext) context,
-        (ComponentLayout) layout,
-        (int) widthSpec,
-        (int) heightSpec,
-        (Size) size,
-        (Output<Long>) measureOutputTmp);
+      (ComponentContext) context,
+      (ComponentLayout) layout,
+      (int) widthSpec,
+      (int) heightSpec,
+      (Size) size,
+      (Output<Long>) measureOutputTmp);
     getInterStagePropsContainerImpl(context).measureOutput = measureOutputTmp.get();
   }
 
@@ -264,55 +295,56 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout,
+      InterStagePropsContainer _2) {
     Output<Integer> boundsDefinedOutputTmp = new Output<>();
     TestMountSpec.onBoundsDefined(
-        (ComponentContext) c,
-        (ComponentLayout) layout,
-        (Object) prop3,
-        (char[]) prop4,
-        (Long) getInterStagePropsContainerImpl(c).measureOutput,
-        (Output<Integer>) boundsDefinedOutputTmp);
+      (ComponentContext) c,
+      (ComponentLayout) layout,
+      (Object) prop3,
+      (char[]) prop4,
+      (Long) getInterStagePropsContainerImpl(c).measureOutput,
+      (Output<Integer>) boundsDefinedOutputTmp);
     getInterStagePropsContainerImpl(c).boundsDefinedOutput = boundsDefinedOutputTmp.get();
   }
 
   @Override
   protected Object onCreateMountContent(Context c) {
     Object _result;
-    _result = (Object) TestMountSpec.onCreateMountContent((Context) c);
+    _result = (Object) TestMountSpec.onCreateMountContent(
+      (Context) c);
     return _result;
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object v) {
+  protected void onMount(ComponentContext c, Object v, InterStagePropsContainer _2) {
     TestMountStateContainer _state = getStateContainerImpl(c);
     TestMountSpec.onMount(
-        (ComponentContext) c,
-        (Drawable) v,
-        (boolean) prop2,
-        (long) _state.state1,
-        (S) _state.state2,
-        (Long) getInterStagePropsContainerImpl(c).measureOutput,
-        (TestTreeProp)
-            (useTreePropsFromContext()
-                ? c.getParentTreeProp(
-                    com.facebook.litho.processor.integration.resources.TestTreeProp.class)
-                : treeProp));
+      (ComponentContext) c,
+      (Drawable) v,
+      (boolean) prop2,
+      (long) _state.state1,
+      (S) _state.state2,
+      (Long) getInterStagePropsContainerImpl(c).measureOutput,
+      (TestTreeProp) (useTreePropsFromContext() ? c.getParentTreeProp(com.facebook.litho.processor.integration.resources.TestTreeProp.class) : treeProp));
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object v) {
-    TestMountSpec.onUnmount((ComponentContext) c, (Drawable) v, (long) prop8);
+  protected void onUnmount(ComponentContext c, Object v, InterStagePropsContainer _2) {
+    TestMountSpec.onUnmount(
+      (ComponentContext) c,
+      (Drawable) v,
+      (long) prop8);
   }
 
   @Override
-  protected void onPopulateAccessibilityNode(
-      ComponentContext c, View host, AccessibilityNodeInfoCompat node) {
+  protected void onPopulateAccessibilityNode(ComponentContext c, View host,
+      AccessibilityNodeInfoCompat node) {
     TestMountSpec.onPopulateAccessibilityNode(
-        (ComponentContext) c,
-        (View) host,
-        (AccessibilityNodeInfoCompat) node,
-        (CharSequence) prop7);
+      (ComponentContext) c,
+      (View) host,
+      (AccessibilityNodeInfoCompat) node,
+      (CharSequence) prop7);
   }
 
   @Override
@@ -323,32 +355,27 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected int getExtraAccessibilityNodesCount(ComponentContext c) {
     int _result;
-    _result =
-        (int)
-            TestMountSpec.getExtraAccessibilityNodesCount(
-                (ComponentContext) c,
-                (int) prop1,
-                (CharSequence) prop7,
-                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
+    _result = (int) TestMountSpec.getExtraAccessibilityNodesCount(
+      (ComponentContext) c,
+      (int) prop1,
+      (CharSequence) prop7,
+      (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
     return _result;
   }
 
   @Override
-  protected void onPopulateExtraAccessibilityNode(
-      ComponentContext c,
-      AccessibilityNodeInfoCompat node,
-      int extraNodeIndex,
-      int componentBoundsLeft,
+  protected void onPopulateExtraAccessibilityNode(ComponentContext c,
+      AccessibilityNodeInfoCompat node, int extraNodeIndex, int componentBoundsLeft,
       int componentBoundsTop) {
     TestMountSpec.onPopulateExtraAccessibilityNode(
-        (ComponentContext) c,
-        (AccessibilityNodeInfoCompat) node,
-        (int) extraNodeIndex,
-        (int) componentBoundsLeft,
-        (int) componentBoundsTop,
-        (Object) prop3,
-        (CharSequence) prop7,
-        (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
+      (ComponentContext) c,
+      (AccessibilityNodeInfoCompat) node,
+      (int) extraNodeIndex,
+      (int) componentBoundsLeft,
+      (int) componentBoundsTop,
+      (Object) prop3,
+      (CharSequence) prop7,
+      (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
   }
 
   @Override
@@ -359,34 +386,28 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y) {
     int _result;
-    _result =
-        (int)
-            TestMountSpec.getExtraAccessibilityNodeAt(
-                (ComponentContext) c,
-                (int) x,
-                (int) y,
-                (Object) prop3,
-                (CharSequence) prop7,
-                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
+    _result = (int) TestMountSpec.getExtraAccessibilityNodeAt(
+      (ComponentContext) c,
+      (int) x,
+      (int) y,
+      (Object) prop3,
+      (CharSequence) prop7,
+      (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
     return _result;
   }
 
   @Override
-  protected boolean shouldUpdate(
-      Component _prevAbstractImpl,
-      StateContainer _prevStateContainer,
-      Component _nextAbstractImpl,
-      StateContainer _nextStateContainer) {
+  protected boolean shouldUpdate(Component _prevAbstractImpl, StateContainer _prevStateContainer,
+      Component _nextAbstractImpl, StateContainer _nextStateContainer) {
     if (!isPureRender()) {
       return true;
     }
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;
-    Diff<Integer> prop1 =
-        new Diff<Integer>(
-            _prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
-    _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
+    Diff<Integer> prop1 = new Diff<Integer>(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
+    _result = (boolean) TestMountSpec.shouldUpdate(
+      (Diff<Integer>) prop1);
     return _result;
   }
 
@@ -398,7 +419,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected MountContentPool onCreateMountContentPool() {
     MountContentPool _result;
-    _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
+    _result = (MountContentPool) TestMountSpec.onCreateMountContentPool(
+      );
     return _result;
   }
 
@@ -448,28 +470,24 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     _dispatcher.dispatchOnEvent(_eventHandler, _eventState);
   }
 
-  private void testLayoutEvent(
-      HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
+  private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
+      int param1) {
     TestMount _ref = (TestMount) _abstract;
     TestMountStateContainer _state = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestMountSpec.testLayoutEvent(
-        c,
-        (Object) _ref.prop3,
-        (char) _ref.prop5,
-        view,
-        param1,
-        (long) _state.state1,
-        (int) _ref.getCached(c));
+      c,
+      (Object) _ref.prop3,
+      (char) _ref.prop5,
+      view,
+      param1,
+      (long) _state.state1,
+      (int) _ref.getCached(c));
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(
-        TestMount.class,
-        "TestMount",
-        c,
-        1328162206,
-        new Object[] {
-          c, param1,
+    return newEventHandler(TestMount.class, "TestMount", c, 1328162206, new Object[] {
+          c,
+          param1,
         });
   }
 
@@ -477,53 +495,51 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   protected Object dispatchOnEventImpl(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case 1328162206:
-        {
-          ClickEvent _event = (ClickEvent) eventState;
-          testLayoutEvent(
+      case 1328162206: {
+        ClickEvent _event = (ClickEvent) eventState;
+        testLayoutEvent(
               eventHandler.mHasEventDispatcher,
               (ComponentContext) eventHandler.params[0],
               (View) _event.view,
               (int) eventHandler.params[1]);
-          return null;
-        }
-      case -1048037474:
-        {
-          dispatchErrorEvent(
-              (com.facebook.litho.ComponentContext) eventHandler.params[0],
-              (com.facebook.litho.ErrorEvent) eventState);
-          return null;
-        }
-      default:
         return null;
+      }
+      case -1048037474: {
+        dispatchErrorEvent((com.facebook.litho.ComponentContext) eventHandler.params[0], (com.facebook.litho.ErrorEvent) eventState);
+        return null;
+      }
+      default:
+          return null;
     }
   }
 
-  private static EventTrigger<ClickEvent> createOnClickEventTriggerTrigger(
-      ComponentContext c, Component component) {
+  private static EventTrigger<ClickEvent> createOnClickEventTriggerTrigger(ComponentContext c,
+      Component component) {
     int methodId = -830639048;
     return newEventTrigger(c, component, methodId);
   }
 
   /**
-   * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the
-   *     component a Handle and use {@link #onClickEventTrigger(ComponentContext, Handle)}.
+   * @deprecated Do not use this method to get a EventTrigger to use later. Instead give the component a Handle and use {@link #onClickEventTrigger(ComponentContext, Handle)}.
    */
   @Deprecated
-  public static EventTrigger<ClickEvent> onClickEventTriggerTrigger(
-      ComponentContext c, String key) {
+  public static EventTrigger<ClickEvent> onClickEventTriggerTrigger(ComponentContext c,
+      String key) {
     int methodId = -830639048;
     return newEventTrigger(c, key, methodId);
   }
 
   private void onClickEventTrigger(ComponentContext c, EventTriggerTarget _abstract, View view) {
     TestMount _ref = (TestMount) _abstract;
-    TestMountSpec.onClickEventTrigger(c, view, (Object) _ref.prop3);
+    TestMountSpec.onClickEventTrigger(
+      c,
+      view,
+      (Object) _ref.prop3);
   }
 
   /**
-   * This will send the onClickEventTrigger trigger to the component with the given handle. For more
-   * information about using triggers, see https://fblitho.com/docs/trigger-events
+   * This will send the onClickEventTrigger trigger to the component with the given handle.
+   * For more information about using triggers, see https://fblitho.com/docs/trigger-events
    */
   public static void onClickEventTrigger(ComponentContext c, Handle handle, View view) {
     int methodId = -830639048;
@@ -533,10 +549,13 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     }
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+    trigger.dispatchOnTrigger(_eventState, new Object[] {
+        });
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(ComponentContext c, String key, View view) {
     int methodId = -830639048;
@@ -546,40 +565,48 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     }
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+    trigger.dispatchOnTrigger(_eventState, new Object[] {
+        });
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   public static void onClickEventTrigger(EventTrigger trigger, View view) {
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+    trigger.dispatchOnTrigger(_eventState, new Object[] {
+        });
   }
 
-  /** @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead. */
+  /**
+   * @deprecated Use {@link #onClickEventTrigger(ComponentContext, Handle)} instead.
+   */
   @Deprecated
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestMount component = (TestMount) c.getComponentScope();
-    component.onClickEventTrigger(c, (EventTriggerTarget) component, view);
+    component.onClickEventTrigger(
+        c,
+        (EventTriggerTarget) component,
+        view);
   }
 
   @Override
-  protected Object acceptTriggerEventImpl(
-      final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
+  protected Object acceptTriggerEventImpl(final EventTrigger eventTrigger, final Object eventState,
+      final Object[] params) {
     int id = eventTrigger.mId;
-    switch (id) {
-      case -830639048:
-        {
-          ClickEvent _event = (ClickEvent) eventState;
-          onClickEventTrigger(
+    switch(id) {
+      case -830639048: {
+        ClickEvent _event = (ClickEvent) eventState;
+        onClickEventTrigger(
               (com.facebook.litho.ComponentContext) eventTrigger.mComponentContext,
               eventTrigger.mTriggerTarget,
               _event.view);
-          return null;
-        }
-      default:
         return null;
+      }
+      default:
+          return null;
     }
   }
 
@@ -598,18 +625,16 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected void transferState(
-      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    TestMountStateContainer<S> prevStateContainer =
-        (TestMountStateContainer<S>) _prevStateContainer;
-    TestMountStateContainer<S> nextStateContainer =
-        (TestMountStateContainer<S>) _nextStateContainer;
+  protected void transferState(StateContainer _prevStateContainer,
+      StateContainer _nextStateContainer) {
+    TestMountStateContainer<S> prevStateContainer = (TestMountStateContainer<S>) _prevStateContainer;
+    TestMountStateContainer<S> nextStateContainer = (TestMountStateContainer<S>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
   }
 
-  private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
-      ComponentContext c, TestMount component) {
+  private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
+      TestMount component) {
     TestMountStateContainer _stateContainer = new TestMountStateContainer();
     transferState(Component.getStateContainer(c, component), _stateContainer);
     c.applyLazyStateUpdatesForContainer(_stateContainer);
@@ -648,8 +673,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     if (_component == null) {
       return;
     }
-    StateContainer.StateUpdate _stateUpdate =
-        new StateContainer.StateUpdate(-2147483648, lazyUpdateValue);
+    StateContainer.StateUpdate _stateUpdate = new StateContainer.StateUpdate(-2147483648, lazyUpdateValue);
     c.updateStateLazy(_stateUpdate);
   }
 
@@ -657,19 +681,18 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(
-      ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr,
+      int defStyleRes) {
     TestMount instance = new TestMount();
     return new Builder(context, defStyleAttr, defStyleRes, instance);
   }
 
   private int getCached(ComponentContext c) {
     String globalKey = c.getGlobalKey();
-    final CachedInputs inputs =
-        new CachedInputs(globalKey, prop3, prop5, getStateContainerImpl(c).state1);
+    final CachedInputs inputs = new CachedInputs(globalKey,prop3,prop5,getStateContainerImpl(c).state1);
     Integer cached = (Integer) c.getCachedValue(inputs);
     if (cached == null) {
-      cached = TestMountSpec.onCalculateCached(prop3, prop5, getStateContainerImpl(c).state1);
+      cached = TestMountSpec.onCalculateCached(prop3,prop5,getStateContainerImpl(c).state1);
       c.putCachedValue(inputs, cached);
     }
     return cached;
@@ -682,15 +705,21 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     Long measureOutput;
   }
 
-  @VisibleForTesting(otherwise = 2)
+  @VisibleForTesting(
+      otherwise = 2
+  )
   @Generated
   static class TestMountStateContainer<S extends View> extends StateContainer {
     @State
-    @Comparable(type = 3)
+    @Comparable(
+        type = 3
+    )
     long state1;
 
     @State
-    @Comparable(type = 13)
+    @Comparable(
+        type = 13
+    )
     S state2;
 
     @Override
@@ -720,15 +749,14 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
     ComponentContext mContext;
 
-    private final String[] REQUIRED_PROPS_NAMES =
-        new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
+    private final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
 
     private final int REQUIRED_PROPS_COUNT = 7;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private Builder(
-        ComponentContext context, int defStyleAttr, int defStyleRes, TestMount testMountRef) {
+    private Builder(ComponentContext context, int defStyleAttr, int defStyleRes,
+        TestMount testMountRef) {
       super(context, defStyleAttr, defStyleRes, testMountRef);
       mTestMount = testMountRef;
       mContext = context;
@@ -740,7 +768,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       mTestMount = (TestMount) component;
     }
 
-    @PropSetter(value = "prop1", required = true)
+    @PropSetter(
+        value = "prop1",
+        required = true
+    )
     @RequiredProp("prop1")
     public Builder<S> prop1(int prop1) {
       this.mTestMount.prop1 = prop1;
@@ -748,13 +779,19 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop2", required = false)
+    @PropSetter(
+        value = "prop2",
+        required = false
+    )
     public Builder<S> prop2(boolean prop2) {
       this.mTestMount.prop2 = prop2;
       return this;
     }
 
-    @PropSetter(value = "prop3", required = true)
+    @PropSetter(
+        value = "prop3",
+        required = true
+    )
     @RequiredProp("prop3")
     public Builder<S> prop3(Object prop3) {
       this.mTestMount.prop3 = prop3;
@@ -762,7 +799,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop4", required = true)
+    @PropSetter(
+        value = "prop4",
+        required = true
+    )
     @RequiredProp("prop4")
     public Builder<S> prop4(char[] prop4) {
       this.mTestMount.prop4 = prop4;
@@ -770,7 +810,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop5", required = true)
+    @PropSetter(
+        value = "prop5",
+        required = true
+    )
     @RequiredProp("prop5")
     public Builder<S> prop5(char prop5) {
       this.mTestMount.prop5 = prop5;
@@ -778,7 +821,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop6", required = true)
+    @PropSetter(
+        value = "prop6",
+        required = true
+    )
     @RequiredProp("prop6")
     public Builder<S> prop6(long prop6) {
       this.mTestMount.prop6 = prop6;
@@ -786,7 +832,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop7", required = true)
+    @PropSetter(
+        value = "prop7",
+        required = true
+    )
     @RequiredProp("prop7")
     public Builder<S> prop7(@Nullable CharSequence prop7) {
       this.mTestMount.prop7 = prop7;
@@ -794,7 +843,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop7", required = true)
+    @PropSetter(
+        value = "prop7",
+        required = true
+    )
     @RequiredProp("prop7")
     public Builder<S> prop7Res(@StringRes int resId) {
       this.mTestMount.prop7 = mResourceResolver.resolveStringRes(resId);
@@ -802,7 +854,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop7", required = true)
+    @PropSetter(
+        value = "prop7",
+        required = true
+    )
     @RequiredProp("prop7")
     public Builder<S> prop7Res(@StringRes int resId, Object... formatArgs) {
       this.mTestMount.prop7 = mResourceResolver.resolveStringRes(resId, formatArgs);
@@ -810,7 +865,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop7", required = true)
+    @PropSetter(
+        value = "prop7",
+        required = true
+    )
     @RequiredProp("prop7")
     public Builder<S> prop7Attr(@AttrRes int attrResId, @StringRes int defResId) {
       this.mTestMount.prop7 = mResourceResolver.resolveStringAttr(attrResId, defResId);
@@ -818,7 +876,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop7", required = true)
+    @PropSetter(
+        value = "prop7",
+        required = true
+    )
     @RequiredProp("prop7")
     public Builder<S> prop7Attr(@AttrRes int attrResId) {
       this.mTestMount.prop7 = mResourceResolver.resolveStringAttr(attrResId, 0);
@@ -826,7 +887,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    @PropSetter(value = "prop8", required = true)
+    @PropSetter(
+        value = "prop8",
+        required = true
+    )
     @RequiredProp("prop8")
     public Builder<S> prop8(long prop8) {
       this.mTestMount.prop8 = prop8;
@@ -834,16 +898,15 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       return this;
     }
 
-    public Builder<S> testEventHandler(
-        @androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler) {
+    public Builder<S> testEventHandler(@androidx.annotation.Nullable EventHandler<TestEvent> testEventHandler) {
       this.mTestMount.testEventHandler = testEventHandler;
       return this;
     }
 
     /**
-     * @deprecated Do not use this method to set an EventTrigger. Instead, set a Handle on this
-     *     Component with .handle() and dispatch the trigger using the variant of
-     *     TestMount.onClickEventTriggerTrigger that takes a Handle param.
+     * @deprecated Do not use this method to set an EventTrigger. Instead, set a Handle on
+     * this Component with .handle() and dispatch the trigger using the variant of
+     * TestMount.onClickEventTriggerTrigger that takes a Handle param.
      */
     @Deprecated
     public Builder<S> onClickEventTriggerTrigger(EventTrigger onClickEventTriggerTrigger) {
@@ -852,11 +915,9 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     }
 
     private void registerOnClickEventTriggerTrigger() {
-      com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
-          this.mTestMount.onClickEventTriggerTrigger;
+      com.facebook.litho.EventTrigger onClickEventTriggerTrigger = this.mTestMount.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
-        onClickEventTriggerTrigger =
-            TestMount.createOnClickEventTriggerTrigger(this.mContext, this.mTestMount);
+        onClickEventTriggerTrigger = TestMount.createOnClickEventTriggerTrigger(this.mContext, this.mTestMount);
       }
       onClickEventTriggerTrigger(onClickEventTriggerTrigger);
     }
@@ -912,9 +973,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       if (!com.facebook.litho.CommonUtils.equals(globalKey, cachedValueInputs.globalKey)) {
         return false;
       }
-      if (prop3 != null
-          ? !prop3.equals(cachedValueInputs.prop3)
-          : cachedValueInputs.prop3 != null) {
+      if (prop3 != null ? !prop3.equals(cachedValueInputs.prop3) : cachedValueInputs.prop3 != null) {
         return false;
       }
       if (prop5 != cachedValueInputs.prop5) {

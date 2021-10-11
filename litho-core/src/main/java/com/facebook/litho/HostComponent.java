@@ -52,7 +52,10 @@ class HostComponent extends Component {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object convertContent) {
+  protected void onMount(
+      final ComponentContext c,
+      final Object convertContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) convertContent;
 
     if (Build.VERSION.SDK_INT >= 11) {
@@ -65,7 +68,10 @@ class HostComponent extends Component {
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent) {
+  protected void onUnmount(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) mountedContent;
 
     // Some hosts might be duplicating parent state which could be 'pressed' and under certain
@@ -81,7 +87,10 @@ class HostComponent extends Component {
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent) {
+  protected void onBind(
+      ComponentContext c,
+      Object mountedContent,
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     final ComponentHost host = (ComponentHost) mountedContent;
     host.maybeInvalidateAccessibilityState();
   }

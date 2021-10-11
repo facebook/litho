@@ -294,7 +294,7 @@ public class InternalNodeUtils {
     }
 
     try {
-      component.onBoundsDefined(result.getContext(), result);
+      component.onBoundsDefined(result.getContext(), result, null);
     } catch (Exception e) {
       ComponentUtils.handleWithHierarchy(result.getContext(), component, e);
     } finally {

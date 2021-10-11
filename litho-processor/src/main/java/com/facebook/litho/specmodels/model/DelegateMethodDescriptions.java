@@ -183,7 +183,8 @@ public final class DelegateMethodDescriptions {
                   ClassNames.COMPONENT_LAYOUT,
                   TypeName.INT,
                   TypeName.INT,
-                  ClassNames.SIZE))
+                  ClassNames.SIZE,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(
                   PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
@@ -221,7 +222,10 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("onBoundsDefined")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.COMPONENT_LAYOUT))
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT,
+                  ClassNames.COMPONENT_LAYOUT,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(
                   PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
@@ -256,7 +260,10 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("onMount")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT,
+                  ClassNames.OBJECT,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(
                   PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
@@ -275,7 +282,10 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("onBind")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT,
+                  ClassNames.OBJECT,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(
                   PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
@@ -294,7 +304,10 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("onUnbind")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT,
+                  ClassNames.OBJECT,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(
@@ -313,7 +326,10 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("onUnmount")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT,
+                  ClassNames.OBJECT,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(

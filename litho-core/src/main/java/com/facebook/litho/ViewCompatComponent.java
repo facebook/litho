@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 
@@ -70,7 +71,12 @@ public class ViewCompatComponent<V extends View> extends Component {
 
   @Override
   protected void onMeasure(
-      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
+      ComponentContext c,
+      ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     final V toMeasure =
         (V) ComponentsPools.acquireMountContent(c.getAndroidContext(), this, c.getRecyclingMode());
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
@@ -99,12 +105,18 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent) {
+  protected void onBind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     mViewBinder.bind((V) mountedContent);
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent) {
+  protected void onUnbind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     mViewBinder.unbind((V) mountedContent);
   }
 

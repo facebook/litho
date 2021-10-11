@@ -680,7 +680,7 @@ public class LayoutState
       }
 
       try {
-        component.onBoundsDefined(scopedContext, result);
+        component.onBoundsDefined(scopedContext, result, null);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       } finally {

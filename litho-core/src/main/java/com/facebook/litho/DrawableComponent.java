@@ -34,7 +34,10 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
+  protected void onBoundsDefined(
+      final ComponentContext c,
+      final ComponentLayout layout,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     setDrawableWidth(layout.getWidth());
     setDrawableHeight(layout.getHeight());
   }
@@ -45,21 +48,30 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  protected void onMount(ComponentContext context, Object content) {
+  protected void onMount(
+      final ComponentContext context,
+      final Object content,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     MatrixDrawable drawable = (MatrixDrawable) content;
 
     drawable.mount(getDrawable());
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent) {
+  protected void onBind(
+      final ComponentContext c,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
 
     mountedDrawable.bind(getDrawableWidth(), getDrawableHeight());
   }
 
   @Override
-  protected void onUnmount(ComponentContext context, Object mountedContent) {
+  protected void onUnmount(
+      final ComponentContext context,
+      final Object mountedContent,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
     matrixDrawable.unmount();
   }

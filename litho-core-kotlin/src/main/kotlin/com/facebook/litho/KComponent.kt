@@ -167,11 +167,17 @@ abstract class KComponent : Component() {
 
   final override fun onAttached(c: ComponentContext) = super.onAttached(c)
 
-  final override fun onBind(c: ComponentContext, mountedContent: Any) =
-      super.onBind(c, mountedContent)
+  final override fun onBind(
+      c: ComponentContext,
+      mountedContent: Any,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onBind(c, mountedContent, interStagePropsContainer)
 
-  final override fun onBoundsDefined(c: ComponentContext, layout: ComponentLayout) =
-      super.onBoundsDefined(c, layout)
+  final override fun onBoundsDefined(
+      c: ComponentContext,
+      layout: ComponentLayout,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onBoundsDefined(c, layout, interStagePropsContainer)
 
   final override fun onCreateMountContent(context: Context) = super.onCreateMountContent(context)
 
@@ -190,14 +196,22 @@ abstract class KComponent : Component() {
       layout: ComponentLayout,
       widthSpec: Int,
       heightSpec: Int,
-      size: Size
-  ) = super.onMeasure(c, layout, widthSpec, heightSpec, size)
+      size: Size,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onMeasure(c, layout, widthSpec, heightSpec, size, interStagePropsContainer)
 
-  final override fun onMeasureBaseline(c: ComponentContext, width: Int, height: Int) =
-      super.onMeasureBaseline(c, width, height)
+  final override fun onMeasureBaseline(
+      c: ComponentContext,
+      width: Int,
+      height: Int,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onMeasureBaseline(c, width, height, interStagePropsContainer)
 
-  final override fun onMount(c: ComponentContext, convertContent: Any) =
-      super.onMount(c, convertContent)
+  final override fun onMount(
+      c: ComponentContext,
+      convertContent: Any,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onMount(c, convertContent, interStagePropsContainer)
 
   final override fun onPopulateAccessibilityNode(
       c: ComponentContext,
@@ -217,11 +231,17 @@ abstract class KComponent : Component() {
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
 
-  final override fun onUnbind(c: ComponentContext, mountedContent: Any) =
-      super.onUnbind(c, mountedContent)
+  final override fun onUnbind(
+      c: ComponentContext,
+      mountedContent: Any,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onUnbind(c, mountedContent, interStagePropsContainer)
 
-  final override fun onUnmount(c: ComponentContext, mountedContent: Any) =
-      super.onUnmount(c, mountedContent)
+  final override fun onUnmount(
+      c: ComponentContext,
+      mountedContent: Any,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onUnmount(c, mountedContent, interStagePropsContainer)
 
   final override fun poolSize() = super.poolSize()
 

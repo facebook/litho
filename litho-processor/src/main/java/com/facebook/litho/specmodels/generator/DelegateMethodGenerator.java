@@ -126,7 +126,8 @@ public class DelegateMethodGenerator {
     for (int i = 0, size = lifecycleArgs.size(); i < size; i++) {
 
       final TypeName lifecycleArg = lifecycleArgs.get(i).type;
-      final TypeName delegateArg = delegateArgs.get(i).getTypeName();
+      final TypeName delegateArg =
+          delegateArgs.size() > i ? delegateArgs.get(i).getTypeName() : null;
 
       final String name;
 

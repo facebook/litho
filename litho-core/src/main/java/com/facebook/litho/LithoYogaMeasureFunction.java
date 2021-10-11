@@ -117,7 +117,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       } else {
         final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-        component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size);
+        component.onMeasure(componentScopedContext, result, widthSpec, heightSpec, size, null);
 
         if (size.width < 0 || size.height < 0) {
           throw new IllegalStateException(

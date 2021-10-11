@@ -194,7 +194,8 @@ public class InterStagePropsGeneratorTest {
     assertThat(onBindMethod.toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void onBind(com.facebook.litho.ComponentContext c, java.lang.Object lithoView) {\n"
+                + "protected void onBind(com.facebook.litho.ComponentContext c, java.lang.Object lithoView,\n"
+                + "    com.facebook.litho.InterStagePropsContainer _2) {\n"
                 + "  MountTestSpec.onBind(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.LithoView) lithoView,\n"

@@ -23,6 +23,7 @@ import androidx.annotation.StyleRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.InterStagePropsContainer;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import javax.annotation.Nullable;
@@ -63,12 +64,16 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object convertView) {
+  protected void onMount(
+      ComponentContext c, Object convertView, InterStagePropsContainer interStagePropsContainer) {
     onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent) {
+  protected void onUnmount(
+      ComponentContext c,
+      Object mountedContent,
+      InterStagePropsContainer interStagePropsContainer) {
     onUnmountCalled();
   }
 
@@ -79,7 +84,12 @@ public class TestViewComponent extends TestComponent {
 
   @Override
   protected void onMeasure(
-      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
+      ComponentContext c,
+      ComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,
+      InterStagePropsContainer interStagePropsContainer) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
 
@@ -90,17 +100,26 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
+  protected void onBoundsDefined(
+      ComponentContext c,
+      ComponentLayout layout,
+      InterStagePropsContainer interStagePropsContainer) {
     onDefineBoundsCalled();
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent) {
+  protected void onBind(
+      ComponentContext c,
+      Object mountedContent,
+      InterStagePropsContainer interStagePropsContainer) {
     onBindCalled();
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent) {
+  protected void onUnbind(
+      ComponentContext c,
+      Object mountedContent,
+      InterStagePropsContainer interStagePropsContainer) {
     onUnbindCalled();
   }
 

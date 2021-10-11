@@ -210,7 +210,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().mount(getComponentContext(unit), content);
+      output.getComponent().mount(getComponentContext(unit), content, null);
     }
 
     @Override
@@ -220,7 +220,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unmount(getComponentContext(unit), content);
+      output.getComponent().unmount(getComponentContext(unit), content, null);
 
       if (content instanceof HasLithoViewChildren) {
         final ArrayList<LithoView> lithoViews = new ArrayList<>();
@@ -259,7 +259,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         }
       }
 
-      output.getComponent().bind(getComponentContext(unit), content);
+      output.getComponent().bind(getComponentContext(unit), content, null);
     }
 
     @Override
@@ -269,7 +269,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unbind(getComponentContext(unit), content);
+      output.getComponent().unbind(getComponentContext(unit), content, null);
     }
   }
 

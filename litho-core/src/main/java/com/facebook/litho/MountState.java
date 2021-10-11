@@ -1170,8 +1170,8 @@ class MountState implements MountDelegateTarget {
     // Call unmount and mount in sequence to make sure all the the resources are correctly
     // de-allocated. It's possible for previousContent to equal null - when the root is
     // interactive we create a LayoutOutput without content in order to set up click handling.
-    previousComponent.unmount(previousContext, previousContent);
-    newComponent.mount(newContext, previousContent);
+    previousComponent.unmount(previousContext, previousContent, null);
+    newComponent.mount(newContext, previousContent, null);
   }
 
   private void mountLayoutOutput(
@@ -1207,7 +1207,7 @@ class MountState implements MountDelegateTarget {
             mContext.getAndroidContext(), component, mRecyclingMode);
 
     final ComponentContext context = getContextForComponent(node);
-    component.mount(context, content);
+    component.mount(context, content, null);
 
     // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
     if (isHostSpec(component)) {
@@ -2317,7 +2317,7 @@ class MountState implements MountDelegateTarget {
       unbindComponentFromContent(item, component, content);
     }
     if (mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
-      component.unmount(context, content);
+      component.unmount(context, content, null);
     }
   }
 
@@ -2713,7 +2713,7 @@ class MountState implements MountDelegateTarget {
       final ComponentContext context,
       final Object content) {
 
-    component.bind(getContextForComponent(mountItem.getRenderTreeNode()), content);
+    component.bind(getContextForComponent(mountItem.getRenderTreeNode()), content, null);
     mDynamicPropsManager.onBindComponentToContent(component, context, content);
     mountItem.setIsBound(true);
   }
@@ -2721,7 +2721,7 @@ class MountState implements MountDelegateTarget {
   private void unbindComponentFromContent(
       MountItem mountItem, Component component, Object content) {
     mDynamicPropsManager.onUnbindComponent(component, content);
-    component.unbind(getContextForComponent(mountItem.getRenderTreeNode()), content);
+    component.unbind(getContextForComponent(mountItem.getRenderTreeNode()), content, null);
     mountItem.setIsBound(false);
   }
 
