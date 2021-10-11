@@ -681,4 +681,10 @@ public class ComponentContext implements Cloneable {
   boolean useStatelessComponent() {
     return mComponentTree != null && mComponentTree.useStatelessComponent();
   }
+
+  boolean shouldReuseOutputs() {
+    return mComponentTree != null
+        && mComponentTree.useRenderUnitIdMap()
+        && mComponentTree.shouldReuseOutputs();
+  }
 }

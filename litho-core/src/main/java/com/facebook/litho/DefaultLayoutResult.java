@@ -55,6 +55,12 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
 
+  private @Nullable LithoRenderUnit mContentRenderUnit;
+  private @Nullable LithoRenderUnit mHostRenderUnit;
+  private @Nullable LithoRenderUnit mBackgroundRenderUnit;
+  private @Nullable LithoRenderUnit mForegroundRenderUnit;
+  private @Nullable LithoRenderUnit mBorderRenderUnit;
+
   public DefaultLayoutResult(
       final LayoutStateContext layoutStateContext,
       final ComponentContext c,
@@ -327,27 +333,62 @@ public class DefaultLayoutResult implements LithoLayoutResult, ComponentLayout {
 
   @Override
   public @Nullable LithoRenderUnit getRenderUnit() {
-    return InternalNodeUtils.createContentRenderUnit(this);
+    if (mContext.shouldReuseOutputs()) {
+      if (mContentRenderUnit == null) {
+        mContentRenderUnit = InternalNodeUtils.createContentRenderUnit(this);
+      }
+      return mContentRenderUnit;
+    } else {
+      return InternalNodeUtils.createContentRenderUnit(this);
+    }
   }
 
   @Override
   public @Nullable LithoRenderUnit getHostRenderUnit() {
-    return InternalNodeUtils.createHostRenderUnit(this);
+    if (mContext.shouldReuseOutputs()) {
+      if (mHostRenderUnit == null) {
+        mHostRenderUnit = InternalNodeUtils.createHostRenderUnit(this);
+      }
+      return mHostRenderUnit;
+    } else {
+      return InternalNodeUtils.createHostRenderUnit(this);
+    }
   }
 
   @Override
   public @Nullable LithoRenderUnit getBackgroundRenderUnit() {
-    return InternalNodeUtils.createBackgroundRenderUnit(this);
+    if (mContext.shouldReuseOutputs()) {
+      if (mBackgroundRenderUnit == null) {
+        mBackgroundRenderUnit = InternalNodeUtils.createBackgroundRenderUnit(this);
+      }
+      return mBackgroundRenderUnit;
+    } else {
+      return InternalNodeUtils.createBackgroundRenderUnit(this);
+    }
   }
 
   @Override
   public @Nullable LithoRenderUnit getForegroundRenderUnit() {
-    return InternalNodeUtils.createForegroundRenderUnit(this);
+    if (mContext.shouldReuseOutputs()) {
+      if (mForegroundRenderUnit == null) {
+        mForegroundRenderUnit = InternalNodeUtils.createForegroundRenderUnit(this);
+      }
+      return mForegroundRenderUnit;
+    } else {
+      return InternalNodeUtils.createForegroundRenderUnit(this);
+    }
   }
 
   @Override
   public @Nullable LithoRenderUnit getBorderRenderUnit() {
-    return InternalNodeUtils.createBorderRenderUnit(this);
+    if (mContext.shouldReuseOutputs()) {
+      if (mBorderRenderUnit == null) {
+        mBorderRenderUnit = InternalNodeUtils.createBorderRenderUnit(this);
+      }
+      return mBorderRenderUnit;
+    } else {
+      return InternalNodeUtils.createBorderRenderUnit(this);
+    }
   }
 
   @Nullable

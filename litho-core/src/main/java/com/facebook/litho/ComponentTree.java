@@ -449,7 +449,9 @@ public class ComponentTree implements LithoLifecycleListener {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
-    mIsLayoutCachingEnabled = builder.isLayoutCachingEnabled;
+
+    mIsLayoutCachingEnabled =
+        builder.componentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
     mReuseInternalNodes = mIsLayoutCachingEnabled || builder.reuseInternalNodes;
     mUseInputOnlyInternalNodes =
         mReuseInternalNodes || mComponentsConfiguration.getUseInputOnlyInternalNodes();
@@ -1241,6 +1243,10 @@ public class ComponentTree implements LithoLifecycleListener {
   /** Returns the recycling mode. Please see {@link RecyclingMode for details of different modes} */
   public @RecyclingMode int getRecyclingMode() {
     return mRecyclingMode;
+  }
+
+  public boolean shouldReuseOutputs() {
+    return mComponentsConfiguration.shouldReuseOutputs();
   }
 
   public boolean useStatelessComponent() {

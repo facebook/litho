@@ -308,6 +308,8 @@ public class ComponentsConfiguration {
   private final @Deprecated boolean mIgnoreNullLayoutStateError;
   private final boolean mUseInputOnlyInternalNodes;
 
+  private final boolean mShouldReuseOutputs;
+
   public boolean getUseCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -325,6 +327,11 @@ public class ComponentsConfiguration {
     mUseCancelableLayoutFutures = builder.mUseCancelableLayoutFutures;
     mIgnoreNullLayoutStateError = builder.mIgnoreNullLayoutStateError;
     mUseInputOnlyInternalNodes = builder.mUseInputOnlyInternalNodes;
+    mShouldReuseOutputs = builder.mShouldReuseOutputs;
+  }
+
+  public boolean shouldReuseOutputs() {
+    return mShouldReuseOutputs;
   }
 
   public static ComponentsConfiguration.Builder create() {
@@ -340,9 +347,11 @@ public class ComponentsConfiguration {
   }
 
   public static class Builder {
+
     boolean mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
     boolean mUseInputOnlyInternalNodes = false;
+    boolean mShouldReuseOutputs = false;
 
     protected Builder() {}
 
