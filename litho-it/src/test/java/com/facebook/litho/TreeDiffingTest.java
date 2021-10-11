@@ -25,18 +25,11 @@ import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
 import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutState.calculate;
-import static com.facebook.litho.LayoutState.createDiffNode;
-import static com.facebook.litho.SizeSpec.getMode;
-import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
-import static com.facebook.yoga.YogaConstants.UNDEFINED;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
-import static com.facebook.yoga.YogaMeasureOutput.getHeight;
-import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
@@ -52,15 +45,13 @@ import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
-import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.Text;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -145,175 +136,92 @@ public class TreeDiffingTest {
     return sum;
   }
 
-  private DefaultInternalNode createInternalNodeForMeasurableComponent(Component component) {
-    ComponentContext context = new ComponentContext(mLithoViewRule.getContext());
-    LayoutState layoutState =
-        new LayoutState(context, component, new StateHandler(), null, null, null);
-    context.setLayoutStateContext(layoutState.getLayoutStateContext());
-    component.setScopedContext(context);
-    final ComponentContext c = new ComponentContext(context);
-    DefaultInternalNode node =
-        (DefaultInternalNode) Layout.create(context.getLayoutStateContext(), c, component);
-    node.setLayoutStateContextRecursively(context.getLayoutStateContext());
-    return node;
-  }
-
-  private long measureInternalNode(
-      DefaultInternalNode node, float widthConstranint, float heightConstraint) {
-
-    final YogaMeasureFunction measureFunc =
-        Whitebox.getInternalState(node.getYogaNode(), "mMeasureFunction");
-
-    return measureFunc.measure(
-        node.getYogaNode(), widthConstranint, EXACTLY, heightConstraint, EXACTLY);
-  }
-
   @Test
   public void testCachedMeasureFunction() {
-    final Component component =
-        TestDrawableComponent.create(mLithoViewRule.getComponentTree().getContext())
-            .key("global_key")
-            .build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component_0 = Text.create(c).text("hello-world").build();
 
-    DefaultInternalNode node = createInternalNodeForMeasurableComponent(component);
-    DiffNode diffNode = new DefaultDiffNode();
-    diffNode.setLastHeightSpec(mUnspecifiedSpec);
-    diffNode.setLastWidthSpec(mUnspecifiedSpec);
-    diffNode.setLastMeasuredWidth(10);
-    diffNode.setLastMeasuredHeight(5);
-    diffNode.setComponent(component, "global_key", null);
+    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
-    node.setCachedMeasuresValid(true);
-    node.setDiffNode(diffNode);
+    final DiffNode diffNode = mLithoViewRule.getCommittedLayoutState().getDiffTree();
 
-    long output = measureInternalNode(node, UNDEFINED, UNDEFINED);
+    final Component component_1 = Text.create(c).text("hello-world").build();
 
-    assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
-    assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
+    mLithoViewRule.setRoot(component_1).layout().measure();
+
+    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
+
+    assertThat(result.getWidth()).isEqualTo((int) diffNode.getLastMeasuredWidth());
+    assertThat(result.getHeight()).isEqualTo((int) diffNode.getLastMeasuredHeight());
   }
 
   @Test
   public void tesLastConstraints() {
-    final Component component =
-        TestDrawableComponent.create(mLithoViewRule.getComponentTree().getContext())
-            .key("global_key")
-            .build();
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component_0 = Text.create(c).text("hello-world").build();
 
-    DefaultInternalNode node = createInternalNodeForMeasurableComponent(component);
-    DiffNode diffNode = new DefaultDiffNode();
-    diffNode.setLastWidthSpec(makeSizeSpec(10, SizeSpec.EXACTLY));
-    diffNode.setLastHeightSpec(makeSizeSpec(5, SizeSpec.EXACTLY));
-    diffNode.setLastMeasuredWidth(10f);
-    diffNode.setLastMeasuredHeight(5f);
-    diffNode.setComponent(component, "global_key", null);
+    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
-    node.setCachedMeasuresValid(true);
-    node.setDiffNode(diffNode);
+    final DiffNode diffNode = mLithoViewRule.getCommittedLayoutState().getDiffTree();
 
-    long output = measureInternalNode(node, 10f, 5f);
+    final Component component_1 = Text.create(c).text("hello-world").build();
 
-    assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
-    assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
+    mLithoViewRule.setRoot(component_1).layout().measure();
 
-    int lastWidthSpec = node.getLastWidthSpec();
-    int lastHeightSpec = node.getLastHeightSpec();
+    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
 
-    assertThat(getMode(lastWidthSpec) == SizeSpec.EXACTLY).isTrue();
-    assertThat(getMode(lastHeightSpec) == SizeSpec.EXACTLY).isTrue();
-    assertThat(getSize(lastWidthSpec) == 10).isTrue();
-    assertThat(getSize(lastHeightSpec) == 5).isTrue();
-  }
-
-  @Test
-  public void measureAndCreateDiffNode() {
-    final Component component =
-        TestDrawableComponent.create(mLithoViewRule.getComponentTree().getContext()).build();
-
-    DefaultInternalNode node = createInternalNodeForMeasurableComponent(component);
-    long output = measureInternalNode(node, UNDEFINED, UNDEFINED);
-
-    node.setCachedMeasuresValid(false);
-    DiffNode diffNode = createDiffNode(node, node, null);
-    assertThat(getHeight(output) == (int) diffNode.getLastMeasuredHeight()).isTrue();
-    assertThat(getWidth(output) == (int) diffNode.getLastMeasuredWidth()).isTrue();
+    assertThat(diffNode.getLastWidthSpec()).isEqualTo(result.getWidthSpec());
+    assertThat(diffNode.getLastHeightSpec()).isEqualTo(result.getHeightSpec());
   }
 
   @Test
   public void testCachedMeasures() {
-    final Component component1 = new TestLayoutSpec(false);
-    final Component component2 = new TestLayoutSpec(false);
+    final ComponentContext c = mLithoViewRule.getContext();
+    final Component component_0 =
+        Column.create(c)
+            .child(Text.create(c).text("hello-world").build())
+            .child(Text.create(c).text("hello-world").build())
+            .build();
 
-    LayoutState prevLayoutState =
-        calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
-            component1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            null);
+    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
-    // Check diff tree is consistent.
-    DiffNode node = prevLayoutState.getDiffTree();
+    final Component component_1 =
+        Column.create(c)
+            .child(Text.create(c).text("hello-world").build())
+            .child(Text.create(c).text("hello-world").build())
+            .build();
 
-    ComponentContext c = mLithoViewRule.getComponentTree().getContext();
-    InternalNode newInternalNode = createInternalNodeForMeasurableComponent(component2);
-    LithoLayoutResult layoutTreeRoot =
-        Layout.measure(
-            newInternalNode.getTailComponentContext().getLayoutStateContext(),
-            c,
-            newInternalNode,
-            SizeSpec.UNSPECIFIED,
-            SizeSpec.UNSPECIFIED,
-            null,
-            node);
-    Layout.applyDiffNodeToUnchangedNodes(layoutTreeRoot, true, node);
-    checkAllComponentsHaveMeasureCache(layoutTreeRoot);
+    mLithoViewRule.setRoot(component_1).layout().measure();
+
+    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
+
+    assertThat(result.getChildAt(0).areCachedMeasuresValid()).isTrue();
+    assertThat(result.getChildAt(1).areCachedMeasuresValid()).isTrue();
   }
 
-  @Ignore("t100378826")
   @Test
   public void testPartiallyCachedMeasures() {
-    final Component component1 = new TestLayoutSpec(false);
-    final Component component2 = new TestLayoutSpec(true);
-
     final ComponentContext c = mLithoViewRule.getContext();
-    LayoutState prevLayoutState =
-        calculateLayoutStateWithDiffing(
-            mLithoViewRule.getComponentTree().getContext(),
-            component1,
-            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY),
-            null);
+    final Component component_0 =
+        Column.create(c)
+            .child(Text.create(c).text("hello-world-1").build())
+            .child(Text.create(c).text("hello-world-2").build())
+            .build();
 
-    // Check diff tree is consistent.
-    DiffNode node = prevLayoutState.getDiffTree();
+    mLithoViewRule.attachToWindow().setRoot(component_0).layout().measure();
 
-    ComponentContext context = new ComponentContext(mLithoViewRule.getContext());
-    context.setLayoutStateContext(LayoutStateContext.getTestInstance(context));
-    component2.setScopedContext(context);
-    DefaultInternalNode newInternalNode =
-        (DefaultInternalNode) Layout.create(context.getLayoutStateContext(), c, component2);
-    newInternalNode.setLayoutStateContextRecursively(context.getLayoutStateContext());
+    final Component component_1 =
+        Column.create(c)
+            .child(Text.create(c).text("hello-world-1").build())
+            .child(Text.create(c).text("hello-world-3").build())
+            .build();
 
-    LithoLayoutResult layoutTreeRoot =
-        Layout.measure(
-            context.getLayoutStateContext(),
-            context,
-            newInternalNode,
-            SizeSpec.UNSPECIFIED,
-            SizeSpec.UNSPECIFIED,
-            null,
-            node);
-    Layout.applyDiffNodeToUnchangedNodes(layoutTreeRoot, true, node);
-    LithoLayoutResult child_1 = layoutTreeRoot.getChildAt(0);
-    assertCachedMeasurementsDefined(child_1);
+    mLithoViewRule.setRoot(component_1).layout().measure();
 
-    LithoLayoutResult child_2 = layoutTreeRoot.getChildAt(1);
-    assertCachedMeasurementsNotDefined(child_2);
-    LithoLayoutResult child_3 = child_2.getChildAt(0);
-    assertCachedMeasurementsDefined(child_3);
+    final LithoLayoutResult result = mLithoViewRule.getCurrentRootNode();
 
-    LithoLayoutResult child_4 = layoutTreeRoot.getChildAt(2);
-    assertCachedMeasurementsNotDefined(child_4);
+    assertThat(result.getChildAt(0).areCachedMeasuresValid()).isTrue();
+    assertThat(result.getChildAt(1).areCachedMeasuresValid()).isFalse();
   }
 
   @Test
