@@ -160,9 +160,11 @@ module.exports = {
       },
       'deep-dive/incremental-mount',
     ],
+    ...fbInternalOnly({
     'Contributing Documentation': [
-      'contributing-documentation',
-    ],
+      'fb/contributing-documentation',
+      'fb/documentation-writing-formatting',
+    ]}),
     ...fbInternalOnly({
       '[Internal]': [
         'fb/internal-litho',
