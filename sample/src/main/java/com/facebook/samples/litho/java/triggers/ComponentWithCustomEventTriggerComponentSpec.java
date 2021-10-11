@@ -27,8 +27,10 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
 public class ComponentWithCustomEventTriggerComponentSpec {
@@ -39,8 +41,11 @@ public class ComponentWithCustomEventTriggerComponentSpec {
   }
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State Integer exampleState) {
-    return Column.create(c).child(Text.create(c).text("Example State:" + exampleState)).build();
+  static Component onCreateLayout(
+      ComponentContext c, @Prop String titleText, @State Integer exampleState) {
+    return Column.create(c)
+        .child(Text.create(c).marginDip(YogaEdge.LEFT, 5).text(titleText + exampleState))
+        .build();
   }
 
   @OnUpdateState

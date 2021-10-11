@@ -25,6 +25,9 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.Text;
 
 @LayoutSpec
@@ -33,17 +36,38 @@ public class CustomEventTriggerExampleComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
     final Handle textInputHandle = new Handle();
+    final Handle handleInNestedTree = new Handle();
     return Column.create(c)
         .child(
             Text.create(c, android.R.attr.buttonStyle, 0)
                 .text("Trigger custom event")
                 .clickHandler(CustomEventTriggerExampleComponent.onClick(c, textInputHandle)))
-        .child(ComponentWithCustomEventTriggerComponent.create(c).handle(textInputHandle))
+        .child(
+            Text.create(c, android.R.attr.buttonStyle, 0)
+                .text("Trigger custom event in nested tree")
+                .clickHandler(CustomEventTriggerExampleComponent.onClick(c, handleInNestedTree)))
+        .child(
+            ComponentWithCustomEventTriggerComponent.create(c)
+                .titleText("State: ")
+                .handle(textInputHandle))
+        .child(
+            RecyclerCollectionComponent.create(c)
+                .heightPx(150)
+                .section(
+                    SingleComponentSection.create(new SectionContext(c))
+                        .component(
+                            Column.create(c)
+                                .child(
+                                    ComponentWithCustomEventTriggerComponent.create(c)
+                                        .handle(handleInNestedTree)
+                                        .titleText("State in nested tree: ")
+                                        .build()))
+                        .build()))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
-  static void onClick(ComponentContext c, @Param Handle textInputHandle) {
-    ComponentWithCustomEventTriggerComponent.triggerCustomEvent(c, textInputHandle, 2);
+  static void onClick(ComponentContext c, @Param Handle handle) {
+    ComponentWithCustomEventTriggerComponent.triggerCustomEvent(c, handle, 2);
   }
 }
