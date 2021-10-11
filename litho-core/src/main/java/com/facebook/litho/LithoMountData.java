@@ -128,7 +128,10 @@ public class LithoMountData {
     MountItem item =
         new MountItem(
             LithoRenderUnit.create(
-                unit, bounds, new LithoLayoutData(bounds.width(), bounds.height(), 0, 0), null),
+                unit,
+                bounds,
+                new LithoLayoutData(bounds.width(), bounds.height(), 0, 0, null),
+                null),
             lithoView,
             lithoView);
     item.setMountData(new LithoMountData(lithoView));

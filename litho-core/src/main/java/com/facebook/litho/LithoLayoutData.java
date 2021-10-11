@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.LayoutOutput.UpdateState;
 import com.facebook.rendercore.Node;
@@ -36,12 +37,18 @@ public class LithoLayoutData {
   public final int height;
   public final int currentLayoutStateId;
   public final int previousLayoutStateId;
+  public final @Nullable InterStagePropsContainer interStagePropsContainer;
 
   public LithoLayoutData(
-      int width, int height, int currentLayoutStateId, int previousLayoutStateId) {
+      int width,
+      int height,
+      int currentLayoutStateId,
+      int previousLayoutStateId,
+      @Nullable InterStagePropsContainer interStagePropsContainer) {
     this.width = width;
     this.height = height;
     this.currentLayoutStateId = currentLayoutStateId;
     this.previousLayoutStateId = previousLayoutStateId;
+    this.interStagePropsContainer = interStagePropsContainer;
   }
 }

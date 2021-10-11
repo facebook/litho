@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaNode;
 
@@ -25,7 +26,15 @@ public class LithoYogaBaselineFunction implements YogaBaselineFunction {
   public float baseline(YogaNode cssNode, float width, float height) {
     final LithoLayoutResult result = (LithoLayoutResult) cssNode.getData();
     final InternalNode node = result.getInternalNode();
-    return node.getTailComponent()
-        .onMeasureBaseline(result.getContext(), (int) width, (int) height, null);
+    final Component component = node.getTailComponent();
+
+    // TODO: Get the inter stage props from the LayoutResult
+    final @Nullable InterStagePropsContainer interStageProps =
+        result.getContext().useStatelessComponent()
+            ? result.getContext().getScopedComponentInfo().getInterStagePropsContainer()
+            : component.getInterStagePropsContainer();
+
+    return component.onMeasureBaseline(
+        result.getContext(), (int) width, (int) height, interStageProps);
   }
 }

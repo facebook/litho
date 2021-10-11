@@ -288,12 +288,20 @@ public class LayoutState
       return null;
     }
 
+    // TODO: Get the inter stage props from the LayoutResult
+    final @Nullable InterStagePropsContainer interStageProps =
+        result.getContext().useStatelessComponent()
+            ? result.getContext().getScopedComponentInfo().getInterStagePropsContainer()
+            : Preconditions.checkNotNull(result.getInternalNode().getTailComponent())
+                .getInterStagePropsContainer();
+
     return createRenderTreeNode(
         unit,
         Preconditions.checkNotNull(node.getTailComponent()),
         layoutState,
         result,
         true,
+        interStageProps,
         parent);
   }
 
@@ -319,7 +327,8 @@ public class LayoutState
         LithoRenderUnit.create(
             unit,
             new Rect(0, 0, width, height),
-            new LithoLayoutData(width, height, layoutState.mId, layoutState.mPreviousLayoutStateId),
+            new LithoLayoutData(
+                width, height, layoutState.mId, layoutState.mPreviousLayoutStateId, null),
             null);
 
     final LayoutOutput hostOutput = unit.output;
@@ -342,7 +351,7 @@ public class LayoutState
     final Component hostComponent = unit.output.getComponent();
 
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, hostComponent, layoutState, result, false, parent);
+        createRenderTreeNode(unit, hostComponent, layoutState, result, false, null, parent);
 
     final LayoutOutput hostOutput = unit.output;
 
@@ -368,6 +377,7 @@ public class LayoutState
       final LayoutState layoutState,
       final LithoLayoutResult result,
       final boolean useNodePadding,
+      final @Nullable InterStagePropsContainer interStageProps,
       final @Nullable RenderTreeNode parent) {
 
     final int hostTranslationX;
@@ -398,7 +408,11 @@ public class LayoutState
         unit,
         bounds,
         new LithoLayoutData(
-            bounds.width(), bounds.height(), layoutState.mId, layoutState.mPreviousLayoutStateId),
+            bounds.width(),
+            bounds.height(),
+            layoutState.mId,
+            layoutState.mPreviousLayoutStateId,
+            interStageProps),
         parent);
   }
 
@@ -967,7 +981,8 @@ public class LayoutState
       boolean matchHostBoundsTransitions) {
 
     final RenderTreeNode renderTreeNode =
-        createRenderTreeNode(unit, unit.output.getComponent(), layoutState, result, false, parent);
+        createRenderTreeNode(
+            unit, unit.output.getComponent(), layoutState, result, false, null, parent);
 
     final LithoRenderUnit drawableRenderUnit = (LithoRenderUnit) renderTreeNode.getRenderUnit();
     final LayoutOutput output = drawableRenderUnit.output;

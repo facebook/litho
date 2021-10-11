@@ -171,25 +171,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         updateValueFromLayoutOutput);
   }
 
-  /**
-   * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
-   * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
-   */
-  private static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
-    if (layoutData == null) {
-      throw new RuntimeException("LayoutData is null in LithoMountBinder.shouldUpdate");
-    }
-
-    if (!(layoutData instanceof LithoLayoutData)) {
-      throw new RuntimeException(
-          "LayoutData is not LithoLayoutData in LithoMountBinder.shouldUpdate. ("
-              + layoutData.getClass().getSimpleName()
-              + ")");
-    }
-
-    return (LithoLayoutData) layoutData;
-  }
-
   public static class LithoMountBinder implements Binder<LithoRenderUnit, Object> {
 
     public static final LithoMountBinder INSTANCE = new LithoMountBinder();
@@ -210,7 +191,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().mount(getComponentContext(unit), content, null);
+      output.getComponent().mount(getComponentContext(unit), content, getInterStageProps(data));
     }
 
     @Override
@@ -220,7 +201,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unmount(getComponentContext(unit), content, null);
+      output.getComponent().unmount(getComponentContext(unit), content, getInterStageProps(data));
 
       if (content instanceof HasLithoViewChildren) {
         final ArrayList<LithoView> lithoViews = new ArrayList<>();
@@ -259,7 +240,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         }
       }
 
-      output.getComponent().bind(getComponentContext(unit), content, null);
+      output.getComponent().bind(getComponentContext(unit), content, getInterStageProps(data));
     }
 
     @Override
@@ -269,7 +250,7 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final LithoRenderUnit unit,
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
-      output.getComponent().unbind(getComponentContext(unit), content, null);
+      output.getComponent().unbind(getComponentContext(unit), content, getInterStageProps(data));
     }
   }
 
@@ -309,5 +290,28 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
       final Component component = ((LithoRenderUnit) renderUnit).output.getComponent();
       mMountContentPool.maybePreallocateContent(c, component);
     }
+  }
+
+  /**
+   * Helper method to throw exception if a provided layout-data is null or not a LithoLayoutData
+   * instance. Will return a casted, non-null instance of LithoLayoutData otherwise.
+   */
+  private static LithoLayoutData verifyAndGetLithoLayoutData(@Nullable Object layoutData) {
+    if (layoutData == null) {
+      throw new RuntimeException("LayoutData is null in LithoMountBinder.shouldUpdate");
+    }
+
+    if (!(layoutData instanceof LithoLayoutData)) {
+      throw new RuntimeException(
+          "LayoutData is not LithoLayoutData in LithoMountBinder.shouldUpdate. ("
+              + layoutData.getClass().getSimpleName()
+              + ")");
+    }
+
+    return (LithoLayoutData) layoutData;
+  }
+
+  private static @Nullable InterStagePropsContainer getInterStageProps(@Nullable Object data) {
+    return verifyAndGetLithoLayoutData(data).interStagePropsContainer;
   }
 }
