@@ -128,11 +128,17 @@ abstract class KComponent : Component() {
 
   final override fun getDynamicProps() = super.getDynamicProps()
 
-  final override fun getExtraAccessibilityNodeAt(c: ComponentContext, x: Int, y: Int) =
-      super.getExtraAccessibilityNodeAt(c, x, y)
+  final override fun getExtraAccessibilityNodeAt(
+      c: ComponentContext,
+      x: Int,
+      y: Int,
+      InterStagePropsContainer: InterStagePropsContainer?
+  ) = super.getExtraAccessibilityNodeAt(c, x, y, interStagePropsContainer)
 
-  final override fun getExtraAccessibilityNodesCount(c: ComponentContext) =
-      super.getExtraAccessibilityNodesCount(c)
+  final override fun getExtraAccessibilityNodesCount(
+      c: ComponentContext,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.getExtraAccessibilityNodesCount(c, interStagePropsContainer)
 
   final override fun getMountType() = super.getMountType()
 
@@ -216,18 +222,25 @@ abstract class KComponent : Component() {
   final override fun onPopulateAccessibilityNode(
       c: ComponentContext,
       host: View,
-      accessibilityNode: AccessibilityNodeInfoCompat
-  ) = super.onPopulateAccessibilityNode(c, host, accessibilityNode)
+      accessibilityNode: AccessibilityNodeInfoCompat,
+      interStagePropsContainer: InterStagePropsContainer?
+  ) = super.onPopulateAccessibilityNode(c, host, accessibilityNode, interStagePropsContainer)
 
   final override fun onPopulateExtraAccessibilityNode(
       c: ComponentContext,
       accessibilityNode: AccessibilityNodeInfoCompat,
       extraNodeIndex: Int,
       componentBoundsX: Int,
-      componentBoundsY: Int
+      componentBoundsY: Int,
+      interStagePropsContainer: InterStagePropsContainer?
   ) =
       super.onPopulateExtraAccessibilityNode(
-          c, accessibilityNode, extraNodeIndex, componentBoundsX, componentBoundsY)
+          c,
+          accessibilityNode,
+          extraNodeIndex,
+          componentBoundsX,
+          componentBoundsY,
+          interStagePropsContainer)
 
   final override fun onPrepare(c: ComponentContext) = super.onPrepare(c)
 

@@ -418,7 +418,11 @@ public abstract class Component
    * @return the extra virtual view id if one is found, otherwise {@code
    *     ExploreByTouchHelper#INVALID_ID}
    */
-  protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y) {
+  protected int getExtraAccessibilityNodeAt(
+      final ComponentContext c,
+      final int x,
+      final int y,
+      final @Nullable InterStagePropsContainer InterStagePropsContainer) {
     return ExploreByTouchHelper.INVALID_ID;
   }
 
@@ -428,7 +432,8 @@ public abstract class Component
    *
    * @return the number of extra nodes
    */
-  protected int getExtraAccessibilityNodesCount(ComponentContext c) {
+  protected int getExtraAccessibilityNodesCount(
+      final ComponentContext c, final @Nullable InterStagePropsContainer interStagePropsContainer) {
     return 0;
   }
 
@@ -643,7 +648,10 @@ public abstract class Component
    * @param accessibilityNode node to populate
    */
   protected void onPopulateAccessibilityNode(
-      ComponentContext c, View host, AccessibilityNodeInfoCompat accessibilityNode) {}
+      final ComponentContext c,
+      final View host,
+      final AccessibilityNodeInfoCompat accessibilityNode,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   /**
    * Populate an extra accessibility node.
@@ -652,13 +660,15 @@ public abstract class Component
    * @param extraNodeIndex index of extra node
    * @param componentBoundsX left bound of the mounted component
    * @param componentBoundsY top bound of the mounted component
+   * @param interStagePropsContainer
    */
   protected void onPopulateExtraAccessibilityNode(
-      ComponentContext c,
-      AccessibilityNodeInfoCompat accessibilityNode,
-      int extraNodeIndex,
-      int componentBoundsX,
-      int componentBoundsY) {}
+      final ComponentContext c,
+      final AccessibilityNodeInfoCompat accessibilityNode,
+      final int extraNodeIndex,
+      final int componentBoundsX,
+      final int componentBoundsY,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {}
 
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default

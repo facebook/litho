@@ -26,6 +26,8 @@ public class LifecycleMethodArgumentType {
 
   public static final LifecycleMethodArgumentType INT =
       new LifecycleMethodArgumentType(TypeName.INT);
+  public static final LifecycleMethodArgumentType INTER_STAGE_PROPS_CONTAINER =
+      new LifecycleMethodArgumentType(ClassNames.INTER_STAGE_PROPS_CONTAINER);;
 
   public final TypeName type;
 

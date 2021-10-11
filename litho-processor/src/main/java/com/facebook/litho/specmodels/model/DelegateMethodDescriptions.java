@@ -366,7 +366,10 @@ public final class DelegateMethodDescriptions {
           .name("onPopulateAccessibilityNode")
           .definedParameterTypes(
               ImmutableList.<TypeName>of(
-                  ClassNames.COMPONENT_CONTEXT, ClassNames.VIEW, ClassNames.ACCESSIBILITY_NODE))
+                  ClassNames.COMPONENT_CONTEXT,
+                  ClassNames.VIEW,
+                  ClassNames.ACCESSIBILITY_NODE,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(
@@ -398,7 +401,8 @@ public final class DelegateMethodDescriptions {
                   ClassNames.ACCESSIBILITY_NODE,
                   TypeName.INT,
                   TypeName.INT,
-                  TypeName.INT))
+                  TypeName.INT,
+                  ClassNames.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(
@@ -428,7 +432,8 @@ public final class DelegateMethodDescriptions {
               ImmutableList.of(
                   LifecycleMethodArgumentType.COMPONENT_CONTEXT,
                   LifecycleMethodArgumentType.INT,
-                  LifecycleMethodArgumentType.INT))
+                  LifecycleMethodArgumentType.INT,
+                  LifecycleMethodArgumentType.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(
@@ -446,7 +451,10 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PROTECTED)
           .returnType(TypeName.INT)
           .name("getExtraAccessibilityNodesCount")
-          .lifecycleMethodArguments(ImmutableList.of(LifecycleMethodArgumentType.COMPONENT_CONTEXT))
+          .lifecycleMethodArguments(
+              ImmutableList.of(
+                  LifecycleMethodArgumentType.COMPONENT_CONTEXT,
+                  LifecycleMethodArgumentType.INTER_STAGE_PROPS_CONTAINER))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(

@@ -339,7 +339,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   protected void onPopulateAccessibilityNode(ComponentContext c, View host,
-      AccessibilityNodeInfoCompat node) {
+      AccessibilityNodeInfoCompat node, InterStagePropsContainer _3) {
     TestMountSpec.onPopulateAccessibilityNode(
       (ComponentContext) c,
       (View) host,
@@ -353,7 +353,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected int getExtraAccessibilityNodesCount(ComponentContext c) {
+  protected int getExtraAccessibilityNodesCount(ComponentContext c, InterStagePropsContainer _1) {
     int _result;
     _result = (int) TestMountSpec.getExtraAccessibilityNodesCount(
       (ComponentContext) c,
@@ -366,7 +366,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected void onPopulateExtraAccessibilityNode(ComponentContext c,
       AccessibilityNodeInfoCompat node, int extraNodeIndex, int componentBoundsLeft,
-      int componentBoundsTop) {
+      int componentBoundsTop, InterStagePropsContainer _5) {
     TestMountSpec.onPopulateExtraAccessibilityNode(
       (ComponentContext) c,
       (AccessibilityNodeInfoCompat) node,
@@ -384,7 +384,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   }
 
   @Override
-  protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y) {
+  protected int getExtraAccessibilityNodeAt(ComponentContext c, int x, int y,
+      InterStagePropsContainer _3) {
     int _result;
     _result = (int) TestMountSpec.getExtraAccessibilityNodeAt(
       (ComponentContext) c,
