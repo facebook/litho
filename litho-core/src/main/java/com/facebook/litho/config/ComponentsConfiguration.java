@@ -350,7 +350,7 @@ public class ComponentsConfiguration {
 
     boolean mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
-    boolean mUseInputOnlyInternalNodes = false;
+    boolean mUseInputOnlyInternalNodes = useInputOnlyInternalNodes;
     boolean mShouldReuseOutputs = false;
 
     protected Builder() {}
