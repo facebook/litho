@@ -687,6 +687,8 @@ public class LayoutState
       final LithoRenderUnit contentRenderUnit =
           (LithoRenderUnit) contentRenderTreeNode.getRenderUnit();
       final LayoutOutput contentLayoutOutput = contentRenderUnit.output;
+      final LithoLayoutData layoutData =
+          (LithoLayoutData) Preconditions.checkNotNull(contentRenderTreeNode.getLayoutData());
 
       // Notify component about its final size.
       if (isTracing) {
@@ -694,7 +696,7 @@ public class LayoutState
       }
 
       try {
-        component.onBoundsDefined(scopedContext, result, null);
+        component.onBoundsDefined(scopedContext, result, layoutData.interStagePropsContainer);
       } catch (Exception e) {
         ComponentUtils.handleWithHierarchy(scopedContext, component, e);
       } finally {
