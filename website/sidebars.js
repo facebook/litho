@@ -221,7 +221,7 @@ module.exports = {
             'tooltips',
             'saving-state',
           ],
-          'Compatibility': ['styles', 'rtl'],
+          'Compatibility': ['styles'],
           'Advanced Guides': [
             'architecture-overview',
             'recycler-component',
