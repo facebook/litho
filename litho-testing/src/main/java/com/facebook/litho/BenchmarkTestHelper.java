@@ -50,18 +50,6 @@ public class BenchmarkTestHelper {
     lithoView.unmountAllItems();
   }
 
-  public static void prepareComponent(ComponentContext c, Component component) {
-    component.onPrepare(c);
-  }
-
-  public static void bindComponent(ComponentContext c, Component component, Object content) {
-    component.bind(c, content);
-  }
-
-  public static void unbindComponent(ComponentContext c, Component component, Object content) {
-    component.unbind(c, content);
-  }
-
   public static void ensureMountSpec(Component component) {
     if (!Component.isMountSpec(component)) {
       throw new IllegalStateException("Bind benchmark test is for MountSpec component only!");
