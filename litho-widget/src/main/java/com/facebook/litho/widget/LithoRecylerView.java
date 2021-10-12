@@ -19,6 +19,7 @@ package com.facebook.litho.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +38,8 @@ public class LithoRecylerView extends RecyclerView
   private @Nullable PostDispatchDrawListener mPostDispatchDrawListener;
 
   private final List<RecyclerView.OnScrollListener> mOnScrollListeners = new ArrayList<>();
+  private final StringBuilder mErrorStringBuilder = new StringBuilder();
+  private final StringBuilder mUsageStringBuilder = new StringBuilder();
 
   public LithoRecylerView(Context context) {
     this(context, null);
@@ -98,17 +101,45 @@ public class LithoRecylerView extends RecyclerView
 
   @Override
   public void auditForRelease() {
+    String errorMessage = null;
     if (!mOnScrollListeners.isEmpty()) {
-      throw new IllegalStateException(
+      errorMessage =
           "LithoRecyclerView is being recycled with "
               + mOnScrollListeners.size()
-              + " scroll listeners");
+              + " scroll listeners";
+    } else if (mTouchInterceptor != null) {
+      errorMessage = "LithoRecyclerView is being recycled with a non null TouchInterceptor";
     }
 
-    if (mTouchInterceptor != null) {
+    if (errorMessage != null) {
       throw new IllegalStateException(
-          "LithoRecyclerView is being recycled with a non null TouchInterceptor");
+          errorMessage
+              + "\nError Log:\n"
+              + mErrorStringBuilder.toString()
+              + "\nUsage Log:\n"
+              + mUsageStringBuilder.toString());
     }
+  }
+
+  @Override
+  public void logError(String message, Exception e) {
+    // <message>: <exception message>
+    // <stack-trace line 1>
+    // <stack-trace line 2>
+    // ...
+    // <stack-trace line n>
+    mErrorStringBuilder.append(message);
+    mErrorStringBuilder.append(": ");
+    mErrorStringBuilder.append(e.getMessage());
+    mErrorStringBuilder.append("\n");
+    mErrorStringBuilder.append(Log.getStackTraceString(e));
+    mErrorStringBuilder.append("\n");
+  }
+
+  @Override
+  public void logUsage(String usageDescription) {
+    mUsageStringBuilder.append(usageDescription);
+    mUsageStringBuilder.append("\n");
   }
 
   @Override

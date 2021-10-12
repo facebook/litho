@@ -27,4 +27,18 @@ public interface AuditableMountContent {
    * if the content isn't in its default state.
    */
   void auditForRelease();
+
+  /**
+   * Called when a non-crashing error occurs on the mount content before audit is called, suggesting
+   * that it may be related to the audit failure. Implementations of this method should collect
+   * the error, and print it out in the audit exception.
+   */
+  void logError(String message, Exception e);
+
+  /**
+   * Called when a standard usage of this mounted content occurs. This information could be useful
+   * if audit throws an exception. Implementations of this method should collect the usage
+   * description and print it out in the audit exception.
+   */
+  void logUsage(String usageDescription);
 }

@@ -235,6 +235,20 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
     }
   }
 
+  @Override
+  public void logError(String message, Exception e) {
+    if (mRecyclerView instanceof LithoRecylerView) {
+      ((LithoRecylerView) mRecyclerView).logError(message, e);
+    }
+  }
+
+  @Override
+  public void logUsage(String usageDescription) {
+    if (mRecyclerView instanceof LithoRecylerView) {
+      ((LithoRecylerView) mRecyclerView).logUsage(usageDescription);
+    }
+  }
+
   /** Pass to a SectionsRecyclerView to do custom logging. */
   public interface SectionsRecylerViewLogger {
     void onLayoutStarted(boolean isFirstLayoutAfterRecycle);

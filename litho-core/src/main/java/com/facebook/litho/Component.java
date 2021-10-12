@@ -65,6 +65,7 @@ import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.rendercore.AuditableMountContent;
 import com.facebook.rendercore.transitions.TransitionUtils;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -294,8 +295,10 @@ public abstract class Component
       ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
     }
     try {
+      logUsageForAuditableContent(mountedContent, "bound");
       onBind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
+      logErrorForAuditableContent(mountedContent, "bind error", e);
       if (c != null) {
         ComponentUtils.handle(c, e);
       } else {
@@ -345,8 +348,10 @@ public abstract class Component
       ComponentsSystrace.beginSection("onMount:" + ((Component) this).getSimpleName());
     }
     try {
+      logUsageForAuditableContent(convertContent, "mounted");
       onMount(c, convertContent, interStagePropsContainer);
     } catch (Exception e) {
+      logErrorForAuditableContent(convertContent, "mount error", e);
       if (c != null) {
         ComponentUtils.handle(c, e);
       } else {
@@ -367,8 +372,10 @@ public abstract class Component
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     try {
+      logUsageForAuditableContent(mountedContent, "unbound");
       onUnbind(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
+      logErrorForAuditableContent(mountedContent, "unbind error", e);
       ComponentUtils.handle(c, e);
     }
   }
@@ -378,10 +385,30 @@ public abstract class Component
       final Object mountedContent,
       final @Nullable InterStagePropsContainer interStagePropsContainer) {
     try {
+      logUsageForAuditableContent(mountedContent, "unmounted");
       onUnmount(c, mountedContent, interStagePropsContainer);
     } catch (Exception e) {
+      logErrorForAuditableContent(mountedContent, "unmount error", e);
       ComponentUtils.handle(c, e);
     }
+  }
+
+  private void logErrorForAuditableContent(Object content, String message, Exception e) {
+    if (content instanceof AuditableMountContent) {
+      ((AuditableMountContent) content).logError(getAuditMessage(content, message), e);
+    }
+  }
+
+  private void logUsageForAuditableContent(Object content, String message) {
+    if (content instanceof AuditableMountContent) {
+      ((AuditableMountContent) content).logUsage(getAuditMessage(content, message));
+    }
+  }
+
+  private String getAuditMessage(Object content, String message) {
+    final String globalKey = getScopedContext() != null ? getScopedContext().getGlobalKey() : "N/A";
+
+    return content.getClass().getSimpleName() + " " + message + ". Global Key: " + globalKey;
   }
 
   protected void applyPreviousRenderData(
