@@ -17,12 +17,17 @@
 package com.facebook.litho;
 
 import com.facebook.infer.annotation.Nullsafe;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public class ComponentKeyUtils {
   private static final String DUPLICATE_MANUAL_KEY = "ComponentKeyUtils:DuplicateManualKey";
   private static final String NULL_PARENT_KEY = "ComponentKeyUtils:NullParentKey";
+
+  private static final Pattern TYPE_ID_PATTERN = Pattern.compile("(\\d+)");
 
   private static final String PREFIX_FOR_MANUAL_KEY = "$";
   private static final String SEPARATOR = ",";
@@ -146,5 +151,49 @@ public class ComponentKeyUtils {
     }
 
     return sb.toString();
+  }
+
+  public static String mapToSimpleName(String key, Map<Object, Integer> typeToIdMap) {
+
+    // manual keys cannot be resolved.
+    if (key.startsWith(ComponentKeyUtils.PREFIX_FOR_MANUAL_KEY)) {
+      return key;
+    }
+
+    // default to return in case of failure
+    final String unresolved = "id(" + key + ")";
+
+    final Matcher matcher = TYPE_ID_PATTERN.matcher(key);
+
+    // find the type id
+    if (matcher.find()) {
+      key = matcher.group(0);
+    } else {
+      return unresolved;
+    }
+
+    if (key == null) {
+      return unresolved;
+    }
+
+    final int id;
+    try {
+      id = Integer.parseInt(key);
+    } catch (NumberFormatException e) {
+      return unresolved; // if parsing failed just return the unresolved key.
+    }
+
+    for (Map.Entry<Object, Integer> entry : typeToIdMap.entrySet()) {
+      if (entry.getValue().equals(id)) {
+        Object type = entry.getKey();
+        if (type instanceof Class) {
+          return ((Class<?>) type).getSimpleName();
+        } else {
+          return type.toString();
+        }
+      }
+    }
+
+    return unresolved;
   }
 }

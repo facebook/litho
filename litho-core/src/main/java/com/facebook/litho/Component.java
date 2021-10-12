@@ -79,6 +79,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -3197,5 +3198,17 @@ public abstract class Component
   @Nullable
   public static <T> T getTreePropFromParent(TreeProps parentTreeProps, Class<T> key) {
     return parentTreeProps == null ? null : parentTreeProps.get(key);
+  }
+
+  static LinkedList<String> generateHierarchy(String globalKey) {
+    LinkedList<String> list = new LinkedList<>();
+    String[] keys = globalKey.split(",");
+
+    for (String key : keys) {
+      String name = ComponentKeyUtils.mapToSimpleName(key, sTypeIdByComponentType);
+      list.add(name);
+    }
+
+    return list;
   }
 }
