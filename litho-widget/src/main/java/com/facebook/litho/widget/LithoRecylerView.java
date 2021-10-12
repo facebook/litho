@@ -22,15 +22,21 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import com.facebook.rendercore.AuditableMountContent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
  * RecyclerSpec}
  */
-public class LithoRecylerView extends RecyclerView implements HasPostDispatchDrawListener {
+public class LithoRecylerView extends RecyclerView
+    implements HasPostDispatchDrawListener, AuditableMountContent {
 
   private @Nullable TouchInterceptor mTouchInterceptor;
   private @Nullable PostDispatchDrawListener mPostDispatchDrawListener;
+
+  private final List<RecyclerView.OnScrollListener> mOnScrollListeners = new ArrayList<>();
 
   public LithoRecylerView(Context context) {
     this(context, null);
@@ -88,6 +94,39 @@ public class LithoRecylerView extends RecyclerView implements HasPostDispatchDra
   @Override
   public void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener) {
     mPostDispatchDrawListener = null;
+  }
+
+  @Override
+  public void auditForRelease() {
+    if (!mOnScrollListeners.isEmpty()) {
+      throw new IllegalStateException(
+          "LithoRecyclerView is being recycled with "
+              + mOnScrollListeners.size()
+              + " scroll listeners");
+    }
+
+    if (mTouchInterceptor != null) {
+      throw new IllegalStateException(
+          "LithoRecyclerView is being recycled with a non null TouchInterceptor");
+    }
+  }
+
+  @Override
+  public void addOnScrollListener(RecyclerView.OnScrollListener listener) {
+    super.addOnScrollListener(listener);
+    mOnScrollListeners.add(listener);
+  }
+
+  @Override
+  public void removeOnScrollListener(RecyclerView.OnScrollListener listener) {
+    super.removeOnScrollListener(listener);
+    mOnScrollListeners.remove(listener);
+  }
+
+  @Override
+  public void clearOnScrollListeners() {
+    super.clearOnScrollListeners();
+    mOnScrollListeners.clear();
   }
 
   /** Allows to override {@link #onInterceptTouchEvent(MotionEvent)} behavior */

@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
+import com.facebook.rendercore.AuditableMountContent;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -35,7 +36,7 @@ import javax.annotation.Nullable;
  * and pull-to-refresh
  */
 public class SectionsRecyclerView extends SwipeRefreshLayout
-    implements HasLithoViewChildren, ComponentsPools.LoggingMountContent {
+    implements HasLithoViewChildren, ComponentsPools.LoggingMountContent, AuditableMountContent {
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
@@ -225,6 +226,13 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
   @Override
   public void onMountContentRecycled() {
     mIsFirstLayout = true;
+  }
+
+  @Override
+  public void auditForRelease() {
+    if (mRecyclerView instanceof LithoRecylerView) {
+      ((LithoRecylerView) mRecyclerView).auditForRelease();
+    }
   }
 
   /** Pass to a SectionsRecyclerView to do custom logging. */

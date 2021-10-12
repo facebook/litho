@@ -20,7 +20,6 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 public class MountItem {
-
   private Object mContent;
   private @Nullable Host mHost;
   private boolean mBound;
