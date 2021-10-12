@@ -229,9 +229,9 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
   }
 
   @Override
-  public void auditForRelease() {
+  public void auditForUnboundState(AuditSource auditSource) {
     if (mRecyclerView instanceof LithoRecylerView) {
-      ((LithoRecylerView) mRecyclerView).auditForRelease();
+      ((LithoRecylerView) mRecyclerView).auditForUnboundState(auditSource);
     }
   }
 

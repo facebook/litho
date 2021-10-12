@@ -100,25 +100,30 @@ public class LithoRecylerView extends RecyclerView
   }
 
   @Override
-  public void auditForRelease() {
-    String errorMessage = null;
-    if (!mOnScrollListeners.isEmpty()) {
-      errorMessage =
-          "LithoRecyclerView is being recycled with "
-              + mOnScrollListeners.size()
-              + " scroll listeners";
-    } else if (mTouchInterceptor != null) {
-      errorMessage = "LithoRecyclerView is being recycled with a non null TouchInterceptor";
+  public void auditForUnboundState(AuditSource auditSource) {
+    final StringBuilder errorMessage = new StringBuilder();
+    // Only check scroll listeners on release
+    if (auditSource == AuditSource.RELEASE && !mOnScrollListeners.isEmpty()) {
+      errorMessage.append("LithoRecyclerView should be unbound, but has ");
+      errorMessage.append(mOnScrollListeners.size());
+      errorMessage.append(" scroll listeners\n");
     }
 
-    if (errorMessage != null) {
-      throw new IllegalStateException(
-          errorMessage
-              + "\nError Log:\n"
-              + mErrorStringBuilder.toString()
-              + "\nUsage Log:\n"
-              + mUsageStringBuilder.toString());
+    if (mTouchInterceptor != null) {
+      errorMessage.append(
+          "LithoRecyclerView should be unbound, but has a non null TouchInterceptor\n");
     }
+
+    if (errorMessage.length() == 0) {
+      return;
+    }
+
+    throw new IllegalStateException(
+        errorMessage
+            + "\nError Log:\n"
+            + mErrorStringBuilder.toString()
+            + "\nUsage Log:\n"
+            + mUsageStringBuilder.toString());
   }
 
   @Override

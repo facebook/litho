@@ -21,12 +21,17 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface AuditableMountContent {
   
+  enum AuditSource {
+    RELEASE,
+    BIND
+  }
+  
   /**
-   * Called before a mount content is released and added to the recycling pool.
+   * Called when a mount content is expected to be unbound.
    * Implementations of this method should check the state of the content, and throw an exception
-   * if the content isn't in its default state.
+   * if the content isn't unbound and in its default state.
    */
-  void auditForRelease();
+  void auditForUnboundState(AuditSource auditSource);
 
   /**
    * Called when a non-crashing error occurs on the mount content before audit is called, suggesting
