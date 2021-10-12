@@ -119,25 +119,33 @@ public class RenderTreeHostView extends HostView implements RenderTreeHost {
 
   @Override
   public void offsetTopAndBottom(int offset) {
-    super.offsetTopAndBottom(offset);
-    notifyVisibleBoundsChanged();
+    if (offset != 0) {
+      super.offsetTopAndBottom(offset);
+      notifyVisibleBoundsChanged();
+    }
   }
 
   @Override
   public void offsetLeftAndRight(int offset) {
-    super.offsetLeftAndRight(offset);
-    notifyVisibleBoundsChanged();
+    if (offset != 0) {
+      super.offsetLeftAndRight(offset);
+      notifyVisibleBoundsChanged();
+    }
   }
 
   @Override
   public void setTranslationX(float translationX) {
-    super.setTranslationX(translationX);
-    notifyVisibleBoundsChanged();
+    if (translationX != getTranslationX()) {
+      super.setTranslationX(translationX);
+      notifyVisibleBoundsChanged();
+    }
   }
 
   @Override
   public void setTranslationY(float translationY) {
-    super.setTranslationY(translationY);
-    notifyVisibleBoundsChanged();
+    if (translationY != getTranslationY()) {
+      super.setTranslationY(translationY);
+      notifyVisibleBoundsChanged();
+    }
   }
 }
