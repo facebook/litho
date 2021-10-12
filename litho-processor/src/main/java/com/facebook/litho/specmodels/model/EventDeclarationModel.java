@@ -37,7 +37,8 @@ public class EventDeclarationModel {
       ImmutableList<FieldModel> fields,
       Object representedObject) {
     this.name = name;
-    this.returnType = returnType;
+    this.returnType =
+        returnType == null || TypeName.VOID.equals(returnType) ? returnType : returnType.box();
     this.fields = fields;
     this.representedObject = representedObject;
   }

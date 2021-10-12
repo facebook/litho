@@ -69,7 +69,7 @@ public class TriggerValidation {
                 ? ((ParameterizedTypeName) triggerMethod.returnType).rawType
                 : triggerMethod.returnType;
 
-        if (!returnType.equals(triggerMethod.typeModel.returnType)) {
+        if (!returnType.box().equals(triggerMethod.typeModel.returnType.box())) {
           validationErrors.add(
               new SpecModelValidationError(
                   triggerMethod.representedObject,

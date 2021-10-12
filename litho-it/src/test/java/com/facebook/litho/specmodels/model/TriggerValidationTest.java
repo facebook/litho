@@ -116,7 +116,8 @@ public class TriggerValidationTest {
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message)
-        .isEqualTo("Method must return boolean since that is what java.lang.Object expects.");
+        .isEqualTo(
+            "Method must return java.lang.Boolean since that is what java.lang.Object expects.");
   }
 
   @Test
@@ -141,11 +142,7 @@ public class TriggerValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         TriggerValidation.validate(mSpecModel, RunMode.normal());
-    assertThat(validationErrors).hasSize(1);
-    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
-    assertThat(validationErrors.get(0).message)
-        .isEqualTo(
-            "Method must return java.lang.Integer since that is what java.lang.Object expects.");
+    assertThat(validationErrors).hasSize(0);
   }
 
   @Test
