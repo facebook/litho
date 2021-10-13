@@ -873,6 +873,8 @@ public class MountState implements MountDelegateTarget {
 
       renderUnit.updateExtensions(
           context, content, currentRenderUnit, currentLayoutData, newLayoutData);
+      
+      currentMountItem.setIsBound(true);
     }
 
     if (mountDelegate != null) {
