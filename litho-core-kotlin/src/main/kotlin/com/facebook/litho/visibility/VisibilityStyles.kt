@@ -24,6 +24,7 @@ import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
 import com.facebook.litho.StyleItem
 import com.facebook.litho.UnfocusedVisibleEvent
+import com.facebook.litho.VisibilityChangedEvent
 import com.facebook.litho.VisibleEvent
 import com.facebook.litho.eventHandler
 import com.facebook.litho.exhaustive
@@ -37,6 +38,7 @@ internal enum class VisibilityField {
   ON_FOCUSED,
   ON_UNFOCUSED,
   ON_FULL_IMPRESSION,
+  ON_VISIBILITY_CHANGED,
 }
 
 @PublishedApi
@@ -55,6 +57,9 @@ internal data class VisibilityStyleItem(val field: VisibilityField, val value: A
       VisibilityField.ON_FULL_IMPRESSION ->
           commonProps.fullImpressionHandler(
               eventHandler(value as (FullImpressionVisibleEvent) -> Unit))
+      VisibilityField.ON_VISIBILITY_CHANGED, ->
+          commonProps.visibilityChangedHandler(
+              eventHandler(value as (VisibilityChangedEvent) -> Unit))
     }.exhaustive
   }
 }
@@ -94,3 +99,8 @@ inline fun Style.onUnfocusedVisible(noinline onUnfocused: (UnfocusedVisibleEvent
 inline fun Style.onFullImpression(
     noinline onFullImpression: (FullImpressionVisibleEvent) -> Unit
 ): Style = this + VisibilityStyleItem(VisibilityField.ON_FULL_IMPRESSION, onFullImpression)
+
+/** Registers a callback to be called when the visible rect of a Component changes. */
+inline fun Style.onVisibilityChanged(
+    noinline onVisibilityChanged: (VisibilityChangedEvent) -> Unit
+): Style = this + VisibilityStyleItem(VisibilityField.ON_VISIBILITY_CHANGED, onVisibilityChanged)

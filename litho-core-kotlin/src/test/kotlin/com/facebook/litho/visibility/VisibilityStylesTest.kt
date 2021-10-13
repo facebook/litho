@@ -27,7 +27,7 @@ import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.testing.setRoot
 import com.facebook.litho.testing.unspecified
 import java.util.concurrent.atomic.AtomicBoolean
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -112,6 +112,24 @@ class VisibilityStylesTest {
         .setSizeSpecs(unspecified(), unspecified())
         .setRoot {
           Row(style = Style.width(200.px).height(200.px).onFullImpression { eventFired.set(true) })
+        }
+        .measure()
+        .layout()
+        .attachToWindow()
+
+    assertThat(eventFired.get()).isTrue()
+  }
+
+  @Test
+  fun onVisibilityChanged_whenSet_firesWhenVisibilityBoundsChange() {
+    val eventFired = AtomicBoolean(false)
+
+    lithoViewRule
+        .setSizeSpecs(unspecified(), unspecified())
+        .setRoot {
+          Row(
+              style =
+                  Style.width(200.px).height(200.px).onVisibilityChanged { eventFired.set(true) })
         }
         .measure()
         .layout()
