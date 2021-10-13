@@ -26,7 +26,7 @@ import com.facebook.samples.litho.java.animations.animatedbadge.AnimatedBadge
 import com.facebook.samples.litho.java.animations.animationcallbacks.AnimationCallbacksActivity
 import com.facebook.samples.litho.java.animations.animationcomposition.ComposedAnimationsComponent
 import com.facebook.samples.litho.java.animations.animationcookbook.AnimationCookBookActivity
-import com.facebook.samples.litho.java.animations.bounds.BoundsAnimationComponent
+import com.facebook.samples.litho.java.animations.bounds.BoundsAnimationComponent as JavaBoundsAnimationComponent
 import com.facebook.samples.litho.java.animations.commondynamicprops.CommonDynamicPropsAnimationActivity
 import com.facebook.samples.litho.java.animations.docs.AlphaTransitionComponent
 import com.facebook.samples.litho.java.animations.docs.AppearTransitionComponent
@@ -78,6 +78,7 @@ import com.facebook.samples.litho.kotlin.animations.animatedapi.AnimatedComponen
 import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeKotlin
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
 import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
+import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
@@ -124,6 +125,8 @@ class Demos {
                         listOf(
                             SingleDemo(name = "Animated API Demo", component = AnimatedComponent()),
                             SingleDemo(name = "Animated Badge", component = AnimatedBadgeKotlin()),
+                            SingleDemo(
+                                name = "Bounds Animation", component = BoundsAnimationComponent()),
                             SingleDemo(
                                 name = "Animated Counter",
                                 component = AnimatingCounterRootComponent()),
@@ -196,7 +199,7 @@ class Demos {
                               AnimatedBadge.create(context).build()
                             },
                             SingleDemo(name = "Bounds Animation") { context ->
-                              BoundsAnimationComponent.create(context).build()
+                              JavaBoundsAnimationComponent.create(context).build()
                             },
                             SingleDemo(name = "Page Indicators") { context ->
                               PageIndicatorsRootComponent.create(context).build()
