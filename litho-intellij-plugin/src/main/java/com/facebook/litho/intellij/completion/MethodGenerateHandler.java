@@ -116,61 +116,66 @@ class MethodGenerateHandler extends GenerateMembersHandlerBase {
 
       final PsiMethod psiMethodWithContext = Objects.requireNonNull(getPsiMember());
       final TemplateBuilderImpl templateBuilder = new TemplateBuilderImpl(psiMethodWithContext);
-      PsiTreeUtil.processElements(
-          psiMethodWithContext,
-          psiElement -> {
-            final String elementText = psiElement.getText();
-            if (psiElement instanceof PsiTypeElement && elementText.equals("placeholder_type")) {
-              templateBuilder.replaceElement(
-                  psiElement, new TextExpression(getFirstStateTypeAndName(specClass).first));
-            } else if (psiElement instanceof PsiIdentifier) {
-
-              if (elementText.equals("onClickEvent")) {
-                String methodName = getNextMethodName("onClickEvent");
-                templateBuilder.replaceElement(psiElement, methodName);
-              } else if (elementText.equals("onTriggerEvent")) {
-                String methodName = getNextMethodName("onTriggerEvent");
-                templateBuilder.replaceElement(psiElement, methodName);
-              } else if (elementText.equals("placeholder_name")) {
-                templateBuilder.replaceElement(
-                    psiElement, new TextExpression(getFirstStateTypeAndName(specClass).second));
-              } else if (psiElement.getParent() instanceof PsiMethod) {
-                // Method name
-                templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
-              } else if (elementText.equals("placeholder_annotation_class")) {
-                templateBuilder.replaceElement(psiElement, "ClickEvent");
-              } else if (elementText.equals("placeholder_from_event_parameter")) {
-                templateBuilder.replaceElement(psiElement, "@FromEvent");
-              } else if (elementText.equals("placeholder_from_trigger_parameter")) {
-                templateBuilder.replaceElement(psiElement, "@FromTrigger");
-              }
-            } else if (psiElement instanceof PsiTypeElement
-                && elementText.equals("placeholder_service_type")) {
-              templateBuilder.replaceElement(
-                  psiElement, new TextExpression(getServiceType(specClass)));
-            } else if (psiElement instanceof PsiTypeElement
-                && elementText.equals("placeholder_tree_prop_type")) {
-              templateBuilder.replaceElement(psiElement, "TreePropType");
-            } else if (psiElement instanceof PsiComment) {
-              templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
-              templateBuilder.setEndVariableAfter(psiElement);
-            }
-            return true;
-          });
+      fillTemplate(psiMethodWithContext, templateBuilder, specClass);
       final Template template = templateBuilder.buildTemplate();
       template.setToReformat(true);
       return template;
     }
+  }
 
-    private String getNextMethodName(String methodName) {
-      String newMethodName = methodName;
-      int postfix = 1;
-      while (specClass.findMethodsByName(newMethodName).length > 0) {
-        newMethodName = methodName + postfix;
-        postfix++;
-      }
-      return newMethodName;
+  static void fillTemplate(
+      PsiMethod psiMethodWithContext, TemplateBuilderImpl templateBuilder, PsiClass specClass) {
+    PsiTreeUtil.processElements(
+        psiMethodWithContext,
+        psiElement -> {
+          final String elementText = psiElement.getText();
+          if (psiElement instanceof PsiTypeElement && elementText.equals("placeholder_type")) {
+            templateBuilder.replaceElement(
+                psiElement, new TextExpression(getFirstStateTypeAndName(specClass).first));
+          } else if (psiElement instanceof PsiIdentifier) {
+
+            if (elementText.equals("onClickEvent")) {
+              String methodName = getNextMethodName("onClickEvent", specClass);
+              templateBuilder.replaceElement(psiElement, methodName);
+            } else if (elementText.equals("onTriggerEvent")) {
+              String methodName = getNextMethodName("onTriggerEvent", specClass);
+              templateBuilder.replaceElement(psiElement, methodName);
+            } else if (elementText.equals("placeholder_name")) {
+              templateBuilder.replaceElement(
+                  psiElement, new TextExpression(getFirstStateTypeAndName(specClass).second));
+            } else if (psiElement.getParent() instanceof PsiMethod) {
+              // Method name
+              templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
+            } else if (elementText.equals("placeholder_annotation_class")) {
+              templateBuilder.replaceElement(psiElement, "ClickEvent");
+            } else if (elementText.equals("placeholder_from_event_parameter")) {
+              templateBuilder.replaceElement(psiElement, "@FromEvent");
+            } else if (elementText.equals("placeholder_from_trigger_parameter")) {
+              templateBuilder.replaceElement(psiElement, "@FromTrigger");
+            }
+          } else if (psiElement instanceof PsiTypeElement
+              && elementText.equals("placeholder_service_type")) {
+            templateBuilder.replaceElement(
+                psiElement, new TextExpression(getServiceType(specClass)));
+          } else if (psiElement instanceof PsiTypeElement
+              && elementText.equals("placeholder_tree_prop_type")) {
+            templateBuilder.replaceElement(psiElement, "TreePropType");
+          } else if (psiElement instanceof PsiComment) {
+            templateBuilder.replaceElement(psiElement, new TextExpression(elementText));
+            templateBuilder.setEndVariableAfter(psiElement);
+          }
+          return true;
+        });
+  }
+
+  private static String getNextMethodName(String methodName, PsiClass specClass) {
+    String newMethodName = methodName;
+    int postfix = 1;
+    while (specClass.findMethodsByName(newMethodName).length > 0) {
+      newMethodName = methodName + postfix;
+      postfix++;
     }
+    return newMethodName;
   }
 
   private static Pair<String, String> getFirstStateTypeAndName(PsiClass specClass) {
