@@ -48,13 +48,16 @@ public class LayoutStateFutureReleaseTest {
   private int mHeightSpec;
 
   private ComponentContext mContext;
-  private final boolean config = ComponentsConfiguration.useCancelableLayoutFutures;
+  private final boolean config =
+      ComponentsConfiguration.getDefaultComponentsConfiguration().getUseCancelableLayoutFutures();
   private ShadowLooper mLayoutThreadShadowLooper;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(getApplicationContext());
-    ComponentsConfiguration.useCancelableLayoutFutures = true;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
+            .useCancelableLayoutFutures(true));
 
     mWidthSpec = makeSizeSpec(40, EXACTLY);
     mHeightSpec = makeSizeSpec(40, EXACTLY);
@@ -66,7 +69,9 @@ public class LayoutStateFutureReleaseTest {
 
   @After
   public void tearDown() {
-    ComponentsConfiguration.useCancelableLayoutFutures = config;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.getDefaultComponentsConfigurationBuilder()
+            .useCancelableLayoutFutures(config));
   }
 
   @Test

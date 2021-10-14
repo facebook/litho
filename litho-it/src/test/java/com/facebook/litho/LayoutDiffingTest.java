@@ -63,17 +63,21 @@ public class LayoutDiffingTest {
 
   public LayoutDiffingTest(boolean usesInputOnlyInternalNode) {
     mUsesInputOnlyInternalNode = usesInputOnlyInternalNode;
-    mOriginalValueOfUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+    mOriginalValueOfUseInputOnlyInternalNodes =
+        ComponentsConfiguration.getDefaultComponentsConfiguration().getUseInputOnlyInternalNodes();
   }
 
   @Before
   public void before() {
-    ComponentsConfiguration.useInputOnlyInternalNodes = mUsesInputOnlyInternalNode;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().useInputOnlyInternalNodes(mUsesInputOnlyInternalNode));
   }
 
   @After
   public void after() {
-    ComponentsConfiguration.useInputOnlyInternalNodes = mOriginalValueOfUseInputOnlyInternalNodes;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create()
+            .useInputOnlyInternalNodes(mOriginalValueOfUseInputOnlyInternalNodes));
   }
 
   /**

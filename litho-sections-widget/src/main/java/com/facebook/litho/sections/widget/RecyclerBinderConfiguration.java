@@ -237,7 +237,7 @@ public class RecyclerBinderConfiguration {
     private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
     private LithoViewFactory mLithoViewFactory;
     private boolean mIgnoreNullLayoutStateError =
-        ComponentsConfiguration.ignoreNullLayoutStateError;
+        mComponentsConfiguration.getIgnoreNullLayoutStateError();
     private ErrorEventHandler mErrorEventHandler;
 
     Builder() {}

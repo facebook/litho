@@ -124,7 +124,6 @@ public class ComponentsConfiguration {
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
 
-  public static boolean useCancelableLayoutFutures;
   public static boolean canInterruptAndMoveLayoutsBetweenThreads = true;
 
   /**
@@ -192,12 +191,6 @@ public class ComponentsConfiguration {
 
   public static boolean keepReconciliationEnabledWhenStateless = true;
 
-  /**
-   * When true, Litho will use the InputOnlyInternalNode and DefaultLayoutResult for layout
-   * calculations.
-   */
-  public static boolean useInputOnlyInternalNodes = false;
-
   public static boolean reuseInternalNodes = false;
 
   public static boolean enableLayoutCaching = false;
@@ -214,12 +207,6 @@ public class ComponentsConfiguration {
   public static boolean isTimelineEnabled = isDebugModeEnabled;
 
   public static @Nullable String timelineDocsLink = null;
-
-  /**
-   * Only used for testing. If true, the framework will not throw an error if a null LayoutState is
-   * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
-   */
-  @Deprecated public static boolean ignoreNullLayoutStateError = false;
 
   /** When the LithoView visibility changes, rebind */
   public static boolean rebindWhenVisibilityChanges = false;
@@ -314,11 +301,19 @@ public class ComponentsConfiguration {
     return mUseCancelableLayoutFutures;
   }
 
+  /**
+   * Only used for testing. If true, the framework will not throw an error if a null LayoutState is
+   * returned from a layout calculation in illegal cases (such as for a sync layout calculation).
+   */
   @Deprecated
   public boolean getIgnoreNullLayoutStateError() {
     return mIgnoreNullLayoutStateError;
   }
 
+  /**
+   * When true, Litho will use the InputOnlyInternalNode and DefaultLayoutResult for layout
+   * calculations.
+   */
   public boolean getUseInputOnlyInternalNodes() {
     return mUseInputOnlyInternalNodes;
   }
@@ -347,10 +342,9 @@ public class ComponentsConfiguration {
   }
 
   public static class Builder {
-
-    boolean mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+    boolean mUseCancelableLayoutFutures;
     @Deprecated boolean mIgnoreNullLayoutStateError = false;
-    boolean mUseInputOnlyInternalNodes = useInputOnlyInternalNodes;
+    boolean mUseInputOnlyInternalNodes = false;
     boolean mShouldReuseOutputs = false;
 
     protected Builder() {}

@@ -54,7 +54,8 @@ public class InternalNodeTest {
 
   public InternalNodeTest() {
     ComponentsConfiguration.useStatelessComponent = true;
-    mDefaultUseInputOnlyInternalNodes = ComponentsConfiguration.useInputOnlyInternalNodes;
+    mDefaultUseInputOnlyInternalNodes =
+        ComponentsConfiguration.getDefaultComponentsConfiguration().getUseInputOnlyInternalNodes();
   }
 
   private InternalNode acquireInternalNode() {
@@ -84,13 +85,16 @@ public class InternalNodeTest {
 
   @Before
   public void setup() {
-    ComponentsConfiguration.useInputOnlyInternalNodes = true;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create().useInputOnlyInternalNodes(true));
     ComponentsReporter.provide(mComponentsReporter);
   }
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useInputOnlyInternalNodes = mDefaultUseInputOnlyInternalNodes;
+    ComponentsConfiguration.setDefaultComponentsConfigurationBuilder(
+        ComponentsConfiguration.create()
+            .useInputOnlyInternalNodes(mDefaultUseInputOnlyInternalNodes));
   }
 
   @Test
