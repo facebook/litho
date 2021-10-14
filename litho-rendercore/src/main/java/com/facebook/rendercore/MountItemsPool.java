@@ -85,11 +85,6 @@ public class MountItemsPool {
   public static void release(Context context, RenderUnit renderUnit, Object mountContent) {
     final ItemPool pool = getMountContentPool(context, renderUnit);
     if (pool != null) {
-      if (mountContent instanceof AuditableMountContent) {
-        ((AuditableMountContent) mountContent)
-            .auditForUnboundState(AuditableMountContent.AuditSource.RELEASE);
-      }
-
       pool.release(mountContent);
     }
   }

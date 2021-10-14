@@ -24,7 +24,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.AuditableMountContent;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderTreeNode;
@@ -239,11 +238,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
           final View view = (View) drawable.getCallback();
           maybeSetDrawableState(view, drawable, output.getFlags(), output.getNodeInfo());
         }
-      }
-
-      if (content instanceof AuditableMountContent) {
-        ((AuditableMountContent) content)
-            .auditForUnboundState(AuditableMountContent.AuditSource.BIND);
       }
 
       output.getComponent().bind(getComponentContext(unit), content, getInterStageProps(data));

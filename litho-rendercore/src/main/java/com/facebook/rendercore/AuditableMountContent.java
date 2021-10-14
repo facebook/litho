@@ -21,17 +21,16 @@ import com.facebook.infer.annotation.Nullsafe;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 public interface AuditableMountContent {
 
-  enum AuditSource {
-    RELEASE,
-    BIND
-  }
+  /**
+   * Audit after on-bind. Use to monitor bound state. If the content is already bound, throw an 
+   * exception here.
+   */
+  void auditAfterOnBind();
 
   /**
-   * Called when a mount content is expected to be unbound. Implementations of this method should
-   * check the state of the content, and throw an exception if the content isn't unbound and in its
-   * default state.
+   * Audit after on-unbind. Use to monitor bound state.
    */
-  void auditForUnboundState(AuditSource auditSource);
+  void auditAfterOnUnbind();
 
   /**
    * Called when a non-crashing error occurs on the mount content before audit is called, suggesting

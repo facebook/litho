@@ -37,8 +37,7 @@ public class LithoRecylerView extends RecyclerView
   private @Nullable TouchInterceptor mTouchInterceptor;
   private @Nullable PostDispatchDrawListener mPostDispatchDrawListener;
 
-  private final List<RecyclerView.OnScrollListener> mOnScrollListeners = new ArrayList<>();
-  private final StringBuilder mErrorStringBuilder = new StringBuilder();
+  private boolean mIsBound = false;
   private final StringBuilder mUsageStringBuilder = new StringBuilder();
 
   public LithoRecylerView(Context context) {
@@ -100,69 +99,43 @@ public class LithoRecylerView extends RecyclerView
   }
 
   @Override
-  public void auditForUnboundState(AuditSource auditSource) {
-    final StringBuilder errorMessage = new StringBuilder();
-    // Only check scroll listeners on release
-    if (auditSource == AuditSource.RELEASE && !mOnScrollListeners.isEmpty()) {
-      errorMessage.append("LithoRecyclerView should be unbound, but has ");
-      errorMessage.append(mOnScrollListeners.size());
-      errorMessage.append(" scroll listeners\n");
+  public void auditAfterOnBind() {
+    if (mIsBound) {
+      throw new RuntimeException(
+          "LithoRecyclerView is already bound and is being bound again!"
+              + "\nUsage Log:\n"
+              + mUsageStringBuilder.toString());
     }
 
-    if (mTouchInterceptor != null) {
-      errorMessage.append(
-          "LithoRecyclerView should be unbound, but has a non null TouchInterceptor\n");
-    }
+    mIsBound = true;
+  }
 
-    if (errorMessage.length() == 0) {
-      return;
-    }
-
-    throw new IllegalStateException(
-        errorMessage
-            + "\nError Log:\n"
-            + mErrorStringBuilder.toString()
-            + "\nUsage Log:\n"
-            + mUsageStringBuilder.toString());
+  @Override
+  public void auditAfterOnUnbind() {
+    // Don't crash if already unbound here, since this might happen.
+    mIsBound = false;
   }
 
   @Override
   public void logError(String message, Exception e) {
-    // <message>: <exception message>
+    // ERROR: <message>: <exception message>
     // <stack-trace line 1>
     // <stack-trace line 2>
     // ...
     // <stack-trace line n>
-    mErrorStringBuilder.append(message);
-    mErrorStringBuilder.append(": ");
-    mErrorStringBuilder.append(e.getMessage());
-    mErrorStringBuilder.append("\n");
-    mErrorStringBuilder.append(Log.getStackTraceString(e));
-    mErrorStringBuilder.append("\n");
+    mUsageStringBuilder.append("ERROR: ");
+    mUsageStringBuilder.append(message);
+    mUsageStringBuilder.append(": ");
+    mUsageStringBuilder.append(e.getMessage());
+    mUsageStringBuilder.append("\n");
+    mUsageStringBuilder.append(Log.getStackTraceString(e));
+    mUsageStringBuilder.append("\n");
   }
 
   @Override
   public void logUsage(String usageDescription) {
     mUsageStringBuilder.append(usageDescription);
     mUsageStringBuilder.append("\n");
-  }
-
-  @Override
-  public void addOnScrollListener(RecyclerView.OnScrollListener listener) {
-    super.addOnScrollListener(listener);
-    mOnScrollListeners.add(listener);
-  }
-
-  @Override
-  public void removeOnScrollListener(RecyclerView.OnScrollListener listener) {
-    super.removeOnScrollListener(listener);
-    mOnScrollListeners.remove(listener);
-  }
-
-  @Override
-  public void clearOnScrollListeners() {
-    super.clearOnScrollListeners();
-    mOnScrollListeners.clear();
   }
 
   /** Allows to override {@link #onInterceptTouchEvent(MotionEvent)} behavior */

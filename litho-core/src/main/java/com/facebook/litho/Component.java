@@ -34,6 +34,7 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -313,6 +314,8 @@ public abstract class Component
         ComponentsSystrace.endSection();
       }
     }
+
+    auditForOnBind(mountedContent);
   }
 
   final @Nullable Transition createTransition(ComponentContext c) {
@@ -379,6 +382,8 @@ public abstract class Component
       logErrorForAuditableContent(mountedContent, "unbind error", e);
       ComponentUtils.handle(c, e);
     }
+
+    auditForOnUnbind(mountedContent);
   }
 
   final void unmount(
@@ -394,22 +399,65 @@ public abstract class Component
     }
   }
 
+  private static void auditForOnBind(Object content) {
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
+    if (content instanceof AuditableMountContent) {
+      ((AuditableMountContent) content).auditAfterOnBind();
+    }
+  }
+
+  private static void auditForOnUnbind(Object content) {
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
+    if (content instanceof AuditableMountContent) {
+      ((AuditableMountContent) content).auditAfterOnUnbind();
+    }
+  }
+
   private void logErrorForAuditableContent(Object content, String message, Exception e) {
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
     if (content instanceof AuditableMountContent) {
       ((AuditableMountContent) content).logError(getAuditMessage(content, message), e);
     }
   }
 
   private void logUsageForAuditableContent(Object content, String message) {
+    if (!ComponentsConfiguration.delegateToRenderCoreMount) {
+      return;
+    }
+
     if (content instanceof AuditableMountContent) {
       ((AuditableMountContent) content).logUsage(getAuditMessage(content, message));
     }
   }
 
   private String getAuditMessage(Object content, String message) {
-    final String globalKey = getScopedContext() != null ? getScopedContext().getGlobalKey() : "N/A";
+    final String globalKey;
 
-    return content.getClass().getSimpleName() + " " + message + ". Global Key: " + globalKey;
+    if (getScopedContext() != null) {
+      globalKey = generateHierarchyString(getScopedContext().getGlobalKey());
+    } else {
+      globalKey = "N/A";
+    }
+
+    final long currentTime = System.currentTimeMillis();
+
+    return "Timestamp: "
+        + currentTime
+        + " - "
+        + content.getClass().getSimpleName()
+        + " "
+        + message
+        + ". Global Key: "
+        + globalKey;
   }
 
   protected void applyPreviousRenderData(
@@ -3210,5 +3258,19 @@ public abstract class Component
     }
 
     return list;
+  }
+
+  static String generateHierarchyString(String globalKey) {
+    final List<String> hierarchyList = generateHierarchy(globalKey);
+
+    final StringBuilder hierarchyStringBuilder = new StringBuilder();
+
+    for (String hierarchy : hierarchyList) {
+      if (!TextUtils.isEmpty(hierarchy)) {
+        hierarchyStringBuilder.append(hierarchy);
+        hierarchyStringBuilder.append(", ");
+      }
+    }
+    return hierarchyStringBuilder.length() > 0 ? hierarchyStringBuilder.toString() : "N/A";
   }
 }
