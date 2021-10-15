@@ -247,7 +247,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   void detachExtensions(Context context, MOUNT_CONTENT content, @Nullable Object layoutData) {
     unbind((List) mAttachDetachExtensions, context, content, layoutData);
   }
-
+  
   /**
    * Unbind and rebind all extensions which should update compared to a previous (i.e. current)
    * RenderUnit.
@@ -257,7 +257,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       MOUNT_CONTENT content,
       RenderUnit<MOUNT_CONTENT> currentRenderUnit,
       @Nullable Object currentLayoutData,
-      @Nullable Object newLayoutData) {
+      @Nullable Object newLayoutData, 
+      boolean isAttached) {
 
     final List<Extension> attachDetachExtensionsForBind =
         new ArrayList<>(sizeOrZero(mAttachDetachExtensions));
@@ -286,8 +287,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
         mountUnmountExtensionsForBind,
         mountUnmountExtensionsForUnbind);
 
-    // 2. unbind all attach binders which should update.
-    unbind(attachDetachExtensionsForUnbind, context, content, currentLayoutData);
+    // 2. unbind all attach binders which should update (only if currently attached).
+    if (isAttached) {
+      unbind(attachDetachExtensionsForUnbind, context, content, currentLayoutData);
+    }
 
     // 3. unbind all mount binders which should update.
     unbind(mountUnmountExtensionsForUnbind, context, content, currentLayoutData);

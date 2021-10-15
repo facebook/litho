@@ -870,9 +870,14 @@ public class MountState implements MountDelegateTarget {
 
     if (currentRenderUnit != renderUnit) {
       RenderCoreSystrace.beginSection("Update Item: ", renderUnit.getDescription());
-
+      
       renderUnit.updateExtensions(
-          context, content, currentRenderUnit, currentLayoutData, newLayoutData);
+          context, 
+          content, 
+          currentRenderUnit, 
+          currentLayoutData, 
+          newLayoutData, 
+          currentMountItem.isBound());
 
       currentMountItem.setIsBound(true);
     }
