@@ -162,9 +162,10 @@ module.exports = {
       'deep-dive/incremental-mount',
     ],
     ...fbInternalOnly({
-    'Contributing Documentation': [
-      'fb/contributing-documentation',
-      'fb/documentation-writing-formatting',
+    'Contributing to the Documentation': [
+      'fb/documentation/contributing-documentation',
+      'fb/documentation/formatting-tips',
+      'fb/documentation/writing-tips',
     ]}),
     ...fbInternalOnly({
       '[Internal]': [
