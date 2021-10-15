@@ -225,7 +225,6 @@ module.exports = {
           'Compatibility': ['styles'],
           'Advanced Guides': [
             'architecture-overview',
-            'recycler-component',
             'custom-layout',
             'onattached-ondetached',
           ],
