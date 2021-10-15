@@ -81,4 +81,9 @@ public abstract class SpecGeneratedComponent extends Component {
       ComponentContext c, int widthSpec, int heightSpec) {
     return Column.create(c).build();
   }
+
+  @Override
+  protected boolean usesLocalStateContainer() {
+    return true;
+  }
 }

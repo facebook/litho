@@ -159,6 +159,8 @@ abstract class KComponent : Component() {
 
   final override fun hasState() = false
 
+  final override fun usesLocalStateContainer() = false
+
   final override fun implementsAccessibility() = false
 
   final override fun implementsExtraAccessibilityNodes() = false

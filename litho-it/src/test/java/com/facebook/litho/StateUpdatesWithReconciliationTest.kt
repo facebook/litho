@@ -28,6 +28,7 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRender
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorWillRenderSpec
 import com.facebook.litho.widget.TestWrapperComponent
+import com.facebook.litho.widget.Text
 import java.util.ArrayList
 import org.assertj.core.api.Java6Assertions
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -458,6 +459,51 @@ class StateUpdatesWithReconciliationTest(
     // trigger a state update
     caller_1.increment()
     assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 3")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+  }
+
+  @Test
+  fun `state is not lost when multiple different components update state for kotlin components`() {
+    val c = lithoViewRule.context
+    val caller = SimpleStateUpdateEmulatorSpec.Caller()
+
+    data class Updater(var callback: (() -> Unit)?)
+
+    class RootComponentWithState(private val updater: Updater) : KComponent() {
+      override fun ComponentScope.render(): Component? {
+
+        val count = useState { 1 }
+
+        updater.callback = { count.updateSync(count.value + 1) }
+
+        return Column {
+          child(Text.create(context).text("Root Text: " + count.value).build())
+          child(SimpleStateUpdateEmulator.create(c).caller(caller).build())
+        }
+      }
+    }
+
+    val updater = Updater(null)
+    val root: Component = RootComponentWithState(updater)
+
+    lithoViewRule.attachToWindow().setRoot(root).measure().layout()
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 1")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 1")
+
+    updater.callback?.let { it() }
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 1")
+
+    caller.increment()
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 2")
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
+
+    updater.callback?.let { it() }
+
+    assertThat(lithoViewRule.lithoView).hasVisibleText("Root Text: 3")
     assertThat(lithoViewRule.lithoView).hasVisibleText("Text: 2")
   }
 }

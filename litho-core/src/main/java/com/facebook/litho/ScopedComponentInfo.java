@@ -143,8 +143,13 @@ class ScopedComponentInfo implements Cloneable {
 
   public void commitToLayoutState(StateHandler stateHandler) {
     mIsBeingUsed = true;
-    if (mComponent.hasState()) {
-      stateHandler.addStateContainer(mContext.getGlobalKey(), mStateContainer);
+    if (mComponent.usesLocalStateContainer()) {
+      if (mComponent.hasState()) {
+        stateHandler.addStateContainer(mContext.getGlobalKey(), mStateContainer);
+      }
+    } else {
+      // the get method adds the state container to the needed state container map
+      stateHandler.getStateContainer(mContext.getGlobalKey());
     }
   }
 

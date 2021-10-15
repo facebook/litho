@@ -541,6 +541,10 @@ public abstract class Component
     return false;
   }
 
+  protected boolean usesLocalStateContainer() {
+    return false;
+  }
+
   /**
    * Whether this component will populate any accessibility nodes or events that are passed to it.
    *
@@ -1624,9 +1628,14 @@ public abstract class Component
       final ComponentContext scopedContext,
       final String globalKey) {
     scopedContext.setParentTreeProps(parentContext.getTreeProps());
-    if (hasState()) {
-      Preconditions.checkNotNull(stateHandler)
-          .applyStateUpdatesForComponent(scopedContext, this, globalKey);
+    if (usesLocalStateContainer()) {
+      if (hasState()) {
+        Preconditions.checkNotNull(stateHandler)
+            .applyStateUpdatesForComponent(scopedContext, this, globalKey);
+      }
+    } else {
+      // the get method adds the state container to the needed state container map
+      stateHandler.getStateContainer(globalKey);
     }
   }
 
