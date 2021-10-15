@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.animations.transitions
 
-import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -71,7 +70,7 @@ class TransitionsComponent : KComponent() {
                       .transitionKey(
                           context, TRANSITION_KEY_TEXT, Transition.TransitionKeyType.GLOBAL)
                       .alignSelf(if (toRight.value) YogaAlign.FLEX_END else YogaAlign.FLEX_START)
-                      .background(RoundedRect.build(context, Color.parseColor("#666699"), 8))))
+                      .background(RoundedRect(0xff666699, 8.dp))))
       child(
           Column(
               style =
@@ -80,7 +79,7 @@ class TransitionsComponent : KComponent() {
                       .margin(all = 5.dp)
                       .transitionKey(
                           context, TRANSITION_KEY2_TEXT, Transition.TransitionKeyType.GLOBAL)
-                      .background(RoundedRect.build(context, Color.parseColor("#ba7bb5"), 8))))
+                      .background(RoundedRect(0xffba7bb5, 8.dp))))
       child(ContainersComponent())
     }
   }

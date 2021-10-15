@@ -76,9 +76,7 @@ class AnimatedBadgeKotlin : KComponent() {
   }
 
   private fun ComponentScope.buildComment1(expanded: Boolean): Component =
-      Column(
-          style =
-              Style.padding(all = 8f.dp).background(RoundedRect.build(context, -0x222223, 20))) {
+      Column(style = Style.padding(all = 8f.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
               child(Text("Cristobal Castilla", textSize = 16f.dp, textStyle = Typeface.BOLD))
@@ -87,14 +85,14 @@ class AnimatedBadgeKotlin : KComponent() {
                       style =
                           Style.margin(start = 8f.dp)
                               .padding(all = 3f.dp)
-                              .background(RoundedRect.build(context, Color.WHITE, 12)),
+                              .background(RoundedRect(Color.WHITE, 12.dp)),
                       alignItems = YogaAlign.CENTER) {
                     child(
                         Column(
                             style =
                                 Style.height(18f.dp)
                                     .width(18f.dp)
-                                    .background(RoundedRect.build(context, -0x48b5, 9))))
+                                    .background(RoundedRect(0xffffb74b, 9.dp))))
                     if (expanded) {
                       child(
                           key("text") {
@@ -122,10 +120,7 @@ class AnimatedBadgeKotlin : KComponent() {
       }
 
   private fun ComponentScope.buildComment2(expanded: Boolean): Component =
-      Column(
-          style =
-              Style.padding(all = 8f.dp)
-                  .background(RoundedRect.build(context, 0xFFDDDDDD.toInt(), 20))) {
+      Column(style = Style.padding(all = 8f.dp).background(RoundedRect(0xFFDDDDDD, 20.dp))) {
         child(
             Row(alignItems = YogaAlign.CENTER) {
               child(Text("Cristobal Castilla", textSize = 16f.dp, textStyle = Typeface.BOLD))
@@ -135,7 +130,7 @@ class AnimatedBadgeKotlin : KComponent() {
                           Style.width((if (expanded) 48f else 24f).dp)
                               .margin(start = 8f.dp)
                               .padding(all = 3f.dp)
-                              .background(RoundedRect.build(context, Color.WHITE, 12)),
+                              .background(RoundedRect(Color.WHITE, 12.dp)),
                       alignItems = YogaAlign.CENTER) {
                     child(
                         Column(
@@ -145,7 +140,7 @@ class AnimatedBadgeKotlin : KComponent() {
                                     .positionType(YogaPositionType.ABSOLUTE)
                                     .height(18f.dp)
                                     .width(18f.dp)
-                                    .background(RoundedRect.build(context, 0xFFB2CFE5.toInt(), 9))))
+                                    .background(RoundedRect(0xFFB2CFE5, 9.dp))))
                     child(
                         Column(
                             style =
@@ -154,13 +149,13 @@ class AnimatedBadgeKotlin : KComponent() {
                                     .positionType(YogaPositionType.ABSOLUTE)
                                     .height(18f.dp)
                                     .width(18f.dp)
-                                    .background(RoundedRect.build(context, 0xFF4B8C61.toInt(), 9))))
+                                    .background(RoundedRect(0xFF4B8C61, 9.dp))))
                     child(
                         Column(
                             style =
                                 Style.height(18f.dp)
                                     .width(18f.dp)
-                                    .background(RoundedRect.build(context, 0xFFFFB74B.toInt(), 9))))
+                                    .background(RoundedRect(0xFFFFB74B, 9.dp))))
                   })
             })
         child(Text("So awesome!", textSize = 18f.dp))

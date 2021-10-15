@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.animations.transitions
 
-import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -46,14 +45,14 @@ class ContainersComponent : KComponent() {
                 Style.width(100.dp)
                     .height(50.dp)
                     .margin(all = 5.dp)
-                    .background(RoundedRect.build(context, Color.parseColor("#6ab071"), 8)))
+                    .background(RoundedRect(0xff6ab071, 8.dp)))
     val secondComponent =
         Column(
             style =
                 Style.width(50.dp)
                     .height(50.dp)
                     .margin(all = 5.dp)
-                    .background(RoundedRect.build(context, Color.parseColor("#bf678d"), 8)))
+                    .background(RoundedRect(0xffbf678d, 8.dp)))
 
     return Column(style = Style.width(200.dp)) {
       child(
@@ -62,7 +61,7 @@ class ContainersComponent : KComponent() {
                   Style.width(100.dp)
                       .height(50.dp)
                       .margin(all = 5.dp)
-                      .background(RoundedRect.build(context, Color.parseColor("#6ab071"), 8))
+                      .background(RoundedRect(0xff6ab071, 8.dp))
                       .onClick { isExpanded.update(!isExpanded.value) }))
 
       child(
@@ -73,14 +72,14 @@ class ContainersComponent : KComponent() {
                       Style.width(50.dp)
                           .height(50.dp)
                           .margin(all = 5.dp)
-                          .background(RoundedRect.build(context, Color.parseColor("#bf678d"), 8)))))
+                          .background(RoundedRect(0xffbf678d, 8.dp)))))
       child(
           Column(
               style =
                   Style.width(150.dp)
                       .height(50.dp)
                       .margin(all = 5.dp)
-                      .background(RoundedRect.build(context, Color.parseColor("#a4dece"), 8))
+                      .background(RoundedRect(0xffa4dece, 8.dp))
                       .onClick { showSecondComponent.update(!showSecondComponent.value) }))
       child(CrossFade(showSecondComponent.value, firstComponent, secondComponent))
     }

@@ -19,21 +19,23 @@ package com.facebook.samples.litho.kotlin.drawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
-import android.util.TypedValue
-import com.facebook.litho.ComponentContext
-import java.util.Arrays
+import androidx.annotation.ColorInt
+import androidx.annotation.Px
+import com.facebook.litho.ComponentScope
+import com.facebook.litho.Dimen
 
-object RoundedRect {
-  /** Helper function creating rounded rectanlge shape */
-  fun build(c: ComponentContext, color: Int, cornerRadiusDp: Int): Drawable {
-    val cornerRadiusPx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp.toFloat(), c.resources.displayMetrics)
+private fun RoundedRect(@ColorInt fillColor: Int, @Px cornerRadiusPx: Float): Drawable =
+    ShapeDrawable(RoundRectShape(FloatArray(8) { cornerRadiusPx }, null, null)).apply {
+      paint.color = fillColor
+    }
 
-    val radii = FloatArray(8)
-    Arrays.fill(radii, cornerRadiusPx)
-    val roundedRectShape = RoundRectShape(radii, null, radii)
+/** Create a Rectangle drawable with rounded corners */
+fun ComponentScope.RoundedRect(@ColorInt fillColor: Int, cornerRadius: Dimen): Drawable =
+    RoundedRect(fillColor, cornerRadius.toPixels(resourceResolver).toFloat())
 
-    return ShapeDrawable(roundedRectShape).also { it.paint.color = color }
-  }
-}
+/**
+ * Create a Rectangle drawable with rounded corners. Kotlin resolves numbers >= 0x80000000 as a
+ * Long. This is a convenience function that accepts [fillColor] as a Long.
+ */
+fun ComponentScope.RoundedRect(@ColorInt fillColor: Long, cornerRadius: Dimen): Drawable =
+    RoundedRect(fillColor.toInt(), cornerRadius)

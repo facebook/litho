@@ -34,8 +34,9 @@ import com.facebook.litho.dp
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sp
-import com.facebook.litho.view.backgroundColor
+import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text
+import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
 // start_example
 class HorizontalScrollKComponent : KComponent() {
@@ -45,7 +46,7 @@ class HorizontalScrollKComponent : KComponent() {
         recyclerConfiguration =
             ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build(),
         itemDecoration = ItemSpacingDecorator(10.dp.toPixels()),
-        topPadding = 10.dp,
+        wrapContentCrossAxis = true,
         style = Style.height(100.dp),
     ) {
       (0..10).forEach {
@@ -53,7 +54,7 @@ class HorizontalScrollKComponent : KComponent() {
           Text(
               text = "$it",
               textSize = 24.sp,
-              style = Style.padding(30.dp).backgroundColor(Color.LTGRAY))
+              style = Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp)))
         }
       }
     }

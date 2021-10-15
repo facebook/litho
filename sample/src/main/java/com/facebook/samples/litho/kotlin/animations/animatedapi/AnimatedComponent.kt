@@ -16,7 +16,6 @@
 
 package com.facebook.samples.litho.kotlin.animations.animatedapi
 
-import android.graphics.Color
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -127,8 +126,7 @@ class AnimatedComponent : KComponent() {
                         Style.width(100.dp)
                             .height(150.dp)
                             .margin(all = 5.dp)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#99b3ff"), 8))))
+                            .background(RoundedRect(0xff99b3ff, 8.dp))))
             child(
                 Column(
                     style =
@@ -136,8 +134,7 @@ class AnimatedComponent : KComponent() {
                             .height(150.dp)
                             .margin(all = 5.dp)
                             .alpha(alpha)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#ffd480"), 8))))
+                            .background(RoundedRect(0xffffd480, 8.dp))))
             child(
                 Column(
                     style =
@@ -145,8 +142,7 @@ class AnimatedComponent : KComponent() {
                             .height(150.dp)
                             .margin(all = 5.dp)
                             .alpha(alpha2)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#e699cc"), 8))))
+                            .background(RoundedRect(0xffe699cc, 8.dp))))
             child(
                 Column(
                     style =
@@ -154,8 +150,7 @@ class AnimatedComponent : KComponent() {
                             .height(150.dp)
                             .margin(all = 5.dp)
                             .alpha(alpha3)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#9fdfbf"), 8))))
+                            .background(RoundedRect(0xff9fdfbf, 8.dp))))
           })
       child(
           Row(
@@ -176,15 +171,14 @@ class AnimatedComponent : KComponent() {
                           } else {
                             scale2
                           })
-                      .background(RoundedRect.build(context, Color.parseColor("#d9d9d9"), 8))) {
+                      .background(RoundedRect(0xffd9d9d9, 8.dp))) {
             child(
                 Row(
                     style =
                         Style.margin(30.dp)
                             .width(90.dp)
                             .height(20.dp)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#999999"), 12))))
+                            .background(RoundedRect(0xff999999, 12.dp))))
           })
       child(
           Row(style = Style.alignSelf(YogaAlign.CENTER).wrapInView()) {
@@ -194,8 +188,7 @@ class AnimatedComponent : KComponent() {
                         Style.width(50.dp)
                             .height(50.dp)
                             .margin(all = 5.dp)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
+                            .background(RoundedRect(0xff666699, 8.dp))))
             child(
                 Column(
                     style =
@@ -209,24 +202,21 @@ class AnimatedComponent : KComponent() {
                                   yProgress
                                 })
                             .alpha(alphaProgress)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
+                            .background(RoundedRect(0xff666699, 8.dp))))
             child(
                 Column(
                     style =
                         Style.width(50.dp)
                             .height(50.dp)
                             .margin(all = 5.dp)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
+                            .background(RoundedRect(0xff666699, 8.dp))))
             child(
                 Column(
                     style =
                         Style.width(50.dp)
                             .height(50.dp)
                             .margin(all = 5.dp)
-                            .background(
-                                RoundedRect.build(context, Color.parseColor("#666699"), 8))))
+                            .background(RoundedRect(0xff666699, 8.dp))))
           })
     }
   }
