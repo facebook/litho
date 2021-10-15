@@ -25,12 +25,14 @@ import com.facebook.litho.kotlinStyle
 /** Builder function for creating [ProgressSpec] components. */
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun ComponentScope.Progress(
-    @ColorInt color: Int,
+    @ColorInt color: Int? = null,
     style: Style? = null,
     indeterminateDrawable: Drawable? = null
 ): Progress =
     Progress.create(context)
-        .color(color)
-        .indeterminateDrawable(indeterminateDrawable)
+        .apply {
+          color?.let { color(color) }
+          indeterminateDrawable?.let { indeterminateDrawable(indeterminateDrawable) }
+        }
         .kotlinStyle(style)
         .build()

@@ -16,39 +16,74 @@
 
 package com.facebook.samples.litho.kotlin.collection
 
-import com.facebook.litho.Column
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import androidx.annotation.ColorInt
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.Handle
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.core.padding
-import com.facebook.litho.dp
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
-import kotlin.random.Random
 
+// start_example
 class PullToRefreshCollectionKComponent : KComponent() {
 
-  private fun generateRandomNumbers(): List<Int> = List(50) { Random.nextInt(0, 100) }
-
   override fun ComponentScope.render(): Component? {
-    val list = useState { generateRandomNumbers() }
-    val idGenerator = useState { generateSequence(0) { it + 1 }.iterator() }
-    val handle = Handle()
+    val deck = useState { (0..51).map { Card(it) }.shuffled() }
+    val collectionHandle = Handle()
+    return Collection(
+        handle = collectionHandle,
+        style = Style.flex(grow = 1f),
+        onPullToRefresh = {
+          deck.update { it.shuffled() }
+          Collection.clearRefreshing(context, collectionHandle)
+        },
+    ) { deck.value.forEach { card -> child(id = card.index) { Text(card.styledText) } } }
+  }
+}
+// end_example
 
-    return Column(style = Style.padding(16.dp)) {
-      child(
-          Collection(
-              handle = handle,
-              style = Style.flex(grow = 1f),
-              onPullToRefresh = {
-                list.update(generateRandomNumbers())
-                Collection.clearRefreshing(context, handle)
-              },
-          ) { list.value.forEach { child(id = idGenerator.value.next()) { Text("$it") } } })
+class Card(val suit: Suit, val value: Int) {
+
+  enum class Suit(val symbol: Char, @ColorInt val color: Int) {
+    SPADES('♠', Color.BLACK),
+    HEARTS('♥', Color.RED),
+    CLUBS('♣', Color.BLACK),
+    DIAMONDS('♦', Color.RED),
+  }
+
+  constructor(index: Int) : this(Suit.values()[index / 13], (index % 13) + 1)
+
+  init {
+    if (value !in 1..13) {
+      throw IllegalArgumentException()
     }
   }
+
+  val valueText
+    get() =
+        when (value) {
+          1 -> "A"
+          11 -> "J"
+          12 -> "Q"
+          13 -> "K"
+          else -> "$value"
+        }
+
+  val styledText
+    get(): CharSequence {
+      val spannable = SpannableString("$valueText ${suit.symbol}")
+      spannable.setSpan(
+          ForegroundColorSpan(suit.color), 0, spannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+      return spannable
+    }
+
+  val index
+    get() = (suit.ordinal * 13) + (value - 1)
 }

@@ -93,6 +93,8 @@ import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsComponentKot
 import com.facebook.samples.litho.kotlin.collection.ChangeableItemsCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.CollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.DepsCollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.FriendsCollectionKComponent
+import com.facebook.samples.litho.kotlin.collection.HorizontalScrollKComponent
 import com.facebook.samples.litho.kotlin.collection.MultiListCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PaginationCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.PullToRefreshCollectionKComponent
@@ -194,6 +196,10 @@ class Demos {
                                 name = "Selection", component = SelectionCollectionKComponent()),
                             SingleDemo(
                                 name = "SubCollections", component = SubCollectionsKComponent()),
+                            SingleDemo(name = "Friends", component = FriendsCollectionKComponent()),
+                            SingleDemo(
+                                name = "Horizontal Scroll",
+                                component = HorizontalScrollKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),

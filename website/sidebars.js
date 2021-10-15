@@ -72,6 +72,7 @@ module.exports = {
           ],
         },
         'fb/kotlin/kotlin-flexbox-containers',
+        'fb/kotlin/collections',
         'fb/kotlin/event-handling',
          {
            'Testing': [

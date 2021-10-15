@@ -16,44 +16,68 @@
 
 package com.facebook.samples.litho.kotlin.collection
 
+import android.os.Handler
+import android.os.Looper
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
-import com.facebook.litho.flexbox.flex
+import com.facebook.litho.core.height
+import com.facebook.litho.dp
 import com.facebook.litho.sections.widget.Collection
 import com.facebook.litho.sections.widget.Collection.Companion.tailPagination
+import com.facebook.litho.useRef
 import com.facebook.litho.useState
 import com.facebook.litho.widget.Progress
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaAlign
 
+// start_example
 class PaginationCollectionKComponent : KComponent() {
 
-  private val paginatedData = (0..300).chunked(50).iterator()
-
   override fun ComponentScope.render(): Component? {
-    val list = useState { paginatedData.next() }
+    val paginatedData = useRef { PaginatedDataSource() }
+    val list = useState { paginatedData.value.next() }
 
     return Collection(
-        style = Style.flex(grow = 1f),
         pagination =
             tailPagination(offsetBeforeTailFetch = 10) {
-              if (paginatedData.hasNext()) {
-                list.update(list.value + paginatedData.next())
-              }
+              paginatedData.value.fetchDelayed { newData -> list.update { it + newData } }
             },
     ) {
       list.value.forEach { child(id = it) { Text("$it") } }
 
-      if (paginatedData.hasNext()) {
+      if (paginatedData.value.hasNext) {
         child {
           Column(alignItems = YogaAlign.CENTER) {
-            child(Progress.create(context).heightDip(50f).widthDip(50f).build())
+            child(Progress(style = Style.height(50.dp).height(50.dp)))
           }
         }
       }
     }
+  }
+}
+// end_example
+
+// A paginated datasource with a simulated network delay
+class PaginatedDataSource {
+  val data = (0..150).chunked(40).iterator()
+  var isFetching = false
+  val hasNext
+    get() = data.hasNext()
+
+  fun next(): List<Int> = data.next()
+
+  fun fetchDelayed(callback: (newData: List<Int>) -> Unit) {
+    if (isFetching || !hasNext) return
+    isFetching = true
+    Handler(Looper.getMainLooper())
+        .postDelayed(
+            {
+              callback.invoke(next())
+              isFetching = false
+            },
+            1000)
   }
 }
