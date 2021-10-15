@@ -70,8 +70,8 @@ public class RecyclerSpecTest {
     final int size = 3;
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
-    LithoRecylerView.TouchInterceptor touchInterceptor =
-        mock(LithoRecylerView.TouchInterceptor.class);
+    LithoRecyclerView.TouchInterceptor touchInterceptor =
+        mock(LithoRecyclerView.TouchInterceptor.class);
 
     RecyclerSpec.onBind(
         mComponentContext,

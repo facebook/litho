@@ -31,7 +31,7 @@ import java.util.List;
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
  * RecyclerSpec}
  */
-public class LithoRecylerView extends RecyclerView
+public class LithoRecyclerView extends RecyclerView
     implements HasPostDispatchDrawListener, AuditableMountContent {
 
   private @Nullable TouchInterceptor mTouchInterceptor;
@@ -40,15 +40,15 @@ public class LithoRecylerView extends RecyclerView
   private boolean mIsBound = false;
   private final StringBuilder mUsageStringBuilder = new StringBuilder();
 
-  public LithoRecylerView(Context context) {
+  public LithoRecyclerView(Context context) {
     this(context, null);
   }
 
-  public LithoRecylerView(Context context, @Nullable AttributeSet attrs) {
+  public LithoRecyclerView(Context context, @Nullable AttributeSet attrs) {
     this(context, attrs, 0);
   }
 
-  public LithoRecylerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+  public LithoRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
   }
 

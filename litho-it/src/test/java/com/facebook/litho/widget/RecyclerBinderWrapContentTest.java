@@ -1075,8 +1075,8 @@ public class RecyclerBinderWrapContentTest {
 
   @Test
   public void testOnDataRenderedWithNoChanges() {
-    final LithoRecylerView recyclerView =
-        new LithoRecylerView(mComponentContext.getAndroidContext());
+    final LithoRecyclerView recyclerView =
+        new LithoRecyclerView(mComponentContext.getAndroidContext());
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =

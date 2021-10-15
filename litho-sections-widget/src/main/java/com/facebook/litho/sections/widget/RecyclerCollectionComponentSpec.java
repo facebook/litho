@@ -62,7 +62,7 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LayoutInfo;
-import com.facebook.litho.widget.LithoRecylerView;
+import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -160,7 +160,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
-      @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) OnItemTouchListener itemTouchListener,
       @Prop(optional = true) boolean setRootAsync,
       @Prop(optional = true) boolean disablePTR,

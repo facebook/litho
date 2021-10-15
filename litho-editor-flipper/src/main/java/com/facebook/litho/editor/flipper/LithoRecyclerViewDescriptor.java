@@ -25,15 +25,15 @@ import com.facebook.flipper.plugins.inspector.NodeDescriptor;
 import com.facebook.flipper.plugins.inspector.SetDataOperations;
 import com.facebook.flipper.plugins.inspector.Touch;
 import com.facebook.litho.sections.debug.DebugSection;
-import com.facebook.litho.widget.LithoRecylerView;
+import com.facebook.litho.widget.LithoRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView> {
+public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecyclerView> {
 
   @Override
-  public void invalidate(final LithoRecylerView node) {
+  public void invalidate(final LithoRecyclerView node) {
     super.invalidate(node);
 
     new com.facebook.flipper.core.ErrorReportingRunnable(mConnection) {
@@ -51,37 +51,37 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
-  public void init(final LithoRecylerView node) throws Exception {
+  public void init(final LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.init(node);
   }
 
   @Override
-  public String getId(LithoRecylerView node) throws Exception {
+  public String getId(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getId(node);
   }
 
   @Override
-  public String getName(LithoRecylerView node) throws Exception {
+  public String getName(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getName(node);
   }
 
   @Override
-  public int getChildCount(LithoRecylerView node) throws Exception {
+  public int getChildCount(LithoRecyclerView node) throws Exception {
     // TODO T39526148 this might not always be true when using the RecyclerBinder manually.
     return 1;
   }
 
   @Override
-  public int getAXChildCount(LithoRecylerView node) throws Exception {
+  public int getAXChildCount(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAXChildCount(node);
   }
 
   @Override
-  public Object getChildAt(LithoRecylerView node, int index) throws Exception {
+  public Object getChildAt(LithoRecyclerView node, int index) throws Exception {
     // TODO T39526148 account for the case above
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     int count = descriptor.getChildCount(node);
@@ -95,13 +95,13 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
-  public Object getAXChildAt(LithoRecylerView node, int index) throws Exception {
+  public Object getAXChildAt(LithoRecyclerView node, int index) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAXChildAt(node, index);
   }
 
   @Override
-  public List<Named<FlipperObject>> getData(LithoRecylerView node) throws Exception {
+  public List<Named<FlipperObject>> getData(LithoRecyclerView node) throws Exception {
     final List<Named<FlipperObject>> props = new ArrayList<>();
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     props.addAll(descriptor.getData(node));
@@ -110,14 +110,14 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
-  public List<Named<FlipperObject>> getAXData(LithoRecylerView node) throws Exception {
+  public List<Named<FlipperObject>> getAXData(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAXData(node);
   }
 
   @Override
   public void setValue(
-      LithoRecylerView node,
+      LithoRecyclerView node,
       String[] path,
       @Nullable SetDataOperations.FlipperValueHint kind,
       FlipperDynamic value)
@@ -127,61 +127,61 @@ public class LithoRecyclerViewDescriptor extends NodeDescriptor<LithoRecylerView
   }
 
   @Override
-  public List<Named<String>> getAttributes(LithoRecylerView node) throws Exception {
+  public List<Named<String>> getAttributes(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAttributes(node);
   }
 
   @Override
-  public FlipperObject getExtraInfo(LithoRecylerView node) {
+  public FlipperObject getExtraInfo(LithoRecyclerView node) {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getExtraInfo(node);
   }
 
   @Override
-  public void hitTest(LithoRecylerView node, Touch touch) throws Exception {
+  public void hitTest(LithoRecyclerView node, Touch touch) throws Exception {
     touch.continueWithOffset(0, 0, 0);
   }
 
   @Override
-  public void axHitTest(LithoRecylerView node, Touch touch) throws Exception {
+  public void axHitTest(LithoRecyclerView node, Touch touch) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.axHitTest(node, touch);
   }
 
   @Override
-  public String getAXName(LithoRecylerView node) throws Exception {
+  public String getAXName(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAXName(node);
   }
 
   @Override
-  public List<Named<String>> getAXAttributes(LithoRecylerView node) throws Exception {
+  public List<Named<String>> getAXAttributes(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAXAttributes(node);
   }
 
   @Override
-  public void setHighlighted(LithoRecylerView node, boolean selected, boolean isAlignmentMode)
+  public void setHighlighted(LithoRecyclerView node, boolean selected, boolean isAlignmentMode)
       throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     descriptor.setHighlighted(node, selected, isAlignmentMode);
   }
 
   @Override
-  public String getDecoration(LithoRecylerView node) throws Exception {
+  public String getDecoration(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getDecoration(node);
   }
 
   @Override
-  public String getAXDecoration(LithoRecylerView node) throws Exception {
+  public String getAXDecoration(LithoRecyclerView node) throws Exception {
     final NodeDescriptor descriptor = descriptorForClass(ViewGroup.class);
     return descriptor.getAXDecoration(node);
   }
 
   @Override
-  public boolean matches(String query, LithoRecylerView node) throws Exception {
+  public boolean matches(String query, LithoRecyclerView node) throws Exception {
     NodeDescriptor descriptor = descriptorForClass(Object.class);
     return descriptor.matches(query, node);
   }

@@ -34,7 +34,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
 import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.LithoRecylerView;
+import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SnapUtil;
 
@@ -81,7 +81,7 @@ public class ViewPagerComponentSpec<T> {
       // the RV's normal touchIntercept behavior by ignoring onInterceptTouchEvent.
       builder
           .touchInterceptor(
-              new LithoRecylerView.TouchInterceptor() {
+              new LithoRecyclerView.TouchInterceptor() {
                 @Override
                 public Result onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent ev) {
                   return Result.IGNORE_TOUCH_EVENT;

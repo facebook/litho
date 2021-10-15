@@ -36,7 +36,7 @@ import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.OnCheckIsSameContentEvent
 import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
 import com.facebook.litho.widget.ComponentRenderInfo
-import com.facebook.litho.widget.LithoRecylerView
+import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
 import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SmoothScrollAlignmentType
@@ -83,7 +83,7 @@ class Collection(
     private val recyclerViewId: Int? = null,
     private val overScrollMode: Int? = null,
     private val refreshProgressBarColor: Int? = null,
-    private val touchInterceptor: LithoRecylerView.TouchInterceptor? = null,
+    private val touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,
     private val itemTouchListener: RecyclerView.OnItemTouchListener? = null,
     private val sectionTreeTag: String? = null,
     private val startupLogger: LithoStartupLogger? = null,

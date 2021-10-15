@@ -27,7 +27,7 @@ import com.facebook.litho.LithoStartupLogger
 import com.facebook.litho.Style
 import com.facebook.litho.kotlinStyle
 import com.facebook.litho.sections.Section
-import com.facebook.litho.widget.LithoRecylerView
+import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.SectionsRecyclerView.SectionsRecylerViewLogger
 import com.facebook.litho.widget.StickyHeaderControllerFactory
 
@@ -62,7 +62,7 @@ inline fun ComponentScope.RecyclerCollectionComponent(
     recyclerViewId: Int = RecyclerCollectionComponentSpec.recyclerViewId,
     overScrollMode: Int = RecyclerCollectionComponentSpec.overScrollMode,
     refreshProgressBarColor: Int = RecyclerCollectionComponentSpec.refreshProgressBarColor,
-    touchInterceptor: LithoRecylerView.TouchInterceptor? = null,
+    touchInterceptor: LithoRecyclerView.TouchInterceptor? = null,
     itemTouchListener: OnItemTouchListener? = null,
     eventsController: RecyclerCollectionEventsController? = null,
     sectionTreeTag: String? = null,

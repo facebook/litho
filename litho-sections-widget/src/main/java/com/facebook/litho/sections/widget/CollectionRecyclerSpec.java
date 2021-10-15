@@ -46,7 +46,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
-import com.facebook.litho.widget.LithoRecylerView;
+import com.facebook.litho.widget.LithoRecyclerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -88,7 +88,7 @@ public class CollectionRecyclerSpec {
       @Prop(optional = true, resType = ResType.COLOR) @Nullable
           Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) Integer refreshProgressBarColor,
-      @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) OnItemTouchListener itemTouchListener,
       @Prop(optional = true) boolean pullToRefreshEnabled,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,

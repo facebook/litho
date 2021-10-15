@@ -20,7 +20,7 @@ import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.debug.DebugSection;
-import com.facebook.litho.widget.LithoRecylerView;
+import com.facebook.litho.widget.LithoRecyclerView;
 
 public final class LithoFlipperDescriptors {
 
@@ -31,7 +31,7 @@ public final class LithoFlipperDescriptors {
 
   public static void addWithSections(DescriptorMapping descriptorMapping) {
     add(descriptorMapping);
-    descriptorMapping.register(LithoRecylerView.class, new LithoRecyclerViewDescriptor());
+    descriptorMapping.register(LithoRecyclerView.class, new LithoRecyclerViewDescriptor());
     descriptorMapping.register(DebugSection.class, new DebugSectionDescriptor());
   }
 }

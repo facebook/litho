@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A test {@link LithoRecylerView} class used for unit testing. */
-public class TestLithoRecyclerView extends LithoRecylerView {
+/** A test {@link LithoRecyclerView} class used for unit testing. */
+public class TestLithoRecyclerView extends LithoRecyclerView {
 
   @Nullable private RecyclerView.ItemAnimator itemAnimator;
   @Nullable private TouchInterceptor touchInterceptor;

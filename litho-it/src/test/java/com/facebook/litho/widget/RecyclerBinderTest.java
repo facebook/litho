@@ -3996,7 +3996,7 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
+    final LithoRecyclerView recyclerView = new LithoRecyclerView(getApplicationContext());
     recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
@@ -4027,7 +4027,7 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
+    final LithoRecyclerView recyclerView = new LithoRecyclerView(getApplicationContext());
     recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
@@ -4050,7 +4050,7 @@ public class RecyclerBinderTest {
     }
 
     // mount() and unmount() are called prior to data insertions.
-    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    final RecyclerView recyclerView = mock(LithoRecyclerView.class);
     recyclerBinder.mount(recyclerView);
     recyclerBinder.unmount(recyclerView);
 
@@ -4073,7 +4073,7 @@ public class RecyclerBinderTest {
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
-    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    final RecyclerView recyclerView = mock(LithoRecyclerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(false);
     when(recyclerView.isAttachedToWindow()).thenReturn(true);
     when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
@@ -4101,7 +4101,7 @@ public class RecyclerBinderTest {
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
-    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    final RecyclerView recyclerView = mock(LithoRecyclerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     when(recyclerView.isAttachedToWindow()).thenReturn(false);
     when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
@@ -4129,7 +4129,7 @@ public class RecyclerBinderTest {
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
-    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    final RecyclerView recyclerView = mock(LithoRecyclerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     when(recyclerView.isAttachedToWindow()).thenReturn(true);
     when(recyclerView.getWindowVisibility()).thenReturn(View.GONE);
@@ -4170,7 +4170,7 @@ public class RecyclerBinderTest {
     verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
+    final LithoRecyclerView recyclerView = new LithoRecyclerView(getApplicationContext());
     recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
@@ -4206,7 +4206,7 @@ public class RecyclerBinderTest {
     verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
+    final LithoRecyclerView recyclerView = new LithoRecyclerView(getApplicationContext());
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -4237,7 +4237,7 @@ public class RecyclerBinderTest {
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
-    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    final RecyclerView recyclerView = mock(LithoRecyclerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
@@ -4647,7 +4647,7 @@ public class RecyclerBinderTest {
       recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
     }
 
-    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    final RecyclerView recyclerView = mock(LithoRecyclerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     when(recyclerView.isAttachedToWindow()).thenReturn(true);
     when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
@@ -5697,7 +5697,7 @@ public class RecyclerBinderTest {
     }
   }
 
-  private static class ComputingLayoutRecyclerView extends LithoRecylerView {
+  private static class ComputingLayoutRecyclerView extends LithoRecyclerView {
 
     private boolean mIsComputingLayout = false;
 

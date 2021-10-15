@@ -230,29 +230,29 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
 
   @Override
   public void auditAfterOnBind() {
-    if (mRecyclerView instanceof LithoRecylerView) {
-      ((LithoRecylerView) mRecyclerView).auditAfterOnBind();
+    if (mRecyclerView instanceof LithoRecyclerView) {
+      ((LithoRecyclerView) mRecyclerView).auditAfterOnBind();
     }
   }
 
   @Override
   public void auditAfterOnUnbind() {
-    if (mRecyclerView instanceof LithoRecylerView) {
-      ((LithoRecylerView) mRecyclerView).auditAfterOnUnbind();
+    if (mRecyclerView instanceof LithoRecyclerView) {
+      ((LithoRecyclerView) mRecyclerView).auditAfterOnUnbind();
     }
   }
 
   @Override
   public void logError(String message, Exception e) {
-    if (mRecyclerView instanceof LithoRecylerView) {
-      ((LithoRecylerView) mRecyclerView).logError(message, e);
+    if (mRecyclerView instanceof LithoRecyclerView) {
+      ((LithoRecyclerView) mRecyclerView).logError(message, e);
     }
   }
 
   @Override
   public void logUsage(String usageDescription) {
-    if (mRecyclerView instanceof LithoRecylerView) {
-      ((LithoRecylerView) mRecyclerView).logUsage(usageDescription);
+    if (mRecyclerView instanceof LithoRecyclerView) {
+      ((LithoRecyclerView) mRecyclerView).logUsage(usageDescription);
     }
   }
 

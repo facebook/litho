@@ -120,7 +120,7 @@ class RecyclerSpec {
 
   @OnCreateMountContent
   static SectionsRecyclerView onCreateMountContent(Context c) {
-    return new SectionsRecyclerView(c, new LithoRecylerView(c));
+    return new SectionsRecyclerView(c, new LithoRecyclerView(c));
   }
 
   @OnMount
@@ -197,7 +197,7 @@ class RecyclerSpec {
           List<OnScrollListener> onScrollListeners,
       @Nullable @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
-      @Prop(optional = true) @Nullable LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) @Nullable LithoRecyclerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) RecyclerView.OnItemTouchListener onItemTouchListener,
       @Nullable @Prop(optional = true) final EventHandler refreshHandler,
       @Prop(optional = true) SectionsRecyclerView.SectionsRecylerViewLogger sectionsViewLogger) {
@@ -218,7 +218,7 @@ class RecyclerSpec {
             }
             : null);
 
-    final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
+    final LithoRecyclerView recyclerView = (LithoRecyclerView) sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
@@ -270,7 +270,7 @@ class RecyclerSpec {
 
     sectionsRecycler.setSectionsRecyclerViewLogger(null);
 
-    final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
+    final LithoRecyclerView recyclerView = (LithoRecyclerView) sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
