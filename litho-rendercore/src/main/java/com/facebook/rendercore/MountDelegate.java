@@ -123,6 +123,8 @@ public class MountDelegate {
       if (extension.shouldUpdateItem(
           previousRenderUnit, previousLayoutData, nextRenderUnit, nextLayoutData)) {
         extension.onUnbindItem(state, previousRenderUnit, content, previousLayoutData);
+        extension.onUnmountItem(state, previousRenderUnit, content, previousLayoutData);
+        extension.onMountItem(state, nextRenderUnit, content, nextLayoutData);
         extension.onBindItem(state, nextRenderUnit, content, nextLayoutData);
       }
     }

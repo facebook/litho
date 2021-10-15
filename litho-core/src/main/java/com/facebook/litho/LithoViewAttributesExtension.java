@@ -64,7 +64,7 @@ public class LithoViewAttributesExtension
   }
 
   @Override
-  public void onBindItem(
+  public void onMountItem(
       final ExtensionState<LithoViewAttributesState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
@@ -84,7 +84,7 @@ public class LithoViewAttributesExtension
   }
 
   @Override
-  public void onUnbindItem(
+  public void onUnmountItem(
       final ExtensionState<LithoViewAttributesState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,

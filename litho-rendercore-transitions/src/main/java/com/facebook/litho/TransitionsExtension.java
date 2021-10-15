@@ -257,7 +257,7 @@ public class TransitionsExtension
   }
 
   @Override
-  public void onUnbindItem(
+  public void onUnmountItem(
       final ExtensionState<TransitionsExtensionState> extensionState,
       final RenderUnit<?> renderUnit,
       final Object content,
