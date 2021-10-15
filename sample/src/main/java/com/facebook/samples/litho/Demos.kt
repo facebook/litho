@@ -79,6 +79,13 @@ import com.facebook.samples.litho.kotlin.animations.animatedbadge.AnimatedBadgeK
 import com.facebook.samples.litho.kotlin.animations.animatedcounter.AnimatingCounterRootComponent
 import com.facebook.samples.litho.kotlin.animations.animationcomposition.ComposedAnimationsComponentKotlin
 import com.facebook.samples.litho.kotlin.animations.bounds.BoundsAnimationComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.AllCommonDynamicPropsKComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.AnimateDynamicPropsComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.AnimateDynamicPropsKComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.CommonDynamicPropsComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.CommonDynamicPropsKComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.CustomDynamicPropsComponent
+import com.facebook.samples.litho.kotlin.animations.dynamicprops.CustomDynamicPropsKComponent
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementRootKotlinKComponent
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.samples.litho.kotlin.animations.transitions.TransitionsComponent
@@ -138,7 +145,29 @@ class Demos {
                                 component =
                                     ExpandableElementRootKotlinKComponent(
                                         initialMessages = Message.MESSAGES)),
-                            SingleDemo(name = "Transitions", component = TransitionsComponent()))),
+                            SingleDemo(name = "Transitions", component = TransitionsComponent()),
+                            SingleDemo(name = "[Spec] Common Dynamic Props") { context ->
+                              CommonDynamicPropsComponent.create(context).build()
+                            },
+                            SingleDemo(
+                                name = "[KComponent] Common Dynamic Props",
+                                component = CommonDynamicPropsKComponent()),
+                            SingleDemo(
+                                name = "All Common Dynamic Props",
+                                component = AllCommonDynamicPropsKComponent()),
+                            SingleDemo(name = "[Spec] Custom Dynamic Props") { context ->
+                              CustomDynamicPropsComponent.create(context).build()
+                            },
+                            SingleDemo(
+                                name = "[KComponent] Custom Dynamic Props",
+                                component = CustomDynamicPropsKComponent()),
+                            SingleDemo(name = "[Spec] Animated Dynamic Props") { context ->
+                              AnimateDynamicPropsComponent.create(context).build()
+                            },
+                            SingleDemo(
+                                name = "[KComponent] Animated Dynamic Props",
+                                component = AnimateDynamicPropsKComponent()),
+                        )),
                     DemoGrouping(
                         name = "Collections",
                         listOf(

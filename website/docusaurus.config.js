@@ -167,8 +167,11 @@ module.exports = {
             from: ['/docs'],
           },
           {
-            to: '/docs/mainconcepts/coordinate-state-actions/dynamic-props',
-            from: ['/docs/dynamic-props'],
+            to: '/docs/animations/dynamic-props',
+            from: [
+              '/docs/dynamic-props',
+              '/docs/mainconcepts/coordinate-state-actions/dynamic-props',
+            ],
           },
           {
             to: '/docs/sections/start',
