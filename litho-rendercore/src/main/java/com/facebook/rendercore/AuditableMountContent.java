@@ -22,14 +22,12 @@ import com.facebook.infer.annotation.Nullsafe;
 public interface AuditableMountContent {
 
   /**
-   * Audit after on-bind. Use to monitor bound state. If the content is already bound, throw an 
+   * Audit after on-bind. Use to monitor bound state. If the content is already bound, throw an
    * exception here.
    */
   void auditAfterOnBind();
 
-  /**
-   * Audit after on-unbind. Use to monitor bound state.
-   */
+  /** Audit after on-unbind. Use to monitor bound state. */
   void auditAfterOnUnbind();
 
   /**

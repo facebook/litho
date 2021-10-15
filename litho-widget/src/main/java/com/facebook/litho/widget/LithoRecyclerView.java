@@ -24,8 +24,6 @@ import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.rendercore.AuditableMountContent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
