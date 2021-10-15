@@ -23,7 +23,6 @@ import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.flexbox.flex
 import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.GridRecyclerConfiguration
 import com.facebook.litho.widget.Text
 
 class SpanCollectionKComponent : KComponent() {
@@ -31,8 +30,9 @@ class SpanCollectionKComponent : KComponent() {
   override fun ComponentScope.render(): Component? {
 
     return Collection(
+        layout = Collection.Grid(columns = 4),
         style = Style.flex(grow = 1f),
-        recyclerConfiguration = GridRecyclerConfiguration.create().numColumns(4).build()) {
+    ) {
       child(isFullSpan = true, component = Text("Full Span", backgroundColor = Color.WHITE))
       (0..20).forEach { child(id = it, component = Text("$it")) }
       child(spanSize = 2, component = Text("Span 2", backgroundColor = Color.WHITE))

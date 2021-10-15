@@ -67,7 +67,7 @@ typealias OnViewportChanged =
  * ```
  */
 class Collection(
-    private val recyclerConfiguration: RecyclerConfiguration? = null,
+    private val layout: CollectionLayout = defaultLayout,
     private val itemAnimator: RecyclerView.ItemAnimator? = null,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,
     private val wrapContentCrossAxis: Boolean = false,
@@ -131,7 +131,7 @@ class Collection(
 
     return CollectionRecycler.create(context)
         .section(section)
-        .apply { recyclerConfiguration?.let { recyclerConfiguration(recyclerConfiguration) } }
+        .apply { layout?.let { recyclerConfiguration(layout.recyclerConfiguration) } }
         .itemAnimator(itemAnimator)
         .itemDecoration(itemDecoration)
         .canMeasureRecycler(wrapContentCrossAxis)
@@ -157,7 +157,10 @@ class Collection(
         .build()
   }
 
-  companion object {
+  companion object : CollectionLayouts {
+
+    val defaultLayout = Linear()
+
     fun scrollTo(c: ComponentContext, handle: Handle, position: Int): Unit =
         CollectionRecycler.onScroll(c, handle, position)
 

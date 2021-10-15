@@ -22,7 +22,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.view.View
 import androidx.annotation.Px
-import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
@@ -32,7 +31,6 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.sections.widget.Collection
-import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text
@@ -43,8 +41,7 @@ class HorizontalScrollKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     return Collection(
-        recyclerConfiguration =
-            ListRecyclerConfiguration.create().orientation(OrientationHelper.HORIZONTAL).build(),
+        layout = Collection.Linear(orientation = RecyclerView.HORIZONTAL),
         itemDecoration = ItemSpacingDecorator(10.dp.toPixels()),
         wrapContentCrossAxis = true,
         style = Style.height(100.dp),

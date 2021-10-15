@@ -196,6 +196,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
       return this;
     }
 
+    @Override
     public Builder reverseLayout(boolean reverseLayout) {
       mReverseLayout = reverseLayout;
       return this;

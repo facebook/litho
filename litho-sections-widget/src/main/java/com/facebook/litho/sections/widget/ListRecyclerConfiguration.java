@@ -207,6 +207,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    @Override
     public Builder reverseLayout(boolean reverseLayout) {
       mReverseLayout = reverseLayout;
       return this;

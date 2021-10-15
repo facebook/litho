@@ -36,6 +36,8 @@ public interface RecyclerConfiguration {
 
     Builder recyclerBinderConfiguration(RecyclerBinderConfiguration recyclerBinderConfiguration);
 
+    Builder reverseLayout(boolean reverseLayout);
+
     RecyclerConfiguration build();
   }
 
