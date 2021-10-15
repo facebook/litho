@@ -3252,9 +3252,11 @@ public abstract class Component
     LinkedList<String> list = new LinkedList<>();
     String[] keys = globalKey.split(",");
 
-    for (String key : keys) {
-      String name = ComponentKeyUtils.mapToSimpleName(key, sTypeIdByComponentType);
-      list.add(name);
+    synchronized (sTypeIdByComponentType) {
+      for (String key : keys) {
+        String name = ComponentKeyUtils.mapToSimpleName(key, sTypeIdByComponentType);
+        list.add(name);
+      }
     }
 
     return list;
