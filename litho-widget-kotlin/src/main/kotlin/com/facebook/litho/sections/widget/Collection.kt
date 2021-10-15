@@ -38,7 +38,6 @@ import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
-import com.facebook.litho.widget.RenderInfo
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 
 typealias OnViewportChanged =
@@ -215,7 +214,10 @@ class CollectionContainerScope {
   private data class CollectionData(
       val id: Any? = null,
       val component: Component? = null,
-      val renderInfo: RenderInfo? = null,
+      val componentFunction: (() -> Component?)? = null,
+      val isSticky: Boolean = false,
+      val isFullSpan: Boolean = false,
+      val spanSize: Int? = null,
       val deps: Array<Any?>? = null,
       val section: Section? = null,
   )
@@ -223,31 +225,33 @@ class CollectionContainerScope {
   private var nextStaticId = 0
 
   fun child(
+      component: Component?,
       id: Any? = null,
       isSticky: Boolean = false,
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
-      deps: Array<Any?>? = null,
-      componentFunction: () -> Component?
   ) {
-    val component = componentFunction()
+    collectionChildrenModels.add(
+        CollectionData(
+            id ?: generateStaticId(), component, null, isSticky, isFullSpan, spanSize, null))
+  }
+
+  fun child(
+      id: Any? = null,
+      isSticky: Boolean = false,
+      isFullSpan: Boolean = false,
+      spanSize: Int? = null,
+      deps: Array<Any?>,
+      componentFunction: () -> Component?,
+  ) {
     collectionChildrenModels.add(
         CollectionData(
             id ?: generateStaticId(),
-            component,
-            ComponentRenderInfo.create()
-                .apply {
-                  if (isSticky) {
-                    isSticky(isSticky)
-                  }
-                  if (isFullSpan) {
-                    isFullSpan(isFullSpan)
-                  }
-                  spanSize?.let { spanSize(it) }
-                  component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
-                }
-                .component(component)
-                .build(),
+            null,
+            componentFunction,
+            isSticky,
+            isFullSpan,
+            spanSize,
             deps))
   }
 
@@ -270,7 +274,23 @@ class CollectionContainerScope {
   ): Section {
     return DataDiffSection.create<CollectionData>(sectionContext)
         .data(forDataDiffSection.toList())
-        .renderEventHandler(eventHandlerWithReturn { it.model.renderInfo })
+        .renderEventHandler(
+            eventHandlerWithReturn {
+              val item = it.model
+              ComponentRenderInfo.create()
+                  .apply {
+                    if (item.isSticky) {
+                      isSticky(item.isSticky)
+                    }
+                    if (item.isFullSpan) {
+                      isFullSpan(item.isFullSpan)
+                    }
+                    item.spanSize?.let { spanSize(it) }
+                    item.component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
+                  }
+                  .component(item.component ?: item.componentFunction?.invoke())
+                  .build()
+            })
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
         .onCheckIsSameContentEventHandler(eventHandlerWithReturn(::isComponentEquivalent))
         .build()

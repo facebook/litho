@@ -57,7 +57,7 @@ class CollectionPaginationTest {
             style =
                 Style.viewTag("collection_tag").onClick {
                   Collection.scrollTo(context, handle, 4)
-                }) { (0..4).forEach { child { Text("Child $it") } } }
+                }) { (0..4).forEach { child(Text("Child $it")) } }
       }
     }
     lithoViewRule.setSizePx(100, 100)

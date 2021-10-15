@@ -65,7 +65,8 @@ class ChangeableItemsCollectionKComponent : KComponent() {
               },
               onDataBound = { Log.d("litho-kotlin", "onDataBound") }) {
             orderedPeople.forEach {
-              child(id = it.id) { Text("${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}") }
+              child(
+                  id = it.id, component = Text("${it.name} ${"\uD83D\uDC31".repeat(it.score + 1)}"))
             }
           })
     }

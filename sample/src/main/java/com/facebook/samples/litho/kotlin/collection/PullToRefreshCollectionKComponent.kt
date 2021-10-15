@@ -44,7 +44,7 @@ class PullToRefreshCollectionKComponent : KComponent() {
           deck.update { it.shuffled() }
           Collection.clearRefreshing(context, collectionHandle)
         },
-    ) { deck.value.forEach { card -> child(id = card.index) { Text(card.styledText) } } }
+    ) { deck.value.forEach { card -> child(id = card.index, component = Text(card.styledText)) } }
   }
 }
 // end_example

@@ -50,12 +50,14 @@ class HorizontalScrollKComponent : KComponent() {
         style = Style.height(100.dp),
     ) {
       (0..10).forEach {
-        child(id = it) {
-          Text(
-              text = "$it",
-              textSize = 24.sp,
-              style = Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp)))
-        }
+        child(
+            id = it,
+            component =
+                Text(
+                    text = "$it",
+                    textSize = 24.sp,
+                    style =
+                        Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp))))
       }
     }
   }

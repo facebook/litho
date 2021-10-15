@@ -89,8 +89,8 @@ class FriendList(val friends: List<Person>) : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     return Collection {
-      child { Text(text = "Friends", textStyle = Typeface.BOLD) }
-      friends.forEach { (name, id) -> child(id = id) { Text(name) } }
+      child(Text(text = "Friends", textStyle = Typeface.BOLD))
+      friends.forEach { (name, id) -> child(id = id, component = Text(name)) }
     }
   }
 }

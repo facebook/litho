@@ -59,10 +59,12 @@ class UseCallbackTest {
 
         return Collection {
           data.forEach { item ->
-            child(id = item) {
-              CollectionRow(
-                  style = Style.viewTag("item_$item").onClick { clickCallback.current(item) })
-            }
+            child(
+                id = item,
+                component =
+                    CollectionRow(
+                        style =
+                            Style.viewTag("item_$item").onClick { clickCallback.current(item) }))
           }
         }
       }
@@ -100,10 +102,11 @@ class UseCallbackTest {
         val clickCallback = useCallback { clickEvent: ClickEvent -> onRowClick(rowClickedTag) }
         return Collection {
           data.forEach { item ->
-            child(id = item) {
-              CollectionRow(
-                  style = Style.viewTag("item_$item").onClick { clickCallback.current(it) })
-            }
+            child(
+                id = item,
+                component =
+                    CollectionRow(
+                        style = Style.viewTag("item_$item").onClick { clickCallback.current(it) }))
           }
         }
       }
@@ -168,13 +171,14 @@ class UseCallbackTest {
 
         return Collection {
           data.forEach { item ->
-            child(id = item) {
-              CollectionRow(
-                  style =
-                      Style.viewTag("item_$item").onClick {
-                        selected.updateSync(selected.value + listOf(item))
-                      })
-            }
+            child(
+                id = item,
+                component =
+                    CollectionRow(
+                        style =
+                            Style.viewTag("item_$item").onClick {
+                              selected.updateSync(selected.value + listOf(item))
+                            }))
           }
         }
       }
@@ -223,13 +227,14 @@ class UseCallbackTest {
 
         return Collection {
           data.forEach { item ->
-            child(id = item) {
-              CollectionRow(
-                  style =
-                      Style.viewTag("item_$item").onClick {
-                        selected.updateSync { oldList -> oldList + listOf(item) }
-                      })
-            }
+            child(
+                id = item,
+                component =
+                    CollectionRow(
+                        style =
+                            Style.viewTag("item_$item").onClick {
+                              selected.updateSync { oldList -> oldList + listOf(item) }
+                            }))
           }
         }
       }
@@ -274,10 +279,11 @@ class UseCallbackTest {
       override fun ComponentScope.render(): Component? {
         return Collection {
           data.forEach { item ->
-            child(id = item) {
-              CollectionRow(
-                  style = Style.viewTag("item_$item").onClick { onRowClick(rowClickedTag) })
-            }
+            child(
+                id = item,
+                component =
+                    CollectionRow(
+                        style = Style.viewTag("item_$item").onClick { onRowClick(rowClickedTag) }))
           }
         }
       }

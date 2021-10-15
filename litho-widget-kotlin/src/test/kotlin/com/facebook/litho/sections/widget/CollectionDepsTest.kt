@@ -77,11 +77,10 @@ class CollectionDepsTest {
         KComponent() {
       override fun ComponentScope.render(): Component? {
         return Collection {
-          child {
-            Text(
-                "deps_null",
-                style = Style.viewTag("deps_null").alpha(alpha).rotation(rotation).scale(scale))
-          }
+          child(
+              Text(
+                  "deps_null",
+                  style = Style.viewTag("deps_null").alpha(alpha).rotation(rotation).scale(scale)))
           child(deps = arrayOf(alpha)) {
             Text(
                 "deps_alpha",

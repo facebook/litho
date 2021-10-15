@@ -46,14 +46,13 @@ class PaginationCollectionKComponent : KComponent() {
               paginatedData.value.fetchDelayed { newData -> list.update { it + newData } }
             },
     ) {
-      list.value.forEach { child(id = it) { Text("$it") } }
+      list.value.forEach { child(id = it, component = Text("$it")) }
 
       if (paginatedData.value.hasNext) {
-        child {
-          Column(alignItems = YogaAlign.CENTER) {
-            child(Progress(style = Style.height(50.dp).height(50.dp)))
-          }
-        }
+        child(
+            Column(alignItems = YogaAlign.CENTER) {
+              child(Progress(style = Style.height(50.dp).height(50.dp)))
+            })
       }
     }
   }

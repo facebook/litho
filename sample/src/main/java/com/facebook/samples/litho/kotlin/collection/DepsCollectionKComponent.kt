@@ -53,13 +53,12 @@ class DepsCollectionKComponent : KComponent() {
           Collection(
               style = Style.flex(grow = 1f),
           ) {
-            child {
-              Text(
-                  "deps = null (all props)",
-                  textColor = color.value,
-                  textSize = size.value.sp,
-                  style = Style.alpha(alpha.value))
-            }
+            child(
+                Text(
+                    "deps = null (all props)",
+                    textColor = color.value,
+                    textSize = size.value.sp,
+                    style = Style.alpha(alpha.value)))
             child(deps = arrayOf(color.value)) {
               Text(
                   "deps = arrayOf(color.value)",

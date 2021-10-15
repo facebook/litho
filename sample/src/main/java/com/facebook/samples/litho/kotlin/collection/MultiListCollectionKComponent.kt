@@ -45,13 +45,16 @@ class MultiListCollectionKComponent : KComponent() {
       child(
           Collection(style = Style.flex(grow = 1f)) {
             if (shouldShowTopFriends.value) {
-              child(id = TOP_FRIENDS_TAG) { Text("Top Friends", textStyle = Typeface.BOLD) }
+              child(
+                  id = TOP_FRIENDS_TAG, component = Text("Top Friends", textStyle = Typeface.BOLD))
               topFriends.forEach {
-                child(id = Pair(it, TOP_FRIENDS_TAG)) { Text("${friends[it]}") }
+                child(id = Pair(it, TOP_FRIENDS_TAG), component = Text("${friends[it]}"))
               }
             }
-            child(id = ALL_FRIENDS_TAG) { Text("All Friends", textStyle = Typeface.BOLD) }
-            allFriends.forEach { child(id = Pair(it, ALL_FRIENDS_TAG)) { Text("${friends[it]}") } }
+            child(id = ALL_FRIENDS_TAG, component = Text("All Friends", textStyle = Typeface.BOLD))
+            allFriends.forEach {
+              child(id = Pair(it, ALL_FRIENDS_TAG), component = Text("${friends[it]}"))
+            }
           })
     }
   }

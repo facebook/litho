@@ -33,14 +33,14 @@ class SpanCollectionKComponent : KComponent() {
     return Collection(
         style = Style.flex(grow = 1f),
         recyclerConfiguration = GridRecyclerConfiguration.create().numColumns(4).build()) {
-      child(isFullSpan = true) { Text("Full Span", backgroundColor = Color.WHITE) }
-      (0..20).forEach { child(id = it) { Text("$it") } }
-      child(spanSize = 2) { Text("Span 2", backgroundColor = Color.WHITE) }
-      (21..40).forEach { child(id = it) { Text("$it") } }
-      child(spanSize = 3) { Text("Span 2", backgroundColor = Color.WHITE) }
-      (41..60).forEach { child(id = it) { Text("$it") } }
-      child { Text("Default Span", backgroundColor = Color.WHITE) }
-      (61..80).forEach { child(id = it) { Text("$it") } }
+      child(isFullSpan = true, component = Text("Full Span", backgroundColor = Color.WHITE))
+      (0..20).forEach { child(id = it, component = Text("$it")) }
+      child(spanSize = 2, component = Text("Span 2", backgroundColor = Color.WHITE))
+      (21..40).forEach { child(id = it, component = Text("$it")) }
+      child(spanSize = 3, component = Text("Span 2", backgroundColor = Color.WHITE))
+      (41..60).forEach { child(id = it, component = Text("$it")) }
+      child(Text("Default Span", backgroundColor = Color.WHITE))
+      (61..80).forEach { child(id = it, component = Text("$it")) }
     }
   }
 }

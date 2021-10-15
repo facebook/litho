@@ -62,8 +62,8 @@ class ScrollToCollectionKComponent : KComponent() {
               handle = collectionHandle,
               style = Style.flex(grow = 1f),
           ) {
-            (0..99).forEach { child(id = it) { Text("$it ") } }
-            child { Text("End", handle = endItemHandle) }
+            (0..99).forEach { child(id = it, component = Text("$it ")) }
+            child(Text("End", handle = endItemHandle))
           })
     }
   }

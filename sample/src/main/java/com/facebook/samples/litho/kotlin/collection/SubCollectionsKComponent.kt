@@ -44,19 +44,18 @@ class SubCollectionsKComponent : KComponent() {
   }
 
   fun ComponentScope.header(): SubCollection {
-    return SubCollection { child(isSticky = true) { Text("Header") } }
+    return SubCollection { child(isSticky = true, component = Text("Header")) }
   }
 
   fun ComponentScope.body(nestedContentVisible: State<Boolean>): SubCollection {
     val nestedContent = SubCollection {
-      (0..3).forEach { child(id = it) { Text("  Nested Body Item $it") } }
+      (0..3).forEach { child(id = it, component = Text("  Nested Body Item $it")) }
     }
     return SubCollection {
-      child {
-        Text(
-            "${if (nestedContentVisible.value) "-" else "+"} Body",
-            style = Style.onClick { nestedContentVisible.update(!nestedContentVisible.value) })
-      }
+      child(
+          Text(
+              "${if (nestedContentVisible.value) "-" else "+"} Body",
+              style = Style.onClick { nestedContentVisible.update(!nestedContentVisible.value) }))
       if (nestedContentVisible.value) subCollection(nestedContent)
     }
   }
@@ -65,7 +64,7 @@ class SubCollectionsKComponent : KComponent() {
 object FooterUtils {
   fun getFooter(componentScope: ComponentScope): SubCollection {
     with(componentScope) {
-      return SubCollection { child { Text("Footer") } }
+      return SubCollection { child(Text("Footer")) }
     }
   }
 }

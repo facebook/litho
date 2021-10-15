@@ -77,12 +77,11 @@ class SelectionCollectionKComponent : KComponent() {
         }
       }
 
-      child {
-        Text(
-            selected.value.joinToString(prefix = "Selected: ") { items[it] },
-            textColor = Color.DKGRAY,
-            style = Style.padding(horizontal = 20.dp, vertical = 10.dp))
-      }
+      child(
+          Text(
+              selected.value.joinToString(prefix = "Selected: ") { items[it] },
+              textColor = Color.DKGRAY,
+              style = Style.padding(horizontal = 20.dp, vertical = 10.dp)))
     }
   }
 }
