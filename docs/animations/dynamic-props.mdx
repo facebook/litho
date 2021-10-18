@@ -16,7 +16,7 @@ Dynamic props are properties that are applied directly to a `View` or `Drawable`
 
 To control a dynamic prop you should create a `DynamicValue` and assign it to that prop. You can then keep a reference to the `DynamicValue` and use it to directly set values e.g. in a callback or an `Animator`. Use the `set()` function to set new values from the main thread. In `KComponents` a `DynamicValue` can be created using `useBinding()`.
 
-:::Warning
+:::caution
 `DynamicValue`s should only be updated on the main thread.
 :::
 
