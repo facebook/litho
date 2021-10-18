@@ -41,6 +41,7 @@ public class LithoHostListenerCoordinator {
   @Nullable private EndToEndTestingExtension mEndToEndTestingExtension;
   @Nullable private DynamicPropsExtension mDynamicPropsExtension;
   @Nullable private LithoViewAttributesExtension mViewAttributesExtension;
+  @Nullable private NestedLithoViewsExtension mNestedLithoViewsExtension;
 
   public LithoHostListenerCoordinator(MountDelegateTarget mountDelegateTarget) {
     mMountExtensions = new ArrayList<>();
@@ -185,6 +186,17 @@ public class LithoHostListenerCoordinator {
     mViewAttributesExtension = LithoViewAttributesExtension.getInstance();
     mMountDelegateTarget.registerMountDelegateExtension(mViewAttributesExtension);
     registerListener(mViewAttributesExtension);
+  }
+
+  void enableNestedLithoViewsExtension() {
+    if (mNestedLithoViewsExtension != null) {
+      throw new IllegalStateException(
+          "Nested LithoView extension has already been enabled on this coordinator");
+    }
+
+    mNestedLithoViewsExtension = new NestedLithoViewsExtension();
+    mMountDelegateTarget.registerMountDelegateExtension(mNestedLithoViewsExtension);
+    registerListener(mNestedLithoViewsExtension);
   }
 
   @Nullable

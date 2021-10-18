@@ -202,16 +202,6 @@ public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRen
         final @Nullable Object data) {
       final LayoutOutput output = unit.output;
       output.getComponent().unmount(getComponentContext(unit), content, getInterStageProps(data));
-
-      if (content instanceof HasLithoViewChildren) {
-        final ArrayList<LithoView> lithoViews = new ArrayList<>();
-        ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
-
-        for (int i = lithoViews.size() - 1; i >= 0; i--) {
-          final LithoView lithoView = lithoViews.get(i);
-          lithoView.unmountAllItems();
-        }
-      }
     }
   }
 
