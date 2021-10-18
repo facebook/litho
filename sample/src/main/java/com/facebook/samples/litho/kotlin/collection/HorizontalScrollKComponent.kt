@@ -21,29 +21,43 @@ package com.facebook.samples.litho.kotlin.collection
 import android.graphics.Color
 import android.graphics.Rect
 import android.view.View
-import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
+import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
+import com.facebook.litho.px
 import com.facebook.litho.sections.widget.Collection
+import com.facebook.litho.sections.widget.WrapMode
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.drawable.RoundedRect
 
-// start_example
 class HorizontalScrollKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     return Collection(
+        itemDecoration = CollectionSpacing(vertical = 20.dp),
+    ) {
+      child(FixedHeightHScroll())
+      child(WrapFirstItemHeightHScroll())
+      child(WrapDynamicHScroll())
+    }
+  }
+}
+
+// start_example
+class FixedHeightHScroll : KComponent() {
+
+  override fun ComponentScope.render(): Component? {
+    return Collection(
         layout = Collection.Linear(orientation = RecyclerView.HORIZONTAL),
-        itemDecoration = ItemSpacingDecorator(10.dp.toPixels()),
-        wrapContentCrossAxis = true,
+        itemDecoration = CollectionSpacing(horizontal = 10.dp),
         style = Style.height(100.dp),
     ) {
       (0..10).forEach {
@@ -61,26 +75,76 @@ class HorizontalScrollKComponent : KComponent() {
 }
 // end_example
 
+class WrapFirstItemHeightHScroll : KComponent() {
+
+  override fun ComponentScope.render(): Component? {
+    return Collection(
+        layout =
+            Collection.Linear(
+                orientation = RecyclerView.HORIZONTAL, wrapMode = WrapMode.MatchFirstChild),
+        itemDecoration = CollectionSpacing(horizontal = 10.dp),
+    ) {
+      (0..10).forEach {
+        child(
+            id = it,
+            component =
+                Text(
+                    text = "$it",
+                    textSize = 24.sp,
+                    style =
+                        Style.padding(all = 30.dp).background(RoundedRect(Color.LTGRAY, 10.dp))))
+      }
+    }
+  }
+}
+
+class WrapDynamicHScroll : KComponent() {
+
+  override fun ComponentScope.render(): Component? {
+    return Collection(
+        layout =
+            Collection.Linear(orientation = RecyclerView.HORIZONTAL, wrapMode = WrapMode.Dynamic),
+        itemDecoration = CollectionSpacing(horizontal = 10.dp),
+    ) {
+      (0..10).forEach {
+        child(
+            id = it,
+            component =
+                Text(
+                    text = "$it",
+                    textSize = 24.sp,
+                    style =
+                        Style.padding(horizontal = 30.dp, vertical = (it * 5).dp)
+                            .background(RoundedRect(Color.LTGRAY, 10.dp))))
+      }
+    }
+  }
+}
+
 /*
  * Apply spacing to each item in the Collection. Note we cannot achieve this by applying margin to
  * each component because they are root components so margin is ignored.
  */
-private class ItemSpacingDecorator(
-    @Px private val horizontal: Int = 0,
-    @Px private val vertical: Int = 0,
-) : RecyclerView.ItemDecoration() {
-  override fun getItemOffsets(
-      outRect: Rect,
-      view: View,
-      parent: RecyclerView,
-      state: RecyclerView.State
-  ) =
-      with(outRect) {
-        if (parent.getChildAdapterPosition(view) == 0) {
-          left = horizontal
-          top = vertical
+fun ComponentScope.CollectionSpacing(
+    horizontal: Dimen = 0.px,
+    vertical: Dimen = 0.px,
+): RecyclerView.ItemDecoration {
+  val horizontalPx = horizontal.toPixels()
+  val verticalPx = vertical.toPixels()
+  return object : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ): Unit =
+        with(outRect) {
+          if (parent.getChildAdapterPosition(view) == 0) {
+            left = horizontalPx
+            top = verticalPx
+          }
+          right = horizontalPx
+          bottom = verticalPx
         }
-        right = horizontal
-        bottom = vertical
-      }
+  }
 }

@@ -25,7 +25,8 @@ abstract class CollectionLayout(
     @RecyclerView.Orientation private val orientation: Int,
     @SnapUtil.SnapMode private val snapMode: Int,
     private val reverseLayout: Boolean,
-    private val hasDynamicItemHeight: Boolean?,
+    private val hasDynamicItemHeight: Boolean = false,
+    val canMeasureRecycler: Boolean = false,
 ) {
   abstract val recyclerConfigurationBuilder: RecyclerConfiguration.Builder
 
@@ -36,7 +37,7 @@ abstract class CollectionLayout(
           .snapMode(snapMode)
           .reverseLayout(reverseLayout)
           .apply {
-            if (hasDynamicItemHeight != null) {
+            if (hasDynamicItemHeight) {
               recyclerBinderConfiguration(
                   RecyclerBinderConfiguration.create()
                       .hasDynamicItemHeight(hasDynamicItemHeight)
@@ -47,6 +48,21 @@ abstract class CollectionLayout(
     }
 }
 
+enum class WrapMode(val canMeasureRecycler: Boolean, val hasDynamicItemHeight: Boolean) {
+  /** No wrapping specified. The size should be specified on the [Collection]'s style parameter. */
+  NoWrap(false, false),
+
+  /** The cross axis dimension will match the first child in the [Collection] */
+  MatchFirstChild(true, false),
+
+  /**
+   * The cross axis dimension will match the largest item in the [Collection]. Measuring all the
+   * children comes with a high performance cost, especially for infinite scrolls. This should only
+   * be used if absolutely necessary.
+   */
+  Dynamic(true, true),
+}
+
 /** Provide [CollectionLayout]s that can be applied to [Collection]'s `layout` parameter. */
 interface CollectionLayouts {
 
@@ -54,9 +70,15 @@ interface CollectionLayouts {
       @RecyclerView.Orientation orientation: Int = RecyclerView.VERTICAL,
       @SnapUtil.SnapMode snapMode: Int = SnapUtil.SNAP_NONE,
       reverseLayout: Boolean = false,
-      hasDynamicItemHeight: Boolean? = null,
+      wrapMode: WrapMode = WrapMode.NoWrap,
   ): CollectionLayout =
-      object : CollectionLayout(orientation, snapMode, reverseLayout, hasDynamicItemHeight) {
+      object :
+          CollectionLayout(
+              orientation,
+              snapMode,
+              reverseLayout,
+              wrapMode.hasDynamicItemHeight,
+              wrapMode.canMeasureRecycler) {
         override val recyclerConfigurationBuilder = ListRecyclerConfiguration.Builder()
       }
 
@@ -66,7 +88,7 @@ interface CollectionLayouts {
       reverseLayout: Boolean = false,
       columns: Int = 2,
   ): CollectionLayout =
-      object : CollectionLayout(orientation, snapMode, reverseLayout, false) {
+      object : CollectionLayout(orientation, snapMode, reverseLayout) {
         override val recyclerConfigurationBuilder =
             GridRecyclerConfiguration.Builder().numColumns(columns)
       }
@@ -78,7 +100,7 @@ interface CollectionLayouts {
       spans: Int = 2,
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE
   ): CollectionLayout =
-      object : CollectionLayout(orientation, snapMode, reverseLayout, false) {
+      object : CollectionLayout(orientation, snapMode, reverseLayout) {
         override val recyclerConfigurationBuilder =
             StaggeredGridRecyclerConfiguration.Builder().numSpans(spans).gapStrategy(gapStrategy)
       }

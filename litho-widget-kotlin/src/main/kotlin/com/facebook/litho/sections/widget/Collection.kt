@@ -70,7 +70,6 @@ class Collection(
     private val layout: CollectionLayout = defaultLayout,
     private val itemAnimator: RecyclerView.ItemAnimator? = null,
     private val itemDecoration: RecyclerView.ItemDecoration? = null,
-    private val wrapContentCrossAxis: Boolean = false,
     private val clipToPadding: Boolean? = null,
     private val clipChildren: Boolean? = null,
     private val startPadding: Dimen? = null,
@@ -134,7 +133,7 @@ class Collection(
         .apply { layout?.let { recyclerConfiguration(layout.recyclerConfiguration) } }
         .itemAnimator(itemAnimator)
         .itemDecoration(itemDecoration)
-        .canMeasureRecycler(wrapContentCrossAxis)
+        .canMeasureRecycler(layout.canMeasureRecycler)
         .clipToPadding(clipToPadding)
         .clipChildren(clipChildren)
         .startPaddingPx(startPadding?.toPixels(resourceResolver) ?: 0)
