@@ -55,7 +55,8 @@ public class Reducer {
       final @Nullable Map<RenderCoreExtension<?, ?>, Object> extensions) {
 
     // If width & height are 0 then do not return the tree.
-    if (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0) {
+    // TODO: T102760805 follow up on null check.
+    if ((layoutResult == null) || (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0)) {
       return;
     }
 
