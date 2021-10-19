@@ -104,7 +104,8 @@ public class MountStateIncrementalMountWithTransitionsTest {
 
     sectionsRecyclerView.obtainLithoViewChildren(lithoViews);
 
-    final LithoView animatingLithoView = lithoViews.get(1);
+    // grab the 2nd litho-view in the list (0 = sticky header, 1 = 1st litho view)
+    final LithoView animatingLithoView = lithoViews.get(2);
     animatingLithoView.onAttachedToWindowForTest();
 
     mStateCaller.update();

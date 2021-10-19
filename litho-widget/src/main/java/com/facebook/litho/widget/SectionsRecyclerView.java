@@ -215,6 +215,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout
 
   @Override
   public void obtainLithoViewChildren(List<LithoView> lithoViews) {
+    lithoViews.add(mStickyHeader);
     for (int i = 0, size = mRecyclerView.getChildCount(); i < size; i++) {
       final View child = mRecyclerView.getChildAt(i);
       if (child instanceof LithoView) {
