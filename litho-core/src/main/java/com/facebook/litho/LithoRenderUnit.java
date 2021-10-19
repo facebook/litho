@@ -29,7 +29,6 @@ import com.facebook.rendercore.MountItemsPool;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.transitions.TransitionRenderUnit;
-import java.util.ArrayList;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> implements TransitionRenderUnit {
