@@ -24,6 +24,7 @@ import android.view.ViewOutlineProvider
 import androidx.annotation.ColorInt
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
+import com.facebook.litho.Dimen
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.ResourceResolver
 import com.facebook.litho.Style
@@ -34,6 +35,7 @@ import com.facebook.litho.eventHandler
 import com.facebook.litho.eventHandlerWithReturn
 import com.facebook.litho.exhaustive
 import com.facebook.litho.getCommonPropsHolder
+import com.facebook.yoga.YogaEdge
 
 /** Enums for [ObjectStyleItem]. */
 @PublishedApi
@@ -66,6 +68,20 @@ internal enum class FloatField {
   ROTATION_X,
   ROTATION_Y,
   SCALE,
+}
+
+/** Enums for [FloatStyleItem]. */
+@PublishedApi
+internal enum class DimenField {
+  TOUCH_EXPANSION_START,
+  TOUCH_EXPANSION_TOP,
+  TOUCH_EXPANSION_END,
+  TOUCH_EXPANSION_BOTTOM,
+  TOUCH_EXPANSION_LEFT,
+  TOUCH_EXPANSION_RIGHT,
+  TOUCH_EXPANSION_HORIZONTAL,
+  TOUCH_EXPANSION_VERTICAL,
+  TOUCH_EXPANSION_ALL,
 }
 
 /** Common style item for all object styles. See note on [DimenField] about this pattern. */
@@ -111,6 +127,28 @@ internal data class FloatStyleItem(val field: FloatField, val value: Float) : St
       FloatField.ROTATION_X -> commonProps.rotationX(value)
       FloatField.ROTATION_Y -> commonProps.rotationY(value)
       FloatField.SCALE -> commonProps.scale(value)
+    }.exhaustive
+  }
+}
+
+/** Common style item for all float styles. See note on [FloatField] about this pattern. */
+@PublishedApi
+internal data class DimenStyleItem(val field: DimenField, val value: Dimen) : StyleItem {
+  override fun applyToComponent(resourceResolver: ResourceResolver, component: Component) {
+    val commonProps = component.getCommonPropsHolder()
+    val pixelValue = value.toPixels(resourceResolver)
+    when (field) {
+      DimenField.TOUCH_EXPANSION_START -> commonProps.touchExpansionPx(YogaEdge.START, pixelValue)
+      DimenField.TOUCH_EXPANSION_TOP -> commonProps.touchExpansionPx(YogaEdge.TOP, pixelValue)
+      DimenField.TOUCH_EXPANSION_END -> commonProps.touchExpansionPx(YogaEdge.END, pixelValue)
+      DimenField.TOUCH_EXPANSION_BOTTOM -> commonProps.touchExpansionPx(YogaEdge.BOTTOM, pixelValue)
+      DimenField.TOUCH_EXPANSION_LEFT -> commonProps.touchExpansionPx(YogaEdge.LEFT, pixelValue)
+      DimenField.TOUCH_EXPANSION_RIGHT -> commonProps.touchExpansionPx(YogaEdge.RIGHT, pixelValue)
+      DimenField.TOUCH_EXPANSION_HORIZONTAL ->
+          commonProps.touchExpansionPx(YogaEdge.HORIZONTAL, pixelValue)
+      DimenField.TOUCH_EXPANSION_VERTICAL ->
+          commonProps.touchExpansionPx(YogaEdge.VERTICAL, pixelValue)
+      DimenField.TOUCH_EXPANSION_ALL -> commonProps.touchExpansionPx(YogaEdge.ALL, pixelValue)
     }.exhaustive
   }
 }
@@ -344,3 +382,26 @@ inline fun Style.viewTags(viewTags: SparseArray<out Any>): Style =
  */
 inline fun Style.outlineProvider(outlineProvider: ViewOutlineProvider?): Style =
     this + ObjectStyleItem(ObjectField.OUTLINE_PROVIDER, outlineProvider)
+
+/** Defines touch Expansion area around the component on a per-edge basis. */
+inline fun Style.touchExpansion(
+    all: Dimen? = null,
+    horizontal: Dimen? = null,
+    vertical: Dimen? = null,
+    start: Dimen? = null,
+    top: Dimen? = null,
+    end: Dimen? = null,
+    bottom: Dimen? = null,
+    left: Dimen? = null,
+    right: Dimen? = null,
+): Style =
+    this +
+        all?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_ALL, it) } +
+        horizontal?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_HORIZONTAL, it) } +
+        vertical?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_VERTICAL, it) } +
+        start?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_START, it) } +
+        top?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_TOP, it) } +
+        end?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_END, it) } +
+        bottom?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_BOTTOM, it) } +
+        left?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_LEFT, it) } +
+        right?.let { DimenStyleItem(DimenField.TOUCH_EXPANSION_RIGHT, it) }
