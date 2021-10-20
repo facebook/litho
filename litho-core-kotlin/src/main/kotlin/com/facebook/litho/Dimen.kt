@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import androidx.annotation.DimenRes
 import java.lang.Double.doubleToRawLongBits
 import java.lang.Double.longBitsToDouble
 import java.lang.Float.intBitsToFloat
@@ -70,6 +71,10 @@ inline class Dimen(val encodedValue: Long) {
         else -> throw IllegalArgumentException("Got unexpected NaN: ${toHexString(encodedValue)}")
       }
 }
+
+/** Resolve a dimen resource ID as a [Dimen] value. */
+inline fun ComponentScope.dimenRes(@DimenRes id: Int): Dimen =
+    resourceResolver.resolveDimenSizeRes(id).px
 
 inline val Int.dp: Dimen
   get() = Dimen(doubleToRawLongBits(this.toDouble()))
