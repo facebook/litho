@@ -160,6 +160,9 @@ module.exports = {
         ],
       },
       'deep-dive/incremental-mount',
+      {
+        'Debugging': ['annotation-processor-debugging'],
+      },
     ],
     ...fbInternalOnly({
     'Contributing to the Documentation': [
@@ -237,7 +240,6 @@ module.exports = {
           ],
           'Experimental': ['mount-extensions'],
           'Additional Resources': ['faq', 'glossary'],
-          'Tools': ['debugging'],
           'Contributing': [
             'contributing',
             'community-showcase',
