@@ -61,6 +61,7 @@ public class MethodParamModelFactoryTest {
             new ArrayList<Annotation>(),
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.of(),
             true,
             null);
 
@@ -78,6 +79,7 @@ public class MethodParamModelFactoryTest {
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.of(),
             true,
             null);
 
@@ -95,6 +97,7 @@ public class MethodParamModelFactoryTest {
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.of(),
             true,
             null);
 
@@ -119,6 +122,7 @@ public class MethodParamModelFactoryTest {
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class),
+            ImmutableList.of(),
             true,
             null);
 
@@ -144,6 +148,7 @@ public class MethodParamModelFactoryTest {
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.of(),
             true,
             null);
 
@@ -169,6 +174,7 @@ public class MethodParamModelFactoryTest {
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.of(),
             false,
             null);
 

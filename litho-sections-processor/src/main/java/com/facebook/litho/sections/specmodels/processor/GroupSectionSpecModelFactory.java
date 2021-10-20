@@ -69,8 +69,6 @@ import javax.lang.model.util.Types;
 /** Factory for creating {@link GroupSectionSpecModel}s. */
 public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSectionSpecModel> {
 
-  public static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
-      new ArrayList<>();
   public static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
@@ -134,15 +132,16 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
         DelegateMethodExtractor.getDelegateMethods(
             element,
             DELEGATE_METHOD_ANNOTATIONS,
-            INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.of(),
+            ImmutableList.of(),
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+            elements, element, ImmutableList.of(), ImmutableList.of(), messager, runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+            elements, element, ImmutableList.of(), ImmutableList.of(), messager, runMode),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, ImmutableList.of(), ImmutableList.of(), messager),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(

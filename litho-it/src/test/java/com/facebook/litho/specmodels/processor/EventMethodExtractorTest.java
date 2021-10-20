@@ -78,6 +78,7 @@ public class EventMethodExtractorTest {
             elements,
             typeElement,
             permittedParamAnnotations,
+            ImmutableList.of(),
             mock(Messager.class),
             RunMode.normal());
 

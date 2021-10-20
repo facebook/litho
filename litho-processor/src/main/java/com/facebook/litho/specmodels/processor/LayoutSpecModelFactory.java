@@ -103,21 +103,32 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
         DelegateMethodExtractor.getDelegateMethods(
             element,
             mLayoutSpecDelegateMethodAnnotations,
+            ImmutableList.of(),
             INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+            elements,
+            element,
+            ImmutableList.of(),
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            messager,
+            runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+            elements,
+            element,
+            ImmutableList.of(),
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            messager,
+            runMode),
         WorkingRangesMethodExtractor.getRegisterMethod(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, ImmutableList.of(), INTER_STAGE_INPUT_ANNOTATIONS, messager),
         WorkingRangesMethodExtractor.getRangesMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            elements, element, ImmutableList.of(), INTER_STAGE_INPUT_ANNOTATIONS, messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, ImmutableList.of(), INTER_STAGE_INPUT_ANNOTATIONS, messager),
         UpdateStateMethodExtractor.getOnUpdateStateWithTransitionMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, ImmutableList.of(), INTER_STAGE_INPUT_ANNOTATIONS, messager),
         interStageStore == null
             ? ImmutableList.of()
             : CachedPropNameExtractor.getCachedPropNames(

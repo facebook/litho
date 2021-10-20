@@ -68,7 +68,7 @@ public class UpdateStateMethodExtractorTest {
 
     ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> methods =
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            typeElement, permittedParamAnnotations, mock(Messager.class));
+            typeElement, permittedParamAnnotations, ImmutableList.of(), mock(Messager.class));
 
     UpdateStateMethodExtractorTestHelper.assertMethodExtraction(methods);
   }

@@ -47,6 +47,7 @@ public class PsiBindDynamicValuesMethodExtractor {
               psiMethod,
               Collections.singletonList(Prop.class),
               ImmutableList.of(),
+              ImmutableList.of(),
               ImmutableList.of());
       final PsiType returnType = psiMethod.getReturnType();
       if (returnType == null) {

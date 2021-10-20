@@ -214,6 +214,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<PrepareInterStageInputParamModel> getPrepareInterStageInputs() {
+    return mSpecModel.getPrepareInterStageInputs();
+  }
+
+  @Override
   public ImmutableList<TreePropModel> getTreeProps() {
     return mSpecModel.getTreeProps();
   }

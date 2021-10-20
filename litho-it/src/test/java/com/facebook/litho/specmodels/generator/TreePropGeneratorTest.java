@@ -80,6 +80,7 @@ public class TreePropGeneratorTest {
                         new ArrayList<Annotation>(),
                         new ArrayList<AnnotationSpec>(),
                         new ArrayList<Class<? extends Annotation>>(),
+                        ImmutableList.of(),
                         true,
                         null),
                     MethodParamModelFactory.create(
@@ -88,6 +89,7 @@ public class TreePropGeneratorTest {
                         ImmutableList.of(createAnnotation(Prop.class)),
                         new ArrayList<AnnotationSpec>(),
                         new ArrayList<Class<? extends Annotation>>(),
+                        ImmutableList.of(),
                         true,
                         null),
                     MethodParamModelFactory.create(
@@ -96,6 +98,7 @@ public class TreePropGeneratorTest {
                         ImmutableList.of(createAnnotation(State.class)),
                         new ArrayList<AnnotationSpec>(),
                         new ArrayList<Class<? extends Annotation>>(),
+                        ImmutableList.of(),
                         true,
                         null)))
             .build();
@@ -120,6 +123,7 @@ public class TreePropGeneratorTest {
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
                     new ArrayList<Class<? extends Annotation>>(),
+                    ImmutableList.of(),
                     true,
                     null),
                 false));
@@ -154,6 +158,7 @@ public class TreePropGeneratorTest {
                         new ArrayList<Annotation>(),
                         new ArrayList<AnnotationSpec>(),
                         new ArrayList<Class<? extends Annotation>>(),
+                        ImmutableList.of(),
                         true,
                         null),
                     MethodParamModelFactory.create(
@@ -167,6 +172,7 @@ public class TreePropGeneratorTest {
                         ImmutableList.of(createAnnotation(Prop.class)),
                         new ArrayList<AnnotationSpec>(),
                         new ArrayList<Class<? extends Annotation>>(),
+                        ImmutableList.of(),
                         true,
                         null)))
             .representedObject(null)

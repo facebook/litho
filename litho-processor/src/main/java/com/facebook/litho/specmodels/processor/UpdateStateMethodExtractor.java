@@ -56,9 +56,14 @@ public class UpdateStateMethodExtractor {
   public static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getOnUpdateStateMethods(
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
       Messager messager) {
     return extractOnUpdateStateMethods(
-        typeElement, permittedInterStageInputAnnotations, messager, false);
+        typeElement,
+        permittedInterStageInputAnnotations,
+        permittedLayoutInterStageInputAnnotations,
+        messager,
+        false);
   }
 
   /** Get the delegate methods from the given {@link TypeElement}. */
@@ -66,15 +71,21 @@ public class UpdateStateMethodExtractor {
       getOnUpdateStateWithTransitionMethods(
           TypeElement typeElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
           Messager messager) {
     return extractOnUpdateStateMethods(
-        typeElement, permittedInterStageInputAnnotations, messager, true);
+        typeElement,
+        permittedInterStageInputAnnotations,
+        permittedLayoutInterStageInputAnnotations,
+        messager,
+        true);
   }
 
   private static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
       extractOnUpdateStateMethods(
           TypeElement typeElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
           Messager messager,
           boolean isTransitionMethod) {
     final List<SpecMethodModel<UpdateStateMethod, Void>> delegateMethods = new ArrayList<>();
@@ -95,8 +106,10 @@ public class UpdateStateMethodExtractor {
             getMethodParams(
                 executableElement,
                 messager,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                getPermittedMethodParamAnnotations(
+                    permittedInterStageInputAnnotations, permittedLayoutInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
         final SpecMethodModel<UpdateStateMethod, Void> delegateMethod =
@@ -118,10 +131,12 @@ public class UpdateStateMethodExtractor {
   }
 
   private static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
     permittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+    permittedMethodParamAnnotations.addAll(permittedLayoutInterStageInputAnnotations);
 
     return permittedMethodParamAnnotations;
   }

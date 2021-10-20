@@ -25,6 +25,7 @@ import com.intellij.psi.PsiClass;
 import com.squareup.javapoet.ClassName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +48,8 @@ public class PsiTriggerMethodExtractorTest extends LithoPluginIntellijTest {
           List<Class<? extends Annotation>> permittedParamAnnotations = new ArrayList<>();
 
           ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
-              PsiTriggerMethodExtractor.getOnTriggerMethods(psiClass, permittedParamAnnotations);
+              PsiTriggerMethodExtractor.getOnTriggerMethods(
+                  psiClass, permittedParamAnnotations, Collections.emptyList());
 
           TriggerMethodExtractorTestHelper.assertMethodExtraction(
               methods, ClassName.bestGuess("TestEvent"));

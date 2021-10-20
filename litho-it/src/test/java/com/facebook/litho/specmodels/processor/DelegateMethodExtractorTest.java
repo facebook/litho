@@ -89,6 +89,7 @@ public class DelegateMethodExtractorTest {
             new ArrayList<>(DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet()),
             permittedParamAnnotations,
             ImmutableList.<Class<? extends Annotation>>of(),
+            ImmutableList.<Class<? extends Annotation>>of(),
             mock(Messager.class));
 
     DelegateMethodExtractorTestHelper.assertDelegateMethodExtraction(delegateMethods);
@@ -108,6 +109,7 @@ public class DelegateMethodExtractorTest {
             typeElement,
             new ArrayList<>(DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet()),
             permittedParamAnnotations,
+            ImmutableList.<Class<? extends Annotation>>of(),
             ImmutableList.<Class<? extends Annotation>>of(),
             mock(Messager.class));
 

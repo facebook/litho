@@ -64,6 +64,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<StateParamModel> mStateValues;
   private final ImmutableList<CachedValueParamModel> mCachedValues;
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
+  private final ImmutableList<PrepareInterStageInputParamModel> mPrepareInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
   private final ImmutableList<BuilderMethodModel> mImplicitBuilderMethods;
@@ -169,6 +170,14 @@ public final class SpecModelImpl implements SpecModel {
             updateStateMethods);
     mInterStageInputs =
         getInterStageInputs(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
+    mPrepareInterStageInputs =
+        getLayoutInterStageInputs(
             delegateMethods,
             eventMethods,
             triggerMethods,
@@ -305,6 +314,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<InterStageInputParamModel> getInterStageInputs() {
     return mInterStageInputs;
+  }
+
+  @Override
+  public ImmutableList<PrepareInterStageInputParamModel> getPrepareInterStageInputs() {
+    return mPrepareInterStageInputs;
   }
 
   @Override
@@ -1005,6 +1019,83 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
           interStageInputs.add((InterStageInputParamModel) param);
+        }
+      }
+    }
+
+    return ImmutableList.copyOf(new ArrayList<>(interStageInputs));
+  }
+
+  private static ImmutableList<PrepareInterStageInputParamModel> getLayoutInterStageInputs(
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+    final Set<PrepareInterStageInputParamModel> interStageInputs =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof PrepareInterStageInputParamModel) {
+          interStageInputs.add((PrepareInterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+      for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof PrepareInterStageInputParamModel) {
+          interStageInputs.add((PrepareInterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+      for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof PrepareInterStageInputParamModel) {
+          interStageInputs.add((PrepareInterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
+        if (param instanceof PrepareInterStageInputParamModel) {
+          interStageInputs.add((PrepareInterStageInputParamModel) param);
+        }
+      }
+    }
+
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof PrepareInterStageInputParamModel) {
+          interStageInputs.add((PrepareInterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof PrepareInterStageInputParamModel) {
+            interStageInputs.add((PrepareInterStageInputParamModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof PrepareInterStageInputParamModel) {
+            interStageInputs.add((PrepareInterStageInputParamModel) param);
+          }
+        }
+      }
+    }
+
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
+      for (MethodParamModel param : updateStateMethod.methodParams) {
+        if (param instanceof PrepareInterStageInputParamModel) {
+          interStageInputs.add((PrepareInterStageInputParamModel) param);
         }
       }
     }

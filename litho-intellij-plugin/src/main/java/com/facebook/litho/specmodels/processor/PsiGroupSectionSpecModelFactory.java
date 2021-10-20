@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
-import static com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory.INTER_STAGE_INPUT_ANNOTATIONS;
 
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -85,12 +84,14 @@ public class PsiGroupSectionSpecModelFactory {
         PsiDelegateMethodExtractor.getDelegateMethods(
             psiClass,
             mGroupSectionSpecDelegateMethodAnnotations,
-            INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.of(),
+            ImmutableList.of(),
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
-        PsiEventMethodExtractor.getOnEventMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS),
-        PsiTriggerMethodExtractor.getOnTriggerMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS),
+        PsiEventMethodExtractor.getOnEventMethods(psiClass, ImmutableList.of(), ImmutableList.of()),
+        PsiTriggerMethodExtractor.getOnTriggerMethods(
+            psiClass, ImmutableList.of(), ImmutableList.of()),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, false),
+            psiClass, ImmutableList.of(), ImmutableList.of(), false),
         PsiTypeVariablesExtractor.getTypeVariables(psiClass),
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),
         PsiEventDeclarationsExtractor.getEventDeclarations(psiClass, GroupSectionSpec.class),

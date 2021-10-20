@@ -38,7 +38,9 @@ import java.util.List;
 public class PsiEventMethodExtractor {
 
   static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getOnEventMethods(
-      PsiClass psiClass, List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      PsiClass psiClass,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 
@@ -55,8 +57,9 @@ public class PsiEventMethodExtractor {
           getMethodParams(
               psiMethod,
               EventMethodExtractor.getPermittedMethodParamAnnotations(
-                  permittedInterStageInputAnnotations),
+                  permittedInterStageInputAnnotations, permittedPrepareInterStageInputAnnotations),
               permittedInterStageInputAnnotations,
+              permittedPrepareInterStageInputAnnotations,
               ImmutableList.of());
 
       final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =

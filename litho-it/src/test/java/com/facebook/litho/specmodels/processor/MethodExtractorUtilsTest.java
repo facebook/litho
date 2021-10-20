@@ -58,6 +58,7 @@ public class MethodExtractorUtilsTest {
             mock(Messager.class),
             Collections.emptyList(),
             Collections.emptyList(),
+            Collections.emptyList(),
             Collections.emptyList()));
   }
 
@@ -68,6 +69,7 @@ public class MethodExtractorUtilsTest {
             methods.get(0),
             mock(Messager.class),
             Collections.singletonList(Prop.class),
+            Collections.emptyList(),
             Collections.emptyList(),
             Collections.emptyList()));
   }

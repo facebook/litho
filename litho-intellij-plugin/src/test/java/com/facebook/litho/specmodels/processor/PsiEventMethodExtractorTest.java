@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.intellij.psi.PsiClass;
+import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,8 @@ public class PsiEventMethodExtractorTest extends LithoPluginIntellijTest {
           PsiClass psiClass = psiClasses.get(0);
 
           ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
-              PsiEventMethodExtractor.getOnEventMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS);
+              PsiEventMethodExtractor.getOnEventMethods(
+                  psiClass, INTER_STAGE_INPUT_ANNOTATIONS, Collections.emptyList());
 
           EventMethodExtractorTestHelper.assertMethodExtraction(methods);
           return true;

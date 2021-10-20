@@ -103,6 +103,9 @@ public interface SpecModel {
   /** @return the set of inter-stage inputs that are defined by the spec. */
   ImmutableList<InterStageInputParamModel> getInterStageInputs();
 
+  /** @return the set of inter-stage inputs that are defined by the spec. */
+  ImmutableList<PrepareInterStageInputParamModel> getPrepareInterStageInputs();
+
   /** @return the set of tree props that are defined by the spec. */
   ImmutableList<TreePropModel> getTreeProps();
 

@@ -36,6 +36,7 @@ public class PsiDelegateMethodExtractor {
       PsiClass psiClass,
       List<Class<? extends Annotation>> permittedMethodAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
     final List<SpecMethodModel<DelegateMethod, Void>> delegateMethods = new ArrayList<>();
 
@@ -48,8 +49,10 @@ public class PsiDelegateMethodExtractor {
             getMethodParams(
                 psiMethod,
                 DelegateMethodExtractor.getPermittedMethodParamAnnotations(
-                    permittedInterStageInputAnnotations),
+                    permittedInterStageInputAnnotations,
+                    permittedPrepareInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedPrepareInterStageInputAnnotations,
                 delegateMethodAnnotationsThatSkipDiffModels);
 
         final SpecMethodModel<DelegateMethod, Void> delegateMethod =

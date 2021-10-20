@@ -72,6 +72,7 @@ public class TriggerMethodExtractor {
           Elements elements,
           TypeElement typeElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
           Messager messager,
           EnumSet<RunMode> runMode) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
@@ -90,8 +91,10 @@ public class TriggerMethodExtractor {
             getMethodParams(
                 executableElement,
                 messager,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                getPermittedMethodParamAnnotations(
+                    permittedInterStageInputAnnotations, permittedLayoutInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
         final DeclaredType eventClassDeclaredType =
@@ -138,10 +141,12 @@ public class TriggerMethodExtractor {
   }
 
   static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
     permittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+    permittedMethodParamAnnotations.addAll(permittedLayoutInterStageInputAnnotations);
 
     return permittedMethodParamAnnotations;
   }

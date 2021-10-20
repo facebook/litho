@@ -37,6 +37,7 @@ public final class MethodParamModelFactory {
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStateInputAnnotations,
       boolean canCreateDiffModels,
       Object representedObject) {
 
@@ -94,6 +95,10 @@ public final class MethodParamModelFactory {
 
       if (permittedInterStateInputAnnotations.contains(annotation.annotationType())) {
         return new InterStageInputParamModel(simpleMethodParamModel);
+      }
+
+      if (permittedLayoutInterStateInputAnnotations.contains(annotation.annotationType())) {
+        return new PrepareInterStageInputParamModel(simpleMethodParamModel);
       }
 
       if (annotation instanceof CachedValue) {

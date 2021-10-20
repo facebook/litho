@@ -71,7 +71,8 @@ public class PsiLayoutSpecModelFactory {
 
     // #5 trigger methods
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods =
-        PsiTriggerMethodExtractor.getOnTriggerMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS);
+        PsiTriggerMethodExtractor.getOnTriggerMethods(
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of());
 
     // #12 classJavadoc
     String classJavadoc = "classJavadoc";
@@ -86,15 +87,19 @@ public class PsiLayoutSpecModelFactory {
             psiClass,
             mLayoutSpecDelegateMethodAnnotations,
             INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.of(),
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
-        PsiEventMethodExtractor.getOnEventMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS),
+        PsiEventMethodExtractor.getOnEventMethods(
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
         triggerMethods,
-        PsiWorkingRangesMethodExtractor.getRegisterMethod(psiClass, INTER_STAGE_INPUT_ANNOTATIONS),
-        PsiWorkingRangesMethodExtractor.getRangesMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS),
+        PsiWorkingRangesMethodExtractor.getRegisterMethod(
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
+        PsiWorkingRangesMethodExtractor.getRangesMethods(
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, false),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), false),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, true),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), true),
         ImmutableList.<String>of(),
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),
         PsiEventDeclarationsExtractor.getEventDeclarations(psiClass, LayoutSpec.class),

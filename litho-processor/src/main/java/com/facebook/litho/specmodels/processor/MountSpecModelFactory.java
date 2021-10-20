@@ -114,20 +114,31 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
             element,
             DELEGATE_METHOD_ANNOTATIONS,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            ImmutableList.of(),
+            ImmutableList.of(ShouldUpdate.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+            elements,
+            element,
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.of(),
+            messager,
+            runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+            elements,
+            element,
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            ImmutableList.of(),
+            messager,
+            runMode),
         WorkingRangesMethodExtractor.getRegisterMethod(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
         WorkingRangesMethodExtractor.getRangesMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
         UpdateStateMethodExtractor.getOnUpdateStateWithTransitionMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
         interStageStore == null
             ? ImmutableList.of()
             : CachedPropNameExtractor.getCachedPropNames(

@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.HasPureRender;
 import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
+import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -304,6 +305,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<InterStageInputParamModel> getInterStageInputs() {
     return mInterStageInputs;
+  }
+
+  @Override
+  public ImmutableList<PrepareInterStageInputParamModel> getPrepareInterStageInputs() {
+    return ImmutableList.of();
   }
 
   @Override

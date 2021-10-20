@@ -65,6 +65,7 @@ public class PsiMethodExtractorUtilsTest extends LithoPluginIntellijTest {
                       methods[1],
                       Collections.emptyList(),
                       Collections.emptyList(),
+                      Collections.emptyList(),
                       Collections.emptyList()));
             });
   }
@@ -78,6 +79,7 @@ public class PsiMethodExtractorUtilsTest extends LithoPluginIntellijTest {
                   getMethodParams(
                       methods[0],
                       Collections.singletonList(Prop.class),
+                      Collections.emptyList(),
                       Collections.emptyList(),
                       Collections.emptyList()));
             });

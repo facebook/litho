@@ -43,7 +43,7 @@ public class PsiUpdateStateMethodExtractorTest extends LithoPluginIntellijTest {
 
           ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> methods =
               PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
-                  cls, permittedParamAnnotations, false);
+                  cls, permittedParamAnnotations, ImmutableList.of(), false);
 
           UpdateStateMethodExtractorTestHelper.assertMethodExtraction(methods);
           return true;

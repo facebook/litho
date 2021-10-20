@@ -84,6 +84,7 @@ public class TriggerMethodExtractorTest {
             elements,
             typeElement,
             permittedParamAnnotations,
+            ImmutableList.of(),
             mock(Messager.class),
             RunMode.normal());
 

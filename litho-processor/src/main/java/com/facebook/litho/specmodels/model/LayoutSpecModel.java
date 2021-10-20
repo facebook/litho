@@ -198,6 +198,11 @@ public class LayoutSpecModel implements SpecModel {
   }
 
   @Override
+  public ImmutableList<PrepareInterStageInputParamModel> getPrepareInterStageInputs() {
+    return mSpecModel.getPrepareInterStageInputs();
+  }
+
+  @Override
   public ImmutableList<TreePropModel> getTreeProps() {
     return mSpecModel.getTreeProps();
   }

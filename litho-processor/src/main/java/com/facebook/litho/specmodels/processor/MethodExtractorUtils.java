@@ -49,6 +49,7 @@ public final class MethodExtractorUtils {
       Messager messager,
       List<Class<? extends Annotation>> permittedAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
 
     final List<MethodParamModel> methodParamModels = new ArrayList<>();
@@ -81,6 +82,7 @@ public final class MethodExtractorUtils {
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 canCreateDiffModels(method, delegateMethodAnnotationsThatSkipDiffModels),
                 param));
       } catch (Exception e) {

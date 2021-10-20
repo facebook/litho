@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -216,6 +217,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<InterStageInputParamModel> getInterStageInputs() {
     return mSpecModel.getInterStageInputs();
+  }
+
+  @Override
+  public ImmutableList<PrepareInterStageInputParamModel> getPrepareInterStageInputs() {
+    return mSpecModel.getPrepareInterStageInputs();
   }
 
   @Override

@@ -38,6 +38,7 @@ public class PsiUpdateStateMethodExtractor {
   public static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getOnUpdateStateMethods(
       PsiClass psiClass,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations,
       boolean isTransition) {
     final List<SpecMethodModel<UpdateStateMethod, Void>> delegateMethods = new ArrayList<>();
 
@@ -52,8 +53,11 @@ public class PsiUpdateStateMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 psiMethod,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                getPermittedMethodParamAnnotations(
+                    permittedInterStageInputAnnotations,
+                    permittedPrepareInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedPrepareInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
         final SpecMethodModel<UpdateStateMethod, Void> delegateMethod =

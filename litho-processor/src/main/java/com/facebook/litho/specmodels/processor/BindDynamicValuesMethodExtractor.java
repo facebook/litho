@@ -60,6 +60,7 @@ public class BindDynamicValuesMethodExtractor {
               messager,
               Collections.singletonList(Prop.class),
               Collections.emptyList(),
+              Collections.emptyList(),
               Collections.emptyList());
 
       final SpecMethodModel<BindDynamicValueMethod, Void> methodModel =

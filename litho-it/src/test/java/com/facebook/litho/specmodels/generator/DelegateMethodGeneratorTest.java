@@ -80,6 +80,7 @@ public class DelegateMethodGeneratorTest {
                         ImmutableList.of(),
                         new ArrayList<>(),
                         ImmutableList.of(),
+                        ImmutableList.of(),
                         true,
                         null),
                     MethodParamModelFactory.create(
@@ -88,6 +89,7 @@ public class DelegateMethodGeneratorTest {
                         ImmutableList.of(createAnnotation(Prop.class)),
                         new ArrayList<>(),
                         ImmutableList.of(),
+                        ImmutableList.of(),
                         true,
                         null),
                     MethodParamModelFactory.create(
@@ -95,6 +97,7 @@ public class DelegateMethodGeneratorTest {
                         "state",
                         ImmutableList.of(createAnnotation(State.class)),
                         new ArrayList<>(),
+                        ImmutableList.of(),
                         ImmutableList.of(),
                         true,
                         null)))
@@ -183,6 +186,7 @@ public class DelegateMethodGeneratorTest {
                         ImmutableList.of(),
                         new ArrayList<>(),
                         ImmutableList.of(),
+                        ImmutableList.of(),
                         true,
                         null),
                     MethodParamModelFactory.createSimpleMethodParamModel(
@@ -192,6 +196,7 @@ public class DelegateMethodGeneratorTest {
                         "prop",
                         ImmutableList.of(createAnnotation(Prop.class)),
                         new ArrayList<>(),
+                        ImmutableList.of(),
                         ImmutableList.of(),
                         true,
                         null)))

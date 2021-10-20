@@ -41,7 +41,8 @@ public class PsiTriggerMethodExtractor {
   public static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
       getOnTriggerMethods(
           PsiClass psiClass,
-          List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+          List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 
@@ -53,8 +54,10 @@ public class PsiTriggerMethodExtractor {
             getMethodParams(
                 psiMethod,
                 TriggerMethodExtractor.getPermittedMethodParamAnnotations(
-                    permittedInterStageInputAnnotations),
+                    permittedInterStageInputAnnotations,
+                    permittedPrepareInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedPrepareInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
         PsiAnnotation psiOnTriggerAnnotation =

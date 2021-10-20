@@ -66,6 +66,7 @@ public class WorkingRangesMethodExtractor {
   public static SpecMethodModel<EventMethod, Void> getRegisterMethod(
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
       Messager messager) {
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
       if (enclosedElement.getKind() != ElementKind.METHOD) {
@@ -81,8 +82,10 @@ public class WorkingRangesMethodExtractor {
             getMethodParams(
                 executableElement,
                 messager,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                getPermittedMethodParamAnnotations(
+                    permittedInterStageInputAnnotations, permittedLayoutInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 ImmutableList.of());
 
         return SpecMethodModel.<EventMethod, Void>builder()
@@ -104,6 +107,7 @@ public class WorkingRangesMethodExtractor {
       Elements elements,
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
       Messager messager) {
     final List<WorkingRangeMethodModel> workingRangeMethods = new ArrayList<>();
 
@@ -124,6 +128,7 @@ public class WorkingRangesMethodExtractor {
                 elements,
                 executableElement,
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 messager,
                 OnEnteredRange.class);
 
@@ -147,6 +152,7 @@ public class WorkingRangesMethodExtractor {
                 elements,
                 executableElement,
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 messager,
                 OnExitedRange.class);
 
@@ -168,10 +174,12 @@ public class WorkingRangesMethodExtractor {
   }
 
   private static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
     permittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+    permittedMethodParamAnnotations.addAll(permittedLayoutInterStageInputAnnotations);
     return permittedMethodParamAnnotations;
   }
 
@@ -181,14 +189,17 @@ public class WorkingRangesMethodExtractor {
           Elements elements,
           ExecutableElement executableElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
           Messager messager,
           Class<? extends Annotation> annotationType) {
     final List<MethodParamModel> methodParams =
         getMethodParams(
             executableElement,
             messager,
-            getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+            getPermittedMethodParamAnnotations(
+                permittedInterStageInputAnnotations, permittedLayoutInterStageInputAnnotations),
             permittedInterStageInputAnnotations,
+            permittedLayoutInterStageInputAnnotations,
             ImmutableList.of());
 
     final String nameInAnnotation =

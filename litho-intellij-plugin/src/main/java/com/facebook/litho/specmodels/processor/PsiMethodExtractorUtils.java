@@ -59,6 +59,7 @@ public class PsiMethodExtractorUtils {
       PsiMethod method,
       List<Class<? extends Annotation>> permittedAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
 
     final List<MethodParamModel> methodParamModels = new ArrayList<>();
@@ -72,6 +73,7 @@ public class PsiMethodExtractorUtils {
               getLibraryAnnotations(param, permittedAnnotations),
               getExternalAnnotations(param),
               permittedInterStageInputAnnotations,
+              permittedPrepareInterStageInputAnnotations,
               canCreateDiffModels(method, delegateMethodAnnotationsThatSkipDiffModels),
               param));
     }

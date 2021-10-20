@@ -45,7 +45,9 @@ class PsiWorkingRangesMethodExtractor {
 
   @Nullable
   static SpecMethodModel<EventMethod, Void> getRegisterMethod(
-      PsiClass psiClass, List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      PsiClass psiClass,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations) {
     for (PsiMethod psiMethod : psiClass.getMethods()) {
       final OnRegisterRanges onRegisterRangesAnnotation =
           PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiMethod, OnRegisterRanges.class);
@@ -53,8 +55,11 @@ class PsiWorkingRangesMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 psiMethod,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                getPermittedMethodParamAnnotations(
+                    permittedInterStageInputAnnotations,
+                    permittedPrepareInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedPrepareInterStageInputAnnotations,
                 ImmutableList.of());
 
         return SpecMethodModel.<EventMethod, Void>builder()
@@ -72,7 +77,9 @@ class PsiWorkingRangesMethodExtractor {
   }
 
   static ImmutableList<WorkingRangeMethodModel> getRangesMethods(
-      PsiClass psiClass, List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      PsiClass psiClass,
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations) {
     Map<String, WorkingRangeMethodModel> models = new HashMap<>();
 
     for (PsiMethod psiMethod : psiClass.getMethods()) {
@@ -82,7 +89,10 @@ class PsiWorkingRangesMethodExtractor {
       if (enteredRangeAnnotation != null) {
         SpecMethodModel<EventMethod, WorkingRangeDeclarationModel> enteredRangeMethod =
             generateWorkingRangeMethod(
-                psiMethod, permittedInterStageInputAnnotations, OnEnteredRange.class.getName());
+                psiMethod,
+                permittedInterStageInputAnnotations,
+                permittedPrepareInterStageInputAnnotations,
+                OnEnteredRange.class.getName());
         final String name = enteredRangeAnnotation.name();
         models.putIfAbsent(name, new WorkingRangeMethodModel(name));
         models.get(name).enteredRangeModel = enteredRangeMethod;
@@ -94,7 +104,10 @@ class PsiWorkingRangesMethodExtractor {
       if (exitedRangeAnnotation != null) {
         SpecMethodModel<EventMethod, WorkingRangeDeclarationModel> exitedRangeMethod =
             generateWorkingRangeMethod(
-                psiMethod, permittedInterStageInputAnnotations, OnExitedRange.class.getName());
+                psiMethod,
+                permittedInterStageInputAnnotations,
+                permittedPrepareInterStageInputAnnotations,
+                OnExitedRange.class.getName());
         final String name = exitedRangeAnnotation.name();
         models.putIfAbsent(name, new WorkingRangeMethodModel(name));
         models.get(name).exitedRangeModel = exitedRangeMethod;
@@ -107,12 +120,15 @@ class PsiWorkingRangesMethodExtractor {
       generateWorkingRangeMethod(
           PsiMethod psiMethod,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations,
           String annotationQualifiedName) {
     final List<MethodParamModel> methodParams =
         getMethodParams(
             psiMethod,
-            getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+            getPermittedMethodParamAnnotations(
+                permittedInterStageInputAnnotations, permittedPrepareInterStageInputAnnotations),
             permittedInterStageInputAnnotations,
+            permittedPrepareInterStageInputAnnotations,
             ImmutableList.of());
 
     PsiAnnotation psiAnnotation = AnnotationUtil.findAnnotation(psiMethod, annotationQualifiedName);

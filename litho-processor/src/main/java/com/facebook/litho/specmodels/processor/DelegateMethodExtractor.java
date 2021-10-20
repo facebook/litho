@@ -58,6 +58,7 @@ public class DelegateMethodExtractor {
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedMethodAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Messager messager) {
     return getDelegateMethods(
@@ -65,6 +66,7 @@ public class DelegateMethodExtractor {
         permittedMethodAnnotations,
         new ArrayList<>(),
         permittedInterStageInputAnnotations,
+        permittedLayoutInterStageInputAnnotations,
         delegateMethodAnnotationsThatSkipDiffModels,
         messager);
   }
@@ -75,6 +77,7 @@ public class DelegateMethodExtractor {
       List<Class<? extends Annotation>> permittedMethodAnnotations,
       List<Class<? extends Annotation>> permittedMethodParamAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Messager messager) {
     final List<SpecMethodModel<DelegateMethod, Void>> delegateMethods = new ArrayList<>();
@@ -94,8 +97,11 @@ public class DelegateMethodExtractor {
                 executableElement,
                 messager,
                 getPermittedMethodParamAnnotations(
-                    permittedMethodParamAnnotations, permittedInterStageInputAnnotations),
+                    permittedMethodParamAnnotations,
+                    permittedInterStageInputAnnotations,
+                    permittedLayoutInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
+                permittedLayoutInterStageInputAnnotations,
                 delegateMethodAnnotationsThatSkipDiffModels);
 
         final SpecMethodModel<DelegateMethod, Void> delegateMethod =
@@ -133,21 +139,25 @@ public class DelegateMethodExtractor {
   }
 
   static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedPrepareInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
     permittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+    permittedMethodParamAnnotations.addAll(permittedPrepareInterStageInputAnnotations);
 
     return permittedMethodParamAnnotations;
   }
 
   static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
       List<Class<? extends Annotation>> permittedMethodParamAnnotations,
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+      List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+      List<Class<? extends Annotation>> permittedLayoutInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> allPermittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
     allPermittedMethodParamAnnotations.addAll(permittedMethodParamAnnotations);
     allPermittedMethodParamAnnotations.addAll(permittedInterStageInputAnnotations);
+    allPermittedMethodParamAnnotations.addAll(permittedLayoutInterStageInputAnnotations);
 
     return allPermittedMethodParamAnnotations;
   }
