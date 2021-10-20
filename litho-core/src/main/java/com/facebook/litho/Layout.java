@@ -666,6 +666,15 @@ class Layout {
           diffNodeScopedComponentInfo != null
               ? diffNodeScopedComponentInfo.getInterStagePropsContainer()
               : Preconditions.checkNotNull(diffNode.getComponent()).getInterStagePropsContainer());
+
+      component.copyPrepareInterStageImpl(
+          scopedComponentInfo != null
+              ? scopedComponentInfo.getPrepareInterStagePropsContainer()
+              : component.getPrepareInterStagePropsContainer(),
+          diffNodeScopedComponentInfo != null
+              ? diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer()
+              : Preconditions.checkNotNull(diffNode.getComponent())
+                  .getPrepareInterStagePropsContainer());
     }
 
     result.setCachedMeasuresValid(true);

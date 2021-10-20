@@ -109,6 +109,13 @@ abstract class KComponent : Component() {
       copyFromInterStagePropsContainer: InterStagePropsContainer?
   ) = super.copyInterStageImpl(copyIntoInterStagePropsContainer, copyFromInterStagePropsContainer)
 
+  final override fun copyPrepareInterStageImpl(
+      to: PrepareInterStagePropsContainer?,
+      from: PrepareInterStagePropsContainer?
+  ) {
+    super.copyPrepareInterStageImpl(to, from)
+  }
+
   final override fun createInitialState(c: ComponentContext) = super.createInitialState(c)
 
   final override fun createInterStagePropsContainer() = super.createInterStagePropsContainer()

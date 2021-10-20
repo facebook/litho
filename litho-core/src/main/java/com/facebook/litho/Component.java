@@ -1431,6 +1431,8 @@ public abstract class Component
     // copy the inter-stage props so that they are set again.
     if (!parentContext.useStatelessComponent()) {
       clone.copyInterStageImpl(clone.getInterStagePropsContainer(), getInterStagePropsContainer());
+      clone.copyPrepareInterStageImpl(
+          clone.getPrepareInterStagePropsContainer(), getPrepareInterStagePropsContainer());
     }
 
     // update the cloned component with the new context.
@@ -1481,6 +1483,11 @@ public abstract class Component
   protected void copyInterStageImpl(
       final @Nullable InterStagePropsContainer copyIntoInterStagePropsContainer,
       final @Nullable InterStagePropsContainer copyFromInterStagePropsContainer) {}
+
+  // This will not be needed anymore for stateless components.
+  protected void copyPrepareInterStageImpl(
+      final @Nullable PrepareInterStagePropsContainer copyIntoInterStagePropsContainer,
+      final @Nullable PrepareInterStagePropsContainer copyFromInterStagePropsContainer) {}
 
   protected DynamicValue[] getDynamicProps() {
     return sEmptyArray;
@@ -1538,6 +1545,14 @@ public abstract class Component
     mInterStagePropsContainer = interStagePropsContainer;
   }
 
+  protected final void setPrepareInterStagePropsContainer(
+      PrepareInterStagePropsContainer interStagePropsContainer) {
+    if (ComponentsConfiguration.useStatelessComponent) {
+      return;
+    }
+    mPrepareInterStagePropsContainer = interStagePropsContainer;
+  }
+
   protected @Nullable StateContainer createStateContainer() {
     return null;
   }
@@ -1584,6 +1599,14 @@ public abstract class Component
       mInterStagePropsContainer = createInterStagePropsContainer();
     }
     return mInterStagePropsContainer;
+  }
+
+  @Nullable
+  final PrepareInterStagePropsContainer getPrepareInterStagePropsContainer() {
+    if (mPrepareInterStagePropsContainer == null) {
+      mPrepareInterStagePropsContainer = createPrepareInterStagePropsContainer();
+    }
+    return mPrepareInterStagePropsContainer;
   }
 
   protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {

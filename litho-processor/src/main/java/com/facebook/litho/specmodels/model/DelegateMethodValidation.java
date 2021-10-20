@@ -170,7 +170,8 @@ public class DelegateMethodValidation {
           continue;
         }
 
-        if (delegateMethodParam instanceof InterStageInputParamModel) {
+        if (delegateMethodParam instanceof InterStageInputParamModel
+            || delegateMethodParam instanceof PrepareInterStageInputParamModel) {
           final Annotation annotation =
               getInterStageInputAnnotation(
                   delegateMethodParam, delegateMethodDescription.interStageInputAnnotations);
@@ -490,6 +491,7 @@ public class DelegateMethodValidation {
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
       case INJECT_PROP:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class);
+      case PREPARE_INTER_STAGE_OUTPUT:
       case INTER_STAGE_OUTPUT:
         return methodParamModel.getTypeName() instanceof ParameterizedTypeName
             && ((ParameterizedTypeName) methodParamModel.getTypeName())

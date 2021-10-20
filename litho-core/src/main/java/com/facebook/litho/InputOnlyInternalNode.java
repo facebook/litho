@@ -363,6 +363,15 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
             diffNodeScopedComponentInfo != null
                 ? diffNodeScopedComponentInfo.getInterStagePropsContainer()
                 : Preconditions.checkNotNull(diff.getComponent()).getInterStagePropsContainer());
+
+        component.copyPrepareInterStageImpl(
+            scopedComponentInfo != null
+                ? scopedComponentInfo.getPrepareInterStagePropsContainer()
+                : component.getPrepareInterStagePropsContainer(),
+            diffNodeScopedComponentInfo != null
+                ? diffNodeScopedComponentInfo.getPrepareInterStagePropsContainer()
+                : Preconditions.checkNotNull(diff.getComponent())
+                    .getPrepareInterStagePropsContainer());
       }
 
       result.setCachedMeasuresValid(true);

@@ -73,6 +73,7 @@ public class StateValidationTest {
     when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -98,6 +99,7 @@ public class StateValidationTest {
     when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -339,6 +341,7 @@ public class StateValidationTest {
     when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     final List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -371,6 +374,7 @@ public class StateValidationTest {
     when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.of(injectProp));
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
     when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     final List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -403,6 +407,7 @@ public class StateValidationTest {
     when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(treeProp));
     when(mSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getPrepareInterStageInputs()).thenReturn(ImmutableList.of());
 
     final List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);

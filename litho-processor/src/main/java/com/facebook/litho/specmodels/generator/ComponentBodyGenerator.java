@@ -45,6 +45,7 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.PrepareInterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
@@ -162,6 +163,12 @@ public class ComponentBodyGenerator {
       builder.addTypeSpecDataHolder(
           generateCopyInterStageImpl(specModel, interstagepropsContainerClass));
     }
+
+    if (hasPrepareInterstageProps) {
+      builder.addTypeSpecDataHolder(
+          generateCopyPrepareInterStageImpl(specModel, interstagepropsContainerClass));
+    }
+
     builder.addTypeSpecDataHolder(generateMakeShallowCopy(specModel, hasState));
     builder.addTypeSpecDataHolder(generateGetDynamicProps(specModel));
     builder.addTypeSpecDataHolder(generateBindDynamicProp(specModel));
@@ -632,6 +639,47 @@ public class ComponentBodyGenerator {
     return typeSpecDataHolder.build();
   }
 
+  static TypeSpecDataHolder generateCopyPrepareInterStageImpl(
+      SpecModel specModel, ClassName implClassName) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    final ImmutableList<PrepareInterStageInputParamModel> interStageInputs =
+        specModel.getPrepareInterStageInputs();
+
+    if (specModel.shouldGenerateCopyMethod() && !interStageInputs.isEmpty()) {
+      final String className =
+          PrepareInterStagePropsContainerGenerator.getPrepareInterStagePropsContainerClassName(
+              specModel);
+      final String copyIntoParam = "copyIntoInterStagePropsContainer";
+      final String copyFromParam = "copyFromInterStagePropsContainer";
+      final String copyIntoInstanceName = copyIntoParam + "_ref";
+      final String copyFromInstanceName = copyFromParam + "_ref";
+      final MethodSpec.Builder copyPrepareInterStageComponentBuilder =
+          MethodSpec.methodBuilder("copyPrepareInterStageImpl")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PROTECTED)
+              .returns(TypeName.VOID)
+              .addParameter(ClassNames.PREPARE_INTER_STAGE_PROPS_CONTAINER, copyIntoParam)
+              .addParameter(ClassNames.PREPARE_INTER_STAGE_PROPS_CONTAINER, copyFromParam)
+              .addStatement(
+                  "$N $N = ($N) $N", className, copyIntoInstanceName, className, copyIntoParam)
+              .addStatement(
+                  "$N $N = ($N) $N", className, copyFromInstanceName, className, copyFromParam);
+
+      for (PrepareInterStageInputParamModel interStageInput : interStageInputs) {
+        copyPrepareInterStageComponentBuilder.addStatement(
+            "$N.$N = $N.$N",
+            copyIntoInstanceName,
+            interStageInput.getName(),
+            copyFromInstanceName,
+            interStageInput.getName());
+      }
+
+      typeSpecDataHolder.addMethod(copyPrepareInterStageComponentBuilder.build());
+    }
+
+    return typeSpecDataHolder.build();
+  }
+
   static TypeSpecDataHolder generateMakeShallowCopy(SpecModel specModel, boolean hasState) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
@@ -695,6 +743,14 @@ public class ComponentBodyGenerator {
     if (hasInterStageProps) {
       builder.addStatement(
           "component.setInterStagePropsContainer(createInterStagePropsContainer())");
+    }
+
+    boolean hasPrepareInterstageProps =
+        specModel.getPrepareInterStageInputs() != null
+            && !specModel.getPrepareInterStageInputs().isEmpty();
+    if (hasPrepareInterstageProps) {
+      builder.addStatement(
+          "component.setPrepareInterStagePropsContainer(createPrepareInterStagePropsContainer())");
     }
 
     if (hasDeepCopy) {
@@ -1043,6 +1099,18 @@ public class ComponentBodyGenerator {
       if (dependencyInjectionHelper != null) {
         return dependencyInjectionHelper.generateImplAccessor(specModel, methodParamModel);
       }
+    } else if (methodParamModel instanceof PrepareInterStageInputParamModel) {
+      if (contextParamName == null) {
+        throw new IllegalStateException(
+            "Cannot access param of type layout inter-stage prop in method "
+                + methodName
+                + " because it doesn't have a scoped ComponentContext as defined parameter.");
+      }
+
+      return "getPrepareInterStagePropsContainerImpl("
+          + contextParamName
+          + ")."
+          + methodParamModel.getName();
     } else if (methodParamModel instanceof InterStageInputParamModel) {
       if (contextParamName == null) {
         throw new IllegalStateException(
@@ -1081,19 +1149,29 @@ public class ComponentBodyGenerator {
       String contextParamName) {
     if (isOutputType(methodParamModel.getTypeName())) {
       if (methodDescription.optionalParameterTypes.contains(
-          DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT)) {
+              DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT)
+          || methodDescription.optionalParameterTypes.contains(
+              DelegateMethodDescription.OptionalParameterType.PREPARE_INTER_STAGE_OUTPUT)) {
         if (contextParamName == null) {
           throw new IllegalStateException(
               "Cannot access param of type inter-stage prop in method "
                   + methodDescription.name
                   + " because it doesn't have a scoped ComponentContext as defined parameter.");
         }
-        return "getInterStagePropsContainerImpl("
-            + contextParamName
-            + ", "
-            + LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME
-            + ")."
-            + methodParamModel.getName();
+        if (methodDescription.mInterStagePropsTarget.equals(
+            DelegateMethodDescription.InterStagePropsTarget.PREPARE)) {
+          return "getPrepareInterStagePropsContainerImpl("
+              + contextParamName
+              + ")."
+              + methodParamModel.getName();
+        } else {
+          return "getInterStagePropsContainerImpl("
+              + contextParamName
+              + ", "
+              + LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME
+              + ")."
+              + methodParamModel.getName();
+        }
       }
     }
 
