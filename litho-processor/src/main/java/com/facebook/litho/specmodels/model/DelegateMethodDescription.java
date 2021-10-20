@@ -54,6 +54,11 @@ public final class DelegateMethodDescription {
     CACHED_VALUE,
   }
 
+  public enum InterStagePropsTarget {
+    PREPARE,
+    MEASURE
+  }
+
   public final ImmutableList<AnnotationSpec> annotations;
   public final Modifier accessType;
   public final TypeName returnType;
@@ -62,6 +67,7 @@ public final class DelegateMethodDescription {
   public final ImmutableList<MethodParamModel> optionalParameters;
   public final ImmutableList<OptionalParameterType> optionalParameterTypes;
   public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
+  public final InterStagePropsTarget mInterStagePropsTarget;
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
   public final boolean createsState;
@@ -78,6 +84,7 @@ public final class DelegateMethodDescription {
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
     createsState = builder.createsState;
+    mInterStagePropsTarget = builder.mInterStagePropsTarget;
   }
 
   public ImmutableList<TypeName> allowedDelegateMethodArguments() {
@@ -100,6 +107,7 @@ public final class DelegateMethodDescription {
         .optionalParameters(methodDescription.optionalParameters)
         .optionalParameterTypes(methodDescription.optionalParameterTypes)
         .interStageInputAnnotations(methodDescription.interStageInputAnnotations)
+        .interStageInputTarget(methodDescription.mInterStagePropsTarget)
         .extraMethods(methodDescription.extraMethods)
         .exceptions(methodDescription.exceptions);
   }
@@ -113,6 +121,7 @@ public final class DelegateMethodDescription {
     private ImmutableList<OptionalParameterType> optionalParameterTypes;
     private ImmutableList<MethodParamModel> optionalParameters;
     private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
+    private InterStagePropsTarget mInterStagePropsTarget = InterStagePropsTarget.MEASURE;
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
     private boolean createsState = false;
@@ -178,6 +187,11 @@ public final class DelegateMethodDescription {
     public Builder interStageInputAnnotations(
         ImmutableList<Class<? extends Annotation>> interStageInputAnnotations) {
       this.interStageInputAnnotations = interStageInputAnnotations;
+      return this;
+    }
+
+    public Builder interStageInputTarget(InterStagePropsTarget target) {
+      this.mInterStagePropsTarget = target;
       return this;
     }
 
