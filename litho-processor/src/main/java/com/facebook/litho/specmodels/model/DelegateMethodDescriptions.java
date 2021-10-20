@@ -22,6 +22,7 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INJECT_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PREPARE_INTER_STAGE_OUTPUT;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP_OUTPUT;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE;
@@ -168,7 +169,8 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
           .optionalParameterTypes(
               ImmutableList.of(
-                  PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
+                  PROP, TREE_PROP, STATE, PREPARE_INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
+          .interStageInputTarget(DelegateMethodDescription.InterStagePropsTarget.PREPARE)
           .build();
 
   public static final DelegateMethodDescription ON_MEASURE =

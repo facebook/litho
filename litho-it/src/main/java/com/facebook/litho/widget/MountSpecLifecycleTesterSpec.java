@@ -27,11 +27,16 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleTracker;
 import com.facebook.litho.MountContentPool;
+import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TrackingMountContentPool;
 import com.facebook.litho.annotations.CachedValue;
+import com.facebook.litho.annotations.FromBind;
+import com.facebook.litho.annotations.FromBoundsDefined;
+import com.facebook.litho.annotations.FromMeasure;
+import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnBind;
@@ -67,7 +72,8 @@ public class MountSpecLifecycleTesterSpec {
       ComponentContext c,
       @Prop LifecycleTracker lifecycleTracker,
       @State Object dummyState,
-      @CachedValue int expensiveValue) {
+      @CachedValue int expensiveValue,
+      Output<String> outputOnPrepare) {
     lifecycleTracker.addStep(LifecycleStep.ON_PREPARE);
   }
 
@@ -79,7 +85,9 @@ public class MountSpecLifecycleTesterSpec {
       int heightSpec,
       Size size,
       @Prop LifecycleTracker lifecycleTracker,
-      @Prop(optional = true) Size intrinsicSize) {
+      @Prop(optional = true) Size intrinsicSize,
+      @FromPrepare String outputOnPrepare,
+      Output<String> outputOnMeasure) {
 
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
@@ -97,7 +105,12 @@ public class MountSpecLifecycleTesterSpec {
 
   @OnBoundsDefined
   static void onBoundsDefined(
-      ComponentContext c, ComponentLayout layout, @Prop LifecycleTracker lifecycleTracker) {
+      ComponentContext c,
+      ComponentLayout layout,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromPrepare String outputOnPrepare,
+      @FromMeasure String outputOnMeasure,
+      Output<String> outputOnBoundsDefined) {
     final Rect bounds =
         new Rect(
             layout.getX(),
@@ -122,7 +135,12 @@ public class MountSpecLifecycleTesterSpec {
   @UiThread
   @OnMount
   static void onMount(
-      ComponentContext context, View view, @Prop LifecycleTracker lifecycleTracker) {
+      ComponentContext context,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromPrepare String outputOnPrepare,
+      @FromMeasure String outputOnMeasure,
+      @FromBoundsDefined String outputOnBoundsDefined) {
     // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (view == StaticContainer.sLastCreatedView) {
       lifecycleTracker.addStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT);
@@ -140,13 +158,24 @@ public class MountSpecLifecycleTesterSpec {
 
   @UiThread
   @OnBind
-  static void onBind(ComponentContext c, View view, @Prop LifecycleTracker lifecycleTracker) {
+  static void onBind(
+      ComponentContext c,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromPrepare String outputOnPrepare,
+      @FromMeasure String outputOnMeasure,
+      @FromBoundsDefined String outputOnBoundsDefined,
+      Output<String> outputOnBind) {
     lifecycleTracker.addStep(LifecycleStep.ON_BIND);
   }
 
   @UiThread
   @OnUnbind
-  static void onUnbind(ComponentContext c, View view, @Prop LifecycleTracker lifecycleTracker) {
+  static void onUnbind(
+      ComponentContext c,
+      View view,
+      @Prop LifecycleTracker lifecycleTracker,
+      @FromBind String outputOnBind) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
   }
 

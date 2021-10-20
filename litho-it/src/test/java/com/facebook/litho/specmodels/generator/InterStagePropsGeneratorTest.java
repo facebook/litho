@@ -17,17 +17,25 @@
 package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import androidx.annotation.UiThread;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
+import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnPrepare;
+import com.facebook.litho.annotations.OnUnbind;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
+import com.facebook.litho.specmodels.model.InterStageInputParamModel;
+import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
@@ -63,14 +71,24 @@ public class InterStagePropsGeneratorTest {
     Types types = mCompilationRule.getTypes();
 
     mInterstagePropsMountSpecModel =
-        mMountSpecModelFactory.create(
-            elements,
-            types,
-            elements.getTypeElement(MountTestSpec.class.getCanonicalName()),
-            mMessager,
-            RunMode.normal(),
-            null,
-            null);
+        spy(
+            mMountSpecModelFactory.create(
+                elements,
+                types,
+                elements.getTypeElement(MountTestSpec.class.getCanonicalName()),
+                mMessager,
+                RunMode.normal(),
+                null,
+                null));
+
+    InterStageInputParamModel props =
+        new InterStageInputParamModel(
+            MethodParamModelFactory.createSimpleMethodParamModel(
+                new com.facebook.litho.specmodels.model.TypeSpec(ClassNames.STRING),
+                "stringOutput",
+                new Object()));
+
+    when(mInterstagePropsMountSpecModel.getInterStageInputs()).thenReturn(ImmutableList.of(props));
   }
 
   @Test
@@ -90,7 +108,7 @@ public class InterStagePropsGeneratorTest {
         .isEqualTo(
             "@com.facebook.litho.annotations.Generated\n"
                 + "static class MountTestInterStagePropsContainer implements com.facebook.litho.InterStagePropsContainer {\n"
-                + "  java.lang.Integer color;\n"
+                + "  java.lang.String stringOutput;\n"
                 + "}\n");
   }
 
@@ -103,8 +121,8 @@ public class InterStagePropsGeneratorTest {
       methodNames.add(methodSpec.name);
     }
 
-    assertThat(methodNames.contains("createInterStagePropsContainer")).isTrue();
-    assertThat(methodNames.contains("getInterStagePropsContainerImpl")).isTrue();
+    assertThat(methodNames.contains("createPrepareInterStagePropsContainer")).isTrue();
+    assertThat(methodNames.contains("getPrepareInterStagePropsContainerImpl")).isTrue();
   }
 
   @Test
@@ -150,6 +168,7 @@ public class InterStagePropsGeneratorTest {
                 + "public MountTest makeShallowCopy() {\n"
                 + "  MountTest component = (MountTest) super.makeShallowCopy();\n"
                 + "  component.setInterStagePropsContainer(createInterStagePropsContainer());\n"
+                + "  component.setPrepareInterStagePropsContainer(createPrepareInterStagePropsContainer());\n"
                 + "  return component;\n"
                 + "}\n");
   }
@@ -162,7 +181,7 @@ public class InterStagePropsGeneratorTest {
             DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP,
             RunMode.testing());
 
-    assertThat(holder.getMethodSpecs()).hasSize(2);
+    assertThat(holder.getMethodSpecs()).hasSize(3);
 
     MethodSpec onPrepareMethod = null;
     MethodSpec onBindMethod = null;
@@ -185,12 +204,11 @@ public class InterStagePropsGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected void onPrepare(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.InterStagePropsContainer _interStageProps = null;\n"
                 + "  com.facebook.litho.Output<java.lang.Integer> colorTmp = new Output<>();\n"
                 + "  MountTestSpec.onPrepare(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.Output<java.lang.Integer>) colorTmp);\n"
-                + "  getInterStagePropsContainerImpl(c, _interStageProps).color = colorTmp.get();\n"
+                + "  getPrepareInterStagePropsContainerImpl(c).color = colorTmp.get();\n"
                 + "}\n");
 
     assertThat(onBindMethod.toString())
@@ -199,10 +217,13 @@ public class InterStagePropsGeneratorTest {
                 + "protected void onBind(com.facebook.litho.ComponentContext c, java.lang.Object lithoView,\n"
                 + "    com.facebook.litho.InterStagePropsContainer _2) {\n"
                 + "  com.facebook.litho.InterStagePropsContainer _interStageProps = _2;\n"
+                + "  com.facebook.litho.Output<java.lang.String> stringOutputTmp = new Output<>();\n"
                 + "  MountTestSpec.onBind(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.LithoView) lithoView,\n"
-                + "    (java.lang.Integer) getInterStagePropsContainerImpl(c, _interStageProps).color);\n"
+                + "    (java.lang.Integer) getPrepareInterStagePropsContainerImpl(c).color,\n"
+                + "    (com.facebook.litho.Output<java.lang.String>) stringOutputTmp);\n"
+                + "  getInterStagePropsContainerImpl(c, _interStageProps).stringOutput = stringOutputTmp.get();\n"
                 + "}\n");
   }
 
@@ -214,6 +235,18 @@ public class InterStagePropsGeneratorTest {
 
     @UiThread
     @OnBind
-    static void onBind(ComponentContext c, LithoView lithoView, @FromPrepare Integer color) {}
+    static void onBind(
+        ComponentContext c,
+        LithoView lithoView,
+        @FromPrepare Integer color,
+        Output<String> stringOutput) {}
+
+    @UiThread
+    @OnUnbind
+    static void onUnbind(
+        ComponentContext c,
+        LithoView lithoView,
+        @FromPrepare Integer color,
+        @FromBind String stringOutput) {}
   }
 }

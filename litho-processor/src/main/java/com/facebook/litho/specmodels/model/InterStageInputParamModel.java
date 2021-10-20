@@ -27,7 +27,7 @@ import javax.annotation.concurrent.Immutable;
 public class InterStageInputParamModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
 
-  InterStageInputParamModel(MethodParamModel paramModel) {
+  public InterStageInputParamModel(MethodParamModel paramModel) {
     mParamModel = paramModel;
   }
 

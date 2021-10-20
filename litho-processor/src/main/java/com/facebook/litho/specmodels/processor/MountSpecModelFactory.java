@@ -66,7 +66,7 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
       new ArrayList<>();
 
   static {
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromPrepare.class);
+    PREPARE_INTER_STAGE_INPUT_ANNOTATIONS.add(FromPrepare.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasureBaseline.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasure.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromBoundsDefined.class);
