@@ -66,11 +66,53 @@ With Sections Plugin you can:
 Once you open the plugin it will starting listening for all sections events that are triggered by the Sections.
 This might slow down the interaction with the app at first but it should be smooth after the first event has been tracked.
 
-The plugin rationale is to collect a collection of events that come with an attached stack trace.
+The plugin rationale is to create a collection of events that come with an attached stack trace.
 Every event can hold different information that is rendered on screen through either the Tree Data port view or the left Sidebar.
 
 ![Sections in Flipper](/images/debugging-flipper-sections.png)
 
+
+### Events dashboard
+
+It collects all the relevant events that are sent by the section component tracker,
+the object responsible to manage the lifecycle events of a Sections hierarchy, and the Sections tree analytics listener,
+responsible to deliver information about the build steps for each tree generation.
+
+Depending on the event that is selected different information come available to the user.
+
+![Events dashboard](/images/debugging-flipper-sections-dashboard.png)
+
+### Stack Trace
+
+For each event that gets selected, a stack trace is attached to it such that you can trace back who triggered the selected event.
+
+
+### Tree Data
+
+This visualizes the available tree generation that comes with the selected event.
+You can analyse each item state between events and find information if the item was:
+- removed
+- inserted
+- updated
+- reused
+
+![TreeData for Sections](/images/debugging-flipper-sections-tree.png)
+
+
+### Changeset Information
+
+After a completed tree generation, every Section Component part of the Sections tree is queried for returning its changeset.
+
+Changesets are reported on the right sidebar with information about the type of the change, they can be really useful in analysing what is happening with your Section:
+- Insert
+- Insert Range
+- Update
+- Update Range
+- Delete
+- Delete Range
+- Move
+
+![Sections Changeset](/images/debugging-flipper-sections-changeset.png)
 
 ## Enable Debugging Logs
 
@@ -85,11 +127,3 @@ This can help answer questions like *Why was my item re-rendered when nothing ch
 
 3. [AnimationsDebug](pathname:///javadoc/com/facebook/litho/AnimationsDebug.html) -
    turning on the `ENABLED` flag will enable the logs related to the Animations and Transitions.
-
-
-
-
-
-
-
-
