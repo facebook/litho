@@ -162,6 +162,11 @@ public class ComponentsConfiguration {
 
   public static boolean delegateToRenderCoreMount = false;
 
+  /**
+   * Start parallel layout of visible range just before serial synchronous layouts in RecyclerBinder
+   */
+  public static boolean computeRangeOnSyncLayout = false;
+
   public static boolean ensureParentMountedInRenderCoreMountState = false;
 
   public static boolean shouldDisableBgFgOutputs = false;
