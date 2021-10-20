@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.8.4
+
+_2021-10-15_
+
+* Fix: KComponent Template adds package name to file
+* Fix: Primitive types are now boxed when autocompleting functions
+
+
 ## Version 1.8.3
 
 _2021-08-23_
