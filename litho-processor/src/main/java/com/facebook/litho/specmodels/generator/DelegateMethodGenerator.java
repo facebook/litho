@@ -122,6 +122,7 @@ public class DelegateMethodGenerator {
     final ImmutableList<MethodParamModel> delegateArgs = delegateMethod.methodParams;
 
     String contextParamName = null;
+    String interStagePropsParamName = null;
 
     for (int i = 0, size = lifecycleArgs.size(); i < size; i++) {
 
@@ -140,6 +141,12 @@ public class DelegateMethodGenerator {
       // Cache the name of spec context argument.
       if (lifecycleArgs.get(i).type == specModel.getContextClass() && contextParamName == null) {
         contextParamName = name;
+      }
+
+      // Cache the name of spec context argument.
+      if (lifecycleArgs.get(i).type == ClassNames.INTER_STAGE_PROPS_CONTAINER
+          && interStagePropsParamName == null) {
+        interStagePropsParamName = name;
       }
 
       methodSpec.addParameter(lifecycleArgs.get(i).type, name);
@@ -182,7 +189,13 @@ public class DelegateMethodGenerator {
     }
 
     methodSpec.addCode(
-        getDelegationCode(specModel, delegateMethod, methodDescription, contextParamName, runMode));
+        getDelegationCode(
+            specModel,
+            delegateMethod,
+            methodDescription,
+            contextParamName,
+            interStagePropsParamName,
+            runMode));
 
     if (delegateMethod.name.toString().equals("onCreateLayout")
         || delegateMethod.name.toString().equals("onPrepare")) {
@@ -238,6 +251,7 @@ public class DelegateMethodGenerator {
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
       DelegateMethodDescription methodDescription,
       @Nullable String contextParamName,
+      @Nullable String interStagePropsParamName,
       EnumSet<RunMode> runMode) {
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
     final CodeBlock.Builder releaseStatements = CodeBlock.builder();
@@ -251,6 +265,16 @@ public class DelegateMethodGenerator {
     // If null, find the first spec context from the delegate methods arguments.
     if (contextParamName == null) {
       contextParamName = getContextParamName(specModel, delegateMethod, methodDescription);
+    }
+
+    // Create a local variable for interstage props if they created or used.
+    if (ComponentBodyGenerator.requiresInterStatePropContainer(
+        delegateMethod.methodParams, methodDescription.optionalParameterTypes)) {
+      acquireStatements.addStatement(
+          "$L $L = $L",
+          ClassNames.INTER_STAGE_PROPS_CONTAINER,
+          ComponentBodyGenerator.LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME,
+          interStagePropsParamName != null ? interStagePropsParamName : "null");
     }
 
     final boolean requiresState =

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.isOutputType;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_GETTER;
@@ -79,10 +80,15 @@ import javax.lang.model.element.Modifier;
 public class ComponentBodyGenerator {
 
   static final String LOCAL_STATE_CONTAINER_NAME = "_state";
+  static final String LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME = "_interStageProps";
   static final String LIFECYCLE_CREATE_INITIAL_STATE = "createInitialState";
 
   static final Predicate<MethodParamModel> PREDICATE_NEEDS_STATE =
       param -> param instanceof StateParamModel || isAnnotatedWith(param, State.class);
+
+  static final Predicate<DelegateMethodDescription.OptionalParameterType>
+      PREDICATE_ALLOWS_INTERSTAGE_OUTPUTS =
+          type -> type.equals(DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT);
 
   private ComponentBodyGenerator() {}
 
@@ -399,9 +405,10 @@ public class ComponentBodyGenerator {
     return MethodSpec.methodBuilder("getInterStagePropsContainerImpl")
         .addModifiers(Modifier.PRIVATE)
         .addParameter(specModel.getContextClass(), "c")
+        .addParameter(ClassNames.INTER_STAGE_PROPS_CONTAINER, "interStageProps")
         .returns(interstagePropsContainerImplClassName)
         .addStatement(
-            "return ($T) super.getInterStagePropsContainer(c)",
+            "return ($T) super.getInterStagePropsContainer(c, interStageProps)",
             interstagePropsContainerImplClassName)
         .build();
   }
@@ -1008,6 +1015,8 @@ public class ComponentBodyGenerator {
 
       return "getInterStagePropsContainerImpl("
           + contextParamName
+          + ", "
+          + LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME
           + ")."
           + methodParamModel.getName();
     } else if (methodParamModel instanceof TreePropModel) {
@@ -1032,7 +1041,7 @@ public class ComponentBodyGenerator {
       DelegateMethodDescription methodDescription,
       MethodParamModel methodParamModel,
       String contextParamName) {
-    if (DelegateMethodGenerator.isOutputType(methodParamModel.getTypeName())) {
+    if (isOutputType(methodParamModel.getTypeName())) {
       if (methodDescription.optionalParameterTypes.contains(
           DelegateMethodDescription.OptionalParameterType.INTER_STAGE_OUTPUT)) {
         if (contextParamName == null) {
@@ -1043,6 +1052,8 @@ public class ComponentBodyGenerator {
         }
         return "getInterStagePropsContainerImpl("
             + contextParamName
+            + ", "
+            + LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME
             + ")."
             + methodParamModel.getName();
       }
@@ -1108,5 +1119,20 @@ public class ComponentBodyGenerator {
                   "_e2_" + level + ".next()"));
     }
     return builder.endControlFlow().build();
+  }
+
+  public static boolean requiresInterStatePropContainer(
+      ImmutableList<MethodParamModel> params,
+      @Nullable ImmutableList<DelegateMethodDescription.OptionalParameterType> types) {
+
+    final boolean allowsInterStageOutputs =
+        types != null && types.stream().anyMatch(PREDICATE_ALLOWS_INTERSTAGE_OUTPUTS);
+
+    Predicate<MethodParamModel> hasInterStageProps =
+        param ->
+            param instanceof InterStageInputParamModel
+                || (allowsInterStageOutputs && isOutputType(param.getTypeName()));
+
+    return params.stream().anyMatch(hasInterStageProps);
   }
 }

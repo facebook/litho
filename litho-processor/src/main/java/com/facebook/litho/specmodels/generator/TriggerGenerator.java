@@ -189,6 +189,16 @@ public class TriggerGenerator {
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
+    // Create a local variable for interstage props if they created or used.
+    if (ComponentBodyGenerator.requiresInterStatePropContainer(
+        eventMethodModel.methodParams, null)) {
+      delegation.addStatement(
+          "$L $L = $L",
+          ClassNames.INTER_STAGE_PROPS_CONTAINER,
+          ComponentBodyGenerator.LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME,
+          "null");
+    }
+
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
     if (eventMethodModel.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);

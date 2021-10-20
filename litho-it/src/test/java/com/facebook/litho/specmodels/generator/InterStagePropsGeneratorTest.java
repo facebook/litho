@@ -134,8 +134,9 @@ public class InterStagePropsGeneratorTest {
 
     assertThat(methodSpec.toString())
         .isEqualTo(
-            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl(com.facebook.litho.ComponentContext c) {\n"
-                + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer(c);\n"
+            "private MountTestInterStagePropsContainer getInterStagePropsContainerImpl(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.InterStagePropsContainer interStageProps) {\n"
+                + "  return (MountTestInterStagePropsContainer) super.getInterStagePropsContainer(c, interStageProps);\n"
                 + "}\n");
   }
 
@@ -184,11 +185,12 @@ public class InterStagePropsGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected void onPrepare(com.facebook.litho.ComponentContext c) {\n"
+                + "  com.facebook.litho.InterStagePropsContainer _interStageProps = null;\n"
                 + "  com.facebook.litho.Output<java.lang.Integer> colorTmp = new Output<>();\n"
                 + "  MountTestSpec.onPrepare(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.Output<java.lang.Integer>) colorTmp);\n"
-                + "  getInterStagePropsContainerImpl(c).color = colorTmp.get();\n"
+                + "  getInterStagePropsContainerImpl(c, _interStageProps).color = colorTmp.get();\n"
                 + "}\n");
 
     assertThat(onBindMethod.toString())
@@ -196,10 +198,11 @@ public class InterStagePropsGeneratorTest {
             "@java.lang.Override\n"
                 + "protected void onBind(com.facebook.litho.ComponentContext c, java.lang.Object lithoView,\n"
                 + "    com.facebook.litho.InterStagePropsContainer _2) {\n"
+                + "  com.facebook.litho.InterStagePropsContainer _interStageProps = _2;\n"
                 + "  MountTestSpec.onBind(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.LithoView) lithoView,\n"
-                + "    (java.lang.Integer) getInterStagePropsContainerImpl(c).color);\n"
+                + "    (java.lang.Integer) getInterStagePropsContainerImpl(c, _interStageProps).color);\n"
                 + "}\n");
   }
 

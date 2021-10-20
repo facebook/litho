@@ -114,8 +114,10 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
     return new TestMountInterStagePropsContainer();
   }
 
-  private TestMountInterStagePropsContainer getInterStagePropsContainerImpl(ComponentContext c) {
-    return (TestMountInterStagePropsContainer) super.getInterStagePropsContainer(c);
+  private TestMountInterStagePropsContainer getInterStagePropsContainerImpl(
+      ComponentContext c, InterStagePropsContainer interStageProps) {
+    return (TestMountInterStagePropsContainer)
+        super.getInterStagePropsContainer(c, interStageProps);
   }
 
   @Override
@@ -252,6 +254,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       int heightSpec,
       Size size,
       InterStagePropsContainer _5) {
+    com.facebook.litho.InterStagePropsContainer _interStageProps = _5;
     Output<Long> measureOutputTmp = new Output<>();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
@@ -260,7 +263,8 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         (int) heightSpec,
         (Size) size,
         (Output<Long>) measureOutputTmp);
-    getInterStagePropsContainerImpl(context).measureOutput = measureOutputTmp.get();
+    getInterStagePropsContainerImpl(context, _interStageProps).measureOutput =
+        measureOutputTmp.get();
   }
 
   @Override
@@ -271,15 +275,17 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected void onBoundsDefined(
       ComponentContext c, ComponentLayout layout, InterStagePropsContainer _2) {
+    com.facebook.litho.InterStagePropsContainer _interStageProps = _2;
     Output<Integer> boundsDefinedOutputTmp = new Output<>();
     TestMountSpec.onBoundsDefined(
         (ComponentContext) c,
         (ComponentLayout) layout,
         (Object) prop3,
         (char[]) prop4,
-        (Long) getInterStagePropsContainerImpl(c).measureOutput,
+        (Long) getInterStagePropsContainerImpl(c, _interStageProps).measureOutput,
         (Output<Integer>) boundsDefinedOutputTmp);
-    getInterStagePropsContainerImpl(c).boundsDefinedOutput = boundsDefinedOutputTmp.get();
+    getInterStagePropsContainerImpl(c, _interStageProps).boundsDefinedOutput =
+        boundsDefinedOutputTmp.get();
   }
 
   @Override
@@ -291,6 +297,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
 
   @Override
   protected void onMount(ComponentContext c, Object v, InterStagePropsContainer _2) {
+    com.facebook.litho.InterStagePropsContainer _interStageProps = _2;
     TestMountStateContainer _state = getStateContainerImpl(c);
     TestMountSpec.onMount(
         (ComponentContext) c,
@@ -298,7 +305,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         (boolean) prop2,
         (long) _state.state1,
         (S) _state.state2,
-        (Long) getInterStagePropsContainerImpl(c).measureOutput,
+        (Long) getInterStagePropsContainerImpl(c, _interStageProps).measureOutput,
         (TestTreeProp)
             (useTreePropsFromContext()
                 ? c.getParentTreeProp(
@@ -332,13 +339,14 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   @Override
   protected int getExtraAccessibilityNodesCount(ComponentContext c, InterStagePropsContainer _1) {
     int _result;
+    com.facebook.litho.InterStagePropsContainer _interStageProps = _1;
     _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodesCount(
                 (ComponentContext) c,
                 (int) prop1,
                 (CharSequence) prop7,
-                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
+                (Integer) getInterStagePropsContainerImpl(c, _interStageProps).boundsDefinedOutput);
     return _result;
   }
 
@@ -350,6 +358,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
       int componentBoundsLeft,
       int componentBoundsTop,
       InterStagePropsContainer _5) {
+    com.facebook.litho.InterStagePropsContainer _interStageProps = _5;
     TestMountSpec.onPopulateExtraAccessibilityNode(
         (ComponentContext) c,
         (AccessibilityNodeInfoCompat) node,
@@ -358,7 +367,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
         (int) componentBoundsTop,
         (Object) prop3,
         (CharSequence) prop7,
-        (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
+        (Integer) getInterStagePropsContainerImpl(c, _interStageProps).boundsDefinedOutput);
   }
 
   @Override
@@ -370,6 +379,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
   protected int getExtraAccessibilityNodeAt(
       ComponentContext c, int x, int y, InterStagePropsContainer _3) {
     int _result;
+    com.facebook.litho.InterStagePropsContainer _interStageProps = _3;
     _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodeAt(
@@ -378,7 +388,7 @@ public final class TestMount<S extends View> extends SpecGeneratedComponent impl
                 (int) y,
                 (Object) prop3,
                 (CharSequence) prop7,
-                (Integer) getInterStagePropsContainerImpl(c).boundsDefinedOutput);
+                (Integer) getInterStagePropsContainerImpl(c, _interStageProps).boundsDefinedOutput);
     return _result;
   }
 

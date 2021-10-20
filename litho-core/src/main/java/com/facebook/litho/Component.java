@@ -1546,9 +1546,12 @@ public abstract class Component
   }
 
   protected final @Nullable InterStagePropsContainer getInterStagePropsContainer(
-      ComponentContext scopedContext) {
+      final ComponentContext scopedContext,
+      final @Nullable InterStagePropsContainer interStagePropsContainer) {
     if (scopedContext.useStatelessComponent()) {
-      return scopedContext.getScopedComponentInfo().getInterStagePropsContainer();
+      return interStagePropsContainer != null
+          ? interStagePropsContainer
+          : scopedContext.getScopedComponentInfo().getInterStagePropsContainer();
     } else {
       if (mInterStagePropsContainer == null) {
         mInterStagePropsContainer = createInterStagePropsContainer();

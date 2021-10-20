@@ -233,6 +233,16 @@ public class EventGenerator {
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
+    // Create a local variable for interstage props if they created or used.
+    if (ComponentBodyGenerator.requiresInterStatePropContainer(
+        eventMethodModel.methodParams, null)) {
+      delegation.addStatement(
+          "$L $L = $L",
+          ClassNames.INTER_STAGE_PROPS_CONTAINER,
+          ComponentBodyGenerator.LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME,
+          "null");
+    }
+
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
     final boolean isErrorDelegation =
         eventMethodModel.name.toString().equals(EventCaseGenerator.INTERNAL_ON_ERROR_HANDLER_NAME);
