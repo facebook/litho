@@ -99,14 +99,14 @@ public class LithoPluginUtils {
   }
 
   public static boolean hasLithoComponentSpecAnnotation(@Nullable PsiClass psiClass) {
-    if (psiClass == null) {
-      return false;
-    }
-    return isSpecName(psiClass.getName()) && (isLayoutSpec(psiClass) || isMountSpec(psiClass));
+    return psiClass != null
+        && isSpecName(psiClass.getName())
+        && (isLayoutSpec(psiClass) || isMountSpec(psiClass));
   }
 
-  public static boolean hasLithoSectionSpecAnnotation(PsiClass psiClass) {
-    return isSpecName(psiClass.getName())
+  public static boolean hasLithoSectionSpecAnnotation(@Nullable PsiClass psiClass) {
+    return psiClass != null
+        && isSpecName(psiClass.getName())
         && hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
   }
 

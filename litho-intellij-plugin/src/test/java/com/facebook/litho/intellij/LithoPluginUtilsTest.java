@@ -92,6 +92,7 @@ public class LithoPluginUtilsTest {
 
     PsiClass notSpec = createWithAnnotation(PsiClass.class, "com.facebook.litho.annotations.Any");
     Assert.assertFalse(LithoPluginUtils.hasLithoComponentSpecAnnotation(notSpec));
+    Assert.assertFalse(LithoPluginUtils.hasLithoComponentSpecAnnotation(null));
   }
 
   @Test
@@ -106,6 +107,7 @@ public class LithoPluginUtilsTest {
     PsiClass notSpec =
         createWithAnnotation(PsiClass.class, "com.facebook.litho.sections.annotations.Any");
     Assert.assertFalse(LithoPluginUtils.hasLithoSectionSpecAnnotation(notSpec));
+    Assert.assertFalse(LithoPluginUtils.hasLithoSectionSpecAnnotation(null));
   }
 
   @Test
