@@ -29,6 +29,7 @@ class ScopedComponentInfo implements Cloneable {
   private ComponentContext mContext;
   private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
+  private @Nullable PrepareInterStagePropsContainer mPrepareInterStagePropsContainer;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
@@ -114,6 +115,11 @@ class ScopedComponentInfo implements Cloneable {
   @Nullable
   InterStagePropsContainer getInterStagePropsContainer() {
     return mInterStagePropsContainer;
+  }
+
+  @Nullable
+  PrepareInterStagePropsContainer getPrepareInterStagePropsContainer() {
+    return mPrepareInterStagePropsContainer;
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */

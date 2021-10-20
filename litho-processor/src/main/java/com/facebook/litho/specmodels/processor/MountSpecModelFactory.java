@@ -62,6 +62,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
   public static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS = new ArrayList<>();
+  static final List<Class<? extends Annotation>> PREPARE_INTER_STAGE_INPUT_ANNOTATIONS =
+      new ArrayList<>();
 
   static {
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromPrepare.class);
@@ -114,31 +116,44 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
             element,
             DELEGATE_METHOD_ANNOTATIONS,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.of(),
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.of(ShouldUpdate.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
             elements,
             element,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.of(),
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
             messager,
             runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
             elements,
             element,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.of(),
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
             messager,
             runMode),
         WorkingRangesMethodExtractor.getRegisterMethod(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
+            element,
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
+            messager),
         WorkingRangesMethodExtractor.getRangesMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
+            elements,
+            element,
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
+            messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
+            element,
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
+            messager),
         UpdateStateMethodExtractor.getOnUpdateStateWithTransitionMethods(
-            element, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), messager),
+            element,
+            INTER_STAGE_INPUT_ANNOTATIONS,
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
+            messager),
         interStageStore == null
             ? ImmutableList.of()
             : CachedPropNameExtractor.getCachedPropNames(

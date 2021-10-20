@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.MountSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
 import static com.facebook.litho.specmodels.processor.MountSpecModelFactory.INTER_STAGE_INPUT_ANNOTATIONS;
+import static com.facebook.litho.specmodels.processor.MountSpecModelFactory.PREPARE_INTER_STAGE_INPUT_ANNOTATIONS;
 
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -79,20 +80,20 @@ public class PsiMountSpecModelFactory {
             psiClass,
             mMountSpecDelegateMethodAnnotations,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.of(),
+            PREPARE_INTER_STAGE_INPUT_ANNOTATIONS,
             ImmutableList.of(ShouldUpdate.class)),
         PsiEventMethodExtractor.getOnEventMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, PREPARE_INTER_STAGE_INPUT_ANNOTATIONS),
         PsiTriggerMethodExtractor.getOnTriggerMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, PREPARE_INTER_STAGE_INPUT_ANNOTATIONS),
         PsiWorkingRangesMethodExtractor.getRegisterMethod(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, PREPARE_INTER_STAGE_INPUT_ANNOTATIONS),
         PsiWorkingRangesMethodExtractor.getRangesMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of()),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, PREPARE_INTER_STAGE_INPUT_ANNOTATIONS),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), false),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, PREPARE_INTER_STAGE_INPUT_ANNOTATIONS, false),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
-            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, ImmutableList.of(), true),
+            psiClass, INTER_STAGE_INPUT_ANNOTATIONS, PREPARE_INTER_STAGE_INPUT_ANNOTATIONS, true),
         ImmutableList.of(),
         PsiTypeVariablesExtractor.getTypeVariables(psiClass),
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),

@@ -179,6 +179,7 @@ public abstract class Component
 
   private @Nullable StateContainer mStateContainer;
   private @Nullable InterStagePropsContainer mInterStagePropsContainer;
+  private @Nullable PrepareInterStagePropsContainer mPrepareInterStagePropsContainer;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
@@ -204,6 +205,7 @@ public abstract class Component
     if (!ComponentsConfiguration.useStatelessComponent) {
       mStateContainer = createStateContainer();
       mInterStagePropsContainer = createInterStagePropsContainer();
+      mPrepareInterStagePropsContainer = createPrepareInterStagePropsContainer();
     }
   }
 
@@ -1560,6 +1562,18 @@ public abstract class Component
     }
   }
 
+  protected final @Nullable PrepareInterStagePropsContainer getPrepareInterStagePropsContainer(
+      final ComponentContext scopedContext) {
+    if (scopedContext.useStatelessComponent()) {
+      return scopedContext.getScopedComponentInfo().getPrepareInterStagePropsContainer();
+    } else {
+      if (mPrepareInterStagePropsContainer == null) {
+        mPrepareInterStagePropsContainer = createPrepareInterStagePropsContainer();
+      }
+      return mPrepareInterStagePropsContainer;
+    }
+  }
+
   private static boolean useStatelessComponent(@Nullable ComponentTree componentTree) {
     return componentTree != null && componentTree.useStatelessComponent();
   }
@@ -1573,6 +1587,10 @@ public abstract class Component
   }
 
   protected @Nullable InterStagePropsContainer createInterStagePropsContainer() {
+    return null;
+  }
+
+  protected @Nullable PrepareInterStagePropsContainer createPrepareInterStagePropsContainer() {
     return null;
   }
 

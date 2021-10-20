@@ -46,6 +46,7 @@ public final class DelegateMethodDescription {
     DIFF_STATE,
     PARAM,
     INTER_STAGE_OUTPUT,
+    PREPARE_INTER_STAGE_OUTPUT,
     PROP_OUTPUT,
     STATE_OUTPUT,
     STATE_VALUE,

@@ -22,6 +22,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOU
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_GETTER;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_IMPL_GETTER;
 import static com.facebook.litho.specmodels.generator.InterStagePropsContainerGenerator.getInterStagePropsContainerClassName;
+import static com.facebook.litho.specmodels.generator.PrepareInterStagePropsContainerGenerator.getPrepareInterStagePropsContainerClassName;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 import static com.facebook.litho.specmodels.model.MethodParamModelUtils.isAnnotatedWith;
 
@@ -114,6 +115,21 @@ public class ComponentBodyGenerator {
       builder.addMethod(generateInterStagePropsContainerCreator(interstagepropsContainerClass));
       builder.addMethod(
           generateInterstagePropsContainerImplGetter(specModel, interstagepropsContainerClass));
+    }
+
+    boolean hasPrepareInterstageProps =
+        specModel.getPrepareInterStageInputs() != null
+            && !specModel.getPrepareInterStageInputs().isEmpty();
+
+    if (hasPrepareInterstageProps) {
+      final ClassName prepareInterStagePropContainerClassName =
+          ClassName.bestGuess(getPrepareInterStagePropsContainerClassName(specModel));
+      builder.addType(PrepareInterStagePropsContainerGenerator.generate(specModel));
+      builder.addMethod(
+          generatePrepareInterStagePropsContainerCreator(prepareInterStagePropContainerClassName));
+      builder.addMethod(
+          generatePrepareInterstagePropsContainerImplGetter(
+              specModel, prepareInterStagePropContainerClassName));
     }
 
     final boolean needsRenderDataInfra = !specModel.getRenderDataDiffs().isEmpty();
@@ -413,6 +429,18 @@ public class ComponentBodyGenerator {
         .build();
   }
 
+  static MethodSpec generatePrepareInterstagePropsContainerImplGetter(
+      SpecModel specModel, TypeName prepareInterstagePropsContainerImplClassName) {
+    return MethodSpec.methodBuilder("getPrepareInterStagePropsContainerImpl")
+        .addModifiers(Modifier.PRIVATE)
+        .addParameter(specModel.getContextClass(), "c")
+        .returns(prepareInterstagePropsContainerImplClassName)
+        .addStatement(
+            "return ($T) super.getPrepareInterStagePropsContainer(c)",
+            prepareInterstagePropsContainerImplClassName)
+        .build();
+  }
+
   static MethodSpec generateInterStagePropsContainerCreator(
       ClassName interStagePropsContainerImplClassName) {
     return MethodSpec.methodBuilder("createInterStagePropsContainer")
@@ -420,6 +448,16 @@ public class ComponentBodyGenerator {
         .addAnnotation(Override.class)
         .returns(interStagePropsContainerImplClassName)
         .addStatement("return new $T()", interStagePropsContainerImplClassName)
+        .build();
+  }
+
+  static MethodSpec generatePrepareInterStagePropsContainerCreator(
+      ClassName prepareInterStagePropsContainerImplClassName) {
+    return MethodSpec.methodBuilder("createPrepareInterStagePropsContainer")
+        .addModifiers(Modifier.PROTECTED)
+        .addAnnotation(Override.class)
+        .returns(prepareInterStagePropsContainerImplClassName)
+        .addStatement("return new $T()", prepareInterStagePropsContainerImplClassName)
         .build();
   }
 
