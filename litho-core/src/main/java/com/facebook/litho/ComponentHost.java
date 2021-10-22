@@ -669,10 +669,13 @@ public class ComponentHost extends Host implements DisappearingHost {
   }
 
   private void mountView(View view, int flags) {
-    view.setDuplicateParentStateEnabled(LayoutOutput.isDuplicateParentState(flags));
-    if (view instanceof ComponentHost) {
-      ((ComponentHost) view)
-          .setAddStatesFromChildren(LayoutOutput.isDuplicateChildrenStates(flags));
+    final boolean childShouldDuplicateParentState = LayoutOutput.isDuplicateParentState(flags);
+    if (childShouldDuplicateParentState) {
+      view.setDuplicateParentStateEnabled(true);
+    }
+
+    if (view instanceof ComponentHost && LayoutOutput.isDuplicateChildrenStates(flags)) {
+      ((ComponentHost) view).setAddStatesFromChildren(true);
     }
 
     mIsChildDrawingOrderDirty = true;
@@ -697,6 +700,11 @@ public class ComponentHost extends Host implements DisappearingHost {
       super.removeViewInLayout(view);
     } else {
       super.removeView(view);
+    }
+
+    view.setDuplicateParentStateEnabled(false);
+    if (view instanceof ComponentHost && ((ComponentHost) view).addStatesFromChildren()) {
+      ((ComponentHost) view).setAddStatesFromChildren(false);
     }
   }
 

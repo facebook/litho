@@ -31,10 +31,12 @@ import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -356,11 +358,17 @@ public class ComponentHostTest {
     View v1 = mock(View.class);
     mount(0, v1);
 
+    verify(v1, never()).setDuplicateParentStateEnabled(anyBoolean());
+
     View v2 = mock(View.class);
     mount(1, v2, LAYOUT_FLAG_DUPLICATE_PARENT_STATE);
 
-    verify(v1, times(1)).setDuplicateParentStateEnabled(eq(false));
     verify(v2, times(1)).setDuplicateParentStateEnabled(eq(true));
+    reset(v2);
+
+    unmount(1, v2, LAYOUT_FLAG_DUPLICATE_PARENT_STATE);
+
+    verify(v2, times(1)).setDuplicateParentStateEnabled(eq(false));
   }
 
   @Test
@@ -915,6 +923,30 @@ public class ComponentHostTest {
         index,
         mountItem,
         content instanceof Drawable ? ((Drawable) content).getBounds() : new Rect());
+    return mountItem;
+  }
+
+  private MountItem unmount(int index, View view, int flags) {
+    NodeInfo nodeInfo = new DefaultNodeInfo();
+
+    MountItem mountItem =
+        MountItemTestHelper.create(
+            mViewComponent,
+            sViewComponentKey,
+            null,
+            view,
+            nodeInfo,
+            null,
+            null,
+            0,
+            0,
+            flags,
+            0,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
+            null);
+
+    mHost.unmount(index, mountItem);
     return mountItem;
   }
 
