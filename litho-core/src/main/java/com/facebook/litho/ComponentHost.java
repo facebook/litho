@@ -89,6 +89,7 @@ public class ComponentHost extends Host implements DisappearingHost {
   private boolean mIsChildDrawingOrderDirty;
 
   private boolean mInLayout;
+  private boolean mHadChildWithDuplicateParentState = false;
 
   @Nullable private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
   private boolean mIsComponentAccessibilityDelegateSet = false;
@@ -633,6 +634,16 @@ public class ComponentHost extends Host implements DisappearingHost {
     mImplementsVirtualViews = implementsVirtualViews;
   }
 
+  /**
+   * When a ViewGroup gets a child with duplicateParentState=true added to it, it forever sets a
+   * flag (FLAG_NOTIFY_CHILDREN_ON_DRAWABLE_STATE_CHANGE) which makes the View crash if it ever has
+   * addStatesFromChildren set to true. We track this so we know not to recycle ComponentHosts that
+   * have had this flag set.
+   */
+  boolean hadChildWithDuplicateParentState() {
+    return mHadChildWithDuplicateParentState;
+  }
+
   private boolean hasAccessibilityDelegateAndVirtualViews() {
     return mIsComponentAccessibilityDelegateSet && mImplementsVirtualViews;
   }
@@ -672,6 +683,7 @@ public class ComponentHost extends Host implements DisappearingHost {
     final boolean childShouldDuplicateParentState = LayoutOutput.isDuplicateParentState(flags);
     if (childShouldDuplicateParentState) {
       view.setDuplicateParentStateEnabled(true);
+      mHadChildWithDuplicateParentState = true;
     }
 
     if (view instanceof ComponentHost && LayoutOutput.isDuplicateChildrenStates(flags)) {

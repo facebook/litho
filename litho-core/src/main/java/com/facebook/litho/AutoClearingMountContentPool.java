@@ -64,6 +64,12 @@ public class AutoClearingMountContentPool extends RecyclePool implements MountCo
       return;
     }
 
+    // See ComponentHost#hadChildWithDuplicateParentState() for reason for this check
+    if (item instanceof ComponentHost
+        && ((ComponentHost) item).hadChildWithDuplicateParentState()) {
+      return;
+    }
+
     super.release(item);
 
     if (mShouldAutoClear && !mIsClearPoolPending) {
