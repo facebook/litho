@@ -22,7 +22,7 @@ import android.content.Context
  * The implicit receiver for [KComponent.render] call. This class exposes the ability to use hooks,
  * like [useState], and convenience functions, like [dp].
  */
-class ComponentScope(val context: ComponentContext, val stateHandler: StateHandler) {
+class ComponentScope(val context: ComponentContext) {
   val androidContext: Context
     get() = context.androidContext
   val resourceResolver: ResourceResolver

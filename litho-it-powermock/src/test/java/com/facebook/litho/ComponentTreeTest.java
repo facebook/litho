@@ -178,7 +178,7 @@ public class ComponentTreeTest {
     boolean hasRunLayout;
 
     @Override
-    protected RenderResult render(ComponentContext c, StateHandler stateHandler) {
+    protected RenderResult render(ComponentContext c) {
       if (unlockWaitingOnCreateLayout != null) {
         unlockWaitingOnCreateLayout.countDown();
       }

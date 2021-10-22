@@ -24,7 +24,6 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.RenderResult;
-import com.facebook.litho.StateHandler;
 
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends BaseRenderInfo {
@@ -133,7 +132,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
   private static class EmptyComponent extends Component {
 
     @Override
-    protected RenderResult render(ComponentContext c, StateHandler stateHandler) {
+    protected RenderResult render(ComponentContext c) {
       return new RenderResult(Column.create(c).build());
     }
 

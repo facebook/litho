@@ -31,7 +31,6 @@ import com.facebook.litho.RenderResult;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.StateHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -555,7 +554,7 @@ public class ComponentWarmerTest {
     }
 
     @Override
-    protected RenderResult render(ComponentContext c, StateHandler stateHandler) {
+    protected RenderResult render(ComponentContext c) {
       ranLayout.set(true);
       return new RenderResult(Column.create(c).build());
     }

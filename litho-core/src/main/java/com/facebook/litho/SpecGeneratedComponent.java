@@ -59,7 +59,7 @@ public abstract class SpecGeneratedComponent extends Component {
   }
 
   @Override
-  protected RenderResult render(ComponentContext c, StateHandler stateHandler) {
+  protected RenderResult render(ComponentContext c) {
     if (Component.isLayoutSpecWithSizeSpec(this)) {
       return new RenderResult(onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec()));
     } else {

@@ -242,7 +242,7 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   /** Sets the new root to render. */
   fun render(componentFunction: ComponentScope.() -> Component): LithoView {
     attachToWindow()
-        .setRoot(with(ComponentScope(context, stateHandler)) { componentFunction() })
+        .setRoot(with(ComponentScope(context)) { componentFunction() })
         .measure()
         .layout()
     return lithoView

@@ -211,7 +211,7 @@ class Layout {
       // If the component is a LayoutSpec.
       else if (isLayoutSpec(component)) {
 
-        final RenderResult renderResult = component.render(c, layoutStateContext.getStateHandler());
+        final RenderResult renderResult = component.render(c);
         final Component root = renderResult.component;
 
         if (root != null) {

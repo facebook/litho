@@ -253,7 +253,7 @@ public class LayoutStateFutureReleaseTest {
     }
 
     @Override
-    protected RenderResult render(ComponentContext c, StateHandler stateHandler) {
+    protected RenderResult render(ComponentContext c) {
       if (waitActions != null) {
         waitActions.unblock(c.getLayoutStateFuture());
       }
