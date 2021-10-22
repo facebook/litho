@@ -233,9 +233,10 @@ class CollectionContainerScope {
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
   ) {
+    val id = id ?: generateStaticId()
+    component ?: return
     collectionChildrenModels.add(
-        CollectionData(
-            id ?: generateStaticId(), component, null, isSticky, isFullSpan, spanSize, null))
+        CollectionData(id, component, null, isSticky, isFullSpan, spanSize, null))
   }
 
   fun child(
@@ -279,6 +280,9 @@ class CollectionContainerScope {
         .renderEventHandler(
             eventHandlerWithReturn {
               val item = it.model
+              val component =
+                  item.component
+                      ?: item.componentFunction?.invoke() ?: return@eventHandlerWithReturn null
               ComponentRenderInfo.create()
                   .apply {
                     if (item.isSticky) {
@@ -290,7 +294,7 @@ class CollectionContainerScope {
                     item.spanSize?.let { spanSize(it) }
                     item.component?.handle?.let { customAttribute(HANDLE_CUSTOM_ATTR_KEY, it) }
                   }
-                  .component(item.component ?: item.componentFunction?.invoke())
+                  .component(component)
                   .build()
             })
         .onCheckIsSameItemEventHandler(eventHandlerWithReturn(::isSameID))
