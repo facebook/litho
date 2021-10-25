@@ -22,14 +22,16 @@ import static org.mockito.Mockito.when;
 
 import androidx.annotation.UiThread;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
-import com.facebook.litho.annotations.FromBind;
+import com.facebook.litho.Size;
+import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
+import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnPrepare;
-import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -181,15 +183,20 @@ public class InterStagePropsGeneratorTest {
             DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP,
             RunMode.testing());
 
-    assertThat(holder.getMethodSpecs()).hasSize(3);
+    assertThat(holder.getMethodSpecs()).hasSize(4);
 
     MethodSpec onPrepareMethod = null;
     MethodSpec onBindMethod = null;
+    MethodSpec onMeasureMethod = null;
 
     for (int i = 0, size = holder.getMethodSpecs().size(); i < size; i++) {
       final MethodSpec methodSpec = holder.getMethodSpecs().get(i);
       if (methodSpec.name.equals("onPrepare")) {
         onPrepareMethod = methodSpec;
+      }
+
+      if (methodSpec.name.equals("onMeasure")) {
+        onMeasureMethod = methodSpec;
       }
 
       if (methodSpec.name.equals("onBind")) {
@@ -198,6 +205,7 @@ public class InterStagePropsGeneratorTest {
     }
 
     assertThat(onPrepareMethod).isNotNull();
+    assertThat(onMeasureMethod).isNotNull();
     assertThat(onBindMethod).isNotNull();
 
     assertThat(onPrepareMethod.toString())
@@ -209,6 +217,24 @@ public class InterStagePropsGeneratorTest {
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (com.facebook.litho.Output<java.lang.Integer>) colorTmp);\n"
                 + "  getPrepareInterStagePropsContainerImpl(c).color = colorTmp.get();\n"
+                + "}\n");
+
+    assertThat(onMeasureMethod.toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected void onMeasure(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.ComponentLayout layout, int widthSpec, int heightSpec,\n"
+                + "    com.facebook.litho.Size size, com.facebook.litho.InterStagePropsContainer _5) {\n"
+                + "  com.facebook.litho.InterStagePropsContainer _interStageProps = _5;\n"
+                + "  com.facebook.litho.Output<java.lang.String> stringOutputTmp = new Output<>();\n"
+                + "  MountTestSpec.onMeasure(\n"
+                + "    (com.facebook.litho.ComponentContext) c,\n"
+                + "    (com.facebook.litho.ComponentLayout) layout,\n"
+                + "    (int) widthSpec,\n"
+                + "    (int) heightSpec,\n"
+                + "    (com.facebook.litho.Size) size,\n"
+                + "    (com.facebook.litho.Output<java.lang.String>) stringOutputTmp);\n"
+                + "  getInterStagePropsContainerImpl(c, _interStageProps).stringOutput = stringOutputTmp.get();\n"
                 + "}\n");
 
     assertThat(onBindMethod.toString())
@@ -233,20 +259,21 @@ public class InterStagePropsGeneratorTest {
     @OnPrepare
     static void onPrepare(ComponentContext c, Output<Integer> color) {}
 
+    @OnMeasure
+    static void onMeasure(
+        ComponentContext c,
+        ComponentLayout layout,
+        int widthSpec,
+        int heightSpec,
+        Size size,
+        Output<String> stringOutput) {}
+
     @UiThread
     @OnBind
     static void onBind(
         ComponentContext c,
         LithoView lithoView,
         @FromPrepare Integer color,
-        Output<String> stringOutput) {}
-
-    @UiThread
-    @OnUnbind
-    static void onUnbind(
-        ComponentContext c,
-        LithoView lithoView,
-        @FromPrepare Integer color,
-        @FromBind String stringOutput) {}
+        @FromMeasure Output<String> stringOutput) {}
   }
 }

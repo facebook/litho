@@ -33,7 +33,6 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TrackingMountContentPool;
 import com.facebook.litho.annotations.CachedValue;
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromPrepare;
@@ -164,18 +163,13 @@ public class MountSpecLifecycleTesterSpec {
       @Prop LifecycleTracker lifecycleTracker,
       @FromPrepare String outputOnPrepare,
       @FromMeasure String outputOnMeasure,
-      @FromBoundsDefined String outputOnBoundsDefined,
-      Output<String> outputOnBind) {
+      @FromBoundsDefined String outputOnBoundsDefined) {
     lifecycleTracker.addStep(LifecycleStep.ON_BIND);
   }
 
   @UiThread
   @OnUnbind
-  static void onUnbind(
-      ComponentContext c,
-      View view,
-      @Prop LifecycleTracker lifecycleTracker,
-      @FromBind String outputOnBind) {
+  static void onUnbind(ComponentContext c, View view, @Prop LifecycleTracker lifecycleTracker) {
     lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
   }
 

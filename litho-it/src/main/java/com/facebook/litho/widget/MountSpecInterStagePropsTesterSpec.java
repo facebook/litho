@@ -25,7 +25,7 @@ import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleTracker;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
-import com.facebook.litho.annotations.FromBind;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromPrepare;
@@ -40,14 +40,19 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
+import java.util.concurrent.atomic.AtomicReference;
 
 @MountSpec
 public class MountSpecInterStagePropsTesterSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
-      ComponentContext context, @Prop LifecycleTracker lifecycleTracker) {
+      ComponentContext context,
+      @Prop LifecycleTracker lifecycleTracker,
+      StateValue<AtomicReference<Boolean>> addOnUnbindLifecycleStep) {
     lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE);
+    addOnUnbindLifecycleStep.set(new AtomicReference<Boolean>(null));
   }
 
   @OnPrepare
@@ -99,7 +104,7 @@ public class MountSpecInterStagePropsTesterSpec {
       View view,
       @Prop LifecycleTracker lifecycleTracker,
       @FromPrepare Boolean addOnBindLifecycleStep,
-      final Output<Boolean> addOnUnbindLifecycleStep) {
+      final @State AtomicReference<Boolean> addOnUnbindLifecycleStep) {
     if (addOnBindLifecycleStep) {
       lifecycleTracker.addStep(LifecycleStep.ON_BIND);
     }
@@ -112,8 +117,8 @@ public class MountSpecInterStagePropsTesterSpec {
       ComponentContext c,
       View view,
       @Prop LifecycleTracker lifecycleTracker,
-      @FromBind Boolean addOnUnbindLifecycleStep) {
-    if (addOnUnbindLifecycleStep) {
+      @State AtomicReference<Boolean> addOnUnbindLifecycleStep) {
+    if (addOnUnbindLifecycleStep.get()) {
       lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
     }
   }
