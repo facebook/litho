@@ -92,6 +92,8 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
+  private static final String INVALID_LAYOUT_PROPS = "YogaLayoutProps:ContextSpecificStyleSet";
+
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L;
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
@@ -443,7 +445,18 @@ public class InputOnlyInternalNode<Writer extends YogaLayoutProps>
 
       // Validate layout props for the root
       if (parentNode == null) {
-        writer.validateLayoutPropsForRoot();
+        final @Nullable String props = writer.validateLayoutPropsForRoot();
+        if (props != null) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.WARNING,
+              INVALID_LAYOUT_PROPS,
+              props
+                  + " cannot be set on the root layout.\n"
+                  + "layout-stack: "
+                  + TextUtils.join(
+                      " -> ",
+                      Component.generateHierarchy(currentInternalNode.getTailComponentKey())));
+        }
       }
     }
 

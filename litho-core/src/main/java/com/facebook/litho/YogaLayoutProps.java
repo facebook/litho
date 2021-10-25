@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
 
 import android.text.TextUtils;
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -32,7 +33,6 @@ import java.util.List;
 
 public class YogaLayoutProps implements LayoutProps {
 
-  private static final String INVALID_LAYOUT_PROPS = "YogaLayoutProps:ContextSpecificStyleSet";
   private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
   private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
   private static final long PFLAG_FLEX_IS_SET = 1L << 3;
@@ -251,8 +251,8 @@ public class YogaLayoutProps implements LayoutProps {
     node.setAlignItems(align);
   }
 
-  public void validateLayoutPropsForRoot() {
-    List<CharSequence> error = null;
+  public @Nullable String validateLayoutPropsForRoot() {
+    @Nullable List<CharSequence> error = null;
     if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
       error = addOrCreateList(error, "alignSelf");
     }
@@ -270,11 +270,9 @@ public class YogaLayoutProps implements LayoutProps {
     }
 
     if (error != null) {
-      final CharSequence props = TextUtils.join(", ", error);
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.WARNING,
-          INVALID_LAYOUT_PROPS,
-          "You should not set " + props + " to a root layout.");
+      return TextUtils.join(", ", error);
+    } else {
+      return null;
     }
   }
 }

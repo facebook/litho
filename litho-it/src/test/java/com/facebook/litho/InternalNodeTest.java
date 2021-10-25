@@ -310,7 +310,7 @@ public class InternalNodeTest {
         .attachToWindow();
 
     assertThat(mComponentsReporter.getLoggedMessages().get(0).second)
-        .isEqualTo("You should not set alignSelf, flex to a root layout.");
+        .isEqualTo("alignSelf, flex cannot be set on the root layout.\n" + "layout-stack: Column");
 
     ComponentsConfiguration.isDebugModeEnabled = value;
   }
