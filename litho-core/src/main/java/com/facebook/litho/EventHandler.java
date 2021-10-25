@@ -44,12 +44,7 @@ public class EventHandler<E> implements Function<Void>, Equivalence<EventHandler
   }
 
   public void dispatchEvent(E event) {
-    final Object token = EventDispatcherInstrumenter.onBeginWork(this, event);
-    try {
-      mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
-    } finally {
-      EventDispatcherInstrumenter.onEndWork(token);
-    }
+    mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
   }
 
   @Override
