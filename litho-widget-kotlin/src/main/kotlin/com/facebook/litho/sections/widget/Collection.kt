@@ -92,7 +92,6 @@ class Collection(
     private val onPullToRefresh: (() -> Unit)? = null,
     private val pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
     private val onScrollListener: RecyclerView.OnScrollListener? = null,
-    private val onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -153,7 +152,6 @@ class Collection(
         .startupLogger(startupLogger)
         .handle(recyclerHandle)
         .onScrollListener(onScrollListener)
-        .onScrollListeners(onScrollListeners)
         .kotlinStyle(style)
         .build()
   }
