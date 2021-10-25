@@ -31,9 +31,10 @@ public class DefaultErrorEventHandler extends ErrorEventHandler {
         e = ((ReThrownException) e).original;
       }
       if (e instanceof LithoMetadataExceptionWrapper) {
-        Component crashingComponent = ((LithoMetadataExceptionWrapper) e).getCrashingComponent();
-        if (crashingComponent != null) {
-          categoryKey = categoryKey + ":" + crashingComponent.getSimpleName();
+        final String crashingComponentName =
+            ((LithoMetadataExceptionWrapper) e).getCrashingComponentName();
+        if (crashingComponentName != null) {
+          categoryKey = categoryKey + ":" + crashingComponentName;
         }
       }
       ComponentsReporter.emitMessage(

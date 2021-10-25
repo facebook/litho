@@ -46,7 +46,7 @@ import com.facebook.yoga.YogaEdge
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.ArrayList
-import org.assertj.core.api.Java6Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.core.Is
 import org.junit.After
 import org.junit.Assume.assumeThat
@@ -206,51 +206,53 @@ class ComponentErrorBoundaryTest {
 
   @Test
   fun testOnCreateLayoutCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_LAYOUT, "onCreateLayout crash")
+    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_LAYOUT, "onCreateLayout crash", false)
   }
 
   @Test
   fun testOnCreateTreePropCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TREE_PROP, "onCreateTreeProp crash")
+    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TREE_PROP, "onCreateTreeProp crash", false)
   }
 
   @Test
   fun testOnCreateInitialStateCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CREATE_INITIAL_STATE, "onCreateInitialState crash")
+        LifecycleStep.ON_CREATE_INITIAL_STATE, "onCreateInitialState crash", false)
   }
 
   @Test
   fun testOnCalculateCachedValueCrashWithTestErrorBoundary() {
     crashingScenarioLayoutHelper(
-        LifecycleStep.ON_CALCULATE_CACHED_VALUE, "onCalculateCachedValue crash")
+        LifecycleStep.ON_CALCULATE_CACHED_VALUE, "onCalculateCachedValue crash", false)
   }
 
   @Test
   fun testOnCreateTransitionCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash")
+    crashingScenarioLayoutHelper(
+        LifecycleStep.ON_CREATE_TRANSITION, "onCreateTransition crash", false)
   }
 
   @Test
   fun testOnAttachedCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutHelper(LifecycleStep.ON_ATTACHED, "onAttached crash")
+    crashingScenarioLayoutHelper(LifecycleStep.ON_ATTACHED, "onAttached crash", true)
   }
 
   @Test
   fun testOnRegisterRangesCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_REGISTER_RANGES, "onRegisterRanges crash", false)
+        LifecycleStep.ON_REGISTER_RANGES, "onRegisterRanges crash", false, false)
   }
 
   @Test
   fun testOnEnteredRangeCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_ENTERED_RANGE, "onEnteredRange crash", false)
+        LifecycleStep.ON_ENTERED_RANGE, "onEnteredRange crash", false, true)
   }
 
   @Test
   fun testOnExitedRangeCrashWithTestErrorBoundary() {
-    crashingScenarioLayoutSectionHelper(LifecycleStep.ON_EXITED_RANGE, "onExitedRange crash", true)
+    crashingScenarioLayoutSectionHelper(
+        LifecycleStep.ON_EXITED_RANGE, "onExitedRange crash", true, true)
   }
 
   @Test
@@ -337,9 +339,10 @@ class ComponentErrorBoundaryTest {
     lithoViewRule.setRoot(component).attachToWindow().measure().layout()
     lithoViewRule.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 20, 20), true)
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage("onEventVisible crash")
+    assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
+    assertThat(errorOutput[0].message).contains("onEventVisible crash")
+    assertThat(errorOutput[0].message)
+        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
   }
 
   @Test
@@ -369,27 +372,31 @@ class ComponentErrorBoundaryTest {
         .layout()
     lithoViewRule.lithoView.notifyVisibleBoundsChanged(Rect(0, 0, 10, 5), true)
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage("onEventInvisible crash")
+    assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
+    assertThat(errorOutput[0].message).contains("onEventInvisible crash")
+    assertThat(errorOutput[0].message)
+        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
   }
 
   @Test
   fun testOnFocusedEventVisibleCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash", false)
+        LifecycleStep.ON_FOCUSED_EVENT_VISIBLE, "onFocusedEventVisible crash", false, true)
   }
 
   @Test
   fun testOnFullImpressionVisibleEventCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT, "onFullImpressionVisible crash", false)
+        LifecycleStep.ON_FULL_IMPRESSION_VISIBLE_EVENT,
+        "onFullImpressionVisible crash",
+        false,
+        true)
   }
 
   @Test
   fun testOnVisibilityChangedCrashWithTestErrorBoundary() {
     crashingScenarioLayoutSectionHelper(
-        LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash", false)
+        LifecycleStep.ON_VISIBILITY_CHANGED, "onVisibilityChanged crash", false, true)
   }
 
   @Test
@@ -407,9 +414,10 @@ class ComponentErrorBoundaryTest {
     lithoViewRule.setRoot(component).attachToWindow().measure().layout()
     lithoViewRule.release()
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage("onDetached crash")
+    assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
+    assertThat(errorOutput[0].message).contains("onDetached crash")
+    assertThat(errorOutput[0].message)
+        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
   }
 
   @Test
@@ -433,9 +441,10 @@ class ComponentErrorBoundaryTest {
     TestCrashFromEachLayoutLifecycleMethod.triggerTestEvent(
         lithoViewRule.componentTree.context, triggerHandle, bazObject)
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage("onTrigger crash")
+    assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
+    assertThat(errorOutput[0].message).contains("onTrigger crash")
+    assertThat(errorOutput[0].message)
+        .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
   }
 
   @Test
@@ -472,45 +481,46 @@ class ComponentErrorBoundaryTest {
     lithoViewRule.setRoot(component).attachToWindow().measure().layout()
     dynamicStringProp.set("change_dynamic_prop_test")
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage("onBindDynamicValue crash")
+    assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
+    assertThat(errorOutput[0].message).contains("onBindDynamicValue crash")
+    assertThat(errorOutput[0].message)
+        .contains("layout_stack: DynamicPropCrasher -> TestErrorBoundary")
   }
 
   @Test
   fun testOnMountCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_MOUNT, "Crashed on ON_MOUNT", false)
+    crashingScenarioMountHelper(LifecycleStep.ON_MOUNT, "Crashed on ON_MOUNT", false, true)
   }
 
   @Test
   fun testOnUnMountCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_UNMOUNT, "Crashed on ON_UNMOUNT", true)
+    crashingScenarioMountHelper(LifecycleStep.ON_UNMOUNT, "Crashed on ON_UNMOUNT", true, true)
   }
 
   @Test
   fun testOnBindCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_BIND, "Crashed on ON_BIND", false)
+    crashingScenarioMountHelper(LifecycleStep.ON_BIND, "Crashed on ON_BIND", false, true)
   }
 
   @Test
   fun testOnUnBindCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_UNBIND, "Crashed on ON_UNBIND", true)
+    crashingScenarioMountHelper(LifecycleStep.ON_UNBIND, "Crashed on ON_UNBIND", true, true)
   }
 
   @Test
   fun testOnPrepareCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_PREPARE, "Crashed on ON_PREPARE", false)
+    crashingScenarioMountHelper(LifecycleStep.ON_PREPARE, "Crashed on ON_PREPARE", false, false)
   }
 
   @Test
   fun testOnMeasureCrashWithTestErrorBoundary() {
-    crashingScenarioMountHelper(LifecycleStep.ON_MEASURE, "Crashed on ON_MEASURE", false)
+    crashingScenarioMountHelper(LifecycleStep.ON_MEASURE, "Crashed on ON_MEASURE", false, true)
   }
 
   @Test
   fun testOnBoundsDefinedCrashWithTestErrorBoundary() {
     crashingScenarioMountHelper(
-        LifecycleStep.ON_BOUNDS_DEFINED, "Crashed on ON_BOUNDS_DEFINED", false)
+        LifecycleStep.ON_BOUNDS_DEFINED, "Crashed on ON_BOUNDS_DEFINED", false, false)
   }
 
   @Test
@@ -520,7 +530,7 @@ class ComponentErrorBoundaryTest {
     expectedException.expect(LithoMetadataExceptionWrapper::class.java)
     expectedException.expectMessage("Crashed on ON_CREATE_MOUNT_CONTENT")
     crashingScenarioMountHelper(
-        LifecycleStep.ON_CREATE_MOUNT_CONTENT, "Crashed on ON_CREATE_MOUNT_CONTENT", false)
+        LifecycleStep.ON_CREATE_MOUNT_CONTENT, "Crashed on ON_CREATE_MOUNT_CONTENT", false, true)
   }
 
   @Test
@@ -532,7 +542,8 @@ class ComponentErrorBoundaryTest {
     crashingScenarioMountHelper(
         LifecycleStep.ON_CREATE_MOUNT_CONTENT_POOL,
         "Crashed on ON_CREATE_MOUNT_CONTENT_POOL",
-        false)
+        false,
+        true)
   }
 
   @Test
@@ -569,7 +580,8 @@ class ComponentErrorBoundaryTest {
   private fun crashingScenarioMountHelper(
       crashFromStep: LifecycleStep,
       expectedMessage: String,
-      unmountAfter: Boolean
+      unmountAfter: Boolean,
+      expectHierarchy: Boolean
   ) {
     val crashingComponent =
         CrashingMountable.create(lithoViewRule.context)
@@ -587,12 +599,23 @@ class ComponentErrorBoundaryTest {
       lithoViewRule.lithoView.unmountAllItems()
     }
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(MountPhaseException::class.java)
-        .hasMessage(expectedMessage)
+    if (expectHierarchy) {
+      assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
+      assertThat(errorOutput[0].message).contains(expectedMessage)
+      assertThat(errorOutput[0].message)
+          .contains("layout_stack: CrashingMountable -> TestErrorBoundary")
+    } else {
+      assertThat(errorOutput[0])
+          .isInstanceOf(MountPhaseException::class.java)
+          .hasMessage(expectedMessage)
+    }
   }
 
-  private fun crashingScenarioLayoutHelper(crashFromStep: LifecycleStep, expectedMessage: String) {
+  private fun crashingScenarioLayoutHelper(
+      crashFromStep: LifecycleStep,
+      expectedMessage: String,
+      expectHierarchy: Boolean
+  ) {
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
             .crashFromStep(crashFromStep)
@@ -605,15 +628,23 @@ class ComponentErrorBoundaryTest {
             .build()
     lithoViewRule.setRoot(component).attachToWindow().measure().layout()
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage(expectedMessage)
+    if (expectHierarchy) {
+      assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
+      assertThat(errorOutput[0].message).contains(expectedMessage)
+      assertThat(errorOutput[0].message)
+          .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+    } else {
+      assertThat(errorOutput[0])
+          .isInstanceOf(RuntimeException::class.java)
+          .hasMessage(expectedMessage)
+    }
   }
 
   private fun crashingScenarioLayoutSectionHelper(
       crashFromStep: LifecycleStep,
       expectedMessage: String,
-      releaseAfter: Boolean
+      releaseAfter: Boolean,
+      expectHierarchy: Boolean
   ) {
     val crashingComponent =
         TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
@@ -644,8 +675,14 @@ class ComponentErrorBoundaryTest {
       lithoViewRule.release()
     }
     assertThat(errorOutput).hasSize(1)
-    assertThat(errorOutput[0])
-        .isInstanceOf(RuntimeException::class.java)
-        .hasMessage(expectedMessage)
+    if (expectHierarchy) {
+      assertThat(errorOutput[0]).isInstanceOf(LithoMetadataExceptionWrapper::class.java)
+      assertThat(errorOutput[0].message).contains(expectedMessage)
+      assertThat(errorOutput[0].message)
+          .contains("layout_stack: TestCrashFromEachLayoutLifecycleMethod -> TestErrorBoundary")
+    } else {
+      assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
+      assertThat(errorOutput[0].message).contains(expectedMessage)
+    }
   }
 }

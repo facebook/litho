@@ -509,7 +509,7 @@ public class ComponentUtils {
 
     final LithoMetadataExceptionWrapper metadataWrapper =
         wrapWithMetadata(parent, exceptionToThrow);
-    metadataWrapper.addComponentForLayoutStack(component);
+    metadataWrapper.addComponentNameForLayoutStack(component.getSimpleName());
     metadataWrapper.addParentStateConfigValue(parent.mWasStatelessWhenCreated);
 
     // This means it was already handled by this handler so throw it up to the next frame until we
@@ -537,7 +537,19 @@ public class ComponentUtils {
    */
   static void handle(ComponentContext c, Exception exception) {
     try {
-      dispatchErrorEvent(c, exception);
+      if (c.getComponentScope() != null) {
+        // acquire component hierarchy metadata leveraging the global key
+        LithoMetadataExceptionWrapper metadataExceptionWrapper = wrapWithMetadata(c, exception);
+        LinkedList<String> hierarchy = Component.generateHierarchy(c.getGlobalKey());
+        for (String componentName : hierarchy) {
+          metadataExceptionWrapper.addComponentNameForLayoutStack(componentName);
+        }
+        dispatchErrorEvent(c, metadataExceptionWrapper);
+      } else {
+        // we're not able to get global key hierarchy metadata from a ComponentContext without a
+        // scope
+        dispatchErrorEvent(c, exception);
+      }
     } catch (ReThrownException re) {
       throw wrapWithMetadata(c, exception);
     } catch (Exception e) {

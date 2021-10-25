@@ -636,7 +636,7 @@ class Layout {
         final ComponentContext ct =
             Preconditions.checkNotNull(layoutNode.getTailComponentContext());
         final LithoMetadataExceptionWrapper e = new LithoMetadataExceptionWrapper(ct, t);
-        e.addComponentForLayoutStack(c);
+        e.addComponentNameForLayoutStack(c.getSimpleName());
         throw e;
       } else {
         throw t;

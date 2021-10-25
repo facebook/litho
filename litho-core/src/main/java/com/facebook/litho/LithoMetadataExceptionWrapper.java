@@ -33,7 +33,7 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
 
   @Nullable EventHandler<ErrorEvent> lastHandler;
 
-  private final ArrayList<Component> mComponentLayoutStack = new ArrayList<>();
+  private final ArrayList<String> mComponentNameLayoutStack = new ArrayList<>();
   private final List<String> mComponentStateConfigValueStack = new ArrayList<>();
   private final HashMap<String, String> mCustomMetadata = new HashMap<>();
   private final @Nullable ComponentContext mComponentContext;
@@ -62,8 +62,8 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
     mComponentTree = componentTree;
   }
 
-  void addComponentForLayoutStack(Component c) {
-    mComponentLayoutStack.add(c);
+  void addComponentNameForLayoutStack(String componentName) {
+    mComponentNameLayoutStack.add(componentName);
   }
 
   public void addParentStateConfigValue(Boolean wasStatelessWhenCreated) {
@@ -72,9 +72,9 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
   }
 
   @Nullable
-  Component getCrashingComponent() {
-    // the crashing component is always the first in the mComponentLayoutStack, if it exists
-    return !mComponentLayoutStack.isEmpty() ? mComponentLayoutStack.get(0) : null;
+  String getCrashingComponentName() {
+    // the crashing componentName is always the first in the mComponentNameLayoutStack, if it exists
+    return !mComponentNameLayoutStack.isEmpty() ? mComponentNameLayoutStack.get(0) : null;
   }
 
   void addCustomMetadata(String key, String value) {
@@ -91,11 +91,11 @@ public class LithoMetadataExceptionWrapper extends RuntimeException {
             .append(": ")
             .append(cause.getMessage())
             .append("\nLitho Context:\n");
-    if (!mComponentLayoutStack.isEmpty()) {
+    if (!mComponentNameLayoutStack.isEmpty()) {
       msg.append("  layout_stack: ");
-      for (int i = mComponentLayoutStack.size() - 1; i >= 0; i--) {
-        msg.append(mComponentLayoutStack.get(i).getSimpleName());
-        if (i - 1 >= 0) {
+      for (int i = mComponentNameLayoutStack.size() - 1; i >= 0; i--) {
+        msg.append(mComponentNameLayoutStack.get(i));
+        if (i - 1 >= 0 && i - 1 < mComponentStateConfigValueStack.size()) {
           msg.append("[stateless=").append(mComponentStateConfigValueStack.get(i - 1)).append("]");
         }
         if (i != 0) {
