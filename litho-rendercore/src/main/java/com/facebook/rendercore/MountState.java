@@ -878,9 +878,9 @@ public class MountState implements MountDelegateTarget {
           currentLayoutData,
           newLayoutData,
           currentMountItem.isBound());
-
-      currentMountItem.setIsBound(true);
     }
+
+    currentMountItem.setIsBound(true);
 
     if (mountDelegate != null) {
       mountDelegate.onUpdateItemsIfNeeded(
