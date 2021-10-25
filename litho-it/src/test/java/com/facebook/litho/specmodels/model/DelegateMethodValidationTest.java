@@ -21,7 +21,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -376,49 +375,6 @@ public class DelegateMethodValidationTest {
                 + "com.facebook.litho.annotations.OnBind must have the same type as the "
                 + "return type of the method annotated with @OnCreateMountContent (i.e. "
                 + "java.lang.MadeUpClass).");
-  }
-
-  @Test
-  public void testInterStageInputParamAnnotationNotValid() {
-    final InterStageInputParamModel interStageInputParamModel =
-        mock(InterStageInputParamModel.class);
-    when(interStageInputParamModel.getAnnotations())
-        .thenReturn(ImmutableList.of((Annotation) () -> FromBind.class));
-    when(interStageInputParamModel.getRepresentedObject()).thenReturn(mMethodParamObject3);
-    when(mMountSpecModel.getDelegateMethods())
-        .thenReturn(
-            ImmutableList.of(
-                mOnCreateMountContent,
-                SpecMethodModel.<DelegateMethod, Void>builder()
-                    .annotations(ImmutableList.of((Annotation) () -> OnUnmount.class))
-                    .modifiers(ImmutableList.of(Modifier.STATIC))
-                    .name("onUnmount")
-                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
-                    .typeVariables(ImmutableList.of())
-                    .methodParams(
-                        ImmutableList.of(
-                            mComponentContextParamModel,
-                            MethodParamModelFactory.createSimpleMethodParamModel(
-                                new TypeSpec(ClassName.bestGuess("java.lang.MadeUpClass")),
-                                "content",
-                                mMethodParamObject2),
-                            interStageInputParamModel))
-                    .representedObject(mDelegateMethodObject1)
-                    .typeModel(null)
-                    .build()));
-
-    final List<SpecModelValidationError> validationErrors =
-        DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
-    assertThat(validationErrors).hasSize(1);
-    assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
-    assertThat(validationErrors.get(0).message)
-        .isEqualTo(
-            "Inter-stage input annotation is not valid for methods annotated with interface "
-                + "com.facebook.litho.annotations.OnUnmount; please use one of the "
-                + "following: [interface com.facebook.litho.annotations.FromPrepare, "
-                + "interface com.facebook.litho.annotations.FromMeasure, "
-                + "interface com.facebook.litho.annotations.FromMeasureBaseline, "
-                + "interface com.facebook.litho.annotations.FromBoundsDefined]");
   }
 
   @Test

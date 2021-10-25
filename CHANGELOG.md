@@ -17,6 +17,7 @@ _release-date_
  * **Breaking:** `Component` and `ComponentLifecycle` are now merged as one class (`Component`). `ComponentLifecycle` is now removed. Anywhere `ComponentLifecycle` was directly referenced should be changed to `Component`. Generated components now extend `SpecGeneratedComponent` which extends `Component`.
    * onCreateLayout/onCreateLayoutWithSizeSpec have been moved to SpecGeneratedComponent. Direct subclasses of Component should implement render() instead.
  * New: Allow passing `@TreeProp` to `@OnCalculateCachedValue` methods
+ * **Breaking:** Deletes `@FromBind` inter stage prop. Replace existing usages with `@State AtomicReference<?>` instead. Create a `@State AtomicReference<?>` for the `Component`; set that value for the `AtomicReference` in `@OnBind`, and get from it in `@OnUnbind` or other lifecycle methods.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
 

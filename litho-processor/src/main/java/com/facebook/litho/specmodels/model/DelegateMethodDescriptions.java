@@ -29,7 +29,6 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.TREE_PROP;
 
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
@@ -317,8 +316,7 @@ public final class DelegateMethodDescriptions {
                   FromPrepare.class,
                   FromMeasure.class,
                   FromMeasureBaseline.class,
-                  FromBoundsDefined.class,
-                  FromBind.class))
+                  FromBoundsDefined.class))
           .build();
 
   public static final DelegateMethodDescription ON_UNMOUNT =
@@ -379,8 +377,7 @@ public final class DelegateMethodDescriptions {
                   FromPrepare.class,
                   FromMeasure.class,
                   FromMeasureBaseline.class,
-                  FromBoundsDefined.class,
-                  FromBind.class))
+                  FromBoundsDefined.class))
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("implementsAccessibility")
@@ -412,8 +409,7 @@ public final class DelegateMethodDescriptions {
                   FromPrepare.class,
                   FromMeasure.class,
                   FromMeasureBaseline.class,
-                  FromBoundsDefined.class,
-                  FromBind.class))
+                  FromBoundsDefined.class))
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("implementsExtraAccessibilityNodes")
@@ -443,8 +439,7 @@ public final class DelegateMethodDescriptions {
                   FromPrepare.class,
                   FromMeasure.class,
                   FromMeasureBaseline.class,
-                  FromBoundsDefined.class,
-                  FromBind.class))
+                  FromBoundsDefined.class))
           .build();
 
   public static final DelegateMethodDescription GET_EXTRA_ACCESSIBILITY_NODES_COUNT =
@@ -464,8 +459,7 @@ public final class DelegateMethodDescriptions {
                   FromPrepare.class,
                   FromMeasure.class,
                   FromMeasureBaseline.class,
-                  FromBoundsDefined.class,
-                  FromBind.class))
+                  FromBoundsDefined.class))
           .build();
 
   public static final DelegateMethodDescription SHOULD_ALWAYS_REMEASURE =
@@ -578,7 +572,6 @@ public final class DelegateMethodDescriptions {
     interStageInputsMap.put(FromMeasure.class, OnMeasure.class);
     interStageInputsMap.put(FromMeasureBaseline.class, OnMeasureBaseline.class);
     interStageInputsMap.put(FromBoundsDefined.class, OnBoundsDefined.class);
-    interStageInputsMap.put(FromBind.class, OnBind.class);
     INTER_STAGE_INPUTS_MAP = Collections.unmodifiableMap(interStageInputsMap);
   }
 }

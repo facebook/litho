@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
@@ -70,7 +69,6 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasureBaseline.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromMeasure.class);
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromBoundsDefined.class);
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromBind.class);
     DELEGATE_METHOD_ANNOTATIONS.addAll(
         DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
