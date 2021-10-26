@@ -84,6 +84,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -694,6 +695,7 @@ public class LayoutStateCalculateTest {
     assertThat(getComponentAt(layoutState, 17)).isInstanceOf(TestViewComponent.class);
   }
 
+  @Ignore("t104284524")
   @Test
   public void testLayoutOutputStableIds() {
     final Component component1 =
@@ -760,6 +762,7 @@ public class LayoutStateCalculateTest {
     }
   }
 
+  @Ignore("t104284524")
   @Test
   public void testLayoutOutputStableIdsForMegaDeepComponent() {
     final Component component1 =
@@ -864,6 +867,7 @@ public class LayoutStateCalculateTest {
     }
   }
 
+  @Ignore("t104284524")
   @Test
   public void testPartiallyStableIds() {
     final Component component1 =

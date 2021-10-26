@@ -34,6 +34,7 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -292,6 +293,7 @@ public class DynamicPropsTest {
     assertThat(lithoView.getElevation()).isEqualTo(-50f);
   }
 
+  @Ignore("t104284524")
   @Test
   public void commonDynamicProps_unbindAndRebindContent_resetValues() {
     final DynamicPropsResetValueTesterSpec.Caller stateUpdateCaller =

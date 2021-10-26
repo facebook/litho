@@ -264,7 +264,11 @@ public class ComponentsConfiguration {
 
   public static boolean enableTransitionsExtension = true;
 
-  public static boolean useRenderUnitIdMap = false;
+  /**
+   * For backtesting new method of keeping mount content more consistent between updates, determines
+   * whether render unit id map should be used for the external components in the backtest.
+   */
+  public static boolean useRenderUnitIdMapExternalComponents = true;
 
   /**
    * For mount content pools disabled due to native RenderThread crashes, instead enables them to
@@ -272,11 +276,14 @@ public class ComponentsConfiguration {
    */
   public static boolean enableAutoClearingMountContentPoolExternalComponents = false;
 
-  /** Same as above but for HostComponent. */
+  /** This allows us to also capture the baseline of allowing recycling as normal. */
+  public static boolean autoClearingMountContentPoolShouldClearExternalComponents = true;
+
+  /** Same as enableAutoClearingMountContentPoolExternalComponents but for HostComponent. */
   public static boolean enableAutoClearingMountContentPoolHostComponent = false;
 
-  /** This allows us to also capture the baseline of allowing recycling as normal. */
-  public static boolean autoClearingMountContentPoolShouldClear = true;
+  /** Same as autoClearingMountContentPoolShouldClearExternalComponents but for HostComponent. */
+  public static boolean autoClearingMountContentPoolShouldClearHostComponent = true;
 
   private static ComponentsConfiguration.Builder defaultBuilder = new Builder();
 

@@ -43,7 +43,7 @@ class HostComponent extends Component {
         "HostComponent",
         20,
         ComponentsConfiguration.enableAutoClearingMountContentPoolHostComponent,
-        ComponentsConfiguration.autoClearingMountContentPoolShouldClear);
+        ComponentsConfiguration.autoClearingMountContentPoolShouldClearHostComponent);
   }
 
   @Override

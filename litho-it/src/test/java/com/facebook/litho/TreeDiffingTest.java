@@ -52,6 +52,7 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -224,6 +225,7 @@ public class TreeDiffingTest {
     assertThat(result.getChildAt(1).areCachedMeasuresValid()).isFalse();
   }
 
+  @Ignore("t104284524")
   @Test
   public void testLayoutOutputReuse() {
     final Component component1 =
@@ -272,6 +274,7 @@ public class TreeDiffingTest {
     }
   }
 
+  @Ignore("t104284524")
   @Test
   public void testLayoutOutputPartialReuse() {
     final Component component1 =
@@ -490,6 +493,7 @@ public class TreeDiffingTest {
         .isEqualTo(STATE_UPDATED);
   }
 
+  @Ignore("t104284524")
   @Test
   public void testLayoutOutputUpdateStateIdClash() {
     final Component component1 = new TestLayoutWithStateIdClash(false);

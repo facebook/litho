@@ -116,7 +116,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private final boolean mReuseInternalNodes;
   private final boolean mIsLayoutCachingEnabled;
   private final boolean mUseInputOnlyInternalNodes;
-  private final boolean mUseRenderUnitIdMap = ComponentsConfiguration.useRenderUnitIdMap;
+  private final boolean mUseRenderUnitIdMap;
   private final ComponentsConfiguration mComponentsConfiguration;
 
   @GuardedBy("this")
@@ -449,6 +449,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
+    mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
 
     mIsLayoutCachingEnabled =
         builder.componentsConfiguration.shouldReuseOutputs() || builder.isLayoutCachingEnabled;
@@ -3308,6 +3309,7 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
     private boolean reuseInternalNodes = ComponentsConfiguration.reuseInternalNodes;
     private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
+    private boolean useRenderUnitIdMap = true;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -3502,6 +3504,12 @@ public class ComponentTree implements LithoLifecycleListener {
     public Builder logger(@Nullable ComponentsLogger logger, @Nullable String logTag) {
       this.logger = logger;
       this.logTag = logTag;
+      return this;
+    }
+
+    /** See {@link ComponentsConfiguration#useRenderUnitIdMapExternalComponents} */
+    public Builder useRenderUnitIdMap(boolean useRenderUnitIdMap) {
+      this.useRenderUnitIdMap = useRenderUnitIdMap;
       return this;
     }
 

@@ -31,6 +31,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,6 +46,7 @@ public class MountStateRemountEventHandlerTest {
     mContext = new ComponentContext(getApplicationContext());
   }
 
+  @Ignore("t104284524")
   @Test
   public void testReuseClickListenerOnSameView() {
     final LithoView lithoView =
@@ -82,6 +84,7 @@ public class MountStateRemountEventHandlerTest {
     assertThat(clickListener == getComponentClickListener(lithoView.getChildAt(0))).isTrue();
   }
 
+  @Ignore("t104284524")
   @Test
   public void testReuseLongClickListenerOnSameView() {
     final LithoView lithoView =
@@ -121,6 +124,7 @@ public class MountStateRemountEventHandlerTest {
         .isTrue();
   }
 
+  @Ignore("t104284524")
   @Test
   public void testReuseFocusChangeListenerListenerOnSameView() {
     final LithoView lithoView =
@@ -160,6 +164,7 @@ public class MountStateRemountEventHandlerTest {
         .isTrue();
   }
 
+  @Ignore("t104284524")
   @Test
   public void testReuseTouchListenerOnSameView() {
     final LithoView lithoView =
