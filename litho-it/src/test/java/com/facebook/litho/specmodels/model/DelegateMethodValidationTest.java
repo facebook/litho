@@ -29,7 +29,6 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
-import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
