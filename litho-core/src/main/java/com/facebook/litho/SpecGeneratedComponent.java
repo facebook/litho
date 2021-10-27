@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.annotations.LayoutSpec;
 import javax.annotation.Nullable;
@@ -27,6 +28,12 @@ public abstract class SpecGeneratedComponent extends Component {
   private final String mSimpleName;
 
   protected SpecGeneratedComponent(String simpleName) {
+    mSimpleName = simpleName;
+  }
+
+  @VisibleForTesting
+  protected SpecGeneratedComponent(int identityHashCode, String simpleName) {
+    super(identityHashCode);
     mSimpleName = simpleName;
   }
 

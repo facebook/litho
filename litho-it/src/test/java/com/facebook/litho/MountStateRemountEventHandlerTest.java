@@ -31,7 +31,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,13 +45,15 @@ public class MountStateRemountEventHandlerTest {
     mContext = new ComponentContext(getApplicationContext());
   }
 
-  @Ignore("t104284524")
   @Test
   public void testReuseClickListenerOnSameView() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -70,7 +71,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -84,13 +85,15 @@ public class MountStateRemountEventHandlerTest {
     assertThat(clickListener == getComponentClickListener(lithoView.getChildAt(0))).isTrue();
   }
 
-  @Ignore("t104284524")
   @Test
   public void testReuseLongClickListenerOnSameView() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -109,7 +112,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -124,13 +127,15 @@ public class MountStateRemountEventHandlerTest {
         .isTrue();
   }
 
-  @Ignore("t104284524")
   @Test
   public void testReuseFocusChangeListenerListenerOnSameView() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -149,7 +154,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -164,13 +169,15 @@ public class MountStateRemountEventHandlerTest {
         .isTrue();
   }
 
-  @Ignore("t104284524")
   @Test
   public void testReuseTouchListenerOnSameView() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -188,7 +195,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -204,10 +211,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetClickHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -224,7 +234,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -241,10 +251,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetLongClickHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -261,7 +274,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -278,10 +291,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetFocusChangeHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -298,7 +314,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -315,10 +331,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testUnsetTouchHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -332,7 +351,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -349,10 +368,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetClickHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -368,7 +390,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -387,10 +409,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetLongClickHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -406,7 +431,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -426,10 +451,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetFocusChangeHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -445,7 +473,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -465,10 +493,13 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testSetTouchHandler() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
@@ -484,7 +515,7 @@ public class MountStateRemountEventHandlerTest {
     lithoView
         .getComponentTree()
         .setRoot(
-            new InlineLayoutSpec() {
+            new InlineLayoutSpec(COMPONENT_IDENTITY) {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)

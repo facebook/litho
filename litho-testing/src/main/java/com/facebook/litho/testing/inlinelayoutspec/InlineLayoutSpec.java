@@ -33,6 +33,17 @@ public abstract class InlineLayoutSpec extends SpecGeneratedComponent {
     super("InlineLayout");
   }
 
+  /**
+   * Provides a way to give a consistent identity to different InlineLayoutSpecs, e.g. treat them as
+   * the same component type.
+   *
+   * @deprecated this should only be used for legacy unit tests
+   */
+  @Deprecated
+  protected InlineLayoutSpec(int identityHashCode) {
+    super(identityHashCode, "InlineLayout");
+  }
+
   protected InlineLayoutSpec(ComponentContext c) {
     super("InlineLayout");
     setScopedContext(c);

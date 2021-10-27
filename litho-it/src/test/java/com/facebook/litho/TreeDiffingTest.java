@@ -225,11 +225,13 @@ public class TreeDiffingTest {
     assertThat(result.getChildAt(1).areCachedMeasuresValid()).isFalse();
   }
 
-  @Ignore("t104284524")
   @Test
   public void testLayoutOutputReuse() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final Component component1 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
@@ -240,7 +242,7 @@ public class TreeDiffingTest {
         };
 
     final Component component2 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
@@ -274,11 +276,13 @@ public class TreeDiffingTest {
     }
   }
 
-  @Ignore("t104284524")
   @Test
   public void testLayoutOutputPartialReuse() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final Component component1 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
@@ -289,7 +293,7 @@ public class TreeDiffingTest {
         };
 
     final Component component2 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)

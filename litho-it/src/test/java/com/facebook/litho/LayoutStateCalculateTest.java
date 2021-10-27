@@ -84,7 +84,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -695,11 +694,13 @@ public class LayoutStateCalculateTest {
     assertThat(getComponentAt(layoutState, 17)).isInstanceOf(TestViewComponent.class);
   }
 
-  @Ignore("t104284524")
   @Test
   public void testLayoutOutputStableIds() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final Component component1 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
@@ -718,7 +719,7 @@ public class LayoutStateCalculateTest {
           }
         };
     final Component component2 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
@@ -762,11 +763,13 @@ public class LayoutStateCalculateTest {
     }
   }
 
-  @Ignore("t104284524")
   @Test
   public void testLayoutOutputStableIdsForMegaDeepComponent() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final Component component1 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
@@ -805,7 +808,7 @@ public class LayoutStateCalculateTest {
         };
 
     final Component component2 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
@@ -867,11 +870,13 @@ public class LayoutStateCalculateTest {
     }
   }
 
-  @Ignore("t104284524")
   @Test
   public void testPartiallyStableIds() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final Component component1 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
@@ -881,7 +886,7 @@ public class LayoutStateCalculateTest {
           }
         };
     final Component component2 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
@@ -920,8 +925,11 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testDifferentIds() {
+    // Needed because of (legacy) usage two different InlineLayoutSpec that the test wants to treat
+    // as the same component type.
+    final int COMPONENT_IDENTITY = 12345;
     final Component component1 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -931,7 +939,7 @@ public class LayoutStateCalculateTest {
           }
         };
     final Component component2 =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(COMPONENT_IDENTITY) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
