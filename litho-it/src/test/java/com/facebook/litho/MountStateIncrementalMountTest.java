@@ -47,7 +47,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
@@ -1105,46 +1104,6 @@ public class MountStateIncrementalMountTest {
 
     mLithoViewRule.getLithoView().setTranslationY(-12);
     assertThat(info_child1.getSteps()).describedAs("Mounted.").contains(ON_UNMOUNT);
-  }
-
-  @Test
-  public void incrementalMount_setVisibilityHintFalse_rebinds() {
-    final boolean rebindWhenVisibilityChanges = ComponentsConfiguration.rebindWhenVisibilityChanges;
-    ComponentsConfiguration.rebindWhenVisibilityChanges = true;
-    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
-    final Component component =
-        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
-            .lifecycleTracker(lifecycleTracker)
-            .intrinsicSize(new Size(800, 600))
-            .build();
-
-    mLithoViewRule
-        .useLithoView(new LithoView(mLithoViewRule.getContext()))
-        .setRoot(component)
-        .attachToWindow()
-        .setSizeSpecs(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, EXACTLY))
-        .measure()
-        .layout();
-
-    final LithoView lithoView = mLithoViewRule.getLithoView();
-    assertThat(lifecycleTracker.getSteps())
-        .describedAs("Should call bind")
-        .contains(LifecycleStep.ON_BIND);
-
-    lifecycleTracker.getSteps().clear();
-
-    lithoView.setVisibilityHint(false);
-    assertThat(lifecycleTracker.getSteps())
-        .describedAs("Should call unbind")
-        .contains(LifecycleStep.ON_UNBIND);
-
-    lifecycleTracker.getSteps().clear();
-    lithoView.setVisibilityHint(true);
-    assertThat(lifecycleTracker.getSteps())
-        .describedAs("Should call unbind")
-        .contains(LifecycleStep.ON_BIND);
-
-    ComponentsConfiguration.rebindWhenVisibilityChanges = rebindWhenVisibilityChanges;
   }
 
   @Test

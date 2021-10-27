@@ -213,9 +213,6 @@ public class ComponentsConfiguration {
 
   public static @Nullable String timelineDocsLink = null;
 
-  /** When the LithoView visibility changes, rebind */
-  public static boolean rebindWhenVisibilityChanges = false;
-
   public static boolean swallowUnhandledExceptions = false;
 
   /** Initialize sticky header on scrolled on scrolled */

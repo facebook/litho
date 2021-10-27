@@ -66,7 +66,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
   private boolean mPauseMountingWhileVisibilityHintFalse;
   private boolean mVisibilityHintIsVisible;
   private boolean mSkipMountingIfNotVisible;
-  private final boolean mRebindWhenVisibilityChanges;
   private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
   public interface OnDirtyMountListener {
@@ -255,7 +254,6 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
-    mRebindWhenVisibilityChanges = ComponentsConfiguration.rebindWhenVisibilityChanges;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -912,16 +910,10 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (forceMount) {
         notifyVisibleBoundsChanged();
       } else if (getLocalVisibleRect(mRect)) {
-        if (mRebindWhenVisibilityChanges) {
-          rebind();
-        }
         processVisibilityOutputs(mRect);
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
-      if (mRebindWhenVisibilityChanges) {
-        unbind();
-      }
       clearVisibilityItems();
     }
   }
@@ -1022,17 +1014,11 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
       if (forceMount) {
         notifyVisibleBoundsChanged();
       } else if (getLocalVisibleRect(mRect)) {
-        if (mRebindWhenVisibilityChanges) {
-          rebind();
-        }
         processVisibilityOutputs(mRect);
       }
       recursivelySetVisibleHint(true, skipMountingIfNotVisible);
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
-      if (mRebindWhenVisibilityChanges) {
-        unbind();
-      }
       recursivelySetVisibleHint(false, skipMountingIfNotVisible);
       clearVisibilityItems();
     }
