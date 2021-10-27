@@ -93,7 +93,7 @@ public class CollectionRecyclerSpec {
       @Prop(optional = true) boolean pullToRefreshEnabled,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) SectionsRecyclerView.SectionsRecylerViewLogger sectionsViewLogger,
-      @State RecyclerEventsController recyclerEventsController,
+      @State RecyclerEventsController internalRecyclerEventsController,
       @State Binder<RecyclerView> binder,
       @State SectionTree sectionTree) {
 
@@ -109,7 +109,7 @@ public class CollectionRecyclerSpec {
             .rightPadding(endPadding)
             .topPadding(topPadding)
             .bottomPadding(bottomPadding)
-            .recyclerEventsController(recyclerEventsController)
+            .recyclerEventsController(internalRecyclerEventsController)
             .refreshHandler(!pullToRefreshEnabled ? null : CollectionRecycler.onRefresh(c))
             .pullToRefresh(internalPullToRefreshEnabled)
             .itemDecoration(itemDecoration)
@@ -158,12 +158,13 @@ public class CollectionRecyclerSpec {
       final ComponentContext c,
       StateValue<SectionTree> sectionTree,
       StateValue<Binder<RecyclerView>> binder,
-      StateValue<RecyclerEventsController> recyclerEventsController,
+      StateValue<RecyclerEventsController> internalRecyclerEventsController,
       @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) String sectionTreeTag,
       @Prop(optional = true) boolean canMeasureRecycler,
-      @Prop(optional = true) @Nullable LithoStartupLogger startupLogger) {
+      @Prop(optional = true) @Nullable LithoStartupLogger startupLogger,
+      @Prop(optional = true) @Nullable RecyclerEventsController recyclerEventsController) {
 
     final RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
@@ -214,7 +215,10 @@ public class CollectionRecyclerSpec {
             .build();
     sectionTree.set(sectionTreeInstance);
 
-    recyclerEventsController.set(new RecyclerEventsController());
+    internalRecyclerEventsController.set(
+        (recyclerEventsController != null)
+            ? recyclerEventsController
+            : new RecyclerEventsController());
 
     final ViewportInfo.ViewportChanged viewPortChanged =
         new ViewportInfo.ViewportChanged() {
@@ -292,8 +296,8 @@ public class CollectionRecyclerSpec {
 
   @OnTrigger(ClearRefreshingEvent.class)
   static void onClearRefreshing(
-      ComponentContext c, @State RecyclerEventsController recyclerEventsController) {
-    recyclerEventsController.clearRefreshing();
+      ComponentContext c, @State RecyclerEventsController internalRecyclerEventsController) {
+    internalRecyclerEventsController.clearRefreshing();
   }
 
   @OnDetached

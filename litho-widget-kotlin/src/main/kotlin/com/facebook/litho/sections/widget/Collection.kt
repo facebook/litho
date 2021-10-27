@@ -38,6 +38,7 @@ import com.facebook.litho.sections.common.OnCheckIsSameItemEvent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.LithoRecyclerView
 import com.facebook.litho.widget.RecyclerBinder.HANDLE_CUSTOM_ATTR_KEY
+import com.facebook.litho.widget.RecyclerEventsController
 import com.facebook.litho.widget.SmoothScrollAlignmentType
 
 typealias OnViewportChanged =
@@ -92,6 +93,10 @@ class Collection(
     private val onPullToRefresh: (() -> Unit)? = null,
     private val pagination: ((lastVisibleIndex: Int, totalCount: Int) -> Unit)? = null,
     private val onScrollListener: RecyclerView.OnScrollListener? = null,
+    private val onScrollListeners: List<RecyclerView.OnScrollListener?>? = null,
+    // Avoid using recyclerEventsController. This is only to assist with transitioning from
+    // Sections to Collections and will be removed in future.
+    private val recyclerEventsController: RecyclerEventsController? = null,
     private val init: CollectionContainerScope.() -> Unit
 ) : KComponent() {
 
@@ -152,6 +157,8 @@ class Collection(
         .startupLogger(startupLogger)
         .handle(recyclerHandle)
         .onScrollListener(onScrollListener)
+        .onScrollListeners(onScrollListeners)
+        .recyclerEventsController(recyclerEventsController)
         .kotlinStyle(style)
         .build()
   }
