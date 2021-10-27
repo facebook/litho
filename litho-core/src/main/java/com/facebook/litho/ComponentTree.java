@@ -390,8 +390,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
-  private final boolean mForceAsyncStateUpdate;
-
   private final @Nullable String mLogTag;
 
   private final @Nullable ComponentsLogger mLogger;
@@ -446,7 +444,6 @@ public class ComponentTree implements LithoLifecycleListener {
     } else {
       isReconciliationEnabled = builder.isReconciliationEnabled;
     }
-    mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
     mRecyclingMode = builder.recyclingMode;
     mErrorEventHandler = builder.errorEventHandler;
     mUseRenderUnitIdMap = builder.useRenderUnitIdMap;
@@ -1438,12 +1435,6 @@ public class ComponentTree implements LithoLifecycleListener {
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress) {
-
-    if (mForceAsyncStateUpdate && mIsAsyncUpdateStateEnabled) {
-      updateStateAsync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress);
-      return;
-    }
-
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -1480,11 +1471,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
   final void updateHookStateSync(
       String globalKey, HookUpdater updater, String attribution, boolean isCreateLayoutInProgress) {
-    if (mForceAsyncStateUpdate && mIsAsyncUpdateStateEnabled) {
-      updateHookStateAsync(globalKey, updater, attribution, isCreateLayoutInProgress);
-      return;
-    }
-
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -3302,8 +3288,6 @@ public class ComponentTree implements LithoLifecycleListener {
 
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
-    private boolean shouldForceAsyncStateUpdate =
-        ComponentsConfiguration.shouldForceAsyncStateUpdate;
     private @Nullable LithoLifecycleProvider mLifecycleProvider;
 
     private boolean useStatelessComponent = ComponentsConfiguration.useStatelessComponent;
