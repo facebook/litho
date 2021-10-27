@@ -52,7 +52,6 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -497,7 +496,6 @@ public class TreeDiffingTest {
         .isEqualTo(STATE_UPDATED);
   }
 
-  @Ignore("t104284524")
   @Test
   public void testLayoutOutputUpdateStateIdClash() {
     final Component component1 = new TestLayoutWithStateIdClash(false);
@@ -525,7 +523,7 @@ public class TreeDiffingTest {
         .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(3)).getUpdateState());
     assertThat(STATE_UNKNOWN)
         .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(4)).getUpdateState());
-    assertThat(STATE_UNKNOWN)
+    assertThat(STATE_UPDATED)
         .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(5)).getUpdateState());
   }
 

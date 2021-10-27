@@ -34,7 +34,6 @@ import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.MountItem;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -293,7 +292,6 @@ public class DynamicPropsTest {
     assertThat(lithoView.getElevation()).isEqualTo(-50f);
   }
 
-  @Ignore("t104284524")
   @Test
   public void commonDynamicProps_unbindAndRebindContent_resetValues() {
     final DynamicPropsResetValueTesterSpec.Caller stateUpdateCaller =
@@ -362,6 +360,7 @@ public class DynamicPropsTest {
     HostComponent stateUpdateText2HostComponent = null;
 
     ComponentHost stateUpdateText1Host = null;
+    ComponentHost stateUpdateText2Host = null;
 
     for (int i = 0, size = mountDelegateTarget.getMountItemCount(); i < size; i++) {
       final MountItem mountItem = mountDelegateTarget.getMountItemAt(i);
@@ -375,15 +374,20 @@ public class DynamicPropsTest {
 
         if (text2HostId == MountItem.getId(mountItem)) {
           stateUpdateText2HostComponent = (HostComponent) layoutOutput.getComponent();
+          stateUpdateText2Host = (ComponentHost) mountItem.getContent();
         }
       }
     }
 
-    assertThat(stateUpdateText2HostComponent).isNull();
+    assertThat(stateUpdateText1Host).isEqualTo(text1Host);
+    assertThat(stateUpdateText2Host).isEqualTo(text2Host);
 
-    assertThat(stateUpdateText1Host).isEqualTo(stateUpdateText1Host);
     assertThat(stateUpdateText1HostComponent.hasCommonDynamicProps()).isFalse();
     assertThat(stateUpdateText1Host.getAlpha())
+        .isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE);
+
+    assertThat(stateUpdateText2HostComponent.hasCommonDynamicProps()).isFalse();
+    assertThat(stateUpdateText2Host.getAlpha())
         .isEqualTo(DynamicPropsResetValueTesterSpec.ALPHA_OPAQUE);
   }
 

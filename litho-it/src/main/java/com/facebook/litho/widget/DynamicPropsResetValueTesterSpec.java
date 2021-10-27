@@ -38,9 +38,9 @@ public class DynamicPropsResetValueTesterSpec {
   @OnCreateInitialState
   static void onCreateInitialState(
       ComponentContext c,
-      StateValue<Boolean> displayConditionalChild,
+      StateValue<Boolean> setDynamicAlpha,
       StateValue<DynamicValue<Float>> dynamicAlpha) {
-    displayConditionalChild.set(false);
+    setDynamicAlpha.set(true);
     dynamicAlpha.set(new DynamicValue<>(ALPHA_TRANSPARENT));
   }
 
@@ -48,25 +48,24 @@ public class DynamicPropsResetValueTesterSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop Caller caller,
-      @State boolean displayConditionalChild,
+      @State boolean setDynamicAlpha,
       @State DynamicValue<Float> dynamicAlpha) {
     caller.set(c);
 
-    Row.Builder builder = Row.create(c);
-    if (!displayConditionalChild) {
-      builder.child(
-          Column.create(c)
-              .child(Text.create(c).text("Child 1").alpha(dynamicAlpha).viewTag("vt1")));
+    Text.Builder textChild = Text.create(c).text("Child 1").viewTag("vt1");
+    if (setDynamicAlpha) {
+      textChild.alpha(dynamicAlpha);
     }
 
-    builder.child(Row.create(c).child(Text.create(c).text("Child 2").viewTag("vt2")));
-
-    return builder.build();
+    return Row.create(c)
+        .child(Column.create(c).child(textChild.build()))
+        .child(Row.create(c).child(Text.create(c).text("Child 2").viewTag("vt2")))
+        .build();
   }
 
   @OnUpdateState
-  static void toggleShowChild(StateValue<Boolean> displayConditionalChild) {
-    displayConditionalChild.set(!displayConditionalChild.get());
+  static void toggleSetDynamicAlpha(StateValue<Boolean> setDynamicAlpha) {
+    setDynamicAlpha.set(!setDynamicAlpha.get());
   }
 
   public static class Caller {
@@ -78,7 +77,7 @@ public class DynamicPropsResetValueTesterSpec {
     }
 
     public void toggleShowChild() {
-      DynamicPropsResetValueTester.toggleShowChildSync(c);
+      DynamicPropsResetValueTester.toggleSetDynamicAlphaSync(c);
     }
   }
 }
