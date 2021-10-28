@@ -205,8 +205,8 @@ extends java.lang.Object</pre>
  assertThat(c, mComponent)
    .has(
      allOf(
-       deepSubComponentWith(c, typeIs(Text.class)),
-       subComponentWith(c, typeIs(MyCustomComponent.class))));
+       deepSubComponentWith(c, inspectedTypeIs(Text.class)),
+       subComponentWith(c, inspectedTypeIs(MyCustomComponent.class))));
  </code></pre></div>
 </li>
 </ul>

@@ -116,7 +116,7 @@ public void testComplexSpecIsPresent() {
   assertThat(c, component)
     .has(
       subComponentWith(
-        c, typeIs(ComplexComponent.class)));
+        c, inspectedTypeIs(ComplexComponent.class)));
 }
 ```
 

@@ -18,8 +18,8 @@
 
 package com.facebook.samples.litho.java.lithography;
 
+import static com.facebook.litho.testing.assertj.ComponentConditions.inspectedTypeIs;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
-import static com.facebook.litho.testing.assertj.ComponentConditions.typeIs;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentDeepExtractor.deepSubComponentWith;
 import static org.assertj.core.api.Java6Assertions.allOf;
@@ -116,7 +116,7 @@ public class FeedItemCardSpecTest {
   public void testDeepSubComponentTextType() {
     final ComponentContext c = mComponentsRule.getContext();
 
-    assertThat(c, mComponent).has(deepSubComponentWith(c, typeIs(Text.class)));
+    assertThat(c, mComponent).has(deepSubComponentWith(c, inspectedTypeIs(Text.class)));
   }
 
   @Test

@@ -52,12 +52,42 @@ public final class ComponentConditions {
    *       subComponentWith(c, typeIs(MyCustomComponent.class))));
    * </code></pre>
    */
-  public static Condition<InspectableComponent> typeIs(final Class<? extends Component> clazz) {
+  public static Condition<InspectableComponent> inspectedTypeIs(
+      final Class<? extends Component> clazz) {
     return new Condition<InspectableComponent>(
         new TextDescription("Component with type <%s>", clazz)) {
       @Override
       public boolean matches(InspectableComponent value) {
         final Class component = value.getComponentClass();
+        return component != null && component.equals(clazz);
+      }
+    };
+  }
+
+  /**
+   * Matcher that succeeds if the class of an {@link Component} exactly matches the provided
+   * component class.
+   *
+   * <p><em>Note that this won't match sub-types.</em> This should not have any real-world
+   * implications as Components are not sub-classed.
+   *
+   * <p>
+   *
+   * <h2>Example Use</h2>
+   *
+   * <pre><code>
+   * assertThat(c, mComponent)
+   *   .has(
+   *     allOf(
+   *       deepSubComponentWith(c, typeIs(Text.class)),
+   *       subComponentWith(c, typeIs(MyCustomComponent.class))));
+   * </code></pre>
+   */
+  public static Condition<Component> typeIs(final Class<? extends Component> clazz) {
+    return new Condition<Component>(new TextDescription("Component with type <%s>", clazz)) {
+      @Override
+      public boolean matches(Component value) {
+        Class component = value.getClass();
         return component != null && component.equals(clazz);
       }
     };

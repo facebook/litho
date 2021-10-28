@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.assertj;
 
-import static com.facebook.litho.testing.assertj.ComponentConditions.typeIs;
+import static com.facebook.litho.testing.assertj.ComponentConditions.inspectedTypeIs;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
@@ -68,10 +68,10 @@ public class SubComponentDeepExtractorTest {
         // We don't have a shallow Text component ...
         .doesNotHave(
             SubComponentExtractor.subComponentWith(
-                mComponentsRule.getContext(), typeIs(Text.class)))
+                mComponentsRule.getContext(), inspectedTypeIs(Text.class)))
         // ... but we do have one deep down.
         .has(
             SubComponentDeepExtractor.deepSubComponentWith(
-                mComponentsRule.getContext(), typeIs(Text.class)));
+                mComponentsRule.getContext(), inspectedTypeIs(Text.class)));
   }
 }
