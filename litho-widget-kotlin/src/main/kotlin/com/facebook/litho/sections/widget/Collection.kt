@@ -55,7 +55,7 @@ typealias OnViewportChanged =
  * [CollectionContainerScope.child].
  * ```
  * Collection {
- *   child { Text(text = "Foo") }
+ *   child(Text(text = "Foo"))
  * }
  * ```
  *
@@ -63,7 +63,7 @@ typealias OnViewportChanged =
  * ```
  * Collection {
  *   list.forEach {
- *     child(id = it.id) { Text(text = it.name) }
+ *     child(id = it.id, component = Text(text = it.name))
  *   }
  * ```
  */
@@ -359,12 +359,12 @@ class CollectionContainerScope {
  * A [SubCollection] can be created using the same functions for building a Collection.
  * ```
  * val header = SubCollection {
- *   child { Text("Title") }
- *   child { Text("SubTitle") }
+ *   child(Text("Title"))
+ *   child(Text("SubTitle"))
  * }
  *
  * val body = SubCollection {
- *   models.forEach { child(id = it.id) { Text("${model.text}") } }
+ *   models.forEach { child(id = it.id, component = Text("${model.text}")) }
  *   subCollection(anotherSubCollection)
  * }
  *
