@@ -143,10 +143,6 @@ public class ComponentsConfiguration {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }
 
-  public static boolean prioritizeRenderingOnParallel = true;
-
-  public static boolean useSharedFutureOnParallel = true;
-
   public static @Nullable LithoPerfBoosterFactory perfBoosterFactory = null;
 
   /**
