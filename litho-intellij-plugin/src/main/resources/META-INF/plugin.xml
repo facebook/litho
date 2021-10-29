@@ -38,9 +38,15 @@
     </ul>
   ]]>
   </description>
-  <version>1.8.4-SNAPSHOT</version>
+  <version>1.8.4</version>
   <change-notes>
     <![CDATA[
+    <h3>1.8.4</h3>
+      <ul>
+        <li>Fix: Handle null PsiClass in Litho Annotations</li>
+        <li>Fix: KComponent Template adds package name to file</li>
+        <li>Fix: Primitive types are now boxed when autocompleting functions</li>
+      </ul>
     <h3>1.8.3</h3>
       <ul>
         <li>Fix: Re-arrange litho actions in 'New' context menu</li>

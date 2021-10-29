@@ -2,8 +2,9 @@
 
 ## Version 1.8.4
 
-_2021-10-15_
+_2021-10-27_
 
+* Fix: Handle null PsiClass in Litho Annotations
 * Fix: KComponent Template adds package name to file
 * Fix: Primitive types are now boxed when autocompleting functions
 
