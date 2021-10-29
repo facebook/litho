@@ -1,7 +1,3 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
-
-package com.facebook.samples.litho.kotlin.collection
-
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -18,20 +14,19 @@ package com.facebook.samples.litho.kotlin.collection
  * limitations under the License.
  */
 
+package com.facebook.samples.litho.kotlin.collection
+
 import android.graphics.Color
-import android.graphics.Rect
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
-import com.facebook.litho.Dimen
 import com.facebook.litho.KComponent
 import com.facebook.litho.Style
 import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
-import com.facebook.litho.px
 import com.facebook.litho.sections.widget.Collection
+import com.facebook.litho.sections.widget.LinearSpacing
 import com.facebook.litho.sections.widget.WrapMode
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
@@ -42,7 +37,7 @@ class HorizontalScrollKComponent : KComponent() {
 
   override fun ComponentScope.render(): Component? {
     return Collection(
-        itemDecoration = CollectionSpacing(vertical = 20.dp),
+        itemDecoration = LinearSpacing(all = 20.dp),
     ) {
       child(FixedHeightHScroll())
       child(WrapFirstItemHeightHScroll())
@@ -57,7 +52,7 @@ class FixedHeightHScroll : KComponent() {
   override fun ComponentScope.render(): Component? {
     return Collection(
         layout = Collection.Linear(orientation = RecyclerView.HORIZONTAL),
-        itemDecoration = CollectionSpacing(horizontal = 10.dp),
+        itemDecoration = LinearSpacing(all = 10.dp),
         style = Style.height(100.dp),
     ) {
       (0..10).forEach {
@@ -82,7 +77,7 @@ class WrapFirstItemHeightHScroll : KComponent() {
         layout =
             Collection.Linear(
                 orientation = RecyclerView.HORIZONTAL, wrapMode = WrapMode.MatchFirstChild),
-        itemDecoration = CollectionSpacing(horizontal = 10.dp),
+        itemDecoration = LinearSpacing(all = 10.dp),
     ) {
       (0..10).forEach {
         child(
@@ -104,7 +99,7 @@ class WrapDynamicHScroll : KComponent() {
     return Collection(
         layout =
             Collection.Linear(orientation = RecyclerView.HORIZONTAL, wrapMode = WrapMode.Dynamic),
-        itemDecoration = CollectionSpacing(horizontal = 10.dp),
+        itemDecoration = LinearSpacing(all = 10.dp),
     ) {
       (0..10).forEach {
         child(
@@ -118,33 +113,5 @@ class WrapDynamicHScroll : KComponent() {
                             .background(RoundedRect(Color.LTGRAY, 10.dp))))
       }
     }
-  }
-}
-
-/*
- * Apply spacing to each item in the Collection. Note we cannot achieve this by applying margin to
- * each component because they are root components so margin is ignored.
- */
-fun ComponentScope.CollectionSpacing(
-    horizontal: Dimen = 0.px,
-    vertical: Dimen = 0.px,
-): RecyclerView.ItemDecoration {
-  val horizontalPx = horizontal.toPixels()
-  val verticalPx = vertical.toPixels()
-  return object : RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ): Unit =
-        with(outRect) {
-          if (parent.getChildAdapterPosition(view) == 0) {
-            left = horizontalPx
-            top = verticalPx
-          }
-          right = horizontalPx
-          bottom = verticalPx
-        }
   }
 }
