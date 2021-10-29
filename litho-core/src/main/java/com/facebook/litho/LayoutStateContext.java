@@ -47,6 +47,8 @@ public class LayoutStateContext {
 
   private boolean mIsLayoutStarted = false;
 
+  private @Nullable PerfEvent mPerfEvent;
+
   @Deprecated
   public static LayoutStateContext getTestInstance(ComponentContext c) {
     final LayoutState layoutState = new LayoutState(c);
@@ -115,6 +117,7 @@ public class LayoutStateContext {
     mLayoutStateFuture = null;
     mCurrentDiffTree = null;
     mComponentIdToWillRenderLayout = null;
+    mPerfEvent = null;
   }
 
   /** Returns the LayoutState instance or null if the layout state has been released. */
@@ -190,5 +193,14 @@ public class LayoutStateContext {
 
   boolean useStatelessComponent() {
     return mComponentTree != null && mComponentTree.useStatelessComponent();
+  }
+
+  @Nullable
+  public PerfEvent getPerfEvent() {
+    return mPerfEvent;
+  }
+
+  public void setPerfEvent(@Nullable PerfEvent perfEvent) {
+    mPerfEvent = perfEvent;
   }
 }

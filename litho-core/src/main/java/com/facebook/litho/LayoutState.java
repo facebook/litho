@@ -1210,6 +1210,9 @@ public class LayoutState
               c, component, stateHandler, layoutStateFuture, currentLayoutState, diffTreeRoot);
 
       layoutStateContext = layoutState.getLayoutStateContext();
+      if (logLayoutState != null) {
+        layoutStateContext.setPerfEvent(logLayoutState);
+      }
 
       // Detect errors internal to components
       Component.markLayoutStarted(component, layoutStateContext);
