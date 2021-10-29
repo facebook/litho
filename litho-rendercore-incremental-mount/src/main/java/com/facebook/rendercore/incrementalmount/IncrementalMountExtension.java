@@ -102,6 +102,17 @@ public class IncrementalMountExtension
 
     RenderCoreSystrace.endSection();
   }
+  
+  private static void notifyVisibleBoundsChangedOnNestedContent(final ExtensionState<IncrementalMountExtensionState> extensionState) {
+    final IncrementalMountExtensionState state = extensionState.getState();
+    
+    for (long id : state.mMountedOutputIdsWithNestedContent.keySet()) {
+      final Object content = state.mMountedOutputIdsWithNestedContent.get(id);
+      if (content != null) {
+        recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+      }
+    }
+  } 
 
   /**
    * Called when the visible bounds change to perform incremental mount. This is always called on a
@@ -129,6 +140,7 @@ public class IncrementalMountExtension
 
     if (localVisibleRect.isEmpty() && state.mPreviousLocalVisibleRect.isEmpty()) {
       log("Skipping: Visible area is 0");
+      notifyVisibleBoundsChangedOnNestedContent(extensionState);
       RenderCoreSystrace.endSection();
       return;
     }
@@ -137,6 +149,14 @@ public class IncrementalMountExtension
         && ((localVisibleRect.top < 0 && localVisibleRect.bottom <= 0)
             || (localVisibleRect.left < 0 && localVisibleRect.right < 0))) {
       log("Skipping: Visible area is in negative coordinate space");
+      notifyVisibleBoundsChangedOnNestedContent(extensionState);
+      RenderCoreSystrace.endSection();
+      return;
+    }
+    
+    if (state.mPreviousLocalVisibleRect.equals(localVisibleRect)) {
+      log("Skipping: previous and current visible areas are identical");
+      notifyVisibleBoundsChangedOnNestedContent(extensionState);
       RenderCoreSystrace.endSection();
       return;
     }
