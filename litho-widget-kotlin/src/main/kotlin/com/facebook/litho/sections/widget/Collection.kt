@@ -135,7 +135,7 @@ class Collection(
 
     return CollectionRecycler.create(context)
         .section(section)
-        .apply { layout?.let { recyclerConfiguration(layout.recyclerConfiguration) } }
+        .recyclerConfiguration(layout.recyclerConfiguration)
         .itemAnimator(itemAnimator)
         .itemDecoration(itemDecoration)
         .canMeasureRecycler(layout.canMeasureRecycler)

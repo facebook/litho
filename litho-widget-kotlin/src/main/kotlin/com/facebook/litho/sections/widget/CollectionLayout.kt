@@ -28,11 +28,10 @@ abstract class CollectionLayout(
     private val hasDynamicItemHeight: Boolean = false,
     val canMeasureRecycler: Boolean = false,
 ) {
-  abstract val recyclerConfigurationBuilder: RecyclerConfiguration.Builder
+  internal abstract fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder
 
-  val recyclerConfiguration: RecyclerConfiguration
-    get() {
-      return recyclerConfigurationBuilder
+  val recyclerConfiguration: RecyclerConfiguration =
+      createRecyclerConfigurationBuilder()
           .orientation(orientation)
           .snapMode(snapMode)
           .reverseLayout(reverseLayout)
@@ -45,7 +44,6 @@ abstract class CollectionLayout(
             }
           }
           .build()
-    }
 }
 
 enum class WrapMode(val canMeasureRecycler: Boolean, val hasDynamicItemHeight: Boolean) {
@@ -79,7 +77,7 @@ interface CollectionLayouts {
               reverseLayout,
               wrapMode.hasDynamicItemHeight,
               wrapMode.canMeasureRecycler) {
-        override val recyclerConfigurationBuilder = ListRecyclerConfiguration.Builder()
+        override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder = ListRecyclerConfiguration.Builder()
       }
 
   fun Grid(
@@ -89,7 +87,7 @@ interface CollectionLayouts {
       columns: Int = 2,
   ): CollectionLayout =
       object : CollectionLayout(orientation, snapMode, reverseLayout) {
-        override val recyclerConfigurationBuilder =
+        override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             GridRecyclerConfiguration.Builder().numColumns(columns)
       }
 
@@ -101,7 +99,7 @@ interface CollectionLayouts {
       gapStrategy: Int = StaggeredGridLayoutManager.GAP_HANDLING_NONE
   ): CollectionLayout =
       object : CollectionLayout(orientation, snapMode, reverseLayout) {
-        override val recyclerConfigurationBuilder =
+        override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             StaggeredGridRecyclerConfiguration.Builder().numSpans(spans).gapStrategy(gapStrategy)
       }
 }
