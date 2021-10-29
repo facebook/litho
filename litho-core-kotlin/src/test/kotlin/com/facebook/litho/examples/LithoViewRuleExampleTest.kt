@@ -20,6 +20,7 @@ package com.facebook.litho.examples
 
 import androidx.annotation.VisibleForTesting
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentScope
 import com.facebook.litho.KComponent
@@ -32,6 +33,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.px
 import com.facebook.litho.stats.LithoStats
 import com.facebook.litho.testing.LithoViewRule
+import com.facebook.litho.testing.assertj.ComponentConditions.typeIs
 import com.facebook.litho.testing.assertj.LithoViewAssert
 import com.facebook.litho.useState
 import com.facebook.litho.view.onClick
@@ -119,6 +121,38 @@ class LithoViewRuleExampleTest {
     val component = lithoViewRule.findComponent(InnerComponent::class.java)
     lithoViewRule.assertThat(component).isNotNull
     lithoViewRule.assertThat(component).hasVisibleText("some_text")
+  }
+
+  @Test
+  fun `verify Components existence with ListAssert`() {
+    class DeepComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Row(style = Style.height(100.dp).width(100.dp))
+      }
+    }
+    class InnerComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return DeepComponent()
+      }
+    }
+    class TestComponent : KComponent() {
+      override fun ComponentScope.render(): Component {
+        return Column {
+          child(InnerComponent())
+          child(InnerComponent())
+          child(DeepComponent())
+        }
+      }
+    }
+
+    lithoViewRule.render { TestComponent() }
+    val innerComponentsList = lithoViewRule.findAllComponents(InnerComponent::class.java)
+    val deepComponentsList = lithoViewRule.findAllComponents(DeepComponent::class.java)
+    lithoViewRule.assertThat(innerComponentsList).isNotEmpty
+    lithoViewRule.assertThat(deepComponentsList).isNotEmpty
+
+    lithoViewRule.assertThat(innerComponentsList).haveExactly(2, typeIs(InnerComponent::class.java))
+    lithoViewRule.assertThat(deepComponentsList).haveExactly(3, typeIs(DeepComponent::class.java))
   }
 
   @Test

@@ -41,6 +41,7 @@ import com.facebook.litho.testing.viewtree.ViewPredicates
 import com.facebook.litho.testing.viewtree.ViewTree
 import com.facebook.rendercore.MountItemsPool
 import com.google.common.base.Predicate
+import org.assertj.core.api.ListAssert
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -344,8 +345,24 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   /** Returns a component of the given class from the ComponentTree or null if not found */
   fun findComponent(clazz: Class<out Component?>): Component? {
     val internalNode =
-        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode ?: return null
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode
+            ?: throw IllegalStateException(
+                "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
     return findComponentRecursively(clazz, internalNode)
+  }
+
+  /**
+   * Returns a list of all components of the given class from the ComponentTree or an empty list if
+   * not found
+   */
+  fun findAllComponents(clazz: Class<out Component?>): List<Component> {
+    val componentsList = mutableListOf<Component>()
+    val internalNode =
+        lithoView.componentTree?.committedLayoutState?.layoutRoot?.internalNode
+            ?: throw IllegalStateException(
+                "No ComponentTree/Committed Layout/Layout Root found. Please call render() first")
+    findComponentsRecursively(clazz, internalNode, componentsList)
+    return componentsList
   }
 
   /**
@@ -371,6 +388,25 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
     }
     return null
   }
+  /**
+   * Recursively goes through nodes in a component tree, and adds component of given class to the
+   * list or empty list if not found
+   */
+  private fun findComponentsRecursively(
+      clazz: Class<out Component?>,
+      internalNode: InternalNode,
+      componentsList: MutableList<Component>
+  ) {
+    val components = internalNode.components.filter { it.javaClass == clazz }
+    if (components != null) {
+      componentsList.addAll(components)
+    }
+
+    val childCount = internalNode.childCount
+    for (i in 0 until childCount) {
+      findComponentsRecursively(clazz, internalNode.getChildAt(i), componentsList)
+    }
+  }
 
   private fun findViewWithPredicateOrNull(viewTree: ViewTree, predicate: Predicate<View>): View? {
     return viewTree.findChild(predicate)?.last()
@@ -392,6 +428,11 @@ class LithoViewRule(val componentsConfiguration: ComponentsConfiguration? = null
   /** Exposes assertion methods from [LithoViewAssert] for [LithoView]. */
   fun assertThat(lithoView: LithoView): LithoViewAssert {
     return LithoViewAssert.assertThat(lithoView)
+  }
+
+  /** Exposes assertion methods from [ListAssert] for [List<Component>]. */
+  fun assertThat(componentsList: List<Component>): ListAssert<Component> {
+    return ListAssert<Component>(componentsList)
   }
 
   companion object {
