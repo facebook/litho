@@ -35,14 +35,15 @@ abstract class CollectionLayout(
           .orientation(orientation)
           .snapMode(snapMode)
           .reverseLayout(reverseLayout)
-          .apply {
-            if (hasDynamicItemHeight) {
-              recyclerBinderConfiguration(
-                  RecyclerBinderConfiguration.create()
-                      .hasDynamicItemHeight(hasDynamicItemHeight)
-                      .build())
-            }
-          }
+          .recyclerBinderConfiguration(
+              RecyclerBinderConfiguration.create()
+                  .useBackgroundChangeSets(true)
+                  .apply {
+                    if (hasDynamicItemHeight) {
+                      hasDynamicItemHeight(hasDynamicItemHeight)
+                    }
+                  }
+                  .build())
           .build()
 }
 
