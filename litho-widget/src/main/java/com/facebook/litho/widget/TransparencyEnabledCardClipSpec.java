@@ -24,8 +24,10 @@ import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
 
 import android.content.Context;
 import android.graphics.Color;
+import androidx.annotation.ColorInt;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnBindDynamicValue;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnmount;
@@ -78,5 +80,14 @@ class TransparencyEnabledCardClipSpec {
     cardClipDrawable.setCornerRadius(0);
     cardClipDrawable.setBackgroundColor(Color.WHITE);
     cardClipDrawable.resetCornerPaint();
+  }
+
+  @OnBindDynamicValue
+  static void onBindTime(
+      TransparencyEnabledCardClipDrawable cardClipDrawable,
+      @Prop(dynamic = true, optional = true) @ColorInt Integer cardBackgroundColorDv) {
+    if (cardBackgroundColorDv != null) {
+      cardClipDrawable.setBackgroundColor(cardBackgroundColorDv);
+    }
   }
 }

@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.DynamicValue;
 import com.facebook.litho.LayerType;
 import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -95,6 +96,7 @@ class CardSpec {
       @Prop Component content,
       @Prop(optional = true) @Nullable String cardBackgroundTransitionKey,
       @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
+      @Prop(optional = true) @Nullable DynamicValue<Integer> cardBackgroundColorDv,
       @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
       @Prop(optional = true, resType = ResType.COLOR) int shadowStartColor,
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
@@ -158,6 +160,7 @@ class CardSpec {
                   makeTransparencyEnabledCardClip(
                       c,
                       cardBackgroundColor,
+                      cardBackgroundColorDv,
                       realClippingColor,
                       cornerRadius,
                       disableClipTopLeft,
@@ -217,6 +220,7 @@ class CardSpec {
   private static Component.Builder makeTransparencyEnabledCardClip(
       ComponentContext c,
       int backgroundColor,
+      @Nullable DynamicValue<Integer> backgroundColorDv,
       int clippingColor,
       float cornerRadius,
       boolean disableClipTopLeft,
@@ -227,6 +231,7 @@ class CardSpec {
     Component.Builder transparencyEnabledCardClipBuilder =
         TransparencyEnabledCardClip.create(c)
             .cardBackgroundColor(backgroundColor)
+            .cardBackgroundColorDv(backgroundColorDv)
             .clippingColor(clippingColor)
             .cornerRadiusPx(cornerRadius)
             .disableClipBottomLeft(disableClipBottomLeft)
