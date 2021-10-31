@@ -102,17 +102,18 @@ public class IncrementalMountExtension
 
     RenderCoreSystrace.endSection();
   }
-  
-  private static void notifyVisibleBoundsChangedOnNestedContent(final ExtensionState<IncrementalMountExtensionState> extensionState) {
+
+  private static void notifyVisibleBoundsChangedOnNestedContent(
+      final ExtensionState<IncrementalMountExtensionState> extensionState) {
     final IncrementalMountExtensionState state = extensionState.getState();
-    
+
     for (long id : state.mMountedOutputIdsWithNestedContent.keySet()) {
       final Object content = state.mMountedOutputIdsWithNestedContent.get(id);
       if (content != null) {
         recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
       }
     }
-  } 
+  }
 
   /**
    * Called when the visible bounds change to perform incremental mount. This is always called on a
@@ -153,7 +154,7 @@ public class IncrementalMountExtension
       RenderCoreSystrace.endSection();
       return;
     }
-    
+
     if (state.mPreviousLocalVisibleRect.equals(localVisibleRect)) {
       log("Skipping: previous and current visible areas are identical");
       notifyVisibleBoundsChangedOnNestedContent(extensionState);
