@@ -78,7 +78,8 @@ interface CollectionLayouts {
               reverseLayout,
               wrapMode.hasDynamicItemHeight,
               wrapMode.canMeasureRecycler) {
-        override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder = ListRecyclerConfiguration.Builder()
+        override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
+            ListRecyclerConfiguration.Builder()
       }
 
   fun Grid(
