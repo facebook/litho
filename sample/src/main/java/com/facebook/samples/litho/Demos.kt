@@ -47,6 +47,9 @@ import com.facebook.samples.litho.java.changesetdebug.ItemsRerenderingActivity
 import com.facebook.samples.litho.java.changesetdebug.PropUpdatingActivity
 import com.facebook.samples.litho.java.changesetdebug.ScrollingToBottomActivity
 import com.facebook.samples.litho.java.changesetdebug.StateResettingActivity
+import com.facebook.samples.litho.java.communicating.CommunicatingBetweenSiblings
+import com.facebook.samples.litho.java.communicating.CommunicatingFromChildToParent
+import com.facebook.samples.litho.java.communicating.CommunicatingFromParentToChild
 import com.facebook.samples.litho.java.duplicatestate.DuplicateState
 import com.facebook.samples.litho.java.dynamicprops.DynamicPropsActivity
 import com.facebook.samples.litho.java.editor.SimpleEditorExampleActivity
@@ -361,6 +364,19 @@ class Demos {
                                           .build())
                                   .build()
                             })),
+                    DemoGrouping(
+                        name = "Communicating between Components",
+                        listOf(
+                            SingleDemo(
+                                name = "From child to parent",
+                                klass = CommunicatingFromChildToParent::class.java),
+                            SingleDemo(
+                                name = "From parent to child",
+                                klass = CommunicatingFromParentToChild::class.java),
+                            SingleDemo(
+                                name = "Between sibling components",
+                                klass = CommunicatingBetweenSiblings::class.java),
+                        )),
                     DemoGrouping(
                         name = "TextInput",
                         listOf(

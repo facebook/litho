@@ -58,6 +58,9 @@
     <activity android:name=".java.changesetdebug.ItemsRerenderingActivity"/>
     <activity android:name=".java.changesetdebug.PropUpdatingActivity"/>
     <activity android:name=".java.changesetdebug.ScrollingToBottomActivity" />
+    <activity android:name=".java.communicating.CommunicatingFromParentToChild" />
+    <activity android:name=".java.communicating.CommunicatingFromChildToParent" />
+    <activity android:name=".java.communicating.CommunicatingBetweenSiblings" />
     <activity android:name=".java.incrementalmount.IncrementalMountWithCustomViewContainerActivity" />
     <activity android:name=".java.stateupdates.StateUpdateFromOutsideTreeActivity" />
     <activity android:name=".java.triggers.CustomEventTriggerExampleActivity" />

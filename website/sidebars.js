@@ -39,6 +39,7 @@ module.exports = {
           'mainconcepts/coordinate-state-actions/state-overview',
           'mainconcepts/coordinate-state-actions/hoisting-state',
           'mainconcepts/coordinate-state-actions/events',
+          'mainconcepts/coordinate-state-actions/communicating-between-components',
           'mainconcepts/coordinate-state-actions/trigger-events',
           'mainconcepts/coordinate-state-actions/treeprops',
           'mainconcepts/coordinate-state-actions/componenttree',

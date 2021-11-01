@@ -37,6 +37,7 @@ public class StateUpdateFromOutsideTreeActivity extends NavigatableDemoActivity 
 
     final ExternalEventObserver observer1 = new ExternalEventObserver();
 
+    // start_external_observer
     container.addView(
         LithoView.create(
             componentContext,
@@ -53,8 +54,11 @@ public class StateUpdateFromOutsideTreeActivity extends NavigatableDemoActivity 
             observer1.notifyExternalEventOccurred();
           }
         });
+
+    // end_external_observer
     container.addView(button1);
 
+    // start_external_handle
     final Handle componentHandle = new Handle();
     final LithoView lithoViewWithTrigger =
         LithoView.create(
@@ -62,7 +66,6 @@ public class StateUpdateFromOutsideTreeActivity extends NavigatableDemoActivity 
             StateUpdateFromOutsideTreeWithTriggerComponent.create(componentContext)
                 .handle(componentHandle)
                 .build());
-    container.addView(lithoViewWithTrigger);
 
     final Button button2 = new Button(this);
     button2.setText("Dispatch Event 2");
@@ -78,6 +81,8 @@ public class StateUpdateFromOutsideTreeActivity extends NavigatableDemoActivity 
                 1 /* pass through the increment to show you can pass arbitrary data */);
           }
         });
+    // end_external_handle
+    container.addView(lithoViewWithTrigger);
     container.addView(button2);
 
     setContentView(container);

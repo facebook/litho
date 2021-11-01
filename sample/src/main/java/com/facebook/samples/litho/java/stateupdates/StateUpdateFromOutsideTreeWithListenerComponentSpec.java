@@ -33,6 +33,7 @@ import com.facebook.yoga.YogaEdge;
 @LayoutSpec
 public class StateUpdateFromOutsideTreeWithListenerComponentSpec {
 
+  // start_implement_observer
   @OnCreateInitialState
   static void onCreateInitialState(
       final ComponentContext c,
@@ -49,6 +50,7 @@ public class StateUpdateFromOutsideTreeWithListenerComponentSpec {
           }
         });
   }
+  // end_implement_observer
 
   @OnUpdateState
   static void incrementCounter(StateValue<Integer> counter) {
