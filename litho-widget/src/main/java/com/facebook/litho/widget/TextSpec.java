@@ -540,7 +540,11 @@ class TextSpec {
     layoutBuilder.setAlignment(
         getLayoutAlignment(textAlignment, textDirection, text, layoutDirection));
 
-    newLayout = layoutBuilder.build();
+    try {
+      newLayout = layoutBuilder.build();
+    } catch (ArrayIndexOutOfBoundsException e) { // To capture more info for T102756635
+      throw new RuntimeException("text: " + text.toString(), e);
+    }
 
     if (glyphWarming) {
       // TODO(T34488162): we also don't want this to happen when we are using DL (legacy?)
