@@ -47,8 +47,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.config.TempComponentsConfigurations;
 import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.common.DynamicComponentGroupSection;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerBinderConfiguration;
@@ -62,13 +64,16 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterDrawable;
+import com.facebook.litho.widget.SectionsRecyclerView;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -159,11 +164,21 @@ public class MountStateIncrementalMountTest {
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isTrue();
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    if (mUseMountDelegateTarget) {
+      // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
+      // top.
+      assertThat(child2.isMounted()).isFalse();
+    } else {
+      // In Litho's Inc-Mount, when an item's bottom is equal to the container's top, they will
+      // be mounted. Ensure they are mounted here, and scroll by 1 more px to ensure it unmounts
+      // properly.
+      assertThat(child2.isMounted()).isTrue();
+
+      lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
+      assertThat(child1.isMounted()).isFalse();
+      assertThat(child2.isMounted()).isFalse();
+    }
   }
 
   @Test
@@ -450,11 +465,21 @@ public class MountStateIncrementalMountTest {
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(lifecycleTracker1.isMounted()).isFalse();
-    assertThat(lifecycleTracker2.isMounted()).isTrue();
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
-    assertThat(lifecycleTracker1.isMounted()).isFalse();
-    assertThat(lifecycleTracker2.isMounted()).isFalse();
+    if (mUseMountDelegateTarget) {
+      // Inc-Mount-Ext will properly unmount items when their bottom is equal to the container's
+      // top.
+      assertThat(lifecycleTracker2.isMounted()).isFalse();
+    } else {
+      // In Litho's Inc-Mount, when an item's bottom is equal to the container's top, they will
+      // be mounted. Ensure they are mounted here, and scroll by 1 more px to ensure it unmounts
+      // properly.
+      assertThat(lifecycleTracker2.isMounted()).isTrue();
+
+      lithoView.getComponentTree().mountComponent(new Rect(0, 21, 10, 30), true);
+      assertThat(lifecycleTracker1.isMounted()).isFalse();
+      assertThat(lifecycleTracker2.isMounted()).isFalse();
+    }
   }
 
   /** Tests incremental mount behaviour of a view mount item in a nested hierarchy. */
@@ -1306,6 +1331,124 @@ public class MountStateIncrementalMountTest {
     mLithoViewRule.getLithoView().notifyVisibleBoundsChanged();
 
     assertThat(lifecycleTracker2.getSteps()).contains(LifecycleStep.ON_UNMOUNT);
+  }
+
+  @Test
+  public void incrementalMount_testScrollDownAndUp_correctMountUnmountCalls() {
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker3 = new LifecycleTracker();
+
+    final int CHILD_HEIGHT = 10;
+
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
+    final Component child3 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker3).build();
+
+    // Item is composed of 3 children of equal size (10x10), making 1 item of height 30.
+    final Component item =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(CHILD_HEIGHT))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(CHILD_HEIGHT))
+            .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(CHILD_HEIGHT))
+            .build();
+
+    final RecyclerBinderConfiguration binderConfig =
+        RecyclerBinderConfiguration.create().lithoViewFactory(getLithoViewFactory()).build();
+    RecyclerConfiguration config =
+        ListRecyclerConfiguration.create().recyclerBinderConfiguration(binderConfig).build();
+
+    final SectionContext sectionContext = new SectionContext(mContext);
+    final Component rcc =
+        RecyclerCollectionComponent.create(mContext)
+            .recyclerConfiguration(config)
+            .section(
+                DynamicComponentGroupSection.create(sectionContext)
+                    .component(item)
+                    .totalItems(5)
+                    .build())
+            .build();
+
+    // Set LithoView with height so that it can fully show exactly 3 items (3 children per item).
+    mLithoViewRule
+        .setRoot(rcc)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(CHILD_HEIGHT * 9, EXACTLY))
+        .measure()
+        .layout();
+
+    // Obtain the RV for scrolling later
+    final RecyclerView recyclerView =
+        ((SectionsRecyclerView) mLithoViewRule.getLithoView().getChildAt(0)).getRecyclerView();
+
+    // All 3 children are visible 3 times, so we should see ON_MOUNT being called 3 times
+    // for each child
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT)).isEqualTo(3);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(3);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(3);
+
+    // Clear the lifecycle steps
+    lifecycleTracker1.reset();
+    lifecycleTracker2.reset();
+    lifecycleTracker3.reset();
+
+    // Scroll down by the size of 1 child. We are expecting to top item's child1 to be
+    // unmounted, and a new bottom item's child1 to be mounted.
+    recyclerView.scrollBy(0, CHILD_HEIGHT);
+
+    // Ensure unmount is called once
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_UNMOUNT)).isEqualTo(1);
+
+    // Ensure mount is called once
+    // When using Litho's inc-mount, the exiting item will be mounted twice due to an issue with
+    // the calculation there. Inc-mount-ext does not have this issue.
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
+        .isEqualTo(mUseMountDelegateTarget ? 1 : 2);
+
+    // child2 & 3 of all items should not change.
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_UNMOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(0);
+
+    // Clear the lifecycle steps
+    lifecycleTracker1.reset();
+    lifecycleTracker2.reset();
+    lifecycleTracker3.reset();
+
+    // Scroll up by the size of 1 component. We are expecting to top item's child1 to be mounted,
+    // and the bottom item to be unmounted
+    recyclerView.scrollBy(0, -CHILD_HEIGHT);
+
+    // Ensure unmount is called once
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_UNMOUNT)).isEqualTo(1);
+
+    // Ensure mount is called once
+    // When using Litho's inc-mount, the item we previously expected to exit is still there, so
+    // we don't expect a mount to occur.
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker1.getSteps(), ON_MOUNT))
+        .isEqualTo(mUseMountDelegateTarget ? 1 : 0);
+
+    // child2 & 3 of all items should not change.
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_UNMOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker2.getSteps(), ON_MOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_UNMOUNT)).isEqualTo(0);
+    assertThat(getCountOfLifecycleSteps(lifecycleTracker3.getSteps(), ON_MOUNT)).isEqualTo(0);
+  }
+
+  /** Returns the amount of steps that match the given step in the given list of steps */
+  private static int getCountOfLifecycleSteps(List<LifecycleStep> steps, LifecycleStep step) {
+    int count = 0;
+    for (int i = 0; i < steps.size(); i++) {
+      if (steps.get(i) == step) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
   @After

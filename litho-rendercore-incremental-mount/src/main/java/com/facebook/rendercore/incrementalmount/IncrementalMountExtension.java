@@ -97,7 +97,7 @@ public class IncrementalMountExtension
     if (output == null) {
       throw new IllegalArgumentException("Output with id=" + id + " not found.");
     }
-
+    
     maybeAcquireReference(extensionState, state.mPreviousLocalVisibleRect, output, false);
 
     RenderCoreSystrace.endSection();
@@ -356,7 +356,7 @@ public class IncrementalMountExtension
 
       while (state.mPreviousBottomsIndex > 0
           && localVisibleRect.top
-              <= byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom) {
+              < byBottomBounds.get(state.mPreviousBottomsIndex - 1).getBounds().bottom) {
 
         final IncrementalMountOutput node = byBottomBounds.get(state.mPreviousBottomsIndex - 1);
         final long id = node.getId();
