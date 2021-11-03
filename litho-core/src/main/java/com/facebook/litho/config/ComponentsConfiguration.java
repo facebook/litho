@@ -208,10 +208,8 @@ public class ComponentsConfiguration {
 
   public static boolean swallowUnhandledExceptions = false;
 
-  /** Initialize sticky header on scrolled on scrolled */
-  public static boolean initStickyHeaderOnScroll = false;
-  /** Initialize sticky header on scrolled when its component tree is null */
-  public static boolean initStickyHeaderWhenComponentTreeIsNull = false;
+  /** Initialize sticky header during layout when its component tree is null */
+  public static boolean initStickyHeaderInLayoutWhenComponentTreeIsNull = false;
 
   /**
    * If set to true a single thread will always be used for background layout calculation by

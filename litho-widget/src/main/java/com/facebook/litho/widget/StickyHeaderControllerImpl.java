@@ -154,8 +154,10 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
       if (mSectionsRecyclerView.isStickyHeaderHidden()
           || stickyHeaderPosition != previousStickyHeaderPosition
           || (mSectionsRecyclerView.getStickyHeader().getComponentTree() == null
-              && ComponentsConfiguration.initStickyHeaderWhenComponentTreeIsNull)
-          || ComponentsConfiguration.initStickyHeaderOnScroll) {
+              // RecyclerView can cause a relayout without any scroll changes, check for that here
+              && dx == 0
+              && dy == 0
+              && ComponentsConfiguration.initStickyHeaderInLayoutWhenComponentTreeIsNull)) {
         initStickyHeader(stickyHeaderPosition);
         mSectionsRecyclerView.showStickyHeader();
       }
