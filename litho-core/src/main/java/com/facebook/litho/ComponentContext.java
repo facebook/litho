@@ -201,6 +201,8 @@ public class ComponentContext implements Cloneable {
 
     if (componentContext.useStatelessComponent()) {
 
+      componentContext.setParentTreeProps(parentContext.getTreeProps());
+
       final EventHandler<ErrorEvent> errorEventHandler =
           ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
 
@@ -226,8 +228,6 @@ public class ComponentContext implements Cloneable {
 
       componentContext.mScopedComponentInfo =
           new ScopedComponentInfo(scope, componentContext, stateContainer, errorEventHandler);
-
-      componentContext.setParentTreeProps(parentContext.getTreeProps());
     }
 
     return componentContext;
