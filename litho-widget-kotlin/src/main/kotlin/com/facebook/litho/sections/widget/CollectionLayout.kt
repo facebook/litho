@@ -97,7 +97,9 @@ interface CollectionLayouts {
               snapMode,
               reverse,
               crossAxisWrapMode.hasDynamicItemHeight,
-              crossAxisWrapMode.canMeasureRecycler) {
+              crossAxisWrapMode.canMeasureRecycler,
+              mainAxisWrapContent,
+          ) {
         override fun createRecyclerConfigurationBuilder(): RecyclerConfiguration.Builder =
             ListRecyclerConfiguration.Builder()
       }
