@@ -537,7 +537,7 @@ public class ComponentUtils {
    */
   static void handle(ComponentContext c, Exception exception) {
     try {
-      if (c.getComponentScope() != null) {
+      if (c.getComponentScope() != null && c.getGlobalKey() != null) {
         // acquire component hierarchy metadata leveraging the global key
         LithoMetadataExceptionWrapper metadataExceptionWrapper = wrapWithMetadata(c, exception);
         LinkedList<String> hierarchy = Component.generateHierarchy(c.getGlobalKey());

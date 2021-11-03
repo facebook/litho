@@ -178,42 +178,43 @@ public class StateHandler {
    * @param component the new component
    */
   @ThreadSafe(enableChecks = false)
-  void applyStateUpdatesForComponent(
+  StateContainer applyStateUpdatesAndGetStateContainer(
       final ComponentContext scopedContext, final Component component, final String key) {
     maybeInitStateContainers();
     maybeInitNeededStateContainers();
 
-    if (!component.hasState()) {
-      return;
-    }
-
     final StateContainer currentStateContainer;
+    final @Nullable List<StateUpdate> stateUpdatesForKey;
+    final StateContainer newStateContainer;
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
       mNeededStateContainers.add(key);
+      stateUpdatesForKey = mPendingStateUpdates == null ? null : mPendingStateUpdates.get(key);
     }
 
-    final StateContainer newStateContainer;
-    if (currentStateContainer != null) {
-      newStateContainer = Component.getStateContainer(scopedContext, component);
+    if (currentStateContainer != null
+        && (stateUpdatesForKey == null
+            || stateUpdatesForKey.isEmpty())) { // Reuse if not state updates
+
+      newStateContainer = currentStateContainer;
+
+    } else if (currentStateContainer != null) { // Copy if there are pending state updates
+
+      newStateContainer = component.createStateContainer();
       component.transferState(currentStateContainer, newStateContainer);
-    } else {
+
+    } else { // Create initial state if current state container is null
+
       final ComponentTree componentTree = scopedContext.getComponentTree();
       if (componentTree != null && componentTree.getInitialStateContainer() != null) {
-        componentTree
-            .getInitialStateContainer()
-            .createOrGetInitialStateForComponent(component, scopedContext, key);
+        newStateContainer =
+            componentTree
+                .getInitialStateContainer()
+                .createOrGetInitialStateForComponent(component, scopedContext, key);
       } else {
-        component.createInitialState(scopedContext);
+        newStateContainer = component.createInitialState(scopedContext);
       }
-      newStateContainer = Component.getStateContainer(scopedContext, component);
-    }
-
-    final List<StateUpdate> stateUpdatesForKey;
-
-    synchronized (this) {
-      stateUpdatesForKey = mPendingStateUpdates == null ? null : mPendingStateUpdates.get(key);
     }
 
     List<Transition> transitionsFromStateUpdate = null;
@@ -249,6 +250,8 @@ public class StateHandler {
         mPendingStateUpdateTransitions.put(key, transitionsFromStateUpdate);
       }
     }
+
+    return newStateContainer;
   }
 
   public synchronized void addStateContainer(String key, StateContainer state) {

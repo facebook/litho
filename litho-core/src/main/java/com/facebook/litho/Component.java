@@ -480,7 +480,9 @@ public abstract class Component
     return false;
   }
 
-  protected void createInitialState(ComponentContext c) {}
+  protected @Nullable StateContainer createInitialState(ComponentContext c) {
+    return createStateContainer();
+  }
 
   protected void dispatchOnEnteredRange(ComponentContext c, String name) {
     // Do nothing by default
@@ -1646,12 +1648,10 @@ public abstract class Component
       if (layoutCreatedInWillRender != null) {
         assertSameBaseContext(scopedContext, layoutCreatedInWillRender.getAndroidContext());
       }
-    }
 
-    applyStateUpdates(
-        layoutStateContext.getStateHandler(), parentContext, scopedContext, globalKey);
+      applyStateUpdates(
+          layoutStateContext.getStateHandler(), parentContext, scopedContext, globalKey);
 
-    if (!parentContext.useStatelessComponent()) {
       generateErrorEventHandler(parentContext, scopedContext);
     }
 
@@ -1673,15 +1673,20 @@ public abstract class Component
       final ComponentContext parentContext,
       final ComponentContext scopedContext,
       final String globalKey) {
-    scopedContext.setParentTreeProps(parentContext.getTreeProps());
-    if (usesLocalStateContainer()) {
-      if (hasState()) {
-        Preconditions.checkNotNull(stateHandler)
-            .applyStateUpdatesForComponent(scopedContext, this, globalKey);
+    if (!scopedContext.useStatelessComponent()) {
+      scopedContext.setParentTreeProps(parentContext.getTreeProps());
+      if (usesLocalStateContainer()) {
+        if (hasState()) {
+          final StateContainer stateContainer =
+              Preconditions.checkNotNull(stateHandler)
+                  .applyStateUpdatesAndGetStateContainer(scopedContext, this, globalKey);
+
+          setStateContainer(stateContainer);
+        }
+      } else {
+        // the get method adds the state container to the needed state container map
+        stateHandler.getStateContainer(globalKey);
       }
-    } else {
-      // the get method adds the state container to the needed state container map
-      stateHandler.getStateContainer(globalKey);
     }
   }
 

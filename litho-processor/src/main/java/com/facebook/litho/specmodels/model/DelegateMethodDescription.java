@@ -72,6 +72,7 @@ public final class DelegateMethodDescription {
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
   public final boolean createsState;
+  public final boolean returnsState;
 
   private DelegateMethodDescription(Builder builder) {
     annotations = builder.annotations;
@@ -85,6 +86,7 @@ public final class DelegateMethodDescription {
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
     createsState = builder.createsState;
+    returnsState = builder.returnsState;
     mInterStagePropsTarget = builder.mInterStagePropsTarget;
   }
 
@@ -114,6 +116,7 @@ public final class DelegateMethodDescription {
   }
 
   public static class Builder {
+
     private ImmutableList<AnnotationSpec> annotations;
     private Modifier accessType;
     private TypeName returnType;
@@ -126,6 +129,7 @@ public final class DelegateMethodDescription {
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
     private boolean createsState = false;
+    private boolean returnsState = false;
 
     private Builder() {}
 
@@ -209,6 +213,11 @@ public final class DelegateMethodDescription {
 
     public Builder createsState(boolean createsState) {
       this.createsState = createsState;
+      return this;
+    }
+
+    public Builder returnsState(boolean returnsState) {
+      this.returnsState = returnsState;
       return this;
     }
 
