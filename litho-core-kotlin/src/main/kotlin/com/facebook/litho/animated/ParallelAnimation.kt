@@ -23,47 +23,66 @@ import com.facebook.infer.annotation.ThreadConfined
  * triggered
  */
 class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
-  private val parallelAnimationListeners = mutableListOf<AnimationListener>()
+  private val parallelAnimationListeners = mutableListOf<AnimationFinishListener>()
   private var parallelFinishedAnimators = 0
-  private var isActive = false
+  private var _isActive: Boolean = false
   init {
     animators.forEach {
       it.addListener(
-          object : AnimationListener {
-            override fun onFinish() {
-              animatorFinished()
+          object : AnimationFinishListener {
+            override fun onFinish(cancelled: Boolean) {
+              if (cancelled && _isActive) {
+                // child was cancelled, main animation is still active
+                cancel()
+                return
+              }
+              animatorFinished(cancelled)
             }
           })
     }
   }
+  @ThreadConfined(ThreadConfined.UI) override fun isActive(): Boolean = _isActive
 
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {
-    check(!isActive) { "start() called more than once" }
+    check(!_isActive) { "start() called more than once" }
     if (animators.isEmpty()) {
       throw IllegalArgumentException("Empty animators collection")
     }
-    isActive = true
+    _isActive = true
     startAnimators()
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  override fun stop() {
+  override fun cancel() {
+    if (!_isActive) {
+      // ignore multiple cancel calls
+      return
+    }
+    _isActive = false
+    animators.forEach {
+      if (it.isActive()) {
+        it.cancel()
+      }
+    }
+    parallelAnimationListeners.forEach { it.onFinish(true) }
     finish()
-    animators.forEach { it.stop() }
   }
 
-  override fun addListener(listener: AnimationListener) {
-    if (!parallelAnimationListeners.contains(listener)) {
-      parallelAnimationListeners.add(listener)
+  override fun addListener(finishListener: AnimationFinishListener) {
+    if (!parallelAnimationListeners.contains(finishListener)) {
+      parallelAnimationListeners.add(finishListener)
     }
   }
 
-  private fun animatorFinished() {
+  private fun animatorFinished(cancelled: Boolean) {
+    if (!_isActive || cancelled) {
+      return
+    }
     parallelFinishedAnimators++
     if (animators.size == parallelFinishedAnimators) {
       finish()
-      parallelAnimationListeners.forEach { it.onFinish() }
+      parallelAnimationListeners.forEach { it.onFinish(false) }
     }
   }
 
@@ -72,7 +91,7 @@ class ParallelAnimation(private val animators: Array<out AnimatedAnimation>) : A
   }
 
   private fun finish() {
-    isActive = false
+    _isActive = false
     parallelFinishedAnimators = 0
   }
 }

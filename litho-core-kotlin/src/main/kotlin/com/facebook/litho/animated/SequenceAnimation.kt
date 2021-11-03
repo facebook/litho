@@ -23,47 +23,65 @@ import com.facebook.infer.annotation.ThreadConfined
  * [SequenceAnimation.start] is triggered
  */
 class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : AnimatedAnimation {
-  private val sequenceAnimatorListeners = mutableListOf<AnimationListener>()
+  private val sequenceAnimatorListeners = mutableListOf<AnimationFinishListener>()
   private var currentIndex = 0
-  private var isActive = false
+  private var _isActive: Boolean = false
   init {
     animators.forEach {
       it.addListener(
-          object : AnimationListener {
-            override fun onFinish() {
-              animatorFinished()
+          object : AnimationFinishListener {
+            override fun onFinish(cancelled: Boolean) {
+              if (cancelled && _isActive) {
+                // child was cancelled, main animation is still active
+                cancel()
+                return
+              }
+              animatorFinished(cancelled)
             }
           })
     }
   }
 
+  @ThreadConfined(ThreadConfined.UI) override fun isActive(): Boolean = _isActive
+
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {
-    check(!isActive) { "start() called more than once" }
+    check(!_isActive) { "start() called more than once" }
     if (animators.isEmpty()) {
       throw IllegalArgumentException("Empty animators collection")
     }
-    isActive = true
+    _isActive = true
     startAnimator()
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  override fun stop() {
-    animators[currentIndex].stop()
+  override fun cancel() {
+    if (!_isActive) {
+      // ignore multiple cancel calls
+      return
+    }
+    _isActive = false
+    if (animators[currentIndex].isActive()) {
+      animators[currentIndex].cancel()
+    }
+    sequenceAnimatorListeners.forEach { it.onFinish(true) }
     finish()
   }
 
-  override fun addListener(listener: AnimationListener) {
-    if (!sequenceAnimatorListeners.contains(listener)) {
-      sequenceAnimatorListeners.add(listener)
+  override fun addListener(finishListener: AnimationFinishListener) {
+    if (!sequenceAnimatorListeners.contains(finishListener)) {
+      sequenceAnimatorListeners.add(finishListener)
     }
   }
 
-  private fun animatorFinished() {
+  private fun animatorFinished(cancelled: Boolean) {
+    if (!_isActive || cancelled) {
+      return
+    }
     currentIndex++
     if (currentIndex == animators.size) {
       finish()
-      sequenceAnimatorListeners.forEach { it.onFinish() }
+      sequenceAnimatorListeners.forEach { it.onFinish(false) }
       return
     }
     startAnimator()
@@ -74,7 +92,7 @@ class SequenceAnimation(private val animators: Array<out AnimatedAnimation>) : A
   }
 
   private fun finish() {
-    isActive = false
+    _isActive = false
     currentIndex = 0
   }
 }

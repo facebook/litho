@@ -75,7 +75,7 @@ class AnimatingCounter(private val count: Int) : KComponent() {
       newAnimation.start()
       animation.value = newAnimation
 
-      onCleanup { animation.value?.stop() }
+      onCleanup { animation.value?.cancel() }
     }
 
     return Text(style = Style.translationY(translationY), text = "$count", textSize = 24.sp)

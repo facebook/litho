@@ -71,7 +71,7 @@ class AnimatedComponent : KComponent() {
             to = 150f,
             duration = 2000,
             easing = Easing.bezier(0.85f, 0f, 0.15f, 1f),
-            onFinish = {
+            animationFinishListener = {
               isYProgressCompleted.update(true)
               alphaProgress.set(if (alphaProgress.get() == 1f) 0.5f else 1f)
             })
@@ -80,8 +80,7 @@ class AnimatedComponent : KComponent() {
             target = DynamicValue(0f),
             to = 1f,
             duration = 1000,
-            onFinish = { isYProgressCompleted.update(false) })
-
+            animationFinishListener = { isYProgressCompleted.update(false) })
     val staggerTopAnimation =
         Animated.stagger(
             200,
@@ -100,14 +99,14 @@ class AnimatedComponent : KComponent() {
                         animScale,
                         to = 110f,
                         SpringConfig(stiffness = 50f, dampingRatio = 0.5f),
-                        onFinish = {
+                        animationFinishListener = {
                           isScaleTransitionComplete.update(!isScaleTransitionComplete.value)
                         }),
                     Animated.spring(
                         animScale,
                         to = 100f,
                         SpringConfig(stiffness = 50f, dampingRatio = 0.5f),
-                        onFinish = {
+                        animationFinishListener = {
                           isScaleTransitionComplete.update(!isScaleTransitionComplete.value)
                         }))))
 

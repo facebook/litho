@@ -38,9 +38,8 @@ object Animated {
       to: Float,
       duration: Long = 300,
       easing: Interpolator = Easing.accelerateDecelerate(),
+      animationFinishListener: AnimationFinishListener? = null,
       onUpdate: ((Float) -> Unit)? = null,
-      onFinish: (() -> Unit)? = null,
-      onCancel: (() -> Unit)? = null
   ): AnimatedAnimation {
 
     val animator = ValueAnimator.ofFloat(target.get(), to)
@@ -51,18 +50,11 @@ object Animated {
       target.set(animatedValue)
       onUpdate?.invoke(animatedValue)
     }
-    if (onFinish != null || onCancel != null) {
-      animator.addListener(
-          object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-              onFinish?.invoke()
-            }
-            override fun onAnimationCancel(animation: Animator) {
-              onCancel?.invoke()
-            }
-          })
+    val animatorAnimation = AnimatorAnimation(animator)
+    if (animationFinishListener != null) {
+      animatorAnimation.addListener(animationFinishListener)
     }
-    return AnimatorAnimation(animator)
+    return animatorAnimation
   }
 
   /**
@@ -75,9 +67,8 @@ object Animated {
       target: DynamicValue<Float>,
       to: Float,
       springConfig: SpringConfig = SpringConfig(),
+      animationFinishListener: AnimationFinishListener? = null,
       onUpdate: ((Float) -> Unit)? = null,
-      onFinish: (() -> Unit)? = null,
-      onCancel: (() -> Unit)? = null
   ): AnimatedAnimation {
     val springAnimation = SpringAnimation(DynamicFloatValueHolder(target))
     val springForce = SpringForce()
@@ -86,22 +77,10 @@ object Animated {
     springForce.dampingRatio = springConfig.dampingRatio
     springAnimation.spring = springForce
     onUpdate?.let { springAnimation.addUpdateListener { _, value, _ -> onUpdate(value) } }
-    onFinish?.let {
-      springAnimation.addEndListener { _, canceled, _, _ ->
-        if (!canceled) {
-          onFinish()
-        }
-      }
-    }
-    onCancel?.let {
-      springAnimation.addEndListener { _, canceled, _, _ ->
-        if (canceled) {
-          onCancel()
-        }
-      }
-    }
+    val animatedSpringAnimation = AnimatedSpringAnimation(springAnimation)
+    animationFinishListener?.let { animatedSpringAnimation.addListener(animationFinishListener) }
 
-    return AnimatedSpringAnimation(springAnimation)
+    return animatedSpringAnimation
   }
 
   /**
@@ -150,61 +129,63 @@ object Animated {
  * collection of them
  */
 interface AnimatedAnimation {
+  fun isActive(): Boolean
   fun start()
-  fun stop()
-  fun addListener(listener: AnimationListener)
+  fun cancel()
+  fun addListener(finishListener: AnimationFinishListener)
 }
 
-/**
- * Listener that allows to listen for different state updates on animation or the whole collection
- * of them
- */
-interface AnimationListener {
-  /** triggers when animation or set of animations is completed */
-  fun onFinish() = Unit
-
-  /**
-   * triggers when animation is cancelled. This callback is not invoked for animations with repeat
-   * count set to INFINITE
-   */
-  fun onCancel() = Unit
+/** Listener that allows to listen for animation finish or cancel events. */
+fun interface AnimationFinishListener {
+  /** triggers when animation or set of animations is completed or cancelled */
+  fun onFinish(cancelled: Boolean)
 }
 
 private class AnimatedSpringAnimation(val springAnimation: SpringAnimation) : AnimatedAnimation {
+  override fun isActive(): Boolean = springAnimation.isRunning
   override fun start() {
     springAnimation.start()
   }
-  override fun stop() {
+  override fun cancel() {
     springAnimation.cancel()
   }
 
-  override fun addListener(animationListener: AnimationListener) {
-    springAnimation.addEndListener { _, canceled, _, _ ->
-      if (canceled) {
-        animationListener.onCancel()
-      } else {
-        animationListener.onFinish()
-      }
+  override fun addListener(animationFinishListener: AnimationFinishListener) {
+    springAnimation.addEndListener { _, cancelled, _, _ ->
+      animationFinishListener.onFinish(cancelled)
     }
   }
 }
 
 internal class AnimatorAnimation(val animator: ValueAnimator) : AnimatedAnimation {
+  private var animationCancelled: Boolean = false
+  private var _isActive: Boolean = false
+
+  override fun isActive(): Boolean = _isActive
   override fun start() {
+    _isActive = true
+    animationCancelled = false
     animator.start()
   }
-  override fun stop() {
+  override fun cancel() {
+    _isActive = false
+    animationCancelled = true
     animator.cancel()
   }
 
-  override fun addListener(animatorListener: AnimationListener) {
+  override fun addListener(animatorFinishListener: AnimationFinishListener) {
     animator.addListener(
         object : AnimatorListenerAdapter() {
           override fun onAnimationEnd(animation: Animator) {
-            animatorListener.onFinish()
+            if (animationCancelled) {
+              // do not call onFinish if animation was cancelled
+              return
+            }
+            animatorFinishListener.onFinish(false)
+            _isActive = false
           }
           override fun onAnimationCancel(animation: Animator) {
-            animatorListener.onCancel()
+            animatorFinishListener.onFinish(true)
           }
         })
   }

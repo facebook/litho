@@ -24,47 +24,64 @@ import com.facebook.infer.annotation.ThreadConfined
  */
 class LoopAnimation(private var repeatCount: Int, private val animation: AnimatedAnimation) :
     AnimatedAnimation {
-  private val loopAnimatorListeners = mutableListOf<AnimationListener>()
+  private val loopAnimatorListeners = mutableListOf<AnimationFinishListener>()
   private var currentLoop = 0
-  private var isActive = false
+  private var _isActive: Boolean = false
   init {
     animation.addListener(
-        object : AnimationListener {
-          override fun onFinish() {
-            loopOrEndAnimation()
+        object : AnimationFinishListener {
+          override fun onFinish(cancelled: Boolean) {
+            if (cancelled && _isActive) {
+              // child was cancelled, main animation is still active
+              cancel()
+              return
+            }
+            loopOrEndAnimation(cancelled)
           }
         })
   }
+  @ThreadConfined(ThreadConfined.UI) override fun isActive(): Boolean = _isActive
 
   @ThreadConfined(ThreadConfined.UI)
   override fun start() {
-    check(!isActive) { "start() called more than once" }
-    isActive = true
+    check(!_isActive) { "start() called more than once" }
+    _isActive = true
     animation.start()
   }
   @ThreadConfined(ThreadConfined.UI)
-  override fun stop() {
-    animation.stop()
+  override fun cancel() {
+    if (!_isActive) {
+      // ignore multiple cancel calls
+      return
+    }
+    _isActive = false
+    if (animation.isActive()) {
+      animation.cancel()
+    }
+    loopAnimatorListeners.forEach { it.onFinish(true) }
     finish()
   }
 
-  override fun addListener(listener: AnimationListener) {
-    if (!loopAnimatorListeners.contains(listener)) {
-      loopAnimatorListeners.add(listener)
+  override fun addListener(finishListener: AnimationFinishListener) {
+    if (!loopAnimatorListeners.contains(finishListener)) {
+      loopAnimatorListeners.add(finishListener)
     }
   }
 
-  private fun loopOrEndAnimation() {
+  private fun loopOrEndAnimation(cancelled: Boolean) {
+    if (!_isActive || cancelled) {
+      return
+    }
     currentLoop++
     if (currentLoop == repeatCount) {
-      loopAnimatorListeners.forEach { it.onFinish() }
+      loopAnimatorListeners.forEach { it.onFinish(false) }
       finish()
       return
     }
     animation.start()
   }
   private fun finish() {
-    isActive = false
+    _isActive = false
     currentLoop = 0
   }
 }
