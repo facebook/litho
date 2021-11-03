@@ -26,8 +26,8 @@ import com.facebook.litho.core.height
 import com.facebook.litho.core.padding
 import com.facebook.litho.dp
 import com.facebook.litho.sections.widget.Collection
+import com.facebook.litho.sections.widget.CrossAxisWrapMode
 import com.facebook.litho.sections.widget.LinearSpacing
-import com.facebook.litho.sections.widget.WrapMode
 import com.facebook.litho.sp
 import com.facebook.litho.view.background
 import com.facebook.litho.widget.Text
@@ -76,7 +76,8 @@ class WrapFirstItemHeightHScroll : KComponent() {
     return Collection(
         layout =
             Collection.Linear(
-                orientation = RecyclerView.HORIZONTAL, wrapMode = WrapMode.MatchFirstChild),
+                orientation = RecyclerView.HORIZONTAL,
+                crossAxisWrapMode = CrossAxisWrapMode.MatchFirstChild),
         itemDecoration = LinearSpacing(all = 10.dp),
     ) {
       (0..10).forEach {
@@ -98,7 +99,9 @@ class WrapDynamicHScroll : KComponent() {
   override fun ComponentScope.render(): Component? {
     return Collection(
         layout =
-            Collection.Linear(orientation = RecyclerView.HORIZONTAL, wrapMode = WrapMode.Dynamic),
+            Collection.Linear(
+                orientation = RecyclerView.HORIZONTAL,
+                crossAxisWrapMode = CrossAxisWrapMode.Dynamic),
         itemDecoration = LinearSpacing(all = 10.dp),
     ) {
       (0..10).forEach {
