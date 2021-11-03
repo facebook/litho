@@ -18,6 +18,7 @@ _release-date_
    * onCreateLayout/onCreateLayoutWithSizeSpec have been moved to SpecGeneratedComponent. Direct subclasses of Component should implement render() instead.
  * New: Allow passing `@TreeProp` to `@OnCalculateCachedValue` methods
  * **Breaking:** Deletes `@FromBind` inter stage prop. Replace existing usages with `@State AtomicReference<?>` instead. Create a `@State AtomicReference<?>` for the `Component`; set that value for the `AtomicReference` in `@OnBind`, and get from it in `@OnUnbind` or other lifecycle methods.
+ * **Breaking:** Add `ComponentTree` in `Handle` so that `Handle` can be used across component trees. Remove static references of `Handle` as that can lead to memory leaks since it hold reference to `ComponentTree` now, instead `Handle` should be used via `@State` or `useState` in Kotlin.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.40.0...master).
 

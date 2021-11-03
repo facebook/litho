@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 /**
@@ -25,4 +26,27 @@ import com.facebook.infer.annotation.Nullsafe;
  * @see {@link LithoTooltipController}
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class Handle {}
+public class Handle {
+
+  private @Nullable ComponentTree mComponentTree;
+
+  /**
+   * @param componentTree Set {@link ComponentTree} when binding trigger handles so that this handle
+   *     can be associated with only one ComponentTree and we can access the right event trigger
+   *     later.
+   */
+  void setComponentTree(final ComponentTree componentTree) {
+    mComponentTree = componentTree;
+  }
+
+  /**
+   * @return {@link ComponentTree} associated with this handle object which is used to find the
+   *     correct event trigger as handle can be used across multiple component trees. For example if
+   *     handle is set on a Component and we want to trigger event on it from one of the children in
+   *     Section list, we should have access to Component's component tree.
+   */
+  @Nullable
+  ComponentTree getComponentTree() {
+    return mComponentTree;
+  }
+}

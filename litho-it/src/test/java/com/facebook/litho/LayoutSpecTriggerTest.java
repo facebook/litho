@@ -17,11 +17,15 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.LifecycleStep.getSteps;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecTriggerTester;
+import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +49,125 @@ public class LayoutSpecTriggerTest {
             .steps(info)
             .triggerObjectRef(triggerObjectRef)
             .handle(triggerHandle)
+            .build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    final Object bazObject = new Object();
+
+    // We need to use a ComponentContext with a ComponentTree on it
+    LayoutSpecTriggerTester.triggerTestEvent(
+        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+
+    assertThat(getSteps(info))
+        .describedAs("Should call @OnTrigger method")
+        .containsExactly(LifecycleStep.ON_TRIGGER);
+
+    assertThat(triggerObjectRef.get())
+        .describedAs("Event object is correctly passed")
+        .isEqualTo(bazObject);
+  }
+
+  @Test
+  public void layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_child() {
+    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
+    final Handle triggerHandle = new Handle();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        Column.create(componentContext)
+            .child(Text.create(componentContext).text("Sample"))
+            .child(
+                LayoutSpecTriggerTester.create(componentContext)
+                    .steps(info)
+                    .triggerObjectRef(triggerObjectRef)
+                    .handle(triggerHandle)
+                    .build())
+            .build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    final Object bazObject = new Object();
+
+    // We need to use a ComponentContext with a ComponentTree on it
+    LayoutSpecTriggerTester.triggerTestEvent(
+        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+
+    assertThat(getSteps(info))
+        .describedAs("Should call @OnTrigger method")
+        .containsExactly(LifecycleStep.ON_TRIGGER);
+
+    assertThat(triggerObjectRef.get())
+        .describedAs("Event object is correctly passed")
+        .isEqualTo(bazObject);
+  }
+
+  @Test
+  public void layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_root() {
+    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
+    final Handle triggerHandle = new Handle();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        Column.create(componentContext)
+            .child(Text.create(componentContext).text("Sample"))
+            .child(
+                RecyclerCollectionComponent.create(componentContext)
+                    .heightPx(150)
+                    .section(
+                        SingleComponentSection.create(new SectionContext(componentContext))
+                            .component(
+                                LayoutSpecTriggerTester.create(componentContext)
+                                    .steps(info)
+                                    .triggerObjectRef(triggerObjectRef)
+                                    .handle(triggerHandle)
+                                    .build())))
+            .build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    final Object bazObject = new Object();
+
+    // We need to use a ComponentContext with a ComponentTree on it
+    LayoutSpecTriggerTester.triggerTestEvent(
+        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
+
+    assertThat(getSteps(info))
+        .describedAs("Should call @OnTrigger method")
+        .containsExactly(LifecycleStep.ON_TRIGGER);
+
+    assertThat(triggerObjectRef.get())
+        .describedAs("Event object is correctly passed")
+        .isEqualTo(bazObject);
+  }
+
+  @Test
+  public void
+      layoutSpec_setRootAndTriggerEvent_eventIsTriggered_handle_used_in_nested_tree_deeper_in_hierarchy() {
+    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final AtomicReference<Object> triggerObjectRef = new AtomicReference<>();
+    final Handle triggerHandle = new Handle();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        Column.create(componentContext)
+            .child(Text.create(componentContext).text("Sample"))
+            .child(
+                RecyclerCollectionComponent.create(componentContext)
+                    .heightPx(150)
+                    .section(
+                        SingleComponentSection.create(new SectionContext(componentContext))
+                            .component(
+                                Column.create(componentContext)
+                                    .child(Text.create(componentContext).text("Nested tree child"))
+                                    .child(
+                                        LayoutSpecTriggerTester.create(componentContext)
+                                            .steps(info)
+                                            .triggerObjectRef(triggerObjectRef)
+                                            .handle(triggerHandle)
+                                            .build()))))
             .build();
     mLithoViewRule.setRoot(component);
 

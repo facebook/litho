@@ -936,17 +936,11 @@ public abstract class Component
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, Handle handle) {
-    if (c.getComponentTree() == null) {
+    if (handle.getComponentTree() == null) {
       return null;
     }
 
-    EventTrigger trigger = c.getComponentTree().getEventTrigger(handle, id);
-
-    if (trigger == null) {
-      return null;
-    }
-
-    return trigger;
+    return handle.getComponentTree().getEventTrigger(handle, id);
   }
 
   /**

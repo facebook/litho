@@ -1604,6 +1604,11 @@ public class ComponentTree implements LithoLifecycleListener {
 
   @GuardedBy("mEventTriggersContainer")
   private void bindTriggerHandler(ComponentContext scopedContext, Component component) {
+    final @Nullable Handle componentHandle = component.getHandle();
+
+    if (componentHandle != null) {
+      componentHandle.setComponentTree(this);
+    }
     component.recordEventTrigger(scopedContext, mEventTriggersContainer);
   }
 

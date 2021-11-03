@@ -78,7 +78,7 @@ public class LithoTooltipController {
    */
   public static void showTooltipOnHandle(
       ComponentContext c, LithoTooltip lithoTooltip, Handle handle, int xOffset, int yOffset) {
-    final ComponentTree componentTree = c.getComponentTree();
+    final ComponentTree componentTree = handle.getComponentTree();
 
     if (componentTree == null
         || componentTree.isReleased()
