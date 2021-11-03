@@ -194,4 +194,120 @@ class SpacingTest {
     linearSpacing.getItemOffsets(last, view, recyclerView, state)
     assertThat(last).isEqualTo(Rect(3, 0, 0, 0))
   }
+
+  @Test
+  fun `test overrides applied correctly for vertical reverse layout`() {
+    whenever(linearLayoutManager.reverseLayout).thenReturn(true)
+
+    val linearSpacing =
+        LinearSpacingItemDecoration(
+            all = 10,
+            between = 1,
+            start = 2,
+            end = 3,
+        )
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(0)
+    val first = Rect()
+    linearSpacing.getItemOffsets(first, view, recyclerView, state)
+    assertThat(first).isEqualTo(Rect(0, 1, 0, 2))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(2)
+    val middle = Rect()
+    linearSpacing.getItemOffsets(middle, view, recyclerView, state)
+    assertThat(middle).isEqualTo(Rect(0, 1, 0, 0))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(3)
+    val last = Rect()
+    linearSpacing.getItemOffsets(last, view, recyclerView, state)
+    assertThat(last).isEqualTo(Rect(0, 3, 0, 0))
+  }
+
+  @Test
+  fun `test overrides applied correctly for horizontal reverse layout`() {
+    whenever(linearLayoutManager.orientation).thenReturn(RecyclerView.HORIZONTAL)
+    whenever(linearLayoutManager.reverseLayout).thenReturn(true)
+
+    val linearSpacing =
+        LinearSpacingItemDecoration(
+            all = 10,
+            between = 1,
+            start = 2,
+            end = 3,
+        )
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(0)
+    val first = Rect()
+    linearSpacing.getItemOffsets(first, view, recyclerView, state)
+    assertThat(first).isEqualTo(Rect(1, 0, 2, 0))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(2)
+    val middle = Rect()
+    linearSpacing.getItemOffsets(middle, view, recyclerView, state)
+    assertThat(middle).isEqualTo(Rect(1, 0, 0, 0))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(3)
+    val last = Rect()
+    linearSpacing.getItemOffsets(last, view, recyclerView, state)
+    assertThat(last).isEqualTo(Rect(3, 0, 0, 0))
+  }
+
+  @Test
+  fun `test overrides applied correctly for horizontal reversed RTL layout`() {
+    whenever(linearLayoutManager.orientation).thenReturn(RecyclerView.HORIZONTAL)
+    whenever(linearLayoutManager.reverseLayout).thenReturn(true)
+    whenever(linearLayoutManager.layoutDirection).thenReturn(View.LAYOUT_DIRECTION_RTL)
+
+    val linearSpacing =
+        LinearSpacingItemDecoration(
+            all = 10,
+            between = 1,
+            start = 2,
+            end = 3,
+        )
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(0)
+    val first = Rect()
+    linearSpacing.getItemOffsets(first, view, recyclerView, state)
+    assertThat(first).isEqualTo(Rect(2, 0, 1, 0))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(2)
+    val middle = Rect()
+    linearSpacing.getItemOffsets(middle, view, recyclerView, state)
+    assertThat(middle).isEqualTo(Rect(0, 0, 1, 0))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(3)
+    val last = Rect()
+    linearSpacing.getItemOffsets(last, view, recyclerView, state)
+    assertThat(last).isEqualTo(Rect(0, 0, 3, 0))
+  }
+
+  @Test
+  fun `test overrides applied correctly for vertical reverse RTL layout`() {
+    whenever(linearLayoutManager.reverseLayout).thenReturn(true)
+    whenever(linearLayoutManager.layoutDirection).thenReturn(View.LAYOUT_DIRECTION_RTL)
+
+    val linearSpacing =
+        LinearSpacingItemDecoration(
+            all = 10,
+            between = 1,
+            start = 2,
+            end = 3,
+        )
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(0)
+    val first = Rect()
+    linearSpacing.getItemOffsets(first, view, recyclerView, state)
+    assertThat(first).isEqualTo(Rect(0, 1, 0, 2))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(2)
+    val middle = Rect()
+    linearSpacing.getItemOffsets(middle, view, recyclerView, state)
+    assertThat(middle).isEqualTo(Rect(0, 1, 0, 0))
+
+    whenever(recyclerView.getChildAdapterPosition(any())).thenReturn(3)
+    val last = Rect()
+    linearSpacing.getItemOffsets(last, view, recyclerView, state)
+    assertThat(last).isEqualTo(Rect(0, 3, 0, 0))
+  }
 }

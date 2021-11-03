@@ -71,8 +71,10 @@ data class LinearSpacingItemDecoration(
       state: RecyclerView.State
   ) {
     val layoutManager = parent.layoutManager as? LinearLayoutManager ?: return
-    val isVertical = layoutManager.orientation == RecyclerView.VERTICAL
-    val isRTL = layoutManager.layoutDirection == View.LAYOUT_DIRECTION_RTL
+    val isHorizontal = layoutManager.orientation == RecyclerView.HORIZONTAL
+    val isRTL = isHorizontal && layoutManager.layoutDirection == View.LAYOUT_DIRECTION_RTL
+    val isReverseLayout = layoutManager.reverseLayout
+    val isReversed = isRTL xor isReverseLayout
 
     @Px val resolvedStart = start ?: all ?: 0
     @Px val resolvedEnd = end ?: all ?: 0
@@ -80,31 +82,34 @@ data class LinearSpacingItemDecoration(
 
     val childAdapterPosition = parent.getChildAdapterPosition(view)
     if (childAdapterPosition == RecyclerView.NO_POSITION) return
+    val isFirstItem = childAdapterPosition == 0
+    val isLastItem = childAdapterPosition == parent.adapter?.itemCount?.minus(1) ?: -1
     with(outRect) {
-      if (childAdapterPosition == 0) {
-        // first item
-        if (isRTL) {
-          right = if (isVertical) 0 else resolvedStart
+      if (isFirstItem) {
+        if (isReversed) {
+          right = if (isHorizontal) resolvedStart else 0
+          bottom = if (isHorizontal) 0 else resolvedStart
         } else {
-          left = if (isVertical) 0 else resolvedStart
+          left = if (isHorizontal) resolvedStart else 0
+          top = if (isHorizontal) 0 else resolvedStart
         }
-        top = if (isVertical) resolvedStart else 0
       }
-      if (childAdapterPosition == parent.adapter?.itemCount?.minus(1) ?: -1) {
-        // last item
-        if (isRTL) {
-          left = if (isVertical) 0 else resolvedEnd
+      if (isLastItem) {
+        if (isReversed) {
+          left = if (isHorizontal) resolvedEnd else 0
+          top = if (isHorizontal) 0 else resolvedEnd
         } else {
-          right = if (isVertical) 0 else resolvedEnd
+          right = if (isHorizontal) resolvedEnd else 0
+          bottom = if (isHorizontal) 0 else resolvedEnd
         }
-        bottom = if (isVertical) resolvedEnd else 0
       } else {
-        if (isRTL) {
-          left = if (isVertical) 0 else resolvedBetween
+        if (isReversed) {
+          left = if (isHorizontal) resolvedBetween else 0
+          top = if (isHorizontal) 0 else resolvedBetween
         } else {
-          right = if (isVertical) 0 else resolvedBetween
+          right = if (isHorizontal) resolvedBetween else 0
+          bottom = if (isHorizontal) 0 else resolvedBetween
         }
-        bottom = if (isVertical) resolvedBetween else 0
       }
     }
   }
