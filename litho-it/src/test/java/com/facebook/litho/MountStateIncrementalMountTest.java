@@ -69,7 +69,6 @@ import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.Text;
-import com.facebook.rendercore.incrementalmount.IncrementalMountExtensionConfigs;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;

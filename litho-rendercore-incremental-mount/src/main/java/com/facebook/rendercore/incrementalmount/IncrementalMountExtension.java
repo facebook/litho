@@ -97,7 +97,7 @@ public class IncrementalMountExtension
     if (output == null) {
       throw new IllegalArgumentException("Output with id=" + id + " not found.");
     }
-    
+
     maybeAcquireReference(extensionState, state.mPreviousLocalVisibleRect, output, false);
 
     RenderCoreSystrace.endSection();
