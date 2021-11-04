@@ -52,6 +52,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
@@ -1162,6 +1163,17 @@ public class RecyclerBinder
     applyReadyBatchesWithRetry(0);
   }
 
+  private String getState(RecyclerView recyclerView) {
+    try {
+      Field field = RecyclerView.class.getDeclaredField("mState");
+      field.setAccessible(true);
+      Object state = field.get(recyclerView);
+      return state == null ? "null" : state.toString();
+    } catch (Exception e) {
+      return "Exception getting state: " + e.getMessage();
+    }
+  }
+
   @UiThread
   private void applyReadyBatchesWithRetry(final int retryCount) {
     ThreadUtils.assertMainThread();
@@ -1185,13 +1197,26 @@ public class RecyclerBinder
         // Sanity check that we don't get stuck in an infinite loop
         if (retryCount > APPLY_READY_BATCHES_RETRY_LIMIT) {
           final RecyclerView mountedView = mIsSubAdapter ? mSubAdapterRecyclerView : mMountedView;
-          throw new RuntimeException(
+          String exceptionMessage =
               "Too many retries -- RecyclerView is stuck in layout. Batch size: "
                   + mAsyncBatches.size()
                   + ", isSubAdapter: "
-                  + mIsSubAdapter
-                  + ", isAttachedToWindow: "
-                  + (mountedView != null ? mountedView.isAttachedToWindow() : null));
+                  + mIsSubAdapter;
+          if (mountedView == null) {
+            exceptionMessage += ", mountedView: null";
+          } else {
+            exceptionMessage +=
+                ", isAttachedToWindow: "
+                    + mountedView.isAttachedToWindow()
+                    + ", isAnimating: "
+                    + mountedView.isAnimating()
+                    + ", state: "
+                    + getState(mountedView)
+                    + ", mountedView: "
+                    + mountedView;
+          }
+          throw ComponentUtils.wrapWithMetadata(
+              mComponentContext, new RuntimeException(exceptionMessage));
         }
 
         // Making changes to the adapter here will crash us. Just post to the next frame boundary.
