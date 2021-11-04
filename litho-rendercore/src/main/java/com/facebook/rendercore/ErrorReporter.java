@@ -45,7 +45,7 @@ public class ErrorReporter {
    * @param message Message to log.
    */
   public static void report(final LogLevel level, final String categoryKey, final String message) {
-    getInstance().report(level, categoryKey, message);
+    getInstance().report(level, categoryKey, message, null, 0, null);
   }
 
   /**
@@ -58,7 +58,7 @@ public class ErrorReporter {
    */
   public static void report(
       final LogLevel level, final String categoryKey, final String message, final Throwable cause) {
-    getInstance().report(level, categoryKey, message, cause);
+    getInstance().report(level, categoryKey, message, cause, 0, null);
   }
 
   /**
@@ -74,7 +74,7 @@ public class ErrorReporter {
       final String categoryKey,
       final String message,
       final int samplingFrequency) {
-    getInstance().report(level, categoryKey, message, samplingFrequency);
+    getInstance().report(level, categoryKey, message, null, samplingFrequency, null);
   }
 
   /**
@@ -92,7 +92,7 @@ public class ErrorReporter {
       final String message,
       final Throwable cause,
       final int samplingFrequency) {
-    getInstance().report(level, categoryKey, message, cause, samplingFrequency);
+    getInstance().report(level, categoryKey, message, cause, samplingFrequency, null);
   }
 
   /**
@@ -110,7 +110,7 @@ public class ErrorReporter {
       final String message,
       final int samplingFrequency,
       final @Nullable Map<String, Object> metadata) {
-    getInstance().report(level, categoryKey, message, samplingFrequency, metadata);
+    getInstance().report(level, categoryKey, message, null, samplingFrequency, metadata);
   }
 
   /**

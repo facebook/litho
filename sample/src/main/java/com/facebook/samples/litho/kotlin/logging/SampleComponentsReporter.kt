@@ -17,10 +17,10 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import android.util.Log
-import com.facebook.rendercore.AbstractErrorReporter
+import com.facebook.rendercore.ErrorReporterDelegate
 import com.facebook.rendercore.LogLevel
 
-class SampleComponentsReporter : AbstractErrorReporter() {
+class SampleComponentsReporter : ErrorReporterDelegate {
   private val tag = "LITHOSAMPLE"
 
   override fun report(

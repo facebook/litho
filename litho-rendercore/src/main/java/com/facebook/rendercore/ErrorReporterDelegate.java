@@ -26,73 +26,16 @@ public interface ErrorReporterDelegate {
    *
    * @param level The log level.
    * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   */
-  void report(LogLevel level, String categoryKey, String message);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param cause Cause to log.
-   */
-  void report(LogLevel level, String categoryKey, String message, Throwable cause);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param samplingFrequency Sampling frequency to override default one.
-   */
-  void report(LogLevel level, String categoryKey, String message, int samplingFrequency);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param cause Cause to log.
-   * @param samplingFrequency Sampling frequency to override default one.
-   */
-  void report(
-      LogLevel level, String categoryKey, String message, Throwable cause, int samplingFrequency);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
-   * @param message Message to log.
-   * @param samplingFrequency sampling frequency to override default one.
-   * @param metadata map of metadata associated with the message.
-   */
-  void report(
-      LogLevel level,
-      String categoryKey,
-      String message,
-      int samplingFrequency,
-      @Nullable Map<String, Object> metadata);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level The log level.
-   * @param categoryKey Unique key for aggregation.
    * @param message Message to log. * @param cause Cause to log.
-   * @param cause Cause to log.
-   * @param samplingFrequency sampling frequency to override default one.
-   * @param metadata map of metadata associated with the message.
+   * @param cause Cause to log. default value = null
+   * @param samplingFrequency sampling frequency to override default one. default value = 0
+   * @param metadata map of metadata associated with the message. default value = null
    */
   void report(
       LogLevel level,
       String categoryKey,
       String message,
-      Throwable cause,
+      @Nullable Throwable cause,
       int samplingFrequency,
       @Nullable Map<String, Object> metadata);
 }

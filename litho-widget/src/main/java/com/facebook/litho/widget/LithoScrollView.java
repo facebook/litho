@@ -97,7 +97,9 @@ public class LithoScrollView extends NestedScrollView implements HasLithoViewChi
                 LogLevel.ERROR,
                 "LITHO:NPE:LITHO_SCROLL_VIEW_DRAW",
                 "Root component: " + ct.getSimpleName(),
-                t);
+                t,
+                0,
+                null);
         throw new LithoMetadataExceptionWrapper(ct, t);
       } else {
         throw t;

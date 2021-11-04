@@ -20,7 +20,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import java.util.Map;
 
-public class DefaultErrorReporter extends AbstractErrorReporter {
+public class DefaultErrorReporter implements ErrorReporterDelegate {
 
   private static final String CATEGORY_PREFIX = "RenderCore:";
 

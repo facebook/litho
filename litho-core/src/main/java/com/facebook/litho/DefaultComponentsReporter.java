@@ -20,11 +20,11 @@ import static com.facebook.litho.ComponentsReporter.map;
 
 import android.util.Log;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.AbstractErrorReporter;
+import com.facebook.rendercore.ErrorReporterDelegate;
 import com.facebook.rendercore.LogLevel;
 import java.util.Map;
 
-public class DefaultComponentsReporter extends AbstractErrorReporter {
+public class DefaultComponentsReporter implements ErrorReporterDelegate {
 
   private static final String CATEGORY_PREFIX = "Litho:";
 

@@ -54,7 +54,7 @@ public class ComponentsReporter {
    * @param message Message to log
    */
   public static void emitMessage(LogLevel level, String categoryKey, String message) {
-    ErrorReporter.getInstance().report(map(level), categoryKey, message);
+    ErrorReporter.getInstance().report(map(level), categoryKey, message, null, 0, null);
   }
 
   /**
@@ -68,7 +68,8 @@ public class ComponentsReporter {
    */
   public static void emitMessage(
       LogLevel level, String categoryKey, String message, int samplingFrequency) {
-    ErrorReporter.getInstance().report(map(level), categoryKey, message, samplingFrequency);
+    ErrorReporter.getInstance()
+        .report(map(level), categoryKey, message, null, samplingFrequency, null);
   }
 
   /**
@@ -88,7 +89,7 @@ public class ComponentsReporter {
       int samplingFrequency,
       @Nullable Map<String, Object> metadata) {
     ErrorReporter.getInstance()
-        .report(map(level), categoryKey, message, samplingFrequency, metadata);
+        .report(map(level), categoryKey, message, null, samplingFrequency, metadata);
   }
 
   public static com.facebook.rendercore.LogLevel map(final LogLevel level) {

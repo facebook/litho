@@ -19,7 +19,9 @@ package com.facebook.litho.widget;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -91,7 +93,7 @@ public class RecyclerBinderUpdateCallbackTest {
               }
             })
         .when(mReporter)
-        .report(eq(LogLevel.ERROR), anyString(), anyString());
+        .report(eq(LogLevel.ERROR), anyString(), anyString(), any(), anyInt(), any());
     ComponentsReporter.provide(mReporter);
   }
 
@@ -106,7 +108,8 @@ public class RecyclerBinderUpdateCallbackTest {
         new RecyclerBinderUpdateCallback(null, mOldData, mComponentRenderer, mOperationExecutor);
     callback.onInserted(0, OLD_DATA_SIZE);
     callback.applyChangeset(mComponentContext);
-    verify(mReporter, never()).report((LogLevel) any(), anyString(), anyString());
+    verify(mReporter, never())
+        .report((LogLevel) any(), anyString(), anyString(), any(), anyInt(), any());
 
     final List<RecyclerBinderUpdateCallback.Operation> operations = callback.getOperations();
     assertThat(operations.size()).isEqualTo(1);
@@ -137,7 +140,8 @@ public class RecyclerBinderUpdateCallbackTest {
         new RecyclerBinderUpdateCallback(null, oldData, mComponentRenderer, mOperationExecutor);
     callback.onInserted(0, 12);
     callback.applyChangeset(mComponentContext);
-    verify(mReporter, never()).report((LogLevel) any(), anyString(), anyString());
+    verify(mReporter, never())
+        .report((LogLevel) any(), anyString(), anyString(), any(), anyInt(), any());
 
     final RecyclerBinderUpdateCallback callback2 =
         new RecyclerBinderUpdateCallback(oldData, newData, mComponentRenderer, mOperationExecutor);
@@ -176,7 +180,8 @@ public class RecyclerBinderUpdateCallbackTest {
         new RecyclerBinderUpdateCallback(null, mOldData, mComponentRenderer, mOperationExecutor);
     callback1.onInserted(0, OLD_DATA_SIZE);
     callback1.applyChangeset(mComponentContext);
-    verify(mReporter, never()).report((LogLevel) any(), anyString(), anyString());
+    verify(mReporter, never())
+        .report((LogLevel) any(), anyString(), anyString(), (Throwable) any(), anyInt(), anyMap());
     final RecyclerBinderUpdateCallback.Operation operation =
         (RecyclerBinderUpdateCallback.Operation) callback1.getOperations().get(0);
     assertOperationComponentContainer(operation, mOldData);
@@ -202,7 +207,7 @@ public class RecyclerBinderUpdateCallbackTest {
     callback2.onChanged(10, 1, null);
     callback2.onRemoved(0, 1);
     callback2.applyChangeset(mComponentContext);
-    verify(mReporter).report(eq(LogLevel.ERROR), anyString(), anyString());
+    verify(mReporter).report(eq(LogLevel.ERROR), anyString(), anyString(), any(), anyInt(), any());
 
     final List<RecyclerBinderUpdateCallback.Operation> operations = callback2.getOperations();
     assertThat(operations.size()).isEqualTo(2);

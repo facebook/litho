@@ -160,7 +160,10 @@ public class MountState implements MountDelegateTarget {
                       + " currentRenderUnitId: "
                       + currentRenderUnit.getId()
                       + " newRenderUnitId: "
-                      + renderTreeNode.getRenderUnit().getId());
+                      + renderTreeNode.getRenderUnit().getId(),
+                  null,
+                  0,
+                  null);
         }
 
         // The new render unit is not the same type as the old one.
@@ -182,7 +185,10 @@ public class MountState implements MountDelegateTarget {
                       + " currentRenderUnitContentType: "
                       + currentRenderUnit.getRenderContentType()
                       + " newRenderUnitContentType: "
-                      + renderTreeNode.getRenderUnit().getRenderContentType());
+                      + renderTreeNode.getRenderUnit().getRenderContentType(),
+                  null,
+                  0,
+                  null);
         }
         if (needsRecovery) {
           recreateMountedItemMap(previousRenderTree);

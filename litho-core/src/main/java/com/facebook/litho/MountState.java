@@ -1965,7 +1965,9 @@ class MountState implements MountDelegateTarget {
               LogLevel.ERROR,
               "LITHO:NPE:UNSET_PADDING",
               "From component: " + output.getComponent().getSimpleName(),
-              e);
+              e,
+              0,
+              null);
     }
   }
 
