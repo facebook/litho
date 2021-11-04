@@ -92,7 +92,7 @@ public interface ErrorReporterDelegate {
       LogLevel level,
       String categoryKey,
       String message,
-      @Nullable Throwable cause,
+      Throwable cause,
       int samplingFrequency,
       @Nullable Map<String, Object> metadata);
 }
