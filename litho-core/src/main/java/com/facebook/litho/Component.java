@@ -1303,6 +1303,11 @@ public abstract class Component
     return mErrorEventHandler;
   }
 
+  /** This setter should only be called during the render phase of the component, never after. */
+  final void setErrorEventHandlerDuringRender(EventHandler<ErrorEvent> errorHandler) {
+    mErrorEventHandler = errorHandler;
+  }
+
   /** Get a key that is unique to this component within its tree. */
   static @Nullable String getGlobalKey(
       @Nullable ComponentContext scopedContext, Component component) {

@@ -488,7 +488,7 @@ public class StateHandler {
    * of components.
    */
   private void copyCurrentStateContainers(@Nullable Map<String, StateContainer> stateContainers) {
-    if (stateContainers == null || stateContainers.isEmpty()) {
+    if (stateContainers == null) {
       return;
     }
 

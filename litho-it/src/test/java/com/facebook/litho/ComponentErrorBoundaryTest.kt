@@ -41,11 +41,13 @@ import com.facebook.litho.widget.OnErrorPassUpChildTester
 import com.facebook.litho.widget.OnErrorPassUpParentTester
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethod
 import com.facebook.litho.widget.TestCrashFromEachLayoutLifecycleMethodSpec
+import com.facebook.litho.widget.Text
 import com.facebook.litho.widget.ThrowExceptionGrandChildTester
 import com.facebook.yoga.YogaEdge
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.ArrayList
+import java.util.concurrent.atomic.AtomicReference
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.core.Is
 import org.junit.After
@@ -684,5 +686,33 @@ class ComponentErrorBoundaryTest {
       assertThat(errorOutput[0]).isInstanceOf(RuntimeException::class.java)
       assertThat(errorOutput[0].message).contains(expectedMessage)
     }
+  }
+
+  @Test
+  fun testOnCreateLayoutCrashWithKotlinErrorBoundary() {
+    lateinit var stateRef: AtomicReference<List<Exception>>
+
+    val crashingComponent =
+        TestCrashFromEachLayoutLifecycleMethod.create(lithoViewRule.context)
+            .crashFromStep(LifecycleStep.ON_CREATE_LAYOUT)
+            .build()
+
+    class UseErrorComponent : KComponent() {
+      override fun ComponentScope.render(): Component? {
+        val errorState = useState { listOf<Exception>() }
+        stateRef = AtomicReference(errorState.value)
+        useErrorBoundary { exception: Exception ->
+          errorState.update(errorState.value + listOf(exception))
+          assertThat(exception.message).contains("onCreateLayout crash")
+        }
+        return if (errorState.value.isEmpty()) crashingComponent else Text("error caught")
+      }
+    }
+
+    lithoViewRule.setRoot(UseErrorComponent()).attachToWindow().measure().act { layout() }
+
+    val errorList = stateRef.get()
+    assertThat(errorList.size).isEqualTo(1)
+    assertThat(errorList.get(0).message).isEqualTo("onCreateLayout crash")
   }
 }

@@ -44,7 +44,7 @@ class ScopedComponentInfo implements Cloneable {
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
    * is a root component - a default handler that reraises the exception.
    */
-  private final @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
+  private @Nullable EventHandler<ErrorEvent> mErrorEventHandler;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
@@ -147,6 +147,11 @@ class ScopedComponentInfo implements Cloneable {
   @Nullable
   EventHandler<ErrorEvent> getErrorEventHandler() {
     return mErrorEventHandler;
+  }
+
+  /** This setter should only be called during the render phase of the component, never after. */
+  final void setErrorEventHandlerDuringRender(EventHandler<ErrorEvent> errorHandler) {
+    mErrorEventHandler = errorHandler;
   }
 
   public void commitToLayoutState(StateHandler stateHandler) {
