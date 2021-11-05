@@ -135,6 +135,7 @@ public class ComponentTree implements LithoLifecycleListener {
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
   private final RenderUnitIdMap mRenderUnitIdMap = new RenderUnitIdMap();
+  private boolean mInAttach = false;
 
   @Override
   public void onMovedToState(LithoLifecycle state) {
@@ -708,45 +709,49 @@ public class ComponentTree implements LithoLifecycleListener {
     if (mLithoView == null) {
       throw new IllegalStateException("Trying to attach a ComponentTree without a set View");
     }
-
-    if (mIncrementalMountHelper != null) {
-      mIncrementalMountHelper.onAttach(mLithoView);
-    }
-
-    synchronized (this) {
-      // We need to track that we are attached regardless...
-      mIsAttached = true;
-
-      if (mCommittedLayoutState != null && mMainThreadLayoutState != mCommittedLayoutState) {
-        promoteCommittedLayoutStateToUI();
+    mInAttach = true;
+    try {
+      if (mIncrementalMountHelper != null) {
+        mIncrementalMountHelper.onAttach(mLithoView);
       }
 
-      if (mRoot == null) {
-        throw new IllegalStateException(
-            "Trying to attach a ComponentTree with a null root. Is released: "
-                + mReleased
-                + ", Released Component name is: "
-                + mReleasedComponent);
+      synchronized (this) {
+        // We need to track that we are attached regardless...
+        mIsAttached = true;
+
+        if (mCommittedLayoutState != null && mMainThreadLayoutState != mCommittedLayoutState) {
+          promoteCommittedLayoutStateToUI();
+        }
+
+        if (mRoot == null) {
+          throw new IllegalStateException(
+              "Trying to attach a ComponentTree with a null root. Is released: "
+                  + mReleased
+                  + ", Released Component name is: "
+                  + mReleasedComponent);
+        }
       }
-    }
 
-    // We defer until measure if we don't yet have a width/height
-    final int viewWidth = mLithoView.getMeasuredWidth();
-    final int viewHeight = mLithoView.getMeasuredHeight();
-    if (viewWidth == 0 && viewHeight == 0) {
-      // The host view has not been measured yet.
-      return;
-    }
+      // We defer until measure if we don't yet have a width/height
+      final int viewWidth = mLithoView.getMeasuredWidth();
+      final int viewHeight = mLithoView.getMeasuredHeight();
+      if (viewWidth == 0 && viewHeight == 0) {
+        // The host view has not been measured yet.
+        return;
+      }
 
-    final boolean needsAndroidLayout =
-        mMainThreadLayoutState == null
-            || mMainThreadLayoutState.getWidth() != viewWidth
-            || mMainThreadLayoutState.getHeight() != viewHeight;
+      final boolean needsAndroidLayout =
+          mMainThreadLayoutState == null
+              || mMainThreadLayoutState.getWidth() != viewWidth
+              || mMainThreadLayoutState.getHeight() != viewHeight;
 
-    if (needsAndroidLayout || mLithoView.isMountStateDirty()) {
-      mLithoView.requestLayout();
-    } else {
-      mLithoView.rebind();
+      if (needsAndroidLayout || mLithoView.isMountStateDirty()) {
+        mLithoView.requestLayout();
+      } else {
+        mLithoView.rebind();
+      }
+    } finally {
+      mInAttach = false;
     }
   }
 
@@ -1062,6 +1067,10 @@ public class ComponentTree implements LithoLifecycleListener {
               + mContext.getAndroidContext());
     }
 
+    if (view == null && mInAttach) {
+      throw new RuntimeException("setting null LithoView while in attach");
+    }
+
     mLithoView = view;
   }
 
@@ -1075,6 +1084,10 @@ public class ComponentTree implements LithoLifecycleListener {
 
     if (mLifecycleProvider != null) {
       mLithoView.resetVisibilityHint();
+    }
+
+    if (mInAttach) {
+      throw new RuntimeException("clearing LithoView while in attach");
     }
 
     mLithoView = null;
