@@ -232,6 +232,7 @@ class CollectionContainerScope {
   )
   internal val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
+  private var typeToFreq: MutableMap<Int, Int>? = null
 
   /** A linked list containing the ids of each nested [SubCollection]. */
   private data class NestedId(val id: Any, val next: NestedId?)
@@ -240,34 +241,53 @@ class CollectionContainerScope {
   private data class NestedState(
       val nestedId: NestedId?,
       val nextStaticId: Int,
+      val typeToFreq: MutableMap<Int, Int>?
   )
   private var nestedStateStack: ArrayDeque<NestedState>? = null
 
   private fun pushNestedId(id: Any) {
     // We're processing a nested SubCollection. Save the state.
     nestedStateStack =
-        (nestedStateStack ?: ArrayDeque()).apply { addFirst(NestedState(nestedId, nextStaticId)) }
+        (nestedStateStack ?: ArrayDeque()).apply {
+          addFirst(NestedState(nestedId, nextStaticId, typeToFreq))
+        }
     nestedId = NestedId(id, nestedId)
     nextStaticId = 0
+    typeToFreq = null
   }
 
   private fun popNestedId() {
     // We've finished processing a nested SubCollection. Restore the state.
-    nestedStateStack?.removeFirst()?.let { (nestedId, nextStaticId) ->
+    nestedStateStack?.removeFirst()?.let { (nestedId, nextStaticId, typeToFreq) ->
       this.nestedId = nestedId
       this.nextStaticId = nextStaticId
+      this.typeToFreq = typeToFreq
     }
   }
 
   /** Prepare the final id that will be assigned to the child. */
-  private fun getResolvedId(id: Any?): Any {
+  private fun getResolvedId(id: Any?, component: Component? = null): Any {
     // Generate an id that is unique to the [CollectionContainerScope] in which it was defined
     // If an id has been explicitly defined on the child, use that
-    // Otherwise generate an id.
-    val nonNestedId = id ?: generateStaticId()
+    // If the child has a component generate an id including the type and frequency
+    // Otherwise the child has a null component or a lambda generator, so generate an id.
+    val nonNestedId = id ?: generateIdForComponent(component) ?: generateStaticId()
 
     // Generated an id that is unique across all nested [CollectionContainerScope]s
     return if (nestedId != null) Pair(nonNestedId, nestedId) else nonNestedId
+  }
+
+  /** Generate an id for a non-null Component. */
+  private fun generateIdForComponent(component: Component?): Any? {
+    val typeId = component?.typeId ?: return null
+    if (typeToFreq == null) {
+      typeToFreq = mutableMapOf()
+    }
+
+    return typeToFreq?.let {
+      it[typeId] = (it[typeId] ?: 0) + 1
+      "${typeId}:${it[typeId]}"
+    }
   }
 
   fun child(
@@ -277,7 +297,7 @@ class CollectionContainerScope {
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
   ) {
-    val resolvedId = getResolvedId(id)
+    val resolvedId = getResolvedId(id, component)
     component ?: return
     collectionChildrenModels.add(
         CollectionData(resolvedId, component, null, isSticky, isFullSpan, spanSize, null))

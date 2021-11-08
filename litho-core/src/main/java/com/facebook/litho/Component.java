@@ -330,7 +330,7 @@ public abstract class Component
     return transition;
   }
 
-  final int getTypeId() {
+  public final int getTypeId() {
     return mTypeId;
   }
 

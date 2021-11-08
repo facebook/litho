@@ -20,6 +20,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.facebook.litho.Component
 import com.facebook.litho.testing.LithoViewRule
 import com.facebook.litho.widget.EmptyComponent
+import com.facebook.litho.widget.Text
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -34,6 +35,8 @@ class CollectionIdTest {
   @Rule @JvmField val lithoViewRule = LithoViewRule()
 
   private fun emptyComponent(): Component = EmptyComponent.create(lithoViewRule.context).build()
+
+  private fun textComponent(): Component = Text.create(lithoViewRule.context).text("Hello").build()
 
   private fun CollectionContainerScope.getIds(): List<Any?> = collectionChildrenModels.map { it.id }
 
@@ -75,6 +78,31 @@ class CollectionIdTest {
             .getIds()
 
     assertThat(ids1).hasSameElementsAs(ids2)
+  }
+
+  @Test
+  fun `test generated ids for same component type are stable`() {
+    val ids1 =
+        CollectionContainerScope()
+            .apply {
+              child(textComponent())
+              child(textComponent())
+            }
+            .getIds()
+
+    val ids2 =
+        CollectionContainerScope()
+            .apply {
+              child(textComponent())
+              child(emptyComponent()) // <-- Should not affect ids of other children
+              child(
+                  id = 1,
+                  component = textComponent()) // <-- Should not affect ids of other children
+              child(textComponent())
+            }
+            .getIds()
+
+    assertThat(ids2).containsAll(ids1)
   }
 
   @Test
