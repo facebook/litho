@@ -263,7 +263,8 @@ class MountState implements MountDelegateTarget {
       LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final boolean isIncrementalMountEnabled = componentTree.isIncrementalMountEnabled();
-    final boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
+    final boolean isVisibilityProcessingEnabled =
+        componentTree.isVisibilityProcessingEnabled() && processVisibilityOutputs;
 
     assertMainThread();
 
