@@ -94,15 +94,18 @@ class CollectionIdTest {
         CollectionContainerScope()
             .apply {
               child(textComponent())
-              child(emptyComponent()) // <-- Should not affect ids of other children
-              child(
-                  id = 1,
-                  component = textComponent()) // <-- Should not affect ids of other children
+              // Insert new content. Should not affect ids of existing children
+              child(emptyComponent())
+              child(id = 1, component = textComponent())
+              subCollection { child(textComponent()) }
+              subCollection(id = 2) { child(textComponent()) }
+              // End new content.
               child(textComponent())
             }
             .getIds()
 
-    assertThat(ids2).containsAll(ids1)
+    assertThat(ids2.first()).isEqualTo(ids1.first())
+    assertThat(ids2.last()).isEqualTo(ids1.last())
   }
 
   @Test

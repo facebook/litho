@@ -235,7 +235,7 @@ class CollectionContainerScope {
   private var typeToFreq: MutableMap<Int, Int>? = null
 
   /** A linked list containing the ids of each nested [SubCollection]. */
-  private data class NestedId(val id: Any, val next: NestedId?)
+  private data class NestedId(val id: Any?, val next: NestedId?)
   private var nestedId: NestedId? = null
 
   private data class NestedState(
@@ -245,7 +245,7 @@ class CollectionContainerScope {
   )
   private var nestedStateStack: ArrayDeque<NestedState>? = null
 
-  private fun pushNestedId(id: Any) {
+  private fun pushNestedId(id: Any?) {
     // We're processing a nested SubCollection. Save the state.
     nestedStateStack =
         (nestedStateStack ?: ArrayDeque()).apply {
@@ -324,9 +324,9 @@ class CollectionContainerScope {
    * between [SubCollecion]s.
    */
   fun subCollection(subCollection: SubCollection, id: Any? = null) {
-    id?.let { pushNestedId(id) }
+    pushNestedId(id)
     subCollection.collectionScope.invoke(this)
-    id?.let { popNestedId() }
+    popNestedId()
   }
 
   /** Convenience function for adding an inline [SubCollection] */
