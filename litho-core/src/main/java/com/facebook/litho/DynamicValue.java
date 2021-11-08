@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.infer.annotation.Nullsafe;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -25,9 +24,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * one public method {@link #set(Object)} It also allows attaching listeners (package level access),
  * and takes care of notifying them when the held value changes.
  *
+ * <p>Nullsafe annotation have been removed from this file as infer asks for a T!! type in Kotlin
+ * 1.5 progressive and T & Any type in 1.6 progressive
+ *
  * @param <T> type of value held
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DynamicValue<T> {
 
   private T mValue;

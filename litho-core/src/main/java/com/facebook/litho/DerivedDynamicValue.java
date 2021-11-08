@@ -16,16 +16,16 @@
 
 package com.facebook.litho;
 
-import com.facebook.infer.annotation.Nullsafe;
-
 /**
  * Allows a new DynamicValue to be derived from an existing DynamicValue, with modifications
  * applied.
  *
+ * <p>Nullsafe annotation have been removed from this file as infer asks for a (S!!) -> T!! type in
+ * Kotlin 1.5 progressive and (S & Any) -> T & Any type in 1.6 progressive
+ *
  * @param <I> The type provided
  * @param <O> The type held by the DynamicValue from which this is derived
  */
-@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DerivedDynamicValue<I, O> extends DynamicValue<O> {
 
   public interface Modifier<I, O> {
