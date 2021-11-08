@@ -59,12 +59,10 @@ class StateUpdateTestComponent extends SpecGeneratedComponent {
   }
 
   @Override
-  protected StateContainer createInitialState(ComponentContext c) {
-    final StateContainer stateContainer = createStateContainer();
-    ((TestStateContainer) stateContainer).mCount = INITIAL_COUNT_STATE_VALUE;
+  protected void createInitialState(ComponentContext c) {
+    getStateContainerImpl(c).mCount = INITIAL_COUNT_STATE_VALUE;
     createInitialStateCount.incrementAndGet();
     finalCounterValue.set(INITIAL_COUNT_STATE_VALUE);
-    return stateContainer;
   }
 
   @Override

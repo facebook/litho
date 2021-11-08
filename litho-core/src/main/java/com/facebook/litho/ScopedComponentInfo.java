@@ -57,11 +57,10 @@ class ScopedComponentInfo implements Cloneable {
   ScopedComponentInfo(
       final Component component,
       final ComponentContext context,
-      final @Nullable StateContainer stateContainer,
       final @Nullable EventHandler<ErrorEvent> errorEventHandler) {
     mComponent = component;
     mContext = context;
-    mStateContainer = stateContainer;
+    mStateContainer = component.createStateContainer();
     mInterStagePropsContainer = component.createInterStagePropsContainer();
     mPrepareInterStagePropsContainer = component.createPrepareInterStagePropsContainer();
     mErrorEventHandler = errorEventHandler;

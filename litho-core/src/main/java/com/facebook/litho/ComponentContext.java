@@ -192,7 +192,7 @@ public class ComponentContext implements Cloneable {
       final LayoutStateContext layoutContext,
       final ComponentContext parentContext,
       final Component scope,
-      final String globalKey) {
+      final @Nullable String globalKey) {
     ComponentContext componentContext = parentContext.makeNewCopy();
     componentContext.mComponentScope = scope;
     componentContext.mComponentTree = parentContext.mComponentTree;
@@ -200,34 +200,10 @@ public class ComponentContext implements Cloneable {
     componentContext.mLayoutStateContext = new WeakReference<>(layoutContext);
 
     if (componentContext.useStatelessComponent()) {
-
       final EventHandler<ErrorEvent> errorEventHandler =
           ComponentUtils.createOrGetErrorEventHandler(scope, parentContext, componentContext);
-
-      final StateHandler stateHandler = layoutContext.getStateHandler();
-
-      // Get the current StateContainer from the StateHandler; for both spec gen and k-components.
-      final @Nullable StateContainer stateContainer;
-
-      // If the spec gen component has state maybe apply state updates, and get the new state.
-
-      if (scope.usesLocalStateContainer()) {
-        if (scope.hasState()) {
-          stateContainer =
-              Preconditions.checkNotNull(stateHandler)
-                  .applyStateUpdatesAndGetStateContainer(componentContext, scope, globalKey);
-        } else {
-          stateContainer = null;
-        }
-      } else {
-        // the get method adds the state container to the needed state container map
-        stateContainer = stateHandler.getStateContainer(globalKey);
-      }
-
       componentContext.mScopedComponentInfo =
-          new ScopedComponentInfo(scope, componentContext, stateContainer, errorEventHandler);
-
-      componentContext.setParentTreeProps(parentContext.getTreeProps());
+          new ScopedComponentInfo(scope, componentContext, errorEventHandler);
     }
 
     return componentContext;

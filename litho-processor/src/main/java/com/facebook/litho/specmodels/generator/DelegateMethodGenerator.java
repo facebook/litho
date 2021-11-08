@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.CREATE_STATE_CONTAINER;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LIFECYCLE_CREATE_INITIAL_STATE;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.LOCAL_STATE_CONTAINER_NAME;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.PREDICATE_NEEDS_STATE;
@@ -112,10 +111,7 @@ public class DelegateMethodGenerator {
     final MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(methodDescription.name)
             .addModifiers(methodDescription.accessType)
-            .returns(
-                methodDescription.returnsState
-                    ? ClassNames.STATE_CONTAINER
-                    : methodDescription.returnType);
+            .returns(methodDescription.returnType);
 
     for (AnnotationSpec annotation : methodDescription.annotations) {
       methodSpec.addAnnotation(annotation);
@@ -229,9 +225,7 @@ public class DelegateMethodGenerator {
       }
     }
 
-    if (methodDescription.returnsState) {
-      methodSpec.addStatement("return " + LOCAL_STATE_CONTAINER_NAME);
-    } else if (!methodDescription.returnType.equals(TypeName.VOID)) {
+    if (!methodDescription.returnType.equals(TypeName.VOID)) {
       methodSpec.addStatement("return _result");
     }
 
@@ -287,19 +281,7 @@ public class DelegateMethodGenerator {
         (methodDescription.createsState && !specModel.getStateValues().isEmpty())
             || delegateMethod.methodParams.stream().anyMatch(PREDICATE_NEEDS_STATE);
 
-    if (methodDescription.createsState && methodDescription.returnsState) {
-
-      // if the method creates and returns state then create a new state container.
-
-      acquireStatements.addStatement(
-          "$L $L = $L",
-          StateContainerGenerator.getStateContainerClassName(specModel),
-          LOCAL_STATE_CONTAINER_NAME,
-          CREATE_STATE_CONTAINER + "()");
-    } else if (requiresState) {
-
-      // Create a local variable for the state container that the delegation code can read from.
-
+    if (requiresState) {
       acquireStatements.addStatement(
           "$L $L = $L",
           StateContainerGenerator.getStateContainerClassName(specModel),

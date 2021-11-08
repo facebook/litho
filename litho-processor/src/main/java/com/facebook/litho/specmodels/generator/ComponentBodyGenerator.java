@@ -84,7 +84,6 @@ public class ComponentBodyGenerator {
   static final String LOCAL_STATE_CONTAINER_NAME = "_state";
   static final String LOCAL_INTER_STAGE_PROPS_CONTAINER_NAME = "_interStageProps";
   static final String LIFECYCLE_CREATE_INITIAL_STATE = "createInitialState";
-  static final String CREATE_STATE_CONTAINER = "createStateContainer";
 
   static final Predicate<MethodParamModel> PREDICATE_NEEDS_STATE =
       param -> param instanceof StateParamModel || isAnnotatedWith(param, State.class);
