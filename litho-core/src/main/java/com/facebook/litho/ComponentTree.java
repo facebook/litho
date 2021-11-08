@@ -2629,7 +2629,7 @@ public class ComponentTree implements LithoLifecycleListener {
     mStateHandler.putCachedValue(cachedValueInputs, cachedValue);
   }
 
-  static synchronized Looper getDefaultLayoutThreadLooper() {
+  public static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
       final HandlerThread defaultThread =
           new HandlerThread(DEFAULT_LAYOUT_THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);

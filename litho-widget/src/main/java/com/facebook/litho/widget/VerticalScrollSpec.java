@@ -180,7 +180,7 @@ public class VerticalScrollSpec {
   }
 
   @OnCreateMountContent
-  static LithoScrollView onCreateMountContent(Context context) {
+  public static LithoScrollView onCreateMountContent(Context context) {
     return (LithoScrollView)
         LayoutInflater.from(context).inflate(R.layout.litho_scroll_view, null, false);
   }
