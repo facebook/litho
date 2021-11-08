@@ -28,9 +28,13 @@ import com.facebook.litho.useState
 import com.facebook.litho.widget.Text
 
 class MultiListCollectionKComponent : KComponent() {
-  val ALL_FRIENDS_TAG = "all_friends"
-  val TOP_FRIENDS_TAG = "top_friends"
-  val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
+
+  companion object {
+    private const val ALL_FRIENDS_TAG = "all_friends"
+    private const val TOP_FRIENDS_TAG = "top_friends"
+  }
+
+  private val friends = "Ross Rachel Joey Phoebe Monica Chandler".split(" ")
 
   override fun ComponentScope.render(): Component? {
 
@@ -45,15 +49,15 @@ class MultiListCollectionKComponent : KComponent() {
       child(
           Collection(style = Style.flex(grow = 1f)) {
             if (shouldShowTopFriends.value) {
-              child(
-                  id = TOP_FRIENDS_TAG, component = Text("Top Friends", textStyle = Typeface.BOLD))
-              topFriends.forEach {
-                child(id = Pair(it, TOP_FRIENDS_TAG), component = Text("${friends[it]}"))
+              subCollection(id = TOP_FRIENDS_TAG) {
+                child(Text("Top Friends", textStyle = Typeface.BOLD))
+                topFriends.forEach { child(id = it, component = Text(friends[it])) }
               }
             }
-            child(id = ALL_FRIENDS_TAG, component = Text("All Friends", textStyle = Typeface.BOLD))
-            allFriends.forEach {
-              child(id = Pair(it, ALL_FRIENDS_TAG), component = Text("${friends[it]}"))
+
+            subCollection(id = ALL_FRIENDS_TAG) {
+              child(Text("All Friends", textStyle = Typeface.BOLD))
+              allFriends.forEach { child(id = it, component = Text(friends[it])) }
             }
           })
     }

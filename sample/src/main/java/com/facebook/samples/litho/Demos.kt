@@ -106,6 +106,7 @@ import com.facebook.samples.litho.kotlin.collection.SelectionCollectionKComponen
 import com.facebook.samples.litho.kotlin.collection.SpanCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.StickyHeaderCollectionKComponent
 import com.facebook.samples.litho.kotlin.collection.SubCollectionsKComponent
+import com.facebook.samples.litho.kotlin.collection.TabsCollectionKComponent
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingKotlinActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyKotlinActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
@@ -203,6 +204,7 @@ class Demos {
                             SingleDemo(
                                 name = "Horizontal Scroll",
                                 component = HorizontalScrollKComponent()),
+                            SingleDemo(name = "Tabs", component = TabsCollectionKComponent()),
                             SingleDemo(
                                 name = "Sections Demo: Lithography",
                                 klass = LithographyKotlinActivity::class.java))),

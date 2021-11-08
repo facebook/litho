@@ -25,6 +25,9 @@ litho_robolectric4_test(
     name = "widget",
     srcs = glob(["**/*.kt"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    friend_paths = [
+        LITHO_SECTIONS_WIDGET_KOTLIN_TARGET,
+    ],
     is_androidx = True,
     language = "KOTLIN",
     provided_deps = [

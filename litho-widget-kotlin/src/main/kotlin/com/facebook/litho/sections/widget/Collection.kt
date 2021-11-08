@@ -220,7 +220,7 @@ class Collection(
 @ContainerDsl
 class CollectionContainerScope {
 
-  private data class CollectionData(
+  internal data class CollectionData(
       val id: Any? = null,
       val component: Component? = null,
       val componentFunction: (() -> Component?)? = null,
@@ -230,8 +230,45 @@ class CollectionContainerScope {
       val deps: Array<Any?>? = null,
       val section: Section? = null,
   )
-  private val collectionChildrenModels = mutableListOf<CollectionData>()
+  internal val collectionChildrenModels = mutableListOf<CollectionData>()
   private var nextStaticId = 0
+
+  /** A linked list containing the ids of each nested [SubCollection]. */
+  private data class NestedId(val id: Any, val next: NestedId?)
+  private var nestedId: NestedId? = null
+
+  private data class NestedState(
+      val nestedId: NestedId?,
+      val nextStaticId: Int,
+  )
+  private var nestedStateStack: ArrayDeque<NestedState>? = null
+
+  private fun pushNestedId(id: Any) {
+    // We're processing a nested SubCollection. Save the state.
+    nestedStateStack =
+        (nestedStateStack ?: ArrayDeque()).apply { addFirst(NestedState(nestedId, nextStaticId)) }
+    nestedId = NestedId(id, nestedId)
+    nextStaticId = 0
+  }
+
+  private fun popNestedId() {
+    // We've finished processing a nested SubCollection. Restore the state.
+    nestedStateStack?.removeFirst()?.let { (nestedId, nextStaticId) ->
+      this.nestedId = nestedId
+      this.nextStaticId = nextStaticId
+    }
+  }
+
+  /** Prepare the final id that will be assigned to the child. */
+  private fun getResolvedId(id: Any?): Any {
+    // Generate an id that is unique to the [CollectionContainerScope] in which it was defined
+    // If an id has been explicitly defined on the child, use that
+    // Otherwise generate an id.
+    val nonNestedId = id ?: generateStaticId()
+
+    // Generated an id that is unique across all nested [CollectionContainerScope]s
+    return if (nestedId != null) Pair(nonNestedId, nestedId) else nonNestedId
+  }
 
   fun child(
       component: Component?,
@@ -240,10 +277,10 @@ class CollectionContainerScope {
       isFullSpan: Boolean = false,
       spanSize: Int? = null,
   ) {
-    val id = id ?: generateStaticId()
+    val resolvedId = getResolvedId(id)
     component ?: return
     collectionChildrenModels.add(
-        CollectionData(id, component, null, isSticky, isFullSpan, spanSize, null))
+        CollectionData(resolvedId, component, null, isSticky, isFullSpan, spanSize, null))
   }
 
   fun child(
@@ -256,21 +293,25 @@ class CollectionContainerScope {
   ) {
     collectionChildrenModels.add(
         CollectionData(
-            id ?: generateStaticId(),
-            null,
-            componentFunction,
-            isSticky,
-            isFullSpan,
-            spanSize,
-            deps))
+            getResolvedId(id), null, componentFunction, isSticky, isFullSpan, spanSize, deps))
   }
 
   /**
    * Add a [SubCollection] to the [Collection], i.e. a group of [Collection] children that do not
    * need to be defined inline.
+   *
+   * @param id An id that will be combined with the id of any children. This is to avoid id clashes
+   * between [SubCollecion]s.
    */
-  fun subCollection(subCollection: SubCollection) {
+  fun subCollection(subCollection: SubCollection, id: Any? = null) {
+    id?.let { pushNestedId(id) }
     subCollection.collectionScope.invoke(this)
+    id?.let { popNestedId() }
+  }
+
+  /** Convenience function for adding an inline [SubCollection] */
+  fun subCollection(id: Any? = null, collectionScope: CollectionContainerScope.() -> Unit) {
+    subCollection(SubCollection(collectionScope), id)
   }
 
   /** This is a temporary api, that will soon be removed. Please do not use it */
