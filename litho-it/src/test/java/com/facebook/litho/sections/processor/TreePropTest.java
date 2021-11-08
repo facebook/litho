@@ -29,7 +29,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
-import com.facebook.litho.testing.treeprop.TreePropCreatorRoot;
 import com.facebook.litho.testing.treeprop.TreePropNumberType;
 import com.facebook.litho.testing.treeprop.TreePropStringType;
 import com.facebook.litho.testing.treeprop.TreePropTestParent;
@@ -123,14 +122,5 @@ public class TreePropTest {
     assertThat(view).isInstanceOf(TextView.class);
 
     assertThat(((TextView) view).getText()).isEqualTo("sampleTreeProp_changed");
-  }
-
-  @Test(expected = Test.None.class /* no exception expected */)
-  public void onCreatingTreeProps_shouldBeSetWhenInitialisingStateOfDescendants() {
-    mLithoViewRule
-        .attachToWindow()
-        .setRoot(TreePropCreatorRoot.create(mLithoViewRule.getContext()).build())
-        .layout()
-        .measure();
   }
 }
