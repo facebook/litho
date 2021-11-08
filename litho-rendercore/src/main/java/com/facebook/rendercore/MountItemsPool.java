@@ -96,6 +96,56 @@ public class MountItemsPool {
     }
   }
 
+  /** Factory for creating mount content objects when filling an entire pool. */
+  public interface MountContentCreator {
+    Object createMountContent(Context context);
+  }
+
+  /**
+   * Can be called to fill up a mount content pool for the specified MountContent types. If a pool
+   * doesn't exist for a Mount Content type, a default one will be created with the specified size.
+   *
+   * @param mountContentCreators a map of mount content types with corresponding factories to create
+   *     a mount content instance.
+   */
+  public static void prefillMountContentPool(
+      Context context, int poolSize, Class lifecycle, MountContentCreator mountContentCreator) {
+    if (poolSize == 0) {
+      return;
+    }
+
+    final ItemPool pool = getDefaultMountContentPool(context, lifecycle);
+    if (pool != null) {
+      for (int i = 0; i < poolSize; i++) {
+        pool.release(mountContentCreator.createMountContent(context));
+      }
+    }
+  }
+
+  private static @Nullable ItemPool getDefaultMountContentPool(Context context, Class lifecycle) {
+    synchronized (sMountContentLock) {
+      Map<Object, ItemPool> poolsMap = sMountContentPoolsByContext.get(context);
+      if (poolsMap == null) {
+        final Context rootContext = getRootContext(context);
+        if (sDestroyedRootContexts.containsKey(rootContext)) {
+          return null;
+        }
+
+        ensureActivityCallbacks(context);
+        poolsMap = new HashMap<Object, ItemPool>();
+        sMountContentPoolsByContext.put(context, poolsMap);
+      }
+
+      ItemPool pool = poolsMap.get(lifecycle);
+      if (pool == null) {
+        pool = new DefaultItemPool();
+        poolsMap.put(lifecycle, pool);
+      }
+
+      return pool;
+    }
+  }
+
   private static @Nullable ItemPool getMountContentPool(Context context, RenderUnit renderUnit) {
     if (renderUnit.isRecyclingDisabled()) {
       return null;

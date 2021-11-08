@@ -126,7 +126,7 @@ public abstract class Component
    * @return the globally unique ID associated with {@param type}, creating one if necessary.
    *     Allocated IDs map 1-to-1 with objects passed to this method.
    */
-  private static int getOrCreateId(Object type) {
+  static int getOrCreateId(Object type) {
     synchronized (sTypeIdByComponentType) {
       final Integer typeId = sTypeIdByComponentType.get(type);
       if (typeId != null) {
