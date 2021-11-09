@@ -28,7 +28,6 @@ import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
-import com.facebook.rendercore.extensions.RenderCoreExtension;
 import com.facebook.rendercore.incrementalmount.IncrementalMountExtension.IncrementalMountExtensionState;
 import java.util.Collection;
 import java.util.HashMap;
@@ -110,7 +109,7 @@ public class IncrementalMountExtension
     for (long id : state.mMountedOutputIdsWithNestedContent.keySet()) {
       final Object content = state.mMountedOutputIdsWithNestedContent.get(id);
       if (content != null) {
-        recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+        recursivelyNotifyVisibleBoundsChanged(extensionState, id, content);
       }
     }
   }
@@ -193,7 +192,7 @@ public class IncrementalMountExtension
       return;
     }
 
-    recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+    recursivelyNotifyVisibleBoundsChanged(extensionState, id, content);
   }
 
   @Override
@@ -248,12 +247,15 @@ public class IncrementalMountExtension
   }
 
   static void recursivelyNotifyVisibleBoundsChanged(
-      final IncrementalMountExtensionInput input, final long id, final Object content) {
+      final ExtensionState<IncrementalMountExtensionState> extensionState, 
+      final long id, 
+      final Object content) {
     assertMainThread();
+    final IncrementalMountExtensionInput input = extensionState.getState().mInput;
     if (input != null && input.renderUnitWithIdHostsRenderTrees(id)) {
       log("RecursivelyNotify [RenderUnit=" + id + "]");
       RenderCoreSystrace.beginSection("IncrementalMountExtension.recursivelyNotify");
-      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(content);
+      extensionState.getMountDelegate().notifyVisibleBoundsChangedForItem(content);
       RenderCoreSystrace.endSection();
     }
   }
@@ -292,7 +294,6 @@ public class IncrementalMountExtension
       final Rect localVisibleRect,
       final IncrementalMountOutput incrementalMountOutput,
       final boolean isMounting) {
-    final IncrementalMountExtensionState state = extensionState.getState();
     final long id = incrementalMountOutput.getId();
     final Object content = getContentById(extensionState, id);
     // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
@@ -311,7 +312,7 @@ public class IncrementalMountExtension
       // If we're in the process of mounting now, we know the item we're updating is already
       // mounted and that MountState.mount will not be called. We have to call the binder
       // ourselves.
-      recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+      recursivelyNotifyVisibleBoundsChanged(extensionState, id, content);
     }
   }
 
@@ -429,7 +430,7 @@ public class IncrementalMountExtension
 
       final Object content = state.mMountedOutputIdsWithNestedContent.get(id);
       if (content != null) {
-        recursivelyNotifyVisibleBoundsChanged(state.mInput, id, content);
+        recursivelyNotifyVisibleBoundsChanged(extensionState, id, content);
       }
     }
 

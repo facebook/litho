@@ -21,10 +21,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
+import com.facebook.rendercore.extensions.RenderCoreExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Can be passed to a MountState to override default mounting behaviour and control which items get
@@ -38,9 +41,16 @@ public class MountDelegate {
   private final Map<MountExtension, ExtensionState> mExtensionStates = new HashMap<>();
   private @Nullable ExtensionState mUnmountDelegateExtensionState;
   private boolean mReferenceCountingEnabled = false;
+  private boolean mCollectVisibleBoundsChangedCalls = false;
+  private int mNotifyVisibleBoundsChangedNestCount = 0;
+  private final Set<Object> mNotifyVisibleBoundsChangedItems = new HashSet<>();
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
     mMountDelegateTarget = mountDelegateTarget;
+  }
+
+  public void setCollectVisibleBoundsChangedCalls(boolean value) {
+    mCollectVisibleBoundsChangedCalls = value;
   }
 
   public void addExtension(MountExtension mountExtension) {
@@ -75,6 +85,43 @@ public class MountDelegate {
     mReferenceCountingEnabled = false;
   }
 
+  public void notifyVisibleBoundsChangedForItem(Object item) {
+    if (!mCollectVisibleBoundsChangedCalls) {
+      RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item);
+      return;
+    }
+
+    if (mNotifyVisibleBoundsChangedItems.contains(item)) {
+      return;
+    }
+
+    mNotifyVisibleBoundsChangedItems.add(item);
+  }
+
+  public void startNotifyVisibleBoundsChangedSection() {
+    if (!mCollectVisibleBoundsChangedCalls) {
+      return;
+    }
+
+    mNotifyVisibleBoundsChangedNestCount++;
+  }
+
+  public void endNotifyVisibleBoundsChangedSection() {
+    if (!mCollectVisibleBoundsChangedCalls) {
+      return;
+    }
+
+    mNotifyVisibleBoundsChangedNestCount--;
+
+    if (mNotifyVisibleBoundsChangedNestCount == 0) {
+      for (Object item : mNotifyVisibleBoundsChangedItems) {
+        RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged(item);
+      }
+
+      mNotifyVisibleBoundsChangedItems.clear();
+    }
+  }
+
   private void updateRefCountEnabled() {
     mReferenceCountingEnabled = false;
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
@@ -84,31 +131,47 @@ public class MountDelegate {
   }
 
   void unBind() {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       mountExtension.onUnbind(getExtensionState(mountExtension));
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   void unMount() {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       mountExtension.onUnmount(getExtensionState(mountExtension));
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   void onBindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       extension.onBindItem(getExtensionState(extension), renderUnit, content, layoutData);
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   void onUnbindItem(final RenderUnit renderUnit, final Object content, final Object layoutData) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       extension.onUnbindItem(getExtensionState(extension), renderUnit, content, layoutData);
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   void onUpdateItemsIfNeeded(
@@ -117,6 +180,8 @@ public class MountDelegate {
       final @Nullable RenderUnit<?> nextRenderUnit,
       final @Nullable Object nextLayoutData,
       final Object content) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       final ExtensionState state = getExtensionState(extension);
@@ -128,22 +193,32 @@ public class MountDelegate {
         extension.onBindItem(state, nextRenderUnit, content, nextLayoutData);
       }
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onMountItem(
       final RenderUnit renderUnit, final Object content, final Object layoutData) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       extension.onMountItem(getExtensionState(extension), renderUnit, content, layoutData);
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onUnmountItem(
       final RenderUnit renderUnit, final Object content, final @Nullable Object layoutData) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension extension = mMountExtensions.get(i);
       extension.onUnmountItem(getExtensionState(extension), renderUnit, content, layoutData);
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public ExtensionState getExtensionState(MountExtension mountExtension) {
@@ -173,10 +248,14 @@ public class MountDelegate {
       return true;
     }
 
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       mountExtension.beforeMountItem(getExtensionState(mountExtension), renderTreeNode, index);
     }
+
+    endNotifyVisibleBoundsChangedSection();
 
     return hasAcquiredRef(renderTreeNode.getRenderUnit().getId());
   }

@@ -780,6 +780,8 @@ public class LithoView extends ComponentHost implements RootHost, AnimatedRootHo
         mLithoHostListenerCoordinator.disableIncrementalMount();
       }
     }
+
+    mLithoHostListenerCoordinator.setCollectNotifyVisibleBoundsChangedCalls(mDelegateToRenderCore);
   }
 
   /** Change the root component synchronously. */

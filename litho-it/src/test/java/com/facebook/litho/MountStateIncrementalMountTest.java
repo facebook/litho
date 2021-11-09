@@ -799,9 +799,10 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    verify(childView1, times(2)).notifyVisibleBoundsChanged();
-    verify(childView2, times(2)).notifyVisibleBoundsChanged();
-    verify(childView3, times(2)).notifyVisibleBoundsChanged();
+    final int expectedVisibleBoundsChangedCalls = mDelegateToRenderCoreMount ? 1 : 2;
+    verify(childView1, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
+    verify(childView2, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
+    verify(childView3, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
   }
 
   @Test
@@ -892,9 +893,10 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 
     // Called twice when mount is delegated; for both incremental mount and visibility extension
-    verify(childView1, times(2)).notifyVisibleBoundsChanged();
-    verify(childView2, times(2)).notifyVisibleBoundsChanged();
-    verify(childView3, times(2)).notifyVisibleBoundsChanged();
+    final int expectedVisibleBoundsChangedCalls = mDelegateToRenderCoreMount ? 1 : 2;
+    verify(childView1, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
+    verify(childView2, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
+    verify(childView3, times(expectedVisibleBoundsChangedCalls)).notifyVisibleBoundsChanged();
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -1068,7 +1070,7 @@ public class MountStateIncrementalMountTest {
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
-    verify(lithoView, times(mUseMountDelegateTarget || mDelegateToRenderCoreMount ? 2 : 1))
+    verify(lithoView, times(mUseMountDelegateTarget && !mDelegateToRenderCoreMount ? 2 : 1))
         .notifyVisibleBoundsChanged();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);

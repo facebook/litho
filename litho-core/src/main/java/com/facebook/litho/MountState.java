@@ -786,6 +786,12 @@ class MountState implements MountDelegateTarget {
     return mMountDelegate.getExtensionState(mountExtension);
   }
 
+  @Nullable
+  @Override
+  public MountDelegate getMountDelegate() {
+    return mMountDelegate;
+  }
+
   /** Clears and re-populates the test item map if we are in e2e test mode. */
   private void processTestOutputs(LayoutState layoutState) {
     if (mTestItemMap == null) {

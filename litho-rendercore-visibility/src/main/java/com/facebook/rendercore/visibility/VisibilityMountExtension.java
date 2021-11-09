@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.visibility;
 
-import static com.facebook.rendercore.extensions.RenderCoreExtension.recursivelyNotifyVisibleBoundsChanged;
 import static com.facebook.rendercore.visibility.VisibilityUtils.log;
 
 import android.graphics.Rect;
@@ -27,6 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.Function;
 import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.RenderCoreSystrace;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -335,9 +335,10 @@ public class VisibilityMountExtension<Input extends VisibilityExtensionInput>
       RenderCoreSystrace.endSection();
     }
 
+    final MountDelegate mountDelegate = extensionState.getMountDelegate();
     for (long id : state.mRenderUnitIdsWhichHostRenderTrees) {
       log("RecursivelyNotify:RenderUnit[id=" + id + "]");
-      recursivelyNotifyVisibleBoundsChanged(extensionState.getMountDelegate().getContentById(id));
+      mountDelegate.notifyVisibleBoundsChangedForItem(mountDelegate.getContentById(id));
     }
 
     if (isDirty) {

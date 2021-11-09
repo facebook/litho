@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegateTarget;
 import com.facebook.rendercore.extensions.ExtensionState;
 import com.facebook.rendercore.extensions.MountExtension;
@@ -48,8 +49,34 @@ public class LithoHostListenerCoordinator {
     mMountDelegateTarget = mountDelegateTarget;
   }
 
+  public void setCollectNotifyVisibleBoundsChangedCalls(boolean value) {
+    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
+
+    if (mountDelegate != null) {
+      mountDelegate.setCollectVisibleBoundsChangedCalls(value);
+    }
+  }
+
+  private void startNotifyVisibleBoundsChangedSection() {
+    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
+
+    if (mountDelegate != null) {
+      mountDelegate.startNotifyVisibleBoundsChangedSection();
+    }
+  }
+
+  private void endNotifyVisibleBoundsChangedSection() {
+    final MountDelegate mountDelegate = mMountDelegateTarget.getMountDelegate();
+
+    if (mountDelegate != null) {
+      mountDelegate.endNotifyVisibleBoundsChangedSection();
+    }
+  }
+
   // TODO figure out how to better enforce the input type here.
   public void beforeMount(Object input, Rect localVisibleRect) {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       MountExtension hostListenerExtension = mMountExtensions.get(i);
       ExtensionState state = mMountDelegateTarget.getExtensionState(hostListenerExtension);
@@ -57,9 +84,13 @@ public class LithoHostListenerCoordinator {
         hostListenerExtension.beforeMount(state, input, localVisibleRect);
       }
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void afterMount() {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
@@ -68,25 +99,31 @@ public class LithoHostListenerCoordinator {
       }
     }
 
+    endNotifyVisibleBoundsChangedSection();
+
     LithoStats.incrementComponentMountCount();
   }
 
   public void processVisibilityOutputs(Rect localVisibleRect, boolean isDirty) {
+    startNotifyVisibleBoundsChangedSection();
+
     if (mVisibilityExtension != null) {
       final ExtensionState state = mMountDelegateTarget.getExtensionState(mVisibilityExtension);
-      if (state == null) {
-        return;
-      }
-
-      if (isDirty) {
-        mVisibilityExtension.afterMount(state);
-      } else {
-        mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
+      if (state != null) {
+        if (isDirty) {
+          mVisibilityExtension.afterMount(state);
+        } else {
+          mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
+        }
       }
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onVisibleBoundsChanged(Rect localVisibleRect) {
+    startNotifyVisibleBoundsChangedSection();
+
     // We first mount and then we process visibility outputs.
     if (mIncrementalMountExtension != null) {
       ExtensionState state = mMountDelegateTarget.getExtensionState(mIncrementalMountExtension);
@@ -109,9 +146,13 @@ public class LithoHostListenerCoordinator {
         mVisibilityExtension.onVisibleBoundsChanged(state, localVisibleRect);
       }
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onUnmount() {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
@@ -119,9 +160,13 @@ public class LithoHostListenerCoordinator {
         mountExtension.onUnmount(state);
       }
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   public void onUnbind() {
+    startNotifyVisibleBoundsChangedSection();
+
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       final MountExtension mountExtension = mMountExtensions.get(i);
       ExtensionState state = mMountDelegateTarget.getExtensionState(mountExtension);
@@ -129,6 +174,8 @@ public class LithoHostListenerCoordinator {
         mountExtension.onUnbind(state);
       }
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   void enableIncrementalMount(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
@@ -237,10 +284,14 @@ public class LithoHostListenerCoordinator {
       return;
     }
 
+    startNotifyVisibleBoundsChangedSection();
+
     ExtensionState state = mMountDelegateTarget.getExtensionState(mTransitionsExtension);
     if (state != null) {
       mTransitionsExtension.collectAllTransitions(state, layoutState);
     }
+
+    endNotifyVisibleBoundsChangedSection();
   }
 
   private void registerListener(MountExtension mountListenerExtension) {

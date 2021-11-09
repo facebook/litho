@@ -75,4 +75,7 @@ public interface MountDelegateTarget {
   void removeUnmountDelegateExtension();
 
   ExtensionState getExtensionState(MountExtension mountExtension);
+  
+  @Nullable
+  MountDelegate getMountDelegate();
 }
