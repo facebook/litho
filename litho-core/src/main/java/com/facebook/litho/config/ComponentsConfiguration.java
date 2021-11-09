@@ -330,7 +330,7 @@ public class ComponentsConfiguration {
   }
 
   public static ComponentsConfiguration.Builder create() {
-    return defaultBuilder;
+    return create(defaultComponentsConfiguration);
   }
 
   public static ComponentsConfiguration.Builder create(
