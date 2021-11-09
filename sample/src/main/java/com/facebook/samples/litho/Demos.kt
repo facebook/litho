@@ -212,7 +212,7 @@ class Demos {
                         name = "Errors",
                         listOf(
                             SingleDemo(
-                                name = "Error Boundaries",
+                                name = "[KComponent] Error Boundaries",
                                 klass = ErrorHandlingKotlinActivity::class.java))),
                     DemoGrouping(
                         name = "Common Props",

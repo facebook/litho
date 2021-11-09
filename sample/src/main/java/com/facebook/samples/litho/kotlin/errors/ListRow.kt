@@ -20,6 +20,5 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 
 data class ListRow(val title: String, val subtitle: String) {
-  fun createComponent(c: ComponentContext): Component =
-      ErrorBoundary.create(c).child(ListRowComponent.create(c).row(this).build()).build()
+  fun createComponent(c: ComponentContext): Component = KErrorBoundary(KListRow(this))
 }
