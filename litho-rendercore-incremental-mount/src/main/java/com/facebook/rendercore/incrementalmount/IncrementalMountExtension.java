@@ -247,8 +247,8 @@ public class IncrementalMountExtension
   }
 
   static void recursivelyNotifyVisibleBoundsChanged(
-      final ExtensionState<IncrementalMountExtensionState> extensionState, 
-      final long id, 
+      final ExtensionState<IncrementalMountExtensionState> extensionState,
+      final long id,
       final Object content) {
     assertMainThread();
     final IncrementalMountExtensionInput input = extensionState.getState().mInput;
