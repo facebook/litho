@@ -69,7 +69,7 @@ import javax.lang.model.util.Types;
 /** Factory for creating {@link DiffSectionSpecModel}s. */
 public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSectionSpecModel> {
 
-  private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
+  public static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
       new ArrayList<>();
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
       new BuilderMethodModel(

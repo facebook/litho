@@ -16,12 +16,12 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import static com.facebook.litho.sections.specmodels.processor.GroupSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
+import static com.facebook.litho.sections.specmodels.processor.DiffSectionSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS;
 
 import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.sections.annotations.GroupSectionSpec;
-import com.facebook.litho.sections.specmodels.model.DefaultGroupSectionSpecGenerator;
-import com.facebook.litho.sections.specmodels.model.GroupSectionSpecModel;
+import com.facebook.litho.sections.annotations.DiffSectionSpec;
+import com.facebook.litho.sections.specmodels.model.DefaultDiffSectionSpecGenerator;
+import com.facebook.litho.sections.specmodels.model.DiffSectionSpecModel;
 import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -36,40 +36,34 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
-/** Factory for creating {@link GroupSectionSpecModel}s. */
-public class PsiGroupSectionSpecModelFactory {
-  private final List<Class<? extends Annotation>> mGroupSectionSpecDelegateMethodAnnotations;
-  private final SpecGenerator<GroupSectionSpecModel> mGroupSectionSpecGenerator;
+public class PsiDiffSectionSpecModelFactory {
+  private final List<Class<? extends Annotation>> mDiffSectionSpecDelegateMethodAnnotations;
+  private final SpecGenerator<DiffSectionSpecModel> mDiffSectionSpecGenerator;
   private static final BuilderMethodModel LOADING_EVENT_BUILDER_METHOD =
       new BuilderMethodModel(
           ParameterizedTypeName.get(
               ClassNames.EVENT_HANDLER, SectionClassNames.LOADING_EVENT_HANDLER),
           "loadingEventHandler");
 
-  public PsiGroupSectionSpecModelFactory() {
-    this(DELEGATE_METHOD_ANNOTATIONS, new DefaultGroupSectionSpecGenerator());
+  public PsiDiffSectionSpecModelFactory() {
+    this(DELEGATE_METHOD_ANNOTATIONS, new DefaultDiffSectionSpecGenerator());
   }
 
-  public PsiGroupSectionSpecModelFactory(
-      List<Class<? extends Annotation>> groupSectionSpecDelegateMethodAnnotations,
-      SpecGenerator<GroupSectionSpecModel> groupSectionSpecGenerator) {
-    mGroupSectionSpecDelegateMethodAnnotations = groupSectionSpecDelegateMethodAnnotations;
-    mGroupSectionSpecGenerator = groupSectionSpecGenerator;
+  public PsiDiffSectionSpecModelFactory(
+      List<Class<? extends Annotation>> diffSingleSectionSpecDelegateMethodAnnotations,
+      SpecGenerator<DiffSectionSpecModel> diffSectionSpecGenerator) {
+    mDiffSectionSpecDelegateMethodAnnotations = diffSingleSectionSpecDelegateMethodAnnotations;
+    mDiffSectionSpecGenerator = diffSectionSpecGenerator;
   }
 
-  /**
-   * @return a new {@link GroupSectionSpecModel} or null if provided class isn't a {@link
-   *     GroupSectionSpec} class. Access is allowed from event dispatch thread or inside read-action
-   *     only.
-   */
   @Nullable
-  public GroupSectionSpecModel createWithPsi(
+  public DiffSectionSpecModel createWithPsi(
       Project project,
       PsiClass psiClass,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
-    GroupSectionSpec groupSectionSpecAnnotation =
-        PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, GroupSectionSpec.class);
-    if (groupSectionSpecAnnotation == null) {
+    final DiffSectionSpec diffSectionSpecAnnotation =
+        PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, DiffSectionSpec.class);
+    if (diffSectionSpecAnnotation == null) {
       return null;
     }
 
@@ -78,33 +72,33 @@ public class PsiGroupSectionSpecModelFactory {
       return null;
     }
 
-    return new GroupSectionSpecModel(
+    return new DiffSectionSpecModel(
         qualifiedName,
-        groupSectionSpecAnnotation.value(),
+        diffSectionSpecAnnotation.value(),
         PsiDelegateMethodExtractor.getDelegateMethods(
             psiClass,
-            mGroupSectionSpecDelegateMethodAnnotations,
+            mDiffSectionSpecDelegateMethodAnnotations,
             ImmutableList.of(),
             ImmutableList.of(),
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
         PsiEventMethodExtractor.getOnEventMethods(psiClass, ImmutableList.of(), ImmutableList.of()),
+        PsiAnnotationExtractor.extractValidAnnotations(project, psiClass),
         PsiTriggerMethodExtractor.getOnTriggerMethods(
             psiClass, ImmutableList.of(), ImmutableList.of()),
         PsiUpdateStateMethodExtractor.getOnUpdateStateMethods(
             psiClass, ImmutableList.of(), ImmutableList.of(), false),
         PsiTypeVariablesExtractor.getTypeVariables(psiClass),
         PsiPropDefaultsExtractor.getPropDefaults(psiClass),
-        PsiEventDeclarationsExtractor.getEventDeclarations(psiClass, GroupSectionSpec.class),
-        PsiAnnotationExtractor.extractValidAnnotations(project, psiClass),
+        PsiEventDeclarationsExtractor.getEventDeclarations(psiClass, DiffSectionSpec.class),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),
         ImmutableList.of(),
         "classJavadoc",
         ImmutableList.of(),
-        groupSectionSpecAnnotation.isPublic(),
+        diffSectionSpecAnnotation.isPublic(),
         SpecElementType.JAVA_CLASS,
         dependencyInjectionHelper,
         psiClass,
-        mGroupSectionSpecGenerator,
+        mDiffSectionSpecGenerator,
         PsiFieldsExtractor.extractFields(psiClass));
   }
 }
