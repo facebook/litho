@@ -2,7 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
-
+load("@fbsource//tools/build_defs/android:litho_jni.bzl", "LITHO_JNI_DEPS")
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TESTING_JUNIT_TARGET",
@@ -29,6 +29,7 @@ litho_robolectric4_test(
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     fork_mode = "per_test",
     is_androidx = True,
+    jni_deps = LITHO_JNI_DEPS,
     language = "KOTLIN",
     provided_deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
