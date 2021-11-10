@@ -31,11 +31,11 @@ public class EventTriggersContainerTest {
 
   private static final String TEST_KEY_1 = "test_key_1";
   private static final String TEST_KEY_2 = "test_key_2";
-  private static final Handle TEST_HANDLE_1 = new Handle();
-  private static final Handle TEST_HANDLE_2 = new Handle();
   private static final int METHOD_ID_1 = 1;
   private static final int METHOD_ID_2 = 2;
 
+  @Mock Handle TEST_HANDLE_1;
+  @Mock Handle TEST_HANDLE_2;
   @Mock EventTrigger mockEventTriggerWithKey;
   @Mock EventTrigger mockEventTriggerWithHandle;
   @Mock EventTrigger mockEventTriggerWithKeyAndHandle;
@@ -44,6 +44,9 @@ public class EventTriggersContainerTest {
 
   @Before
   public void setUp() {
+    TEST_HANDLE_1 = mock(Handle.class);
+    TEST_HANDLE_2 = mock(Handle.class);
+
     mockEventTriggerWithKey = mock(EventTrigger.class);
     when(mockEventTriggerWithKey.getKey()).thenReturn(TEST_KEY_1);
 
