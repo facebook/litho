@@ -56,6 +56,7 @@ inline fun ComponentScope.Text(
     minLines: Int = 0,
     maxLines: Int = Int.MAX_VALUE,
     includeFontPadding: Boolean = SHOULD_INCLUDE_FONT_PADDING,
+    accessibleClickableSpans: Boolean = false,
     clipToBounds: Boolean = CLIP_TO_BOUNDS,
     handle: Handle? = null,
     @ColorInt backgroundColor: Int? = null,
@@ -78,6 +79,7 @@ inline fun ComponentScope.Text(
         .minLines(minLines)
         .maxLines(maxLines)
         .shouldIncludeFontPadding(includeFontPadding)
+        .accessibleClickableSpans(accessibleClickableSpans)
         .clipToBounds(clipToBounds)
         .apply { ellipsize?.let { ellipsize(it) } }
         .handle(handle)
