@@ -134,7 +134,7 @@ public class ComponentTree implements LithoLifecycleListener {
   private final @RecyclingMode int mRecyclingMode;
 
   private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
-  private final RenderUnitIdMap mRenderUnitIdMap = new RenderUnitIdMap();
+  private final RenderUnitIdMap mRenderUnitIdMap;
   private boolean mInAttach = false;
 
   @Override
@@ -468,6 +468,12 @@ public class ComponentTree implements LithoLifecycleListener {
       mId = builder.overrideComponentTreeId;
     } else {
       mId = generateComponentTreeId();
+    }
+
+    if (builder.mRenderUnitIdMap != null) {
+      mRenderUnitIdMap = builder.mRenderUnitIdMap;
+    } else {
+      mRenderUnitIdMap = new RenderUnitIdMap();
     }
 
     mIncrementalMountHelper =
@@ -3313,6 +3319,8 @@ public class ComponentTree implements LithoLifecycleListener {
     private boolean isLayoutCachingEnabled = ComponentsConfiguration.enableLayoutCaching;
     private boolean useRenderUnitIdMap = true;
 
+    private @Nullable RenderUnitIdMap mRenderUnitIdMap;
+
     protected Builder(ComponentContext context) {
       this.context = context;
     }
@@ -3448,6 +3456,17 @@ public class ComponentTree implements LithoLifecycleListener {
      */
     public Builder overrideComponentTreeId(int overrideComponentTreeId) {
       this.overrideComponentTreeId = overrideComponentTreeId;
+      return this;
+    }
+
+    /**
+     * This should not be used in majority of cases and should only be used when overriding previous
+     * component tree id {@link ComponentTree.Builder#overrideComponentTreeId}
+     *
+     * @param prevComponentTree Previous ComponentTree to override the render unit id map
+     */
+    public Builder overrideRenderUnitIdMap(ComponentTree prevComponentTree) {
+      this.mRenderUnitIdMap = prevComponentTree.getRenderUnitIdMap();
       return this;
     }
 
