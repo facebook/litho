@@ -21,10 +21,13 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Handle;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
@@ -33,10 +36,20 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class CustomEventTriggerExampleComponentSpec {
 
+  @OnCreateInitialState
+  static void onCreateInitialState(
+      ComponentContext c,
+      final StateValue<Handle> textInputHandle,
+      final StateValue<Handle> handleInNestedTree) {
+    textInputHandle.set(new Handle());
+    handleInNestedTree.set(new Handle());
+  }
+
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    final Handle textInputHandle = new Handle();
-    final Handle handleInNestedTree = new Handle();
+  static Component onCreateLayout(
+      ComponentContext c,
+      final @State Handle textInputHandle,
+      final @State Handle handleInNestedTree) {
     return Column.create(c)
         .child(
             Text.create(c, android.R.attr.buttonStyle, 0)

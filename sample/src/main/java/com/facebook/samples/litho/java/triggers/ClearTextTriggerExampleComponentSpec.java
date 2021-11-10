@@ -21,19 +21,26 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Handle;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
 
 @LayoutSpec
 public class ClearTextTriggerExampleComponentSpec {
 
+  @OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c, final StateValue<Handle> textInputHandle) {
+    textInputHandle.set(new Handle());
+  }
+
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    final Handle textInputHandle = new Handle();
+  static Component onCreateLayout(ComponentContext c, @State Handle textInputHandle) {
     return Column.create(c)
         .child(
             Text.create(c, android.R.attr.buttonStyle, 0)

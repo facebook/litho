@@ -27,11 +27,14 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Handle;
 import com.facebook.litho.LithoTooltipController;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
@@ -41,9 +44,13 @@ public class TooltipTriggerExampleComponentSpec {
 
   private static final @ColorInt int LITHO_PINK = 0xfff36b7f;
 
+  @OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c, final StateValue<Handle> anchorHandle) {
+    anchorHandle.set(new Handle());
+  }
+
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    final Handle anchorHandle = new Handle();
+  static Component onCreateLayout(ComponentContext c, @State Handle anchorHandle) {
     return Column.create(c)
         .alignItems(YogaAlign.CENTER)
         .child(

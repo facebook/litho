@@ -25,6 +25,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Handle;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -36,11 +37,15 @@ import com.facebook.yoga.YogaEdge;
 @LayoutSpec
 class ParentComponentSendsEventToChildSpec {
 
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State int counterForChildComponentText) {
-    // start_define_handle
-    Handle childHandle = new Handle();
+  // start_define_handle
+  @OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c, final StateValue<Handle> childHandle) {
+    childHandle.set(new Handle());
+  }
 
+  @OnCreateLayout
+  static Component onCreateLayout(
+      ComponentContext c, @State int counterForChildComponentText, @State Handle childHandle) {
     return Column.create(c)
         .paddingDip(YogaEdge.ALL, 30)
         .child(Text.create(c).text("ParentComponent").textSizeDip(30))
